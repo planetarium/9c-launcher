@@ -3,8 +3,8 @@ html {
 }
 
 body {
-    padding: 0px 16px;
     min-height: 100%;
+    margin: 0;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
@@ -25,11 +25,17 @@ button {
 .layout {
     
     .container {
-        gap: 8px;
         display: grid;
-        grid-template-columns: 200px 1fr;
-        grid-template-rows: auto 100% auto;
     }
+
+    .banner {
+        grid-row: 1;
+        grid-column: 2;
+        background-image: url('../resources/shop_cat.jpg');
+        background-size: cover;
+        min-width: 300px;
+    }
+
     .header {
         grid-row: 1;
         grid-column: 1 / span 2;
@@ -48,9 +54,9 @@ button {
         }
     }
     .body {
-        padding: 16px;
-        min-height: 600px;
-        grid-column: 2;
+        grid-row: 1;
+        min-height: 630px;
+        grid-column: 1;
         background-color: $color3;
     }
     .footer {
@@ -59,5 +65,13 @@ button {
         grid-column: 1 / span 2;
         background-color: $color2;
         color: $color3;
+    }
+}
+
+.login {
+    .container {
+        display: grid;
+    }
+    .header {
     }
 }

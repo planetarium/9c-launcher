@@ -17,18 +17,11 @@ export const Layout: React.FunctionComponent<ILayoutProps> = ({ children }) => {
     return (
         <div className="layout">
             <div className="container">
-                <div className="sidebar">
-                    <Link to="/">Foo</Link>
-                    <Link to="/bar">Bar</Link>
-                </div>
-                <div className="header">
-                    <h1>My Application</h1>
+                <div className="banner">
+
                 </div>
                 <div className="body">
                     {children}
-                </div>
-                <div className="footer">
-                    <p>Today is: {getTime()}</p>
                 </div>
             </div>
         </div>
