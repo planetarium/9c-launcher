@@ -1,0 +1,62 @@
+{
+  "name": "electron-react-typescript-boilerplate",
+  "version": "2.0.0",
+  "description": "Template project for desktop apps using Electron, React and Typescript",
+  "author": "Marcelo Augusto",
+  "license": "MIT",
+  "keywords": [
+    "electron",
+    "react",
+    "typescript",
+    "hot"
+  ],
+  "homepage": "https://github.com/marceloaugusto80/electron-react-typescript-boilerplate",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marceloaugusto80/electron-react-typescript-boilerplate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/marceloaugusto80/electron-react-typescript-boilerplate/issues"
+  },
+  "main": "main-process.js",
+  "scripts": {
+    "build": "npx webpack --env.NODE_ENV=development --env.target=render && npx webpack --env.NODE_ENV=development --env.target=main",
+    "build-prod": "npx webpack --env.NODE_ENV=production --env.target=render && npx webpack --env.NODE_ENV=production --env.target=main",
+    "server": "npx webpack-dev-server --env.NODE_ENV=development --env.target=render --hot",
+    "start": "npx webpack --env.NODE_ENV=development --env.target=main && npx electron ./dist/.",
+    "pack": "npm run build-prod && npx electron-packager ./dist --out ./pack --overwrite"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.1",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/polyfill": "^7.10.1",
+    "@babel/preset-env": "^7.10.1",
+    "@babel/preset-react": "^7.10.1",
+    "@babel/preset-typescript": "^7.10.1",
+    "@types/node": "^14.0.5",
+    "@types/react": "^16.9.35",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-router-dom": "^5.1.5",
+    "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^6.0.1",
+    "css-loader": "^3.5.3",
+    "electron": "^9.0.0",
+    "electron-packager": "^14.2.1",
+    "html-webpack-externals-plugin": "^3.8.0",
+    "html-webpack-plugin": "^4.3.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "node-sass": "^4.14.1",
+    "react-hot-loader": "^4.12.21",
+    "sass-loader": "^8.0.2",
+    "typescript": "^3.9.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
