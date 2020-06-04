@@ -1,4 +1,6 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, Tray, Menu, nativeImage } from 'electron';
+import path from 'path';
+import icon from './resources/Cat.png';
 
 declare const ENVIRONMENT: String;
 
@@ -8,6 +10,7 @@ const HTML_FILE_PATH = "index.html";
 
 
 let win: BrowserWindow | null = null;
+let tray: Tray;
 
 
 function createWindow() {
@@ -18,6 +21,10 @@ function createWindow() {
             nodeIntegration: true
         }
     });
+
+    console.log(app.getAppPath());
+
+    tray = createTray(path.join(app.getAppPath(), 'resources', 'Cat.png'));
 
     if (IS_DEV) {
         win.loadURL(DEV_SERVER_URL);
@@ -48,3 +55,17 @@ app.on('activate', () => {
         createWindow()
     }
 })
+
+function createTray(iconPath: string) {
+    let trayIcon = nativeImage.createFromPath(iconPath);
+    trayIcon = trayIcon.resize({
+        width: 16,
+        height: 16
+    });
+    let tray = new Tray(trayIcon);
+    tray.setContextMenu(Menu.buildFromTemplate([
+        { label: 'login' },
+        { label: 'download snapshot' }
+    ]));
+    return tray;
+}
