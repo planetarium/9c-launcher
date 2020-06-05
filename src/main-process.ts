@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Tray, Menu, nativeImage } from 'electron';
 import path from 'path';
-import icon from './resources/Cat.png';
+import { exec, ChildProcess } from 'child_process';
 
 declare const ENVIRONMENT: String;
 
@@ -11,7 +11,8 @@ const HTML_FILE_PATH = "index.html";
 
 let win: BrowserWindow | null = null;
 let tray: Tray;
-
+let node: ChildProcess
+let isQuiting: boolean = false;
 
 function createWindow() {
     win = new BrowserWindow({
@@ -26,7 +27,6 @@ function createWindow() {
 
     console.log(app.getAppPath());
 
-    tray = createTray(path.join(app.getAppPath(), 'resources', 'Cat.png'));
 
     if (IS_DEV) {
         win.loadURL(DEV_SERVER_URL);
@@ -36,27 +36,50 @@ function createWindow() {
         win.loadFile(HTML_FILE_PATH);
     }
 
-
-    win.on("closed", () => {
-        win = null
-    })
+    win.on('minimize', function(event: any){
+        event.preventDefault();
+        win?.hide();
+    });
+    
+    win.on('close', function (event: any) {
+        if(!isQuiting){
+            event.preventDefault();
+            win?.hide();
+        }
+    });
 }
 
 app.on("ready", () => {
+    executeNode(path.join(app.getAppPath(), 'netcoreapp3.1', 'NineChronicles.Standalone.Executable.dll'), ['--graphql-server=true'])
     createWindow();
+    // 여기도 file-loader 써서 집어넣자
+    createTray(path.join(app.getAppPath(), 'resources', 'Cat.png'));
 });
 
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
+// app.on('window-all-closed', () => {
+//     if (process.platform !== 'darwin') {
+//         app.quit()
+//     }
+// })
+
+app.on('before-quit', (event) => {
+    node.kill('SIGKILL'); 
+});
+
+app.on('activate', (event) => {
+    event.preventDefault();
+    win?.show();
 })
 
-app.on('activate', () => {
-    if (win === null) {
-        createWindow()
-    }
-})
+function executeNode(binaryPath: string, arg: string[]) {
+    console.log()
+    node = exec(`dotnet ${binaryPath} ${arg.join(' ')}`, (error, stdout, stderr) => {
+        if(error) console.error(`exec error: ${error}`);
+        if(stdout) console.log(`child process stdout: ${stdout}`);
+        if(stderr) console.error(`child process stderr: ${stderr}`);
+    })
+}
+
 
 function createTray(iconPath: string) {
     let trayIcon = nativeImage.createFromPath(iconPath);
@@ -66,8 +89,13 @@ function createTray(iconPath: string) {
     });
     let tray = new Tray(trayIcon);
     tray.setContextMenu(Menu.buildFromTemplate([
-        { label: 'login' },
-        { label: 'download snapshot' }
+        { label: 'Open Window', click: function(){
+            win?.show()
+        }},
+        { label: 'Quit Launcher', click: function(){
+            isQuiting = true;
+            app.quit();
+        }}
     ]));
     return tray;
 }

@@ -25,9 +25,9 @@ export default class LoginView extends React.Component<RouteComponentProps, Stat
                         <h3>Login</h3>
                     </div>
                     <form>
-                        <label>hash</label> <input type="text"></input>
+                        <label>Address</label> <input type="text"></input>
                         <br/>
-                        <label>passpahrase</label> <input type="password"></input>
+                        <label>Passphrase</label> <input type="password"></input>
                     </form>
                 </div>
             </div>
