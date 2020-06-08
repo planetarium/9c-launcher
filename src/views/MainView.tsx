@@ -1,5 +1,3 @@
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import * as React from 'react';
 import { useState } from 'react';
 import LobbyView from './LobbyView';
