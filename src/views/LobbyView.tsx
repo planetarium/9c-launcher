@@ -12,12 +12,10 @@ export default function LobbyView(props: any) {
         setProgressPercentages(progress.percent * 100);
         console.log(progress);
     });
+
     ipcRenderer.on("download complete", (event, path) => {
         setDownloadState(false);
-    })
-    ipcRenderer.on("error popup", (event, message) => {
-        console.log(message);
-    })
+    });
 
     const executeGame = () => {
         ipcRenderer.send("launch game", {
@@ -25,13 +23,13 @@ export default function LobbyView(props: any) {
                 `--privateKey=${props.privateKey}`
             ]
         })
-    }
+    };
 
     const downloadSnapShot = () => {
         ipcRenderer.send("download snapshot", {
             properties: {}
         });
-    }
+    };
 
     return (
         <div>

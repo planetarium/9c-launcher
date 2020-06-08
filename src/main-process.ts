@@ -2,6 +2,7 @@ import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron';
 import path from 'path';
 import { exec, ChildProcess } from 'child_process';
 import { download } from 'electron-dl';
+import "@babel/polyfill"
 
 declare const ENVIRONMENT: String;
 
@@ -54,15 +55,18 @@ function createWindow() {
     });
 }
 
-app.on("ready", () => {
+app.on("ready", async () => {
     executeNode(path.join(app.getAppPath(), 'netcoreapp3.1', 'NineChronicles.Standalone.Executable.dll'), ['--graphql-server=true'])
-    createWindow();
-    // resource 디렉터리를 dist에 집어넣지 않으면 동작하지 않습니다. file-loader 이용해서 트레이 아이콘도 옮길 수 있게 해야 합니다.
-    createTray(path.join(app.getAppPath(), 'resources', 'Cat.png'));
+    //asp net 서버가 구동되기까지의 시간이 필요합니다.
+    await setTimeout(function() {
+        createWindow();
+        // resource 디렉터리를 dist에 집어넣지 않으면 동작하지 않습니다. file-loader 이용해서 트레이 아이콘도 옮길 수 있게 해야 합니다.
+        createTray(path.join(app.getAppPath(), 'resources', 'Cat.png'));
+      }, 1500)
 });
 
 app.on('before-quit', (event) => {
-    node.kill('SIGKILL'); 
+//    node.kill('SIGKILL'); 
 });
 
 app.on('activate', (event) => {
@@ -84,7 +88,7 @@ ipcMain.on("launch game", (event, info) => {
     execute(path.join(app.getAppPath(), GAME_PATH), info.args)
 })
 
-function executeNode(binaryPath: string, args: string[]) {
+async function executeNode(binaryPath: string, args: string[]) {
     execute(`dotnet ${binaryPath}`, args);
 }
 
