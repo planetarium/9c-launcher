@@ -4,17 +4,27 @@ import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import { Layout } from "./views/Layout";
 import "./styles/main.scss";
 import MainView from './views/MainView';
+import ApolloClient from "apollo-client"
+import { ApolloProvider } from 'react-apollo'
+import { createHttpLink } from 'apollo-link-http';
+import { InMemoryCache } from "apollo-cache-inmemory";
 
+const client = new ApolloClient({
+    link: createHttpLink({ uri: "http://localhost/graphql" }),
+    cache: new InMemoryCache(),
+})
 function App() {
     return (
-        <BrowserRouter>
-            <Layout>
-                <Switch>
-                    <Route exact path="/" component={MainView} />
-                    <Redirect from="*" to="/" />
-                </Switch>
-            </Layout>
-        </BrowserRouter>
+        <ApolloProvider client={client}>
+            <BrowserRouter>
+                <Layout>
+                    <Switch>
+                        <Route exact path="/" component={MainView} />
+                        <Redirect from="*" to="/" />
+                    </Switch>
+                </Layout>
+            </BrowserRouter>
+        </ApolloProvider>
     );
 }
 

@@ -36,7 +36,7 @@ export default function LobbyView(props: any) {
     return (
         <div>
             <label>You are using address: {props.address}</label><br/>
-            <button onClick={(event: React.MouseEvent) => { executeGame() }}>Start Game</button>
+            <button disabled={isDownloaded} onClick={(event: React.MouseEvent) => { executeGame() }}>Start Game</button>
             <button onClick={(event: React.MouseEvent) => { downloadSnapShot() }}>Download Snapshot</button>
             <br />
             {isDownloaded ? <label>{progressPercentages}</label> : null}
