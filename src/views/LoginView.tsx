@@ -1,38 +1,37 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import * as fs from "fs";
-import MainView from './MainView';
+import { useState } from 'react';
 
 interface State {
     text: string;
 }
 
-export default class LoginView extends React.Component<RouteComponentProps, State> {
-    fileRef: React.RefObject<HTMLInputElement>;
+export default function LoginView(props: any) {
+    const [address, setAddress] = useState('placeholder');
+    const [passphrase, setPassphrase] = useState('placeholder');
+    const [privateKey, setPrivateKey] = useState('username22');
 
-    constructor(props: RouteComponentProps) {
-        super(props);
-        this.state = {
-            text: "Open a file to display content here"
-        };
-
-        this.fileRef = React.createRef<HTMLInputElement>();
+    const handleAccount = () => {
+        console.log(props)
+        props.setAddress(address);
+        props.setPrivateKey(privateKey);
+        props.setLogin(true);
     }
-    public render() {
-        return (
+    return (
+        <div>
             <div className="login">
                 <div className="container">
                     <div className="header">
                         <h3>Login</h3>
                     </div>
                     <form>
-                        <label>Address</label> <input type="text"></input>
+                        <label>Address</label> <input onChange={event => {setAddress(event.target.value); console.log(address)}} type="text"></input>
                         <br/>
-                        <label>Passphrase</label> <input type="password"></input>
-                        <MainView address={'placeholder'} passpharase={'placeholder'} />
+                        <label>Passphrase</label> <input type="password" onChange={event => {setPassphrase(event.target.value)}}></input>
                     </form>
+                    <button onClick={event => {handleAccount()}}>Login </button>
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
 }

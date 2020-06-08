@@ -5,13 +5,14 @@ import FooView from "./views/LoginView";
 import BarView from "./views/BarView";
 import { Layout } from "./views/Layout";
 import "./styles/main.scss";
+import MainView from './views/MainView';
 
 function App() {
     return (
         <BrowserRouter>
             <Layout>
                 <Switch>
-                    <Route exact path="/" component={FooView} />
+                    <Route exact path="/" component={MainView} />
                     <Redirect from="*" to="/" />
                 </Switch>
             </Layout>
