@@ -15,8 +15,16 @@ export default function LobbyView(props: any) {
     ipcRenderer.on("download complete", (event, path) => {
         setDownloadState(false);
     })
+    ipcRenderer.on("error popup", (event, message) => {
+        console.log(message);
+    })
 
     const executeGame = () => {
+        ipcRenderer.send("launch game", {
+            args: [
+                `--privateKey=${props.privateKey}`
+            ]
+        })
     }
 
     const downloadSnapShot = () => {

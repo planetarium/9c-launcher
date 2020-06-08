@@ -10,6 +10,7 @@ const DEV_SERVER_URL = "http://localhost:9000";
 const HTML_FILE_PATH = "index.html";
 const SNAPSHOT_DOWNLOAD_PATH = "https://9c-test.s3.ap-northeast-2.amazonaws.com/snapshots/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot-202000525.zip";
 const SNAPSHOT_SAVE_PATH = undefined;
+const GAME_PATH = "9c.app/Contents/MacOS/9c";
 
 
 let win: BrowserWindow | null = null;
@@ -56,15 +57,9 @@ function createWindow() {
 app.on("ready", () => {
     executeNode(path.join(app.getAppPath(), 'netcoreapp3.1', 'NineChronicles.Standalone.Executable.dll'), ['--graphql-server=true'])
     createWindow();
-    // 여기도 file-loader 써서 집어넣자
+    // resource 디렉터리를 dist에 집어넣지 않으면 동작하지 않습니다. file-loader 이용해서 트레이 아이콘도 옮길 수 있게 해야 합니다.
     createTray(path.join(app.getAppPath(), 'resources', 'Cat.png'));
 });
-
-// app.on('window-all-closed', () => {
-//     if (process.platform !== 'darwin') {
-//         app.quit()
-//     }
-// })
 
 app.on('before-quit', (event) => {
     node.kill('SIGKILL'); 
@@ -85,15 +80,21 @@ ipcMain.on("download snapshot", (event, info) => {
     }
 });
 
-function executeNode(binaryPath: string, arg: string[]) {
-    console.log()
-    node = exec(`dotnet ${binaryPath} ${arg.join(' ')}`, (error, stdout, stderr) => {
-        if(error) console.error(`exec error: ${error}`);
+ipcMain.on("launch game", (event, info) => {
+    execute(path.join(app.getAppPath(), GAME_PATH), info.args)
+})
+
+function executeNode(binaryPath: string, args: string[]) {
+    execute(`dotnet ${binaryPath}`, args);
+}
+
+function execute(binaryPath: string, args: string[]) {
+    node = exec(`${binaryPath} ${args.join(' ')}`, (error, stdout, stderr) => {
+        if(error) win?.webContents.send('error popup', error);
         if(stdout) console.log(`child process stdout: ${stdout}`);
         if(stderr) console.error(`child process stderr: ${stderr}`);
     })
 }
-
 
 function createTray(iconPath: string) {
     let trayIcon = nativeImage.createFromPath(iconPath);
@@ -109,7 +110,7 @@ function createTray(iconPath: string) {
         { label: 'Quit Launcher', click: function(){
             isQuiting = true;
             app.quit();
-        }}
-    ]));
+        }},
+   ]));
     return tray;
 }
