@@ -27,10 +27,14 @@
     "pack": "npm run build-prod && npx electron-packager ./dist --out ./pack --overwrite"
   },
   "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
     "apollo-link-http": "^1.5.17",
+    "electron-dl": "^3.0.0",
     "file-loader": "^6.0.0",
+    "graphql": "^15.1.0",
+    "graphql-tag": "^2.10.3",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
     "react": "^16.13.1",
@@ -52,7 +56,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^6.0.1",
     "css-loader": "^3.5.3",
-    "electron": "^9.0.0",
+    "electron": "^9.0.2",
     "electron-packager": "^14.2.1",
     "html-webpack-externals-plugin": "^3.8.0",
     "html-webpack-plugin": "^4.3.0",

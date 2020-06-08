@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import * as fs from "fs";
+import MainView from './MainView';
 
 interface State {
     text: string;
@@ -28,6 +29,7 @@ export default class LoginView extends React.Component<RouteComponentProps, Stat
                         <label>Address</label> <input type="text"></input>
                         <br/>
                         <label>Passphrase</label> <input type="password"></input>
+                        <MainView address={'placeholder'} passpharase={'placeholder'} />
                     </form>
                 </div>
             </div>

@@ -1,12 +1,15 @@
-import { app, BrowserWindow, Tray, Menu, nativeImage } from 'electron';
+import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron';
 import path from 'path';
 import { exec, ChildProcess } from 'child_process';
+import { download } from 'electron-dl';
 
 declare const ENVIRONMENT: String;
 
 const IS_DEV = ENVIRONMENT == "development";
 const DEV_SERVER_URL = "http://localhost:9000";
 const HTML_FILE_PATH = "index.html";
+const SNAPSHOT_DOWNLOAD_PATH = "https://9c-test.s3.ap-northeast-2.amazonaws.com/snapshots/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot-202000525.zip";
+const SNAPSHOT_SAVE_PATH = undefined;
 
 
 let win: BrowserWindow | null = null;
@@ -19,7 +22,8 @@ function createWindow() {
         width: 800,
         height: 600,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            preload: path.join(app.getAppPath(), 'preload.js')
         },
         frame: false,
         resizable: false,
@@ -71,6 +75,16 @@ app.on('activate', (event) => {
     win?.show();
 })
 
+ipcMain.on("download snapshot", (event, info) => {
+    info.properties.onProgress = (status: any) => win?.webContents.send("download progress", status);
+    info.properties.directory = SNAPSHOT_SAVE_PATH
+    console.log(win);
+    if (win != null) {
+        download(win, SNAPSHOT_DOWNLOAD_PATH, info.properties)
+            .then(dl => {win?.webContents.send("download complete", dl.getSavePath()); console.log(dl)});
+    }
+});
+
 function executeNode(binaryPath: string, arg: string[]) {
     console.log()
     node = exec(`dotnet ${binaryPath} ${arg.join(' ')}`, (error, stdout, stderr) => {
@@ -87,7 +101,7 @@ function createTray(iconPath: string) {
         width: 16,
         height: 16
     });
-    let tray = new Tray(trayIcon);
+    tray = new Tray(trayIcon);
     tray.setContextMenu(Menu.buildFromTemplate([
         { label: 'Open Window', click: function(){
             win?.show()
