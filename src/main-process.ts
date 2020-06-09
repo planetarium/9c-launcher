@@ -58,7 +58,7 @@ function createWindow() {
 }
 
 app.on("ready", async () => {
-    executeNode(path.join(app.getAppPath(), 'netcoreapp3.1', 'NineChronicles.Standalone.Executable.dll'), ['--graphql-server=true'])
+    executeNode(path.join(app.getAppPath(), 'osx-x64', 'NineChronicles.Standalone.Executable'), ['--graphql-server=true'])
     //asp net 서버가 구동되기까지의 시간이 필요합니다.
     await setTimeout(function() {
         createWindow();
@@ -67,7 +67,9 @@ app.on("ready", async () => {
 });
 
 app.on('before-quit', (event) => {
-//    node.kill('SIGKILL'); 
+    if(node != null) {
+        node.kill('SIGTERM'); 
+    }
 });
 
 app.on('activate', (event) => {
@@ -90,7 +92,7 @@ ipcMain.on("launch game", (event, info) => {
 })
 
 async function executeNode(binaryPath: string, args: string[]) {
-    execute(`dotnet ${binaryPath}`, args);
+    execute(`${binaryPath}`, args);
 }
 
 function execute(binaryPath: string, args: string[]) {
