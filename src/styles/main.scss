@@ -18,6 +18,7 @@ body {
 $color1:  #0077b5;
 $color2:  #000000;
 $color3:  #eeeeee;
+$color4: #999999;
 
 button {
     background-color: $color1;
@@ -26,6 +27,11 @@ button {
     font-weight: bold;
     border-radius: 4px;
     border-style: none;
+}
+
+button:disabled {
+  background-color: $color4;
+  color: $color3;
 }
 
 .layout {
