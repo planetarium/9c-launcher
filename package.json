@@ -1,5 +1,5 @@
 {
-  "name": "electron-react-typescript-boilerplate",
+  "name": "Nine Chronicles",
   "version": "2.0.0",
   "description": "Template project for desktop apps using Electron, React and Typescript",
   "author": "Marcelo Augusto",
@@ -10,7 +10,7 @@
     "typescript",
     "hot"
   ],
-  "homepage": "https://github.com/marceloaugusto80/electron-react-typescript-boilerplate",
+  "homepage": "https://nine-chronicles.com/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marceloaugusto80/electron-react-typescript-boilerplate.git"
