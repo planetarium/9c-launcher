@@ -26,10 +26,11 @@ function createWindow() {
         height: 600,
         webPreferences: {
             nodeIntegration: true,
-            preload: path.join(app.getAppPath(), 'preload.js')
+            preload: path.join(app.getAppPath(), 'preload.js'),
         },
-        frame: false,
+        frame: true,
         resizable: false,
+        autoHideMenuBar: true,
     });
 
     console.log(app.getAppPath());

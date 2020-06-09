@@ -96,7 +96,7 @@ function LoginComponent(props: any) {
                 <br />
                 <label>Passphrase</label> <input type="password" onChange={event => { setPassphrase(event.target.value); }}></input>
             </form>
-            <button disabled={error != undefined} onClick={event => { handleAccount() }}>Login </button>
+            <button disabled={data == undefined} onClick={event => { handleAccount() }}>Login </button>
         </div>
     )
 }
