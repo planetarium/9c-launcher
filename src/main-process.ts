@@ -2,6 +2,7 @@ import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron';
 import path from 'path';
 import { exec, ChildProcess } from 'child_process';
 import { download } from 'electron-dl';
+import trayImage from './resources/Cat.png'
 import "@babel/polyfill"
 
 declare const ENVIRONMENT: String;
@@ -60,8 +61,7 @@ app.on("ready", async () => {
     //asp net 서버가 구동되기까지의 시간이 필요합니다.
     await setTimeout(function() {
         createWindow();
-        // resource 디렉터리를 dist에 집어넣지 않으면 동작하지 않습니다. file-loader 이용해서 트레이 아이콘도 옮길 수 있게 해야 합니다.
-        createTray(path.join(app.getAppPath(), 'resources', 'Cat.png'));
+        createTray(path.join(app.getAppPath(), trayImage));
       }, 1500)
 });
 
