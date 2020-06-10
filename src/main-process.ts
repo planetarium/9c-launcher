@@ -54,7 +54,7 @@ function createWindow() {
 }
 
 app.on("ready", async () => {
-    executeNode(path.join(app.getAppPath(), 'osx-x64', 'NineChronicles.Standalone.Executable'), ['--graphql-server=true'])
+    executeNode(path.join(app.getAppPath(), 'publish', 'NineChronicles.Standalone.Executable'), ['--graphql-server=true'])
     //asp net 서버가 구동되기까지의 시간이 필요합니다.
     await setTimeout(function() {
         createWindow();
@@ -97,6 +97,7 @@ async function executeNode(binaryPath: string, args: string[]) {
 }
 
 function execute(binaryPath: string, args: string[]) {
+    console.log(`execute process: ${binaryPath} ${args.join(' ')}`)
     node = exec(`${binaryPath} ${args.join(' ')}`, (error, stdout, stderr) => {
         if(error) win?.webContents.send('error popup', error);
         if(stdout) console.log(`child process stdout: ${stdout}`);
