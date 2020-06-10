@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { standaloneProperties, RPC_LOOPBACK_HOST } from '../constant';
 
 const { ipcRenderer } = window
 
@@ -20,7 +21,10 @@ export default function LobbyView(props: any) {
     const executeGame = () => {
         ipcRenderer.send("launch game", {
             args: [
-                `--privateKey=${props.privateKey}`
+                `--private-key=${props.privateKey}`,
+                `--rpc-client=${true}`,
+                `--rpc-server-host=${RPC_LOOPBACK_HOST}`,
+                `--rpc-server-port=${standaloneProperties.RpcListenPort}`,
             ]
         })
     };
