@@ -10,14 +10,15 @@ import { RetryLink } from 'apollo-link-retry';
 import { ApolloProvider } from 'react-apollo'
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from "apollo-cache-inmemory";
+import { GRAPHQL_ENTRYPOINT } from './constant';
 
 const link = ApolloLink.from([
     new RetryLink(),
-    createHttpLink({ uri: "http://localhost/graphql" })
+    createHttpLink({ uri: GRAPHQL_ENTRYPOINT })
   ]);
 
 const client = new ApolloClient({
-    link: createHttpLink({ uri: "http://localhost/graphql" }),
+    link: link,
     cache: new InMemoryCache(),
 })
 function App() {

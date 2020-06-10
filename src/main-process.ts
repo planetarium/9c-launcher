@@ -4,15 +4,11 @@ import { exec, ChildProcess } from 'child_process';
 import { download } from 'electron-dl';
 import trayImage from './resources/Cat.png'
 import "@babel/polyfill"
+import * as constant from './constant';
 
 declare const ENVIRONMENT: String;
 
 const IS_DEV = ENVIRONMENT == "development";
-const DEV_SERVER_URL = "http://localhost:9000";
-const HTML_FILE_PATH = "index.html";
-const SNAPSHOT_DOWNLOAD_PATH = "https://9c-test.s3.ap-northeast-2.amazonaws.com/snapshots/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot-202000525.zip";
-const SNAPSHOT_SAVE_PATH = undefined;
-const GAME_PATH = "9c.app/Contents/MacOS/9c";
 
 
 let win: BrowserWindow | null = null;
@@ -37,11 +33,11 @@ function createWindow() {
 
 
     if (IS_DEV) {
-        win.loadURL(DEV_SERVER_URL);
+        win.loadURL(constant.DEV_SERVER_URL);
         win.webContents.openDevTools();
     }
     else {
-        win.loadFile(HTML_FILE_PATH);
+        win.loadFile(constant.HTML_FILE_PATH);
     }
 
     win.on('minimize', function(event: any){
@@ -79,16 +75,21 @@ app.on('activate', (event) => {
 
 ipcMain.on("download snapshot", (event, info) => {
     info.properties.onProgress = (status: any) => win?.webContents.send("download progress", status);
-    info.properties.directory = SNAPSHOT_SAVE_PATH
+    info.properties.directory = constant.SNAPSHOT_SAVE_PATH
     console.log(win);
     if (win != null) {
-        download(win, SNAPSHOT_DOWNLOAD_PATH, info.properties)
+        download(win, constant.SNAPSHOT_DOWNLOAD_PATH, info.properties)
             .then(dl => {win?.webContents.send("download complete", dl.getSavePath()); console.log(dl)});
     }
 });
 
 ipcMain.on("launch game", (event, info) => {
-    execute(path.join(app.getAppPath(), GAME_PATH), info.args)
+    execute(path.join(
+        app.getAppPath(), 
+        process.platform === 'darwin' 
+            ? constant.MAC_GAME_PATH
+            : constant.WIN_GAME_PATH
+        ), info.args)
 })
 
 async function executeNode(binaryPath: string, args: string[]) {

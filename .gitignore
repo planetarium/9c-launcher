@@ -2,3 +2,4 @@ node_modules
 dist
 pack
 .DS_Store
+.blockstore
