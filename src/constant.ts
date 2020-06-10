@@ -5,7 +5,7 @@ export const HTML_FILE_PATH = "index.html";
 export const SNAPSHOT_DOWNLOAD_PATH = "https://9c-test.s3.ap-northeast-2.amazonaws.com/snapshots/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot-202000525.zip";
 export const SNAPSHOT_SAVE_PATH = undefined;
 export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
-export const WIN_GAME_PATH = "";
+export const WIN_GAME_PATH = "9c.exe";
 export const RPC_LOOPBACK_HOST = "127.0.0.1";
 
 export const standaloneProperties = {
