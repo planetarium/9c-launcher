@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo';
+import { GRAPHQL_SERVER_URL, standaloneProperties } from '../constant';
 
 const QUERY_CRYPTKEY = gql`
     query {
@@ -85,8 +86,23 @@ function LoginComponent(props: any) {
 
     const handleAccount = () => {
         props.setAddress(address);
-        props.setPrivateKey(data.keyStore.decryptPrivateKey);
+        props.setPrivateKey(data.keyStore.decryptedPrivateKey);
         props.setLogin(true);
+        const properties = {
+            ...standaloneProperties,
+            PrivateKeyString: data.keyStore.decryptedPrivateKey
+        }
+        console.log(properties);
+        fetch(`${GRAPHQL_SERVER_URL}/run-standalone`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(properties)
+        })
+        .then((response) => {
+            console.log(response)
+        });
     }
 
     return (

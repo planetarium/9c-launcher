@@ -153,8 +153,12 @@ function createMainConfig(isDev) {
 
         entry: {
             "main-process": "./main-process.ts",
-            "preload": "./preload.ts"
         },
+
+        resolve: {
+            extensions: [".js", ".jsx", ".ts", ".tsx", ".json"]
+        },
+
 
         output: {
             filename: "[name].js",
