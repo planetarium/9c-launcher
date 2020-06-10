@@ -18,6 +18,6 @@ export const standaloneProperties = {
     SwarmPort: 6968,
     StroeType: "rocksdb",
     StorePath: ".blockstore",
-    noMiner: true,
+    NoMiner: true,
     TrustedAppProtocolVersionSigners: ["02a5e2811a9bfa4eec274e806debd622c53702bce39a809918563a4cf34189ff85"],
 }
