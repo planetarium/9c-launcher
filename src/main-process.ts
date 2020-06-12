@@ -5,11 +5,13 @@ import { download } from 'electron-dl';
 import trayImage from './resources/Cat.png'
 import "@babel/polyfill"
 import * as constant from './constant';
+import log from 'electron-log';
 
 declare const ENVIRONMENT: String;
 
 const IS_DEV = ENVIRONMENT == "development";
 
+Object.assign(console, log.functions);
 
 let win: BrowserWindow | null = null;
 let tray: Tray;
@@ -30,7 +32,6 @@ function createWindow() {
     });
 
     console.log(app.getAppPath());
-
 
     if (IS_DEV) {
         win.loadURL(constant.DEV_SERVER_URL);
@@ -97,9 +98,9 @@ async function executeNode(binaryPath: string, args: string[]) {
 }
 
 function execute(binaryPath: string, args: string[]) {
-    console.log(`execute process: ${binaryPath} ${args.join(' ')}`)
+    console.log(`Execute subprocess: ${binaryPath} ${args.join(' ')}`)
     node = exec(`${binaryPath} ${args.join(' ')}`, (error, stdout, stderr) => {
-        if(error) win?.webContents.send('error popup', error);
+        if(error) console.log(`child process error: ${error}`);
         if(stdout) console.log(`child process stdout: ${stdout}`);
         if(stderr) console.error(`child process stderr: ${stderr}`);
     })

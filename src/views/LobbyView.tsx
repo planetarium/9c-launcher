@@ -11,7 +11,6 @@ export default function LobbyView(props: any) {
     ipcRenderer.on("download progress", (event, progress) => {
         setDownloadState(true);
         setProgressPercentages(progress.percent * 100);
-        console.log(progress);
     });
 
     ipcRenderer.on("download complete", (event, path) => {
