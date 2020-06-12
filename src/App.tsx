@@ -5,17 +5,41 @@ import { Layout } from "./views/Layout";
 import "./styles/main.scss";
 import MainView from './views/MainView';
 import ApolloClient from "apollo-client"
-import { ApolloLink } from 'apollo-link';
+import { ApolloLink, split } from 'apollo-link';
 import { RetryLink } from 'apollo-link-retry';
+import { WebSocketLink } from 'apollo-link-ws';
 import { ApolloProvider } from 'react-apollo'
+import { getMainDefinition } from 'apollo-utilities';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { GRAPHQL_ENTRYPOINT } from './constant';
 
+const wsLink = new WebSocketLink({
+    uri: `ws://localhost/graphql`,
+    options: {
+      reconnect: true
+    }
+});
+
+const httpLink = createHttpLink({ uri: GRAPHQL_ENTRYPOINT });
+
+const apiLink = split(
+    // split based on operation type
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
+      );
+    },
+    wsLink,
+    httpLink,
+  );
+
 const link = ApolloLink.from([
     new RetryLink(),
-    createHttpLink({ uri: GRAPHQL_ENTRYPOINT })
-  ]);
+    apiLink,
+]);
 
 const client = new ApolloClient({
     link: link,

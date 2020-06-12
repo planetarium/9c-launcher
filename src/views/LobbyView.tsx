@@ -1,6 +1,31 @@
 import * as React from 'react';
+import gql from "graphql-tag";
 import { useState } from 'react';
+import { useSubscription, useQuery } from 'react-apollo';
 import { standaloneProperties, RPC_LOOPBACK_HOST } from '../constant';
+
+const SUBSCRIPTION_PRELOAD_PROGRESS = gql`
+    subscription {
+        preloadProgress {
+            currentPhase
+            totalPhase
+            extra {
+                type
+                currentCount
+                totalCount
+            }
+        }
+    }
+`
+
+const QUERY_NODE_STATUS = gql`
+    query {
+        nodeStatus {
+            bootstrapEnded
+            preloadEnded
+        }
+    }
+`
 
 const { ipcRenderer } = window
 
@@ -34,6 +59,48 @@ export default function LobbyView(props: any) {
         });
     };
 
+    type PreloadStateType = "BlockHashDownloadState" | "BlockDownloadState" | "BlockVerificationState" | "StateDownloadState" | "ActionExecutionState"
+
+    interface PreloadProgressExtra {
+        type: PreloadStateType,
+        currentCount: number,
+        totalCount: number,
+    }
+
+    interface PreloadProgress {
+        currentPhase: number,
+        totalPhase: number,
+        extra: PreloadProgressExtra,
+    }
+
+    interface PreloadProgressSubscriptionResult {
+        preloadProgress: PreloadProgress,
+    }
+
+    interface NodeStatus {
+        bootstrapEnded: boolean,
+        preloadEnded: boolean,
+    }
+
+    interface NodeStatusQueryResult {
+        nodeStatus: NodeStatus,
+    }
+
+    const { data: preloadProgressSubscriptionResult, loading: preloadProgressLoading } = useSubscription<PreloadProgressSubscriptionResult>(SUBSCRIPTION_PRELOAD_PROGRESS);
+    const { data: nodeStatusQueryResult, loading: nodeStatusLoading } = useQuery<NodeStatusQueryResult>(QUERY_NODE_STATUS);
+
+    // preload가 끝나고 바로 nodeStatus가 갱신되는 것이 아니라서 추측을 통해 nodeStatus 값을 갱신해줍니다.
+    // FIXME: 주기적으로 검사하는 코드로 고치는 것이 좋을 것 같습니다. (setInterval)
+    if (undefined !== nodeStatusQueryResult?.nodeStatus) {
+        const nodeStatus = nodeStatusQueryResult.nodeStatus;
+        nodeStatus.bootstrapEnded = undefined !== preloadProgressSubscriptionResult?.preloadProgress;
+        if (undefined !== preloadProgressSubscriptionResult?.preloadProgress) {
+            nodeStatus.preloadEnded =
+                preloadProgressSubscriptionResult?.preloadProgress.currentPhase >= 4
+                    && preloadProgressSubscriptionResult?.preloadProgress.extra.totalCount === preloadProgressSubscriptionResult?.preloadProgress.extra.currentCount;
+        }
+    }
+    
     return (
         <div>
             <label>You are using address: {props.address}</label><br/>
@@ -41,6 +108,18 @@ export default function LobbyView(props: any) {
             <button onClick={(event: React.MouseEvent) => { downloadSnapShot() }}>Download Snapshot</button>
             <br />
             {isDownloaded ? <label>{progressPercentages}</label> : null}
+            <br />
+            {
+                preloadProgressLoading || nodeStatusQueryResult?.nodeStatus.preloadEnded
+                    ? <></>
+                    : (
+                        <>
+                            <p>Preload Status</p>
+                            <p>{preloadProgressSubscriptionResult?.preloadProgress.extra.type} {preloadProgressSubscriptionResult?.preloadProgress.extra.currentCount} / {preloadProgressSubscriptionResult?.preloadProgress.extra.totalCount}</p>
+                        </>
+                )
+            }
+            
         </div>
     );
 }

@@ -33,6 +33,7 @@
     "apollo-link": "^1.2.14",
     "apollo-link-http": "^1.5.17",
     "apollo-link-retry": "^2.2.16",
+    "apollo-link-ws": "^1.0.20",
     "electron-dl": "^3.0.0",
     "electron-log": "^4.2.1",
     "file-loader": "^6.0.0",
@@ -43,7 +44,8 @@
     "react": "^16.13.1",
     "react-apollo": "^3.1.5",
     "react-dom": "^16.13.1",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "subscriptions-transport-ws": "^0.9.16"
   },
   "devDependencies": {
     "@babel/core": "^7.10.1",
