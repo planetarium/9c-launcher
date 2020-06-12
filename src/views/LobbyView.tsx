@@ -4,6 +4,34 @@ import { useState } from 'react';
 import { useSubscription, useQuery } from 'react-apollo';
 import { standaloneProperties, RPC_LOOPBACK_HOST } from '../constant';
 
+
+type PreloadStateType = "BlockHashDownloadState" | "BlockDownloadState" | "BlockVerificationState" | "StateDownloadState" | "ActionExecutionState"
+
+interface PreloadProgressExtra {
+    type: PreloadStateType,
+    currentCount: number,
+    totalCount: number,
+}
+
+interface PreloadProgress {
+    currentPhase: number,
+    totalPhase: number,
+    extra: PreloadProgressExtra,
+}
+
+interface PreloadProgressSubscriptionResult {
+    preloadProgress: PreloadProgress,
+}
+
+interface NodeStatus {
+    bootstrapEnded: boolean,
+    preloadEnded: boolean,
+}
+
+interface NodeStatusQueryResult {
+    nodeStatus: NodeStatus,
+}
+
 const SUBSCRIPTION_PRELOAD_PROGRESS = gql`
     subscription {
         preloadProgress {
@@ -58,33 +86,6 @@ export default function LobbyView(props: any) {
             properties: {}
         });
     };
-
-    type PreloadStateType = "BlockHashDownloadState" | "BlockDownloadState" | "BlockVerificationState" | "StateDownloadState" | "ActionExecutionState"
-
-    interface PreloadProgressExtra {
-        type: PreloadStateType,
-        currentCount: number,
-        totalCount: number,
-    }
-
-    interface PreloadProgress {
-        currentPhase: number,
-        totalPhase: number,
-        extra: PreloadProgressExtra,
-    }
-
-    interface PreloadProgressSubscriptionResult {
-        preloadProgress: PreloadProgress,
-    }
-
-    interface NodeStatus {
-        bootstrapEnded: boolean,
-        preloadEnded: boolean,
-    }
-
-    interface NodeStatusQueryResult {
-        nodeStatus: NodeStatus,
-    }
 
     const { data: preloadProgressSubscriptionResult, loading: preloadProgressLoading } = useSubscription<PreloadProgressSubscriptionResult>(SUBSCRIPTION_PRELOAD_PROGRESS);
     const { data: nodeStatusQueryResult, loading: nodeStatusLoading } = useQuery<NodeStatusQueryResult>(QUERY_NODE_STATUS);
