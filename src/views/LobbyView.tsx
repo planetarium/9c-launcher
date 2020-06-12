@@ -1,6 +1,7 @@
 import * as React from 'react';
 import gql from "graphql-tag";
 import { useState } from 'react';
+import { LinearProgress } from '@material-ui/core';
 import { useSubscription, useQuery } from 'react-apollo';
 import { standaloneProperties, RPC_LOOPBACK_HOST } from '../constant';
 
@@ -120,6 +121,7 @@ export default function LobbyView(props: any) {
                     ? <></>
                     : (
                         <>
+                            <LinearProgress />
                             <p>Preload Status</p>
                             <p>{preloadProgressSubscriptionResult?.preloadProgress.extra.type} {preloadProgressSubscriptionResult?.preloadProgress.extra.currentCount} / {preloadProgressSubscriptionResult?.preloadProgress.extra.totalCount}</p>
                         </>
