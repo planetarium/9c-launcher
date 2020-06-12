@@ -87,8 +87,13 @@ export default function LobbyView(props: any) {
         });
     };
 
-    const { data: preloadProgressSubscriptionResult, loading: preloadProgressLoading } = useSubscription<PreloadProgressSubscriptionResult>(SUBSCRIPTION_PRELOAD_PROGRESS);
-    const { data: nodeStatusQueryResult, loading: nodeStatusLoading } = useQuery<NodeStatusQueryResult>(QUERY_NODE_STATUS);
+    const {
+        data: preloadProgressSubscriptionResult,
+        loading: preloadProgressLoading,
+    } = useSubscription<PreloadProgressSubscriptionResult>(SUBSCRIPTION_PRELOAD_PROGRESS);
+    const {
+        data: nodeStatusQueryResult,
+    } = useQuery<NodeStatusQueryResult>(QUERY_NODE_STATUS);
 
     // preload가 끝나고 바로 nodeStatus가 갱신되는 것이 아니라서 추측을 통해 nodeStatus 값을 갱신해줍니다.
     // FIXME: 주기적으로 검사하는 코드로 고치는 것이 좋을 것 같습니다. (setInterval)
