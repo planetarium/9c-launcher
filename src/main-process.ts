@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron';
 import path from 'path';
-import { exec, ChildProcess } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { download } from 'electron-dl';
 import trayImage from './resources/Cat.png'
 import "@babel/polyfill"
@@ -65,7 +65,8 @@ app.on("ready", async () => {
 
 app.on('before-quit', (event) => {
     if(node != null) {
-        node.kill('SIGTERM'); 
+        if(process.platform == 'darwin') node.kill('SIGTERM'); 
+        if(process.platform == 'win32') execute('taskkill', ['/pid', node.pid.toString(), '/f', '/t'])
     }
 });
 
@@ -99,11 +100,15 @@ async function executeNode(binaryPath: string, args: string[]) {
 
 function execute(binaryPath: string, args: string[]) {
     console.log(`Execute subprocess: ${binaryPath} ${args.join(' ')}`)
-    node = exec(`${binaryPath} ${args.join(' ')}`, (error, stdout, stderr) => {
-        if(error) console.log(`child process error: ${error}`);
-        if(stdout) console.log(`child process stdout: ${stdout}`);
-        if(stderr) console.error(`child process stderr: ${stderr}`);
-    })
+    node = spawn(binaryPath, args)
+
+    node.stdout?.on('data', data => {
+        console.log(`child process stdout from [ ${binaryPath} ]\n${data}`);
+    });
+
+    node.stderr?.on('data', data => {
+        console.log(`child process stderr from [ ${binaryPath} ]\n${data}`);
+    });
 }
 
 function createTray(iconPath: string) {
