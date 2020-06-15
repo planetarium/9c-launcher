@@ -153,6 +153,7 @@ function createMainConfig(isDev) {
 
         entry: {
             "main-process": "./main-process.ts",
+            "preload": "./preload.ts"
         },
 
         resolve: {
