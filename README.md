@@ -26,7 +26,7 @@ Launcher-v2 는 일렉트론 기반의 멀티플랫폼 런처입니다. 기본�
 |   +-- 9c.(exe|app) // NineChronicles Unity
 |   +-- publish // NineChronicles Standalone
 |   |   +-- Libpalnet.dll
-|   |   +-- Grap.Core.dll
+|   |   +-- Grpc.Core.dll
 |   |   +-- ...
 |   |   +-- NineChronicles.Standalone.Executable(.exe)
 ```
