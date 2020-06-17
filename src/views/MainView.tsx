@@ -1,26 +1,21 @@
 import * as React from 'react';
-import { useState } from 'react';
 import LobbyView from './LobbyView';
 import LoginView from './LoginView';
+import { observer, inject } from 'mobx-react';
+import { IStoreContainer } from '../interfaces/store';
 
-const { ipcRenderer } = window
 
-export default function MainView() {
-    const [isLogin, setLogin] = useState(false);
-    const [address, setAddress] = useState("placeholder");
-    const [privateKey, setPrivateKey] = useState("placeholder");
-
-    ipcRenderer.on("error popup", (event, message) => {
-        console.log(message);
-    })
+const MainView = observer(({ accountStore, routerStore }: IStoreContainer) => {
 
     return (
         <div>
             {
-                isLogin ?
-                    <LobbyView address={address} privateKey={privateKey} ></LobbyView> :
-                    <LoginView setAddress={setAddress} setPrivateKey={setPrivateKey} setLogin={setLogin}></LoginView>
+                accountStore.isLogin ?
+                    <LobbyView accountStore={accountStore} routerStore={routerStore}/> :
+                    <LoginView accountStore={accountStore} routerStore={routerStore}></LoginView>
             }
         </div>
     );
-}
+})
+
+export default inject('accountStore', 'routerStore')(MainView)

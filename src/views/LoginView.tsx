@@ -3,6 +3,7 @@ import { useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo';
 import { GRAPHQL_SERVER_URL, standaloneProperties } from '../constant';
+import { IStoreContainer } from '../interfaces/store';
 
 const QUERY_CRYPTKEY = gql`
     query {
@@ -25,7 +26,11 @@ const GET_DECRYPTKEY = gql`
     }
 `;
 
-export default function LoginView(props: any) {
+interface ILoginComponentProps extends IStoreContainer {
+    keyStore: IProtectedPrivateKey,
+}
+
+function LoginView(props: IStoreContainer) {
     const { loading, error, data } = useQuery(QUERY_CRYPTKEY)
     error != undefined ? console.log(error) : null
 
@@ -45,7 +50,6 @@ export default function LoginView(props: any) {
                             <LoginComponent
                                 {...props}
                                 keyStore={data.keyStore}
-                                error={error}
                             />
                     }
                 </div>
@@ -73,21 +77,20 @@ function WaitComponent(props: any) {
     )
 }
 
-function LoginComponent(props: any) {
+function LoginComponent(props: ILoginComponentProps) {
     //TODO: 플레이스홀더로 대체하고, 밑에서 input이 아니라 select로 바꿔서 여러 키 다 보여줄 수 있게 변경
-    const [address, setAddress] = useState(props.keyStore.protectedPrivateKeys[0].address);
     const [passphrase, setPassphrase] = useState('placeholder');
+    const { accountStore, routerStore } = props
     const { loading, error, data } = useQuery(GET_DECRYPTKEY, {
         variables: {
-            address: address,
+            address: accountStore.selectAddress,
             passphrase: passphrase
         },
-    })
+    });
 
     const handleAccount = () => {
-        props.setAddress(address);
-        props.setPrivateKey(data.keyStore.decryptedPrivateKey);
-        props.setLogin(true);
+        accountStore.setPrivateKey(data.keyStore.decryptedPrivateKey);
+        accountStore.toggleLogin();
         const properties = {
             ...standaloneProperties,
             PrivateKeyString: data.keyStore.decryptedPrivateKey
@@ -108,11 +111,15 @@ function LoginComponent(props: any) {
     return (
         <div>
             <form>
-                <label>Address</label> <input value={address} onChange={event => { setAddress(event.target.value); console.log(address) }} type="text"></input>
+                <label>Address</label> <input onChange={event => { accountStore.setAddress(event.target.value) }} type="text"></input>
                 <br />
                 <label>Passphrase</label> <input type="password" onChange={event => { setPassphrase(event.target.value); }}></input>
             </form>
             <button disabled={data == undefined} onClick={event => { handleAccount() }}>Login </button>
+            <br />
+            <button onClick={() => routerStore.push('/create')} > Create Account </button>
         </div>
     )
 }
+
+export default LoginView
