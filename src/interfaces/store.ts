@@ -5,4 +5,3 @@ export interface IStoreContainer {
     accountStore: AccountStore
     routerStore: RouterStore
 }
-

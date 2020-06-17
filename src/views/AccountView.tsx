@@ -23,4 +23,3 @@ const AccountView = observer(({ accountStore, routerStore }: IStoreContainer) =>
 })
 
 export default inject('accountStore', 'routerStore')(AccountView)
-
