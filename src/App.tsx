@@ -1,7 +1,7 @@
 import { hot } from "react-hot-loader/root";
 import * as React from "react";
 import { Router, Route, Switch, Redirect } from "react-router";
-import createBrowserHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history';
 import { Layout } from "./views/Layout";
 import "./styles/main.scss";
 import MainView from './views/MainView';
@@ -19,7 +19,7 @@ import { Provider } from 'mobx-react';
 import AccountStore from './stores/account';
 import { IStoreContainer } from './interfaces/store';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
-import CreateAccountView from "./views/CreateAccountView";
+import AccountView from "./views/AccountView";
 
 const wsLink = new WebSocketLink({
     uri: `ws://localhost/graphql`,
@@ -67,8 +67,8 @@ function App() {
                 <Provider {...Store}>
                     <Layout>
                         <Switch>
-                            <Route exact path="/create" component={CreateAccountView} />
                             <Route exact path="/" component={MainView} />
+                            <Route exact path="/account" component={AccountView} />
                             <Redirect from="*" to="/" />
                         </Switch>
                     </Layout>

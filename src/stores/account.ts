@@ -26,8 +26,13 @@ export default class AccountStore implements IAccountStore{
   }
 
   @action
-  setAddress = (address: string) => {
+  setSelectedAddress = (address: string) => {
     this.selectAddress = address;
+  }
+
+  @action
+  addAddress = (address: string) => {
+    this.addresses.push(address);
   }
 
   @action
