@@ -3,6 +3,9 @@ import { useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo';
 import { GRAPHQL_SERVER_URL, standaloneProperties } from '../constant';
+import { IStoreContainer } from '../interfaces/store';
+import { FormControl, Select, MenuItem } from '@material-ui/core';
+import { observer } from 'mobx-react';
 
 const QUERY_CRYPTKEY = gql`
     query {
@@ -25,7 +28,11 @@ const GET_DECRYPTKEY = gql`
     }
 `;
 
-export default function LoginView(props: any) {
+interface ILoginComponentProps extends IStoreContainer {
+    keyStore: IProtectedPrivateKey,
+}
+
+const LoginView = observer((props: IStoreContainer) => {
     const { loading, error, data } = useQuery(QUERY_CRYPTKEY)
     error != undefined ? console.log(error) : null
 
@@ -45,14 +52,13 @@ export default function LoginView(props: any) {
                             <LoginComponent
                                 {...props}
                                 keyStore={data.keyStore}
-                                error={error}
                             />
                     }
                 </div>
             </div>
         </div>
     );
-}
+});
 
 function WaitComponent(props: any) {
     const errorHandler = (error: any) => {
@@ -73,21 +79,24 @@ function WaitComponent(props: any) {
     )
 }
 
-function LoginComponent(props: any) {
-    //TODO: 플레이스홀더로 대체하고, 밑에서 input이 아니라 select로 바꿔서 여러 키 다 보여줄 수 있게 변경
-    const [address, setAddress] = useState(props.keyStore.protectedPrivateKeys[0].address);
-    const [passphrase, setPassphrase] = useState('placeholder');
-    const { loading, error, data } = useQuery(GET_DECRYPTKEY, {
+const LoginComponent = observer((props: ILoginComponentProps) => {
+    const [passphrase, setPassphrase] = useState('');
+    const { accountStore, routerStore, keyStore } = props
+    const { loading, error, data, refetch } = useQuery(GET_DECRYPTKEY, {
         variables: {
-            address: address,
+            address: accountStore.selectAddress,
             passphrase: passphrase
         },
+    });
+
+    const addresses = keyStore.protectedPrivateKeys.map((value) => value.address)
+    addresses.map((value) => {
+        accountStore.addresses.includes(value) ? null : accountStore.addAddress(value);
     })
 
     const handleAccount = () => {
-        props.setAddress(address);
-        props.setPrivateKey(data.keyStore.decryptedPrivateKey);
-        props.setLogin(true);
+        accountStore.setPrivateKey(data.keyStore.decryptedPrivateKey);
+        accountStore.toggleLogin();
         const properties = {
             ...standaloneProperties,
             PrivateKeyString: data.keyStore.decryptedPrivateKey
@@ -99,20 +108,38 @@ function LoginComponent(props: any) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(properties)
-        })
-        .then((response) => {
+        }).then((response) => {
             console.log(response)
         });
     }
 
+    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        accountStore.setSelectedAddress(event.target.value as string)
+    };
+
     return (
         <div>
             <form>
-                <label>Address</label> <input value={address} onChange={event => { setAddress(event.target.value); console.log(address) }} type="text"></input>
+                <FormControl>
+                    <Select
+                        id="account-select"
+                        value={accountStore.selectAddress}
+                        onChange={handleChange}
+                        autoWidth
+                    >
+                        {
+                            accountStore.addresses.map((value) => <MenuItem key={value} value={value}>{value}</MenuItem>)
+                        }
+                    </Select>
+                </FormControl>
                 <br />
                 <label>Passphrase</label> <input type="password" onChange={event => { setPassphrase(event.target.value); }}></input>
             </form>
             <button disabled={data == undefined} onClick={event => { handleAccount() }}>Login </button>
+            <br />
+            <button onClick={() => routerStore.push('/account')} > Account Management </button>
         </div>
     )
-}
+});
+
+export default LoginView

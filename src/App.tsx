@@ -1,6 +1,7 @@
 import { hot } from "react-hot-loader/root";
 import * as React from "react";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { Router, Route, Switch, Redirect } from "react-router";
+import { createBrowserHistory } from 'history';
 import { Layout } from "./views/Layout";
 import "./styles/main.scss";
 import MainView from './views/MainView';
@@ -13,6 +14,12 @@ import { getMainDefinition } from 'apollo-utilities';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { GRAPHQL_ENTRYPOINT } from './constant';
+import { createContext, useState } from 'react';
+import { Provider } from 'mobx-react';
+import AccountStore from './stores/account';
+import { IStoreContainer } from './interfaces/store';
+import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
+import AccountView from "./views/AccountView";
 
 const wsLink = new WebSocketLink({
     uri: `ws://localhost/graphql`,
@@ -45,17 +52,28 @@ const client = new ApolloClient({
     link: link,
     cache: new InMemoryCache(),
 })
+
+const Store: IStoreContainer = {
+    accountStore: new AccountStore(),
+    routerStore: new RouterStore(),
+}
+
+const history = syncHistoryWithStore(createBrowserHistory(), Store.routerStore);
+
 function App() {
     return (
         <ApolloProvider client={client}>
-            <BrowserRouter>
-                <Layout>
-                    <Switch>
-                        <Route exact path="/" component={MainView} />
-                        <Redirect from="*" to="/" />
-                    </Switch>
-                </Layout>
-            </BrowserRouter>
+            <Router history={history}>
+                <Provider {...Store}>
+                    <Layout>
+                        <Switch>
+                            <Route exact path="/" component={MainView} />
+                            <Route exact path="/account" component={AccountView} />
+                            <Redirect from="*" to="/" />
+                        </Switch>
+                    </Layout>
+                </Provider>
+            </Router>
         </ApolloProvider>
     );
 }

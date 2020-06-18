@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { LinearProgress } from '@material-ui/core';
 import { useSubscription, useQuery } from 'react-apollo';
 import { standaloneProperties, RPC_LOOPBACK_HOST } from '../constant';
+import { IStoreContainer } from '../interfaces/store';
 
 
 type PreloadStateType = "BlockHashDownloadState" | "BlockDownloadState" | "BlockVerificationState" | "StateDownloadState" | "ActionExecutionState"
@@ -58,7 +59,7 @@ const QUERY_NODE_STATUS = gql`
 
 const { ipcRenderer } = window
 
-export default function LobbyView(props: any) {
+const LobbyView = ({accountStore, routerStore}: IStoreContainer) => {
     const [isDownloaded, setDownloadState] = useState(false);
     const [progressPercentages, setProgressPercentages] = useState(0);
 
@@ -74,7 +75,7 @@ export default function LobbyView(props: any) {
     const executeGame = () => {
         ipcRenderer.send("launch game", {
             args: [
-                `--private-key=${props.privateKey}`,
+                `--private-key=${accountStore.privateKey}`,
                 `--rpc-client=${true}`,
                 `--rpc-server-host=${RPC_LOOPBACK_HOST}`,
                 `--rpc-server-port=${standaloneProperties.RpcListenPort}`,
@@ -110,7 +111,7 @@ export default function LobbyView(props: any) {
     
     return (
         <div>
-            <label>You are using address: {props.address}</label><br/>
+            <label>You are using address: {accountStore.selectAddress}</label><br/>
             <button disabled={isDownloaded} onClick={(event: React.MouseEvent) => { executeGame() }}>Start Game</button>
             <button onClick={(event: React.MouseEvent) => { downloadSnapShot() }}>Download Snapshot</button>
             <br />
@@ -131,3 +132,5 @@ export default function LobbyView(props: any) {
         </div>
     );
 }
+
+export default LobbyView;
