@@ -66,3 +66,10 @@ npm run build-prod //프로덕션 빌드
 ```js
 npm run pack
 ```
+
+## 로깅 위치
+로그는 다음 위치에 쌓입니다.
+```
+- on macOS: ~/Library/Logs/{app name}/{process type}.log
+- on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs{process type}.log
+```
