@@ -19,7 +19,7 @@ import { Provider } from 'mobx-react';
 import AccountStore from './stores/account';
 import { IStoreContainer } from './interfaces/store';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
-import AccountView from "./views/AccountView";
+import AccountView from "./views/account/AccountView";
 
 const wsLink = new WebSocketLink({
     uri: `ws://localhost/graphql`,

@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron';
 import path from 'path';
 import { ChildProcess, spawn } from 'child_process';
-import { download } from 'electron-dl';
+import { download, Options as ElectronDLOptions } from 'electron-dl';
 import trayImage from './resources/Cat.png'
 import "@babel/polyfill"
 import * as constant from './constant';
@@ -75,12 +75,13 @@ app.on('activate', (event) => {
     win?.show();
 })
 
-ipcMain.on("download snapshot", (event, info) => {
-    info.properties.onProgress = (status: any) => win?.webContents.send("download progress", status);
-    info.properties.directory = constant.SNAPSHOT_SAVE_PATH
+ipcMain.on("download snapshot", (event, options: IDownloadOptions) => {
+    
+    options.properties.onProgress = (status: IDownloadProgress) => win?.webContents.send("download progress", status);
+    options.properties.directory = constant.SNAPSHOT_SAVE_PATH
     console.log(win);
     if (win != null) {
-        download(win, constant.SNAPSHOT_DOWNLOAD_PATH, info.properties)
+        download(win, constant.SNAPSHOT_DOWNLOAD_PATH, options.properties)
             .then(dl => {win?.webContents.send("download complete", dl.getSavePath()); console.log(dl)});
     }
 });

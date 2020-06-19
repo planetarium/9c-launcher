@@ -5,6 +5,7 @@ import { LinearProgress } from '@material-ui/core';
 import { useSubscription, useQuery } from 'react-apollo';
 import { standaloneProperties, RPC_LOOPBACK_HOST } from '../constant';
 import { IStoreContainer } from '../interfaces/store';
+import { IpcRendererEvent } from 'electron';
 
 
 type PreloadStateType = "BlockHashDownloadState" | "BlockDownloadState" | "BlockVerificationState" | "StateDownloadState" | "ActionExecutionState"
@@ -63,12 +64,12 @@ const LobbyView = ({accountStore, routerStore}: IStoreContainer) => {
     const [isDownloaded, setDownloadState] = useState(false);
     const [progressPercentages, setProgressPercentages] = useState(0);
 
-    ipcRenderer.on("download progress", (event, progress) => {
+    ipcRenderer.on("download progress", (event: IpcRendererEvent, progress: IDownloadProgress) => {
         setDownloadState(true);
         setProgressPercentages(progress.percent * 100);
     });
 
-    ipcRenderer.on("download complete", (event, path) => {
+    ipcRenderer.on("download complete", (event: IpcRendererEvent, path: string) => {
         setDownloadState(false);
     });
 
@@ -84,9 +85,10 @@ const LobbyView = ({accountStore, routerStore}: IStoreContainer) => {
     };
 
     const downloadSnapShot = () => {
-        ipcRenderer.send("download snapshot", {
+        const options: IDownloadOptions = {
             properties: {}
-        });
+        }
+        ipcRenderer.send("download snapshot", options);
     };
 
     const {
