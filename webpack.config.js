@@ -30,7 +30,7 @@ function createRenderConfig(isDev) {
 
         entry: {
             "polyfill": "@babel/polyfill",
-            "render-process": "./render-process.tsx"
+            "render": "./render.tsx"
         },
 
         output: {
@@ -153,7 +153,7 @@ function createMainConfig(isDev) {
         mode: isDev ? DEVELOPMENT : PRODUCTION,
 
         entry: {
-            "main-process": "./main-process.ts",
+            "main": "./main.ts",
             "preload": "./preload.ts"
         },
 
