@@ -13,24 +13,21 @@ import { ApolloProvider } from 'react-apollo'
 import { getMainDefinition } from 'apollo-utilities';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createContext, useState } from 'react';
 import { Provider } from 'mobx-react';
 import AccountStore from './stores/account';
 import { IStoreContainer } from './interfaces/store';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import AccountView from "./views/account/AccountView";
-import { LOCAL_SERVER_URL, electronStore } from './config';
-
-const localhost = LOCAL_SERVER_URL
+import { LOCAL_SERVER_URL } from './config';
 
 const wsLink = new WebSocketLink({
-    uri: `ws://${localhost}/graphql`,
+    uri: `ws://${LOCAL_SERVER_URL}/graphql`,
     options: {
       reconnect: true
     }
 });
 
-const httpLink = createHttpLink({ uri: `http://${localhost}/graphql` });
+const httpLink = createHttpLink({ uri: `http://${LOCAL_SERVER_URL}/graphql` });
 
 const apiLink = split(
     // split based on operation type
