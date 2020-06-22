@@ -108,9 +108,9 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(properties)
-        }).then((response) => {
-            console.log(response)
-        });
+        })
+        .then((response) => response.text())
+        .then((body) => console.log(body));
     }
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
