@@ -3,9 +3,9 @@ import gql from "graphql-tag";
 import { useState } from 'react';
 import { LinearProgress } from '@material-ui/core';
 import { useSubscription, useQuery } from 'react-apollo';
-import { standaloneProperties, RPC_LOOPBACK_HOST } from '../constant';
+import { standaloneProperties, RPC_LOOPBACK_HOST } from '../config';
 import { IStoreContainer } from '../interfaces/store';
-import { IpcRendererEvent } from 'electron';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 
 
 type PreloadStateType = "BlockHashDownloadState" | "BlockDownloadState" | "BlockVerificationState" | "StateDownloadState" | "ActionExecutionState"
@@ -57,8 +57,6 @@ const QUERY_NODE_STATUS = gql`
         }
     }
 `
-
-const { ipcRenderer } = window
 
 const LobbyView = ({accountStore, routerStore}: IStoreContainer) => {
     const [isDownloaded, setDownloadState] = useState(false);

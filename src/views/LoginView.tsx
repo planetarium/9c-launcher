@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo';
-import { GRAPHQL_SERVER_URL, standaloneProperties } from '../constant';
+import { LOCAL_SERVER_URL, standaloneProperties } from '../config';
 import { IStoreContainer } from '../interfaces/store';
 import { FormControl, Select, MenuItem } from '@material-ui/core';
 import { observer } from 'mobx-react';
@@ -102,7 +102,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
             PrivateKeyString: data.keyStore.decryptedPrivateKey
         }
         console.log(properties);
-        fetch(`${GRAPHQL_SERVER_URL}/run-standalone`, {
+        fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

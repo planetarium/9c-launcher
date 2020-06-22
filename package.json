@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/marceloaugusto80/electron-react-typescript-boilerplate/issues"
   },
-  "main": "main-process.js",
+  "main": "main.js",
   "scripts": {
     "build": "npx webpack --env.NODE_ENV=development --env.target=render && npx webpack --env.NODE_ENV=development --env.target=main",
     "build-prod": "npx webpack --env.NODE_ENV=production --env.target=render && npx webpack --env.NODE_ENV=production --env.target=main",
