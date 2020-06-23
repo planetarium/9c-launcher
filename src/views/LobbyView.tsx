@@ -59,17 +59,6 @@ const QUERY_NODE_STATUS = gql`
 `
 
 const LobbyView = ({accountStore, routerStore}: IStoreContainer) => {
-    const [isDownloaded, setDownloadState] = useState(false);
-    const [progressPercentages, setProgressPercentages] = useState(0);
-
-    ipcRenderer.on("download progress", (event: IpcRendererEvent, progress: IDownloadProgress) => {
-        setDownloadState(true);
-        setProgressPercentages(progress.percent * 100);
-    });
-
-    ipcRenderer.on("download complete", (event: IpcRendererEvent, path: string) => {
-        setDownloadState(false);
-    });
 
     const executeGame = () => {
         ipcRenderer.send("launch game", {
@@ -80,13 +69,6 @@ const LobbyView = ({accountStore, routerStore}: IStoreContainer) => {
                 `--rpc-server-port=${standaloneProperties.RpcListenPort}`,
             ]
         })
-    };
-
-    const downloadSnapShot = () => {
-        const options: IDownloadOptions = {
-            properties: {}
-        }
-        ipcRenderer.send("download snapshot", options);
     };
 
     const {
@@ -112,10 +94,8 @@ const LobbyView = ({accountStore, routerStore}: IStoreContainer) => {
     return (
         <div>
             <label>You are using address: {accountStore.selectAddress}</label><br/>
-            <button disabled={isDownloaded} onClick={(event: React.MouseEvent) => { executeGame() }}>Start Game</button>
-            <button onClick={(event: React.MouseEvent) => { downloadSnapShot() }}>Download Snapshot</button>
+            <button onClick={(event: React.MouseEvent) => { executeGame() }}>Start Game</button>
             <br />
-            {isDownloaded ? <label>{progressPercentages}</label> : null}
             <br />
             {
                 preloadProgressLoading || nodeStatusQueryResult?.nodeStatus.preloadEnded

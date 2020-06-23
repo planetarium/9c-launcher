@@ -1,11 +1,11 @@
-import { LOCAL_SERVER_PORT, electronStore, BLOCKCHAIN_STORE_PATH, MAC_GAME_PATH, WIN_GAME_PATH } from './config';
+import { LOCAL_SERVER_PORT, electronStore, BLOCKCHAIN_STORE_PATH, MAC_GAME_PATH, WIN_GAME_PATH, SNAPSHOT_SAVE_PATH } from './config';
 import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron';
 import path from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import { download, Options as ElectronDLOptions } from 'electron-dl';
 import trayImage from './resources/Cat.png'
 import "@babel/polyfill"
-import * as constant from './constant';
+import extractZip from 'extract-zip';
 import log from 'electron-log';
 
 declare const ENVIRONMENT: String;
@@ -82,7 +82,8 @@ ipcMain.on("download snapshot", (event, options: IDownloadOptions) => {
     console.log(win);
     if (win != null) {
         download(win, electronStore.get('SNAPSHOT_DOWNLOAD_PATH') as string, options.properties)
-            .then(dl => { win?.webContents.send("download complete", dl.getSavePath()); console.log(dl) });
+            .then(dl => {win?.webContents.send("download complete", dl.getSavePath()); return dl.getSavePath()})
+            .then(path => extract(path));
     }
 });
 
@@ -129,4 +130,22 @@ function createTray(iconPath: string) {
         },
     ]));
     return tray;
+}
+
+function extract(snapshotPath: string) {
+    console.log(`extract started.
+        extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
+        extractTarget: [ ${snapshotPath} ]`)
+    try {
+        extractZip(snapshotPath, {
+            dir: BLOCKCHAIN_STORE_PATH,
+            onEntry: (_, zipfile) => {
+                const progress = zipfile.entriesRead / zipfile.entryCount;
+                win?.webContents.send('extract progress', progress);
+            }
+        })
+        .then(_ => win?.webContents.send('extract complete'));
+     } catch (err) {
+          console.log(err);
+      }
 }
