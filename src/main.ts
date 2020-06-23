@@ -82,7 +82,7 @@ ipcMain.on("download snapshot", (event, options: IDownloadOptions) => {
     console.log(win);
     if (win != null) {
         download(win, electronStore.get('SNAPSHOT_DOWNLOAD_PATH') as string, options.properties)
-            .then(dl => {win?.webContents.send("download complete", dl.getSavePath()); return dl.getSavePath()})
+            .then(dl => { win?.webContents.send("download complete", dl.getSavePath()); return dl.getSavePath() })
             .then(path => extract(path));
     }
 });
@@ -144,8 +144,8 @@ function extract(snapshotPath: string) {
                 win?.webContents.send('extract progress', progress);
             }
         })
-        .then(_ => win?.webContents.send('extract complete'));
-     } catch (err) {
-          console.log(err);
-      }
+            .then(_ => win?.webContents.send('extract complete'));
+    } catch (err) {
+        console.log(err);
+    }
 }

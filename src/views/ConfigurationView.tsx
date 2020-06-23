@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { IStoreContainer } from '../interfaces/store';
 import { LinearProgress, Button } from '@material-ui/core';
 import { observer, inject } from 'mobx-react';
-import DonwloadSnapshotButton from '../components/SnapshotDownload';
-import ClearChche from '../components/ClearCache';
+import DownloadSnapshotButton from '../components/DownloadSnapshotButton';
+import ClearChche from '../components/ClearCacheButton';
 
 const ConfigurationView = observer(({accountStore, routerStore}: IStoreContainer ) => {
     const [isDownloading, setDownloadState] = useState(false);
@@ -22,7 +22,7 @@ const ConfigurationView = observer(({accountStore, routerStore}: IStoreContainer
                     Back to Home
             </Button>
             <br />
-            <DonwloadSnapshotButton
+            <DownloadSnapshotButton
                 setExtractState={setExtractState}
                 setDownloadState={setDownloadState}
                 progress={progress}

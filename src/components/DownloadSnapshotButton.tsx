@@ -10,7 +10,7 @@ interface IDownloadSnaphostProps {
     setProgress: React.Dispatch<React.SetStateAction<number>> 
 }
 
-const DonwloadSnapshotButton = (props: IDownloadSnaphostProps) => {
+const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
 
     ipcRenderer.on("extract progress", (event, progress) => {
         props.setExtractState(true);
@@ -44,4 +44,4 @@ const DonwloadSnapshotButton = (props: IDownloadSnaphostProps) => {
            </Button>
 }
 
-export default DonwloadSnapshotButton;
+export default DownloadSnapshotButton;
