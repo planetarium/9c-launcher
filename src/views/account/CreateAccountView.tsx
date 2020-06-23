@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { IStoreContainer } from '../interfaces/store';
+import { IStoreContainer } from '../../interfaces/store';
 import { TextField } from '@material-ui/core';
 import gql from 'graphql-tag';
 import { useMutation, ExecutionResult } from 'react-apollo';
@@ -17,7 +17,7 @@ const CREATE_ACCOUNT = gql`
   }
 `;
 
-const CreateAccountView = observer(({ accountStore, routerStore }: IStoreContainer) => {
+const CreateAccountView: React.FC<IStoreContainer> = observer(({ accountStore, routerStore }: IStoreContainer) => {
     const { push } = routerStore;
     const [createAccount, { data }] = useMutation(CREATE_ACCOUNT);
     const [passphrase, setPassphrase] = useState('');
@@ -25,8 +25,6 @@ const CreateAccountView = observer(({ accountStore, routerStore }: IStoreContain
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassphrase(event.target.value);
     };
-
-    console.log(passphrase)
 
     return (
         <div>

@@ -11,4 +11,6 @@ interface StandaloneProperties {
     StorePath: string
     NoMiner: boolean
     TrustedAppProtocolVersionSigners: string[],
+    IceServerStrings: string[],
+    PeerStrings: string[]
 }

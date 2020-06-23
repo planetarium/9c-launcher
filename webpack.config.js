@@ -30,7 +30,7 @@ function createRenderConfig(isDev) {
 
         entry: {
             "polyfill": "@babel/polyfill",
-            "render-process": "./render-process.tsx"
+            "render": "./render.tsx"
         },
 
         output: {
@@ -42,7 +42,10 @@ function createRenderConfig(isDev) {
             "react": "React",
             "react-dom": "ReactDOM",
             "react-router-dom": "ReactRouterDOM",
-            "fs": "require('fs')" // we must add node native functions as externals to be able to use them. see ./src/views/FooView.tsx.
+            "fs": "require('fs')",
+            "electron": "require('electron')",
+            "electron-log": "require('electron-log')",
+            "electron-store": "require('electron-store')"
         },
 
         module: {
@@ -153,8 +156,7 @@ function createMainConfig(isDev) {
         mode: isDev ? DEVELOPMENT : PRODUCTION,
 
         entry: {
-            "main-process": "./main-process.ts",
-            "preload": "./preload.ts"
+            "main": "./main.ts"
         },
 
         resolve: {
@@ -191,7 +193,7 @@ function createMainConfig(isDev) {
                         }
                     }
                 }
-           ]
+            ]
         },
 
         plugins: [
@@ -208,7 +210,7 @@ function createMainConfig(isDev) {
             // electron-packager needs the package.json file. the "../" is because context is set to the ./src folder
             new CopyWebpackPlugin({
                 patterns: [
-                    {from: "package.json", to: "./", context:"../"}
+                    { from: "package.json", to: "./", context: "../" }
                 ]
             })
         ]
