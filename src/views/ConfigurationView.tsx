@@ -11,7 +11,6 @@ const ConfigurationView = observer(({accountStore, routerStore}: IStoreContainer
     const [isExtracting, setExtractState] = useState(false);
     const [progress, setProgress] = useState(0);
 
-    console.log(`downloading: ${isDownloading}, extracting: ${isExtracting}`)
     return (
         <div>
             <Button
