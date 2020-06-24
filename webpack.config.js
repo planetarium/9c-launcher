@@ -18,7 +18,7 @@ function createRenderConfig(isDev) {
 
         context: path.join(__dirname, "src"),
 
-        target: "web", // any other target value makes react-hot-loader stop working
+        target: "node", // any other target value makes react-hot-loader stop working
 
         resolve: {
             extensions: [".js", ".jsx", ".ts", ".tsx", ".json"]
@@ -42,10 +42,7 @@ function createRenderConfig(isDev) {
             "react": "React",
             "react-dom": "ReactDOM",
             "react-router-dom": "ReactRouterDOM",
-            "fs": "require('fs')",
             "electron": "require('electron')",
-            "electron-log": "require('electron-log')",
-            "electron-store": "require('electron-store')"
         },
 
         module: {
