@@ -10,7 +10,7 @@ import path from "path";
 import fs from "fs";
 import { ChildProcess, spawn } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
-import trayImage from "./resources/Cat.png";
+import logoImage from "./resources/logo.png";
 import "@babel/polyfill";
 import extractZip from "extract-zip";
 import log from "electron-log";
@@ -36,6 +36,7 @@ function createWindow() {
     frame: true,
     resizable: false,
     autoHideMenuBar: true,
+    icon: path.join(app.getAppPath(), logoImage)
   });
 
   console.log(app.getAppPath());
@@ -70,7 +71,7 @@ app.on("ready", () => {
     ["--graphql-server=true", `--graphql-port=${LOCAL_SERVER_PORT}`]
   );
   createWindow();
-  createTray(path.join(app.getAppPath(), trayImage));
+  createTray(path.join(app.getAppPath(), logoImage));
 });
 
 app.on("before-quit", (event) => {
