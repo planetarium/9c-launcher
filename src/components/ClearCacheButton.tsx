@@ -1,21 +1,18 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { ipcRenderer } from 'electron';
-import { Button } from '@material-ui/core';
+import { ipcRenderer } from "electron";
+import { Button } from "@material-ui/core";
 
 const ClearCacheButton = () => {
-    const handleClick = () => {
-        ipcRenderer.send('clear cache');
-    }
+  const handleClick = () => {
+    ipcRenderer.send("clear cache");
+  };
 
-    return (
-        <Button
-            onClick={() => handleClick()}
-            variant="contained"
-            color="secondary">
-            Clear Cache
-        </Button>
-    )
-}
+  return (
+    <Button onClick={() => handleClick()} variant="contained" color="secondary">
+      Clear Cache
+    </Button>
+  );
+};
 
-export default ClearCacheButton
+export default ClearCacheButton;
