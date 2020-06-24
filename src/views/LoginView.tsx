@@ -6,7 +6,7 @@ import { LOCAL_SERVER_URL, standaloneProperties } from '../config';
 import { IStoreContainer } from '../interfaces/store';
 import { FormControl, Select, MenuItem, LinearProgress } from '@material-ui/core';
 import { observer } from 'mobx-react';
-import DonwloadSnapshotButton from '../components/SnapshotDownload';
+import DonwloadSnapshotButton from '../components/DownloadSnapshotButton';
 
 const QUERY_CRYPTKEY = gql`
     query {
