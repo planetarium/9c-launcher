@@ -158,9 +158,9 @@ function extract(snapshotPath: string) {
         .then(_ => win?.webContents.send('extract complete'))
         .then(() => fs.unlinkSync(snapshotPath));
 
-     } catch (err) {
+    } catch (err) {
           console.log(err);
-      }
+    }
 }
 
 
@@ -180,5 +180,4 @@ function deleteDirRecursive(path: string) {
         });
         fs.rmdirSync(path);
       }
-
-  };
+};
