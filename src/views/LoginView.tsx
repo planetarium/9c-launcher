@@ -22,14 +22,14 @@ const LoginView = observer((props: IStoreContainer) => {
                         <h3>Login</h3>
                     </div>
                     {
-                        loading || error != undefined && undefined !== data?.keyStore && null !== data?.keyStore ?
+                        loading || undefined === data || error != undefined ?
                             <WaitComponent
                                 error={error}
                                 loading={loading}
                             /> :
                             <LoginComponent
                                 {...props}
-                                keyStore={data?.keyStore}
+                                keyStore={data.keyStore}
                             />
                     }
                 </div>
