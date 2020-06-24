@@ -1,13 +1,20 @@
-import { LOCAL_SERVER_PORT, electronStore, BLOCKCHAIN_STORE_PATH, MAC_GAME_PATH, WIN_GAME_PATH, SNAPSHOT_SAVE_PATH } from './config';
-import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron';
-import path from 'path';
-import fs from 'fs';
-import { ChildProcess, spawn } from 'child_process';
-import { download, Options as ElectronDLOptions } from 'electron-dl';
-import trayImage from './resources/Cat.png'
-import "@babel/polyfill"
-import extractZip from 'extract-zip';
-import log from 'electron-log';
+import {
+  LOCAL_SERVER_PORT,
+  electronStore,
+  BLOCKCHAIN_STORE_PATH,
+  MAC_GAME_PATH,
+  WIN_GAME_PATH,
+  SNAPSHOT_SAVE_PATH,
+} from "./config";
+import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from "electron";
+import path from "path";
+import fs from "fs";
+import { ChildProcess, spawn } from "child_process";
+import { download, Options as ElectronDLOptions } from "electron-dl";
+import trayImage from "./resources/Cat.png";
+import "@babel/polyfill";
+import extractZip from "extract-zip";
+import log from "electron-log";
 
 declare const ENVIRONMENT: String;
 
@@ -17,167 +24,181 @@ Object.assign(console, log.functions);
 
 let win: BrowserWindow | null = null;
 let tray: Tray;
-let node: ChildProcess
+let node: ChildProcess;
 let isQuiting: boolean = false;
 
 function createWindow() {
-    win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            nodeIntegration: true,
-        },
-        frame: true,
-        resizable: false,
-        autoHideMenuBar: true,
-    });
+  win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+    frame: true,
+    resizable: false,
+    autoHideMenuBar: true,
+  });
 
-    console.log(app.getAppPath());
+  console.log(app.getAppPath());
 
-    if (IS_DEV) {
-        win.loadURL('http://localhost:9000');
-        win.webContents.openDevTools();
+  if (IS_DEV) {
+    win.loadURL("http://localhost:9000");
+    win.webContents.openDevTools();
+  } else {
+    win.loadFile("index.html");
+  }
+
+  win.on("minimize", function (event: any) {
+    event.preventDefault();
+    win?.hide();
+  });
+
+  win.on("close", function (event: any) {
+    if (!isQuiting) {
+      event.preventDefault();
+      win?.hide();
     }
-    else {
-        win.loadFile('index.html');
-    }
-
-    win.on('minimize', function (event: any) {
-        event.preventDefault();
-        win?.hide();
-    });
-
-    win.on('close', function (event: any) {
-        if (!isQuiting) {
-            event.preventDefault();
-            win?.hide();
-        }
-    });
+  });
 }
 
 app.on("ready", () => {
-    execute(path.join(app.getAppPath(), 'publish', 'NineChronicles.Standalone.Executable'), [
-        '--graphql-server=true',
-        `--graphql-port=${LOCAL_SERVER_PORT}`
-    ])
-    //asp net 서버가 구동되기까지의 시간이 필요합니다.
-    createWindow();
-    createTray(path.join(app.getAppPath(), trayImage));
+  execute(
+    path.join(
+      app.getAppPath(),
+      "publish",
+      "NineChronicles.Standalone.Executable"
+    ),
+    ["--graphql-server=true", `--graphql-port=${LOCAL_SERVER_PORT}`]
+  );
+  createWindow();
+  createTray(path.join(app.getAppPath(), trayImage));
 });
 
-app.on('before-quit', (event) => {
-    if (node != null) {
-        if (process.platform == 'darwin') node.kill('SIGTERM');
-        if (process.platform == 'win32') execute('taskkill', ['/pid', node.pid.toString(), '/f', '/t'])
-    }
+app.on("before-quit", (event) => {
+  if (node != null) {
+    if (process.platform == "darwin") node.kill("SIGTERM");
+    if (process.platform == "win32")
+      execute("taskkill", ["/pid", node.pid.toString(), "/f", "/t"]);
+  }
 });
 
-app.on('activate', (event) => {
-    event.preventDefault();
-    win?.show();
-})
+app.on("activate", (event) => {
+  event.preventDefault();
+  win?.show();
+});
 
 ipcMain.on("download snapshot", (event, options: IDownloadOptions) => {
-    options.properties.onProgress = (status: IDownloadProgress) => win?.webContents.send("download progress", status);
-    options.properties.directory = app.getPath('userData');
-    console.log(win);
-    if (win != null) {
-        download(win, electronStore.get('SNAPSHOT_DOWNLOAD_PATH') as string, options.properties)
-            .then(dl => { win?.webContents.send("download complete", dl.getSavePath()); return dl.getSavePath() })
-            .then(path => extract(path));
-    }
+  options.properties.onProgress = (status: IDownloadProgress) =>
+    win?.webContents.send("download progress", status);
+  options.properties.directory = app.getPath("userData");
+  console.log(win);
+  if (win != null) {
+    download(
+      win,
+      electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string,
+      options.properties
+    )
+      .then((dl) => {
+        win?.webContents.send("download complete", dl.getSavePath());
+        return dl.getSavePath();
+      })
+      .then((path) => extract(path));
+  }
 });
 
 ipcMain.on("launch game", (event, info) => {
-    execute(path.join(
-        app.getAppPath(),
-        process.platform === 'darwin'
-            ? MAC_GAME_PATH
-            : WIN_GAME_PATH
-    ), info.args)
-})
+  execute(
+    path.join(
+      app.getAppPath(),
+      process.platform === "darwin" ? MAC_GAME_PATH : WIN_GAME_PATH
+    ),
+    info.args
+  );
+});
 
 ipcMain.on("clear cache", (event) => {
-    try {
-        deleteBlockchainStore();
-        event.returnValue = true;
-    } catch (e) {
-        console.log(e)
-        event.returnValue = false;
-    }
-})
+  try {
+    deleteBlockchainStore();
+    event.returnValue = true;
+  } catch (e) {
+    console.log(e);
+    event.returnValue = false;
+  }
+});
 
 function execute(binaryPath: string, args: string[]) {
-    console.log(`Execute subprocess: ${binaryPath} ${args.join(' ')}`)
-    node = spawn(binaryPath, args)
+  console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
+  node = spawn(binaryPath, args);
 
-    node.stdout?.on('data', data => {
-        console.log(`child process stdout from [ ${binaryPath} ]\n${data}`);
-    });
+  node.stdout?.on("data", (data) => {
+    console.log(`child process stdout from [ ${binaryPath} ]\n${data}`);
+  });
 
-    node.stderr?.on('data', data => {
-        console.log(`child process stderr from [ ${binaryPath} ]\n${data}`);
-    });
+  node.stderr?.on("data", (data) => {
+    console.log(`child process stderr from [ ${binaryPath} ]\n${data}`);
+  });
 }
 
 function createTray(iconPath: string) {
-    let trayIcon = nativeImage.createFromPath(iconPath);
-    trayIcon = trayIcon.resize({
-        width: 16,
-        height: 16
-    });
-    tray = new Tray(trayIcon);
-    tray.setContextMenu(Menu.buildFromTemplate([
-        {
-            label: 'Open Window', click: function () {
-                win?.show()
-            }
+  let trayIcon = nativeImage.createFromPath(iconPath);
+  trayIcon = trayIcon.resize({
+    width: 16,
+    height: 16,
+  });
+  tray = new Tray(trayIcon);
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      {
+        label: "Open Window",
+        click: function () {
+          win?.show();
         },
-        {
-            label: 'Quit Launcher', click: function () {
-                isQuiting = true;
-                app.quit();
-            }
+      },
+      {
+        label: "Quit Launcher",
+        click: function () {
+          isQuiting = true;
+          app.quit();
         },
-    ]));
-    return tray;
+      },
+    ])
+  );
+  return tray;
 }
 
 function extract(snapshotPath: string) {
-    console.log(`extract started.
+  console.log(`extract started.
         extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
-        extractTarget: [ ${snapshotPath} ]`)
-    try {
-        extractZip(snapshotPath, {
-            dir: BLOCKCHAIN_STORE_PATH,
-            onEntry: (_, zipfile) => {
-                const progress = zipfile.entriesRead / zipfile.entryCount;
-                win?.webContents.send('extract progress', progress);
-            }
-        })
-        .then(_ => win?.webContents.send('extract complete'))
-        .then(() => fs.unlinkSync(snapshotPath));
-
-    } catch (err) {
-          console.log(err);
-    }
+        extractTarget: [ ${snapshotPath} ]`);
+  try {
+    extractZip(snapshotPath, {
+      dir: BLOCKCHAIN_STORE_PATH,
+      onEntry: (_, zipfile) => {
+        const progress = zipfile.entriesRead / zipfile.entryCount;
+        win?.webContents.send("extract progress", progress);
+      },
+    }).then((_) => win?.webContents.send("extract complete"));
+  } catch (err) {
+    console.log(err);
+  }
 }
 
-
 function deleteBlockchainStore() {
-    deleteDirRecursive(BLOCKCHAIN_STORE_PATH);
+  deleteDirRecursive(BLOCKCHAIN_STORE_PATH);
 }
 
 function deleteDirRecursive(path: string) {
-    if( fs.existsSync(path) ) {
-        fs.readdirSync(path).forEach(function(file) {
-          var curPath = path + "/" + file;
-            if(fs.lstatSync(curPath).isDirectory()) { // recurse
-                deleteDirRecursive(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function (file) {
+      var curPath = path + "/" + file;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        // recurse
+        deleteDirRecursive(curPath);
+      } else {
+        // delete file
+        fs.unlinkSync(curPath);
       }
-};
+    });
+    fs.rmdirSync(path);
+  }
+}
