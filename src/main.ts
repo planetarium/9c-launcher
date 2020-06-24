@@ -4,7 +4,6 @@ import {
   BLOCKCHAIN_STORE_PATH,
   MAC_GAME_PATH,
   WIN_GAME_PATH,
-  SNAPSHOT_SAVE_PATH,
 } from "./config";
 import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from "electron";
 import path from "path";
