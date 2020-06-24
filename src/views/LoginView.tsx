@@ -1,40 +1,17 @@
 import * as React from 'react';
 import { useState } from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from 'react-apollo';
 import { LOCAL_SERVER_URL, standaloneProperties } from '../config';
 import { IStoreContainer } from '../interfaces/store';
 import { FormControl, Select, MenuItem, LinearProgress } from '@material-ui/core';
 import { observer } from 'mobx-react';
 import DonwloadSnapshotButton from '../components/DownloadSnapshotButton';
+import { useDecreyptedPrivateKeyQuery, useProtectedPrivateKeysQuery, KeyStoreType, ProtectedPrivateKeysQuery } from '../generated/graphql';
 
-const QUERY_CRYPTKEY = gql`
-    query {
-        keyStore {
-            protectedPrivateKeys {
-                address
-            }
-        }
-    }
-`
-
-const GET_DECRYPTKEY = gql`
-  query decreyptedPrivateKey($address: Address, $passphrase: String){
-      keyStore {
-            decryptedPrivateKey(
-                address: $address,
-                passphrase: $passphrase,
-            )
-        }
-    }
-`;
-
-interface ILoginComponentProps extends IStoreContainer {
-    keyStore: IProtectedPrivateKey,
-}
+type ILoginComponentProps = IStoreContainer & ProtectedPrivateKeysQuery
 
 const LoginView = observer((props: IStoreContainer) => {
-    const { loading, error, data } = useQuery(QUERY_CRYPTKEY)
+    const { loading, error, data } = useProtectedPrivateKeysQuery();
     error != undefined ? console.log(error) : null
 
     return (
@@ -45,14 +22,14 @@ const LoginView = observer((props: IStoreContainer) => {
                         <h3>Login</h3>
                     </div>
                     {
-                        loading || error != undefined ?
+                        loading || error != undefined && undefined !== data?.keyStore && null !== data?.keyStore ?
                             <WaitComponent
                                 error={error}
                                 loading={loading}
                             /> :
                             <LoginComponent
                                 {...props}
-                                keyStore={data.keyStore}
+                                keyStore={data?.keyStore}
                             />
                     }
                 </div>
@@ -83,24 +60,24 @@ function WaitComponent(props: any) {
 const LoginComponent = observer((props: ILoginComponentProps) => {
     const [ passphrase, setPassphrase ] = useState('');
     const { accountStore, routerStore, keyStore } = props
-    const { loading, error, data, refetch } = useQuery(GET_DECRYPTKEY, {
+    const { data } = useDecreyptedPrivateKeyQuery({
         variables: {
             address: accountStore.selectAddress,
             passphrase: passphrase
         },
     });
 
-    const addresses = keyStore.protectedPrivateKeys.map((value) => value.address)
-    addresses.map((value) => {
+    const addresses = keyStore?.protectedPrivateKeys?.map((value) => value?.address)
+    addresses?.map((value) => {
         accountStore.addresses.includes(value) ? null : accountStore.addAddress(value);
     })
 
     const handleAccount = () => {
-        accountStore.setPrivateKey(data.keyStore.decryptedPrivateKey);
+        accountStore.setPrivateKey(data?.keyStore?.decryptedPrivateKey);
         accountStore.toggleLogin();
         const properties = {
             ...standaloneProperties,
-            PrivateKeyString: data.keyStore.decryptedPrivateKey
+            PrivateKeyString: data?.keyStore?.decryptedPrivateKey
         }
         console.log(properties);
         fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {

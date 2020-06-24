@@ -1,0 +1,43 @@
+mutation createPrivateKey($passphrase: String!) {
+    keyStore {
+        createPrivateKey(passphrase: $passphrase) {
+            address
+        }
+    }
+}
+
+query NodeStatus {
+    nodeStatus {
+        bootstrapEnded
+        preloadEnded
+    }
+}
+
+subscription PreloadProgressSubscription {
+    preloadProgress {
+        currentPhase
+        totalPhase
+        extra {
+            type
+            currentCount
+            totalCount
+        }
+    }
+}
+
+query DecreyptedPrivateKey($address: Address, $passphrase: String){
+    keyStore {
+        decryptedPrivateKey(
+            address: $address,
+            passphrase: $passphrase,
+        )
+    }
+}
+
+query ProtectedPrivateKeys {
+    keyStore {
+        protectedPrivateKeys {
+            address
+        }
+    }
+}

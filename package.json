@@ -20,11 +20,12 @@
   },
   "main": "main.js",
   "scripts": {
-    "build": "npx webpack --env.NODE_ENV=development --env.target=render && npx webpack --env.NODE_ENV=development --env.target=main",
-    "build-prod": "npx webpack --env.NODE_ENV=production --env.target=render && npx webpack --env.NODE_ENV=production --env.target=main",
-    "server": "npx webpack-dev-server --env.NODE_ENV=development --env.target=render --hot",
-    "start": "npx webpack --env.NODE_ENV=development --env.target=main && npx electron ./dist/.",
-    "pack": "npm run build-prod && npx electron-packager ./dist --out ./pack --overwrite --icon=./src/resources/icon.ico"
+    "build": "graphql-codegen && npx webpack --env.NODE_ENV=development --env.target=render && npx webpack --env.NODE_ENV=development --env.target=main",
+    "build-prod": "graphql-codegen && npx webpack --env.NODE_ENV=production --env.target=render && npx webpack --env.NODE_ENV=production --env.target=main",
+    "server": "graphql-codegen && npx webpack-dev-server --env.NODE_ENV=development --env.target=render --hot",
+    "start": "graphql-codegen && npx webpack --env.NODE_ENV=development --env.target=main && npx electron ./dist/.",
+    "pack": "graphql-codegen && npm run build-prod && npx electron-packager ./dist --out ./pack --overwrite --icon=./src/resources/icon.ico",
+    "codegen": "graphql-codegen"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
@@ -62,6 +63,10 @@
     "@babel/preset-env": "^7.10.3",
     "@babel/preset-react": "^7.10.1",
     "@babel/preset-typescript": "^7.10.1",
+    "@graphql-codegen/cli": "^1.15.4",
+    "@graphql-codegen/typescript": "^1.15.4",
+    "@graphql-codegen/typescript-operations": "^1.15.4",
+    "@graphql-codegen/typescript-react-apollo": "^1.15.4",
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/jest": "^26.0.0",
     "@types/node": "^14.0.5",
