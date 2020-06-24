@@ -19,6 +19,7 @@ import { IStoreContainer } from './interfaces/store';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import AccountView from "./views/account/AccountView";
 import { LOCAL_SERVER_URL } from './config';
+import ConfigurationView from "./views/ConfigurationView";
 
 const wsLink = new WebSocketLink({
     uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -68,6 +69,7 @@ function App() {
                         <Switch>
                             <Route exact path="/" component={MainView} />
                             <Route exact path="/account" component={AccountView} />
+                            <Route exact path="/config" component={ConfigurationView} />
                             <Redirect from="*" to="/" />
                         </Switch>
                     </Layout>

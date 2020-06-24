@@ -4,8 +4,9 @@ import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo';
 import { LOCAL_SERVER_URL, standaloneProperties } from '../config';
 import { IStoreContainer } from '../interfaces/store';
-import { FormControl, Select, MenuItem } from '@material-ui/core';
+import { FormControl, Select, MenuItem, LinearProgress } from '@material-ui/core';
 import { observer } from 'mobx-react';
+import DonwloadSnapshotButton from '../components/SnapshotDownload';
 
 const QUERY_CRYPTKEY = gql`
     query {
@@ -80,7 +81,7 @@ function WaitComponent(props: any) {
 }
 
 const LoginComponent = observer((props: ILoginComponentProps) => {
-    const [passphrase, setPassphrase] = useState('');
+    const [ passphrase, setPassphrase ] = useState('');
     const { accountStore, routerStore, keyStore } = props
     const { loading, error, data, refetch } = useQuery(GET_DECRYPTKEY, {
         variables: {
@@ -138,6 +139,8 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
             <button disabled={data == undefined} onClick={event => { handleAccount() }}>Login </button>
             <br />
             <button onClick={() => routerStore.push('/account')} > Account Management </button>
+            <br />
+            <button onClick={() => routerStore.push('/config')} > Config </button>
         </div>
     )
 });
