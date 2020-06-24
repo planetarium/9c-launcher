@@ -1,6 +1,7 @@
 import { LOCAL_SERVER_PORT, electronStore, BLOCKCHAIN_STORE_PATH, MAC_GAME_PATH, WIN_GAME_PATH, SNAPSHOT_SAVE_PATH } from './config';
 import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron';
 import path from 'path';
+import fs from 'fs';
 import { ChildProcess, spawn } from 'child_process';
 import { download, Options as ElectronDLOptions } from 'electron-dl';
 import trayImage from './resources/Cat.png'
@@ -96,6 +97,16 @@ ipcMain.on("launch game", (event, info) => {
     ), info.args)
 })
 
+ipcMain.on("clear cache", (event) => {
+    try {
+        deleteBlockchainStore();
+        event.returnValue = true;
+    } catch (e) {
+        console.log(e)
+        event.returnValue = false;
+    }
+})
+
 function execute(binaryPath: string, args: string[]) {
     console.log(`Execute subprocess: ${binaryPath} ${args.join(' ')}`)
     node = spawn(binaryPath, args)
@@ -148,4 +159,13 @@ function extract(snapshotPath: string) {
     } catch (err) {
         console.log(err);
     }
+}
+
+
+function deleteBlockchainStore() {
+    fs.unlink(BLOCKCHAIN_STORE_PATH, function(err) {
+        if (err) throw err;
+      
+        console.log('file deleted');
+      });
 }
