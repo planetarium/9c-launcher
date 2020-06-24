@@ -1,8 +1,8 @@
 {
   "name": "NineChronicles",
   "version": "2.0.0",
-  "description": "Template project for desktop apps using Electron, React and Typescript",
-  "author": "Marcelo Augusto",
+  "description": "Game Launcher for Nine Chronicles",
+  "author": "Planetarium",
   "license": "MIT",
   "keywords": [
     "electron",
@@ -13,10 +13,10 @@
   "homepage": "https://nine-chronicles.com/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marceloaugusto80/electron-react-typescript-boilerplate.git"
+    "url": "git+https://github.com/planetarium/electron-launcher"
   },
   "bugs": {
-    "url": "https://github.com/marceloaugusto80/electron-react-typescript-boilerplate/issues"
+    "url": "https://github.com/planetarium/electron-launcher/issues"
   },
   "main": "main.js",
   "scripts": {
