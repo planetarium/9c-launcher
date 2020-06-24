@@ -155,17 +155,30 @@ function extract(snapshotPath: string) {
                 win?.webContents.send('extract progress', progress);
             }
         })
-            .then(_ => win?.webContents.send('extract complete'));
-    } catch (err) {
-        console.log(err);
-    }
+        .then(_ => win?.webContents.send('extract complete'))
+        .then(() => fs.unlinkSync(snapshotPath));
+
+     } catch (err) {
+          console.log(err);
+      }
 }
 
 
 function deleteBlockchainStore() {
-    fs.unlink(BLOCKCHAIN_STORE_PATH, function(err) {
-        if (err) throw err;
-      
-        console.log('file deleted');
-      });
+    deleteDirRecursive(BLOCKCHAIN_STORE_PATH);
 }
+
+function deleteDirRecursive(path: string) {
+    if( fs.existsSync(path) ) {
+        fs.readdirSync(path).forEach(function(file) {
+          var curPath = path + "/" + file;
+            if(fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteDirRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+      }
+
+  };
