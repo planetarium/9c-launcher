@@ -5,19 +5,19 @@ import {
   MAC_GAME_PATH,
   WIN_GAME_PATH,
 } from "./config";
+import isDev from "electron-is-dev";
 import { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from "electron";
 import path from "path";
 import fs from "fs";
 import { ChildProcess, spawn } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import logoImage from "./resources/logo.png";
+import { initializeSentry } from "./sentry";
 import "@babel/polyfill";
 import extractZip from "extract-zip";
 import log from "electron-log";
 
-declare const ENVIRONMENT: String;
-
-const IS_DEV = ENVIRONMENT == "development";
+initializeSentry();
 
 Object.assign(console, log.functions);
 
@@ -37,12 +37,12 @@ function createWindow() {
     frame: true,
     resizable: false,
     autoHideMenuBar: true,
-    icon: path.join(app.getAppPath(), logoImage)
+    icon: path.join(app.getAppPath(), logoImage),
   });
 
   console.log(app.getAppPath());
 
-  if (IS_DEV) {
+  if (isDev) {
     win.loadURL("http://localhost:9000");
     win.webContents.openDevTools();
   } else {
