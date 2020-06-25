@@ -1,5 +1,4 @@
-Nine Chronicles Launcher
-========================
+# Nine Chronicles Launcher
 
 ## 개요
 
@@ -89,11 +88,20 @@ npm run pack
 - on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs{process type}.log
 ```
 
-## Prettier 사용법
+## 코드 스타일 맞추기
 
-### VSCode 기준
+```bash
+npx pretty-quick --staged
+```
 
-Extensions(Windows: <kbd>⇧⌃X</kbd>, macOS: <kbd>⇧⌘X</kbd>)에서 [ESlint], [Prettier]를 받아 주십시오.
+### Visual Studio Code 확장
 
-[ESLint]: https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
-[Prettier]: https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+확장 화면(Windows: <kbd>⇧⌃X</kbd>, macOS: <kbd>⇧⌘X</kbd>)에서 다음 확장들을 설치합니다.
+
+- [EditorConfig]
+- [ESlint]
+- [Prettier]
+
+[editorconfig]: https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig
+[eslint]: https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+[prettier]: https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
