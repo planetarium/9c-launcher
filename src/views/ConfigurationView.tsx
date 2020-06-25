@@ -11,11 +11,12 @@ const ConfigurationView = observer(
     const [isDownloading, setDownloadState] = useState(false);
     const [isExtracting, setExtractState] = useState(false);
     const [progress, setProgress] = useState(0);
+    const isDisable = isDownloading || isExtracting;
 
     return (
       <div>
         <Button
-          disabled={isDownloading || isExtracting}
+          disabled={isDisable}
           onClick={() => routerStore.push("/")}
           variant="contained"
           color="primary"
@@ -24,14 +25,14 @@ const ConfigurationView = observer(
         </Button>
         <br />
         <DownloadSnapshotButton
-          disabled={isDownloading || isExtracting}
+          disabled={isDisable}
           setExtractState={setExtractState}
           setDownloadState={setDownloadState}
           progress={progress}
           setProgress={setProgress}
         />
         <br />
-        <ClearCacheButton disabled={isDownloading || isExtracting} />
+        <ClearCacheButton disabled={isDisable} />
         <br />
         {isDownloading || isExtracting ? (
           <LinearProgress variant="determinate" value={progress} />
