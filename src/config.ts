@@ -19,7 +19,7 @@ export const electronStore = new Store({
       type: "string",
       format: "uri",
       default:
-        "https://9c-test.s3.ap-northeast-2.amazonaws.com/snapshots/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot-202000525.zip",
+        "https://9c-test.s3.ap-northeast-2.amazonaws.com/latest/302d8ede310cef94ab7050577f513beed048193cb92006267cf1421166f335a3-snapshot.zip",
     },
     AppProtocolVersion: {
       type: "string",
