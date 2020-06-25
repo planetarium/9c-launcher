@@ -181,7 +181,7 @@ function extract(snapshotPath: string) {
         win?.webContents.send("extract progress", progress);
       },
     }).then((_) => {
-        win?.webContents.send("extract complete")
+        win?.webContents.send("extract complete");
         fs.unlinkSync(snapshotPath);
     });
   } catch (err) {
