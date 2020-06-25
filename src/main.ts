@@ -163,6 +163,9 @@ function createTray(iconPath: string) {
       },
     ])
   );
+  tray.on("click", function () {
+    win?.show();
+  });
   return tray;
 }
 

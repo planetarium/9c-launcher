@@ -118,6 +118,12 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
         accountStore.setSelectedAddress(event.target.value as string)
     };
 
+    // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
+    if (!accountStore.selectAddress && accountStore.addresses.length > 0)
+    {
+        accountStore.setSelectedAddress(accountStore.addresses[0]);
+    }
+
     return (
         <div>
             <form>

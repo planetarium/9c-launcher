@@ -1,8 +1,8 @@
 {
   "name": "NineChronicles",
   "version": "2.0.0",
-  "description": "Template project for desktop apps using Electron, React and Typescript",
-  "author": "Marcelo Augusto",
+  "description": "Game Launcher for Nine Chronicles",
+  "author": "Planetarium",
   "license": "MIT",
   "keywords": [
     "electron",
@@ -13,10 +13,10 @@
   "homepage": "https://nine-chronicles.com/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marceloaugusto80/electron-react-typescript-boilerplate.git"
+    "url": "git+https://github.com/planetarium/electron-launcher"
   },
   "bugs": {
-    "url": "https://github.com/marceloaugusto80/electron-react-typescript-boilerplate/issues"
+    "url": "https://github.com/planetarium/electron-launcher/issues"
   },
   "main": "main.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "build-prod": "npx webpack --env.NODE_ENV=production --env.target=render && npx webpack --env.NODE_ENV=production --env.target=main",
     "server": "npx webpack-dev-server --env.NODE_ENV=development --env.target=render --hot",
     "start": "npx webpack --env.NODE_ENV=development --env.target=main && npx electron ./dist/.",
-    "pack": "npm run build-prod && npx electron-packager ./dist --out ./pack --overwrite"
+    "pack": "npm run build-prod && npx electron-packager ./dist --out ./pack --overwrite --icon=./src/resources/icon.ico"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
