@@ -23,7 +23,7 @@ Object.assign(console, log.functions);
 
 let win: BrowserWindow | null = null;
 let tray: Tray;
-let node: ChildProcess;
+let pids: number[] = [];
 let isQuiting: boolean = false;
 
 function createWindow() {
@@ -74,12 +74,12 @@ app.on("ready", () => {
   createTray(path.join(app.getAppPath(), logoImage));
 });
 
-app.on("before-quit", (event) => {
-  if (node != null) {
-    if (process.platform == "darwin") node.kill("SIGTERM");
+app.on("quit", (event) => {
+  pids.forEach((pid) => {
+    if (process.platform == "darwin") process.kill(pid);
     if (process.platform == "win32")
-      execute("taskkill", ["/pid", node.pid.toString(), "/f", "/t"]);
-  }
+      execute("taskkill", ["/pid", pid.toString(), "/f", "/t"]);
+  });
 });
 
 app.on("activate", (event) => {
@@ -128,7 +128,8 @@ ipcMain.on("clear cache", (event) => {
 
 function execute(binaryPath: string, args: string[]) {
   console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
-  node = spawn(binaryPath, args);
+  let node = spawn(binaryPath, args);
+  pids.push(node.pid);
 
   node.stdout?.on("data", (data) => {
     process.stdout.write(`${data}`);
