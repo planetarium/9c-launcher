@@ -3,3 +3,6 @@ dist
 pack
 .DS_Store
 .blockstore
+
+# ignore generated file by graphql-code-generator.
+src/generated

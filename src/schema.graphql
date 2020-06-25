@@ -1,0 +1,96 @@
+schema {
+  query: StandaloneQuery
+  mutation: StandaloneMutation
+  subscription: StandaloneSubscription
+}
+
+scalar Date
+
+scalar DateTime
+
+scalar DateTimeOffset
+
+scalar Seconds
+
+scalar Milliseconds
+
+scalar Decimal
+
+scalar Uri
+
+scalar Guid
+
+scalar Short
+
+scalar UShort
+
+scalar UInt
+
+scalar Long
+
+scalar BigInt
+
+scalar ULong
+
+scalar Byte
+
+scalar SByte
+
+type StandaloneQuery {
+  keyStore: KeyStoreType
+  nodeStatus: NodeStatusType
+  state(
+    address: Address!
+    hash: ByteString
+  ): ByteString
+}
+
+scalar ByteString
+
+scalar Address
+
+type KeyStoreType {
+  decryptedPrivateKey(address: Address, passphrase: String): ByteString
+  protectedPrivateKeys: [ProtectedPrivateKeyType]!
+}
+
+type ProtectedPrivateKeyType {
+  address: Address
+}
+
+type NodeStatusType {
+  bootstrapEnded: Boolean!
+  preloadEnded: Boolean!
+}
+
+type StandaloneMutation {
+  keyStore: KeyStoreMutation
+}
+
+type KeyStoreMutation {
+  createPrivateKey(passphrase: String): ProtectedPrivateKeyType
+  revokePrivateKey(address: Address): ProtectedPrivateKeyType
+}
+
+type StandaloneSubscription {
+  preloadProgress: PreloadStateType
+  tipChanged: TipChanged
+}
+
+type TipChanged {
+  hash: ByteString
+  index: Long
+}
+
+type PreloadStateType {
+  currentPhase: Long!
+  extra: PreloadStateExtraType!
+  totalPhase: Long!
+}
+
+type PreloadStateExtraType {
+  currentCount: Long!
+  totalCount: Long!
+  type: String!
+}
+

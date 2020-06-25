@@ -5,21 +5,12 @@ import { TextField } from '@material-ui/core';
 import gql from 'graphql-tag';
 import { useMutation, ExecutionResult } from 'react-apollo';
 import { useState } from 'react';
+import { useCreatePrivateKeyMutation } from '../../generated/graphql';
 
-
-const CREATE_ACCOUNT = gql`
-  mutation createPrivateKey($passphrase: String!) {
-    keyStore {
-        createPrivateKey(passphrase: $passphrase) {
-            address
-        }
-      }
-  }
-`;
 
 const CreateAccountView: React.FC<IStoreContainer> = observer(({ accountStore, routerStore }: IStoreContainer) => {
     const { push } = routerStore;
-    const [createAccount, { data }] = useMutation(CREATE_ACCOUNT);
+    const [createAccount, { data }] = useCreatePrivateKeyMutation();
     const [passphrase, setPassphrase] = useState('');
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
