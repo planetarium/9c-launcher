@@ -150,7 +150,8 @@ function createMainConfig(isDev) {
     mode: isDev ? DEVELOPMENT : PRODUCTION,
 
     entry: {
-      main: "./main.ts"
+      main: "./main.ts",
+      preload: "./preload.ts"
     },
 
     resolve: {

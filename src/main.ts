@@ -32,6 +32,7 @@ function createWindow() {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
+      preload: path.join(app.getAppPath(), "preload.js"),
     },
     frame: true,
     resizable: false,
@@ -181,8 +182,8 @@ function extract(snapshotPath: string) {
         win?.webContents.send("extract progress", progress);
       },
     }).then((_) => {
-        win?.webContents.send("extract complete");
-        fs.unlinkSync(snapshotPath);
+      win?.webContents.send("extract complete");
+      fs.unlinkSync(snapshotPath);
     });
   } catch (err) {
     console.log(err);
