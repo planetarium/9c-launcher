@@ -24,12 +24,12 @@ export const electronStore = new Store({
     AppProtocolVersion: {
       type: "string",
       default:
-        "22/019101FEec7ed4f918D396827E1277DEda1e20D4/MEUCIQDiV8dGOGQkujYQGic8Un44ZcU0wkxVpphnl6VQrIRRcwIgM75NixNvPnrUXFM5YW+uaRqdBhS2JNpTEgd5bDT.Lpw=/ZHUxNjpXaW5kb3dzQmluYXJ5VXJsdTUyOmh0dHBzOi8vZG93bmxvYWQubmluZS1jaHJvbmljbGVzLmNvbS92MjIvV2luZG93cy56aXB1MTQ6bWFjT1NCaW5hcnlVcmx1NTM6aHR0cHM6Ly9kb3dubG9hZC5uaW5lLWNocm9uaWNsZXMuY29tL3YyMi9tYWNPUy50YXIuZ3p1OTp0aW1lc3RhbXB1MjA6MjAyMC0wNS0xMVQwNTozMDowMFpl",
+        "1027/019101FEec7ed4f918D396827E1277DEda1e20D4/MEUCIQDb9N6khWlHg0mMiQWSAWitj8BqPciTxJqZkot6WxqJZgIgC.jokMDXPaOsU+kFoEJjqIJt4NcwbKiduJFgmDcQFtY=/ZHUxNjpXaW5kb3dzQmluYXJ5VXJsdTU0Omh0dHBzOi8vZG93bmxvYWQubmluZS1jaHJvbmljbGVzLmNvbS92MTAyNy9XaW5kb3dzLnppcHUxNDptYWNPU0JpbmFyeVVybHU1NTpodHRwczovL2Rvd25sb2FkLm5pbmUtY2hyb25pY2xlcy5jb20vdjEwMjcvbWFjT1MudGFyLmd6dTk6dGltZXN0YW1wdTIwOjIwMjAtMDYtMjNUMDE6NDM6MDNaZQ==",
     },
     GenesisBlockPath: {
       type: "string",
       default:
-        "https://9c-test.s3.amazonaws.com/genesis-block-ea67452fdbf8234308015d3ecd5b1235b0dea844",
+        "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-launcher-v2-test",
     },
     MinimumDifficulty: {
       type: "integer",
@@ -60,9 +60,7 @@ export const electronStore = new Store({
     PeerStrings: {
       type: "array",
       default: [
-        "027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,9c-beta-seed-1.planetarium.dev,31234",
-        "02f164e3139e53eef2c17e52d99d343b8cbdb09eeed88af46c352b1c8be6329d71,9c-beta-seed-2.planetarium.dev,31234",
-        "0247e289aa332260b99dfd50e578f779df9e6702d67e50848bb68f3e0737d9b9a5,9c-beta-seed-3.planetarium.dev,31234",
+        "027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,a532d3e7cafcf4130931550062f4779d-693426789.ap-northeast-2.elb.amazonaws.com,31234",
       ],
     },
   },
