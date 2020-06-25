@@ -180,7 +180,10 @@ function extract(snapshotPath: string) {
         const progress = zipfile.entriesRead / zipfile.entryCount;
         win?.webContents.send("extract progress", progress);
       },
-    }).then((_) => win?.webContents.send("extract complete"));
+    }).then((_) => {
+        win?.webContents.send("extract complete");
+        fs.unlinkSync(snapshotPath);
+    });
   } catch (err) {
     console.log(err);
   }
