@@ -132,11 +132,11 @@ function execute(binaryPath: string, args: string[]) {
   node = spawn(binaryPath, args);
 
   node.stdout?.on("data", (data) => {
-    process.stdout.write(`${data}`);
+    console.log(`${data}`);
   });
 
   node.stderr?.on("data", (data) => {
-    process.stdout.write(`${data}`);
+    console.log(`${data}`);
   });
 }
 
