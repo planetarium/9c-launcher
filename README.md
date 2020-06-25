@@ -1,8 +1,10 @@
-# Launcher-v2
+Nine Chronicles Launcher
+========================
 
 ## 개요
 
-Launcher-v2 는 일렉트론 기반의 멀티플랫폼 런처입니다. 기본적인 골격은 다음과 같습니다.:
+Nine Chronicles를 구동하기 위한 일렉트론 기반의 멀티플랫폼 런처입니다.
+기본적인 골격은 다음과 같습니다:
 
 ```
 ./src
@@ -39,6 +41,7 @@ Launcher-v2 는 일렉트론 기반의 멀티플랫폼 런처입니다. 기본�
 그 뒤 하기의 명령어를 입력합니다.
 
 ```js
+npm install //의존성 설치
 npm run server //렌더러 빌드 후 webpack-hot-reload 실행
 npm run start //메인 프로세스 빌드 후 electron 실행
 ```
@@ -90,4 +93,7 @@ npm run pack
 
 ### VSCode 기준
 
-1. Extension에서 ESlint, Prettier를 받아 주십시오.
+Extensions(Windows: <kbd>⇧⌃X</kbd>, macOS: <kbd>⇧⌘X</kbd>)에서 [ESlint], [Prettier]를 받아 주십시오.
+
+[ESLint]: https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+[Prettier]: https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
