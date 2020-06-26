@@ -115,6 +115,7 @@ ipcMain.on("launch game", (event, info) => {
     ),
     info.args
   );
+  win?.minimize();
 });
 
 ipcMain.on("clear cache", (event) => {
