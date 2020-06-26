@@ -1,7 +1,10 @@
 import * as DOM from "react-dom";
 import * as React from "react";
 import App from "./App";
-import electronLog from 'electron-log';
+import { initializeSentry } from "./sentry";
+import electronLog from "electron-log";
+
+initializeSentry();
 
 Object.assign(console, electronLog.functions);
 
