@@ -55,6 +55,10 @@ export const electronStore = new Store({
         "027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,a532d3e7cafcf4130931550062f4779d-693426789.ap-northeast-2.elb.amazonaws.com,31234",
       ],
     },
+    NoTrustedStateValidators: {
+      type: "boolean",
+      default: false,
+    },
   },
   watch: true,
 });
@@ -108,4 +112,7 @@ export const standaloneProperties: StandaloneProperties = {
   ) as Array<string>,
   IceServerStrings: electronStore.get("IceServerStrings") as Array<string>,
   PeerStrings: electronStore.get("PeerStrings") as Array<string>,
+  NoTrustedStateValidators: electronStore.get(
+    "NoTrustedStateValidators"
+  ) as boolean,
 };
