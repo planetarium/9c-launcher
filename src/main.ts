@@ -26,6 +26,83 @@ let tray: Tray;
 let pids: number[] = [];
 let isQuiting: boolean = false;
 
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on("second-instance", (event, commandLine, workingDirectory) => {
+    win?.show();
+  });
+
+  initializeApp();
+}
+
+function initializeApp() {
+  app.on("ready", () => {
+    execute(
+      path.join(
+        app.getAppPath(),
+        "publish",
+        "NineChronicles.Standalone.Executable"
+      ),
+      ["--graphql-server=true", `--graphql-port=${LOCAL_SERVER_PORT}`]
+    );
+    createWindow();
+    createTray(path.join(app.getAppPath(), logoImage));
+  });
+
+  app.on("quit", (event) => {
+    pids.forEach((pid) => {
+      if (process.platform == "darwin") process.kill(pid);
+      if (process.platform == "win32")
+        execute("taskkill", ["/pid", pid.toString(), "/f", "/t"]);
+    });
+  });
+
+  app.on("activate", (event) => {
+    event.preventDefault();
+    win?.show();
+  });
+
+  ipcMain.on("download snapshot", (event, options: IDownloadOptions) => {
+    options.properties.onProgress = (status: IDownloadProgress) =>
+      win?.webContents.send("download progress", status);
+    options.properties.directory = app.getPath("userData");
+    console.log(win);
+    if (win != null) {
+      download(
+        win,
+        electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string,
+        options.properties
+      )
+        .then((dl) => {
+          win?.webContents.send("download complete", dl.getSavePath());
+          return dl.getSavePath();
+        })
+        .then((path) => extract(path));
+    }
+  });
+
+  ipcMain.on("launch game", (event, info) => {
+    execute(
+      path.join(
+        app.getAppPath(),
+        process.platform === "darwin" ? MAC_GAME_PATH : WIN_GAME_PATH
+      ),
+      info.args
+    );
+  });
+
+  ipcMain.on("clear cache", (event) => {
+    try {
+      deleteBlockchainStore();
+      event.returnValue = true;
+    } catch (e) {
+      console.log(e);
+      event.returnValue = false;
+    }
+  });
+}
+
 function createWindow() {
   win = new BrowserWindow({
     width: 800,
@@ -61,71 +138,6 @@ function createWindow() {
     }
   });
 }
-
-app.on("ready", () => {
-  execute(
-    path.join(
-      app.getAppPath(),
-      "publish",
-      "NineChronicles.Standalone.Executable"
-    ),
-    ["--graphql-server=true", `--graphql-port=${LOCAL_SERVER_PORT}`]
-  );
-  createWindow();
-  createTray(path.join(app.getAppPath(), logoImage));
-});
-
-app.on("quit", (event) => {
-  pids.forEach((pid) => {
-    if (process.platform == "darwin") process.kill(pid);
-    if (process.platform == "win32")
-      execute("taskkill", ["/pid", pid.toString(), "/f", "/t"]);
-  });
-});
-
-app.on("activate", (event) => {
-  event.preventDefault();
-  win?.show();
-});
-
-ipcMain.on("download snapshot", (event, options: IDownloadOptions) => {
-  options.properties.onProgress = (status: IDownloadProgress) =>
-    win?.webContents.send("download progress", status);
-  options.properties.directory = app.getPath("userData");
-  console.log(win);
-  if (win != null) {
-    download(
-      win,
-      electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string,
-      options.properties
-    )
-      .then((dl) => {
-        win?.webContents.send("download complete", dl.getSavePath());
-        return dl.getSavePath();
-      })
-      .then((path) => extract(path));
-  }
-});
-
-ipcMain.on("launch game", (event, info) => {
-  execute(
-    path.join(
-      app.getAppPath(),
-      process.platform === "darwin" ? MAC_GAME_PATH : WIN_GAME_PATH
-    ),
-    info.args
-  );
-});
-
-ipcMain.on("clear cache", (event) => {
-  try {
-    deleteBlockchainStore();
-    event.returnValue = true;
-  } catch (e) {
-    console.log(e);
-    event.returnValue = false;
-  }
-});
 
 function execute(binaryPath: string, args: string[]) {
   console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
@@ -173,8 +185,8 @@ function createTray(iconPath: string) {
 
 function extract(snapshotPath: string) {
   console.log(`extract started.
-        extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
-        extractTarget: [ ${snapshotPath} ]`);
+extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
+extractTarget: [ ${snapshotPath} ]`);
   try {
     extractZip(snapshotPath, {
       dir: BLOCKCHAIN_STORE_PATH,
