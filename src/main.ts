@@ -90,6 +90,7 @@ function initializeApp() {
       ),
       info.args
     );
+    win?.minimize();
   });
 
   ipcMain.on("clear cache", (event) => {
