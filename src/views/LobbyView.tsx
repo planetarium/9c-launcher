@@ -8,7 +8,7 @@ import { IStoreContainer } from "../interfaces/store";
 import {
   withNodeStatus,
   useNodeStatusQuery,
-  usePreloadProgressSubscriptionSubscription
+  usePreloadProgressSubscriptionSubscription,
 } from "../generated/graphql";
 
 const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
@@ -18,14 +18,14 @@ const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
         `--private-key=${accountStore.privateKey}`,
         `--rpc-client=${true}`,
         `--rpc-server-host=${RPC_LOOPBACK_HOST}`,
-        `--rpc-server-port=${standaloneProperties.RpcListenPort}`
-      ]
+        `--rpc-server-port=${standaloneProperties.RpcListenPort}`,
+      ],
     });
   };
 
   const {
     data: preloadProgressSubscriptionResult,
-    loading: preloadProgressLoading
+    loading: preloadProgressLoading,
   } = usePreloadProgressSubscriptionSubscription();
   const { data: nodeStatusQueryResult } = useNodeStatusQuery();
 
@@ -52,18 +52,15 @@ const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
     <div>
       <label>You are using address: {accountStore.selectAddress}</label>
       <br />
-      <button
-        onClick={(event: React.MouseEvent) => {
-          executeGame();
-        }}
-      >
-        Start Game
-      </button>
-      <br />
-      <br />
-      {preloadProgressLoading ||
+      {!preloadProgressLoading &&
       nodeStatusQueryResult?.nodeStatus?.preloadEnded ? (
-        <></>
+        <button
+          onClick={(event: React.MouseEvent) => {
+            executeGame();
+          }}
+        >
+          Start Game
+        </button>
       ) : (
         <>
           <LinearProgress />
