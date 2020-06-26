@@ -1,0 +1,66 @@
+name: build
+on:
+  push: []
+  pull_request: []
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - macos-10.15
+          - windows-2019
+    runs-on: ${{ matrix.os }}
+    steps:
+      # 클론
+      - uses: actions/checkout@v2
+        if: github.event_name != 'pull_request'
+      - uses: actions/checkout@v2
+        if: github.event_name == 'pull_request'
+        with:
+          ref: ${{ github.pull_request.head.sha }}
+      # Node.js 설치
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+      # 의존성 설치
+      - run: npm install --loglevel verbose
+      # 코드 스타일 린트
+      - run: npx pretty-quick --check --branch "${{ github.base_ref }}"
+        if: github.event_name == 'pull_request'
+      # 서브모듈 클론.  actions/checkout@v2가 LFS 쓰는 프라이빗 저장소를
+      # 서브모듈로 제대로 못 다뤄서 수동으로.
+      - uses: actions/checkout@v2
+        with:
+          repository: planetarium/nekoyume-unity
+          path: nekoyume-unity
+          lfs: true
+          fetch-depth: 1
+          ssh-key: "${{ secrets.GIT_SSH_KEY }}"
+        # TODO: Windows 러너에서는 lfs: true 옵션 켜면 1시간 넘도록 반응이 없음…
+        # 그래서 임시로 Windows 러너에서는 막아 둠.
+        # 소스를 받아서 빌드한다는 발상을 버리고 해당 저장소 아티펙트를 뒤져서
+        # 받아다 쓰거나 하는 다른 방법을 고안해야 할 것 같음.
+        if: runner.os != 'Windows'
+      # .NET Core SDK 설치
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "3.1.x"
+      # 빌드
+      - run: npm run build-prod
+      - if: runner.os == 'Windows'
+        run: 7z a "dist-${{ matrix.os }}.zip" dist\*
+      - if: runner.os != 'Windows'
+        run: pushd dist/ && tar cvfj "../dist-${{ matrix.os }}.tar.gz" * && popd
+      - uses: actions/upload-artifact@v2
+        with:
+          path: dist-${{ matrix.os }}.*
+      # 패키지
+      - run: npm run pack
+      - if: runner.os == 'Windows'
+        run: 7z a "pack-${{ matrix.os }}.zip" pack\*
+      - if: runner.os != 'Windows'
+        run: pushd pack/ && tar cvfj "../pack-${{ matrix.os }}.tar.gz" * && popd
+      - uses: actions/upload-artifact@v2
+        with:
+          path: pack-${{ matrix.os }}.*

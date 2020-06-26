@@ -6,8 +6,7 @@ import { IpcRendererEvent, ipcRenderer } from "electron";
 import { standaloneProperties, RPC_LOOPBACK_HOST } from "../config";
 import { IStoreContainer } from "../interfaces/store";
 import {
-  withNodeStatus,
-  useNodeStatusQuery,
+  useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
 } from "../generated/graphql";
 
@@ -25,35 +24,16 @@ const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
 
   const {
     data: preloadProgressSubscriptionResult,
-    loading: preloadProgressLoading,
   } = usePreloadProgressSubscriptionSubscription();
-  const { data: nodeStatusQueryResult } = useNodeStatusQuery();
-
-  // preload가 끝나고 바로 nodeStatus가 갱신되는 것이 아니라서 추측을 통해 nodeStatus 값을 갱신해줍니다.
-  // FIXME: 주기적으로 검사하는 코드로 고치는 것이 좋을 것 같습니다. (setInterval)
-  if (
-    undefined !== nodeStatusQueryResult &&
-    undefined !== nodeStatusQueryResult.nodeStatus &&
-    nodeStatusQueryResult?.nodeStatus !== null
-  ) {
-    const { nodeStatus } = nodeStatusQueryResult;
-    nodeStatus.bootstrapEnded =
-      undefined !== preloadProgressSubscriptionResult?.preloadProgress;
-    if (undefined !== preloadProgressSubscriptionResult?.preloadProgress) {
-      nodeStatus.preloadEnded =
-        preloadProgressSubscriptionResult.preloadProgress?.currentPhase >= 4 &&
-        preloadProgressSubscriptionResult.preloadProgress?.extra.totalCount ===
-          preloadProgressSubscriptionResult?.preloadProgress?.extra
-            .currentCount;
-    }
-  }
+  const {
+    data: nodeStatusSubscriptionResult,
+  } = useNodeStatusSubscriptionSubscription();
 
   return (
     <div>
       <label>You are using address: {accountStore.selectAddress}</label>
       <br />
-      {!preloadProgressLoading &&
-      nodeStatusQueryResult?.nodeStatus?.preloadEnded ? (
+      {nodeStatusSubscriptionResult?.nodeStatus.preloadEnded ? (
         <button
           onClick={(event: React.MouseEvent) => {
             executeGame();
