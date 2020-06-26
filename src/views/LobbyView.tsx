@@ -24,6 +24,7 @@ const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
     });
   };
 
+  // FIXME: ipcRenderer.on 이 한 번만 불리게 고쳐야 합니다.
   ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
     setGameRunningStatus(false);
   });
