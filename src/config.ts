@@ -1,19 +1,11 @@
 import Store from "electron-store";
 import path from "path";
-import { app, remote } from "electron";
 
-function getUserDataPath(): string {
-  let getPath;
-  if (process.type === "browser") {
-    getPath = app.getPath("userData");
-  } else {
-    getPath = remote.app.getPath("userData");
-  }
-
-  return getPath;
-}
+const { app } =
+  process.type === "browser" ? require("electron") : require("electron").remote;
 
 export const electronStore = new Store({
+  cwd: app.getAppPath(),
   schema: {
     SNAPSHOT_DOWNLOAD_PATH: {
       type: "string",
@@ -90,14 +82,17 @@ const SwarmServerPort = (): number => {
   return 27923;
 };
 
-export const SNAPSHOT_SAVE_PATH = getUserDataPath();
+export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
 export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";
 export const RPC_LOOPBACK_HOST = "127.0.0.1";
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
 export const LOCAL_SERVER_PORT = LocalServerPort();
-export const BLOCKCHAIN_STORE_PATH = path.join(getUserDataPath(), ".store");
+export const BLOCKCHAIN_STORE_PATH = path.join(
+  app.getPath("userData"),
+  ".store"
+);
 export const standaloneProperties: StandaloneProperties = {
   AppProtocolVersion: electronStore.get("AppProtocolVersion") as string,
   GenesisBlockPath: electronStore.get("GenesisBlockPath") as string,
