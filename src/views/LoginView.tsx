@@ -11,7 +11,9 @@ import {
   LinearProgress,
 } from "@material-ui/core";
 import { observer } from "mobx-react";
-import DonwloadSnapshotButton from "../components/DownloadSnapshotButton";
+import { useDecreyptedPrivateKeyLazyQuery } from "../generated/graphql";
+import Alert from "../components/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
 const QUERY_CRYPTKEY = gql`
   query {
@@ -60,7 +62,7 @@ const LoginView = observer((props: IStoreContainer) => {
 function WaitComponent(props: any) {
   const errorHandler = (error: any) => {
     console.log(error);
-    return <label>An Error Accupied.</label>;
+    return <label>Something went wrong.</label>;
   };
   return (
     <div>
@@ -69,20 +71,18 @@ function WaitComponent(props: any) {
       ) : (
         <label>Now Loading...</label>
       )}
-      <label></label>
     </div>
   );
 }
 
 const LoginComponent = observer((props: ILoginComponentProps) => {
   const [passphrase, setPassphrase] = useState("");
+  const [openSnackbar, setSnackbarStatus] = useState(false);
   const { accountStore, routerStore, keyStore } = props;
-  const { loading, error, data, refetch } = useQuery(GET_DECRYPTKEY, {
-    variables: {
-      address: accountStore.selectAddress,
-      passphrase: passphrase,
-    },
-  });
+  const [
+    getDecreyptedKey,
+    { loading, data },
+  ] = useDecreyptedPrivateKeyLazyQuery();
 
   const addresses = keyStore.protectedPrivateKeys.map((value) => value.address);
   addresses.map((value) => {
@@ -91,18 +91,29 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
       : accountStore.addAddress(value);
   });
 
+  const getPrivateKey = (): string | undefined => {
+    getDecreyptedKey({
+      variables: {
+        address: accountStore.selectAddress,
+        passphrase: passphrase,
+      },
+    });
+    return data?.keyStore?.decryptedPrivateKey;
+  };
+
   const handleAccount = () => {
-    // 제대로 된 passphrase가 입력되었을 때만 decryptedPrivateKey 쿼리가 제대로 된 응답을 주기 때문에
-    // data === undefineded인 경우를 체크합니다.
-    if (undefined === data) {
+    const privateKey = getPrivateKey();
+    if (privateKey === undefined) {
+      setSnackbarStatus(true);
       return;
     }
 
-    accountStore.setPrivateKey(data.keyStore.decryptedPrivateKey);
+    accountStore.setPrivateKey(privateKey);
     accountStore.toggleLogin();
+
     const properties = {
       ...standaloneProperties,
-      PrivateKeyString: data.keyStore.decryptedPrivateKey,
+      PrivateKeyString: privateKey,
     };
     console.log(properties);
     fetch(`http://${LOCAL_SERVER_URL}/initialize-standalone`, {
@@ -114,17 +125,27 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
     })
       .then((response) => response.text())
       .then((body) => console.log(body))
-      .then((_) => {
+      .then((_) =>
         fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
           method: "POST",
         })
-          .then((response) => response.text())
-          .then((body) => console.log(body));
-      });
+      )
+      .then((response) => response.text())
+      .then((body) => console.log(body))
+      .then((_) => {})
+      .catch((error) => console.log(error));
   };
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     accountStore.setSelectedAddress(event.target.value as string);
+  };
+
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackbarStatus(false);
   };
 
   // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
@@ -166,7 +187,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
         ></input>
       </form>
       <button
-        disabled={data == undefined}
+        disabled={loading}
         onClick={(event) => {
           handleAccount();
         }}
@@ -180,6 +201,15 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
       </button>
       <br />
       <button onClick={() => routerStore.push("/config")}> Config </button>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity="error">
+          passphrase is wrong.
+        </Alert>
+      </Snackbar>
     </div>
   );
 });
