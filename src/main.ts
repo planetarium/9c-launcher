@@ -96,6 +96,7 @@ function initializeApp() {
     node.on("exit", (code) => {
       win?.webContents.send("game closed");
     });
+    win?.minimize();
   });
 
   ipcMain.on("clear cache", (event) => {
