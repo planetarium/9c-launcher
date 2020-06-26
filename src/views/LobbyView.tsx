@@ -11,7 +11,9 @@ import {
 } from "../generated/graphql";
 
 const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
+  const [isGameRunning, setGameRunningStatus] = useState(false);
   const executeGame = () => {
+    setGameRunningStatus(true);
     ipcRenderer.send("launch game", {
       args: [
         `--private-key=${accountStore.privateKey}`,
@@ -21,6 +23,10 @@ const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
       ],
     });
   };
+
+  ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
+    setGameRunningStatus(false);
+  });
 
   const {
     data: preloadProgressSubscriptionResult,
@@ -35,6 +41,7 @@ const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
       <br />
       {nodeStatusSubscriptionResult?.nodeStatus.preloadEnded ? (
         <button
+          disabled={isGameRunning}
           onClick={(event: React.MouseEvent) => {
             executeGame();
           }}
@@ -59,6 +66,7 @@ const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
           </p>
         </>
       )}
+      {isGameRunning ? <label>Now Running...</label> : null}
     </div>
   );
 };

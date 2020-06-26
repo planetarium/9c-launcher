@@ -83,13 +83,19 @@ function initializeApp() {
   });
 
   ipcMain.on("launch game", (event, info) => {
-    execute(
+    const node = execute(
       path.join(
         app.getAppPath(),
         process.platform === "darwin" ? MAC_GAME_PATH : WIN_GAME_PATH
       ),
       info.args
     );
+    node.on("close", (code) => {
+      win?.webContents.send("game closed");
+    });
+    node.on("exit", (code) => {
+      win?.webContents.send("game closed");
+    });
   });
 
   ipcMain.on("clear cache", (event) => {
@@ -151,6 +157,7 @@ function execute(binaryPath: string, args: string[]) {
   node.stderr?.on("data", (data) => {
     console.log(`${data}`);
   });
+  return node;
 }
 
 function createTray(iconPath: string) {
