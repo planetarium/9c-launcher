@@ -8,7 +8,7 @@ import {
   FormControl,
   Select,
   MenuItem,
-  LinearProgress
+  LinearProgress,
 } from "@material-ui/core";
 import { observer } from "mobx-react";
 import DonwloadSnapshotButton from "../components/DownloadSnapshotButton";
@@ -80,8 +80,8 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
   const { loading, error, data, refetch } = useQuery(GET_DECRYPTKEY, {
     variables: {
       address: accountStore.selectAddress,
-      passphrase: passphrase
-    }
+      passphrase: passphrase,
+    },
   });
 
   const addresses = keyStore.protectedPrivateKeys.map((value) => value.address);
@@ -92,25 +92,31 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
   });
 
   const handleAccount = () => {
+    // 제대로 된 passphrase가 입력되었을 때만 decryptedPrivateKey 쿼리가 제대로 된 응답을 주기 때문에
+    // data === undefineded인 경우를 체크합니다.
+    if (undefined === data) {
+      return;
+    }
+
     accountStore.setPrivateKey(data.keyStore.decryptedPrivateKey);
     accountStore.toggleLogin();
     const properties = {
       ...standaloneProperties,
-      PrivateKeyString: data.keyStore.decryptedPrivateKey
+      PrivateKeyString: data.keyStore.decryptedPrivateKey,
     };
     console.log(properties);
     fetch(`http://${LOCAL_SERVER_URL}/initialize-standalone`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(properties)
+      body: JSON.stringify(properties),
     })
       .then((response) => response.text())
       .then((body) => console.log(body))
       .then((_) => {
         fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
-          method: "POST"
+          method: "POST",
         })
           .then((response) => response.text())
           .then((body) => console.log(body));
@@ -149,6 +155,13 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
           type="password"
           onChange={(event) => {
             setPassphrase(event.target.value);
+          }}
+          onKeyDown={(event) => {
+            // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
+            const enterKeyCode = 13;
+            if (enterKeyCode === event.keyCode) {
+              handleAccount();
+            }
           }}
         ></input>
       </form>
