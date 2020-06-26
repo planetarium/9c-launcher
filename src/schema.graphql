@@ -39,10 +39,7 @@ scalar SByte
 type StandaloneQuery {
   keyStore: KeyStoreType
   nodeStatus: NodeStatusType
-  state(
-    address: Address!
-    hash: ByteString
-  ): ByteString
+  state(address: Address!, hash: ByteString): ByteString
 }
 
 scalar ByteString
@@ -74,6 +71,7 @@ type KeyStoreMutation {
 
 type StandaloneSubscription {
   preloadProgress: PreloadStateType
+  nodeStatus: NodeStatusType
   tipChanged: TipChanged
 }
 
@@ -93,4 +91,3 @@ type PreloadStateExtraType {
   totalCount: Long!
   type: String!
 }
-
