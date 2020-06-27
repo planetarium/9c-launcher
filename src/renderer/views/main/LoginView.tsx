@@ -121,7 +121,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
       .catch((error) => console.log(error));
   }
 
-  const handleAccount = () => {
+  const handleSubmit = () => {
     getDecreyptedKey({
       variables: {
         address: accountStore.selectAddress,
@@ -175,7 +175,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
             // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
             const enterKeyCode = 13;
             if (enterKeyCode === event.keyCode) {
-              handleAccount();
+              handleSubmit();
             }
           }}
         ></input>
@@ -183,7 +183,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
       <button
         disabled={loading}
         onClick={(event) => {
-          handleAccount();
+          handleSubmit();
         }}
       >
         Login{" "}
