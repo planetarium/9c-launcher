@@ -91,23 +91,8 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
       : accountStore.addAddress(value);
   });
 
-  const getPrivateKey = (): string | undefined => {
-    getDecreyptedKey({
-      variables: {
-        address: accountStore.selectAddress,
-        passphrase: passphrase,
-      },
-    });
-    return data?.keyStore?.decryptedPrivateKey;
-  };
-
-  const handleAccount = () => {
-    const privateKey = getPrivateKey();
-    if (privateKey === undefined) {
-      setSnackbarStatus(true);
-      return;
-    }
-
+  if (data?.keyStore?.decryptedPrivateKey !== undefined) {
+    const privateKey = data.keyStore.decryptedPrivateKey;
     accountStore.setPrivateKey(privateKey);
     accountStore.toggleLogin();
 
@@ -134,6 +119,15 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
       .then((body) => console.log(body))
       .then((_) => {})
       .catch((error) => console.log(error));
+  }
+
+  const handleSubmit = () => {
+    getDecreyptedKey({
+      variables: {
+        address: accountStore.selectAddress,
+        passphrase: passphrase,
+      },
+    });
   };
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -181,7 +175,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
             // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
             const enterKeyCode = 13;
             if (enterKeyCode === event.keyCode) {
-              handleAccount();
+              handleSubmit();
             }
           }}
         ></input>
@@ -189,7 +183,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
       <button
         disabled={loading}
         onClick={(event) => {
-          handleAccount();
+          handleSubmit();
         }}
       >
         Login{" "}
