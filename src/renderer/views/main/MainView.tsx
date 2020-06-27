@@ -10,9 +10,10 @@ const MainView = observer(
       <div>
         {accountStore.isLogin ? (
           <LobbyView
-            accountStore={accountStore}
-            routerStore={routerStore}
-            gameStore={gameStore}
+            account={accountStore.selectAddress}
+            privateKey={accountStore.privateKey}
+            isGameStarted={gameStore.isGameStarted}
+            startGame={gameStore.startGame}
           />
         ) : (
           <LoginView

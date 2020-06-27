@@ -10,7 +10,19 @@ import {
   usePreloadProgressSubscriptionSubscription,
 } from "../../../generated/graphql";
 
-const LobbyView = ({ accountStore, gameStore }: IStoreContainer) => {
+interface ILobbyProps {
+  account: string;
+  privateKey: string;
+  isGameStarted: boolean;
+  startGame(
+    privateKey: string,
+    rpcClient: boolean,
+    rpcHost: string,
+    rpcPort: number
+  ): void;
+}
+
+const LobbyView = (props: ILobbyProps) => {
   const {
     data: preloadProgressSubscriptionResult,
   } = usePreloadProgressSubscriptionSubscription();
@@ -18,16 +30,18 @@ const LobbyView = ({ accountStore, gameStore }: IStoreContainer) => {
     data: nodeStatusSubscriptionResult,
   } = useNodeStatusSubscriptionSubscription();
 
+  console.log(props.isGameStarted);
+
   return (
     <div>
-      <label>You are using address: {accountStore.selectAddress}</label>
+      <label>You are using address: {props.account}</label>
       <br />
       {nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded ? (
         <button
-          disabled={gameStore.isGameStarted}
+          disabled={props.isGameStarted}
           onClick={(event: React.MouseEvent) => {
-            gameStore.startGame(
-              accountStore.privateKey,
+            props.startGame(
+              props.privateKey,
               true,
               RPC_LOOPBACK_HOST,
               RPC_SERVER_PORT
@@ -54,7 +68,7 @@ const LobbyView = ({ accountStore, gameStore }: IStoreContainer) => {
           </p>
         </>
       )}
-      {gameStore.isGameStarted ? <label>Now Running...</label> : null}
+      {props.isGameStarted ? <label>Now Running...</label> : null}
     </div>
   );
 };
