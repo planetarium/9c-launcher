@@ -4,16 +4,26 @@ import LobbyView from "./LobbyView";
 import LoginView from "./LoginView";
 import { IStoreContainer } from "../../interfaces/store";
 
-const MainView = observer(({ accountStore, routerStore }: IStoreContainer) => {
-  return (
-    <div>
-      {accountStore.isLogin ? (
-        <LobbyView accountStore={accountStore} routerStore={routerStore} />
-      ) : (
-        <LoginView accountStore={accountStore} routerStore={routerStore} />
-      )}
-    </div>
-  );
-});
+const MainView = observer(
+  ({ accountStore, routerStore, gameStore }: IStoreContainer) => {
+    return (
+      <div>
+        {accountStore.isLogin ? (
+          <LobbyView
+            accountStore={accountStore}
+            routerStore={routerStore}
+            gameStore={gameStore}
+          />
+        ) : (
+          <LoginView
+            accountStore={accountStore}
+            routerStore={routerStore}
+            gameStore={gameStore}
+          />
+        )}
+      </div>
+    );
+  }
+);
 
-export default inject("accountStore", "routerStore")(MainView);
+export default inject("accountStore", "routerStore", "gameStore")(MainView);

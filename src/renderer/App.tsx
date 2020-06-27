@@ -20,6 +20,7 @@ import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
 import AccountView from "./views/account/AccountView";
 import { LOCAL_SERVER_URL } from "../config";
 import ConfigurationView from "./views/ConfigurationView";
+import GameStore from "./stores/game";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -53,6 +54,7 @@ const client = new ApolloClient({
 const Store: IStoreContainer = {
   accountStore: new AccountStore(),
   routerStore: new RouterStore(),
+  gameStore: new GameStore(),
 };
 
 const history = syncHistoryWithStore(createBrowserHistory(), Store.routerStore);

@@ -93,6 +93,7 @@ export const RPC_LOOPBACK_HOST = "127.0.0.1";
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
 export const LOCAL_SERVER_PORT = LocalServerPort();
+export const RPC_SERVER_PORT = RpcServerPort();
 export const BLOCKCHAIN_STORE_PATH = path.join(
   app.getPath("userData"),
   ".store"

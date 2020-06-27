@@ -2,33 +2,15 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { useState } from "react";
 import { LinearProgress } from "@material-ui/core";
-import { IpcRendererEvent, ipcRenderer } from "electron";
-import { standaloneProperties, RPC_LOOPBACK_HOST } from "../../config";
+import { RPC_LOOPBACK_HOST, RPC_SERVER_PORT } from "../../config";
 import { IStoreContainer } from "../../interfaces/store";
+import { inject } from "mobx-react";
 import {
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
 } from "../../generated/graphql";
 
-const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
-  const [isGameRunning, setGameRunningStatus] = useState(false);
-  const executeGame = () => {
-    setGameRunningStatus(true);
-    ipcRenderer.send("launch game", {
-      args: [
-        `--private-key=${accountStore.privateKey}`,
-        `--rpc-client=${true}`,
-        `--rpc-server-host=${RPC_LOOPBACK_HOST}`,
-        `--rpc-server-port=${standaloneProperties.RpcListenPort}`,
-      ],
-    });
-  };
-
-  // FIXME: ipcRenderer.on 이 한 번만 불리게 고쳐야 합니다.
-  ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
-    setGameRunningStatus(false);
-  });
-
+const LobbyView = ({ accountStore, gameStore }: IStoreContainer) => {
   const {
     data: preloadProgressSubscriptionResult,
   } = usePreloadProgressSubscriptionSubscription();
@@ -40,11 +22,16 @@ const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
     <div>
       <label>You are using address: {accountStore.selectAddress}</label>
       <br />
-      {nodeStatusSubscriptionResult?.nodeStatus.preloadEnded ? (
+      {nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded ? (
         <button
-          disabled={isGameRunning}
+          disabled={gameStore.isGameStarted}
           onClick={(event: React.MouseEvent) => {
-            executeGame();
+            gameStore.startGame(
+              accountStore.privateKey,
+              true,
+              RPC_LOOPBACK_HOST,
+              RPC_SERVER_PORT
+            );
           }}
         >
           Start Game
@@ -67,7 +54,7 @@ const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
           </p>
         </>
       )}
-      {isGameRunning ? <label>Now Running...</label> : null}
+      {gameStore.isGameStarted ? <label>Now Running...</label> : null}
     </div>
   );
 };
