@@ -2,8 +2,8 @@ import * as React from "react";
 import { useState } from "react";
 import gql from "graphql-tag";
 import { useQuery } from "react-apollo";
-import { LOCAL_SERVER_URL, standaloneProperties } from "../config";
-import { IStoreContainer } from "../interfaces/store";
+import { LOCAL_SERVER_URL, standaloneProperties } from "../../../config";
+import { IStoreContainer } from "../../../interfaces/store";
 import {
   FormControl,
   Select,
@@ -11,8 +11,8 @@ import {
   LinearProgress,
 } from "@material-ui/core";
 import { observer } from "mobx-react";
-import { useDecreyptedPrivateKeyLazyQuery } from "../generated/graphql";
-import Alert from "../components/Alert";
+import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
+import Alert from "../../components/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 
 const QUERY_CRYPTKEY = gql`

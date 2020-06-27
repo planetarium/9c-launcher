@@ -2,9 +2,9 @@ import * as React from "react";
 import { useState } from "react";
 import { LinearProgress, Button } from "@material-ui/core";
 import { observer, inject } from "mobx-react";
-import { IStoreContainer } from "../interfaces/store";
-import DownloadSnapshotButton from "../components/DownloadSnapshotButton";
-import ClearCacheButton from "../components/ClearCacheButton";
+import { IStoreContainer } from "../../../interfaces/store";
+import DownloadSnapshotButton from "../../components/DownloadSnapshotButton";
+import ClearCacheButton from "../../components/ClearCacheButton";
 
 const ConfigurationView = observer(
   ({ accountStore, routerStore }: IStoreContainer) => {

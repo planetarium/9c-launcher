@@ -40,9 +40,9 @@ Nine Chronicles를 구동하기 위한 일렉트론 기반의 멀티플랫폼 �
 그 뒤 하기의 명령어를 입력합니다.
 
 ```js
-npm install //의존성 설치
-npm run server //렌더러 빌드 후 webpack-hot-reload 실행
-npm run start //메인 프로세스 빌드 후 electron 실행
+npm install
+npm run build-headless
+npm run dev
 ```
 
 ## 개발 방법
