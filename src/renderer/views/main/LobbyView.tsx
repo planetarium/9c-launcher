@@ -30,8 +30,6 @@ const LobbyView = (props: ILobbyProps) => {
     data: nodeStatusSubscriptionResult,
   } = useNodeStatusSubscriptionSubscription();
 
-  console.log(props.isGameStarted);
-
   return (
     <div>
       <label>You are using address: {props.account}</label>
