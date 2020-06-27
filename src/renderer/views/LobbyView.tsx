@@ -3,12 +3,12 @@ import gql from "graphql-tag";
 import { useState } from "react";
 import { LinearProgress } from "@material-ui/core";
 import { IpcRendererEvent, ipcRenderer } from "electron";
-import { standaloneProperties, RPC_LOOPBACK_HOST } from "../config";
-import { IStoreContainer } from "../interfaces/store";
+import { standaloneProperties, RPC_LOOPBACK_HOST } from "../../config";
+import { IStoreContainer } from "../../interfaces/store";
 import {
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
-} from "../generated/graphql";
+} from "../../generated/graphql";
 
 const LobbyView = ({ accountStore, routerStore }: IStoreContainer) => {
   const [isGameRunning, setGameRunningStatus] = useState(false);

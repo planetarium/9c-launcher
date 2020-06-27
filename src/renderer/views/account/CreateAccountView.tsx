@@ -3,8 +3,8 @@ import { observer } from "mobx-react";
 import { TextField } from "@material-ui/core";
 import { ExecutionResult } from "react-apollo";
 import { useState } from "react";
-import { IStoreContainer } from "../../interfaces/store";
-import { useCreatePrivateKeyMutation } from "../../generated/graphql";
+import { IStoreContainer } from "../../../interfaces/store";
+import { useCreatePrivateKeyMutation } from "../../../generated/graphql";
 
 const CreateAccountView: React.FC<IStoreContainer> = observer(
   ({ accountStore, routerStore }: IStoreContainer) => {
@@ -26,8 +26,8 @@ const CreateAccountView: React.FC<IStoreContainer> = observer(
             console.log(data);
             createAccount({
               variables: {
-                passphrase
-              }
+                passphrase,
+              },
             }).then((e: ExecutionResult<any>) => {
               console.log(e);
               const { address } = e.data.keyStore.createPrivateKey;

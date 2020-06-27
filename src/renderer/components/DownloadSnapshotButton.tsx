@@ -38,7 +38,7 @@ const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
 
   const downloadSnapShot = () => {
     const options: IDownloadOptions = {
-      properties: {}
+      properties: {},
     };
     ipcRenderer.send("download snapshot", options);
   };

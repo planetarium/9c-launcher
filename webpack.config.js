@@ -17,7 +17,7 @@ function createRenderConfig(isDev) {
     target: "electron-renderer", // any other target value makes react-hot-loader stop working
 
     resolve: {
-      extensions: [".js", ".jsx", ".ts", ".tsx", ".json"]
+      extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
@@ -26,19 +26,19 @@ function createRenderConfig(isDev) {
 
     entry: {
       polyfill: "@babel/polyfill",
-      render: "./render.tsx"
+      render: "./renderer/render.tsx",
     },
 
     output: {
       filename: isDev ? "[name].js" : "[name].[hash].js",
-      path: path.join(__dirname, "dist")
+      path: path.join(__dirname, "dist"),
     },
 
     externals: {
       react: "React",
       "react-dom": "ReactDOM",
       "react-router-dom": "ReactRouterDOM",
-      electron: "require('electron')"
+      electron: "require('electron')",
     },
 
     module: {
@@ -49,12 +49,12 @@ function createRenderConfig(isDev) {
             {
               loader: MiniCssExtractPlugin.loader,
               options: {
-                hmr: isDev
-              }
+                hmr: isDev,
+              },
             },
             "css-loader",
-            "sass-loader"
-          ]
+            "sass-loader",
+          ],
         },
 
         {
@@ -66,15 +66,15 @@ function createRenderConfig(isDev) {
               presets: [
                 "@babel/preset-typescript",
                 "@babel/preset-react",
-                "@babel/preset-env"
+                "@babel/preset-env",
               ],
               plugins: [
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
-                "react-hot-loader/babel"
-              ]
-            }
-          }
+                "react-hot-loader/babel",
+              ],
+            },
+          },
         },
 
         {
@@ -82,25 +82,25 @@ function createRenderConfig(isDev) {
           exclude: /node_modules/,
           use: {
             loader: "file-loader",
-            options: {}
-          }
-        }
-      ]
+            options: {},
+          },
+        },
+      ],
     },
 
     plugins: [
       new CleanWebpackPlugin({
-        cleanOnceBeforeBuildPatterns: ["!main-process.*.js"] // config for electron-main deletes this file
+        cleanOnceBeforeBuildPatterns: ["!main-process.*.js"], // config for electron-main deletes this file
       }),
 
       new MiniCssExtractPlugin({
-        filename: "main.css"
+        filename: "main.css",
       }),
 
       new HtmlPlugin({
         filename: "index.html",
         template: "index.html",
-        cache: true
+        cache: true,
       }),
 
       new HtmlExternalsPlugin({
@@ -111,33 +111,33 @@ function createRenderConfig(isDev) {
             global: "React",
             entry: isDev
               ? "umd/react.development.js"
-              : "umd/react.production.min.js"
+              : "umd/react.production.min.js",
           },
           {
             module: "react-dom",
             global: "ReactDOM",
             entry: isDev
               ? "umd/react-dom.development.js"
-              : "umd/react-dom.production.min.js"
+              : "umd/react-dom.production.min.js",
           },
           {
             module: "react-router-dom",
             global: "ReactRouterDOM",
             entry: isDev
               ? "umd/react-router-dom.js"
-              : "umd/react-router-dom.min.js"
-          }
-        ]
-      })
+              : "umd/react-router-dom.min.js",
+          },
+        ],
+      }),
     ],
 
     devServer: isDev
       ? {
           contentBase: path.join(__dirname, "dist"),
           compress: true,
-          port: 9000
+          port: 9000,
         }
-      : undefined
+      : undefined,
   };
 }
 
@@ -150,17 +150,17 @@ function createMainConfig(isDev) {
     mode: isDev ? DEVELOPMENT : PRODUCTION,
 
     entry: {
-      main: "./main.ts",
-      preload: "./preload.ts"
+      main: "./main/main.ts",
+      preload: "./preload/preload.ts",
     },
 
     resolve: {
-      extensions: [".js", ".jsx", ".ts", ".tsx", ".json"]
+      extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
     },
 
     output: {
       filename: "[name].js",
-      path: path.join(__dirname, "dist")
+      path: path.join(__dirname, "dist"),
     },
 
     module: {
@@ -171,36 +171,36 @@ function createMainConfig(isDev) {
           use: {
             loader: "babel-loader",
             options: {
-              presets: ["@babel/preset-typescript", "@babel/preset-env"]
-            }
-          }
+              presets: ["@babel/preset-typescript", "@babel/preset-env"],
+            },
+          },
         },
         {
           test: /\.(svg|jpg|png)$/,
           exclude: /node_modules/,
           use: {
             loader: "file-loader",
-            options: {}
-          }
-        }
-      ]
+            options: {},
+          },
+        },
+      ],
     },
 
     plugins: [
       new CleanWebpackPlugin({
-        cleanOnceBeforeBuildPatterns: ["main-process.*.js"]
+        cleanOnceBeforeBuildPatterns: ["main-process.*.js"],
       }),
 
       // inject this becaus the main process uses different logic for prod and dev.
       new DefinePlugin({
-        ENVIRONMENT: JSON.stringify(isDev ? DEVELOPMENT : PRODUCTION) // this variable name must match the one declared in the main process file.
+        ENVIRONMENT: JSON.stringify(isDev ? DEVELOPMENT : PRODUCTION), // this variable name must match the one declared in the main process file.
       }),
 
       // electron-packager needs the package.json file. the "../" is because context is set to the ./src folder
       new CopyWebpackPlugin({
-        patterns: [{ from: "package.json", to: "./", context: "../" }]
-      })
-    ]
+        patterns: [{ from: "package.json", to: "./", context: "../" }],
+      }),
+    ],
   };
 }
 
