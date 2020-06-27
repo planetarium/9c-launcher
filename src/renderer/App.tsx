@@ -2,9 +2,9 @@ import { hot } from "react-hot-loader/root";
 import * as React from "react";
 import { Router, Route, Switch, Redirect } from "react-router";
 import { createBrowserHistory } from "history";
-import { Layout } from "./views/Layout";
+import { Layout } from "./views/layout/Layout";
 import "./styles/main.scss";
-import MainView from "./views/MainView";
+import MainView from "./views/main/MainView";
 import ApolloClient from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
 import { RetryLink } from "apollo-link-retry";
@@ -19,7 +19,7 @@ import { IStoreContainer } from "../interfaces/store";
 import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
 import AccountView from "./views/account/AccountView";
 import { LOCAL_SERVER_URL } from "../config";
-import ConfigurationView from "./views/ConfigurationView";
+import ConfigurationView from "./views/config/ConfigurationView";
 import GameStore from "./stores/game";
 
 const wsLink = new WebSocketLink({

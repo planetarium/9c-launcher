@@ -5,9 +5,16 @@ import { ExecutionResult } from "react-apollo";
 import { useState } from "react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { useCreatePrivateKeyMutation } from "../../../generated/graphql";
+import AccountStore from "../../stores/account";
+import { RouterStore } from "mobx-react-router";
 
-const CreateAccountView: React.FC<IStoreContainer> = observer(
-  ({ accountStore, routerStore }: IStoreContainer) => {
+interface ICreateAccountProps {
+  accountStore: AccountStore;
+  routerStore: RouterStore;
+}
+
+const CreateAccountView: React.FC<ICreateAccountProps> = observer(
+  ({ accountStore, routerStore }: ICreateAccountProps) => {
     const { push } = routerStore;
     const [createAccount, { data }] = useCreatePrivateKeyMutation();
     const [passphrase, setPassphrase] = useState("");

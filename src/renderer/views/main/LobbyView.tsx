@@ -2,13 +2,13 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { useState } from "react";
 import { LinearProgress } from "@material-ui/core";
-import { RPC_LOOPBACK_HOST, RPC_SERVER_PORT } from "../../config";
-import { IStoreContainer } from "../../interfaces/store";
+import { RPC_LOOPBACK_HOST, RPC_SERVER_PORT } from "../../../config";
+import { IStoreContainer } from "../../../interfaces/store";
 import { inject } from "mobx-react";
 import {
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
-} from "../../generated/graphql";
+} from "../../../generated/graphql";
 
 const LobbyView = ({ accountStore, gameStore }: IStoreContainer) => {
   const {

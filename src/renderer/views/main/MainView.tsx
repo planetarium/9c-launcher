@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer, inject } from "mobx-react";
 import LobbyView from "./LobbyView";
 import LoginView from "./LoginView";
-import { IStoreContainer } from "../../interfaces/store";
+import { IStoreContainer } from "../../../interfaces/store";
 
 const MainView = observer(
   ({ accountStore, routerStore, gameStore }: IStoreContainer) => {
