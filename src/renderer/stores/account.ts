@@ -8,8 +8,10 @@ export interface IAccountStore {
 }
 
 export default class AccountStore implements IAccountStore {
+  // Referenced mobxjs/mobx#669-comments
+  // https://git.io/JJv8j
   @observable
-  public addresses: string[] = [];
+  public readonly addresses = observable<string>([]);
 
   @observable
   public privateKey: string = "";
@@ -36,8 +38,13 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
+  removeAddress = (address: string) => {
+    this.addresses.remove(address);
+  };
+
+  @action
   setAddresses = (addresses: string[]) => {
-    this.addresses = addresses;
+    this.addresses.replace(addresses);
   };
 
   @action
