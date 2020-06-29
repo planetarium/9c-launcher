@@ -96,6 +96,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
     const privateKey = data.keyStore.decryptedPrivateKey;
     accountStore.setPrivateKey(privateKey);
     accountStore.toggleLogin();
+    routerStore.push("/lobby");
 
     const properties = {
       ...standaloneProperties,

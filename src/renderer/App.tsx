@@ -23,6 +23,7 @@ import ConfigurationView from "./views/config/ConfigurationView";
 import GameStore from "./stores/game";
 import CreateAccountView from "./views/account/CreateAccountView";
 import RevokeAccountView from "./views/account/RevokeAccountView";
+import LobbyView from "./views/lobby/LobbyView";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -69,6 +70,7 @@ function App() {
           <Layout>
             <Switch>
               <Route exact path="/" component={MainView} />
+              <Route exact path="/lobby" component={LobbyView} />
               <Route exact path="/account" component={AccountView} />
               <Route
                 exact
