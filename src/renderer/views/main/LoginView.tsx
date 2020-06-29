@@ -148,7 +148,11 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
     <div>
       <form>
         <FormControl>
-          <AccountSelect accountStore={accountStore} />
+          <AccountSelect
+            addresses={accountStore.addresses}
+            onChangeAddress={accountStore.setSelectedAddress}
+            selectAddress={accountStore.selectAddress}
+          />
         </FormControl>
         <br />
         <label>Passphrase</label>{" "}

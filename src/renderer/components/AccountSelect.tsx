@@ -4,23 +4,25 @@ import { MenuItem, Select } from "@material-ui/core";
 import { observer } from "mobx-react";
 
 interface IAccountSelectProps {
-  accountStore: AccountStore;
+  addresses: string[];
+  selectAddress: string;
+  onChangeAddress: (address: string) => void;
 }
 
 export const AccountSelect: React.FC<IAccountSelectProps> = observer(
-  ({ accountStore }) => {
+  ({ addresses, selectAddress: selectedAddress, onChangeAddress }) => {
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-      accountStore.setSelectedAddress(event.target.value as string);
+      onChangeAddress(event.target.value as string);
     };
 
     return (
       <Select
         id="account-select"
-        value={accountStore.selectAddress}
+        value={selectedAddress}
         onChange={handleChange}
         autoWidth
       >
-        {accountStore.addresses.map((value) => (
+        {addresses.map((value) => (
           <MenuItem key={value} value={value}>
             {value}
           </MenuItem>
