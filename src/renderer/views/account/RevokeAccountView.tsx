@@ -20,14 +20,14 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
         <AccountSelect
           addresses={accountStore.addresses}
           onChangeAddress={accountStore.setSelectedAddress}
-          selectAddress={accountStore.selectAddress}
+          selectAddress={accountStore.selectedAddress}
         />
         <Button
           onClick={(event) => {
             event.preventDefault();
             revokePrivateKey({
               variables: {
-                address: accountStore.selectAddress,
+                address: accountStore.selectedAddress,
               },
             }).then((executionResult) => {
               const revokedAddress =

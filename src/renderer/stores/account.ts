@@ -3,7 +3,7 @@ import { observable, action, decorate } from "mobx";
 export interface IAccountStore {
   addresses: string[];
   privateKey: string;
-  selectAddress: string;
+  selectedAddress: string;
   isLogin: boolean;
 }
 
@@ -16,7 +16,7 @@ export default class AccountStore implements IAccountStore {
   public privateKey: string = "";
 
   @observable
-  public selectAddress: string = "";
+  public selectedAddress: string = "";
 
   @observable
   public isLogin: boolean = false;
@@ -28,7 +28,7 @@ export default class AccountStore implements IAccountStore {
 
   @action
   setSelectedAddress = (address: string) => {
-    this.selectAddress = address;
+    this.selectedAddress = address;
   };
 
   @action
@@ -59,7 +59,7 @@ export default class AccountStore implements IAccountStore {
   @action
   changeAddress = (index: number) => {
     if (index >= 0 && index < this.addresses.length) {
-      this.selectAddress = this.addresses[index];
+      this.selectedAddress = this.addresses[index];
     }
   };
 }

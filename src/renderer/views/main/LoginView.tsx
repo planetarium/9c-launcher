@@ -125,7 +125,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
   const handleSubmit = () => {
     getDecreyptedKey({
       variables: {
-        address: accountStore.selectAddress,
+        address: accountStore.selectedAddress,
         passphrase: passphrase,
       },
     });
@@ -140,7 +140,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
   };
 
   // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
-  if (!accountStore.selectAddress && accountStore.addresses.length > 0) {
+  if (!accountStore.selectedAddress && accountStore.addresses.length > 0) {
     accountStore.setSelectedAddress(accountStore.addresses[0]);
   }
 
@@ -151,7 +151,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
           <AccountSelect
             addresses={accountStore.addresses}
             onChangeAddress={accountStore.setSelectedAddress}
-            selectAddress={accountStore.selectAddress}
+            selectAddress={accountStore.selectedAddress}
           />
         </FormControl>
         <br />
