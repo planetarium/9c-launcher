@@ -38,7 +38,7 @@ scalar SByte
 
 type StandaloneQuery {
   keyStore: KeyStoreType
-  nodeStatus: NodeStatusType
+  nodeStatus: NodeStatusType!
   state(address: Address!, hash: ByteString): ByteString
 }
 
@@ -47,12 +47,12 @@ scalar ByteString
 scalar Address
 
 type KeyStoreType {
-  decryptedPrivateKey(address: Address, passphrase: String): ByteString
-  protectedPrivateKeys: [ProtectedPrivateKeyType]!
+  decryptedPrivateKey(address: Address!, passphrase: String!): ByteString!
+  protectedPrivateKeys: [ProtectedPrivateKeyType!]!
 }
 
 type ProtectedPrivateKeyType {
-  address: Address
+  address: Address!
 }
 
 type NodeStatusType {
@@ -65,19 +65,19 @@ type StandaloneMutation {
 }
 
 type KeyStoreMutation {
-  createPrivateKey(passphrase: String): ProtectedPrivateKeyType
-  revokePrivateKey(address: Address): ProtectedPrivateKeyType
+  createPrivateKey(passphrase: String!): ProtectedPrivateKeyType!
+  revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
 }
 
 type StandaloneSubscription {
-  preloadProgress: PreloadStateType
   nodeStatus: NodeStatusType
+  preloadProgress: PreloadStateType
   tipChanged: TipChanged
 }
 
 type TipChanged {
   hash: ByteString
-  index: Long
+  index: Long!
 }
 
 type PreloadStateType {
