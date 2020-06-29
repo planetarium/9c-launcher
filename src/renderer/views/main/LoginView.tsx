@@ -14,6 +14,7 @@ import { observer } from "mobx-react";
 import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import Alert from "../../components/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import { AccountSelect } from "../../components/AccountSelect";
 
 const QUERY_CRYPTKEY = gql`
   query {
@@ -124,14 +125,10 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
   const handleSubmit = () => {
     getDecreyptedKey({
       variables: {
-        address: accountStore.selectAddress,
+        address: accountStore.selectedAddress,
         passphrase: passphrase,
       },
     });
-  };
-
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    accountStore.setSelectedAddress(event.target.value as string);
   };
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -143,7 +140,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
   };
 
   // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
-  if (!accountStore.selectAddress && accountStore.addresses.length > 0) {
+  if (!accountStore.selectedAddress && accountStore.addresses.length > 0) {
     accountStore.setSelectedAddress(accountStore.addresses[0]);
   }
 
@@ -151,18 +148,11 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
     <div>
       <form>
         <FormControl>
-          <Select
-            id="account-select"
-            value={accountStore.selectAddress}
-            onChange={handleChange}
-            autoWidth
-          >
-            {accountStore.addresses.map((value) => (
-              <MenuItem key={value} value={value}>
-                {value}
-              </MenuItem>
-            ))}
-          </Select>
+          <AccountSelect
+            addresses={accountStore.addresses}
+            onChangeAddress={accountStore.setSelectedAddress}
+            selectedAddress={accountStore.selectedAddress}
+          />
         </FormControl>
         <br />
         <label>Passphrase</label>{" "}

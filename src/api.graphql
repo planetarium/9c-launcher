@@ -6,6 +6,14 @@ mutation createPrivateKey($passphrase: String!) {
   }
 }
 
+mutation revokePrivateKey($address: Address!) {
+  keyStore {
+    revokePrivateKey(address: $address) {
+      address
+    }
+  }
+}
+
 query NodeStatus {
   nodeStatus {
     bootstrapEnded

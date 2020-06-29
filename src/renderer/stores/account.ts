@@ -3,19 +3,20 @@ import { observable, action, decorate } from "mobx";
 export interface IAccountStore {
   addresses: string[];
   privateKey: string;
-  selectAddress: string;
+  selectedAddress: string;
   isLogin: boolean;
 }
 
 export default class AccountStore implements IAccountStore {
-  @observable
-  public addresses: string[] = [];
+  // Referenced mobxjs/mobx#669-comments
+  // https://git.io/JJv8j
+  public readonly addresses = observable<string>([]);
 
   @observable
   public privateKey: string = "";
 
   @observable
-  public selectAddress: string = "";
+  public selectedAddress: string = "";
 
   @observable
   public isLogin: boolean = false;
@@ -27,7 +28,7 @@ export default class AccountStore implements IAccountStore {
 
   @action
   setSelectedAddress = (address: string) => {
-    this.selectAddress = address;
+    this.selectedAddress = address;
   };
 
   @action
@@ -36,8 +37,13 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
+  removeAddress = (address: string) => {
+    this.addresses.remove(address);
+  };
+
+  @action
   setAddresses = (addresses: string[]) => {
-    this.addresses = addresses;
+    this.addresses.replace(addresses);
   };
 
   @action
@@ -53,7 +59,7 @@ export default class AccountStore implements IAccountStore {
   @action
   changeAddress = (index: number) => {
     if (index >= 0 && index < this.addresses.length) {
-      this.selectAddress = this.addresses[index];
+      this.selectedAddress = this.addresses[index];
     }
   };
 }
