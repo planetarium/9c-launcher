@@ -5,12 +5,12 @@ import { observer } from "mobx-react";
 
 interface IAccountSelectProps {
   addresses: string[];
-  selectAddress: string;
+  selectedAddress: string;
   onChangeAddress: (address: string) => void;
 }
 
 export const AccountSelect: React.FC<IAccountSelectProps> = observer(
-  ({ addresses, selectAddress: selectedAddress, onChangeAddress }) => {
+  ({ addresses, selectedAddress, onChangeAddress }) => {
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
       onChangeAddress(event.target.value as string);
     };

@@ -151,7 +151,7 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
           <AccountSelect
             addresses={accountStore.addresses}
             onChangeAddress={accountStore.setSelectedAddress}
-            selectAddress={accountStore.selectedAddress}
+            selectedAddress={accountStore.selectedAddress}
           />
         </FormControl>
         <br />

@@ -20,7 +20,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
         <AccountSelect
           addresses={accountStore.addresses}
           onChangeAddress={accountStore.setSelectedAddress}
-          selectAddress={accountStore.selectedAddress}
+          selectedAddress={accountStore.selectedAddress}
         />
         <Button
           onClick={(event) => {
