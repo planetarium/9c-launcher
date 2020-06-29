@@ -36,6 +36,8 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
                 accountStore.removeAddress(revokedAddress);
                 if (accountStore.addresses.length > 0) {
                   accountStore.setSelectedAddress(accountStore.addresses[0]);
+                } else {
+                  routerStore.push("/main");
                 }
               }
             });

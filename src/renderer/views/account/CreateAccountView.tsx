@@ -39,6 +39,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
               console.log(e);
               const { address } = e.data.keyStore.createPrivateKey;
               accountStore.addAddress(address);
+              accountStore.setSelectedAddress(address);
               push("/");
             });
           }}
@@ -55,7 +56,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
         </form>
         <button
           onClick={() => {
-            routerStore.push("/");
+            routerStore.push("/login");
           }}
         >
           back to the home
