@@ -3,7 +3,7 @@ import * as React from "react";
 import { Router, Route, Switch, Redirect } from "react-router";
 import { createBrowserHistory } from "history";
 import { Layout } from "./views/layout/Layout";
-import "./styles/main.scss";
+import "./styles/common.scss";
 import MainView from "./views/main/MainView";
 import ApolloClient from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
