@@ -10,7 +10,6 @@ export interface IAccountStore {
 export default class AccountStore implements IAccountStore {
   // Referenced mobxjs/mobx#669-comments
   // https://git.io/JJv8j
-  @observable
   public readonly addresses = observable<string>([]);
 
   @observable
