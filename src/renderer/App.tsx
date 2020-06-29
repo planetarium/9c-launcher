@@ -21,6 +21,8 @@ import AccountView from "./views/account/AccountView";
 import { LOCAL_SERVER_URL } from "../config";
 import ConfigurationView from "./views/config/ConfigurationView";
 import GameStore from "./stores/game";
+import CreateAccountView from "./views/account/CreateAccountView";
+import RevokeAccountView from "./views/account/RevokeAccountView";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -68,6 +70,16 @@ function App() {
             <Switch>
               <Route exact path="/" component={MainView} />
               <Route exact path="/account" component={AccountView} />
+              <Route
+                exact
+                path="/account/create"
+                component={CreateAccountView}
+              />
+              <Route
+                exact
+                path="/account/revoke"
+                component={RevokeAccountView}
+              />
               <Route exact path="/config" component={ConfigurationView} />
               <Redirect from="*" to="/" />
             </Switch>

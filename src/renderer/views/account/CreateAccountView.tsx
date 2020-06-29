@@ -1,5 +1,5 @@
 import * as React from "react";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
 import { TextField } from "@material-ui/core";
 import { ExecutionResult } from "react-apollo";
 import { useState } from "react";
@@ -53,10 +53,18 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
             Create Account{" "}
           </button>
         </form>
+        <button
+          onClick={() => {
+            routerStore.push("/");
+          }}
+        >
+          back to the home
+        </button>
+
         <br />
       </div>
     );
   }
 );
 
-export default CreateAccountView;
+export default inject("accountStore", "routerStore")(CreateAccountView);

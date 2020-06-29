@@ -9,20 +9,20 @@ const AccountView: React.FC<IStoreContainer> = observer(
   ({ accountStore, routerStore }: IStoreContainer) => {
     return (
       <div>
-        <Container>
-          <InputLabel>Create Account</InputLabel>
-          <CreateAccountView
-            accountStore={accountStore}
-            routerStore={routerStore}
-          />
-        </Container>
-        <Container>
-          <InputLabel>Revoke Address</InputLabel>
-          <RevokeAccountView
-            accountStore={accountStore}
-            routerStore={routerStore}
-          />
-        </Container>
+        <button
+          onClick={() => {
+            routerStore.push("/account/create");
+          }}
+        >
+          create key
+        </button>
+        <button
+          onClick={() => {
+            routerStore.push("/account/revoke");
+          }}
+        >
+          revoke key
+        </button>
         <button
           onClick={() => {
             routerStore.push("/");

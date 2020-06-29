@@ -1,5 +1,5 @@
 import * as React from "react";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { Button } from "@material-ui/core";
 import AccountStore from "../../stores/account";
@@ -43,9 +43,16 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
         >
           Revoke Key
         </Button>
+        <button
+          onClick={() => {
+            routerStore.push("/");
+          }}
+        >
+          back to the home
+        </button>
       </>
     );
   }
 );
 
-export default RevokeAccountView;
+export default inject("accountStore", "routerStore")(RevokeAccountView);
