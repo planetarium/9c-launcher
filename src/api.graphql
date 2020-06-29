@@ -40,7 +40,7 @@ subscription NodeStatusSubscription {
   }
 }
 
-query DecreyptedPrivateKey($address: Address, $passphrase: String) {
+query DecreyptedPrivateKey($address: Address!, $passphrase: String!) {
   keyStore {
     decryptedPrivateKey(address: $address, passphrase: $passphrase)
   }
