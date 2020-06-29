@@ -1,4 +1,5 @@
 import * as React from "react";
+import "../../styles/layout/layout.scss";
 
 export interface ILayoutProps {}
 
