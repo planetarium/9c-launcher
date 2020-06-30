@@ -96,4 +96,4 @@ function App() {
   );
 }
 
-export default hot(App);
+export default hot(module)(App);
