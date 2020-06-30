@@ -17,6 +17,7 @@ import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
 import { LOCAL_SERVER_URL } from "../config";
 import GameStore from "./stores/game";
 import Root from "./Root";
+import StandaloneStore from "./stores/standalone";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -51,6 +52,7 @@ const Store: IStoreContainer = {
   accountStore: new AccountStore(),
   routerStore: new RouterStore(),
   gameStore: new GameStore(),
+  standaloneStore: new StandaloneStore(),
 };
 
 const history = syncHistoryWithStore(createBrowserHistory(), Store.routerStore);
