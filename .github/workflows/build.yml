@@ -110,27 +110,99 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: [build-launcher, build-headless]
     runs-on: macos-10.15
+    env:
+      MACOS_RESOURCES_APP_PATH: NineChronicles.app/Contents/Resources/app/
+      WINDOWS_RESOURCES_APP_PATH: resources/app/
     steps:
+      # 클론
+      - uses: actions/checkout@v2
+        if: github.event_name != 'pull_request'
+        with:
+          submodules: false
+          lfs: false
+      - uses: actions/checkout@v2
+        if: github.event_name == 'pull_request'
+        with:
+          ref: ${{ github.pull_request.head.sha }}
+          submodules: false
+          lfs: false
+      # 본 저장소에서 빌드된 론처 및 헤들리스 (스탠드얼론) 아티팩트 받아서 배포본으로 재포장
       - uses: actions/download-artifact@v2
         with:
           path: .
-      - run: mkdir dist/
       - run: |
+          set -vx
           tar xvfj artifact/9c-launcher-pack-macos-*.tar.bz2
           mv NineChronicles-darwin-x64 macOS
-          pushd macOS/
-          tar xvfj ../artifact/9c-headless-macos-*.tar.bz2
-          GZIP=-9 tar cvfz ../dist/macOS.tar.gz *
-          popd
       - run: |
+          set -vx
           7z x artifact/9c-launcher-pack-windows-*.7z
           ls -al
           mv NineChronicles-win32-x64 Windows
-          pushd Windows/
-          7z x ../artifact/9c-headless-windows-*.7z
-          7z a -mm=Deflate -mfb=258 -mpass=15 -r ../dist/Windows.zip *
+      # 9C Unity Player 빌드를 nekoyume-unity 저장소에서 아티팩트로 남은 거 받아서 풀기
+      # FIXME: 그런데 nekoyume-unity 저장소에서 주기적으로 아티팩트를 지움.  그래서 론처
+      # 쪽에서 nekoyume-unity 서브모듈이 가르키는 커밋이 보름 넘게 안 바뀌면 쓰던 아티팩트가
+      # 지워져서 빌드가 깨질 수도.
+      - run: |
+          set -vx
+          auth="Authorization: token ${{ secrets.GH_TOKEN }}"
+          repo=planetarium/nekoyume-unity
+          url_base="https://api.github.com/repos/$repo"
+          workflow=977355  # Pack
+          submodule_ref="$(git submodule status -- nekoyume-unity \
+                           | awk '{ gsub(/^[-+ ]/, "", $1); print $1 }')"
+          artifacts_url="$(\
+            curl -H "$auth" \
+              "$url_base/actions/workflows/$workflow/runs?status=success" \
+            | jq \
+                -r \
+                --arg sha "$submodule_ref" \
+                '.workflow_runs
+                |map(select(.head_sha == $sha))[0].artifacts_url' \
+          )"
+          archive_download_url="$(\
+            curl -H "$auth" "$artifacts_url" \
+            | jq \
+                -r \
+                '.artifacts
+                |map(select(.name == "unity.tar"))[0].archive_download_url'
+          )"
+          curl -o unity.tar.zip -L -H "$auth" "$archive_download_url"
+          7z x unity.tar.zip
+          tar xvf unity.tar --directory "${{ runner.temp }}"
+          mv "${{ runner.temp }}"/MacOS/* "macOS/$MACOS_RESOURCES_APP_PATH"
+          mv "${{ runner.temp }}"/Windows/* \
+            "Windows/$WINDOWS_RESOURCES_APP_PATH"
+      # 최종 패키징
+      - run: mkdir dist/
+      - run: |
+          set -vx
+          top="$(pwd)"
+          pushd macOS/
+          pushd "$MACOS_RESOURCES_APP_PATH"
+          tar xvfj "$top"/artifact/9c-headless-macos-*.tar.bz2
           popd
+          GZIP=-9 tar cvfz "$top"/dist/macOS.tar.gz *
+          popd
+      - run: |
+          set -vx
+          top="$(pwd)"
+          pushd Windows/
+          pushd "$WINDOWS_RESOURCES_APP_PATH"
+          7z x "$top"/artifact/9c-headless-windows-*.7z
+          popd
+          7z a -r "$top"/dist/Windows.zip *
+          popd
+      # 아티팩트로 업로드
       - uses: actions/upload-artifact@v2
         with:
           name: 9c
           path: dist/
+      # 실패하더라도 대체 뭐가 어떻게 됐던 것인지 알기 위한 디버그용 출력 처리.
+      - if: always()
+        run: |
+          echo "[TOP-LEVEL DIRECTORIES]"
+          ls -al
+          echo
+          echo "[DIRECTORY CONTENTS]"
+          ls -al *
