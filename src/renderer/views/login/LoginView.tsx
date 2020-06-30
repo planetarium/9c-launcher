@@ -15,6 +15,7 @@ import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import Alert from "../../components/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import { AccountSelect } from "../../components/AccountSelect";
+import ClearCacheButton from "../../components/ClearCacheButton";
 
 const QUERY_CRYPTKEY = gql`
   query {
@@ -137,6 +138,8 @@ const LoginView = observer((props: IStoreContainer) => {
         {" "}
         Account Management{" "}
       </button>
+      <br />
+      <ClearCacheButton disabled={false} />
       <br />
       <button onClick={() => routerStore.push("/config")}> Config </button>
       <Snackbar

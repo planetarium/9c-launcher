@@ -32,7 +32,6 @@ const ConfigurationView = observer(
           setProgress={setProgress}
         />
         <br />
-        <ClearCacheButton disabled={isDisable} />
         <br />
         {isDownloading || isExtracting ? (
           <LinearProgress variant="determinate" value={progress} />
