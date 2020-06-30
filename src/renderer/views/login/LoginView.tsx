@@ -1,39 +1,13 @@
 import * as React from "react";
 import { useState } from "react";
-import gql from "graphql-tag";
-import { useQuery } from "react-apollo";
-import { LOCAL_SERVER_URL, standaloneProperties } from "../../../config";
 import { IStoreContainer } from "../../../interfaces/store";
-import {
-  FormControl,
-  Select,
-  MenuItem,
-  LinearProgress,
-} from "@material-ui/core";
+import { FormControl } from "@material-ui/core";
 import { observer, inject } from "mobx-react";
 import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import Alert from "../../components/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import { AccountSelect } from "../../components/AccountSelect";
 import ClearCacheButton from "../../components/ClearCacheButton";
-
-const QUERY_CRYPTKEY = gql`
-  query {
-    keyStore {
-      protectedPrivateKeys {
-        address
-      }
-    }
-  }
-`;
-
-const GET_DECRYPTKEY = gql`
-  query decreyptedPrivateKey($address: Address, $passphrase: String) {
-    keyStore {
-      decryptedPrivateKey(address: $address, passphrase: $passphrase)
-    }
-  }
-`;
 
 const LoginView = observer((props: IStoreContainer) => {
   const [passphrase, setPassphrase] = useState("");
@@ -49,31 +23,7 @@ const LoginView = observer((props: IStoreContainer) => {
       const privateKey = data.keyStore.decryptedPrivateKey;
       accountStore.setPrivateKey(privateKey);
       accountStore.toggleLogin();
-      routerStore.push("/lobby");
-
-      const properties = {
-        ...standaloneProperties,
-        PrivateKeyString: privateKey,
-      };
-      console.log(properties);
-      fetch(`http://${LOCAL_SERVER_URL}/initialize-standalone`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(properties),
-      })
-        .then((response) => response.text())
-        .then((body) => console.log(body))
-        .then((_) =>
-          fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
-            method: "POST",
-          })
-        )
-        .then((response) => response.text())
-        .then((body) => console.log(body))
-        .then((_) => {})
-        .catch((error) => console.log(error));
+      routerStore.push("/lobby/mining");
     }
   });
 

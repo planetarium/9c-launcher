@@ -11,6 +11,7 @@ import RevokeAccountView from "./views/account/RevokeAccountView";
 import LobbyView from "./views/lobby/LobbyView";
 import IntroView from "./IntroView";
 import LoginView from "./views/login/LoginView";
+import MiningView from "./views/login/MiningView";
 
 class Root extends React.Component {
   render() {
@@ -20,6 +21,7 @@ class Root extends React.Component {
           <Route exact path="/" component={IntroView} />
           <Route exact path="/main" component={MainView} />
           <Route exact path="/login" component={LoginView} />
+          <Route exact path="/lobby/mining" component={MiningView} />
           <Route exact path="/lobby" component={LobbyView} />
           <Route exact path="/account" component={AccountView} />
           <Route exact path="/account/create" component={CreateAccountView} />
