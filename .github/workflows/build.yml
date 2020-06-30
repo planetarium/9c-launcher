@@ -4,7 +4,8 @@ on:
   pull_request: []
 
 jobs:
-  build:
+  # 론처 빌드
+  build-launcher:
     strategy:
       matrix:
         os:
@@ -15,10 +16,17 @@ jobs:
       # 클론
       - uses: actions/checkout@v2
         if: github.event_name != 'pull_request'
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          submodules: true
+          lfs: false
       - uses: actions/checkout@v2
         if: github.event_name == 'pull_request'
         with:
           ref: ${{ github.pull_request.head.sha }}
+          token: ${{ secrets.GH_TOKEN }}
+          submodules: true
+          lfs: false
       # Node.js 설치
       - uses: actions/setup-node@v1
         with:
@@ -28,39 +36,101 @@ jobs:
       # 코드 스타일 린트
       - run: npx pretty-quick --check --branch "${{ github.base_ref }}"
         if: github.event_name == 'pull_request'
-      # 서브모듈 클론.  actions/checkout@v2가 LFS 쓰는 프라이빗 저장소를
-      # 서브모듈로 제대로 못 다뤄서 수동으로.
-      - uses: actions/checkout@v2
+      # 빌드
+      - run: npm run build-prod
+      - if: runner.os == 'Windows'
+        run: 7z a -r "../9c-launcher-dist-${{ matrix.os }}.7z" *
+        working-directory: dist/
+      - if: runner.os != 'Windows'
+        run: tar cvfj "../9c-launcher-dist-${{ matrix.os }}.tar.bz2" *
+        working-directory: dist/
+      - uses: actions/upload-artifact@v2
         with:
-          repository: planetarium/nekoyume-unity
-          path: nekoyume-unity
-          lfs: true
-          fetch-depth: 1
-          ssh-key: "${{ secrets.GIT_SSH_KEY }}"
-        # TODO: Windows 러너에서는 lfs: true 옵션 켜면 1시간 넘도록 반응이 없음…
-        # 그래서 임시로 Windows 러너에서는 막아 둠.
-        # 소스를 받아서 빌드한다는 발상을 버리고 해당 저장소 아티펙트를 뒤져서
-        # 받아다 쓰거나 하는 다른 방법을 고안해야 할 것 같음.
-        if: runner.os != 'Windows'
+          path: 9c-launcher-dist-${{ matrix.os }}.*
+      # 패키지
+      - run: npm run pack
+      - if: runner.os == 'Windows'
+        run: 7z a -r "../9c-launcher-pack-${{ matrix.os }}.7z" *
+        working-directory: pack/
+      - if: runner.os != 'Windows'
+        run: tar cvfj "../9c-launcher-pack-${{ matrix.os }}.tar.bz2" *
+        working-directory: pack/
+      - uses: actions/upload-artifact@v2
+        with:
+          path: 9c-launcher-pack-${{ matrix.os }}.*
+
+  # 헤들리스 (스탠드얼론) 빌드
+  build-headless:
+    if: github.event_name != 'pull_request'
+    strategy:
+      matrix:
+        os:
+          - macos-10.15
+          - windows-2019
+    runs-on: ${{ matrix.os }}
+    steps:
+      # 클론
+      - uses: actions/checkout@v2
+        if: github.event_name != 'pull_request'
+        with:
+          submodules: true
+          lfs: false
+          token: ${{ secrets.GH_TOKEN }}
+      - uses: actions/checkout@v2
+        if: github.event_name == 'pull_request'
+        with:
+          ref: ${{ github.pull_request.head.sha }}
+          submodules: true
+          lfs: false
+          token: ${{ secrets.GH_TOKEN }}
       # .NET Core SDK 설치
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "3.1.x"
       # 빌드
-      - run: npm run build-prod
+      # 그냥 build-headless 돌려도 되지만 그러면 run-script-os 의존성이 필요하고,
+      # 그걸 설치하려고 npm install 돌리기엔 의존성이 너무 많음.
       - if: runner.os == 'Windows'
-        run: 7z a "dist-${{ matrix.os }}.zip" dist\*
+        run: npm run build-headless:windows
       - if: runner.os != 'Windows'
-        run: pushd dist/ && tar cvfj "../dist-${{ matrix.os }}.tar.gz" * && popd
+        run: npm run build-headless:darwin
+      # 아티팩트
+      - if: runner.os == 'Windows'
+        run: 7z a -r "9c-headless-${{ matrix.os }}.7z" publish
+        working-directory: dist
+      - if: runner.os != 'Windows'
+        run: tar cvfj "9c-headless-${{ matrix.os }}.tar.bz2" publish
+        working-directory: dist
       - uses: actions/upload-artifact@v2
         with:
-          path: dist-${{ matrix.os }}.*
-      # 패키지
-      - run: npm run pack
-      - if: runner.os == 'Windows'
-        run: 7z a "pack-${{ matrix.os }}.zip" pack\*
-      - if: runner.os != 'Windows'
-        run: pushd pack/ && tar cvfj "../pack-${{ matrix.os }}.tar.gz" * && popd
+          path: dist/9c-headless-${{ matrix.os }}.*
+
+  # 번들
+  bundle:
+    if: github.event_name != 'pull_request'
+    needs: [build-launcher, build-headless]
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          path: .
+      - run: mkdir dist/
+      - run: |
+          tar xvfj artifact/9c-launcher-pack-macos-*.tar.bz2
+          mv NineChronicles-darwin-x64 macOS
+          pushd macOS/
+          tar xvfj ../artifact/9c-headless-macos-*.tar.bz2
+          GZIP=-9 tar cvfz ../dist/macOS.tar.gz *
+          popd
+      - run: |
+          7z x artifact/9c-launcher-pack-windows-*.7z
+          ls -al
+          mv NineChronicles-win32-x64 Windows
+          pushd Windows/
+          7z x ../artifact/9c-headless-windows-*.7z
+          7z a -mm=Deflate -mfb=258 -mpass=15 -r ../dist/Windows.zip *
+          popd
       - uses: actions/upload-artifact@v2
         with:
-          path: pack-${{ matrix.os }}.*
+          name: 9c
+          path: dist/
