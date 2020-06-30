@@ -1,10 +1,7 @@
-import { hot } from "react-hot-loader/root";
 import * as React from "react";
-import { Router, Route, Switch, Redirect } from "react-router";
+import { Router } from "react-router";
 import { createBrowserHistory } from "history";
-import { Layout } from "./views/layout/Layout";
 import "./styles/common.scss";
-import MainView from "./views/main/MainView";
 import ApolloClient from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
 import { RetryLink } from "apollo-link-retry";
@@ -17,15 +14,9 @@ import { Provider } from "mobx-react";
 import AccountStore from "./stores/account";
 import { IStoreContainer } from "../interfaces/store";
 import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
-import AccountView from "./views/account/AccountView";
 import { LOCAL_SERVER_URL } from "../config";
-import ConfigurationView from "./views/config/ConfigurationView";
 import GameStore from "./stores/game";
-import CreateAccountView from "./views/account/CreateAccountView";
-import RevokeAccountView from "./views/account/RevokeAccountView";
-import LobbyView from "./views/lobby/LobbyView";
-import IntroView from "./IntroView";
-import LoginView from "./views/login/LoginView";
+import Root from "./Root";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -69,31 +60,11 @@ function App() {
     <ApolloProvider client={client}>
       <Router history={history}>
         <Provider {...Store}>
-          <Layout>
-            <Switch>
-              <Route exact path="/" component={IntroView} />
-              <Route exact path="/main" component={MainView} />
-              <Route exact path="/login" component={LoginView} />
-              <Route exact path="/lobby" component={LobbyView} />
-              <Route exact path="/account" component={AccountView} />
-              <Route
-                exact
-                path="/account/create"
-                component={CreateAccountView}
-              />
-              <Route
-                exact
-                path="/account/revoke"
-                component={RevokeAccountView}
-              />
-              <Route exact path="/config" component={ConfigurationView} />
-              <Redirect from="*" to="/" />
-            </Switch>
-          </Layout>
+          <Root />
         </Provider>
       </Router>
     </ApolloProvider>
   );
 }
 
-export default hot(module)(App);
+export default App;
