@@ -10,7 +10,7 @@ import {
   MenuItem,
   LinearProgress,
 } from "@material-ui/core";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
 import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import Alert from "../../components/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -34,93 +34,47 @@ const GET_DECRYPTKEY = gql`
   }
 `;
 
-interface ILoginComponentProps extends IStoreContainer {
-  keyStore: IProtectedPrivateKey;
-}
-
 const LoginView = observer((props: IStoreContainer) => {
-  const { loading, error, data } = useQuery(QUERY_CRYPTKEY);
-  error != undefined ? console.log(error) : null;
-
-  return (
-    <div>
-      <div className="login">
-        <div className="container">
-          <div className="header">
-            <h3>Login</h3>
-          </div>
-          {loading || error != undefined ? (
-            <WaitComponent error={error} loading={loading} />
-          ) : (
-            <LoginComponent {...props} keyStore={data.keyStore} />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-});
-
-function WaitComponent(props: any) {
-  const errorHandler = (error: any) => {
-    console.log(error);
-    return <label>Something went wrong.</label>;
-  };
-  return (
-    <div>
-      {props.error != undefined ? (
-        <label>{errorHandler(props.error)}</label>
-      ) : (
-        <label>Now Loading...</label>
-      )}
-    </div>
-  );
-}
-
-const LoginComponent = observer((props: ILoginComponentProps) => {
   const [passphrase, setPassphrase] = useState("");
   const [openSnackbar, setSnackbarStatus] = useState(false);
-  const { accountStore, routerStore, keyStore } = props;
+  const { accountStore, routerStore } = props;
   const [
     getDecreyptedKey,
     { loading, data },
   ] = useDecreyptedPrivateKeyLazyQuery();
 
-  const addresses = keyStore.protectedPrivateKeys.map((value) => value.address);
-  addresses.map((value) => {
-    accountStore.addresses.includes(value)
-      ? null
-      : accountStore.addAddress(value);
+  React.useEffect(() => {
+    if (data?.keyStore?.decryptedPrivateKey !== undefined) {
+      const privateKey = data.keyStore.decryptedPrivateKey;
+      accountStore.setPrivateKey(privateKey);
+      accountStore.toggleLogin();
+      routerStore.push("/lobby");
+
+      const properties = {
+        ...standaloneProperties,
+        PrivateKeyString: privateKey,
+      };
+      console.log(properties);
+      fetch(`http://${LOCAL_SERVER_URL}/initialize-standalone`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(properties),
+      })
+        .then((response) => response.text())
+        .then((body) => console.log(body))
+        .then((_) =>
+          fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
+            method: "POST",
+          })
+        )
+        .then((response) => response.text())
+        .then((body) => console.log(body))
+        .then((_) => {})
+        .catch((error) => console.log(error));
+    }
   });
-
-  if (data?.keyStore?.decryptedPrivateKey !== undefined) {
-    const privateKey = data.keyStore.decryptedPrivateKey;
-    accountStore.setPrivateKey(privateKey);
-    accountStore.toggleLogin();
-
-    const properties = {
-      ...standaloneProperties,
-      PrivateKeyString: privateKey,
-    };
-    console.log(properties);
-    fetch(`http://${LOCAL_SERVER_URL}/initialize-standalone`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(properties),
-    })
-      .then((response) => response.text())
-      .then((body) => console.log(body))
-      .then((_) =>
-        fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
-          method: "POST",
-        })
-      )
-      .then((response) => response.text())
-      .then((body) => console.log(body))
-      .then((_) => {})
-      .catch((error) => console.log(error));
-  }
 
   const handleSubmit = () => {
     getDecreyptedKey({
@@ -198,4 +152,4 @@ const LoginComponent = observer((props: ILoginComponentProps) => {
   );
 });
 
-export default LoginView;
+export default inject("accountStore", "routerStore", "gameStore")(LoginView);

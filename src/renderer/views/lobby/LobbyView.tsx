@@ -4,42 +4,31 @@ import { useState } from "react";
 import { LinearProgress } from "@material-ui/core";
 import { RPC_LOOPBACK_HOST, RPC_SERVER_PORT } from "../../../config";
 import { IStoreContainer } from "../../../interfaces/store";
-import { inject } from "mobx-react";
+import { inject, observer } from "mobx-react";
 import {
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
 } from "../../../generated/graphql";
 
-interface ILobbyProps {
-  account: string;
-  privateKey: string;
-  isGameStarted: boolean;
-  startGame(
-    privateKey: string,
-    rpcClient: boolean,
-    rpcHost: string,
-    rpcPort: number
-  ): void;
-}
-
-const LobbyView = (props: ILobbyProps) => {
+const LobbyView = observer((props: IStoreContainer) => {
   const {
     data: preloadProgressSubscriptionResult,
   } = usePreloadProgressSubscriptionSubscription();
   const {
     data: nodeStatusSubscriptionResult,
   } = useNodeStatusSubscriptionSubscription();
+  const { accountStore, routerStore, gameStore } = props;
 
   return (
     <div>
-      <label>You are using address: {props.account}</label>
+      <label>You are using address: {accountStore.selectedAddress}</label>
       <br />
       {nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded ? (
         <button
-          disabled={props.isGameStarted}
+          disabled={gameStore.isGameStarted}
           onClick={(event: React.MouseEvent) => {
-            props.startGame(
-              props.privateKey,
+            gameStore.startGame(
+              accountStore.privateKey,
               true,
               RPC_LOOPBACK_HOST,
               RPC_SERVER_PORT
@@ -66,9 +55,9 @@ const LobbyView = (props: ILobbyProps) => {
           </p>
         </>
       )}
-      {props.isGameStarted ? <label>Now Running...</label> : null}
+      {gameStore.isGameStarted ? <label>Now Running...</label> : null}
     </div>
   );
-};
+});
 
-export default LobbyView;
+export default inject("accountStore", "routerStore", "gameStore")(LobbyView);
