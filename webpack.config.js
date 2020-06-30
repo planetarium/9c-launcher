@@ -32,6 +32,7 @@ function createRenderConfig(isDev) {
     output: {
       filename: isDev ? "[name].js" : "[name].[hash].js",
       path: path.join(__dirname, "dist"),
+      publicPath: "/",
     },
 
     externals: {
@@ -136,6 +137,7 @@ function createRenderConfig(isDev) {
           contentBase: path.join(__dirname, "dist"),
           compress: true,
           port: 9000,
+          historyApiFallback: true,
         }
       : undefined,
   };
