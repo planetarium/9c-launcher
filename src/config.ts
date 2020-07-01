@@ -11,17 +11,17 @@ export const electronStore = new Store({
       type: "string",
       format: "uri",
       default:
-        "https://9c-test.s3.ap-northeast-2.amazonaws.com/latest/302d8ede310cef94ab7050577f513beed048193cb92006267cf1421166f335a3-snapshot.zip",
+        "https://download.nine-chronicles.com/latest/4a321a45b07750ca7fa88a0a4a0c817fa26c5f5e54ac2ab91675256e6abed21a-snapshot.zip",
     },
     AppProtocolVersion: {
       type: "string",
       default:
-        "1027/019101FEec7ed4f918D396827E1277DEda1e20D4/MEUCIQDb9N6khWlHg0mMiQWSAWitj8BqPciTxJqZkot6WxqJZgIgC.jokMDXPaOsU+kFoEJjqIJt4NcwbKiduJFgmDcQFtY=/ZHUxNjpXaW5kb3dzQmluYXJ5VXJsdTU0Omh0dHBzOi8vZG93bmxvYWQubmluZS1jaHJvbmljbGVzLmNvbS92MTAyNy9XaW5kb3dzLnppcHUxNDptYWNPU0JpbmFyeVVybHU1NTpodHRwczovL2Rvd25sb2FkLm5pbmUtY2hyb25pY2xlcy5jb20vdjEwMjcvbWFjT1MudGFyLmd6dTk6dGltZXN0YW1wdTIwOjIwMjAtMDYtMjNUMDE6NDM6MDNaZQ==",
+        "2001/019101FEec7ed4f918D396827E1277DEda1e20D4/MEQCIBlLqJk+INI.EHa2EvdUl.7LIZoOXRm3+9GF0fQPakw8AiBE2wbRGSnohWgDHm1gSU+iSpVv7sxKQFHcrfKFTD72dg==/ZHUxNjpXaW5kb3dzQmluYXJ5VXJsdTU0Omh0dHBzOi8vZG93bmxvYWQubmluZS1jaHJvbmljbGVzLmNvbS92MjAwMS9XaW5kb3dzLnppcHUxNDptYWNPU0JpbmFyeVVybHU1NTpodHRwczovL2Rvd25sb2FkLm5pbmUtY2hyb25pY2xlcy5jb20vdjIwMDEvbWFjT1MudGFyLmd6dTk6dGltZXN0YW1wdTIwOjIwMjAtMDYtMzBUMDU6NDg6MTFaZQ==",
     },
     GenesisBlockPath: {
       type: "string",
       default:
-        "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-launcher-v2-test",
+        "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-9c-beta-3",
     },
     MinimumDifficulty: {
       type: "integer",
@@ -52,7 +52,9 @@ export const electronStore = new Store({
     PeerStrings: {
       type: "array",
       default: [
-        "027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,a532d3e7cafcf4130931550062f4779d-693426789.ap-northeast-2.elb.amazonaws.com,31234",
+        "027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,9c-beta-seed-1.planetarium.dev,31234",
+        "02f164e3139e53eef2c17e52d99d343b8cbdb09eeed88af46c352b1c8be6329d71,9c-beta-seed-2.planetarium.dev,31234",
+        "0247e289aa332260b99dfd50e578f779df9e6702d67e50848bb68f3e0737d9b9a5,9c-beta-seed-3.planetarium.dev,31234",
       ],
     },
     NoTrustedStateValidators: {
