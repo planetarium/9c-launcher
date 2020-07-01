@@ -8,11 +8,10 @@ const MiningView = observer(
     const runStandalone = (isMining: boolean) => {
       standaloneStore.setMiner(!isMining);
       routerStore.push("/lobby");
-      try {
-        standaloneStore.initStandalone(accountStore.privateKey);
-      } catch (error) {
+      standaloneStore.initStandalone(accountStore.privateKey).catch((error) => {
         console.log(error);
-      }
+        routerStore.push("/error");
+      });
     };
 
     return (

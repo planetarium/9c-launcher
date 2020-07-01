@@ -27,11 +27,12 @@ const LoginView = observer(
           routerStore.push("/lobby/mining");
         } else {
           routerStore.push("/lobby");
-          try {
-            standaloneStore.initStandalone(accountStore.privateKey);
-          } catch (error) {
-            console.log(error);
-          }
+          standaloneStore
+            .initStandalone(accountStore.privateKey)
+            .catch((error) => {
+              console.log(error);
+              routerStore.push("/error");
+            });
         }
       }
     });
