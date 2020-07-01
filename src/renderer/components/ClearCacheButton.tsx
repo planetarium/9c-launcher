@@ -17,7 +17,7 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
       disabled={props.disabled}
       onClick={() => handleClick()}
       variant="contained"
-      color="secondary"
+      color="default"
     >
       Clear Cache
     </Button>
