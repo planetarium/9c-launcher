@@ -20,7 +20,7 @@ export const AccountSelect: React.FC<IAccountSelectProps> = observer(
         id="account-select"
         value={selectedAddress}
         onChange={handleChange}
-        autoWidth
+        fullWidth
       >
         {addresses.map((value) => (
           <MenuItem key={value} value={value}>

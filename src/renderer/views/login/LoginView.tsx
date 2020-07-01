@@ -1,11 +1,19 @@
 import * as React from "react";
 import { useState } from "react";
 import { IStoreContainer } from "../../../interfaces/store";
-import { FormControl } from "@material-ui/core";
+import {
+  FormControl,
+  Button,
+  Input,
+  InputLabel,
+  TextField,
+  Container,
+  Box,
+  Grid,
+} from "@material-ui/core";
 import { observer, inject } from "mobx-react";
+import "../../styles/login/login.scss";
 import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
-import Alert from "../../components/Alert";
-import Snackbar from "@material-ui/core/Snackbar";
 import { AccountSelect } from "../../components/AccountSelect";
 import ClearCacheButton from "../../components/ClearCacheButton";
 
@@ -46,71 +54,53 @@ const LoginView = observer(
       });
     };
 
-    const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-      if (reason === "clickaway") {
-        return;
-      }
-
-      setSnackbarStatus(false);
-    };
-
     // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
     if (!accountStore.selectedAddress && accountStore.addresses.length > 0) {
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }
 
     return (
-      <div>
-        <form>
-          <FormControl>
-            <AccountSelect
-              addresses={accountStore.addresses}
-              onChangeAddress={accountStore.setSelectedAddress}
-              selectedAddress={accountStore.selectedAddress}
-            />
-          </FormControl>
-          <br />
-          <label>Passphrase</label>{" "}
-          <input
-            type="password"
-            onChange={(event) => {
-              setPassphrase(event.target.value);
-            }}
-            onKeyDown={(event) => {
-              // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
-              const enterKeyCode = 13;
-              if (enterKeyCode === event.keyCode) {
-                handleSubmit();
-              }
-            }}
-          ></input>
-        </form>
-        <button
-          disabled={loading}
-          onClick={(event) => {
+      <div className="login">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
             handleSubmit();
           }}
         >
-          Login{" "}
-        </button>
-        <br />
-        <button onClick={() => routerStore.push("/account")}>
-          {" "}
-          Account Management{" "}
-        </button>
-        <br />
-        <ClearCacheButton disabled={false} />
-        <br />
-        <button onClick={() => routerStore.push("/config")}> Config </button>
-        <Snackbar
-          open={openSnackbar}
-          autoHideDuration={3000}
-          onClose={handleClose}
-        >
-          <Alert onClose={handleClose} severity="error">
-            passphrase is wrong.
-          </Alert>
-        </Snackbar>
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <InputLabel>ID</InputLabel>
+              <AccountSelect
+                addresses={accountStore.addresses}
+                onChangeAddress={accountStore.setSelectedAddress}
+                selectedAddress={accountStore.selectedAddress}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <InputLabel>Password</InputLabel>
+              <TextField
+                type="password"
+                onChange={(event) => {
+                  setPassphrase(event.target.value);
+                }}
+                fullWidth
+              ></TextField>
+            </Grid>
+          </Grid>
+          <Box>
+            <Button
+              id="login-button"
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
+              Login
+            </Button>
+          </Box>
+        </form>
+        <Box id="clear-cache">
+          <ClearCacheButton disabled={false} />
+        </Box>
       </div>
     );
   }
