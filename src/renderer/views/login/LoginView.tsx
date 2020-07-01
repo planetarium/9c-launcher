@@ -16,11 +16,15 @@ import "../../styles/login/login.scss";
 import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import { AccountSelect } from "../../components/AccountSelect";
 import ClearCacheButton from "../../components/ClearCacheButton";
+import DownloadSnapshotButton from "../../components/DownloadSnapshotButton";
+import { LinearProgress } from "@material-ui/core";
 
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const [passphrase, setPassphrase] = useState("");
-    const [openSnackbar, setSnackbarStatus] = useState(false);
+    const [isDownload, setDownloadState] = useState(false);
+    const [isExtract, setExtractState] = useState(false);
+    const [progress, setProgress] = useState(0);
     const [
       getDecreyptedKey,
       { loading, data },
@@ -93,13 +97,23 @@ const LoginView = observer(
               type="submit"
               variant="contained"
               color="primary"
+              disabled={isDownload || isExtract}
             >
               Login
             </Button>
           </Box>
         </form>
+        <LinearProgress variant="determinate" value={progress} />
+        <Box id="download-snapshot">
+          <DownloadSnapshotButton
+            disabled={false}
+            setDownloadState={setDownloadState}
+            setExtractState={setExtractState}
+            setProgress={setProgress}
+          />
+        </Box>
         <Box id="clear-cache">
-          <ClearCacheButton disabled={false} />
+          <ClearCacheButton disabled={isDownload || isExtract} />
         </Box>
       </div>
     );

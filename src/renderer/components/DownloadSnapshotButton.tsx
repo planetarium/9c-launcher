@@ -7,7 +7,6 @@ interface IDownloadSnaphostProps {
   disabled: boolean;
   setExtractState: React.Dispatch<React.SetStateAction<boolean>>;
   setDownloadState: React.Dispatch<React.SetStateAction<boolean>>;
-  progress: number;
   setProgress: React.Dispatch<React.SetStateAction<number>>;
 }
 
@@ -49,7 +48,7 @@ const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
         downloadSnapShot();
       }}
       variant="contained"
-      color="primary"
+      color="default"
     >
       Download Snapshot
     </Button>
