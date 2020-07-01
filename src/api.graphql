@@ -1,6 +1,6 @@
-mutation createPrivateKey($passphrase: String!) {
+mutation createPrivateKey($privateKey: ByteString, $passphrase: String!) {
   keyStore {
-    createPrivateKey(passphrase: $passphrase) {
+    createPrivateKey(privateKey: $privateKey, passphrase: $passphrase) {
       address
     }
   }
@@ -51,5 +51,21 @@ query ProtectedPrivateKeys {
     protectedPrivateKeys {
       address
     }
+  }
+}
+
+query ConvertPrivateKeyToAddress($privateKey: ByteString!) {
+  keyStore {
+    privateKey(hex: $privateKey) {
+      publicKey {
+        address
+      }
+    }
+  }
+}
+
+query ValidatePrivateKey($privateKey: ByteString!) {
+  validation {
+    privateKey(hex: $privateKey)
   }
 }
