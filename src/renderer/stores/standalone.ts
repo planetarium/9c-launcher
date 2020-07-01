@@ -35,29 +35,27 @@ export default class StandaloneStore {
   }
 
   @action
-  initStandalone = async (privateKey: string) => {
+  initStandalone = (privateKey: string) => {
     const properties = {
       ...this.properties,
       NoMiner: this.NoMiner,
       PrivateKeyString: privateKey,
     };
 
-    const init = await fetch(
-      `http://${LOCAL_SERVER_URL}/initialize-standalone`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(properties),
-      }
-    );
-    await this.checkIsOk(init);
-
-    const run = await fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
+    return fetch(`http://${LOCAL_SERVER_URL}/initialize-standalone`, {
       method: "POST",
-    });
-    await this.checkIsOk(run);
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(properties),
+    })
+      .then((resp) => this.checkIsOk(resp))
+      .then((_) =>
+        fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
+          method: "POST",
+        })
+      )
+      .then((resp) => this.checkIsOk(resp));
   };
 
   @action
@@ -67,6 +65,6 @@ export default class StandaloneStore {
   };
 
   checkIsOk = async (response: Response) => {
-    if (!response.ok) new Error(await response.text());
+    if (!response.ok) throw new Error(await response.text());
   };
 }
