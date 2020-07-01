@@ -1,6 +1,4 @@
 import * as React from "react";
-import gql from "graphql-tag";
-import { useState } from "react";
 import { LinearProgress } from "@material-ui/core";
 import { RPC_LOOPBACK_HOST, RPC_SERVER_PORT } from "../../../config";
 import { IStoreContainer } from "../../../interfaces/store";
@@ -21,7 +19,10 @@ const LobbyView = observer((props: IStoreContainer) => {
 
   return (
     <div>
-      <label>You are using address: {accountStore.selectedAddress}</label>
+      <label>
+        {gameStore.isGameStarted ? "Now Running..." : "Running the game"}
+      </label>
+      <br />
       <br />
       {nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded ? (
         <button
@@ -55,7 +56,6 @@ const LobbyView = observer((props: IStoreContainer) => {
           </p>
         </>
       )}
-      {gameStore.isGameStarted ? <label>Now Running...</label> : null}
     </div>
   );
 });
