@@ -81,11 +81,6 @@ const LocalServerPort = (): number => {
   return 23061;
 };
 
-const SwarmServerPort = (): number => {
-  // FIXME: 열려 있지 않는 랜덤한 포트를 반환하게 해야 합니다.
-  return 27923;
-};
-
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
 export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";
@@ -98,22 +93,3 @@ export const BLOCKCHAIN_STORE_PATH = path.join(
   app.getPath("userData"),
   ".store"
 );
-export const standaloneProperties: StandaloneProperties = {
-  AppProtocolVersion: electronStore.get("AppProtocolVersion") as string,
-  GenesisBlockPath: electronStore.get("GenesisBlockPath") as string,
-  RpcServer: true,
-  RpcListenHost: "0.0.0.0",
-  RpcListenPort: RpcServerPort(),
-  MinimumDifficulty: electronStore.get("MinimumDifficulty") as number,
-  StoreType: electronStore.get("StoreType") as string,
-  StorePath: BLOCKCHAIN_STORE_PATH,
-  NoMiner: electronStore.get("NoMiner") as boolean,
-  TrustedAppProtocolVersionSigners: electronStore.get(
-    "TrustedAppProtocolVersionSigners"
-  ) as Array<string>,
-  IceServerStrings: electronStore.get("IceServerStrings") as Array<string>,
-  PeerStrings: electronStore.get("PeerStrings") as Array<string>,
-  NoTrustedStateValidators: electronStore.get(
-    "NoTrustedStateValidators"
-  ) as boolean,
-};

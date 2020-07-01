@@ -30,4 +30,4 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
   return <div>now loading...</div>;
 });
 
-export default inject("accountStore", "routerStore", "gameStore")(IntroView);
+export default inject("accountStore", "routerStore")(IntroView);
