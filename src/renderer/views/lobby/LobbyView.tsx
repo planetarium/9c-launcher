@@ -2,7 +2,6 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { useState } from "react";
 import { LinearProgress } from "@material-ui/core";
-import { RPC_LOOPBACK_HOST, RPC_SERVER_PORT } from "../../../config";
 import { IStoreContainer } from "../../../interfaces/store";
 import { inject, observer } from "mobx-react";
 import {
@@ -27,12 +26,7 @@ const LobbyView = observer((props: IStoreContainer) => {
         <button
           disabled={gameStore.isGameStarted}
           onClick={(event: React.MouseEvent) => {
-            gameStore.startGame(
-              accountStore.privateKey,
-              true,
-              RPC_LOOPBACK_HOST,
-              RPC_SERVER_PORT
-            );
+            gameStore.startGame(accountStore.privateKey);
           }}
         >
           Start Game
