@@ -35,12 +35,10 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
     const IsPrivateKeyValid =
       undefined === error && !loading && data?.validation.privateKey;
 
-    const privateKeySubmitHandle = (
-      event: React.MouseEvent<HTMLButtonElement>
-    ) => {
+    const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
       if (IsPrivateKeyValid) {
         accountStore.setPrivateKey(privateKey);
-        routerStore.push("/account/reset/1");
+        routerStore.push("/account/reset/input/passphrase");
       }
     };
 
@@ -51,7 +49,7 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
         <br />
         <Button
           color={IsPrivateKeyValid ? "primary" : "secondary"}
-          onClick={privateKeySubmitHandle}
+          onClick={handleSubmit}
         >
           Enter
         </Button>

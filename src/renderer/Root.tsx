@@ -30,15 +30,14 @@ class Root extends React.Component {
           <Route exact path="/account" component={AccountView} />
           <Route exact path="/account/create" component={CreateAccountView} />
           <Route exact path="/account/revoke" component={RevokeAccountView} />
-          {/* FIXME: /account/reset/:step 같이 네이밍으로 해도 괜찮을까? */}
           <Route
             exact
-            path="/account/reset/0"
+            path="/account/reset/input/private-key"
             component={InputPrivateKeyView}
           />
           <Route
             exact
-            path="/account/reset/1"
+            path="/account/reset/input/passphrase"
             component={RegisterPrivateKeyView}
           />
           <Route exact path="/config" component={ConfigurationView} />

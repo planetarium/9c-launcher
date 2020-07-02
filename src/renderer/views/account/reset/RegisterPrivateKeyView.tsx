@@ -32,7 +32,7 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
     };
 
     // FIXME: 좀 더 나은 변수명이 있을 것 같습니다.
-    const IsDoublePasswordEqual =
+    const passwordMatched =
       "" !== secondPassword && firstPassword === secondPassword;
     const {
       loading: loadingAddress,
@@ -45,8 +45,8 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
     const [revokePrivateKey, {}] = useRevokePrivateKeyMutation();
     const [createPrivateKey, {}] = useCreatePrivateKeyMutation();
 
-    const submitHandle = async (event: React.MouseEvent<HTMLButtonElement>) => {
-      if (IsDoublePasswordEqual) {
+    const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (passwordMatched) {
         const address = data?.keyStore?.privateKey.publicKey.address;
         const passphrase = firstPassword;
         if (!loadingAddress) {
@@ -78,14 +78,14 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
         />
         <br />
         <TextField
-          error={!IsDoublePasswordEqual}
+          error={!passwordMatched}
           label="Retype Password"
           type="password"
           onChange={makePasswordChangeHandle(setSecondPassword)}
-          helperText={!IsDoublePasswordEqual ? "Password is not equal." : ""}
+          helperText={!passwordMatched ? "Password is not equal." : ""}
         />
         <br />
-        <Button onClick={submitHandle}>Done</Button>
+        <Button onClick={handleSubmit}>Done</Button>
       </>
     );
   })

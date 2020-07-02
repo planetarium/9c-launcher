@@ -25,7 +25,7 @@ const AccountView: React.FC<IStoreContainer> = observer(
         </button>
         <button
           onClick={() => {
-            routerStore.push("/account/reset/0");
+            routerStore.push("/account/reset/input/private-key");
           }}
         >
           reset account
