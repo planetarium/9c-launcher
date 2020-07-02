@@ -1,6 +1,4 @@
 import * as React from "react";
-import gql from "graphql-tag";
-import { useState } from "react";
 import { LinearProgress } from "@material-ui/core";
 import { IStoreContainer } from "../../../interfaces/store";
 import { inject, observer } from "mobx-react";
@@ -16,11 +14,14 @@ const LobbyView = observer((props: IStoreContainer) => {
   const {
     data: nodeStatusSubscriptionResult,
   } = useNodeStatusSubscriptionSubscription();
-  const { accountStore, routerStore, gameStore } = props;
+  const { accountStore, gameStore } = props;
 
   return (
     <div>
-      <label>You are using address: {accountStore.selectedAddress}</label>
+      <label>
+        {gameStore.isGameStarted ? "Now Running..." : "Running the game"}
+      </label>
+      <br />
       <br />
       {nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded ? (
         <button
@@ -33,25 +34,27 @@ const LobbyView = observer((props: IStoreContainer) => {
         </button>
       ) : (
         <>
-          <LinearProgress />
+          <LinearProgress
+            variant="determinate"
+            value={getProgress(
+              preloadProgressSubscriptionResult?.preloadProgress?.extra
+                .currentCount,
+              preloadProgressSubscriptionResult?.preloadProgress?.extra
+                .totalCount
+            )}
+          />
           <p>Preload Status</p>
           <p>
             {preloadProgressSubscriptionResult?.preloadProgress?.extra.type}{" "}
-            {
-              preloadProgressSubscriptionResult?.preloadProgress?.extra
-                .currentCount
-            }{" "}
-            /{" "}
-            {
-              preloadProgressSubscriptionResult?.preloadProgress?.extra
-                .totalCount
-            }
           </p>
         </>
       )}
-      {gameStore.isGameStarted ? <label>Now Running...</label> : null}
     </div>
   );
 });
 
-export default inject("accountStore", "routerStore", "gameStore")(LobbyView);
+const getProgress = (current: number, total: number) => {
+  return total === 0 ? 0 : (current / total) * 100;
+};
+
+export default inject("accountStore", "gameStore")(LobbyView);
