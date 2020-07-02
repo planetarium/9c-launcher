@@ -56,6 +56,7 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
           Enter
         </Button>
         <br />
+        {/* FIXME: https://github.com/planetarium/9c-launcher/pull/109#discussion_r448705979 */}
         <a href="/account/revoke">Forgot private key?</a>
       </>
     );
