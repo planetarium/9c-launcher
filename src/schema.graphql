@@ -40,6 +40,7 @@ type StandaloneQuery {
   keyStore: KeyStoreType
   nodeStatus: NodeStatusType!
   state(address: Address!, hash: ByteString): ByteString
+  validation: ValidationQuery!
 }
 
 scalar ByteString
@@ -48,6 +49,7 @@ scalar Address
 
 type KeyStoreType {
   decryptedPrivateKey(address: Address!, passphrase: String!): ByteString!
+  privateKey(hex: ByteString!): PrivateKeyType!
   protectedPrivateKeys: [ProtectedPrivateKeyType!]!
 }
 
@@ -55,9 +57,24 @@ type ProtectedPrivateKeyType {
   address: Address!
 }
 
+type PrivateKeyType {
+  hex: ByteString!
+  publicKey: PublicKeyType!
+}
+
+type PublicKeyType {
+  address: Address!
+  hex(compress: Boolean): ByteString!
+}
+
 type NodeStatusType {
   bootstrapEnded: Boolean!
   preloadEnded: Boolean!
+}
+
+type ValidationQuery {
+  privateKey(hex: ByteString!): Boolean!
+  publicKey(hex: ByteString!): Boolean!
 }
 
 type StandaloneMutation {
@@ -65,7 +82,10 @@ type StandaloneMutation {
 }
 
 type KeyStoreMutation {
-  createPrivateKey(passphrase: String!): ProtectedPrivateKeyType!
+  createPrivateKey(
+    passphrase: String!
+    privateKey: ByteString
+  ): ProtectedPrivateKeyType!
   revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
 }
 

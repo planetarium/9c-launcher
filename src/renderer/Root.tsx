@@ -13,6 +13,8 @@ import IntroView from "./IntroView";
 import LoginView from "./views/login/LoginView";
 import MiningView from "./views/login/MiningView";
 import ErrorView from "./views/error/ErrorView";
+import { InputPrivateKeyView } from "./views/account/reset/InputPrivateKeyView";
+import { RegisterPrivateKeyView } from "./views/account/reset/RegisterPrivateKeyView";
 
 class Root extends React.Component {
   render() {
@@ -28,6 +30,16 @@ class Root extends React.Component {
           <Route exact path="/account" component={AccountView} />
           <Route exact path="/account/create" component={CreateAccountView} />
           <Route exact path="/account/revoke" component={RevokeAccountView} />
+          <Route
+            exact
+            path="/account/reset/input/private-key"
+            component={InputPrivateKeyView}
+          />
+          <Route
+            exact
+            path="/account/reset/input/passphrase"
+            component={RegisterPrivateKeyView}
+          />
           <Route exact path="/config" component={ConfigurationView} />
           <Redirect from="*" to="/" />
         </Switch>
