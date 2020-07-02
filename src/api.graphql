@@ -69,3 +69,17 @@ query ValidatePrivateKey($privateKey: ByteString!) {
     privateKey(hex: $privateKey)
   }
 }
+
+subscription DifferentAppProtocolVersionEncounter {
+  differentAppProtocolVersionEncounter {
+    peer
+    peerVersion {
+      version
+      extra
+    }
+    localVersion {
+      version
+      extra
+    }
+  }
+}
