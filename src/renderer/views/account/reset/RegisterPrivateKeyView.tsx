@@ -24,14 +24,13 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
     const [firstPassword, setFirstPassword] = useState("");
     const [secondPassword, setSecondPassword] = useState("");
 
-    const makePasswordChangeHandle = (fn: StateSetter<string>) => {
+    const makeHandlePasswordChange = (fn: StateSetter<string>) => {
       const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         fn(event.target.value);
       };
       return handleChange;
     };
 
-    // FIXME: 좀 더 나은 변수명이 있을 것 같습니다.
     const passwordMatched =
       "" !== secondPassword && firstPassword === secondPassword;
     const {
@@ -74,14 +73,14 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
         <TextField
           label="Password"
           type="password"
-          onChange={makePasswordChangeHandle(setFirstPassword)}
+          onChange={makeHandlePasswordChange(setFirstPassword)}
         />
         <br />
         <TextField
           error={!passwordMatched}
           label="Retype Password"
           type="password"
-          onChange={makePasswordChangeHandle(setSecondPassword)}
+          onChange={makeHandlePasswordChange(setSecondPassword)}
           helperText={!passwordMatched ? "Password is not equal." : ""}
         />
         <br />
