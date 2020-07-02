@@ -15,7 +15,7 @@ const LobbyView = observer((props: IStoreContainer) => {
   const {
     data: nodeStatusSubscriptionResult,
   } = useNodeStatusSubscriptionSubscription();
-  const { accountStore, routerStore, gameStore } = props;
+  const { accountStore, gameStore } = props;
 
   return (
     <div>
@@ -40,19 +40,18 @@ const LobbyView = observer((props: IStoreContainer) => {
         </button>
       ) : (
         <>
-          <LinearProgress />
+          <LinearProgress
+            variant="determinate"
+            value={getProgress(
+              preloadProgressSubscriptionResult?.preloadProgress?.extra
+                .currentCount,
+              preloadProgressSubscriptionResult?.preloadProgress?.extra
+                .totalCount
+            )}
+          />
           <p>Preload Status</p>
           <p>
             {preloadProgressSubscriptionResult?.preloadProgress?.extra.type}{" "}
-            {
-              preloadProgressSubscriptionResult?.preloadProgress?.extra
-                .currentCount
-            }{" "}
-            /{" "}
-            {
-              preloadProgressSubscriptionResult?.preloadProgress?.extra
-                .totalCount
-            }
           </p>
         </>
       )}
@@ -60,4 +59,8 @@ const LobbyView = observer((props: IStoreContainer) => {
   );
 });
 
-export default inject("accountStore", "routerStore", "gameStore")(LobbyView);
+const getProgress = (current: number, total: number) => {
+  return total === 0 ? 0 : (current / total) * 100;
+};
+
+export default inject("accountStore", "gameStore")(LobbyView);
