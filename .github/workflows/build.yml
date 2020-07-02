@@ -1,6 +1,8 @@
 name: build
 on:
-  push: []
+  push:
+    branches: ["*"]
+    tags: ["*"]
   pull_request: []
 
 jobs:
@@ -27,6 +29,45 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           submodules: true
           lfs: false
+      # 이미 릴리스된 버전을 쓰고 있는지 검사
+      - run: |
+          set -vx
+          if [[ "$GITHUB_REF" != refs/tags/* ]] && \
+              git fetch --tags && \
+              (git tag | grep "^$(jq -r .version package.json)$"); then
+            urlvar="$(echo "${{ runner.os }}" | tr '[:lower:]' '[:upper:]')_URL"
+            curl -L -o github-commenter "${!urlvar}"
+            if [[ "${{ runner.os }}" != "Windows" ]]; then
+              chmod +x github-commenter
+            fi
+            export GITHUB_REPO="${GITHUB_REPOSITORY#*/}"
+            if [[ "${{ github.event_name }}" = "pull_request" ]]; then
+              pr_no=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+              ./github-commenter \
+                --type pr \
+                --number "$pr_no"
+            else
+              ./github-commenter \
+                --type commit \
+                --sha "${{ github.sha }}"
+            fi
+            exit 1
+          fi
+        env:
+          # 다운로드할 때 쓰는 토큰
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          # 코멘트 달 때 쓰는 토큰
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          GITHUB_COMMENT: |
+            *package.json* 파일의 `"version"`이 이미 Git 태그로 존재합니다.
+            버전 범프가 필요합니다.
+
+            <!-- 9c-launcher-version-warning -->
+          GITHUB_DELETE_COMMENT_REGEX: '.*<!-- +9c-launcher-version-warning +-->[ \n\t]*'
+          MACOS_URL: https://github.com/cloudposse/github-commenter/releases/download/0.6.1/github-commenter_darwin_amd64
+          WINDOWS_URL: https://github.com/cloudposse/github-commenter/releases/download/0.6.1/github-commenter_windows_amd64.exe
+        shell: bash
       # Node.js 설치
       - uses: actions/setup-node@v1
         with:
@@ -151,15 +192,39 @@ jobs:
           workflow=977355  # Pack
           submodule_ref="$(git submodule status -- nekoyume-unity \
                            | awk '{ gsub(/^[-+ ]/, "", $1); print $1 }')"
-          artifacts_url="$(\
-            curl -H "$auth" \
-              "$url_base/actions/workflows/$workflow/runs?status=success" \
-            | jq \
-                -r \
-                --arg sha "$submodule_ref" \
-                '.workflow_runs
-                |map(select(.head_sha == $sha))[0].artifacts_url' \
-          )"
+          runs_url="$url_base/actions/workflows/$workflow/runs?status=success"
+          artifacts_url=null
+          while [[ "$artifacts_url" = "null" && "$runs_url" != "" ]]; do
+            artifacts_url="$(\
+              curl -H "$auth" --include "$runs_url" \
+              | tee raw_output.http \
+              | sed '1,/^'$'\r\{0,1\}''$/d' \
+              | jq \
+                  -r \
+                  --arg sha "$submodule_ref" \
+                  '.workflow_runs
+                  |map(select(.head_sha == $sha))[0].artifacts_url' \
+              || true \
+            )"
+            if [[ "$artifacts_url" = "" ]]; then
+              # 위 명령이 실패했으면 curl 응답 결과 출력 후 종료
+              cat raw_output.http
+              exit 1
+            fi
+            if [[ "$artifacts_url" = "null" ]]; then
+              # 아마도 해당 리스트 페이지에 찾는 커밋의 빌드가 없는 모양.
+              # Link 헤더의 rel="next" URL을 찾아서 재요청.
+              link_header="$(grep -i '^Link:\s*' raw_output.http)"
+              runs_url="$(\
+                echo "$link_header" \
+                | sed -n 's/.\{0,\}<\([^>]\{0,\}\)>; rel="\{0,\}next"\{0,1\}.\{0,\}/\1/p' \
+              )"
+              if [[ "runs_url" = "" ]]; then
+                # 디버그용 출력
+                cat raw_output.http
+              fi
+            fi
+          done
           archive_download_url="$(\
             curl -H "$auth" "$artifacts_url" \
             | jq \
@@ -177,27 +242,51 @@ jobs:
       - run: mkdir dist/
       - run: |
           set -vx
-          top="$(pwd)"
           pushd macOS/
           pushd "$MACOS_RESOURCES_APP_PATH"
-          tar xvfj "$top"/artifact/9c-headless-macos-*.tar.bz2
+          tar xvfj \
+            "${{ github.workspace }}"/artifact/9c-headless-macos-*.tar.bz2
           popd
-          GZIP=-9 tar cvfz "$top"/dist/macOS.tar.gz *
+          GZIP=-9 tar cvfz "${{ github.workspace }}"/dist/macOS.tar.gz *
           popd
       - run: |
           set -vx
-          top="$(pwd)"
           pushd Windows/
           pushd "$WINDOWS_RESOURCES_APP_PATH"
-          7z x "$top"/artifact/9c-headless-windows-*.7z
+          7z x "${{ github.workspace }}"/artifact/9c-headless-windows-*.7z
           popd
-          7z a -r "$top"/dist/Windows.zip *
+          7z a -r "${{ github.workspace }}"/dist/Windows.zip *
           popd
-      # 아티팩트로 업로드
-      - uses: actions/upload-artifact@v2
-        with:
-          name: 9c
-          path: dist/
+      # 태그를 만들었거나 master에 푸시한 경우, GitHub Releases에 업로드
+      - run: |
+          set -vx
+          if ! [[ "$GITHUB_REF" = refs/tags/* || \
+                  "$GITHUB_REF" = refs/heads/master ]]; then
+            echo "Skip..." > /dev/stderr
+            exit 0
+          fi
+          wget https://github.com/github-release/github-release/releases/download/v0.8.1/darwin-amd64-github-release.bz2
+          bzip2 -d darwin-amd64-github-release.bz2
+          mv darwin-amd64-github-release github-release
+          chmod +x github-release
+          version="$(jq -r .version package.json)"
+          name="Nine Chronicles $version ($GITHUB_SHA)"
+          if ! [[ "$GITHUB_REF" = refs/tags/* ]]; then
+            draft="--pre-release --draft"
+          fi
+          export GITHUB_REPO="${GITHUB_REPOSITORY#*/}"
+          ./github-release -v edit --tag "$version" --name "$name" $draft \
+          || ./github-release -v release --tag "$version" --name "$name" $draft 
+          for f in dist/*.*; do
+            ./github-release -v upload \
+              --tag "$version" \
+              --name "$(basename "$f")" \
+              --file "$f" \
+              --replace
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USER: ${{ github.repository_owner }}
       # 실패하더라도 대체 뭐가 어떻게 됐던 것인지 알기 위한 디버그용 출력 처리.
       - if: always()
         run: |
