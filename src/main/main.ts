@@ -34,6 +34,7 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   initializeApp();
+  initializeIpc();
 }
 
 function initializeApp() {
@@ -62,7 +63,9 @@ function initializeApp() {
     event.preventDefault();
     win?.show();
   });
+}
 
+function initializeIpc() {
   ipcMain.on("download snapshot", (event, options: IDownloadOptions) => {
     options.properties.onProgress = (status: IDownloadProgress) =>
       win?.webContents.send("download progress", status);
