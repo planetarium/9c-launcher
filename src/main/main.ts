@@ -101,7 +101,7 @@ function initializeApp() {
 
   ipcMain.on("clear cache", (event) => {
     try {
-      deleteBlockchainStore();
+      deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
       event.returnValue = true;
     } catch (e) {
       console.log(e);
@@ -211,22 +211,6 @@ extractTarget: [ ${snapshotPath} ]`);
   }
 }
 
-function deleteBlockchainStore() {
-  deleteDirRecursive(BLOCKCHAIN_STORE_PATH);
-}
-
-function deleteDirRecursive(path: string) {
-  if (fs.existsSync(path)) {
-    fs.readdirSync(path).forEach(function (file) {
-      var curPath = path + "/" + file;
-      if (fs.lstatSync(curPath).isDirectory()) {
-        // recurse
-        deleteDirRecursive(curPath);
-      } else {
-        // delete file
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(path);
-  }
+function deleteBlockchainStore(path: string) {
+  fs.rmdirSync(path, { recursive: true });
 }
