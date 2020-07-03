@@ -66,7 +66,7 @@ function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on("download snapshot", (event, options: IDownloadOptions) => {
+  ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
     options.properties.onProgress = (status: IDownloadProgress) =>
       win?.webContents.send("download progress", status);
     options.properties.directory = app.getPath("userData");
@@ -85,7 +85,7 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.on("launch game", (event, info) => {
+  ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     const node = execute(
       path.join(
         app.getAppPath(),
