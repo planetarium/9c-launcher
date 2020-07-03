@@ -34,6 +34,7 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   initializeApp();
+  initializeIpc();
 }
 
 function initializeApp() {
@@ -62,8 +63,10 @@ function initializeApp() {
     event.preventDefault();
     win?.show();
   });
+}
 
-  ipcMain.on("download snapshot", (event, options: IDownloadOptions) => {
+function initializeIpc() {
+  ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
     options.properties.onProgress = (status: IDownloadProgress) =>
       win?.webContents.send("download progress", status);
     options.properties.directory = app.getPath("userData");
@@ -82,7 +85,7 @@ function initializeApp() {
     }
   });
 
-  ipcMain.on("launch game", (event, info) => {
+  ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     const node = execute(
       path.join(
         app.getAppPath(),
@@ -101,7 +104,7 @@ function initializeApp() {
 
   ipcMain.on("clear cache", (event) => {
     try {
-      deleteBlockchainStore();
+      deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
       event.returnValue = true;
     } catch (e) {
       console.log(e);
@@ -211,22 +214,6 @@ extractTarget: [ ${snapshotPath} ]`);
   }
 }
 
-function deleteBlockchainStore() {
-  deleteDirRecursive(BLOCKCHAIN_STORE_PATH);
-}
-
-function deleteDirRecursive(path: string) {
-  if (fs.existsSync(path)) {
-    fs.readdirSync(path).forEach(function (file) {
-      var curPath = path + "/" + file;
-      if (fs.lstatSync(curPath).isDirectory()) {
-        // recurse
-        deleteDirRecursive(curPath);
-      } else {
-        // delete file
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(path);
-  }
+function deleteBlockchainStore(path: string) {
+  fs.rmdirSync(path, { recursive: true });
 }
