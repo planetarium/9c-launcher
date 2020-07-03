@@ -11,30 +11,28 @@ interface IDownloadSnaphostProps {
 }
 
 const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
-  ipcRenderer.on("extract progress", (event, progress) => {
-    props.setExtractState(true);
-    props.setProgress(progress * 100);
-  });
+  React.useEffect(() => {
+    ipcRenderer.on("extract progress", (event, progress) => {
+      props.setExtractState(true);
+      props.setProgress(progress * 100);
+    });
 
-  ipcRenderer.on("extract complete", (event) => {
-    props.setExtractState(false);
-  });
+    ipcRenderer.on("extract complete", (event) => {
+      props.setExtractState(false);
+    });
 
-  ipcRenderer.on(
-    "download progress",
-    (event: IpcRendererEvent, progress: IDownloadProgress) => {
-      props.setDownloadState(true);
-      props.setProgress(progress.percent * 100);
-    }
-  );
+    ipcRenderer.on(
+      "download progress",
+      (event: IpcRendererEvent, progress: IDownloadProgress) => {
+        props.setDownloadState(true);
+        props.setProgress(progress.percent * 100);
+      }
+    );
 
-  ipcRenderer.on(
-    "download complete",
-    (event: IpcRendererEvent, path: string) => {
+    ipcRenderer.on("download complete", (_, path: string) => {
       props.setDownloadState(false);
-    }
-  );
-
+    });
+  }, []);
   const downloadSnapShot = () => {
     const options: IDownloadOptions = {
       properties: {},
