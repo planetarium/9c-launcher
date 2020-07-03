@@ -7,7 +7,7 @@ const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
     const runStandalone = (isMining: boolean) => {
       standaloneStore.setMiner(!isMining);
-      routerStore.push("/lobby");
+      routerStore.push("/lobby/preload");
       standaloneStore.initStandalone(accountStore.privateKey).catch((error) => {
         console.log(error);
         routerStore.push("/error");
