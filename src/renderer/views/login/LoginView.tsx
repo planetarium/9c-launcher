@@ -36,7 +36,7 @@ const LoginView = observer(
         accountStore.setPrivateKey(privateKey);
         accountStore.toggleLogin();
         if (standaloneStore.NoMiner) {
-          routerStore.push("/lobby/mining");
+          routerStore.push("/login/mining");
         } else {
           routerStore.push("/lobby");
           standaloneStore
