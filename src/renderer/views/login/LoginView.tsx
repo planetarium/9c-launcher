@@ -36,9 +36,9 @@ const LoginView = observer(
         accountStore.setPrivateKey(privateKey);
         accountStore.toggleLogin();
         if (standaloneStore.NoMiner) {
-          routerStore.push("/lobby/mining");
+          routerStore.push("/login/mining");
         } else {
-          routerStore.push("/lobby");
+          routerStore.push("/lobby/preload");
           standaloneStore
             .initStandalone(accountStore.privateKey)
             .catch((error) => {
@@ -47,7 +47,7 @@ const LoginView = observer(
             });
         }
       }
-    });
+    }, [data]);
 
     const handleSubmit = () => {
       getDecreyptedKey({
