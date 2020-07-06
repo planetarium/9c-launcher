@@ -2,6 +2,7 @@ import React from "react";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { LinearProgress } from "@material-ui/core";
+import { LinearProgressWithLabel } from "../../components/LinerProgressWithLabel";
 import {
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
@@ -17,6 +18,8 @@ const PreloadView = observer((props: IStoreContainer) => {
     data: nodeStatusSubscriptionResult,
   } = useNodeStatusSubscriptionSubscription();
 
+  const [progress, setProgress] = React.useState(0);
+
   React.useEffect(() => {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
     if (isEnded) {
@@ -24,24 +27,34 @@ const PreloadView = observer((props: IStoreContainer) => {
     }
   }, [nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded]);
 
+  React.useEffect(() => {
+    const prog = getProgress(
+      preloadProgressSubscriptionResult?.preloadProgress?.extra.currentCount,
+      preloadProgressSubscriptionResult?.preloadProgress?.extra.totalCount
+    );
+    setProgress(prog);
+  }, [preloadProgressSubscriptionResult?.preloadProgress?.extra]);
+
   return (
     <div>
-      <LinearProgress
-        variant="determinate"
-        value={getProgress(
-          preloadProgressSubscriptionResult?.preloadProgress?.extra
-            .currentCount,
-          preloadProgressSubscriptionResult?.preloadProgress?.extra.totalCount
-        )}
-      />
+      <LinearProgressWithLabel value={progress} />
       <p>Preload Status</p>
+      <p>
+        {preloadProgressSubscriptionResult?.preloadProgress?.currentPhase} by{" "}
+        {preloadProgressSubscriptionResult?.preloadProgress?.totalPhase}
+      </p>
       <p>{preloadProgressSubscriptionResult?.preloadProgress?.extra.type} </p>
     </div>
   );
 });
 
-const getProgress = (current: number, total: number) => {
-  return total === 0 ? 0 : (current / total) * 100;
+const getProgress = (
+  current: number | undefined,
+  total: number | undefined
+) => {
+  if (current === undefined) return 0;
+  if (total === undefined) return 0;
+  return total === 0 ? 0 : Math.round((current / total) * 100);
 };
 
 export default inject("routerStore")(PreloadView);
