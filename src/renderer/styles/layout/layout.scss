@@ -11,8 +11,9 @@
   .banner {
     grid-row: 1;
     grid-column: 2 / 3;
-    background-image: url("../../resources/shop_cat.jpg");
+    background-image: url("../../resources/bg.jpg");
     background-size: cover;
+    background-position: 55%;
   }
 
   .header {
