@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Grid, LinearProgress } from "@material-ui/core";
+import { Button, Container, LinearProgress } from "@material-ui/core";
 import { IStoreContainer } from "../../../interfaces/store";
 import { inject, observer } from "mobx-react";
 
@@ -7,10 +7,7 @@ const LobbyView = observer((props: IStoreContainer) => {
   const { accountStore, gameStore } = props;
 
   return (
-    <Grid container>
-      <label>
-        {gameStore.isGameStarted ? "Now Running..." : "Running the game"}
-      </label>
+    <Container>
       <Button
         fullWidth
         disabled={gameStore.isGameStarted}
@@ -18,9 +15,9 @@ const LobbyView = observer((props: IStoreContainer) => {
           gameStore.startGame(accountStore.privateKey);
         }}
       >
-        Start Game
+        {gameStore.isGameStarted ? "Now Running..." : "Start Game"}
       </Button>
-    </Grid>
+    </Container>
   );
 });
 
