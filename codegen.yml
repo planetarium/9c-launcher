@@ -12,5 +12,5 @@ generates:
       withHooks: true
       withMutationFn: true
       scalars:
-        ByteString: string
-        Address: string
+        Address: ../mappers#Address
+        ByteString: ../mappers#ByteStringHex
