@@ -19,6 +19,7 @@ import { LOCAL_SERVER_URL } from "../config";
 import GameStore from "./stores/game";
 import Root from "./Root";
 import StandaloneStore from "./stores/standalone";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { useDifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
 import bencodex, { BencodexValue } from "bencodex";
 import { ipcRenderer } from "electron";
@@ -63,12 +64,24 @@ const Store: IStoreContainer = {
 const history = syncHistoryWithStore(createBrowserHistory(), Store.routerStore);
 
 function App() {
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: "dark",
+        },
+      }),
+    []
+  );
+
   return (
     <ApolloProvider client={client}>
       <DifferentAppProtocolVersionSubscriptionProvider>
         <Router history={history}>
           <Provider {...Store}>
-            <Root />
+            <ThemeProvider theme={theme}>
+              <Root />
+            </ThemeProvider>
           </Provider>
         </Router>
       </DifferentAppProtocolVersionSubscriptionProvider>

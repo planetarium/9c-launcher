@@ -2,12 +2,14 @@ import * as React from "react";
 
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import { Button } from "@material-ui/core";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 
 interface IDownloadSnaphostProps {
   disabled: boolean;
   setExtractState: React.Dispatch<React.SetStateAction<boolean>>;
   setDownloadState: React.Dispatch<React.SetStateAction<boolean>>;
   setProgress: React.Dispatch<React.SetStateAction<number>>;
+  className: string;
 }
 
 const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
@@ -41,12 +43,13 @@ const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
   };
   return (
     <Button
+      startIcon={<CloudDownloadIcon />}
       disabled={props.disabled}
       onClick={(event: React.MouseEvent) => {
         downloadSnapShot();
       }}
-      variant="contained"
       color="default"
+      className={props.className}
     >
       Download Snapshot
     </Button>
