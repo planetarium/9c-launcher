@@ -12,6 +12,10 @@ const miningViewStyle = makeStyles({
   button: {
     borderRadius: "0",
   },
+
+  jade: {
+    width: "100%",
+  },
 });
 
 export default miningViewStyle;
