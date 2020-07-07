@@ -4,9 +4,13 @@ documents: ./src/api.graphql
 generates:
   src/generated/graphql.tsx:
     plugins:
-    - typescript
-    - typescript-operations
-    - typescript-react-apollo
+      - typescript
+      - typescript-operations
+      - typescript-resolvers
+      - typescript-react-apollo
     config:
       withHooks: true
       withMutationFn: true
+      scalars:
+        ByteString: string
+        Address: string
