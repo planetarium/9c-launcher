@@ -6,6 +6,11 @@ const loginViewStyle = makeStyles({
   },
   cacheButton: {
     float: "right",
+    color: "#929292",
+  },
+  downloadButton: {
+    float: "right",
+    color: "#929292",
   },
   loginButton: {
     display: "block",
