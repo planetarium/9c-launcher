@@ -56,7 +56,7 @@ const LoginView = observer(
       <div className="login">
         <NineChroniclesLogo />
         <Box>
-          <ClearCacheButton className={classes.button} />
+          <ClearCacheButton className={classes.cacheButton} />
         </Box>
         <form
           onSubmit={(event) => {
@@ -88,7 +88,7 @@ const LoginView = observer(
           </Grid>
           <Box>
             <Button
-              id="login-button"
+              className={classes.loginButton}
               type="submit"
               variant="contained"
               color="primary"

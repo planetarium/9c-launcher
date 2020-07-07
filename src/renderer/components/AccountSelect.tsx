@@ -18,7 +18,6 @@ export const AccountSelect: React.FC<IAccountSelectProps> = observer(
 
     return (
       <Select
-        {...props}
         id="account-select"
         variant="outlined"
         value={props.addresses}
