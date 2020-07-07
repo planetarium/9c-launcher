@@ -11,7 +11,6 @@ import { getMainDefinition } from "apollo-utilities";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { Provider } from "mobx-react";
-import { Buffer } from "buffer";
 import AccountStore from "./stores/account";
 import { IStoreContainer } from "../interfaces/store";
 import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
@@ -20,10 +19,8 @@ import GameStore from "./stores/game";
 import Root from "./Root";
 import StandaloneStore from "./stores/standalone";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
-import { useDifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
-import bencodex, { BencodexValue } from "bencodex";
-import { ipcRenderer } from "electron";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
+import montserrat from "./styles/font";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -69,6 +66,16 @@ function App() {
       createMuiTheme({
         palette: {
           type: "dark",
+        },
+        typography: {
+          fontFamily: "Montserrat",
+        },
+        overrides: {
+          MuiCssBaseline: {
+            "@global": {
+              "@font-face": [montserrat],
+            },
+          },
         },
       }),
     []

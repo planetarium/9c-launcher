@@ -21,6 +21,7 @@ import {
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
 } from "../../../generated/graphql";
+import preloadViewStyle from "./PreloadView.style";
 
 enum PreloadProgressPhase {
   ActionExecutionState,
@@ -32,6 +33,7 @@ enum PreloadProgressPhase {
 
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore } = props;
+  const classes = preloadViewStyle();
   const {
     data: preloadProgressSubscriptionResult,
   } = usePreloadProgressSubscriptionSubscription();
@@ -112,7 +114,7 @@ const PreloadView = observer((props: IStoreContainer) => {
   });
 
   return (
-    <Container>
+    <Container className={classes.root}>
       <Headline paragraph>
         Receiving data from other users. <br />
         Let's watch teaser and contents!
