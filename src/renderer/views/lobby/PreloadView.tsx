@@ -87,15 +87,15 @@ const PreloadView = observer((props: IStoreContainer) => {
       status = `Downloading states... ${steps}`;
   }
 
-  const handleClickBlockExplorer = () => {
+  const handleClickBlockExplorer = React.useCallback(() => {
     shell.openExternal("https://explorer.libplanet.io/9c-beta/");
-  };
+  }, []);
 
-  const handleClickPlayerGuide = () => {
+  const handleClickPlayerGuide = React.useCallback(() => {
     shell.openExternal(
       "https://forum.nine-chronicles.com/t/nine-chronicles-quick-game-guide/31"
     );
-  };
+  }, []);
 
   const Headline = styled(Typography)({
     marginTop: "60px",
