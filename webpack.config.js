@@ -81,7 +81,7 @@ function createRenderConfig(isDev) {
           test: /\.(svg|jpg|png|ttf)$/,
           exclude: /node_modules/,
           use: {
-            loader: "file-loader",
+            loader: "url-loader",
             options: {},
           },
         },
