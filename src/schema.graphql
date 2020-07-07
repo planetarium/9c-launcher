@@ -90,6 +90,7 @@ type KeyStoreMutation {
 }
 
 type StandaloneSubscription {
+  differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
   nodeStatus: NodeStatusType
   preloadProgress: PreloadStateType
   tipChanged: TipChanged
@@ -110,4 +111,17 @@ type PreloadStateExtraType {
   currentCount: Long!
   totalCount: Long!
   type: String!
+}
+
+type DifferentAppProtocolVersionEncounterType {
+  localVersion: AppProtocolVersionType!
+  peer: String!
+  peerVersion: AppProtocolVersionType!
+}
+
+type AppProtocolVersionType {
+  extra: ByteString
+  signature: ByteString!
+  signer: Address!
+  version: Int!
 }

@@ -25,7 +25,7 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
         routerStore.push("/login");
       }
     }
-  });
+  }, [loading, data]);
 
   return <div>now loading...</div>;
 });
