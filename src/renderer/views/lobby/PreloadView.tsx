@@ -32,15 +32,18 @@ enum PreloadProgressPhase {
 
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore } = props;
-
   const {
     data: preloadProgressSubscriptionResult,
   } = usePreloadProgressSubscriptionSubscription();
   const {
     data: nodeStatusSubscriptionResult,
   } = useNodeStatusSubscriptionSubscription();
+  const preloadProgress = preloadProgressSubscriptionResult?.preloadProgress;
 
   const [progress, setProgress] = React.useState(0);
+  const [statusMessage, setStatusMessage] = React.useState(
+    "Connecting to the network..."
+  );
 
   React.useEffect(() => {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
@@ -55,7 +58,34 @@ const PreloadView = observer((props: IStoreContainer) => {
       preloadProgressSubscriptionResult?.preloadProgress?.extra.totalCount
     );
     setProgress(prog);
-  }, [preloadProgressSubscriptionResult?.preloadProgress?.extra]);
+  }, [preloadProgress?.extra]);
+
+  React.useEffect(() => {
+    const steps: string = `(${preloadProgress?.currentPhase}/${preloadProgress?.totalPhase})`;
+    const phase: PreloadProgressPhase =
+      PreloadProgressPhase[preloadProgress?.extra.type];
+    switch (phase) {
+      case PreloadProgressPhase.ActionExecutionState:
+        setStatusMessage(`Executing actions... ${steps}`);
+        break;
+
+      case PreloadProgressPhase.BlockDownloadState:
+        setStatusMessage(`Downloading blocks... ${steps}`);
+        break;
+
+      case PreloadProgressPhase.BlockHashDownloadState:
+        setStatusMessage(`Downloading block hashes... ${steps}`);
+        break;
+
+      case PreloadProgressPhase.BlockVerificationState:
+        setStatusMessage(`Verifying block headers... ${steps}`);
+        break;
+
+      case PreloadProgressPhase.StateDownloadState:
+        setStatusMessage(`Downloading states... ${steps}`);
+        break;
+    }
+  }, [preloadProgress]);
 
   const videoOpts = {
     width: 330,
@@ -64,28 +94,6 @@ const PreloadView = observer((props: IStoreContainer) => {
       autoPlay: 1,
     },
   };
-
-  const preloadProgress = preloadProgressSubscriptionResult?.preloadProgress;
-  let status: string = "Connecting to the network...";
-  const steps: string = `(${preloadProgress?.currentPhase}/${preloadProgress?.totalPhase})`;
-  const phase: PreloadProgressPhase =
-    PreloadProgressPhase[preloadProgress?.extra.type];
-  switch (phase) {
-    case PreloadProgressPhase.ActionExecutionState:
-      status = `Executing actions... ${steps}`;
-
-    case PreloadProgressPhase.BlockDownloadState:
-      status = `Downloading blocks... ${steps}`;
-
-    case PreloadProgressPhase.BlockHashDownloadState:
-      status = `Downloading block hashes... ${steps}`;
-
-    case PreloadProgressPhase.BlockVerificationState:
-      status = `Verifying block headers... ${steps}`;
-
-    case PreloadProgressPhase.StateDownloadState:
-      status = `Downloading states... ${steps}`;
-  }
 
   const handleClickBlockExplorer = React.useCallback(() => {
     shell.openExternal("https://explorer.libplanet.io/9c-beta/");
@@ -105,7 +113,7 @@ const PreloadView = observer((props: IStoreContainer) => {
 
   return (
     <Container>
-      <Headline paragraph variant="outline">
+      <Headline paragraph>
         Receiving data from other users. <br />
         Let's watch teaser and contents!
       </Headline>
@@ -126,7 +134,7 @@ const PreloadView = observer((props: IStoreContainer) => {
       </List>
       {!!preloadProgress && <LinearProgressWithLabel value={progress} />}
       <Typography align="center" display="block" variant="caption">
-        {status}
+        {statusMessage}
       </Typography>
     </Container>
   );
