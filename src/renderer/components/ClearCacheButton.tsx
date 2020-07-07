@@ -1,10 +1,10 @@
 import * as React from "react";
 
 import { ipcRenderer } from "electron";
-import { Button } from "@material-ui/core";
+import { Button, ButtonProps } from "@material-ui/core";
 
-interface IClearCacheButtonProps {
-  disabled: boolean;
+interface IClearCacheButtonProps extends ButtonProps {
+  disabled?: boolean;
 }
 
 const ClearCacheButton = (props: IClearCacheButtonProps) => {
@@ -14,9 +14,9 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
 
   return (
     <Button
+      {...props}
       disabled={props.disabled}
       onClick={() => handleClick()}
-      variant="contained"
       color="default"
     >
       Clear Cache
