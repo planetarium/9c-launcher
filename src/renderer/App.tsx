@@ -24,6 +24,7 @@ import { useDifferentAppProtocolVersionEncounterSubscription } from "../generate
 import bencodex, { BencodexValue } from "bencodex";
 import { ipcRenderer } from "electron";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
+import montserrat from "./styles/font";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -69,6 +70,16 @@ function App() {
       createMuiTheme({
         palette: {
           type: "dark",
+        },
+        typography: {
+          fontFamily: "Montserrat",
+        },
+        overrides: {
+          MuiCssBaseline: {
+            "@global": {
+              "@font-face": [montserrat],
+            },
+          },
         },
       }),
     []
