@@ -14,6 +14,21 @@
     background-image: url("../../resources/bg.jpg");
     background-size: cover;
     background-position: 55%;
+    display: inline-flex;
+    padding: 24px;
+
+    .nav {
+      align-self: flex-end;
+      padding-left: 0;
+
+      li {
+        list-style-type: none;
+
+        button {
+          color: white;
+        }
+      }
+    }
   }
 
   .header {
