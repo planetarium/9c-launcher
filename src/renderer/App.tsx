@@ -18,6 +18,7 @@ import { LOCAL_SERVER_URL } from "../config";
 import GameStore from "./stores/game";
 import Root from "./Root";
 import StandaloneStore from "./stores/standalone";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -58,11 +59,23 @@ const Store: IStoreContainer = {
 const history = syncHistoryWithStore(createBrowserHistory(), Store.routerStore);
 
 function App() {
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: "dark",
+        },
+      }),
+    []
+  );
+
   return (
     <ApolloProvider client={client}>
       <Router history={history}>
         <Provider {...Store}>
-          <Root />
+          <ThemeProvider theme={theme}>
+            <Root />
+          </ThemeProvider>
         </Provider>
       </Router>
     </ApolloProvider>
