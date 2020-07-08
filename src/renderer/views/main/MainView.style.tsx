@@ -1,21 +1,27 @@
 import { makeStyles } from "@material-ui/core";
 
-const loginViewStyle = makeStyles({
+const mainViewStyle = makeStyles({
   root: {
-    margin: "15px",
+    color: "white",
+    textAlign: "center",
   },
-  cacheButton: {
-    float: "right",
-  },
-  loginButton: {
-    display: "block",
-    margin: "50px auto",
-    borderRadius: "0",
-    width: "60%",
-    height: "60px",
-    fontSize: "150%",
+  button: {
+    width: "310px",
+    height: "72px",
     fontWeight: "bold",
+    fontSize: "larger",
+    borderRadius: "0",
+  },
+  title: {
+    fontWeight: "bold",
+  },
+  body: {
+    fontSize: "16px",
+  },
+  buttonContainer: {
+    position: "relative",
+    bottom: "-106px",
   },
 });
 
-export default loginViewStyle;
+export default mainViewStyle;
