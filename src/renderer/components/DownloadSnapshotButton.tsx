@@ -1,38 +1,38 @@
 import * as React from "react";
-
+import { useState } from "react";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { Button } from "@material-ui/core";
+import { Button, CircularProgress } from "@material-ui/core";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 
 interface IDownloadSnaphostProps {
-  disabled: boolean;
-  setExtractState: React.Dispatch<React.SetStateAction<boolean>>;
-  setDownloadState: React.Dispatch<React.SetStateAction<boolean>>;
-  setProgress: React.Dispatch<React.SetStateAction<number>>;
   className: string;
 }
 
 const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
+  const [isExtract, setExtractState] = useState(false);
+  const [isDownload, setDownloadState] = useState(false);
+  const [progress, setProgress] = useState(0);
+
   React.useEffect(() => {
     ipcRenderer.on("extract progress", (event, progress) => {
-      props.setExtractState(true);
-      props.setProgress(progress * 100);
+      setExtractState(true);
+      setProgress(progress * 100);
     });
 
     ipcRenderer.on("extract complete", (event) => {
-      props.setExtractState(false);
+      setExtractState(false);
     });
 
     ipcRenderer.on(
       "download progress",
       (event: IpcRendererEvent, progress: IDownloadProgress) => {
-        props.setDownloadState(true);
-        props.setProgress(progress.percent * 100);
+        setDownloadState(true);
+        setProgress(progress.percent * 100);
       }
     );
 
     ipcRenderer.on("download complete", (_, path: string) => {
-      props.setDownloadState(false);
+      setDownloadState(false);
     });
   }, []);
   const downloadSnapShot = () => {
@@ -44,14 +44,21 @@ const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
   return (
     <Button
       startIcon={<CloudDownloadIcon />}
-      disabled={props.disabled}
+      disabled={isDownload || isExtract}
       onClick={(event: React.MouseEvent) => {
         downloadSnapShot();
       }}
-      color="default"
+      variant="text"
       className={props.className}
     >
-      Download Snapshot
+      {isDownload || isExtract ? (
+        <>
+          {isDownload ? "Downloading..." : "Extracting..."}
+          <CircularProgress variant="static" size={15} value={progress} />
+        </>
+      ) : (
+        <>Download Snapshot</>
+      )}
     </Button>
   );
 };

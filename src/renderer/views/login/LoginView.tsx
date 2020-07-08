@@ -5,9 +5,9 @@ import {
   Button,
   InputLabel,
   TextField,
+  Typography,
   Box,
   Grid,
-  LinearProgress,
 } from "@material-ui/core";
 import { observer, inject } from "mobx-react";
 import "../../styles/login/login.scss";
@@ -22,8 +22,6 @@ const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
     const [passphrase, setPassphrase] = useState("");
-    const [isExtract, setExtractState] = useState(false);
-    const [isDownload, setDownloadState] = useState(false);
     const [progress, setProgress] = useState(0);
     const [
       getDecreyptedKey,
@@ -68,13 +66,7 @@ const LoginView = observer(
         <NineChroniclesLogo />
         <Box>
           <ClearCacheButton className={classes.cacheButton} />
-          <DownloadSnapshotButton
-            disabled={false}
-            setExtractState={setExtractState}
-            setDownloadState={setDownloadState}
-            setProgress={setProgress}
-            className={classes.downloadButton}
-          />
+          <DownloadSnapshotButton className={classes.downloadButton} />
         </Box>
         <form
           onSubmit={(event) => {
@@ -103,7 +95,6 @@ const LoginView = observer(
               ></TextField>
             </Grid>
           </Grid>
-          <LinearProgress variant="determinate" value={progress} />
           <Box>
             <Button
               className={classes.loginButton}
