@@ -242,7 +242,7 @@ function initializeIpc() {
 
       // 재시작
       app.relaunch();
-      app.quit();
+      app.exit();
 
       /*
       Electron이 제공하는 autoUpdater는 macOS에서는 무조건 코드사이닝 되어야 동작.
