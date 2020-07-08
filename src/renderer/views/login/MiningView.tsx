@@ -1,7 +1,7 @@
 import * as React from "react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { observer, inject } from "mobx-react";
-import { Button, Container } from "@material-ui/core";
+import { Button, Container, Box } from "@material-ui/core";
 import miningViewStyle from "./MiningView.style";
 import jade from "../../resources/miningJade.png";
 
@@ -19,7 +19,7 @@ const MiningView = observer(
 
     return (
       <Container className={classes.root}>
-        <h2 className={classes.title}>Please turn on the mining option.</h2>
+        <h3 className={classes.title}>Please turn on the mining option.</h3>
         <img className={classes.jade} src={jade} />
         <p>
           Nine Chronicles pursues an in-game economy that users create together.
@@ -27,25 +27,27 @@ const MiningView = observer(
           contribute your computer resources to the operation of Nine
           Chronicles.
         </p>
-        <Button
-          className={classes.button}
-          variant="contained"
-          onClick={() => {
-            runStandalone(false);
-          }}
-        >
-          Not now
-        </Button>
-        <Button
-          className={classes.button}
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            runStandalone(true);
-          }}
-        >
-          Got it!
-        </Button>
+        <Box className={classes.buttonContainer}>
+          <Button
+            className={`${classes.button} ${classes.buttonLeft}`}
+            variant="contained"
+            onClick={() => {
+              runStandalone(false);
+            }}
+          >
+            Not now
+          </Button>
+          <Button
+            className={`${classes.button} ${classes.buttonRight}`}
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              runStandalone(true);
+            }}
+          >
+            Got it!
+          </Button>
+        </Box>
       </Container>
     );
   }
