@@ -20,7 +20,7 @@ export const AccountSelect: React.FC<IAccountSelectProps> = observer(
       <Select
         id="account-select"
         variant="outlined"
-        value={props.addresses}
+        value={props.selectedAddress}
         onChange={handleChange}
         fullWidth
       >
