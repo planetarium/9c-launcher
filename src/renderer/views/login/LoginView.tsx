@@ -64,7 +64,7 @@ const LoginView = observer(
     }
 
     return (
-      <div className="login">
+      <div className="login" className={classes.root}>
         <NineChroniclesLogo />
         <Box>
           <ClearCacheButton className={classes.cacheButton} />
@@ -81,7 +81,6 @@ const LoginView = observer(
             event.preventDefault();
             handleSubmit();
           }}
-          className={classes.root}
         >
           <Grid container spacing={1}>
             <Grid item xs={12}>
