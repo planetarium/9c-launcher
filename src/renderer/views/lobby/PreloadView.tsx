@@ -1,6 +1,6 @@
 import { shell } from "electron";
 import React from "react";
-import YouTube from "react-youtube";
+import YouTube, { Options as IYoutubeOption } from "react-youtube";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import {
@@ -64,6 +64,7 @@ const PreloadView = observer((props: IStoreContainer) => {
 
   React.useEffect(() => {
     const steps: string = `(${preloadProgress?.currentPhase}/${preloadProgress?.totalPhase})`;
+    // FIXME: preloadProgress가 undefined일 경우 문제가 생길 수 있습니다.
     const phase: PreloadProgressPhase =
       PreloadProgressPhase[preloadProgress?.extra.type];
     switch (phase) {
@@ -89,11 +90,11 @@ const PreloadView = observer((props: IStoreContainer) => {
     }
   }, [preloadProgress]);
 
-  const videoOpts = {
-    width: 330,
-    height: 220,
+  const videoOpts: IYoutubeOption = {
+    width: "330",
+    height: "220",
     playerVars: {
-      autoPlay: 1,
+      autoplay: 1,
     },
   };
 

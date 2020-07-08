@@ -67,7 +67,8 @@
     "react-router-dom": "^5.2.0",
     "react-youtube": "^7.11.2",
     "subscriptions-transport-ws": "^0.9.16",
-    "tmp-promise": "^3.0.2"
+    "tmp-promise": "^3.0.2",
+    "url-loader": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.1",
