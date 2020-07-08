@@ -18,7 +18,7 @@ import {
 } from "electron";
 import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
-import fs from "fs";
+import fs, { copyFile } from "fs";
 import { ChildProcess, spawn } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import logoImage from "./resources/logo.png";
@@ -29,7 +29,7 @@ import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
 import { BencodexDict, decode, encode } from "bencodex";
 import zlib from "zlib";
-import tmp from "tmp-promise";
+import tmp, { tmpName } from "tmp-promise";
 import extract from "extract-zip";
 
 initializeSentry();
@@ -162,38 +162,39 @@ function initializeIpc() {
           ? path.dirname(
               path.dirname(path.dirname(path.dirname(app.getAppPath())))
             )
-          : app.getAppPath();
+          : path.dirname(path.dirname(app.getAppPath()));
       console.log("The 9C app installation path:", extractPath);
 
+      const appDirName = app.getAppPath();
       // FIXME: "config.json" 이거 하드코딩하지 말아야 함
-      // 기존 설정 파일 있으면 남겨두기
-      const configPath = path.join(app.getAppPath(), "config.json");
-      const dupConfigPath = configPath + ".bak";
-      // 압축 해제하기 전에 기존 설정 파일 꿍쳐둔다. 나중에 기존 설정 내용이랑 새 디폴트 값들이랑 합쳐야 함.
-      await fs.promises.copyFile(configPath, dupConfigPath);
-      console.log(
-        "The existing configuration file",
-        configPath,
-        "has moved to",
-        dupConfigPath
+      const configFileName = "config.json";
+
+      // 압축 해제하기 전에 기존 설정 꿍쳐둔다. 나중에 기존 설정 내용이랑 새 디폴트 값들이랑 합쳐야 함.
+      const configPath = path.join(appDirName, configFileName);
+      const bakConfig = JSON.parse(
+        await fs.promises.readFile(configPath, { encoding: "utf-8" })
       );
+      console.log("The existing configuration:", bakConfig);
 
       if (process.platform == "win32") {
-        const src = app.getPath("exe");
         // 윈도는 프로세스 떠 있는 실행 파일을 덮어씌우거나 지우지 못하므로 이름을 바꿔둬야 함.
-        const dst = `_bak_${src}`;
+        const src = app.getPath("exe");
+        const basename = path.basename(src);
+        const dirname = path.dirname(src);
+        const dst = path.join(dirname, "bak_" + basename);
         await fs.promises.rename(src, dst);
         console.log("The executing file has renamed from", src, "to", dst);
-        // TODO: 재시작 후에 _bak_{src} 파일 있으면 청소하는 거 추가해야...
+
+        // TODO: temp directory 앞에 9c-updater- 접두어
+        const tempDir = await tmpName();
+
+        // TODO: 재시작 후에 dst 파일 있으면 청소하는 거 추가해야...
         // ZIP 압축 해제
-        console.log(
-          "Start to extract the zip archive",
-          dlPath,
-          "to",
-          extractPath
-        );
-        await extract(dlPath, { dir: extractPath });
-        console.log("The zip archive", dlPath, "has extracted to", extractPath);
+        console.log("Start to extract the zip archive", dlPath, "to", tempDir);
+
+        await extract(dlPath, { dir: tempDir });
+        console.log("The zip archive", dlPath, "has extracted to", tempDir);
+        await copyDir(tempDir, extractPath);
       } else if (process.platform == "darwin") {
         // .tar.{gz,bz2} 해제
         const lowerFname = dlFname.toLowerCase();
@@ -225,16 +226,12 @@ function initializeIpc() {
         console.warn("Not supported platform.");
         return;
       }
-
       // 설정 합치기
-      const dupConfig = JSON.parse(
-        await fs.promises.readFile(dupConfigPath, { encoding: "utf-8" })
-      );
       const newConfig = JSON.parse(
         await fs.promises.readFile(configPath, { encoding: "utf-8" })
       );
       const config = {
-        ...dupConfig,
+        ...bakConfig,
         ...newConfig,
       };
       await fs.promises.writeFile(configPath, JSON.stringify(config), "utf-8");
@@ -430,4 +427,28 @@ extractTarget: [ ${snapshotPath} ]`);
 
 function deleteBlockchainStore(path: string) {
   fs.rmdirSync(path, { recursive: true });
+}
+
+async function copyDir(srcDir: string, dstDir: string) {
+  console.log("Copy a directory ", srcDir, "->", dstDir);
+  if (!(await fs.promises.stat(dstDir)).isDirectory()) {
+    fs.promises.mkdir(dstDir, { recursive: true });
+  }
+
+  for (const ent of await fs.promises.readdir(srcDir, {
+    withFileTypes: true,
+  })) {
+    const src = path.join(srcDir, ent.name);
+    const dst = path.join(dstDir, ent.name);
+    if (ent.isDirectory()) {
+      await copyDir(src, dst);
+    } else {
+      try {
+        await fs.promises.copyFile(src, dst);
+        console.log("Copy a file ", src, "->", dst);
+      } catch (e) {
+        console.warn("Failed to copy a file", src, "->", dst, ":\n", e);
+      }
+    }
+  }
 }
