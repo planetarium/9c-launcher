@@ -22,6 +22,7 @@ import {
   usePreloadProgressSubscriptionSubscription,
 } from "../../../generated/graphql";
 import preloadViewStyle from "./PreloadView.style";
+import LobbyView from "./LobbyView";
 
 enum PreloadProgressPhase {
   ActionExecutionState,
@@ -47,11 +48,11 @@ const PreloadView = observer((props: IStoreContainer) => {
     "Connecting to the network..."
   );
 
+  const [isPreloadEnded, setPreloadStats] = React.useState(false);
+
   React.useEffect(() => {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
-    if (isEnded) {
-      routerStore.push("/lobby");
-    }
+    setPreloadStats(isEnded === undefined ? false : isEnded);
   }, [nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded]);
 
   React.useEffect(() => {
@@ -135,10 +136,16 @@ const PreloadView = observer((props: IStoreContainer) => {
           <ListItemText primary="Nine Chronicles Player Guide" />
         </ListItem>
       </List>
-      {!!preloadProgress && <LinearProgressWithLabel value={progress} />}
-      <Typography align="center" display="block" variant="caption">
-        {statusMessage}
-      </Typography>
+      {!isPreloadEnded ? (
+        <>
+          {!!preloadProgress && <LinearProgressWithLabel value={progress} />}
+          <Typography align="center" display="block" variant="caption">
+            {statusMessage}
+          </Typography>
+        </>
+      ) : (
+        <LobbyView {...props} />
+      )}
     </Container>
   );
 });
