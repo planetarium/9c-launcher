@@ -145,6 +145,7 @@ function initializeIpc() {
           console.log(
             `Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
           );
+          win?.webContents.send("update download progress", status);
         },
         onCancel: () => {
           downloadingNewVersion = false;
@@ -153,6 +154,7 @@ function initializeIpc() {
       if (downloadingNewVersion) return;
       console.log("Starts to download:", downloadUrl);
       const dl = await download(win, downloadUrl, options);
+      win?.webContents.send("update download complete");
       const dlFname = dl.getFilename();
       const dlPath = dl.getSavePath();
       console.log("Finished to download:", dlPath);
@@ -192,9 +194,18 @@ function initializeIpc() {
         // ZIP 압축 해제
         console.log("Start to extract the zip archive", dlPath, "to", tempDir);
 
-        await extract(dlPath, { dir: tempDir });
+        await extractZip(dlPath, {
+          dir: tempDir,
+          onEntry: (_, zipfile) => {
+            const progress = zipfile.entriesRead / zipfile.entryCount;
+            win?.webContents.send("update extract progress", progress);
+          },
+        });
+        win?.webContents.send("update extract complete");
         console.log("The zip archive", dlPath, "has extracted to", tempDir);
+        win?.webContents.send("update copying progress");
         await copyDir(tempDir, extractPath);
+        win?.webContents.send("update copying complete");
       } else if (process.platform == "darwin") {
         // .tar.{gz,bz2} 해제
         const lowerFname = dlFname.toLowerCase();
