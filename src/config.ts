@@ -83,6 +83,14 @@ const LocalServerPort = (): number => {
   return 23061;
 };
 
+const getLocalApplicationDataPath = (): string => {
+  if (process.platform === "darwin") {
+    return path.join(app.getPath("home"), ".local", "share");
+  } else {
+    return path.join(app.getPath("home"), "AppData", "Local");
+  }
+};
+
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
 export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";
@@ -92,6 +100,7 @@ export const GRAPHQL_SERVER_URL = GraphQLServer();
 export const LOCAL_SERVER_PORT = LocalServerPort();
 export const RPC_SERVER_PORT = RpcServerPort();
 export const BLOCKCHAIN_STORE_PATH = path.join(
-  app.getPath("userData"),
-  ".store"
+  getLocalApplicationDataPath(),
+  "planetarium",
+  "9c"
 );
