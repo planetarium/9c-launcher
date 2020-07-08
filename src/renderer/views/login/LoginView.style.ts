@@ -11,6 +11,9 @@ const loginViewStyle = makeStyles({
   downloadButton: {
     float: "right",
     color: "#929292",
+    "&:disabled": {
+      backgroundColor: "transparent",
+    },
   },
   loginButton: {
     display: "block",
