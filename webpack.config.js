@@ -32,6 +32,7 @@ function createRenderConfig(isDev) {
     output: {
       filename: isDev ? "[name].js" : "[name].[hash].js",
       path: path.join(__dirname, "dist"),
+      publicPath: isDev ? "/" : undefined,
     },
 
     externals: {
