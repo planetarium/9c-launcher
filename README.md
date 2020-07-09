@@ -27,7 +27,7 @@ npm install
 
 추가로, 두 개의 별도 바이너리가 필요합니다.
 
-- 9C Headless (Standalone): `npm run build-headless`로 빌요 가능
+- 9C Headless (Standalone): `npm run build-headless`로 빌드 가능
   (.NET Core SDK 필요)
 - 9C Unity Player (_9c.exe_/_9c.app_): `npm run bundle-player`로 다운로드 가능
 

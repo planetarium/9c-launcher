@@ -54,6 +54,7 @@ function downloadPlayerBinary(
   return new Promise<void>((resolve, reject) => {
     https
       .get(url, (res) => {
+        if (res.statusCode != null && res.statusCode >= 400) return reject(res);
         const contentLength = res.headers["content-length"];
         const totalSize =
           contentLength == null ? null : parseInt(contentLength);
@@ -163,6 +164,10 @@ async function bundlePlayerBinary(
       playerCommit,
       f,
       options.downloadProgress
+    );
+  } catch {
+    throw new Error(
+      `Failed to download the player executable from ${playerCommit}.`
     );
   } finally {
     f.close();
