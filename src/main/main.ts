@@ -31,6 +31,7 @@ import { BencodexDict, decode, encode } from "bencodex";
 import zlib from "zlib";
 import tmp, { tmpName } from "tmp-promise";
 import extract from "extract-zip";
+import lockfile from "lockfile";
 
 initializeSentry();
 
@@ -41,6 +42,8 @@ let tray: Tray;
 let pids: number[] = [];
 let isQuiting: boolean = false;
 
+const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
@@ -48,7 +51,7 @@ if (!app.requestSingleInstanceLock()) {
     win?.show();
   });
 
-  cleanUpAfterUpdate();
+  cleanUp();
 
   initializeApp();
   initializeIpc();
@@ -103,9 +106,6 @@ function initializeIpc() {
     }
   });
 
-  // FIXME: 이렇게 변수로 하지 말고 .lock 파일 하나 만들어서 걸자
-  let downloadingNewVersion = false;
-
   ipcMain.on(
     "encounter different version",
     async (event, data: DifferentAppProtocolVersionEncounterSubscription) => {
@@ -137,10 +137,27 @@ function initializeIpc() {
 
       if (downloadUrl == null) return; // 지원 안 하는 플랫폼이니 무시.
 
+      if (lockfile.checkSync(lockfilePath)) {
+        console.log(
+          "'encounter different version' event seems running already. Stop this flow."
+        );
+        return;
+      } else {
+        try {
+          lockfile.lockSync(lockfilePath);
+          console.log(
+            "Created 'encounter different version' lockfile at ",
+            lockfilePath
+          );
+        } catch (e) {
+          console.error("Error occurred during trying lock.");
+          throw e;
+        }
+      }
+
       // TODO: 이어받기 되면 좋을 듯
       const options: ElectronDLOptions = {
         onStarted: (downloadItem: DownloadItem) => {
-          downloadingNewVersion = true;
           console.log("Starts to download:", downloadItem);
         },
         onProgress: (status: IDownloadProgress) => {
@@ -150,12 +167,8 @@ function initializeIpc() {
           );
           win?.webContents.send("update download progress", status);
         },
-        onCancel: () => {
-          downloadingNewVersion = false;
-        },
         directory: app.getPath("temp"),
       };
-      if (downloadingNewVersion) return;
       console.log("Starts to download:", downloadUrl);
       const dl = await download(win, downloadUrl, options);
       win?.webContents.send("update download complete");
@@ -256,6 +269,12 @@ function initializeIpc() {
       console.log(
         "The existing and new configuration files has been merged:",
         config
+      );
+
+      lockfile.unlockSync(lockfilePath);
+      console.log(
+        "Removed 'encounter different version' lockfile at ",
+        lockfilePath
       );
 
       // 재시작
@@ -375,6 +394,14 @@ function createWindow() {
   });
 }
 
+/**
+ * 프로그램이 시작될 때 이전 실행에서 발생한 부산물을 정리합니다.
+ */
+function cleanUp() {
+  cleanUpAfterUpdate();
+  cleanUpLockfile();
+}
+
 function cleanUpAfterUpdate() {
   const executable = app.getPath("exe");
   const basename = path.basename(executable);
@@ -389,6 +416,15 @@ function cleanUpAfterUpdate() {
     );
     fs.unlinkSync(bakExecutable);
     console.log("Removed ", bakExecutable);
+  }
+}
+
+/**
+ * lockfile lock이 걸려있을 경우 unlock합니다.
+ */
+function cleanUpLockfile() {
+  if (lockfile.checkSync(lockfilePath)) {
+    lockfile.unlockSync(lockfilePath);
   }
 }
 
