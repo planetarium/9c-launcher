@@ -22,7 +22,7 @@ const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
     const [passphrase, setPassphrase] = useState("");
-    const [progress, setProgress] = useState(0);
+    const [isSnapshotProgress, setSnapshotProgressState] = useState(false);
     const [
       getDecreyptedKey,
       { loading, data },
@@ -62,11 +62,14 @@ const LoginView = observer(
     }
 
     return (
-      <div className="login" className={classes.root}>
+      <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
         <Box>
           <ClearCacheButton className={classes.cacheButton} />
-          <DownloadSnapshotButton className={classes.downloadButton} />
+          <DownloadSnapshotButton
+            setSnapshotProgressState={setSnapshotProgressState}
+            className={classes.downloadButton}
+          />
         </Box>
         <form
           onSubmit={(event) => {
@@ -101,6 +104,7 @@ const LoginView = observer(
               type="submit"
               variant="contained"
               color="primary"
+              disabled={isSnapshotProgress}
             >
               Login
             </Button>

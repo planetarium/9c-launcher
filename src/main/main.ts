@@ -82,6 +82,7 @@ function initializeApp() {
 
 function initializeIpc() {
   ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
+    deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
     options.properties.onProgress = (status: IDownloadProgress) =>
       win?.webContents.send("download progress", status);
     options.properties.directory = app.getPath("userData");
@@ -317,9 +318,11 @@ function initializeIpc() {
     );
     node.on("close", (code) => {
       win?.webContents.send("game closed");
+      win?.show();
     });
     node.on("exit", (code) => {
       win?.webContents.send("game closed");
+      win?.show();
     });
     win?.minimize();
   });
@@ -357,11 +360,6 @@ function createWindow() {
   } else {
     win.loadFile("index.html");
   }
-
-  win.on("minimize", function (event: any) {
-    event.preventDefault();
-    win?.hide();
-  });
 
   win.on("close", function (event: any) {
     if (!isQuiting) {

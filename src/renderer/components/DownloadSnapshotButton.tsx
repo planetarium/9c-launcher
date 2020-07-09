@@ -6,6 +6,7 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 
 interface IDownloadSnaphostProps {
   className: string;
+  setSnapshotProgressState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
@@ -35,6 +36,10 @@ const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
       setDownloadState(false);
     });
   }, []);
+
+  React.useEffect(() => {
+    props.setSnapshotProgressState(isExtract || isDownload);
+  }, [isExtract, isDownload]);
   const downloadSnapShot = () => {
     const options: IDownloadOptions = {
       properties: {},
