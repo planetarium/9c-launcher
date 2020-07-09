@@ -18,6 +18,17 @@ const FILENAMES: { [K in Platform]: string } = {
   Windows: "Windows.zip",
 };
 
+function getCurrentPlatform(): Platform {
+  const error = () => {
+    throw new Error(`Unsupported platform: ${process.platform}`);
+  };
+  return process.platform == "win32"
+    ? "Windows"
+    : process.platform == "darwin"
+    ? "macOS"
+    : error();
+}
+
 async function getPlayerCommit(): Promise<Sha> {
   const refFile = await fs.promises.open(
     path.join(__dirname, "..", ".git", "modules", "nekoyume-unity", "HEAD"),
@@ -64,7 +75,8 @@ function downloadPlayerBinary(
   });
 }
 
-async function unzip(zipPath: string, extractTo: string): Promise<void> {
+// extract-zip 패키지가 없을 때를 위한 PowerShell 외주 구현.
+let unzip = (zipPath: string, extractTo: string): Promise<void> => {
   const args = [
     "-Command",
     'Expand-Archive -Force -Path "$env:ZIP_SRC" -DestinationPath "$env:ZIP_DST"',
@@ -87,6 +99,15 @@ async function unzip(zipPath: string, extractTo: string): Promise<void> {
       }
     });
   });
+};
+
+try {
+  const extractZip = require("extract-zip");
+  unzip = async (zipPath: string, extractTo: string): Promise<void> => {
+    await extractZip(zipPath, { dir: extractTo });
+  };
+} catch (_) {
+  // extract-zip 패키지 없으면 그냥 PowerShell에 외주 준다.
 }
 
 async function untar(tarPath: string, extractTo: string): Promise<void> {
@@ -163,7 +184,7 @@ async function main(): Promise<void> {
     // dist/ 디렉터리가 이미 있으면 안 만들어도 됨.
   }
   let percent: number | null = null;
-  await bundlePlayerBinary("macOS", commit, distPath, {
+  await bundlePlayerBinary(getCurrentPlatform(), commit, distPath, {
     downloadProgress: async (got, total) => {
       const p = total == null ? null : ((got / total) * 100) | 0;
       if (p !== percent || total === null) {

@@ -17,20 +17,27 @@ Nine Chronicles를 구동하기 위한 일렉트론 기반의 멀티플랫폼 �
 |   +-- App.tsx
 ```
 
-## 실행방법
+## 실행 방법
 
-먼저, 두 개의 추가 바이너리가 필요합니다.
+먼저, 개발에 필요한 의존성부터 모두 설치합니다.
 
-- NineChronicles Standalone
-- NineChronicles Unity
+```bash
+npm install
+```
 
-두 개의 바이너리를 해당 디렉터리와 같게 배치해 주십시오.
+추가로, 두 개의 별도 바이너리가 필요합니다.
+
+- 9C Headless (Standalone): `npm run build-headless`로 빌요 가능
+  (.NET Core SDK 필요)
+- 9C Unity Player (_9c.exe_/_9c.app_): `npm run bundle-player`로 다운로드 가능
+
+또는 두 개의 바이너리를 해당 디렉터리와 같게 배치해 주십시오.
 
 ```
 ./src
 ./dist
-|   +-- 9c.(exe|app) // NineChronicles Unity
-|   +-- publish // NineChronicles Standalone
+|   +-- 9c.(exe|app) // 9C Unity Player
+|   +-- publish // 9C Headless (Standalone)
 |   |   +-- Libpalnet.dll
 |   |   +-- Grpc.Core.dll
 |   |   +-- ...
@@ -39,9 +46,7 @@ Nine Chronicles를 구동하기 위한 일렉트론 기반의 멀티플랫폼 �
 
 그 뒤 하기의 명령어를 입력합니다.
 
-```js
-npm install
-npm run build-headless
+```javascript
 npm run dev
 ```
 
@@ -68,9 +73,12 @@ mobx-devtools
 
 ## 빌드 방법
 
-```js
-npm run build //개발 빌드
-npm run build-prod //프로덕션 빌드
+```bash
+npm install
+npm run build  # 개발 빌드
+npm run build-headless  # 9C Headless (Standalone) 빌드 (.NET Core SDK 필요)
+npm run bundle-player  # 9C Unity Player 받기
+npm run build-prod  # 프로덕션 빌드
 ```
 
 ## 패키징 방법
