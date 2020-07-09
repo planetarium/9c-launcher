@@ -1,22 +1,37 @@
 import * as React from "react";
+import { remote } from "electron";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { useProtectedPrivateKeysQuery } from "../../../generated/graphql";
-import { Button } from "@material-ui/core";
+import errorViewStyle from "./ErrorView.style";
+import { Button, Container, Typography } from "@material-ui/core";
 
 const ErrorView: React.FC<{}> = () => {
+  const classes = errorViewStyle();
+  const handleRelaunch = React.useCallback(() => {
+    remote.app.relaunch();
+    remote.app.exit();
+  }, []);
   return (
-    <div>
-      <h1>Oops, something went wrong.</h1>
-      <label>Please follow step below.</label>
+    <Container className={classes.root}>
+      <Typography variant="h1" gutterBottom className={classes.title}>
+        Something went wrong.
+      </Typography>
+      <Typography variant="subtitle1">Please follow step below.</Typography>
       <ol>
-        <li>Quit launcher.</li>
-        <li>Reopen launcher.</li>
-        <li>Clear Cache.</li>
-        <li>Download Snapshot.</li>
-        <li>Login.</li>
+        <li>Relaunch &ldquo;Nine Chornicles&rdquo;</li>
+        <li>Click Download Snapshot</li>
+        <li>Login once again</li>
       </ol>
-    </div>
+      <Button
+        color="primary"
+        variant="contained"
+        fullWidth
+        onClick={handleRelaunch}
+      >
+        Relaunch
+      </Button>
+    </Container>
   );
 };
 
