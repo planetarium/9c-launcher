@@ -34,6 +34,7 @@ const LoginView = observer(
         const privateKey = data.keyStore.decryptedPrivateKey;
         accountStore.setPrivateKey(privateKey);
         accountStore.toggleLogin();
+        mixpanel.track("Launcher/Login");
         mixpanel.identify(accountStore.selectedAddress);
 
         if (standaloneStore.NoMiner) {
