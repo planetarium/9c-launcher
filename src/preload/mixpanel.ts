@@ -5,7 +5,7 @@ import getMAC from "getmac";
 const token = "80a1e14b57d050536185c7459d45195a";
 
 export default function initializeMixpanel() {
-  if (isDev && false) {
+  if (isDev) {
     console.debug("Mixpanel is disabled in development mode.");
     return;
   }
