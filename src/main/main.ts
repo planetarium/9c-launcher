@@ -317,9 +317,11 @@ function initializeIpc() {
     );
     node.on("close", (code) => {
       win?.webContents.send("game closed");
+      win?.show();
     });
     node.on("exit", (code) => {
       win?.webContents.send("game closed");
+      win?.show();
     });
     win?.minimize();
   });
