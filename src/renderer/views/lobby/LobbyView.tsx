@@ -11,6 +11,8 @@ const LobbyView = observer((props: IStoreContainer) => {
       <Button
         fullWidth
         disabled={gameStore.isGameStarted}
+        variant="contained"
+        color="primary"
         onClick={(event: React.MouseEvent) => {
           gameStore.startGame(accountStore.privateKey);
         }}
