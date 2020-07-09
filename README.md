@@ -83,8 +83,8 @@ npm run build-prod  # 프로덕션 빌드
 
 ## 패키징 방법
 
-```js
-npm run pack
+```bash
+npm run pack-all
 ```
 
 ## 로깅 위치
