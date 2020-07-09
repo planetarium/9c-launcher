@@ -358,11 +358,6 @@ function createWindow() {
     win.loadFile("index.html");
   }
 
-  win.on("minimize", function (event: any) {
-    event.preventDefault();
-    win?.hide();
-  });
-
   win.on("close", function (event: any) {
     if (!isQuiting) {
       event.preventDefault();
