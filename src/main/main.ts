@@ -150,6 +150,7 @@ function initializeIpc() {
         onCancel: () => {
           downloadingNewVersion = false;
         },
+        directory: app.getPath("temp"),
       };
       if (downloadingNewVersion) return;
       console.log("Starts to download:", downloadUrl);
