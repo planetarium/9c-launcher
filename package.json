@@ -31,7 +31,7 @@
     "build-headless": "run-script-os",
     "build-headless:windows": "dotnet publish nekoyume-unity/NineChronicles.Standalone.Executable/NineChronicles.Standalone.Executable.csproj -r win-x64 -o dist/publish --self-contained",
     "build-headless:darwin": "dotnet publish nekoyume-unity/NineChronicles.Standalone.Executable/NineChronicles.Standalone.Executable.csproj -r osx-x64 -o dist/publish --self-contained",
-    "bundle-player": "ts-node scripts/downloadPlayer.ts"
+    "bundle-player": "npx ts-node scripts/downloadPlayer.ts"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
@@ -123,6 +123,7 @@
     "react-test-renderer": "^16.13.1",
     "run-script-os": "^1.1.1",
     "sass-loader": "^8.0.2",
+    "ts-node": "^8.10.2",
     "typescript": "^3.9.3",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
