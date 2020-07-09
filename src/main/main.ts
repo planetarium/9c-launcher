@@ -15,6 +15,7 @@ import {
   ipcMain,
   DownloadItem,
   autoUpdater,
+  Notification,
 } from "electron";
 import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
@@ -26,7 +27,10 @@ import { initializeSentry } from "../preload/sentry";
 import "@babel/polyfill";
 import extractZip from "extract-zip";
 import log from "electron-log";
-import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
+import {
+  DifferentAppProtocolVersionEncounterSubscription,
+  NotificationSubscription,
+} from "../generated/graphql";
 import { BencodexDict, decode, encode } from "bencodex";
 import zlib from "zlib";
 import tmp, { tmpName } from "tmp-promise";
@@ -359,6 +363,28 @@ function initializeIpc() {
     } catch (e) {
       console.log(e);
       event.returnValue = false;
+    }
+  });
+
+  ipcMain.on("notification", async (event, data: NotificationSubscription) => {
+    let { type } = data.notification;
+    let title = "";
+    let body = "";
+    let icon = path.join(app.getAppPath(), logoImage);
+
+    if (type === "refill") {
+      title = "You can refill action point!";
+      body = "Turn on Nine Chronicles!";
+    }
+
+    if (title && body && icon) {
+      let notification = new Notification({
+        title: title,
+        body: body,
+        icon: icon,
+      });
+
+      notification.show();
     }
   });
 }

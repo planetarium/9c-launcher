@@ -21,6 +21,7 @@ import Root from "./Root";
 import StandaloneStore from "./stores/standalone";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
+import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
 import montserrat from "./styles/font";
 
 const wsLink = new WebSocketLink({
@@ -88,15 +89,15 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <DifferentAppProtocolVersionSubscriptionProvider>
-        <Router history={history}>
-          <Provider {...Store}>
-            <ThemeProvider theme={theme}>
-              <Root />
-            </ThemeProvider>
-          </Provider>
-        </Router>
-      </DifferentAppProtocolVersionSubscriptionProvider>
+      <DifferentAppProtocolVersionSubscriptionProvider />
+      <NotificationSubscriptionProvider />
+      <Router history={history}>
+        <Provider {...Store}>
+          <ThemeProvider theme={theme}>
+            <Root />
+          </ThemeProvider>
+        </Provider>
+      </Router>
     </ApolloProvider>
   );
 }
