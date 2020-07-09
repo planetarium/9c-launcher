@@ -30,7 +30,8 @@
     "codegen": "graphql-codegen",
     "build-headless": "run-script-os",
     "build-headless:windows": "dotnet publish nekoyume-unity/NineChronicles.Standalone.Executable/NineChronicles.Standalone.Executable.csproj -r win-x64 -o dist/publish --self-contained",
-    "build-headless:darwin": "dotnet publish nekoyume-unity/NineChronicles.Standalone.Executable/NineChronicles.Standalone.Executable.csproj -r osx-x64 -o dist/publish --self-contained"
+    "build-headless:darwin": "dotnet publish nekoyume-unity/NineChronicles.Standalone.Executable/NineChronicles.Standalone.Executable.csproj -r osx-x64 -o dist/publish --self-contained",
+    "bundle-player": "ts-node scripts/downloadPlayer.ts"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
