@@ -239,6 +239,10 @@ function initializeIpc() {
         console.warn("Not supported platform.");
         return;
       }
+
+      // 압축을 푼 뒤 압축 파일은 제거합니다.
+      await fs.promises.unlink(dlPath);
+
       // 설정 합치기
       const newConfig = JSON.parse(
         await fs.promises.readFile(configPath, { encoding: "utf-8" })
