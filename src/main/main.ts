@@ -48,6 +48,8 @@ if (!app.requestSingleInstanceLock()) {
     win?.show();
   });
 
+  cleanUpAfterUpdate();
+
   initializeApp();
   initializeIpc();
 }
@@ -151,6 +153,7 @@ function initializeIpc() {
         onCancel: () => {
           downloadingNewVersion = false;
         },
+        directory: app.getPath("temp"),
       };
       if (downloadingNewVersion) return;
       console.log("Starts to download:", downloadUrl);
@@ -191,7 +194,6 @@ function initializeIpc() {
         // TODO: temp directory 앞에 9c-updater- 접두어
         const tempDir = await tmpName();
 
-        // TODO: 재시작 후에 dst 파일 있으면 청소하는 거 추가해야...
         // ZIP 압축 해제
         console.log("Start to extract the zip archive", dlPath, "to", tempDir);
 
@@ -238,6 +240,10 @@ function initializeIpc() {
         console.warn("Not supported platform.");
         return;
       }
+
+      // 압축을 푼 뒤 압축 파일은 제거합니다.
+      await fs.promises.unlink(dlPath);
+
       // 설정 합치기
       const newConfig = JSON.parse(
         await fs.promises.readFile(configPath, { encoding: "utf-8" })
@@ -367,6 +373,23 @@ function createWindow() {
       win?.hide();
     }
   });
+}
+
+function cleanUpAfterUpdate() {
+  const executable = app.getPath("exe");
+  const basename = path.basename(executable);
+  const dirname = path.dirname(executable);
+  const bakExecutable = path.join(dirname, "bak_" + basename);
+
+  if (fs.existsSync(bakExecutable)) {
+    console.log(
+      "The result from updating process, ",
+      bakExecutable,
+      ", was found."
+    );
+    fs.unlinkSync(bakExecutable);
+    console.log("Removed ", bakExecutable);
+  }
 }
 
 function execute(binaryPath: string, args: string[]) {
