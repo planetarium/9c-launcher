@@ -9,9 +9,10 @@ import stream from "stream";
 type Sha = string;
 type Platform = "macOS" | "Windows";
 
-// 아래 S3 버킷에 nekoyume-unity 저장소의 마스터 푸시마다 빌드한 아티팩트가 올라간다.
+// S3 "9c-artifacts.s3.amazonaws.com" 버킷에 nekoyume-unity 저장소의
+// 마스터 푸시마다 빌드한 아티팩트가 올라간다.
 // 참고: https://github.com/planetarium/nekoyume-unity/pull/2446
-const DOWNLOAD_URL_BASE: string = "https://9c-artifacts.s3.amazonaws.com";
+const DOWNLOAD_URL_BASE: string = "https://d3rgdei88xmq6p.cloudfront.net";
 const FILENAMES: { [K in Platform]: string } = {
   macOS: "macOS.tar.gz",
   Windows: "Windows.zip",
