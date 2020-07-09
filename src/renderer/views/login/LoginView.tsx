@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
+import mixpanel from "mixpanel-browser";
 import { IStoreContainer } from "../../../interfaces/store";
 import {
   Button,
@@ -33,6 +34,9 @@ const LoginView = observer(
         const privateKey = data.keyStore.decryptedPrivateKey;
         accountStore.setPrivateKey(privateKey);
         accountStore.toggleLogin();
+        mixpanel.track("Launcher/Login");
+        mixpanel.identify(accountStore.selectedAddress);
+
         if (standaloneStore.NoMiner) {
           routerStore.push("/login/mining");
         } else {

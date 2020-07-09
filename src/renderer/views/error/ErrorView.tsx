@@ -1,5 +1,6 @@
 import * as React from "react";
 import { remote } from "electron";
+import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { useProtectedPrivateKeysQuery } from "../../../generated/graphql";
@@ -11,6 +12,10 @@ const ErrorView: React.FC<{}> = () => {
   const handleRelaunch = React.useCallback(() => {
     remote.app.relaunch();
     remote.app.exit();
+  }, []);
+
+  React.useEffect(() => {
+    mixpanel.track("Launcher/FatalError");
   }, []);
   return (
     <Container className={classes.root}>

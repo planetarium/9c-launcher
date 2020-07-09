@@ -1,4 +1,5 @@
 import * as React from "react";
+import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
 import {
   Button,
@@ -40,6 +41,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
 
     const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
+      mixpanel.track("Launcher/CreatePrivateKey");
       createAccount({
         variables: {
           passphrase: password,
