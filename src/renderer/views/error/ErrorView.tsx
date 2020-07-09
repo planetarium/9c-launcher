@@ -2,13 +2,17 @@ import * as React from "react";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { useProtectedPrivateKeysQuery } from "../../../generated/graphql";
-import { Button } from "@material-ui/core";
+import errorViewStyle from "./ErrorView.style";
+import { Container, Typography } from "@material-ui/core";
 
 const ErrorView: React.FC<{}> = () => {
+  const classes = errorViewStyle();
   return (
-    <div>
-      <h1>Oops, something went wrong.</h1>
-      <label>Please follow step below.</label>
+    <Container className={classes.root}>
+      <Typography variant="h1" gutterBottom className={classes.title}>
+        Something went wrong.
+      </Typography>
+      <Typography variant="subtitle1">Please follow step below.</Typography>
       <ol>
         <li>Quit launcher.</li>
         <li>Reopen launcher.</li>
@@ -16,7 +20,7 @@ const ErrorView: React.FC<{}> = () => {
         <li>Download Snapshot.</li>
         <li>Login.</li>
       </ol>
-    </div>
+    </Container>
   );
 };
 
