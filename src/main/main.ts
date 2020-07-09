@@ -82,6 +82,7 @@ function initializeApp() {
 
 function initializeIpc() {
   ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
+    deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
     options.properties.onProgress = (status: IDownloadProgress) =>
       win?.webContents.send("download progress", status);
     options.properties.directory = app.getPath("userData");
