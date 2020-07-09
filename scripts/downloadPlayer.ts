@@ -181,6 +181,7 @@ async function bundlePlayerBinary(
 }
 
 async function main(): Promise<void> {
+  const platform = getCurrentPlatform();
   const commit = await getPlayerCommit();
   const distPath = path.normalize(path.join(__dirname, "..", "dist"));
   try {
@@ -188,8 +189,28 @@ async function main(): Promise<void> {
   } catch (_) {
     // dist/ 디렉터리가 이미 있으면 안 만들어도 됨.
   }
+  const appPath = path.join(
+    distPath,
+    platform == "Windows" ? "Nine Chronicles.exe" : "Nine Chronicles.app"
+  );
+  const fingerprintPath = path.join(distPath, ".9cfp");
+  try {
+    const fingerprint = await fs.promises.readFile(fingerprintPath, {
+      encoding: "utf8",
+    });
+    const [eCommit, eMtime] = fingerprint.trim().split("\n");
+    if (eCommit.toLowerCase().trim() === commit) {
+      const appStat = await fs.promises.stat(appPath);
+      if (parseInt(eMtime.trim()) == appStat.mtime.getTime()) {
+        console.debug(`There is already ${appPath} which is from ${commit}.`);
+        return;
+      }
+    }
+  } catch (e) {
+    if (e.code == null || e.code !== "ENOENT") throw e;
+  }
   let percent: number | null = null;
-  await bundlePlayerBinary(getCurrentPlatform(), commit, distPath, {
+  await bundlePlayerBinary(platform, commit, distPath, {
     downloadProgress: async (got, total) => {
       const p = total == null ? null : ((got / total) * 100) | 0;
       if (p !== percent || total === null) {
@@ -205,6 +226,11 @@ async function main(): Promise<void> {
       console.debug(`Extracting ${archivePath} to ${extractTo}...`);
     },
   });
+  const appStat = await fs.promises.stat(appPath);
+  await fs.promises.writeFile(
+    fingerprintPath,
+    `${commit}\n${appStat.mtime.getTime()}`
+  );
 }
 
 main().catch((e) => console.error(e));
