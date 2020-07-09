@@ -176,8 +176,21 @@ async function bundlePlayerBinary(
     await options.beforeDecompress(tmpPath, bundleInto);
   }
   await DECOMPRESSOR[platform](tmpPath, bundleInto);
-  await fs.promises.unlink(tmpPath);
-  await fs.promises.rmdir(tmpdir);
+  const unnecessaryDirs = // 론처 v1의 잔재들
+    platform == "Windows"
+      ? ["MonoBleedingEdge", "qt-runtime", "9c_Data"]
+      : ["Nine Chronicles.app"];
+  for (const unnecessaryDir of unnecessaryDirs) {
+    try {
+      await fs.promises.rmdir(path.join(bundleInto, unnecessaryDir), {
+        recursive: true,
+      });
+    } catch (e) {
+      if (e.code === "ENOENT") continue;
+      throw e;
+    }
+  }
+  await fs.promises.rmdir(tmpdir, { recursive: true });
 }
 
 async function main(): Promise<void> {
@@ -207,7 +220,7 @@ async function main(): Promise<void> {
       }
     }
   } catch (e) {
-    if (e.code == null || e.code !== "ENOENT") throw e;
+    if (e.code !== "ENOENT") throw e;
   }
   let percent: number | null = null;
   await bundlePlayerBinary(platform, commit, distPath, {
