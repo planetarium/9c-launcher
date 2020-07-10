@@ -4,7 +4,11 @@ import mixpanel from "mixpanel-browser";
 import { IStoreContainer } from "../../../interfaces/store";
 import { inject, observer } from "mobx-react";
 
-const LobbyView = observer((props: IStoreContainer) => {
+interface ILobbyViewProps extends IStoreContainer {
+  onLaunch: () => void;
+}
+
+const LobbyView = observer((props: ILobbyViewProps) => {
   const { accountStore, gameStore } = props;
 
   return (
@@ -17,6 +21,8 @@ const LobbyView = observer((props: IStoreContainer) => {
         onClick={(event: React.MouseEvent) => {
           mixpanel.track("Launcher/Unity Player Start");
           gameStore.startGame(accountStore.privateKey);
+          props.onLaunch();
+          window.close();
         }}
       >
         {gameStore.isGameStarted ? "Now Running..." : "Start Game"}
