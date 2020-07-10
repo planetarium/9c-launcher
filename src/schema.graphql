@@ -37,6 +37,7 @@ scalar Byte
 scalar SByte
 
 type StandaloneQuery {
+  activationStatus: ActivationStatusQuery!
   keyStore: KeyStoreType
   nodeStatus: NodeStatusType!
   state(address: Address!, hash: ByteString): ByteString
@@ -77,7 +78,12 @@ type ValidationQuery {
   publicKey(hex: ByteString!): Boolean!
 }
 
+type ActivationStatusQuery {
+  activated: Boolean!
+}
+
 type StandaloneMutation {
+  activationStatus: ActivationStatusMutation
   keyStore: KeyStoreMutation
 }
 
@@ -87,6 +93,10 @@ type KeyStoreMutation {
     privateKey: ByteString
   ): ProtectedPrivateKeyType!
   revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
+}
+
+type ActivationStatusMutation {
+  activateAccount(encodedActivationKey: String!): Boolean!
 }
 
 type StandaloneSubscription {
