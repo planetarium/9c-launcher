@@ -78,14 +78,24 @@ npm install
 npm run build  # 개발 빌드
 npm run build-headless  # 9C Headless (Standalone) 빌드 (.NET Core SDK 필요)
 npm run bundle-player  # 9C Unity Player 받기
+APV_SIGN_KEY=... APV_NO=... npm run sign-apv  # APV 서명 (planet 명령 필요)
 npm run build-prod  # 프로덕션 빌드
 ```
 
 ## 패키징 방법
 
 ```bash
-npm run pack-all
+APV_SIGN_KEY=... APV_NO=... npm run pack-all
 ```
+
+다음 환경 변수를 요구합니다. 누락됐을 경우 APV(앱 프로토콜 버전) 서명을 안 합니다.
+
+- `APV_SIGN_KEY`: APV 서명에 쓸 비밀키의 16진수 문자열
+  (프로덕션 빌드를 위한 서명용 비밀키는 동료에게 문의하세요)
+- `APV_NO`: APV 숫자
+  ([`Libplanet.Net.AppProtocolVersion.Version`][appprotocolversion.version])
+
+[appprotocolversion.version]: https://docs.libplanet.io/master/api/Libplanet.Net.AppProtocolVersion.html#Libplanet_Net_AppProtocolVersion_Version
 
 ## 로깅 위치
 

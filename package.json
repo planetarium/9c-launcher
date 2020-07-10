@@ -32,7 +32,10 @@
     "build-headless:windows": "dotnet publish nekoyume-unity/NineChronicles.Standalone.Executable/NineChronicles.Standalone.Executable.csproj -r win-x64 -o dist/publish --self-contained",
     "build-headless:darwin": "dotnet publish nekoyume-unity/NineChronicles.Standalone.Executable/NineChronicles.Standalone.Executable.csproj -r osx-x64 -o dist/publish --self-contained",
     "bundle-player": "npx ts-node scripts/downloadPlayer.ts",
-    "pack-all": "npm install && npm run build-headless && npm run bundle-player && npm run pack"
+    "sign-apv": "run-script-os",
+    "sign-apv:windows": "powershell -nop -ex bypass -noni -f scripts\\sign-apv.ps1 || (exit 0)",
+    "sign-apv:darwin": "scripts/sign-apv.sh || true",
+    "pack-all": "npm install && npm run build-headless && npm run bundle-player && npm run sign-apv && npm run pack"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
