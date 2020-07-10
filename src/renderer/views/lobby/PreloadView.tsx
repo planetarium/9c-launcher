@@ -34,7 +34,7 @@ enum PreloadProgressPhase {
 }
 
 const PreloadView = observer((props: IStoreContainer) => {
-  const { routerStore } = props;
+  const { routerStore, standaloneStore } = props;
   const classes = preloadViewStyle();
   const {
     data: preloadProgressSubscriptionResult,
@@ -67,6 +67,21 @@ const PreloadView = observer((props: IStoreContainer) => {
     );
     setProgress(prog);
   }, [preloadProgress?.extra]);
+
+  React.useEffect(() => {
+    if (isPreloadEnded) {
+      const phase: PreloadProgressPhase =
+        PreloadProgressPhase[preloadProgress?.extra.type];
+
+      if (
+        phase !== PreloadProgressPhase.ActionExecutionState &&
+        phase !== PreloadProgressPhase.StateDownloadState &&
+        standaloneStore.properties.PeerStrings.length > 0
+      ) {
+        routerStore.push("/error");
+      }
+    }
+  }, [isPreloadEnded, preloadProgress?.extra]);
 
   React.useEffect(() => {
     const steps: string = `(${preloadProgress?.currentPhase}/${preloadProgress?.totalPhase})`;
@@ -170,4 +185,4 @@ const getProgress = (
   return total === 0 ? 0 : Math.round((current / total) * 100);
 };
 
-export default inject("routerStore")(PreloadView);
+export default inject("routerStore", "standaloneStore")(PreloadView);
