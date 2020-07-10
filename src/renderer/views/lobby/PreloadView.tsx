@@ -120,13 +120,19 @@ const PreloadView = observer((props: IStoreContainer) => {
     lineHeight: 1.25,
   });
 
+  const youtubeRef = React.useRef<YouTube>(null);
+  const handleLaunch = React.useCallback(() => {
+    const player = youtubeRef.current.internalPlayer;
+    player.pauseVideo();
+  }, [youtubeRef]);
+
   return (
     <Container className={classes.root}>
       <Headline paragraph>
         Receiving data from other users. <br />
         Let's watch teaser and contents!
       </Headline>
-      <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} />
+      <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
       <List component="nav">
         <ListItem button onClick={handleClickBlockExplorer}>
           <ListItemIcon>
@@ -149,7 +155,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </Typography>
         </>
       ) : (
-        <LobbyView {...props} />
+        <LobbyView {...props} onLaunch={handleLaunch} />
       )}
     </Container>
   );
