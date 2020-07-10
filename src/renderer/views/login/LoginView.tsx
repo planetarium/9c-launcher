@@ -23,10 +23,11 @@ const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
     const [passphrase, setPassphrase] = useState("");
+    const [isLoginSuccess, setLoginSuccessState] = useState(false);
     const [isSnapshotProgress, setSnapshotProgressState] = useState(false);
     const [
       getDecreyptedKey,
-      { loading, data },
+      { loading, error, data },
     ] = useDecreyptedPrivateKeyLazyQuery();
 
     React.useEffect(() => {
@@ -50,6 +51,12 @@ const LoginView = observer(
         }
       }
     }, [data]);
+
+    React.useEffect(() => {
+      if (error?.message !== undefined) {
+        setLoginSuccessState(true);
+      }
+    }, [error]);
 
     const handleSubmit = () => {
       getDecreyptedKey({
@@ -95,6 +102,7 @@ const LoginView = observer(
               <TextField
                 type="password"
                 variant="outlined"
+                error={isLoginSuccess}
                 onChange={(event) => {
                   setPassphrase(event.target.value);
                 }}
