@@ -12,6 +12,7 @@ import {
   useActivationQuery,
   useActivateMutation,
 } from "../../../generated/graphql";
+import lobbyViewStyle from "./LobbyView.style";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
@@ -22,6 +23,7 @@ function sleep(ms: number) {
 }
 
 const LobbyView = observer((props: ILobbyViewProps) => {
+  const classes = lobbyViewStyle();
   const { accountStore, gameStore } = props;
   const {
     loading,
@@ -68,7 +70,8 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     return false;
   }, [activatedError]);
 
-  if (loading || polling) return <p>Verifing...</p>;
+  if (loading || polling)
+    return <p className={classes.verifing}>Verifing...</p>;
   if (status?.activationStatus.activated)
     return (
       <Container>
@@ -96,8 +99,16 @@ const LobbyView = observer((props: ILobbyViewProps) => {
             error={handleIsActivationSuccess()}
             label="Activation Key"
             onChange={privateKeyChangeHandle}
+            fullWidth
           />
-          <Button type="submit"> Activation</Button>
+          <Button
+            color="primary"
+            variant="contained"
+            className={classes.activation}
+            type="submit"
+          >
+            Activation
+          </Button>
         </form>
       </Container>
     );
