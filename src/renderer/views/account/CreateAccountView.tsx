@@ -50,14 +50,17 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
           passphrase: password,
         },
       }).then((e: ExecutionResult<CreatePrivateKeyMutation>) => {
-        const address = e.data?.keyStore?.createPrivateKey.publicKey.address;
-        if (null == address) {
+        const keyStore = e.data?.keyStore;
+        if (null == keyStore) {
           return;
         }
+        const address = keyStore.createPrivateKey.publicKey.address;
+        const privateKey = keyStore.createPrivateKey.hex;
 
+        accountStore.setPrivateKey(privateKey);
         accountStore.addAddress(address);
         accountStore.setSelectedAddress(address);
-        push("/");
+        push("/account/create/copy");
       });
     };
 

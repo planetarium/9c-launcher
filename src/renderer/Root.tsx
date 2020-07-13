@@ -16,6 +16,7 @@ import ErrorView from "./views/error/ErrorView";
 import { InputPrivateKeyView } from "./views/account/reset/InputPrivateKeyView";
 import { RegisterPrivateKeyView } from "./views/account/reset/RegisterPrivateKeyView";
 import PreloadView from "./views/lobby/PreloadView";
+import CopyCreatedPrivateKeyView from "./views/account/CopyCreatedPrivateKeyView";
 
 class Root extends React.Component {
   render() {
@@ -31,6 +32,11 @@ class Root extends React.Component {
           <Route exact path="/error" component={ErrorView} />
           <Route exact path="/account" component={AccountView} />
           <Route exact path="/account/create" component={CreateAccountView} />
+          <Route
+            exact
+            path="/account/create/copy"
+            component={CopyCreatedPrivateKeyView}
+          />
           <Route exact path="/account/revoke" component={RevokeAccountView} />
           <Route
             exact
