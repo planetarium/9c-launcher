@@ -1,7 +1,9 @@
 mutation createPrivateKey($privateKey: ByteString, $passphrase: String!) {
   keyStore {
     createPrivateKey(privateKey: $privateKey, passphrase: $passphrase) {
-      address
+      publicKey {
+        address
+      }
     }
   }
 }

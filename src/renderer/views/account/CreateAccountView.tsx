@@ -11,7 +11,10 @@ import {
 import { ExecutionResult } from "react-apollo";
 import { useState } from "react";
 import { IStoreContainer } from "../../../interfaces/store";
-import { useCreatePrivateKeyMutation } from "../../../generated/graphql";
+import {
+  useCreatePrivateKeyMutation,
+  CreatePrivateKeyMutation,
+} from "../../../generated/graphql";
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CreateAccountView.style";
 import { RouterStore } from "mobx-react-router";
@@ -46,8 +49,12 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
         variables: {
           passphrase: password,
         },
-      }).then((e: ExecutionResult<any>) => {
-        const { address } = e.data.keyStore.createPrivateKey;
+      }).then((e: ExecutionResult<CreatePrivateKeyMutation>) => {
+        const address = e.data?.keyStore?.createPrivateKey.publicKey.address;
+        if (null == address) {
+          return;
+        }
+
         accountStore.addAddress(address);
         accountStore.setSelectedAddress(address);
         push("/");
