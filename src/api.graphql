@@ -84,13 +84,13 @@ subscription DifferentAppProtocolVersionEncounter {
   }
 }
 
-query ActivationStatusQuery {
+query Activation {
   activationStatus {
     activated
   }
 }
 
-mutation ActivateMutation($encodedActivationKey: String!) {
+mutation Activate($encodedActivationKey: String!) {
   activationStatus {
     activateAccount(encodedActivationKey: $encodedActivationKey)
   }
