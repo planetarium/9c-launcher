@@ -17,6 +17,10 @@ interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
 }
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 const LobbyView = observer((props: ILobbyViewProps) => {
   const { accountStore, gameStore } = props;
   const {
@@ -30,20 +34,25 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     { data: isActivated, error: activatedError },
   ] = useActivateMutation();
   const [activationKey, setActivationKey] = React.useState("");
+  const [polling, setPollingState] = React.useState(false);
 
-  const handleActivateSubmit = React.useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      activate({
-        variables: {
-          encodedActivationKey: activationKey,
-        },
-      }).then((value) => {
-        value.data?.activationStatus;
-      });
-    },
-    [activationKey]
-  );
+  const handleActivateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    activate({
+      variables: {
+        encodedActivationKey: activationKey,
+      },
+    }).then(async (value) => {
+      if (!value.data?.activationStatus?.activateAccount) return;
+      setPollingState(true);
+      while (true) {
+        await sleep(1000);
+        const value = await refetch();
+        if (value.data.activationStatus.activated) break;
+      }
+      setPollingState(false);
+    });
+  };
 
   const privateKeyChangeHandle = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,11 +62,13 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   );
 
   const handleIsActivationSuccess = React.useCallback(() => {
-    if (isActivated === undefined) return false;
-    if (isActivated.activationStatus?.activateAccount) return true;
-  }, [isActivated]);
+    if (activatedError?.message !== undefined) {
+      return true;
+    }
+    return false;
+  }, [activatedError]);
 
-  if (loading) return <p>Verifing...</p>;
+  if (loading || polling) return <p>Verifing...</p>;
   if (status?.activationStatus.activated)
     return (
       <Container>
@@ -82,7 +93,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       <Container>
         <form onSubmit={handleActivateSubmit}>
           <TextField
-            error={!handleIsActivationSuccess()}
+            error={handleIsActivationSuccess()}
             label="Activation Key"
             onChange={privateKeyChangeHandle}
           />
