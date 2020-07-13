@@ -150,16 +150,22 @@ const PreloadView = observer((props: IStoreContainer) => {
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
       <List component="nav">
         <ListItem button onClick={handleClickBlockExplorer}>
-          <ListItemIcon>
+          <ListItemIcon className={classes.listItemIcon}>
             <GrainIcon />
           </ListItemIcon>
-          <ListItemText primary="Block Explorer" />
+          <ListItemText
+            className={classes.listItemText}
+            primary="Block Explorer"
+          />
         </ListItem>
         <ListItem button onClick={handleClickPlayerGuide}>
-          <ListItemIcon>
+          <ListItemIcon className={classes.listItemIcon}>
             <MenuBookIcon />
           </ListItemIcon>
-          <ListItemText primary="Nine Chronicles Player Guide" />
+          <ListItemText
+            className={classes.listItemText}
+            primary="Nine Chronicles Player Guide"
+          />
         </ListItem>
       </List>
       {!isPreloadEnded ? (
