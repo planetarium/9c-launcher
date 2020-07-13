@@ -30,6 +30,7 @@ import log from "electron-log";
 import {
   DifferentAppProtocolVersionEncounterSubscription,
   NotificationSubscription,
+  NotificationEnum,
 } from "../generated/graphql";
 import { BencodexDict, decode, encode } from "bencodex";
 import zlib from "zlib";
@@ -372,12 +373,12 @@ function initializeIpc() {
     let body = "";
     let icon = path.join(app.getAppPath(), logoImage);
 
-    if (type === "refill") {
+    if (type === NotificationEnum.Refill) {
       title = "You can refill action point!";
       body = "Turn on Nine Chronicles!";
     }
 
-    if (title && body && icon) {
+    if (title && body) {
       let notification = new Notification({
         title: title,
         body: body,

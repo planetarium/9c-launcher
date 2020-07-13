@@ -166,5 +166,8 @@ type AppProtocolVersionType {
 }
 
 type NotificationType {
-  type: String!
+  type: NotificationEnum!
+}
+enum NotificationEnum {
+  REFILL
 }
