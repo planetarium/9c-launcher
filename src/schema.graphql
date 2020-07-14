@@ -4,14 +4,19 @@ schema {
   subscription: StandaloneSubscription
 }
 
+# The `Date` scalar type represents a year, month and day in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
 scalar Date
 
+# The `DateTime` scalar type represents a date and time. `DateTime` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
 scalar DateTime
 
+# The `DateTimeOffset` scalar type represents a date, time and offset from UTC. `DateTimeOffset` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
 scalar DateTimeOffset
 
+# The `Seconds` scalar type represents a period of time represented as the total number of seconds.
 scalar Seconds
 
+# The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds.
 scalar Milliseconds
 
 scalar Decimal
@@ -40,7 +45,13 @@ type StandaloneQuery {
   activationStatus: ActivationStatusQuery!
   keyStore: KeyStoreType
   nodeStatus: NodeStatusType!
-  state(address: Address!, hash: ByteString): ByteString
+  state(
+    # The address of state to fetch from the chain.
+    address: Address!
+    # The hash of the block used to fetch state from chain.
+    hash: ByteString
+  ): ByteString
+  # The validation method provider for Libplanet types.
   validation: ValidationQuery!
 }
 
@@ -50,7 +61,11 @@ scalar Address
 
 type KeyStoreType {
   decryptedPrivateKey(address: Address!, passphrase: String!): ByteString!
-  privateKey(hex: ByteString!): PrivateKeyType!
+  # An API to provide conversion to public-key, address.
+  privateKey(
+    # A representation of public-key with hexadecimal format.
+    hex: ByteString!
+  ): PrivateKeyType!
   protectedPrivateKeys: [ProtectedPrivateKeyType!]!
 }
 
@@ -59,13 +74,20 @@ type ProtectedPrivateKeyType {
 }
 
 type PrivateKeyType {
+  # A representation of private-key with hexadecimal format.
   hex: ByteString!
+  # A public-key derived from the private-key.
   publicKey: PublicKeyType!
 }
 
 type PublicKeyType {
+  # An address derived from the public-key.
   address: Address!
-  hex(compress: Boolean): ByteString!
+  # A representation of public-key with hexadecimal format.
+  hex(
+    # A flag to determine whether to compress public-key.
+    compress: Boolean
+  ): ByteString!
 }
 
 type NodeStatusType {
@@ -74,8 +96,14 @@ type NodeStatusType {
 }
 
 type ValidationQuery {
-  privateKey(hex: ByteString!): Boolean!
-  publicKey(hex: ByteString!): Boolean!
+  privateKey(
+    # The raw value of private-key, presented as hexadecimal.
+    hex: ByteString!
+  ): Boolean!
+  publicKey(
+    # The raw value of public-key, presented as hexadecimal.
+    hex: ByteString!
+  ): Boolean!
 }
 
 type ActivationStatusQuery {
@@ -102,6 +130,7 @@ type ActivationStatusMutation {
 type StandaloneSubscription {
   differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
   nodeStatus: NodeStatusType
+  notification: NotificationType!
   preloadProgress: PreloadStateType
   tipChanged: TipChanged
 }
@@ -134,4 +163,11 @@ type AppProtocolVersionType {
   signature: ByteString!
   signer: Address!
   version: Int!
+}
+
+type NotificationType {
+  type: NotificationEnum!
+}
+enum NotificationEnum {
+  REFILL
 }

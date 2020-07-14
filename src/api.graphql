@@ -95,3 +95,9 @@ mutation Activate($encodedActivationKey: String!) {
     activateAccount(encodedActivationKey: $encodedActivationKey)
   }
 }
+
+subscription Notification {
+  notification {
+    type
+  }
+}
