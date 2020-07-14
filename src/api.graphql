@@ -83,3 +83,15 @@ subscription DifferentAppProtocolVersionEncounter {
     }
   }
 }
+
+query Activation {
+  activationStatus {
+    activated
+  }
+}
+
+mutation Activate($encodedActivationKey: String!) {
+  activationStatus {
+    activateAccount(encodedActivationKey: $encodedActivationKey)
+  }
+}
