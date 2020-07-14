@@ -110,16 +110,17 @@ type ActivationStatusQuery {
   activated: Boolean!
 }
 
+type ActivationStatusQuery {
+  activated: Boolean!
+}
+
 type StandaloneMutation {
   activationStatus: ActivationStatusMutation
   keyStore: KeyStoreMutation
 }
 
 type KeyStoreMutation {
-  createPrivateKey(
-    passphrase: String!
-    privateKey: ByteString
-  ): ProtectedPrivateKeyType!
+  createPrivateKey(passphrase: String!, privateKey: ByteString): PrivateKeyType!
   revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
 }
 
