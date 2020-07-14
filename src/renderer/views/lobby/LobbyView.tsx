@@ -72,25 +72,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   if (loading || polling)
     return <p className={classes.verifing}>Verifing...</p>;
-  if (status?.activationStatus.activated)
-    return (
-      <Container>
-        <Button
-          fullWidth
-          disabled={gameStore.isGameStarted}
-          variant="contained"
-          color="primary"
-          onClick={(event: React.MouseEvent) => {
-            mixpanel.track("Launcher/Unity Player Start");
-            gameStore.startGame(accountStore.privateKey);
-            props.onLaunch();
-            window.close();
-          }}
-        >
-          {gameStore.isGameStarted ? "Now Running..." : "Start Game"}
-        </Button>
-      </Container>
-    );
+  if (status?.activationStatus.activated) return <GameStartButton {...props} />;
   else
     return (
       <Container>
@@ -112,6 +94,33 @@ const LobbyView = observer((props: ILobbyViewProps) => {
         </form>
       </Container>
     );
+});
+
+const GameStartButton = observer((props: ILobbyViewProps) => {
+  const { accountStore, gameStore } = props;
+  const handleStartGame = () => {
+    mixpanel.track("Launcher/Unity Player Start");
+    gameStore.startGame(accountStore.privateKey);
+    props.onLaunch();
+  };
+
+  React.useEffect(() => {
+    handleStartGame();
+  }, []);
+
+  return (
+    <Container>
+      <Button
+        fullWidth
+        disabled={gameStore.isGameStarted}
+        variant="contained"
+        color="primary"
+        onClick={handleStartGame}
+      >
+        {gameStore.isGameStarted ? "Now Running..." : "Start Game"}
+      </Button>
+    </Container>
+  );
 });
 
 export default inject("accountStore", "gameStore")(LobbyView);
