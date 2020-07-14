@@ -72,11 +72,7 @@ function initializeApp() {
   });
 
   app.on("quit", (event) => {
-    pids.forEach((pid) => {
-      if (process.platform == "darwin") process.kill(pid);
-      if (process.platform == "win32")
-        execute("taskkill", ["/pid", pid.toString(), "/f", "/t"]);
-    });
+    quitAllProcesses();
   });
 
   app.on("activate", (event) => {
@@ -109,6 +105,8 @@ function initializeIpc() {
   ipcMain.on(
     "encounter different version",
     async (event, data: DifferentAppProtocolVersionEncounterSubscription) => {
+      quitAllProcesses();
+
       console.log("Encounter a different version:", data);
       if (win == null) return;
 
@@ -440,6 +438,14 @@ function execute(binaryPath: string, args: string[]) {
     console.log(`${data}`);
   });
   return node;
+}
+
+function quitAllProcesses() {
+  pids.forEach((pid) => {
+    if (process.platform == "darwin") process.kill(pid);
+    if (process.platform == "win32")
+      execute("taskkill", ["/pid", pid.toString(), "/f", "/t"]);
+  });
 }
 
 function createTray(iconPath: string) {
