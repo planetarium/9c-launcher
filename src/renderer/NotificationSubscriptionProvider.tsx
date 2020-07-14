@@ -10,7 +10,7 @@ export function NotificationSubscriptionProvider() {
 
   React.useEffect(() => {
     if (!loading && data) {
-      let { type } = data.notification;
+      const { type } = data.notification;
       let title = "";
       let body = "";
 
