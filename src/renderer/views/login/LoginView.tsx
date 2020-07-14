@@ -37,18 +37,7 @@ const LoginView = observer(
         accountStore.toggleLogin();
         mixpanel.track("Launcher/Login");
         mixpanel.identify(accountStore.selectedAddress);
-
-        if (standaloneStore.NoMiner) {
-          routerStore.push("/login/mining");
-        } else {
-          routerStore.push("/lobby/preload");
-          standaloneStore
-            .initStandalone(accountStore.privateKey)
-            .catch((error) => {
-              console.log(error);
-              routerStore.push("/error");
-            });
-        }
+        routerStore.push("/login/mining");
       }
     }, [data]);
 

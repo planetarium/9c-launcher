@@ -349,7 +349,6 @@ function initializeIpc() {
       win?.webContents.send("game closed");
       win?.show();
     });
-    win?.minimize();
   });
 
   ipcMain.on("clear cache", (event) => {
