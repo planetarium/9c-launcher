@@ -54,6 +54,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             variant="outlined"
             onClick={(e) => {
               e.preventDefault();
+              mixpanel.track("Launcher/Copy Private Key");
               clipboard.clear();
               clipboard.writeText(accountStore.privateKey);
             }}
