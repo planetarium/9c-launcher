@@ -45,16 +45,19 @@ planet apv analyze "$apv"
 $configPath = $MyInvocation.MyCommand.Definition `
   | Split-Path -Parent `
   | Split-Path -Parent `
-  | Join-Path -ChildPath "dist" -AdditionalChildPath "config.json"
-if (Test-Path "$configPath" -PathType Leaf) {
-  $config = Get-Content "$configPath" | ConvertFrom-Json
-} else {
-  $config = ConvertFrom-Json '{"AppProtocolVersion": null}'
-}
+  | Join-Path -ChildPath "dist" `
+  | Join-Path -ChildPath "config.json"
 
-if ($config.PSObject.Properties.Name.Contains("AppProtocolVersion")) {
-  $config.AppProtocolVersion = "$apv"
-} else {
-  $config | Add-Member AppProtocolVersion "$apv"
-}
-$config | ConvertTo-Json > "$configPath"
+node -e @"
+const fs = require('fs');
+fs.readFile(process.argv[1], 'utf8', (err, data) => {
+  var config = (data || '').trim() ? JSON.parse(data) : {};
+  config.AppProtocolVersion = process.argv[2];
+  fs.writeFile(
+    process.argv[1],
+    JSON.stringify(config, null, 2),
+    'utf8',
+    () => undefined
+  );
+});
+"@ "$configPath" "$apv"
