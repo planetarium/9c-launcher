@@ -5,16 +5,15 @@ const createAccountViewStyle = makeStyles({
     marginLeft: "30px",
     marginRight: "29px",
     marginTop: "78px",
+    color: "white",
   },
   title: {
     typeface: "Montserrat",
     fontWeight: "bold",
-    fontSize: "19px",
+    fontSize: "18px",
     lineHeight: 1.25,
-    color: "#FFFFFF",
   },
   description: {
-    color: "white",
     marginTop: "12px",
     fontSize: "13px",
     lineHeight: 1.375,
@@ -29,24 +28,18 @@ const createAccountViewStyle = makeStyles({
     marginBottom: "30px",
   },
   privateKeyText: {
-    color: "white",
-    fontSize: "16px",
+    fontWeight: "normal",
     marginBottom: "10px",
   },
   privateKey: {
     marginBottom: "40px;",
-    "& .Mui-focused": {
-      color: "#ffffff",
+    width: "16em",
+    "& .MuiOutlinedInput-root": {
+      borderRadius: 0,
     },
-    "::after": {
-      content: "",
-    },
-    height: "48px",
-    borderRadius: 0,
   },
   copyButton: {
-    color: "white",
-    height: "55px",
+    height: "40px",
     borderRadius: 0,
   },
   done: {

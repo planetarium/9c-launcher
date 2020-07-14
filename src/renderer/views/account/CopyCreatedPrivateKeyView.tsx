@@ -14,7 +14,6 @@ interface ICopyCreatedPrivateKeyProps {
 
 const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observer(
   ({ accountStore, routerStore }: ICopyCreatedPrivateKeyProps) => {
-    const { push } = routerStore;
     const classes = createAccountViewStyle();
 
     return (
@@ -40,13 +39,12 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
           Anyone can steal your assets if this key is exposed.
         </Typography>
         <div className={classes.privateKeyContainer}>
-          <Typography className={classes.privateKeyText}>
-            Your Private key
-          </Typography>
+          <h3 className={classes.privateKeyText}>Your Private key</h3>
           <TextField
             id="created-private-key"
             variant="outlined"
             type="password"
+            size="small"
             className={classes.privateKey}
             value={accountStore.privateKey}
             aria-readonly="true"
