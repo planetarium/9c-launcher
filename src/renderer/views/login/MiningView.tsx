@@ -8,13 +8,14 @@ import jade from "../../resources/miningJade.png";
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
     const classes = miningViewStyle();
-    const runStandalone = (isMining: boolean) => {
-      standaloneStore.setMiner(!isMining);
+    const setMining = (isMining: boolean) => {
       routerStore.push("/lobby/preload");
-      standaloneStore.initStandalone(accountStore.privateKey).catch((error) => {
-        console.log(error);
-        routerStore.push("/error");
-      });
+      standaloneStore
+        .setMining(isMining, accountStore.privateKey)
+        .catch((error) => {
+          console.log(error);
+          routerStore.push("/error");
+        });
     };
 
     return (
@@ -32,7 +33,7 @@ const MiningView = observer(
             className={`${classes.button} ${classes.buttonLeft}`}
             variant="contained"
             onClick={() => {
-              runStandalone(false);
+              setMining(false);
             }}
           >
             Not now
@@ -42,7 +43,7 @@ const MiningView = observer(
             variant="contained"
             color="primary"
             onClick={() => {
-              runStandalone(true);
+              setMining(true);
             }}
           >
             Got it!

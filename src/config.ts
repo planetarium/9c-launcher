@@ -4,7 +4,20 @@ import path from "path";
 const { app } =
   process.type === "browser" ? require("electron") : require("electron").remote;
 
-export const electronStore = new Store({
+interface IElectronStore {
+  SNAPSHOT_DOWNLOAD_PATH: string;
+  AppProtocolVersion: string;
+  GenesisBlockPath: string;
+  MinimumDifficulty: number;
+  StoreType: string;
+  NoMiner: boolean;
+  TrustedAppProtocolVersionSigners: string[];
+  IceServerStrings: string[];
+  PeerStrings: string[];
+  NoTrustedStateValidators: boolean;
+}
+
+export const electronStore = new Store<IElectronStore>({
   cwd: app.getAppPath(),
   schema: {
     SNAPSHOT_DOWNLOAD_PATH: {
@@ -62,7 +75,6 @@ export const electronStore = new Store({
       default: false,
     },
   },
-  watch: true,
 });
 
 const LocalServerUrl = (): string => {
