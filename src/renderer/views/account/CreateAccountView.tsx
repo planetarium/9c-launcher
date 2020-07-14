@@ -26,7 +26,6 @@ interface ICreateAccountProps {
 
 const CreateAccountView: React.FC<ICreateAccountProps> = observer(
   ({ accountStore, routerStore }: ICreateAccountProps) => {
-    const { push } = routerStore;
     const [createAccount, { data }] = useCreatePrivateKeyMutation();
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
@@ -60,7 +59,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
         accountStore.setPrivateKey(privateKey);
         accountStore.addAddress(address);
         accountStore.setSelectedAddress(address);
-        push("/account/create/copy");
+        routerStore.push("/account/create/copy");
       });
     };
 
