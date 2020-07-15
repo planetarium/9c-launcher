@@ -19,14 +19,7 @@ windows_url="${APV_WINDOWS_URL:-$default_url_base$APV_NO/Windows.zip}"
 if [[ "$APV_NO" = "" ]]; then
   echo "APV_NO is not configured; query S3 about the latest APV_NO..." \
     > /dev/stderr
-  list_url="https://9c-test.s3.amazonaws.com/?list-type=2&prefix=v&delimiter=/"
-  latest_apv_no="$( \
-    curl "$list_url" \
-      | xpath "/ListBucketResult/CommonPrefixes/Prefix/text()" \
-      | tr -d v | tr / '\n' \
-      | sort -nr \
-      | head -n1 \
-  )"
+  latest_apv_no="$(npm run --silent latest-apv-no)"
   APV_NO="$((latest_apv_no + 1))"
   {
     echo "The last published APV number: $latest_apv_no; APV_NO will be:"

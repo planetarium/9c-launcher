@@ -25,14 +25,7 @@ if ("$env:APV_WINDOWS_URL" -eq "") {
 
 if ("$env:APV_NO" -eq "") {
   Write-Error "APV_NO is not configured; query S3 about the latest APV_NO..."
-  $listUrl = `
-    "https://9c-test.s3.amazonaws.com/?list-type=2&prefix=v&delimiter=/"
-  $apvListXml = [xml] (Invoke-WebRequest "$listUrl").Content
-  $apvList = $apvListXml.ListBucketResult.CommonPrefixes.Prefix
-  $latestApvNo = [int] ( `
-    $apvList.TrimStart("v").TrimEnd("/") `
-      | Sort-Object -Descending { [int] $_ } `
-  )[0]
+  $latestApvNo = [int] $(npm run --silent latest-apv-no)
   $env:APV_NO = $latestApvNo + 1
   Write-Error "The last published APV number: $latestApvNo; APV_NO will be:"
   Write-Error "  APV_NO = $env:APV_NO"
