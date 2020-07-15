@@ -1,5 +1,8 @@
 #!/usr/bin/env pwsh
-if ("$env:APV_SIGN_KEY" -eq "") {
+if ("$env:SKIP_APV_SIGN" -ne "") {
+  Write-Error "Skip APV signing..."
+  exit 0
+} elseif ("$env:APV_SIGN_KEY" -eq "") {
   Write-Error "APV_SIGN_KEY is not configured." -ErrorAction Stop
 } elseif (-not (Get-Command planet -ErrorAction SilentlyContinue)) {
   Write-Error "`

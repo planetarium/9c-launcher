@@ -1,6 +1,9 @@
 #!/bin/bash
 
-if [[ "$APV_SIGN_KEY" = "" ]]; then
+if [[ "$SKIP_APV_SIGN" != "" ]]; then
+  echo "Skip APV signing..."
+  exit 0
+elif [[ "$APV_SIGN_KEY" = "" ]]; then
   echo "APV_SIGN_KEY is not configured." > /dev/stderr
   exit 1
 elif ! command -v planet > /dev/null; then
