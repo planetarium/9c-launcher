@@ -79,6 +79,24 @@ jobs:
         if: github.event_name == 'pull_request'
       # 빌드
       - run: npm run build-prod
+      # 이전 릴리스 버전으로부터 config.json 복사
+      - run: |
+          set -ex
+          latest_apv_no="$(npm run --silent latest-apv-no)"
+          temp_dir="$(mktemp -d)"
+          pushd "$temp_dir"
+          curl -o tmp.zip "$(printf "$URL_PATTERN" "$latest_apv_no")"
+          7z x tmp.zip resources/app/config.json
+          popd
+          mv "$temp_dir/resources/app/config.json" dist/
+        shell: bash
+        env:
+          URL_PATTERN: "https://download.nine-chronicles.com/v%d/Windows.zip"
+      # APV 서명 (config.json에 반영)
+      - run: npm run sign-apv
+        env:
+          APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
+      # 빌드 아티팩트
       - if: runner.os == 'Windows'
         run: 7z a -r "../9c-launcher-dist-${{ matrix.os }}.7z" *
         working-directory: dist/
@@ -89,209 +107,18 @@ jobs:
         with:
           path: 9c-launcher-dist-${{ matrix.os }}.*
       # 패키지
-      - run: npm run pack
-      - if: runner.os == 'Windows'
-        run: 7z a -r "../9c-launcher-pack-${{ matrix.os }}.7z" *
-        working-directory: pack/
-      - if: runner.os != 'Windows'
-        run: tar cvfj "../9c-launcher-pack-${{ matrix.os }}.tar.bz2" *
-        working-directory: pack/
-      - uses: actions/upload-artifact@v2
-        with:
-          path: 9c-launcher-pack-${{ matrix.os }}.*
-
-  # 헤들리스 (스탠드얼론) 빌드
-  build-headless:
-    if: github.event_name != 'pull_request'
-    strategy:
-      matrix:
-        os:
-          - macos-10.15
-          - windows-2019
-    runs-on: ${{ matrix.os }}
-    steps:
-      # 클론
-      - uses: actions/checkout@v2
-        if: github.event_name != 'pull_request'
-        with:
-          submodules: true
-          lfs: false
-          token: ${{ secrets.GH_TOKEN }}
-      - uses: actions/checkout@v2
-        if: github.event_name == 'pull_request'
-        with:
-          ref: ${{ github.pull_request.head.sha }}
-          submodules: true
-          lfs: false
-          token: ${{ secrets.GH_TOKEN }}
-      # .NET Core SDK 설치
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: "3.1.x"
-      # 빌드
-      # 그냥 build-headless 돌려도 되지만 그러면 run-script-os 의존성이 필요하고,
-      # 그걸 설치하려고 npm install 돌리기엔 의존성이 너무 많음.
-      - if: runner.os == 'Windows'
-        run: npm run build-headless:windows
-      - if: runner.os != 'Windows'
-        run: npm run build-headless:darwin
-      # 아티팩트
-      - if: runner.os == 'Windows'
-        run: 7z a -r "9c-headless-${{ matrix.os }}.7z" publish
-        working-directory: dist
-      - if: runner.os != 'Windows'
-        run: tar cvfj "9c-headless-${{ matrix.os }}.tar.bz2" publish
-        working-directory: dist
-      - uses: actions/upload-artifact@v2
-        with:
-          path: dist/9c-headless-${{ matrix.os }}.*
-
-  # 번들
-  bundle:
-    if: github.event_name != 'pull_request'
-    needs: [build-launcher, build-headless]
-    runs-on: macos-10.15
-    env:
-      MACOS_RESOURCES_APP_PATH: NineChronicles.app/Contents/Resources/app/
-      WINDOWS_RESOURCES_APP_PATH: resources/app/
-    steps:
-      # 클론
-      - uses: actions/checkout@v2
-        if: github.event_name != 'pull_request'
-        with:
-          submodules: false
-          lfs: false
-      - uses: actions/checkout@v2
-        if: github.event_name == 'pull_request'
-        with:
-          ref: ${{ github.pull_request.head.sha }}
-          submodules: false
-          lfs: false
-      # 본 저장소에서 빌드된 론처 및 헤들리스 (스탠드얼론) 아티팩트 받아서 배포본으로 재포장
-      - uses: actions/download-artifact@v2
-        with:
-          path: .
-      - run: |
-          set -vx
-          tar xvfj artifact/9c-launcher-pack-macos-*.tar.bz2
-          mv NineChronicles-darwin-x64 macOS
-      - run: |
-          set -vx
-          7z x artifact/9c-launcher-pack-windows-*.7z
-          ls -al
-          mv NineChronicles-win32-x64 Windows
-      # 9C Unity Player 빌드를 nekoyume-unity 저장소에서 아티팩트로 남은 거 받아서 풀기
-      # FIXME: 그런데 nekoyume-unity 저장소에서 주기적으로 아티팩트를 지움.  그래서 론처
-      # 쪽에서 nekoyume-unity 서브모듈이 가르키는 커밋이 보름 넘게 안 바뀌면 쓰던 아티팩트가
-      # 지워져서 빌드가 깨질 수도.
-      - run: |
-          set -vx
-          auth="Authorization: token ${{ secrets.GH_TOKEN }}"
-          repo=planetarium/nekoyume-unity
-          url_base="https://api.github.com/repos/$repo"
-          workflow=977355  # Pack
-          submodule_ref="$(git submodule status -- nekoyume-unity \
-                           | awk '{ gsub(/^[-+ ]/, "", $1); print $1 }')"
-          runs_url="$url_base/actions/workflows/$workflow/runs?status=success"
-          artifacts_url=null
-          while [[ "$artifacts_url" = "null" && "$runs_url" != "" ]]; do
-            artifacts_url="$(\
-              curl -H "$auth" --include "$runs_url" \
-              | tee raw_output.http \
-              | sed '1,/^'$'\r\{0,1\}''$/d' \
-              | jq \
-                  -r \
-                  --arg sha "$submodule_ref" \
-                  '.workflow_runs
-                  |map(select(.head_sha == $sha))[0].artifacts_url' \
-              || true \
-            )"
-            if [[ "$artifacts_url" = "" ]]; then
-              # 위 명령이 실패했으면 curl 응답 결과 출력 후 종료
-              cat raw_output.http
-              exit 1
-            fi
-            if [[ "$artifacts_url" = "null" ]]; then
-              # 아마도 해당 리스트 페이지에 찾는 커밋의 빌드가 없는 모양.
-              # Link 헤더의 rel="next" URL을 찾아서 재요청.
-              link_header="$(grep -i '^Link:\s*' raw_output.http)"
-              runs_url="$(\
-                echo "$link_header" \
-                | sed -n 's/.\{0,\}<\([^>]\{0,\}\)>; rel="\{0,\}next"\{0,1\}.\{0,\}/\1/p' \
-              )"
-              if [[ "runs_url" = "" ]]; then
-                # 디버그용 출력
-                cat raw_output.http
-              fi
-            fi
-          done
-          archive_download_url="$(\
-            curl -H "$auth" "$artifacts_url" \
-            | jq \
-                -r \
-                '.artifacts
-                |map(select(.name == "unity.tar"))[0].archive_download_url'
-          )"
-          curl -o unity.tar.zip -L -H "$auth" "$archive_download_url"
-          7z x unity.tar.zip
-          tar xvf unity.tar --directory "${{ runner.temp }}"
-          mv "${{ runner.temp }}"/MacOS/* "macOS/$MACOS_RESOURCES_APP_PATH"
-          mv "${{ runner.temp }}"/Windows/* \
-            "Windows/$WINDOWS_RESOURCES_APP_PATH"
-      # 최종 패키징
-      - run: mkdir dist/
-      - run: |
-          set -vx
-          pushd macOS/
-          pushd "$MACOS_RESOURCES_APP_PATH"
-          tar xvfj \
-            "${{ github.workspace }}"/artifact/9c-headless-macos-*.tar.bz2
-          popd
-          GZIP=-9 tar cvfz "${{ github.workspace }}"/dist/macOS.tar.gz *
-          popd
-      - run: |
-          set -vx
-          pushd Windows/
-          pushd "$WINDOWS_RESOURCES_APP_PATH"
-          7z x "${{ github.workspace }}"/artifact/9c-headless-windows-*.7z
-          popd
-          7z a -r "${{ github.workspace }}"/dist/Windows.zip *
-          popd
-      # 태그를 만들었거나 master에 푸시한 경우, GitHub Releases에 업로드
-      - run: |
-          set -vx
-          if ! [[ "$GITHUB_REF" = refs/tags/* || \
-                  "$GITHUB_REF" = refs/heads/master ]]; then
-            echo "Skip..." > /dev/stderr
-            exit 0
-          fi
-          wget https://github.com/github-release/github-release/releases/download/v0.8.1/darwin-amd64-github-release.bz2
-          bzip2 -d darwin-amd64-github-release.bz2
-          mv darwin-amd64-github-release github-release
-          chmod +x github-release
-          version="$(jq -r .version package.json)"
-          name="Nine Chronicles $version ($GITHUB_SHA)"
-          if ! [[ "$GITHUB_REF" = refs/tags/* ]]; then
-            draft="--pre-release --draft"
-          fi
-          export GITHUB_REPO="${GITHUB_REPOSITORY#*/}"
-          ./github-release -v edit --tag "$version" --name "$name" $draft \
-          || ./github-release -v release --tag "$version" --name "$name" $draft 
-          for f in dist/*.*; do
-            ./github-release -v upload \
-              --tag "$version" \
-              --name "$(basename "$f")" \
-              --file "$f" \
-              --replace
-          done
+      - run: npm run pack-all
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_USER: ${{ github.repository_owner }}
-      # 실패하더라도 대체 뭐가 어떻게 됐던 것인지 알기 위한 디버그용 출력 처리.
-      - if: always()
-        run: |
-          echo "[TOP-LEVEL DIRECTORIES]"
-          ls -al
-          echo
-          echo "[DIRECTORY CONTENTS]"
-          ls -al *
+          SKIP_APV_SIGN: "1" # 위에서 npm run sign-apv 따로 돌림
+      # 패키지 아티팩트
+      - run: mkdir pack-dist/
+      - if: runner.os == 'Windows'
+        run: 7z a -r ../../pack-dist/Windows.zip *
+        working-directory: pack/Nine Chronicles-win32-x64/
+      - if: runner.os != 'Windows'
+        run: tar cvfz ../../pack-dist/macOS.tar.gz *
+        working-directory: pack/Nine Chronicles-darwin-x64/
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v2
+        with:
+          path: pack-dist/*
