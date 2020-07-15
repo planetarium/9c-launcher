@@ -3,9 +3,6 @@
 if [[ "$APV_SIGN_KEY" = "" ]]; then
   echo "APV_SIGN_KEY is not configured." > /dev/stderr
   exit 1
-elif [[ "$APV_NO" = "" ]]; then
-  echo "APV_NO is not configured." > /dev/stderr
-  exit 1
 elif ! command -v planet > /dev/null; then
   {
     echo "The planet command does not exist."
@@ -18,6 +15,24 @@ fi
 default_url_base=https://download.nine-chronicles.com/v
 macos_url="${APV_MACOS_URL:-$default_url_base$APV_NO/macOS.tar.gz}"
 windows_url="${APV_WINDOWS_URL:-$default_url_base$APV_NO/Windows.zip}"
+
+if [[ "$APV_NO" = "" ]]; then
+  echo "APV_NO is not configured; query S3 about the latest APV_NO..." \
+    > /dev/stderr
+  list_url="https://9c-test.s3.amazonaws.com/?list-type=2&prefix=v&delimiter=/"
+  latest_apv_no="$( \
+    curl "$list_url" \
+      | xpath "/ListBucketResult/CommonPrefixes/Prefix/text()" \
+      | tr -d v | tr / '\n' \
+      | sort -nr \
+      | head -n1 \
+  )"
+  APV_NO="$((latest_apv_no + 1))"
+  {
+    echo "The last published APV number: $latest_apv_no; APV_NO will be:"
+    echo "  APV_NO=$APV_NO"
+  }
+fi
 
 passphrase="$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 32 | head -n 1)"
 key_id="$(planet key import --passphrase="$passphrase" "$APV_SIGN_KEY" \
