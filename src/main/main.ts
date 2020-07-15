@@ -4,6 +4,8 @@ import {
   BLOCKCHAIN_STORE_PATH,
   MAC_GAME_PATH,
   WIN_GAME_PATH,
+  RPC_LOOPBACK_HOST,
+  RPC_SERVER_PORT,
 } from "../config";
 import isDev from "electron-is-dev";
 import {
@@ -65,7 +67,34 @@ function initializeApp() {
         "publish",
         "NineChronicles.Standalone.Executable"
       ),
-      ["--graphql-server=true", `--graphql-port=${LOCAL_SERVER_PORT}`]
+      [
+        `-V=${electronStore.get("AppProtocolVersion")}`,
+        `-G=${electronStore.get("GenesisBlockPath")}`,
+        `-D=${electronStore.get("MinimumDifficulty")}`,
+        `--store-type=${electronStore.get("StoreType")}`,
+        `--store-path=${BLOCKCHAIN_STORE_PATH}`,
+        ...electronStore
+          .get("IceServerStrings")
+          .map((iceServerString) => `-I=${iceServerString}`),
+        ...electronStore
+          .get("PeerStrings")
+          .map((peerString) => `--peer=${peerString}`),
+        ...electronStore
+          .get("TrustedAppProtocolVersionSigners")
+          .map(
+            (trustedAppProtocolVersionSigner) =>
+              `-T=${trustedAppProtocolVersionSigner}`
+          ),
+        `--no-trusted-state-validators=${electronStore.get(
+          "NoTrustedStateValidators"
+        )}`,
+        "--rpc-server",
+        `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
+        `--rpc-listen-port=${RPC_SERVER_PORT}`,
+        "--graphql-server",
+        "--graphql-host=localhost",
+        `--graphql-port=${LOCAL_SERVER_PORT}`,
+      ]
     );
     createWindow();
     createTray(path.join(app.getAppPath(), logoImage));

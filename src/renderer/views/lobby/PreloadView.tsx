@@ -24,6 +24,7 @@ import {
 } from "../../../generated/graphql";
 import preloadViewStyle from "./PreloadView.style";
 import LobbyView from "./LobbyView";
+import { electronStore } from "../../../config";
 
 enum PreloadProgressPhase {
   ActionExecutionState,
@@ -76,7 +77,7 @@ const PreloadView = observer((props: IStoreContainer) => {
       if (
         phase !== PreloadProgressPhase.ActionExecutionState &&
         phase !== PreloadProgressPhase.StateDownloadState &&
-        standaloneStore.properties.PeerStrings.length > 0
+        electronStore.get("PeerStrings").length > 0
       ) {
         routerStore.push("/error");
       }

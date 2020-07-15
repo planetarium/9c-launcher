@@ -10,9 +10,14 @@ const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
     const classes = miningViewStyle();
     const runStandalone = (isMining: boolean) => {
-      standaloneStore.setMiner(!isMining);
+      standaloneStore
+        .setMining(isMining, accountStore.privateKey)
+        .catch((error) => {
+          console.log(error);
+          routerStore.push("/error");
+        });
       routerStore.push("/lobby/preload");
-      standaloneStore.initStandalone(accountStore.privateKey).catch((error) => {
+      standaloneStore.runStandalone().catch((error) => {
         console.log(error);
         routerStore.push("/error");
       });

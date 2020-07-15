@@ -1,10 +1,11 @@
 import Store from "electron-store";
 import path from "path";
+import { IElectronStore } from "./interfaces/config";
 
 const { app } =
   process.type === "browser" ? require("electron") : require("electron").remote;
 
-export const electronStore = new Store({
+export const electronStore = new Store<IElectronStore>({
   cwd: app.getAppPath(),
   schema: {
     SNAPSHOT_DOWNLOAD_PATH: {
@@ -62,7 +63,6 @@ export const electronStore = new Store({
       default: false,
     },
   },
-  watch: true,
 });
 
 const LocalServerUrl = (): string => {
