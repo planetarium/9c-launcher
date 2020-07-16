@@ -1,8 +1,9 @@
 #!/usr/bin/env pwsh
-if ("$env:APV_SIGN_KEY" -eq "") {
+if ("$env:SKIP_APV_SIGN" -ne "") {
+  Write-Error "Skip APV signing..."
+  exit 0
+} elseif ("$env:APV_SIGN_KEY" -eq "") {
   Write-Error "APV_SIGN_KEY is not configured." -ErrorAction Stop
-} elseif ("$env:APV_NO" -eq "") {
-  Write-Error "APV_NO is not configured." -ErrorAction Stop
 } elseif (-not (Get-Command planet -ErrorAction SilentlyContinue)) {
   Write-Error "`
 The planet command does not exist.
@@ -23,6 +24,14 @@ if ("$env:APV_WINDOWS_URL" -eq "") {
   $windowsBinaryUrl = "$DefaultUrlBase$env:APV_NO/Windows.zip"
 } else {
   $windowsBinaryUrl = $env:APV_WINDOWS_URL;
+}
+
+if ("$env:APV_NO" -eq "") {
+  Write-Error "APV_NO is not configured; query S3 about the latest APV_NO..."
+  $latestApvNo = [int] $(npm run --silent latest-apv-no)
+  $env:APV_NO = $latestApvNo + 1
+  Write-Error "The last published APV number: $latestApvNo; APV_NO will be:"
+  Write-Error "  APV_NO = $env:APV_NO"
 }
 
 $passphrase = [Guid]::NewGuid().ToString()

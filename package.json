@@ -35,6 +35,7 @@
     "sign-apv": "run-script-os",
     "sign-apv:windows": "powershell -nop -ex bypass -noni -f scripts\\sign-apv.ps1 || (exit 0)",
     "sign-apv:darwin": "scripts/sign-apv.sh || true",
+    "latest-apv-no": "npx ts-node scripts/latestApvNo.ts",
     "pack-all": "npm install && npm run build-headless && npm run bundle-player && npm run sign-apv && npm run pack"
   },
   "dependencies": {
@@ -93,6 +94,7 @@
     "@graphql-codegen/typescript-operations": "^1.15.4",
     "@graphql-codegen/typescript-react-apollo": "^1.15.4",
     "@graphql-codegen/typescript-resolvers": "^1.16.3",
+    "@planetarium/cli": "^0.9.5",
     "@sentry/cli": "^1.54.0",
     "@sentry/webpack-plugin": "^1.11.1",
     "@types/electron-devtools-installer": "^2.2.0",
@@ -101,6 +103,7 @@
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8",
     "@types/react-test-renderer": "^16.9.2",
+    "@types/xml2js": "^0.4.5",
     "babel-jest": "^26.0.1",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
@@ -134,7 +137,8 @@
     "typescript": "^3.9.3",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.0",
+    "xml2js": "^0.4.23"
   },
   "husky": {
     "hooks": {
