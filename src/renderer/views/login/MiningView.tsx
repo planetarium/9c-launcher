@@ -4,6 +4,7 @@ import { observer, inject } from "mobx-react";
 import { Button, Container, Box } from "@material-ui/core";
 import miningViewStyle from "./MiningView.style";
 import jade from "../../resources/miningJade.png";
+import mixpanel from "mixpanel-browser";
 
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
@@ -19,7 +20,7 @@ const MiningView = observer(
 
     return (
       <Container className={classes.root}>
-        <h3 className={classes.title}>Please turn on the mining option.</h3>
+        <h3 className={classes.title}>Do you want to turn mining on?</h3>
         <img className={classes.jade} src={jade} />
         <p>
           Nine Chronicles pursues an in-game economy that users create together.
@@ -27,11 +28,18 @@ const MiningView = observer(
           contribute your computer resources to the operation of Nine
           Chronicles.
         </p>
+        <p className={classes.requirement}>
+          REQUIRE: <br />
+          Requires a 64-bit processor and operating system <br />
+          Processor: Quad core CPU 3.0 GHz <br />
+          Memory: 16 GB RAM
+        </p>
         <Box className={classes.buttonContainer}>
           <Button
             className={`${classes.button} ${classes.buttonLeft}`}
             variant="contained"
             onClick={() => {
+              mixpanel.track("Launcher/Mining Off");
               runStandalone(false);
             }}
           >
@@ -40,8 +48,8 @@ const MiningView = observer(
           <Button
             className={`${classes.button} ${classes.buttonRight}`}
             variant="contained"
-            color="primary"
             onClick={() => {
+              mixpanel.track("Launcher/Mining On");
               runStandalone(true);
             }}
           >

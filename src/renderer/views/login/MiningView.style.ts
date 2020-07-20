@@ -27,7 +27,12 @@ const miningViewStyle = makeStyles({
 
   buttonContainer: {
     position: "relative",
-    bottom: "-76px",
+    bottom: "-30px",
+  },
+
+  requirement: {
+    fontSize: "small",
+    color: "darkgray",
   },
 
   jade: {
