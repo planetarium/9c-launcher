@@ -24,16 +24,28 @@ export default class StandaloneStore {
   @action
   setMining = (mine: boolean, privateKey: string) => {
     electronStore.set("NoMiner", !mine);
-    return fetch(`http://${LOCAL_SERVER_URL}/set-mining`, {
+    return fetch(`http://${LOCAL_SERVER_URL}/set-private-key`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        Mine: mine,
         PrivateKeyString: privateKey,
       }),
-    }).then((resp) => this.checkIsOk(resp));
+    })
+      .then((resp) => this.checkIsOk(resp))
+      .then((_) =>
+        fetch(`http://${LOCAL_SERVER_URL}/set-mining`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Mine: mine,
+          }),
+        })
+      )
+      .then((resp) => this.checkIsOk(resp));
   };
 
   checkIsOk = async (response: Response) => {
