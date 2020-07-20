@@ -178,7 +178,7 @@ async function bundlePlayerBinary(
   await DECOMPRESSOR[platform](tmpPath, bundleInto);
   const unnecessaryDirs = // 론처 v1의 잔재들
     platform == "Windows"
-      ? ["MonoBleedingEdge", "qt-runtime", "9c_Data"]
+      ? ["Nine Chronicles.exe", "MonoBleedingEdge", "qt-runtime"]
       : ["Nine Chronicles.app"];
   for (const unnecessaryDir of unnecessaryDirs) {
     try {
