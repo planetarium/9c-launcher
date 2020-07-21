@@ -3,12 +3,13 @@ import { useState } from "react";
 import mixpanel from "mixpanel-browser";
 import { IStoreContainer } from "../../../interfaces/store";
 import {
+  Box,
   Button,
+  Grid,
   InputLabel,
+  Link,
   TextField,
   Typography,
-  Box,
-  Grid,
 } from "@material-ui/core";
 import { observer, inject } from "mobx-react";
 import "../../styles/login/login.scss";
@@ -54,6 +55,10 @@ const LoginView = observer(
           passphrase: passphrase,
         },
       });
+    };
+
+    const handleRevokeAccount = () => {
+      routerStore.push("/account/revoke");
     };
 
     // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
@@ -109,6 +114,13 @@ const LoginView = observer(
             >
               Login
             </Button>
+            <Link
+              className={classes.revokeLink}
+              href="#"
+              onClick={handleRevokeAccount}
+            >
+              Forgot password?
+            </Link>
           </Box>
         </form>
       </div>
