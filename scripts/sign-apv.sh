@@ -1,6 +1,12 @@
 #!/bin/bash
+set -e
 
-if [[ "$SKIP_APV_SIGN" != "" ]]; then
+if [[ "$APV" != "" ]]; then
+  echo "APV is given; use \"$APV\" instead of generating new one..." \
+    > /dev/stderr
+  npm run --silent configure-apv "$APV"
+  exit $?
+elif [[ "$SKIP_APV_SIGN" != "" ]]; then
   echo "Skip APV signing..."
   exit 0
 elif [[ "$APV_SIGN_KEY" = "" ]]; then
@@ -31,7 +37,7 @@ if [[ "$APV_NO" = "" ]]; then
 fi
 
 passphrase="$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 32 | head -n 1)"
-key_id="$(planet key import --passphrase="$passphrase" "$APV_SIGN_KEY" \
+key_id="$(planet key import --passphrase="$passphrase" "${APV_SIGN_KEY%%*( )}" \
           | awk '{print $1}')"
 apv="$( \
   planet apv sign \
@@ -44,12 +50,5 @@ apv="$( \
 )"
 echo "$apv"
 planet key remove --passphrase="$passphrase" "$key_id"
-planet apv analyze "$apv"
 
-config_path="$(dirname "$0")/../dist/config.json"
-node -e '
-var configString = process.argv[1];
-var config = configString.trim() ? JSON.parse(configString) : {};
-config.AppProtocolVersion = process.argv[2]
-console.log(JSON.stringify(config, null, 2));
-' "$(cat "$config_path" 2> /dev/null || echo '{}')" "$apv" > "$config_path"
+npm run --silent configure-apv "$apv"

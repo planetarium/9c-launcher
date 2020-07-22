@@ -1,5 +1,10 @@
 #!/usr/bin/env pwsh
-if ("$env:SKIP_APV_SIGN" -ne "") {
+if ("$env:APV" -ne "") {
+  Write-Warning `
+    "APV is given; use `"$env:APV`" instead of generating new one..."
+  npm run --silent configure-apv "$env:APV"
+  exit $LastExitCode
+} elseif ("$env:SKIP_APV_SIGN" -ne "") {
   Write-Error "Skip APV signing..."
   exit 0
 } elseif ("$env:APV_SIGN_KEY" -eq "") {
@@ -27,11 +32,11 @@ if ("$env:APV_WINDOWS_URL" -eq "") {
 }
 
 if ("$env:APV_NO" -eq "") {
-  Write-Error "APV_NO is not configured; query S3 about the latest APV_NO..."
+  Write-Warning "APV_NO is not configured; query S3 about the latest APV_NO..."
   $latestApvNo = [int] $(npm run --silent latest-apv-no)
   $env:APV_NO = $latestApvNo + 1
-  Write-Error "The last published APV number: $latestApvNo; APV_NO will be:"
-  Write-Error "  APV_NO = $env:APV_NO"
+  Write-Debug "The last published APV number: $latestApvNo; APV_NO will be:"
+  Write-Information "  APV_NO = $env:APV_NO"
 }
 
 $passphrase = [Guid]::NewGuid().ToString()
@@ -49,24 +54,5 @@ $apv = "$(`
 )"
 Write-Host "$apv"
 planet key remove --passphrase="$passphrase" "$keyId"
-planet apv analyze "$apv"
 
-$configPath = $MyInvocation.MyCommand.Definition `
-  | Split-Path -Parent `
-  | Split-Path -Parent `
-  | Join-Path -ChildPath "dist" `
-  | Join-Path -ChildPath "config.json"
-
-node -e @"
-const fs = require('fs');
-fs.readFile(process.argv[1], 'utf8', (err, data) => {
-  var config = (data || '').trim() ? JSON.parse(data) : {};
-  config.AppProtocolVersion = process.argv[2];
-  fs.writeFile(
-    process.argv[1],
-    JSON.stringify(config, null, 2),
-    'utf8',
-    () => undefined
-  );
-});
-"@ "$configPath" "$apv"
+npm run --silent configure-apv "$apv"

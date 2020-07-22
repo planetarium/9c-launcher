@@ -85,16 +85,31 @@ npm run build-prod  # 프로덕션 빌드
 ## 패키징 방법
 
 ```bash
-APV_SIGN_KEY=... APV_NO=... npm run pack-all
+# 주어진 비밀키로 새 버전 APV를 생성/서명 후 적용
+APV_SIGN_KEY=... npm run pack-all
+# 주어진 비밀키로 지정된 버전의 APV를 생성/서명 후 적용
+APV_SIGN_KEY=... APV_NO=1234 npm run pack-all
+# 주어진 APV를 그대로 적용
+APV=... npm run pack-all
+# APV 미적용 (가장 마지막에 릴리스된 패키지에 적용된 APV 재사용)
+npm run pack-all
 ```
 
-다음 환경 변수를 요구합니다. 누락됐을 경우 APV(앱 프로토콜 버전) 서명을 안 합니다.
+다음 환경 변수를 요구합니다. `APV`와 `APV_SIGN_KEY` 양 쪽 모두 누락됐을 경우
+APV(앱 프로토콜 버전) 서명을 안 합니다.
 
-- `APV_SIGN_KEY`: APV 서명에 쓸 비밀키의 16진수 문자열
-  (프로덕션 빌드를 위한 서명용 비밀키는 동료에게 문의하세요)
+- `APV`: APV 토큰
+  ([`Libplanet.Net.AppProtocolVersion.Token`][appprotocolversion.token]).
+  이게 주어지면 아래 세 환경 변수는 무시되고, 이 빌드 및 패키징된 앱은 이 `APV`를
+  쓰도록 설정됩니다.
+- `APV_SIGN_KEY`: APV 서명에 쓸 비밀키의 16진수 문자열.
+  프로덕션 빌드를 위한 서명용 비밀키는 1Password에 있으니 동료에게 문의하세요.
 - `APV_NO`: APV 숫자
-  ([`Libplanet.Net.AppProtocolVersion.Version`][appprotocolversion.version])
+  ([`Libplanet.Net.AppProtocolVersion.Version`][appprotocolversion.version]).
+  생략시 [download.nine-chronicles.com](https://download.nine-chronicles.com/)의
+  최신 버전에 1을 더한 값을 자동으로 사용합니다.
 
+[appprotocolversion.token]: https://docs.libplanet.io/master/api/Libplanet.Net.AppProtocolVersion.html#Libplanet_Net_AppProtocolVersion_Token
 [appprotocolversion.version]: https://docs.libplanet.io/master/api/Libplanet.Net.AppProtocolVersion.html#Libplanet_Net_AppProtocolVersion_Version
 
 ## 로깅 위치
