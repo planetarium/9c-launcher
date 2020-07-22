@@ -1,11 +1,13 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
-import { Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import AccountStore from "../../stores/account";
 import { RouterStore } from "mobx-react-router";
 import { AccountSelect } from "../../components/AccountSelect";
 import { useRevokePrivateKeyMutation } from "../../../generated/graphql";
+import revokeAccountViewStyle from "./RevokeAccountView.style";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 interface IRevokeAccountProps {
   accountStore: AccountStore;
@@ -15,44 +17,58 @@ interface IRevokeAccountProps {
 const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
   ({ accountStore, routerStore }: IRevokeAccountProps) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
+    const classes = revokeAccountViewStyle();
     return (
-      <>
-        <AccountSelect
-          addresses={accountStore.addresses}
-          onChangeAddress={accountStore.setSelectedAddress}
-          selectedAddress={accountStore.selectedAddress}
-        />
+      <div className={classes.root}>
         <Button
+          startIcon={<ArrowBackIosIcon />}
+          onClick={() => {
+            routerStore.push("/");
+          }}
+        >
+          Back
+        </Button>
+        <Typography className={classes.title}>Revoke your account</Typography>
+        <Typography>
+          Delete all records related to your account.
+          <br />
+          <br />
+          Nine Chronicles is a fully decentralized game. Therefore, there is no
+          central server that manages your password. <br />
+          If you don’t remember your private key, you must create a new account
+          to play the game from the beginning. <br />
+          <br />
+          Private keys can be found in the Settings menu of the game, so make
+          sure to copy them separately next time and keep them in a safe place.
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.revoke}
+          fullWidth
           onClick={(event) => {
             event.preventDefault();
-            revokePrivateKey({
-              variables: {
-                address: accountStore.selectedAddress,
-              },
-            }).then((executionResult) => {
-              const revokedAddress =
-                executionResult.data?.keyStore?.revokePrivateKey?.address;
-              if (undefined !== revokedAddress) {
+            Promise.all(
+              accountStore.addresses.map((address) =>
+                revokePrivateKey({
+                  variables: {
+                    address,
+                  },
+                })
+              )
+            ).then((executionResult) => {
+              executionResult.forEach((r) => {
+                const revokedAddress: string =
+                  r.data?.keyStore?.revokePrivateKey?.address;
                 accountStore.removeAddress(revokedAddress);
-                if (accountStore.addresses.length > 0) {
-                  accountStore.setSelectedAddress(accountStore.addresses[0]);
-                } else {
-                  routerStore.push("/main");
-                }
-              }
+              });
+              routerStore.push("/main");
             });
           }}
         >
           Revoke Key
         </Button>
-        <button
-          onClick={() => {
-            routerStore.push("/");
-          }}
-        >
-          back to the home
-        </button>
-      </>
+      </div>
     );
   }
 );

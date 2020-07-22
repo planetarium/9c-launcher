@@ -17,12 +17,18 @@ const loginViewStyle = makeStyles({
   },
   loginButton: {
     display: "block",
-    margin: "50px auto",
+    margin: "50px auto 0 auto",
     borderRadius: "0",
     width: "60%",
     height: "60px",
     fontSize: "150%",
     fontWeight: "bold",
+  },
+  revokeLink: {
+    margin: "10px auto",
+    display: "block",
+    width: "150px",
+    color: "white",
   },
 });
 
