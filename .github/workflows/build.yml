@@ -6,8 +6,41 @@ on:
   pull_request: []
 
 jobs:
+  # APV 서명
+  sign-apv:
+    runs-on: ubuntu-latest
+    steps:
+      # 클론
+      - uses: actions/checkout@v2
+        if: github.event_name != 'pull_request'
+        with:
+          submodules: false
+          lfs: false
+      - uses: actions/checkout@v2
+        if: github.event_name == 'pull_request'
+        with:
+          ref: ${{ github.pull_request.head.sha }}
+          submodules: false
+          lfs: false
+      # Node.js 설치
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+      # 의존성 설치
+      - run: npm install @planetarium/cli
+      # APV 생성
+      - id: make-apv
+        run: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
+        env:
+          APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
+    outputs:
+      apv: ${{ steps.make-apv.outputs.apv }}
+
   # 론처 빌드
   build-launcher:
+    needs: sign-apv
+    env:
+      APV: ${{ needs.sign-apv.outputs.apv }}
     strategy:
       matrix:
         os:
@@ -94,8 +127,6 @@ jobs:
           URL_PATTERN: "https://download.nine-chronicles.com/v%d/Windows.zip"
       # APV 서명 (config.json에 반영)
       - run: npm run sign-apv
-        env:
-          APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
       # 빌드 아티팩트
       - if: runner.os == 'Windows'
         run: 7z a -r "../9c-launcher-dist-${{ matrix.os }}.7z" *
