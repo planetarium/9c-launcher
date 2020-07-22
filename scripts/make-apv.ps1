@@ -1,6 +1,11 @@
 #!/usr/bin/env pwsh
 if ("$env:APV_SIGN_KEY" -eq "") {
   Write-Error "APV_SIGN_KEY is not configured." -ErrorAction Stop
+} elseif ((Get-Command npx -ErrorAction SilentlyContinue) -and `
+          ((& npx --no-install -q planet --version > $null) -or $?)) {
+  function planet {
+    & npx --no-install -q @args
+  }
 } elseif (-not (Get-Command planet -ErrorAction SilentlyContinue)) {
   Write-Error "`
 The planet command does not exist.

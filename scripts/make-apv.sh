@@ -4,6 +4,11 @@ set -e
 if [[ "$APV_SIGN_KEY" = "" ]]; then
   echo "APV_SIGN_KEY is not configured." > /dev/stderr
   exit 1
+elif command -v npx > /dev/null && \
+     npx --no-install -q planet --version > /dev/null; then
+  function planet {
+    npx --no-install -q planet "$@"
+  }
 elif ! command -v planet > /dev/null; then
   {
     echo "The planet command does not exist."
