@@ -112,6 +112,18 @@ APV(앱 프로토콜 버전) 서명을 안 합니다.
 [appprotocolversion.token]: https://docs.libplanet.io/master/api/Libplanet.Net.AppProtocolVersion.html#Libplanet_Net_AppProtocolVersion_Token
 [appprotocolversion.version]: https://docs.libplanet.io/master/api/Libplanet.Net.AppProtocolVersion.html#Libplanet_Net_AppProtocolVersion_Version
 
+### 패키지에서 config.json 내용만 갈아끼우기
+
+패키징된 _Windows.zip_ 또는 _macOS.tar.gz_ 파일에서 _config.json_ 설정 내용만 갈아끼울 때
+_scripts/extract-config.sh_ 및 _scripts/replace-config.sh_ 스크립트를 활용하면 편합니다.
+
+```bash
+# 패키지에서 config.json 내용만 추출 (Windows.zip 대신 macOS.tar.gz도 가능)
+scripts/extract-config.sh path/Windows.zip > config.json
+# 패키지 내 config.json 내용을 교체 (Windows.zip 대신 macOS.tar.gz도 가능)
+scripts/replace-config.sh path/Windows.zip < config.json
+```
+
 ## 로깅 위치
 
 로그는 다음 위치에 쌓입니다.
