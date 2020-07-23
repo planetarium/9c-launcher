@@ -4,7 +4,7 @@ if ("$env:APV_SIGN_KEY" -eq "") {
 } elseif ((Get-Command npx -ErrorAction SilentlyContinue) -and `
           ((& npx --no-install -q planet --version > $null) -or $?)) {
   function planet {
-    & npx --no-install -q @args
+    & npx --no-install -q planet @args
   }
 } elseif (-not (Get-Command planet -ErrorAction SilentlyContinue)) {
   Write-Error "`
@@ -12,6 +12,14 @@ The planet command does not exist.
 Please install Libplanet.Tools first:
   dotnet tool install --global Libplanet.Tools" `
     -ErrorAction Stop
+}
+
+if ("$env:APV_NO" -eq "") {
+  Write-Debug "APV_NO is not configured; query S3 about the latest APV_NO..."
+  $latestApvNo = [int] $(npm run --silent latest-apv-no)
+  $env:APV_NO = $latestApvNo + 1
+  Write-Debug "The last published APV number: $latestApvNo; APV_NO will be:"
+  Write-Information "  APV_NO = $env:APV_NO"
 }
 
 $DefaultUrlBase = "https://download.nine-chronicles.com/v"
@@ -28,17 +36,9 @@ if ("$env:APV_WINDOWS_URL" -eq "") {
   $windowsBinaryUrl = $env:APV_WINDOWS_URL;
 }
 
-if ("$env:APV_NO" -eq "") {
-  Write-Warning "APV_NO is not configured; query S3 about the latest APV_NO..."
-  $latestApvNo = [int] $(npm run --silent latest-apv-no)
-  $env:APV_NO = $latestApvNo + 1
-  Write-Debug "The last published APV number: $latestApvNo; APV_NO will be:"
-  Write-Information "  APV_NO = $env:APV_NO"
-}
-
 $passphrase = [Guid]::NewGuid().ToString()
 $keyId = (
-  "$(planet key import --passphrase="$passphrase" "$env:APV_SIGN_KEY")"
+  "$(planet key import --passphrase="$passphrase" $env:APV_SIGN_KEY.Trim())"
 ).Split(" ")[0]
 $apv = "$(`
   planet apv sign `
