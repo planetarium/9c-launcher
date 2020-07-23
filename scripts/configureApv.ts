@@ -15,7 +15,11 @@ async function configureApv(configPath: string, apv: string): Promise<void> {
 
 async function main(): Promise<void> {
   const argv = process.argv.slice();
-  if (argv[0].endsWith("ts-node") && argv[1] == __filename) {
+  if (
+    (path.basename(argv[0]) === "ts-node" ||
+      argv[0].endsWith("\\ts-node\\dist\\bin.js")) &&
+    path.basename(argv[1]) == path.basename(__filename)
+  ) {
     argv.shift();
     argv[0] = "npm run configure-apv";
   }
