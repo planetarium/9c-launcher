@@ -1,6 +1,7 @@
 node_modules
 dist
 pack
+out
 .DS_Store
 .blockstore
 

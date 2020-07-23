@@ -37,7 +37,11 @@
     "sign-apv:darwin": "scripts/sign-apv.sh || true",
     "latest-apv-no": "npx ts-node scripts/latestApvNo.ts",
     "configure-apv": "npx ts-node scripts/configureApv.ts",
-    "pack-all": "npm install && npm run build-headless && npm run bundle-player && npm run sign-apv && npm run pack"
+    "before-pack": "npm install && npm run build-headless && npm run bundle-player && npm run sign-apv",
+    "pack-all": "npm run before-pack && npm run pack",
+    "pack-all:electron-builder": "run-script-os",
+    "pack-all:electron-builder:windows": "npm run before-pack && npm run build-prod && npx electron-builder --windows",
+    "pack-all:electron-builder:darwin": "npm run before-pack && npm run build-prod && npx electron-builder --mac"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
@@ -112,6 +116,7 @@
     "copy-webpack-plugin": "^6.0.1",
     "css-loader": "^3.5.3",
     "electron": "^9.0.2",
+    "electron-builder": "^22.7.0",
     "electron-devtools-installer": "^3.0.0",
     "electron-download": "^4.1.1",
     "electron-packager": "^14.2.1",
