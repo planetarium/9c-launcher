@@ -18,10 +18,6 @@ elif ! command -v planet > /dev/null; then
   exit 1
 fi
 
-default_url_base=https://download.nine-chronicles.com/v
-macos_url="${APV_MACOS_URL:-$default_url_base$APV_NO/macOS.tar.gz}"
-windows_url="${APV_WINDOWS_URL:-$default_url_base$APV_NO/Windows.zip}"
-
 if [[ "$APV_NO" = "" ]]; then
   echo "APV_NO is not configured; query S3 about the latest APV_NO..." \
     > /dev/stderr
@@ -32,6 +28,10 @@ if [[ "$APV_NO" = "" ]]; then
     echo "  APV_NO=$APV_NO"
   } > /dev/stderr
 fi
+
+default_url_base=https://download.nine-chronicles.com/v
+macos_url="${APV_MACOS_URL:-$default_url_base$APV_NO/macOS.tar.gz}"
+windows_url="${APV_WINDOWS_URL:-$default_url_base$APV_NO/Windows.zip}"
 
 if command -v node > /dev/null; then
   passphrase="$(node -e 'console.log(Math.random())')"
