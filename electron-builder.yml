@@ -1,7 +1,7 @@
 appId: "com.planetariumhq.nine-chronicles"
 asar: "false"
 directories:
-  output: "out"
+  output: "pack"
   app: "dist"
 win:
   target:
