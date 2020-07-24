@@ -3,12 +3,14 @@ asar: "false"
 directories:
   output: "out"
   app: "dist"
-icon: "app.ico"
 win:
   target:
     - target: "nsis"
       arch:
         - "x64"
+  icon: "app.ico"
+mac:
+  icon: "AppIcon.icns"
 publish:
   - provider: "generic"
     url: "https://9c-test.s3.ap-northeast-2.amazonaws.com/electron-builder-test/"

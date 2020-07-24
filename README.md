@@ -132,12 +132,6 @@ scripts/replace-config.sh path/Windows.zip < config.json
 npm run pack-all:electron-builder
 ```
 
-😢현재 macOS에서는 아이콘 크기 문제로 빌드가 되지 않습니다.
-
-> image /Users/moreal/github/planetarium/electron-launcher/app.ico must be at least 512x512
-
-`icon: "app.ico"` 부분을 주석처리 하면 빌드 및 패키징 해볼 수 있습니다.
-
 ## 로깅 위치
 
 로그는 다음 위치에 쌓입니다.
