@@ -59,43 +59,47 @@ if (!app.requestSingleInstanceLock()) {
   initializeIpc();
 }
 
+function executeStandalone() {
+  execute(
+    path.join(
+      app.getAppPath(),
+      "publish",
+      "NineChronicles.Standalone.Executable"
+    ),
+    [
+      `-V=${electronStore.get("AppProtocolVersion")}`,
+      `-G=${electronStore.get("GenesisBlockPath")}`,
+      `-D=${electronStore.get("MinimumDifficulty")}`,
+      `--store-type=${electronStore.get("StoreType")}`,
+      `--store-path=${BLOCKCHAIN_STORE_PATH}`,
+      ...electronStore
+        .get("IceServerStrings")
+        .map((iceServerString) => `-I=${iceServerString}`),
+      ...electronStore
+        .get("PeerStrings")
+        .map((peerString) => `--peer=${peerString}`),
+      ...electronStore
+        .get("TrustedAppProtocolVersionSigners")
+        .map(
+          (trustedAppProtocolVersionSigner) =>
+            `-T=${trustedAppProtocolVersionSigner}`
+        ),
+      `--no-trusted-state-validators=${electronStore.get(
+        "NoTrustedStateValidators"
+      )}`,
+      "--rpc-server",
+      `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
+      `--rpc-listen-port=${RPC_SERVER_PORT}`,
+      "--graphql-server",
+      "--graphql-host=localhost",
+      `--graphql-port=${LOCAL_SERVER_PORT}`,
+    ]
+  );
+}
+
 function initializeApp() {
   app.on("ready", () => {
-    execute(
-      path.join(
-        app.getAppPath(),
-        "publish",
-        "NineChronicles.Standalone.Executable"
-      ),
-      [
-        `-V=${electronStore.get("AppProtocolVersion")}`,
-        `-G=${electronStore.get("GenesisBlockPath")}`,
-        `-D=${electronStore.get("MinimumDifficulty")}`,
-        `--store-type=${electronStore.get("StoreType")}`,
-        `--store-path=${BLOCKCHAIN_STORE_PATH}`,
-        ...electronStore
-          .get("IceServerStrings")
-          .map((iceServerString) => `-I=${iceServerString}`),
-        ...electronStore
-          .get("PeerStrings")
-          .map((peerString) => `--peer=${peerString}`),
-        ...electronStore
-          .get("TrustedAppProtocolVersionSigners")
-          .map(
-            (trustedAppProtocolVersionSigner) =>
-              `-T=${trustedAppProtocolVersionSigner}`
-          ),
-        `--no-trusted-state-validators=${electronStore.get(
-          "NoTrustedStateValidators"
-        )}`,
-        "--rpc-server",
-        `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
-        `--rpc-listen-port=${RPC_SERVER_PORT}`,
-        "--graphql-server",
-        "--graphql-host=localhost",
-        `--graphql-port=${LOCAL_SERVER_PORT}`,
-      ]
-    );
+    executeStandalone();
     createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
   });
@@ -111,24 +115,46 @@ function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
-    deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
-    options.properties.onProgress = (status: IDownloadProgress) =>
-      win?.webContents.send("download progress", status);
+  ipcMain.on("download metadata", (_, options: IDownloadOptions) => {
     options.properties.directory = app.getPath("userData");
-    console.log(win);
+    options.properties.filename = "meta.json";
     if (win != null) {
       download(
         win,
-        electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string,
+        (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".json",
         options.properties
-      )
-        .then((dl) => {
-          win?.webContents.send("download complete", dl.getSavePath());
-          return dl.getSavePath();
-        })
-        .then((path) => extractSnapshot(path));
+      ).then(async (dl) => {
+        var path = dl.getSavePath();
+        var meta = await fs.promises.readFile(path, "utf-8");
+        console.log("metadata download complete: ", meta);
+        win?.webContents.send("metadata downloaded", meta);
+      });
     }
+  });
+
+  ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
+    console.log("downloading snapshot.");
+    quitAllProcesses();
+    setTimeout(() => {
+      deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
+      options.properties.onProgress = (status: IDownloadProgress) =>
+        win?.webContents.send("download progress", status);
+      options.properties.directory = app.getPath("userData");
+      console.log(win);
+      if (win != null) {
+        download(
+          win,
+          (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
+          options.properties
+        )
+          .then((dl) => {
+            win?.webContents.send("download complete", dl.getSavePath());
+            return dl.getSavePath();
+          })
+          .then((path) => extractSnapshot(path))
+          .then(() => executeStandalone());
+      }
+    }, 1000);
   });
 
   ipcMain.on(
@@ -379,13 +405,18 @@ function initializeIpc() {
   });
 
   ipcMain.on("clear cache", (event) => {
-    try {
-      deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
-      event.returnValue = true;
-    } catch (e) {
-      console.log(e);
-      event.returnValue = false;
-    }
+    quitAllProcesses();
+    setTimeout(() => {
+      try {
+        deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
+        event.returnValue = true;
+      } catch (e) {
+        console.log(e);
+        event.returnValue = false;
+      } finally {
+        executeStandalone();
+      }
+    }, 1000);
   });
 }
 
