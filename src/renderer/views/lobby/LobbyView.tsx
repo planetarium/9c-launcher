@@ -24,7 +24,7 @@ function sleep(ms: number) {
 
 const LobbyView = observer((props: ILobbyViewProps) => {
   const classes = lobbyViewStyle();
-  const { accountStore, gameStore } = props;
+  const { accountStore, gameStore, standaloneStore } = props;
   const {
     loading,
     error: statusError,
@@ -72,7 +72,8 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   if (loading || polling)
     return <p className={classes.verifing}>Verifing...</p>;
-  if (status?.activationStatus.activated) return <GameStartButton {...props} />;
+  if (!status?.activationStatus.activated)
+    return <GameStartButton {...props} />;
   else
     return (
       <Container>
@@ -97,7 +98,8 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 });
 
 const GameStartButton = observer((props: ILobbyViewProps) => {
-  const { accountStore, gameStore } = props;
+  const { accountStore, gameStore, standaloneStore } = props;
+  const classes = lobbyViewStyle();
   const handleStartGame = () => {
     mixpanel.track("Launcher/Unity Player Start");
     gameStore.startGame(accountStore.privateKey);
@@ -105,22 +107,33 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
   };
 
   React.useEffect(() => {
-    handleStartGame();
-  }, []);
+    if (standaloneStore.IsPreloadEnded) {
+      handleStartGame();
+    }
+  }, [standaloneStore.IsPreloadEnded]);
 
   return (
     <Container>
       <Button
         fullWidth
-        disabled={gameStore.isGameStarted}
+        disabled={!standaloneStore.IsPreloadEnded || gameStore.isGameStarted}
         variant="contained"
         color="primary"
         onClick={handleStartGame}
+        className={classes.gameStartButton}
       >
-        {gameStore.isGameStarted ? "Now Running..." : "Start Game"}
+        {gameStore.isGameStarted
+          ? "Now Running..."
+          : standaloneStore.IsPreloadEnded
+          ? "Start Game"
+          : "Preloading..."}
       </Button>
     </Container>
   );
 });
 
-export default inject("accountStore", "gameStore")(LobbyView);
+export default inject(
+  "accountStore",
+  "gameStore",
+  "standaloneStore"
+)(LobbyView);

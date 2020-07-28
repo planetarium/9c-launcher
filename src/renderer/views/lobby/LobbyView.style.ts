@@ -16,6 +16,10 @@ const lobbyViewStyle = makeStyles({
   verifing: {
     textAlign: "center",
   },
+
+  gameStartButton: {
+    marginTop: "65px",
+  },
 });
 
 export default lobbyViewStyle;

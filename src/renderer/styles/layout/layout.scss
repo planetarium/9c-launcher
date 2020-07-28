@@ -57,10 +57,11 @@
     position: relative;
   }
   .footer {
-    padding: 16px;
-    grid-row: 3;
-    grid-column: 1 / span 2;
-    background-color: $color2;
-    color: $color3;
+    position: absolute;
+    padding: 0px;
+    bottom: 0px;
+    width: 97%;
+    height: 30px;
+    background-color: "transparent";
   }
 }

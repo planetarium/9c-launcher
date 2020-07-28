@@ -9,7 +9,7 @@ import mixpanel from "mixpanel-browser";
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
     const classes = miningViewStyle();
-    const runStandalone = (isMining: boolean) => {
+    const setMining = (isMining: boolean) => {
       standaloneStore
         .setMining(isMining, accountStore.privateKey)
         .catch((error) => {
@@ -17,10 +17,6 @@ const MiningView = observer(
           routerStore.push("/error");
         });
       routerStore.push("/lobby/preload");
-      standaloneStore.runStandalone().catch((error) => {
-        console.log(error);
-        routerStore.push("/error");
-      });
     };
 
     return (
@@ -45,7 +41,7 @@ const MiningView = observer(
             variant="contained"
             onClick={() => {
               mixpanel.track("Launcher/Mining Off");
-              runStandalone(false);
+              setMining(false);
             }}
           >
             Not now
@@ -55,7 +51,7 @@ const MiningView = observer(
             variant="contained"
             onClick={() => {
               mixpanel.track("Launcher/Mining On");
-              runStandalone(true);
+              setMining(true);
             }}
           >
             Got it!

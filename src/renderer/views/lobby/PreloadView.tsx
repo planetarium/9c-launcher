@@ -26,91 +26,10 @@ import preloadViewStyle from "./PreloadView.style";
 import LobbyView from "./LobbyView";
 import { electronStore } from "../../../config";
 
-enum PreloadProgressPhase {
-  ActionExecutionState,
-  BlockDownloadState,
-  BlockHashDownloadState,
-  BlockVerificationState,
-  StateDownloadState,
-}
-
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore, standaloneStore } = props;
   const classes = preloadViewStyle();
-  const {
-    data: preloadProgressSubscriptionResult,
-  } = usePreloadProgressSubscriptionSubscription();
-  const {
-    data: nodeStatusSubscriptionResult,
-  } = useNodeStatusSubscriptionSubscription();
-  const preloadProgress = preloadProgressSubscriptionResult?.preloadProgress;
-
   const [progress, setProgress] = React.useState(0);
-  const [statusMessage, setStatusMessage] = React.useState(
-    "Connecting to the network..."
-  );
-
-  const [isPreloadEnded, setPreloadStats] = React.useState(false);
-
-  React.useEffect(() => {
-    mixpanel.track("Launcher/IBD Start");
-  }, []);
-
-  React.useEffect(() => {
-    const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
-    setPreloadStats(isEnded === undefined ? false : isEnded);
-  }, [nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded]);
-
-  React.useEffect(() => {
-    const prog = getProgress(
-      preloadProgressSubscriptionResult?.preloadProgress?.extra.currentCount,
-      preloadProgressSubscriptionResult?.preloadProgress?.extra.totalCount
-    );
-    setProgress(prog);
-  }, [preloadProgress?.extra]);
-
-  React.useEffect(() => {
-    if (isPreloadEnded) {
-      const phase: PreloadProgressPhase =
-        PreloadProgressPhase[preloadProgress?.extra.type];
-
-      if (
-        phase !== PreloadProgressPhase.ActionExecutionState &&
-        phase !== PreloadProgressPhase.StateDownloadState &&
-        electronStore.get("PeerStrings").length > 0
-      ) {
-        routerStore.push("/error");
-      }
-    }
-  }, [isPreloadEnded, preloadProgress?.extra]);
-
-  React.useEffect(() => {
-    const steps: string = `(${preloadProgress?.currentPhase}/${preloadProgress?.totalPhase})`;
-    // FIXME: preloadProgress가 undefined일 경우 문제가 생길 수 있습니다.
-    const phase: PreloadProgressPhase =
-      PreloadProgressPhase[preloadProgress?.extra.type];
-    switch (phase) {
-      case PreloadProgressPhase.ActionExecutionState:
-        setStatusMessage(`Executing actions... ${steps}`);
-        break;
-
-      case PreloadProgressPhase.BlockDownloadState:
-        setStatusMessage(`Downloading blocks... ${steps}`);
-        break;
-
-      case PreloadProgressPhase.BlockHashDownloadState:
-        setStatusMessage(`Downloading block hashes... ${steps}`);
-        break;
-
-      case PreloadProgressPhase.BlockVerificationState:
-        setStatusMessage(`Verifying block headers... ${steps}`);
-        break;
-
-      case PreloadProgressPhase.StateDownloadState:
-        setStatusMessage(`Downloading states... ${steps}`);
-        break;
-    }
-  }, [preloadProgress]);
 
   const videoOpts: IYoutubeOption = {
     width: "330",
@@ -131,7 +50,7 @@ const PreloadView = observer((props: IStoreContainer) => {
   }, []);
 
   const Headline = styled(Typography)({
-    marginTop: "60px",
+    marginTop: "30px",
     fontWeight: "bold",
     lineHeight: 1.25,
   });
@@ -169,16 +88,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           />
         </ListItem>
       </List>
-      {!isPreloadEnded ? (
-        <>
-          {!!preloadProgress && <LinearProgressWithLabel value={progress} />}
-          <Typography align="center" display="block" variant="caption">
-            {statusMessage}
-          </Typography>
-        </>
-      ) : (
-        <LobbyView {...props} onLaunch={handleLaunch} />
-      )}
+      <LobbyView {...props} onLaunch={handleLaunch} />
     </Container>
   );
 });

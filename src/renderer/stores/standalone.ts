@@ -10,15 +10,29 @@ export default class StandaloneStore {
   @observable
   public NoMiner: boolean;
 
+  @observable
+  public IsPreloadEnded: boolean;
+
   constructor() {
     this.NoMiner = electronStore.get("NoMiner") as boolean;
+    this.IsPreloadEnded = false;
   }
 
   @action
   runStandalone = () => {
-    return fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
-      method: "POST",
-    }).then((resp) => this.checkIsOk(resp));
+    return new Promise((resolve, reject) => {
+      // TODO: Replace with apollo-link-retry
+      // https://www.apollographql.com/docs/link/links/retry/#gatsby-focus-wrapper
+      const tid = setTimeout(() => {
+        fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
+          method: "POST",
+        })
+          .then((resp) => this.checkIsOk(resp))
+          .then(() => {
+            resolve();
+          });
+      }, 10000);
+    });
   };
 
   @action
