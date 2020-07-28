@@ -39,7 +39,6 @@ const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
 
     ipcRenderer.on("metadata downloaded", (_, meta) => {
       validateSnapshot({ variables: { raw: meta } });
-      // returns true iff snapshot need to be downloaded
     });
 
     ipcRenderer.on("download complete", (_, path: string) => {
