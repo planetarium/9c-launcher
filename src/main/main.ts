@@ -123,12 +123,19 @@ function initializeIpc() {
         win,
         (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".json",
         options.properties
-      ).then(async (dl) => {
-        var path = dl.getSavePath();
-        var meta = await fs.promises.readFile(path, "utf-8");
-        console.log("metadata download complete: ", meta);
-        win?.webContents.send("metadata downloaded", meta);
-      });
+      )
+        .then(async (dl) => {
+          var path = dl.getSavePath();
+          var meta = await fs.promises.readFile(path, "utf-8");
+          console.log("Metadata download complete: ", meta);
+          win?.webContents.send("metadata downloaded", meta);
+        })
+        .catch((error) => {
+          console.log(
+            `An error occurred during downloading metadata: ${error}`
+          );
+          win?.webContents.send("snapshot complete");
+        });
     }
   });
 
@@ -153,7 +160,8 @@ function initializeIpc() {
             return dl.getSavePath();
           })
           .then((path) => extractSnapshot(path))
-          .then(() => executeStandalone());
+          .then(() => executeStandalone())
+          .then(() => win?.webContents.send("snapshot complete"));
       }
     }, 1000);
   });

@@ -27,7 +27,7 @@ const miningViewStyle = makeStyles({
 
   buttonContainer: {
     position: "relative",
-    bottom: "-30px",
+    bottom: "-5px",
   },
 
   requirement: {
