@@ -104,3 +104,9 @@ subscription Notification {
     type
   }
 }
+
+query ValidateSnapshot($raw: String!) {
+  validation {
+    metadata(raw: $raw)
+  }
+}

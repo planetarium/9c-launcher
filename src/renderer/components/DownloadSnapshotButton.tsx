@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import { Button, CircularProgress } from "@material-ui/core";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import { useValidateSnapshotLazyQuery } from "../../generated/graphql";
 
 interface IDownloadSnaphostProps {
   className: string;
@@ -13,6 +14,11 @@ const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
   const [isExtract, setExtractState] = useState(false);
   const [isDownload, setDownloadState] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  const [
+    validateSnapshot,
+    { loading, data, error },
+  ] = useValidateSnapshotLazyQuery();
 
   React.useEffect(() => {
     ipcRenderer.on("extract progress", (event, progress) => {
@@ -27,10 +33,13 @@ const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
     ipcRenderer.on(
       "download progress",
       (event: IpcRendererEvent, progress: IDownloadProgress) => {
-        setDownloadState(true);
         setProgress(progress.percent * 100);
       }
     );
+
+    ipcRenderer.on("metadata downloaded", (_, meta) => {
+      validateSnapshot({ variables: { raw: meta } });
+    });
 
     ipcRenderer.on("download complete", (_, path: string) => {
       setDownloadState(false);
@@ -38,13 +47,25 @@ const DownloadSnapshotButton = (props: IDownloadSnaphostProps) => {
   }, []);
 
   React.useEffect(() => {
+    if (undefined === error && !loading && data?.validation.metadata) {
+      const options: IDownloadOptions = {
+        properties: {},
+      };
+      console.log("Snapshot is valid. Start downloading.");
+      setDownloadState(true);
+      ipcRenderer.send("download snapshot", options);
+    }
+  }, [data?.validation.metadata]);
+
+  React.useEffect(() => {
     props.setSnapshotProgressState(isExtract || isDownload);
   }, [isExtract, isDownload]);
+
   const downloadSnapShot = () => {
     const options: IDownloadOptions = {
       properties: {},
     };
-    ipcRenderer.send("download snapshot", options);
+    ipcRenderer.send("download metadata", options);
   };
   return (
     <Button
