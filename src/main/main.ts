@@ -135,6 +135,7 @@ function initializeIpc() {
   ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
     console.log("downloading snapshot.");
     quitAllProcesses();
+    // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
     setTimeout(() => {
       deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
       options.properties.onProgress = (status: IDownloadProgress) =>
@@ -406,6 +407,7 @@ function initializeIpc() {
 
   ipcMain.on("clear cache", (event) => {
     quitAllProcesses();
+    // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
     setTimeout(() => {
       try {
         deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
