@@ -165,9 +165,10 @@ async function bundlePlayerBinary(
       f,
       options.downloadProgress
     );
-  } catch {
+  } catch (e) {
     throw new Error(
-      `Failed to download the player executable from ${playerCommit}.`
+      `Failed to download the player executable from ${playerCommit}.` +
+        (e.statusCode == null ? "" : ` [status code: ${e.statusCode}]`)
     );
   } finally {
     f.close();
