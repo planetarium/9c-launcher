@@ -14,6 +14,10 @@ export const electronStore = new Store<IElectronStore>({
       default:
         "https://download.nine-chronicles.com/latest/4a321a45b07750ca7fa88a0a4a0c817fa26c5f5e54ac2ab91675256e6abed21a-snapshot",
     },
+    UseSnapshot: {
+      type: "boolean",
+      default: true,
+    },
     AppProtocolVersion: {
       type: "string",
       default:
