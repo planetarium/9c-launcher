@@ -424,7 +424,9 @@ function initializeIpc() {
         console.log(e);
         event.returnValue = false;
       } finally {
-        executeStandalone();
+        // Clear cache한 후 앱을 종료합니다.
+        isQuiting = true;
+        app.quit();
       }
     }, 1000);
   });
