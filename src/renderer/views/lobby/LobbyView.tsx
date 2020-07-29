@@ -72,7 +72,10 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   if (loading || polling)
     return <p className={classes.verifing}>Verifing...</p>;
-  if (status?.activationStatus.activated) return <GameStartButton {...props} />;
+
+  // FIXME status가 undefined 인 경우가 없어야 합니다.
+  if (status === undefined || status?.activationStatus.activated)
+    return <GameStartButton {...props} />;
   else
     return (
       <Container>
