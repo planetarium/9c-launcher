@@ -72,8 +72,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   if (loading || polling)
     return <p className={classes.verifing}>Verifing...</p>;
-  if (!status?.activationStatus.activated)
-    return <GameStartButton {...props} />;
+  if (status?.activationStatus.activated) return <GameStartButton {...props} />;
   else
     return (
       <Container>
