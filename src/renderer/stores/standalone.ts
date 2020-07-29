@@ -20,18 +20,37 @@ export default class StandaloneStore {
 
   @action
   runStandalone = () => {
+    console.log("Running standalone service...");
     return new Promise((resolve, reject) => {
-      // TODO: Replace with apollo-link-retry
-      // https://www.apollographql.com/docs/link/links/retry/#gatsby-focus-wrapper
-      const tid = setTimeout(() => {
+      // TODO: thundering herd
+      const delay = 1000;
+      const maxRetry = 30;
+      let retry = 0;
+      const tid = setInterval(() => {
         fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
           method: "POST",
         })
           .then((resp) => this.checkIsOk(resp))
           .then(() => {
+            console.log(`Successfully fetched standalone in ${retry} retries.`);
+            clearInterval(tid);
             resolve();
+          })
+          .catch((error) => {
+            if (retry > maxRetry) {
+              console.error(
+                `Failed to fetch standalone in ${maxRetry} retries.`
+              );
+              clearInterval(tid);
+              reject(error);
+            } else {
+              retry++;
+              console.log(
+                `Failed to fetch standalone. Retrying after ${delay}...`
+              );
+            }
           });
-      }, 10000);
+      }, delay);
     });
   };
 
