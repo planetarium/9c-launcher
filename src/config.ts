@@ -11,8 +11,7 @@ export const electronStore = new Store<IElectronStore>({
     SNAPSHOT_DOWNLOAD_PATH: {
       type: "string",
       format: "uri",
-      default:
-        "https://download.nine-chronicles.com/latest/4a321a45b07750ca7fa88a0a4a0c817fa26c5f5e54ac2ab91675256e6abed21a-snapshot",
+      default: "https://download.nine-chronicles.com/latest/9c-beta-4-snapshot",
     },
     UseSnapshot: {
       type: "boolean",
@@ -26,7 +25,7 @@ export const electronStore = new Store<IElectronStore>({
     GenesisBlockPath: {
       type: "string",
       default:
-        "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-9c-beta-3",
+        "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-9c-beta-4",
     },
     MinimumDifficulty: {
       type: "integer",
