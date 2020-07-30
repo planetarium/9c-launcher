@@ -23,7 +23,7 @@ enum PreloadProgressPhase {
 }
 
 const PreloadProgressView = observer((props: IStoreContainer) => {
-  const { routerStore, standaloneStore } = props;
+  const { accountStore, routerStore, standaloneStore } = props;
   const classes = preloadProgressViewStyle();
   const {
     data: preloadProgressSubscriptionResult,
@@ -107,10 +107,20 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
 
   const startPreloading = () => {
     mixpanel.track("Launcher/IBD Start");
-    standaloneStore.runStandalone().catch((error) => {
-      console.log(error);
-      routerStore.push("/error");
-    });
+    standaloneStore
+      .runStandalone()
+      .then(() => {
+        if (accountStore.isLogin && accountStore.privateKey !== "") {
+          return standaloneStore.setMining(
+            !standaloneStore.NoMiner,
+            accountStore.privateKey
+          );
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        routerStore.push("/error");
+      });
   };
 
   React.useEffect(() => {
@@ -207,4 +217,8 @@ const getProgress = (
   return total === 0 ? 0 : Math.round((current / total) * 100);
 };
 
-export default inject("routerStore", "standaloneStore")(PreloadProgressView);
+export default inject(
+  "accountStore",
+  "routerStore",
+  "standaloneStore"
+)(PreloadProgressView);
