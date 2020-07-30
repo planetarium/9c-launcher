@@ -124,6 +124,14 @@ scripts/extract-config.sh path/Windows.zip > config.json
 scripts/replace-config.sh path/Windows.zip < config.json
 ```
 
+### electron-builder로 패키징하기
+
+```bash
+# Windows (nsis)
+# macOS (dmg, zip)
+npm run pack-all:electron-builder
+```
+
 ## 로깅 위치
 
 로그는 다음 위치에 쌓입니다.
