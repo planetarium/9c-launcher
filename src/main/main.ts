@@ -498,7 +498,9 @@ function cleanUpLockfile() {
 }
 
 function execute(binaryPath: string, args: string[]) {
-  console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
+  if (isDev) {
+    console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
+  }
   let node = spawn(binaryPath, args);
   pids.push(node.pid);
 
