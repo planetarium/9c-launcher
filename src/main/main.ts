@@ -498,7 +498,9 @@ function cleanUpLockfile() {
 }
 
 function execute(binaryPath: string, args: string[]) {
-  console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
+  if (isDev) {
+    console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
+  }
   let node = spawn(binaryPath, args);
   pids.push(node.pid);
 
@@ -575,9 +577,17 @@ function deleteBlockchainStore(path: string) {
 }
 
 async function copyDir(srcDir: string, dstDir: string) {
-  console.log("Copy a directory ", srcDir, "->", dstDir);
-  if (!(await fs.promises.stat(dstDir)).isDirectory()) {
-    fs.promises.mkdir(dstDir, { recursive: true });
+  try {
+    const stat = await fs.promises.stat(dstDir);
+
+    if (!stat.isDirectory()) {
+      await fs.promises.unlink(dstDir);
+      await fs.promises.mkdir(dstDir, { recursive: true });
+    }
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      await fs.promises.mkdir(dstDir, { recursive: true });
+    }
   }
 
   for (const ent of await fs.promises.readdir(srcDir, {
@@ -590,7 +600,6 @@ async function copyDir(srcDir: string, dstDir: string) {
     } else {
       try {
         await fs.promises.copyFile(src, dst);
-        console.log("Copy a file ", src, "->", dst);
       } catch (e) {
         console.warn("Failed to copy a file", src, "->", dst, ":\n", e);
       }
