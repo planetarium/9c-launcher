@@ -25,7 +25,7 @@ const ErrorView: React.FC<{}> = () => {
       <Typography variant="subtitle1">Please follow step below.</Typography>
       <ol>
         <li>Relaunch &ldquo;Nine Chornicles&rdquo;</li>
-        <li>Click Download Snapshot</li>
+        <li>Click Clear Cache</li>
         <li>Login once again</li>
       </ol>
       <Button
