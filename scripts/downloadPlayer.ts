@@ -34,7 +34,7 @@ function getCurrentPlatform(): Platform {
 
 async function getPlayerCommit(): Promise<Sha> {
   const { stdout, stderr } = await execWithPromise("git rev-parse HEAD", {
-    cwd: "nekoyume-unity",
+    cwd: path.join(__dirname, "..", "nekoyume-unity"),
   });
   return stdout.trim();
 }
