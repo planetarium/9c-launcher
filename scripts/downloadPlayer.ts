@@ -1,13 +1,16 @@
 // 9C Unity Player 빌드를 nekoyume-unity 저장소에서 아티팩트로 남은 거 받아서 풀기
-import { execFile } from "child_process";
+import { exec, execFile } from "child_process";
 import fs from "fs";
 import https from "https";
 import os from "os";
 import path from "path";
 import stream from "stream";
+import { promisify } from "util";
 
 type Sha = string;
 type Platform = "macOS" | "Windows";
+
+const execWithPromise = promisify(exec);
 
 // S3 "9c-artifacts.s3.amazonaws.com" 버킷에 nekoyume-unity 저장소의
 // 마스터 푸시마다 빌드한 아티팩트가 올라간다.
@@ -30,15 +33,10 @@ function getCurrentPlatform(): Platform {
 }
 
 async function getPlayerCommit(): Promise<Sha> {
-  const refFile = await fs.promises.open(
-    path.join(__dirname, "..", ".git", "modules", "nekoyume-unity", "HEAD"),
-    "r"
-  );
-  try {
-    return (await refFile.readFile({ encoding: "ascii" })).trim();
-  } finally {
-    await refFile.close();
-  }
+  const { stdout, stderr } = await execWithPromise("git rev-parse HEAD", {
+    cwd: "nekoyume-unity",
+  });
+  return stdout.trim();
 }
 
 function downloadPlayerBinary(
