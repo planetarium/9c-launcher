@@ -1,11 +1,6 @@
 import { observable, action } from "mobx";
 import { retry } from "@lifeomic/attempt";
-import {
-  electronStore,
-  BLOCKCHAIN_STORE_PATH,
-  LOCAL_SERVER_URL,
-  RPC_SERVER_PORT,
-} from "../../config";
+import { electronStore, LOCAL_SERVER_URL, RPC_SERVER_PORT } from "../../config";
 
 const retryOptions = {
   delay: 100,

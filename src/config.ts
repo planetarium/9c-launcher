@@ -66,6 +66,10 @@ export const electronStore = new Store<IElectronStore>({
       type: "boolean",
       default: false,
     },
+    BlockchainStoreDirName: {
+      type: "string",
+      default: "9c",
+    },
   },
 });
 
@@ -105,6 +109,5 @@ export const LOCAL_SERVER_PORT = LocalServerPort();
 export const RPC_SERVER_PORT = RpcServerPort();
 export const BLOCKCHAIN_STORE_PATH = path.join(
   getLocalApplicationDataPath(),
-  "planetarium",
-  "9c"
+  "planetarium"
 );

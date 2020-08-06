@@ -45,6 +45,10 @@ let pids: number[] = [];
 let isQuiting: boolean = false;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
+const blockchainStorePath = path.join(
+  BLOCKCHAIN_STORE_PATH,
+  electronStore.get("BlockchainStoreDirName")
+);
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -71,7 +75,7 @@ function executeStandalone() {
       `-G=${electronStore.get("GenesisBlockPath")}`,
       `-D=${electronStore.get("MinimumDifficulty")}`,
       `--store-type=${electronStore.get("StoreType")}`,
-      `--store-path=${BLOCKCHAIN_STORE_PATH}`,
+      `--store-path=${blockchainStorePath}`,
       ...electronStore
         .get("IceServerStrings")
         .map((iceServerString) => `-I=${iceServerString}`),
@@ -144,7 +148,7 @@ function initializeIpc() {
     quitAllProcesses();
     // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
     setTimeout(() => {
-      deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
+      deleteBlockchainStore(blockchainStorePath);
       options.properties.onProgress = (status: IDownloadProgress) =>
         win?.webContents.send("download progress", status);
       options.properties.directory = app.getPath("userData");
@@ -418,7 +422,7 @@ function initializeIpc() {
     // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
     setTimeout(() => {
       try {
-        deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
+        deleteBlockchainStore(blockchainStorePath);
         event.returnValue = true;
       } catch (e) {
         console.log(e);
@@ -554,11 +558,11 @@ function createTray(iconPath: string) {
 
 function extractSnapshot(snapshotPath: string) {
   console.log(`extract started.
-extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
+extractPath: [ ${blockchainStorePath} ],
 extractTarget: [ ${snapshotPath} ]`);
   try {
     extractZip(snapshotPath, {
-      dir: BLOCKCHAIN_STORE_PATH,
+      dir: blockchainStorePath,
       onEntry: (_, zipfile) => {
         const progress = zipfile.entriesRead / zipfile.entryCount;
         win?.webContents.send("extract progress", progress);
