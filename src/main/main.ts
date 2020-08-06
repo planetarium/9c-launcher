@@ -430,7 +430,8 @@ function initializeIpc() {
       } finally {
         // Clear cache한 후 앱을 종료합니다.
         isQuiting = true;
-        app.quit();
+        app.relaunch();
+        app.exit();
       }
     }, 1000);
   });
