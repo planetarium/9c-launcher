@@ -562,7 +562,7 @@ function extractSnapshot(snapshotPath: string) {
 extractPath: [ ${blockchainStorePath} ],
 extractTarget: [ ${snapshotPath} ]`);
   try {
-    extractZip(snapshotPath, {
+    return extractZip(snapshotPath, {
       dir: blockchainStorePath,
       onEntry: (_, zipfile) => {
         const progress = zipfile.entriesRead / zipfile.entryCount;
