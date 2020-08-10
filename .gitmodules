@@ -1,0 +1,3 @@
+[submodule "NineChronicles.Standalone"]
+	path = NineChronicles.Standalone
+	url = git@github.com:planetarium/NineChronicles.Standalone
