@@ -2,6 +2,8 @@ import * as React from "react";
 import { useState } from "react";
 import mixpanel from "mixpanel-browser";
 import { IStoreContainer } from "../../../interfaces/store";
+import { LoginFormEvent } from "../../../interfaces/event";
+
 import {
   Box,
   Button,
@@ -18,14 +20,6 @@ import { AccountSelect } from "../../components/AccountSelect";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import loginViewStyle from "./LoginView.style";
-
-interface FormElement extends HTMLFormElement {
-  password: HTMLInputElement;
-}
-
-interface FormEvent extends React.FormEvent {
-  target: FormElement;
-}
 
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
@@ -53,7 +47,7 @@ const LoginView = observer(
       }
     }, [error]);
 
-    const handleSubmit = (event: FormEvent) => {
+    const handleSubmit = (event: LoginFormEvent) => {
       event.preventDefault();
       getDecreyptedKey({
         variables: {
