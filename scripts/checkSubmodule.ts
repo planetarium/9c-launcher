@@ -21,20 +21,24 @@ async function getSubmoduleHash(
       cwd: path.join(__dirname, "..", submodulePath),
     }
   );
-  return stdout.trim();
+  return stdout.trim().split(" ")[0].replace("-", "");
 }
 
-async function checkLib9c(): Promise<boolean> {
+async function checkLib9c(): Promise<void> {
   const sha1 = await getSubmoduleHash(
     "nekoyume-unity",
     "./nekoyume/Assets/_Scripts/Lib9c/Lib9c"
   );
   const sha2 = await getSubmoduleHash("NineChronicles.Standalone", "./Lib9c");
 
-  return sha1 === sha2;
+  if (sha1 !== sha2) {
+    throw new Error(
+      `checkSubmodule.ts: Failed while checking ${Submodules.lib9c}. (nekoyume-unity: ${sha1}, NineChronicles.Standalone: ${sha2})`
+    );
+  }
 }
 
-async function checkShared(): Promise<boolean> {
+async function checkShared(): Promise<void> {
   const sha1 = await getSubmoduleHash(
     "nekoyume-unity",
     "./nekoyume/Assets/_Scripts/NineChronicles.RPC.Shared"
@@ -44,35 +48,41 @@ async function checkShared(): Promise<boolean> {
     "./NineChronicles.RPC.Shared"
   );
 
-  return sha1 === sha2;
+  if (sha1 !== sha2) {
+    throw new Error(
+      `checkSubmodule.ts: Failed while checking ${Submodules.shared}. (nekoyume-unity: ${sha1}, NineChronicles.Standalone: ${sha2})`
+    );
+  }
 }
 
-async function checkSubmodule(name: string): Promise<boolean> {
+async function checkSubmodule(name: string): Promise<void> {
   switch (name) {
     case Submodules.lib9c:
-      return await checkLib9c();
+      await checkLib9c();
+      break;
 
     case Submodules.shared:
-      return await checkShared();
+      await checkShared();
+      break;
 
     default:
       throw new Error(
-        `checkSubmodule.ts: Argument should be either ${Submodules.shared} or ${Submodules.shared}`
+        `checkSubmodule.ts: Argument should be either ${Submodules.lib9c} or ${Submodules.shared}. (actual: ${name})`
       );
   }
 }
 
 async function main(): Promise<void> {
-  if (process.argv.length !== 1) {
-    throw new Error("checkSubmodule.ts: One argument (submodule) is required.");
-  }
-
-  const result = await checkSubmodule(process.argv[0]);
-  if (!result) {
+  if (process.argv.length !== 3) {
     throw new Error(
-      `checkSubmodule.ts: Failed while checking ${process.argv[0]}`
+      `checkSubmodule.ts: One argument (submodule) is required. (acual: ${Math.max(
+        0,
+        process.argv.length - 2
+      )}).`
     );
   }
+
+  await checkSubmodule(process.argv[2]);
 }
 
 main().catch((e) => console.error(e));
