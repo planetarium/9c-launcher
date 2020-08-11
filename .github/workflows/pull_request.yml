@@ -1,7 +1,9 @@
 name: pull_request
 on:
-  push: []
-  pull_request: []
+  push:
+    branches: []
+  pull_request:
+    branches: []
 
 jobs:
   # 서브모듈 확인
