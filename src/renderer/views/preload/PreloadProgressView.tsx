@@ -37,7 +37,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
 
   const [isPreloadEnded, setPreloadStats] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
-  const [step, setStep] = React.useState(1);
+  const [step, setStep] = React.useState(0);
 
   const [
     validateSnapshot,
@@ -54,7 +54,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
     ipcRenderer.on(
       "download progress",
       (event: IpcRendererEvent, progress: IDownloadProgress) => {
-        setStep(2);
+        setStep(1);
         setProgress(progress.percent * 100);
       }
     );
@@ -64,7 +64,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
     });
 
     ipcRenderer.on("extract progress", (event, progress) => {
-      setStep(3);
+      setStep(2);
       setProgress(progress * 100);
     });
 
@@ -163,7 +163,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
 
   React.useEffect(() => {
     if (preloadProgress !== undefined) {
-      setStep(preloadProgress?.currentPhase + 3);
+      setStep(preloadProgress?.currentPhase + 2);
     }
   }, [preloadProgress]);
 
@@ -175,7 +175,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
         <>
           <CircularProgress className={classes.circularProgress} size={12} />
           <Typography className={classes.text}>
-            {statusMessage[step]} ({step}/8) {Math.floor(progress)}%
+            {statusMessage[step]} ({step + 1}/8) {Math.floor(progress)}%
           </Typography>
         </>
       )}
@@ -184,7 +184,6 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
 });
 
 const statusMessage = [
-  "",
   "Validating Snapshot...",
   "Downloading Snapshot...",
   "Extracting Snapshot...",
