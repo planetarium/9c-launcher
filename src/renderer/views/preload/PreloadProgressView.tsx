@@ -101,7 +101,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
   }, [data?.validation.metadata]);
 
   useDidUpdateEffect(() => {
-    mixpanel.track(statusMessage[step]);
+    mixpanel.track(`Launcher/${statusMessage[step]}`);
   }, [step]);
 
   const downloadSnapShot = () => {
@@ -175,7 +175,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
         <>
           <CircularProgress className={classes.circularProgress} size={12} />
           <Typography className={classes.text}>
-            {statusMessage[step]} ({step + 1}/8) {Math.floor(progress)}%
+            {statusMessage[step]} ... ({step + 1}/8) {Math.floor(progress)}%
           </Typography>
         </>
       )}
@@ -184,17 +184,17 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
 });
 
 const statusMessage = [
-  "Validating Snapshot...",
-  "Downloading Snapshot...",
-  "Extracting Snapshot...",
-  "Verifying block headers...",
-  "Downloading block hashes...",
-  "Extracting Snapshot...",
-  "Verifying block headers...",
-  "Downloading block hashes...",
-  "Downloading blocks...",
-  "Downloading states...",
-  "Executing actions...",
+  "Validating Snapshot",
+  "Downloading Snapshot",
+  "Extracting Snapshot",
+  "Verifying block headers",
+  "Downloading block hashes",
+  "Extracting Snapshot",
+  "Verifying block headers",
+  "Downloading block hashes",
+  "Downloading blocks",
+  "Downloading states",
+  "Executing actions",
 ];
 
 const getProgress = (
