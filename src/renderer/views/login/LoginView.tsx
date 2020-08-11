@@ -19,10 +19,17 @@ import ClearCacheButton from "../../components/ClearCacheButton";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import loginViewStyle from "./LoginView.style";
 
+interface FormElement extends HTMLFormElement {
+  password: HTMLInputElement;
+}
+
+interface FormEvent extends React.FormEvent {
+  target: FormElement;
+}
+
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
-    const [passphrase, setPassphrase] = useState("");
     const [isLoginSuccess, setLoginSuccessState] = useState(true);
     const [
       getDecreyptedKey,
@@ -46,11 +53,12 @@ const LoginView = observer(
       }
     }, [error]);
 
-    const handleSubmit = () => {
+    const handleSubmit = (event: FormEvent) => {
+      event.preventDefault();
       getDecreyptedKey({
         variables: {
           address: accountStore.selectedAddress,
-          passphrase: passphrase,
+          passphrase: event.target.password.value,
         },
       });
     };
@@ -69,12 +77,7 @@ const LoginView = observer(
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
         <ClearCacheButton className={classes.cacheButton} />
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            handleSubmit();
-          }}
-        >
+        <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <InputLabel>ID</InputLabel>
@@ -88,12 +91,10 @@ const LoginView = observer(
               <InputLabel>Password</InputLabel>
               <TextField
                 type="password"
+                name="password"
                 variant="outlined"
                 error={isLoginSuccess}
-                onChange={(event) => {
-                  setLoginSuccessState(true);
-                  setPassphrase(event.target.value);
-                }}
+                onChange={() => setLoginSuccessState(true)}
                 fullWidth
               ></TextField>
             </Grid>
