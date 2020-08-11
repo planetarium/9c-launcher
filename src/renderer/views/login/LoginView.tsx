@@ -23,7 +23,7 @@ const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
     const [passphrase, setPassphrase] = useState("");
-    const [isLoginSuccess, setLoginSuccessState] = useState(false);
+    const [isLoginSuccess, setLoginSuccessState] = useState(true);
     const [
       getDecreyptedKey,
       { loading, error, data },
@@ -91,6 +91,7 @@ const LoginView = observer(
                 variant="outlined"
                 error={isLoginSuccess}
                 onChange={(event) => {
+                  setLoginSuccessState(true);
                   setPassphrase(event.target.value);
                 }}
                 fullWidth
