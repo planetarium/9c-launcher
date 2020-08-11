@@ -14,6 +14,8 @@ import preloadProgressViewStyle from "./PreloadProgressView.style";
 import { electronStore } from "../../../config";
 import { RouterStore } from "mobx-react-router";
 
+import useDidUpdateEffect from "../../hooks/useDidUpdateEffect";
+
 enum PreloadProgressPhase {
   ActionExecutionState,
   BlockDownloadState,
@@ -98,6 +100,10 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
     }
   }, [data?.validation.metadata]);
 
+  useDidUpdateEffect(() => {
+    mixpanel.track(statusMessage[step]);
+  }, [step]);
+
   const downloadSnapShot = () => {
     const options: IDownloadOptions = {
       properties: {},
@@ -169,7 +175,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
         <>
           <CircularProgress className={classes.circularProgress} size={12} />
           <Typography className={classes.text}>
-            {getStatusMessage(step)} ({step}/8) {Math.floor(progress)}%
+            {statusMessage[step]} ({step}/8) {Math.floor(progress)}%
           </Typography>
         </>
       )}
@@ -177,36 +183,20 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
   );
 });
 
-const getStatusMessage = (step: number) => {
-  switch (step) {
-    case 1:
-      return "Validating Snapshot...";
-
-    case 2:
-      return "Downloading Snapshot...";
-
-    case 3:
-      return "Extracting Snapshot...";
-
-    case 4:
-      return "Verifying block headers...";
-
-    case 5:
-      return "Downloading block hashes...";
-
-    case 6:
-      return "Downloading blocks...";
-
-    case 7:
-      return "Downloading states...";
-
-    case 8:
-      return "Executing actions...";
-
-    default:
-      return `Error occurred ${step}`;
-  }
-};
+const statusMessage = [
+  "",
+  "Validating Snapshot...",
+  "Downloading Snapshot...",
+  "Extracting Snapshot...",
+  "Verifying block headers...",
+  "Downloading block hashes...",
+  "Extracting Snapshot...",
+  "Verifying block headers...",
+  "Downloading block hashes...",
+  "Downloading blocks...",
+  "Downloading states...",
+  "Executing actions...",
+];
 
 const getProgress = (
   current: number | undefined,
