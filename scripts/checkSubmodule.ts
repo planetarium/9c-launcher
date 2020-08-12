@@ -1,6 +1,7 @@
 import { exec } from "child_process";
 import path from "path";
 import { promisify } from "util";
+import { exit } from "process";
 
 type Sha = string;
 
@@ -36,6 +37,8 @@ async function checkLib9c(): Promise<void> {
       `checkSubmodule.ts: Failed while checking ${Submodules.lib9c}. (nekoyume-unity: ${sha1}, NineChronicles.Standalone: ${sha2})`
     );
   }
+
+  console.log(`Commit hash of ${Submodules.lib9c} matches: ${sha1}`);
 }
 
 async function checkShared(): Promise<void> {
@@ -53,6 +56,8 @@ async function checkShared(): Promise<void> {
       `checkSubmodule.ts: Failed while checking ${Submodules.shared}. (nekoyume-unity: ${sha1}, NineChronicles.Standalone: ${sha2})`
     );
   }
+
+  console.log(`Commit hash of ${Submodules.shared} matches: ${sha1}`);
 }
 
 async function checkSubmodule(name: string): Promise<void> {
@@ -85,4 +90,7 @@ async function main(): Promise<void> {
   await checkSubmodule(process.argv[2]);
 }
 
-main().catch((e) => console.error(e));
+main().catch((e) => {
+  console.error(e);
+  exit(-1);
+});

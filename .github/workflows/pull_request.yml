@@ -28,6 +28,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
+      # 의존성 설치
+      - run: npm install typescript
       # Lib9c 확인
       - name: Check Lib9c
         run: npx ts-node scripts/checkSubmodule.ts Lib9c
