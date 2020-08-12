@@ -52,15 +52,15 @@ jobs:
       - uses: actions/checkout@v2
         if: github.event_name != 'pull_request'
         with:
-          token: ${{ secrets.GH_TOKEN }}
-          submodules: true
+          submodules: recursive
+          ssh-key: ${{ secrets.SUBMODULE_PULL_KEY }}
           lfs: false
       - uses: actions/checkout@v2
         if: github.event_name == 'pull_request'
         with:
           ref: ${{ github.pull_request.head.sha }}
-          token: ${{ secrets.GH_TOKEN }}
-          submodules: true
+          submodules: recursive
+          ssh-key: ${{ secrets.SUBMODULE_PULL_KEY }}
           lfs: false
       # 이미 릴리스된 버전을 쓰고 있는지 검사
       - run: |
