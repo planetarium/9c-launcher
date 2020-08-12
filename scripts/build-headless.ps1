@@ -4,4 +4,4 @@ dotnet publish NineChronicles.Standalone/NineChronicles.Standalone.Executable/Ni
   -r osx-x64 `
   -o dist/publish `
   --self-contained `
-  --version-suffix "$(git rev-parse HEAD)"
+  --version-suffix "$(git -C NineChronicles.Standalone rev-parse HEAD)"
