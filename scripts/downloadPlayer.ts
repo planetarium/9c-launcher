@@ -238,11 +238,18 @@ async function main(): Promise<void> {
       console.debug(`Extracting ${archivePath} to ${extractTo}...`);
     },
   });
-  const appStat = await fs.promises.stat(appPath);
-  await fs.promises.writeFile(
-    fingerprintPath,
-    `${commit}\n${appStat.mtime.getTime()}`
-  );
+
+  try {
+    const appStat = await fs.promises.stat(appPath);
+    await fs.promises.writeFile(
+      fingerprintPath,
+      `${commit}\n${appStat.mtime.getTime()}`
+    );
+  } catch (e) {
+    if (e.code !== "ENOENT") {
+      console.log(e);
+    }
+  }
 }
 
 main().catch((e) => {
