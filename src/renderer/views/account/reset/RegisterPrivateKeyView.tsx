@@ -47,12 +47,11 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
       if (passwordMatched) {
         const address = data?.keyStore?.privateKey.publicKey.address;
+        if (address === undefined) throw Error("Address not found");
         const passphrase = firstPassword;
         if (!loadingAddress) {
           await revokePrivateKey({
-            variables: {
-              address: address,
-            },
+            variables: { address },
           }).finally(async () => {
             await createPrivateKey({
               variables: {

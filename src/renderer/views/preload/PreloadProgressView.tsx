@@ -148,13 +148,13 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
 
   React.useEffect(() => {
     if (isPreloadEnded) {
-      const phase: PreloadProgressPhase =
-        PreloadProgressPhase[preloadProgress?.extra.type];
+      const phase = preloadProgress?.extra.type;
 
       if (
-        phase !== PreloadProgressPhase.ActionExecutionState &&
-        phase !== PreloadProgressPhase.StateDownloadState &&
-        electronStore.get("PeerStrings").length > 0
+        phase === undefined ||
+        (phase !== "ActionExecutionState" &&
+          phase !== "StateDownloadState" &&
+          electronStore.get("PeerStrings").length > 0)
       ) {
         routerStore.push("/error");
       }

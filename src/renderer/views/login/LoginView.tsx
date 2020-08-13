@@ -57,7 +57,9 @@ const LoginView = observer(
       });
     };
 
-    const handleRevokeAccount = (e: React.MouseEvent<HTMLLinkElement>) => {
+    const handleRevokeAccount = (
+      e: React.MouseEvent<HTMLAnchorElement & HTMLSpanElement, MouseEvent>
+    ) => {
       e.preventDefault();
       routerStore.push("/account/revoke");
     };
