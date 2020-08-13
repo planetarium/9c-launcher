@@ -2,6 +2,8 @@ import * as React from "react";
 import { useState } from "react";
 import mixpanel from "mixpanel-browser";
 import { IStoreContainer } from "../../../interfaces/store";
+import { LoginFormEvent } from "../../../interfaces/event";
+
 import {
   Box,
   Button,
@@ -22,8 +24,7 @@ import loginViewStyle from "./LoginView.style";
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
-    const [passphrase, setPassphrase] = useState("");
-    const [isLoginSuccess, setLoginSuccessState] = useState(false);
+    const [isLoginSuccess, setLoginSuccessState] = useState(true);
     const [
       getDecreyptedKey,
       { loading, error, data },
@@ -46,11 +47,12 @@ const LoginView = observer(
       }
     }, [error]);
 
-    const handleSubmit = () => {
+    const handleSubmit = (event: LoginFormEvent) => {
+      event.preventDefault();
       getDecreyptedKey({
         variables: {
           address: accountStore.selectedAddress,
-          passphrase: passphrase,
+          passphrase: event.target.password.value,
         },
       });
     };
@@ -69,12 +71,7 @@ const LoginView = observer(
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
         <ClearCacheButton className={classes.cacheButton} />
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            handleSubmit();
-          }}
-        >
+        <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <InputLabel>ID</InputLabel>
@@ -88,11 +85,10 @@ const LoginView = observer(
               <InputLabel>Password</InputLabel>
               <TextField
                 type="password"
+                name="password"
                 variant="outlined"
                 error={isLoginSuccess}
-                onChange={(event) => {
-                  setPassphrase(event.target.value);
-                }}
+                onChange={() => setLoginSuccessState(true)}
                 fullWidth
               ></TextField>
             </Grid>
