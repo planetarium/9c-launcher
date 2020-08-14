@@ -5,8 +5,8 @@ import { electronStore, LOCAL_SERVER_URL, RPC_SERVER_PORT } from "../../config";
 const retryOptions = {
   delay: 100,
   factor: 1.5,
-  maxAttempts: 10,
-  timeout: 1000,
+  maxAttempts: 100,
+  timeout: 30000,
   jitter: true,
   minDelay: 100,
 };
