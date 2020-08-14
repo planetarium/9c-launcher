@@ -17,7 +17,7 @@ function createRenderConfig(isDev) {
     target: "electron-renderer", // any other target value makes react-hot-loader stop working
 
     resolve: {
-      extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
+      extensions: [".js", ".ts", ".tsx", ".json"],
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
@@ -59,7 +59,7 @@ function createRenderConfig(isDev) {
         },
 
         {
-          test: /\.(js|jsx|ts|tsx)$/,
+          test: /\.tsx?$/,
           exclude: /node_modules/,
           use: {
             loader: "babel-loader",
