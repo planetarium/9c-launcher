@@ -41,7 +41,7 @@ Object.assign(console, log.functions);
 
 let win: BrowserWindow | null = null;
 let tray: Tray;
-let pids: number[] = [];
+let runningPids: number[] = [];
 let isQuiting: boolean = false;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
@@ -507,7 +507,7 @@ function execute(binaryPath: string, args: string[]) {
     console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
   }
   let node = spawn(binaryPath, args);
-  pids.push(node.pid);
+  runningPids.push(node.pid);
 
   node.stdout?.on("data", (data) => {
     console.log(`${data}`);
@@ -520,11 +520,12 @@ function execute(binaryPath: string, args: string[]) {
 }
 
 function quitAllProcesses() {
-  pids.forEach((pid) => {
+  runningPids.forEach((pid) => {
     if (process.platform == "darwin") process.kill(pid);
     if (process.platform == "win32")
       execute("taskkill", ["/pid", pid.toString(), "/f", "/t"]);
   });
+  runningPids = [];
 }
 
 function createTray(iconPath: string) {
