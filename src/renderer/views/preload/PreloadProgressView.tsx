@@ -38,6 +38,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
   const [isPreloadEnded, setPreloadStats] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const [step, setStep] = React.useState(0);
+  const [aborted, setAborted] = React.useState(false);
 
   const [
     validateSnapshot,
@@ -125,8 +126,14 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
       })
       .catch((error) => {
         console.log(error);
-        routerStore.push("/error");
+        gotoErrorPage();
       });
+  };
+
+  const gotoErrorPage = () => {
+    standaloneStore.abort();
+    setAborted(true);
+    routerStore.push("/error");
   };
 
   React.useEffect(() => {
@@ -156,7 +163,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
         phase !== PreloadProgressPhase.StateDownloadState &&
         electronStore.get("PeerStrings").length > 0
       ) {
-        routerStore.push("/error");
+        gotoErrorPage();
       }
     }
   }, [isPreloadEnded, preloadProgress?.extra]);
@@ -169,7 +176,9 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
 
   return (
     <Container className="footer">
-      {isPreloadEnded ? (
+      {aborted ? (
+        <></>
+      ) : isPreloadEnded ? (
         <Typography className={classes.text}>Preload Completed.</Typography>
       ) : (
         <>
