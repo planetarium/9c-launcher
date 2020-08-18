@@ -46,6 +46,13 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
   ] = useValidateSnapshotLazyQuery();
 
   React.useEffect(() => {
+    ipcRenderer.on("standalone exited", () => {
+      // Standalone exited abnormally. This indicates that
+      // standalone has different version, or the genesis block
+      // is invalid.
+      gotoErrorPage();
+    });
+
     ipcRenderer.on("metadata downloaded", (_, meta) => {
       console.log("Metadata downloded. Verifying...");
       validateSnapshot({ variables: { raw: meta } });
@@ -77,6 +84,8 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
       console.log("Snapshot extraction completed. Start IBD.");
       startPreloading();
     });
+
+    ipcRenderer.send("check standalone");
 
     // 여기서 스냅샷을 받을지 여부를 결정 가능
     if (electronStore.get("UseSnapshot")) {
