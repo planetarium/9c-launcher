@@ -24,7 +24,7 @@ import loginViewStyle from "./LoginView.style";
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
-    const [isLoginSuccess, setLoginSuccessState] = useState(true);
+    const [isInvalid, setInvalid] = useState(false);
     const [
       getDecreyptedKey,
       { loading, error, data },
@@ -43,7 +43,7 @@ const LoginView = observer(
 
     React.useEffect(() => {
       if (error?.message !== undefined) {
-        setLoginSuccessState(true);
+        setInvalid(true);
       }
     }, [error]);
 
@@ -89,8 +89,8 @@ const LoginView = observer(
                 type="password"
                 name="password"
                 variant="outlined"
-                error={isLoginSuccess}
-                onChange={() => setLoginSuccessState(true)}
+                error={isInvalid}
+                onChange={() => setInvalid(false)}
                 fullWidth
               ></TextField>
             </Grid>
