@@ -42,6 +42,11 @@ const LoginView = observer(
     }, [data]);
 
     React.useEffect(() => {
+      /**
+      * 에러가 아니어도 error에 값이 들어옴. 해당 값이 실제 error인지 검사하기 위해서는 error 안에 메세지가 있는지 검사해야 함.
+      * error가 undefined인 경우: Query를 수행하지 않은 경우
+      * error.message가 undefined인 경우: 에러가 아님
+      **/
       if (error?.message !== undefined) {
         setInvalid(true);
       }
