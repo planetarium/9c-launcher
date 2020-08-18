@@ -72,6 +72,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   if (loading || polling)
     return <p className={classes.verifing}>Verifing...</p>;
+  if (!standaloneStore.IsPreloadEnded) return <PreloadWaitingButton />;
   if (status?.activationStatus.activated) return <GameStartButton {...props} />;
   else
     return (
@@ -96,6 +97,22 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     );
 });
 
+const PreloadWaitingButton = () => {
+  return (
+    <Container>
+      <Button
+        fullWidth
+        disabled={true}
+        variant="contained"
+        color="primary"
+        className={lobbyViewStyle().gameStartButton}
+      >
+        Preloading...
+      </Button>
+    </Container>
+  );
+};
+
 const GameStartButton = observer((props: ILobbyViewProps) => {
   const { accountStore, gameStore, standaloneStore } = props;
   const classes = lobbyViewStyle();
@@ -115,17 +132,13 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
     <Container>
       <Button
         fullWidth
-        disabled={!standaloneStore.IsPreloadEnded || gameStore.isGameStarted}
+        disabled={gameStore.isGameStarted}
         variant="contained"
         color="primary"
         onClick={handleStartGame}
         className={classes.gameStartButton}
       >
-        {gameStore.isGameStarted
-          ? "Now Running..."
-          : standaloneStore.IsPreloadEnded
-          ? "Start Game"
-          : "Preloading..."}
+        {gameStore.isGameStarted ? "Now Running..." : "Start Game"}
       </Button>
     </Container>
   );
