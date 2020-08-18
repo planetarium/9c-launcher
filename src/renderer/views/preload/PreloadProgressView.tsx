@@ -1,8 +1,7 @@
 import React from "react";
 import mixpanel from "mixpanel-browser";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { observer, inject } from "mobx-react";
-import { IStoreContainer } from "../../../interfaces/store";
+import useStores from "../../../hooks/useStores";
 import { Container, Typography, CircularProgress } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import {
@@ -24,8 +23,8 @@ enum PreloadProgressPhase {
   StateDownloadState,
 }
 
-const PreloadProgressView = observer((props: IStoreContainer) => {
-  const { accountStore, routerStore, standaloneStore } = props;
+const PreloadProgressView = () => {
+  const { accountStore, routerStore, standaloneStore } = useStores();
   const classes = preloadProgressViewStyle();
   const {
     data: preloadProgressSubscriptionResult,
@@ -164,13 +163,13 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
 
   React.useEffect(() => {
     if (isPreloadEnded) {
-      const phase: PreloadProgressPhase =
-        PreloadProgressPhase[preloadProgress?.extra.type];
+      const phase = preloadProgress?.extra.type;
 
       if (
-        phase !== PreloadProgressPhase.ActionExecutionState &&
-        phase !== PreloadProgressPhase.StateDownloadState &&
-        electronStore.get("PeerStrings").length > 0
+        phase === undefined ||
+        (phase !== "ActionExecutionState" &&
+          phase !== "StateDownloadState" &&
+          electronStore.get("PeerStrings").length > 0)
       ) {
         gotoErrorPage();
       }
@@ -199,7 +198,7 @@ const PreloadProgressView = observer((props: IStoreContainer) => {
       )}
     </Container>
   );
-});
+};
 
 const statusMessage = [
   "Validating Snapshot",
@@ -224,8 +223,4 @@ const getProgress = (
   return total === 0 ? 0 : Math.round((current / total) * 100);
 };
 
-export default inject(
-  "accountStore",
-  "routerStore",
-  "standaloneStore"
-)(PreloadProgressView);
+export default PreloadProgressView;

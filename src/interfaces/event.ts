@@ -4,6 +4,6 @@ interface FormElement extends HTMLFormElement {
   password: HTMLInputElement;
 }
 
-export interface LoginFormEvent extends React.FormEvent {
+export interface LoginFormEvent extends React.FormEvent<FormElement> {
   target: FormElement;
 }

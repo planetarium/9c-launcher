@@ -58,9 +58,9 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
               )
             ).then((executionResult) => {
               executionResult.forEach((r) => {
-                const revokedAddress: string =
+                const revokedAddress =
                   r.data?.keyStore?.revokePrivateKey?.address;
-                accountStore.removeAddress(revokedAddress);
+                if (revokedAddress) accountStore.removeAddress(revokedAddress);
               });
               routerStore.push("/main");
             });

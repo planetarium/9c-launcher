@@ -25,6 +25,7 @@ import {
 import preloadViewStyle from "./PreloadView.style";
 import LobbyView from "./LobbyView";
 import { electronStore } from "../../../config";
+import { YouTubeInternal } from "../../../interfaces/refs";
 
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore, standaloneStore } = props;
@@ -55,9 +56,10 @@ const PreloadView = observer((props: IStoreContainer) => {
     lineHeight: 1.25,
   });
 
-  const youtubeRef = React.useRef<YouTube>(null);
+  const youtubeRef = React.useRef<YouTubeInternal>(null);
   const handleLaunch = React.useCallback(() => {
-    const player = youtubeRef.current.internalPlayer;
+    const player = youtubeRef.current?.internalPlayer;
+    if (player === undefined) throw Error("YouTube Player not found");
     player.pauseVideo();
   }, [youtubeRef]);
 

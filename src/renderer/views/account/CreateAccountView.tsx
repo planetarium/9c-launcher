@@ -41,7 +41,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
       setPasswordConfirm(e.target.value);
     };
 
-    const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       mixpanel.track("Launcher/CreatePrivateKey");
       createAccount({
@@ -64,7 +64,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
     };
 
     return (
-      <div className="create-account" className={classes.root}>
+      <div className={`create-account ${classes.root}`}>
         <Typography className={classes.info}>
           Please set the password <br /> to complete account creation.
         </Typography>
@@ -100,7 +100,6 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
             type="submit"
             className={classes.submit}
             variant="contained"
-            onSubmit={handleSubmit}
           >
             Done
           </Button>
