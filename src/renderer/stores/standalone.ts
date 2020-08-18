@@ -5,8 +5,8 @@ import { electronStore, LOCAL_SERVER_URL, RPC_SERVER_PORT } from "../../config";
 const retryOptions = {
   delay: 100,
   factor: 1.5,
-  maxAttempts: 10,
-  timeout: 1000,
+  maxAttempts: 100,
+  timeout: 30000,
   jitter: true,
   minDelay: 100,
 };
@@ -18,15 +18,27 @@ export default class StandaloneStore {
   @observable
   public IsPreloadEnded: boolean;
 
+  private AbortRequested: boolean;
+
   constructor() {
     this.NoMiner = electronStore.get("NoMiner") as boolean;
     this.IsPreloadEnded = false;
+    this.AbortRequested = false;
   }
+
+  @action
+  abort = () => {
+    this.AbortRequested = true;
+  };
 
   @action
   runStandalone = () => {
     console.log("Running standalone service...");
     return retry(async (context) => {
+      if (this.AbortRequested) {
+        context.abort();
+      }
+
       await fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
         method: "POST",
       })
@@ -51,6 +63,10 @@ export default class StandaloneStore {
   setMining = (mine: boolean, privateKey: string) => {
     electronStore.set("NoMiner", !mine);
     return retry(async (context) => {
+      if (this.AbortRequested) {
+        context.abort();
+      }
+
       await fetch(`http://${LOCAL_SERVER_URL}/set-private-key`, {
         method: "POST",
         headers: {

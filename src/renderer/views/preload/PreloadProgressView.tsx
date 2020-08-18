@@ -37,6 +37,7 @@ const PreloadProgressView = () => {
   const [isPreloadEnded, setPreloadStats] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const [step, setStep] = React.useState(0);
+  const [aborted, setAborted] = React.useState(false);
 
   const [
     validateSnapshot,
@@ -44,6 +45,13 @@ const PreloadProgressView = () => {
   ] = useValidateSnapshotLazyQuery();
 
   React.useEffect(() => {
+    ipcRenderer.on("standalone exited", () => {
+      // Standalone exited abnormally. This indicates that
+      // standalone has different version, or the genesis block
+      // is invalid.
+      gotoErrorPage();
+    });
+
     ipcRenderer.on("metadata downloaded", (_, meta) => {
       console.log("Metadata downloded. Verifying...");
       validateSnapshot({ variables: { raw: meta } });
@@ -75,6 +83,8 @@ const PreloadProgressView = () => {
       console.log("Snapshot extraction completed. Start IBD.");
       startPreloading();
     });
+
+    ipcRenderer.send("check standalone");
 
     // 여기서 스냅샷을 받을지 여부를 결정 가능
     if (electronStore.get("UseSnapshot")) {
@@ -124,8 +134,14 @@ const PreloadProgressView = () => {
       })
       .catch((error) => {
         console.log(error);
-        routerStore.push("/error");
+        gotoErrorPage();
       });
+  };
+
+  const gotoErrorPage = () => {
+    standaloneStore.abort();
+    setAborted(true);
+    routerStore.push("/error");
   };
 
   React.useEffect(() => {
@@ -155,7 +171,7 @@ const PreloadProgressView = () => {
           phase !== "StateDownloadState" &&
           electronStore.get("PeerStrings").length > 0)
       ) {
-        routerStore.push("/error");
+        gotoErrorPage();
       }
     }
   }, [isPreloadEnded, preloadProgress?.extra]);
@@ -168,7 +184,9 @@ const PreloadProgressView = () => {
 
   return (
     <Container className="footer">
-      {isPreloadEnded ? (
+      {aborted ? (
+        <></>
+      ) : isPreloadEnded ? (
         <Typography className={classes.text}>Preload Completed.</Typography>
       ) : (
         <>

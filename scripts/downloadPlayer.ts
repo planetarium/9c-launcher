@@ -175,20 +175,6 @@ async function bundlePlayerBinary(
     await options.beforeDecompress(tmpPath, bundleInto);
   }
   await DECOMPRESSOR[platform](tmpPath, bundleInto);
-  const unnecessaryDirs = // 론처 v1의 잔재들
-    platform == "Windows"
-      ? ["Nine Chronicles.exe", "qt-runtime"]
-      : ["Nine Chronicles.app"];
-  for (const unnecessaryDir of unnecessaryDirs) {
-    try {
-      await fs.promises.rmdir(path.join(bundleInto, unnecessaryDir), {
-        recursive: true,
-      });
-    } catch (e) {
-      if (e.code === "ENOENT") continue;
-      throw e;
-    }
-  }
   await fs.promises.rmdir(tmpdir, { recursive: true });
 }
 
@@ -238,11 +224,21 @@ async function main(): Promise<void> {
       console.debug(`Extracting ${archivePath} to ${extractTo}...`);
     },
   });
-  const appStat = await fs.promises.stat(appPath);
-  await fs.promises.writeFile(
-    fingerprintPath,
-    `${commit}\n${appStat.mtime.getTime()}`
-  );
+
+  try {
+    const appStat = await fs.promises.stat(appPath);
+    await fs.promises.writeFile(
+      fingerprintPath,
+      `${commit}\n${appStat.mtime.getTime()}`
+    );
+  } catch (e) {
+    if (e.code !== "ENOENT") {
+      console.log(e);
+    }
+  }
 }
 
-main().catch((e) => console.error(e));
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

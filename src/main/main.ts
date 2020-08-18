@@ -41,8 +41,10 @@ Object.assign(console, log.functions);
 
 let win: BrowserWindow | null = null;
 let tray: Tray;
-let pids: number[] = [];
+let runningPids: number[] = [];
 let isQuiting: boolean = false;
+let standaloneNode: ChildProcess;
+let standaloneExited: boolean = false;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 const blockchainStorePath = path.join(
@@ -64,7 +66,8 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 function executeStandalone() {
-  execute(
+  standaloneExited = false;
+  const node = execute(
     path.join(
       app.getAppPath(),
       "publish",
@@ -99,11 +102,17 @@ function executeStandalone() {
       `--graphql-port=${LOCAL_SERVER_PORT}`,
     ]
   );
+  node.addListener("exit", (code) => {
+    console.error(`Standalone exited with exit code: ${code}`);
+    setStandaloneExited();
+  });
+
+  return node;
 }
 
 function initializeApp() {
   app.on("ready", () => {
-    executeStandalone();
+    standaloneNode = executeStandalone();
     createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
   });
@@ -119,6 +128,10 @@ function initializeApp() {
 }
 
 function initializeIpc() {
+  ipcMain.on("check standalone", (_) => {
+    if (standaloneExited) setStandaloneExited();
+  });
+
   ipcMain.on("download metadata", (_, options: IDownloadOptions) => {
     options.properties.directory = app.getPath("userData");
     options.properties.filename = "meta.json";
@@ -145,6 +158,8 @@ function initializeIpc() {
 
   ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
     console.log("downloading snapshot.");
+    // Prevent the exit event lead renderer to error page because it's intended.
+    standaloneNode.removeAllListeners("exit");
     quitAllProcesses();
     // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
     setTimeout(() => {
@@ -164,7 +179,9 @@ function initializeIpc() {
             return dl.getSavePath();
           })
           .then((path) => extractSnapshot(path))
-          .then(() => executeStandalone())
+          .then(() => {
+            standaloneNode = executeStandalone();
+          })
           .then(() => win?.webContents.send("snapshot complete"));
       }
     }, 1000);
@@ -507,7 +524,7 @@ function execute(binaryPath: string, args: string[]) {
     console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
   }
   let node = spawn(binaryPath, args);
-  pids.push(node.pid);
+  runningPids.push(node.pid);
 
   node.stdout?.on("data", (data) => {
     console.log(`${data}`);
@@ -520,11 +537,12 @@ function execute(binaryPath: string, args: string[]) {
 }
 
 function quitAllProcesses() {
-  pids.forEach((pid) => {
+  runningPids.forEach((pid) => {
     if (process.platform == "darwin") process.kill(pid);
     if (process.platform == "win32")
       execute("taskkill", ["/pid", pid.toString(), "/f", "/t"]);
   });
+  runningPids = [];
 }
 
 function createTray(iconPath: string) {
@@ -610,4 +628,9 @@ async function copyDir(srcDir: string, dstDir: string) {
       }
     }
   }
+}
+
+function setStandaloneExited() {
+  standaloneExited = true;
+  win?.webContents.send("standalone exited");
 }
