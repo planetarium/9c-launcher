@@ -75,6 +75,12 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     return false;
   }, [activatedError]);
 
+  React.useEffect(() => {
+    if (standaloneStore.IsPreloadEnded) {
+      refetch();
+    }
+  }, [standaloneStore.IsPreloadEnded]);
+
   let child: JSX.Element;
 
   if (loading || polling) {

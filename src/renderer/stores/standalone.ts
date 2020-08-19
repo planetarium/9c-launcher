@@ -104,6 +104,10 @@ export default class StandaloneStore {
   };
 
   checkIsOk = async (response: Response) => {
-    if (!response.ok) throw new Error(await response.text());
+    if (!response.ok) {
+      if (response.status === 503) {
+        throw new Error(await response.text());
+      }
+    }
   };
 }
