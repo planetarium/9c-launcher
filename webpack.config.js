@@ -61,21 +61,7 @@ function createRenderConfig(isDev) {
         {
           test: /\.tsx?$/,
           exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: [
-                "@babel/preset-typescript",
-                "@babel/preset-react",
-                "@babel/preset-env",
-              ],
-              plugins: [
-                ["@babel/plugin-proposal-decorators", { legacy: true }],
-                ["@babel/plugin-proposal-class-properties", { loose: true }],
-                "react-hot-loader/babel",
-              ],
-            },
-          },
+          use: ["babel-loader"],
         },
 
         {
