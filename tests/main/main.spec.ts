@@ -22,8 +22,8 @@ describe("Application launch", () => {
     }
   });
   it("shows an initial window", (done) => {
-    app.client.getWindowCount().then((count) => {
-      assert.equal(count, 1);
+    app.client?.getWindowCount().then((count) => {
+      expect(count).toBe(1);
       done();
     });
   });
