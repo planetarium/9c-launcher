@@ -109,6 +109,10 @@ jobs:
       - run: npm install --loglevel verbose
       # 코드 스타일 린트
       - run: npx pretty-quick --check --branch "${{ github.base_ref }}"
+      - name: Generate GraphQL types
+        run: npm run codegen
+      - name: Type Check
+        run: npx tsc --noEmit
         if: github.event_name == 'pull_request'
       # 빌드
       - run: npm run build-prod
