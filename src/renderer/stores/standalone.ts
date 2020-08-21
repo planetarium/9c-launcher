@@ -78,26 +78,36 @@ export default class StandaloneStore {
         },
         body: body,
       })
-        .then((resp) => this.checkIsOk(resp))
-        .then(() => {
-          console.log(
-            `Successfully fetched standalone in ${context.attemptNum} retries.`
-          );
+        .then((resp) => this.needRetry(resp))
+        .then((needRetry) => {
+          if (needRetry) {
+            console.log(
+              `Failed to fetch standalone. Retrying... ${context.attemptNum}/${
+                context.attemptsRemaining + context.attemptNum
+              }`
+            );
+            throw new Error("Retry required.");
+          } else {
+            console.log(
+              `Successfully fetched standalone in ${context.attemptNum} retries.`
+            );
+          }
         })
         .catch((error) => {
-          console.log(
-            `Failed to fetch standalone. Retrying... ${context.attemptNum}/${
-              context.attemptsRemaining + context.attemptNum
-            }`
-          );
+          console.log(`Failed to fetch standalone. Abort: ${error}`);
+          context.abort();
           throw error;
         });
     }, retryOptions);
   };
 
-  checkIsOk = async (response: Response) => {
-    if (response.status === 503) {
+  needRetry = async (response: Response) => {
+    if (response.status === 409) {
+      return true;
+    } else if (response.status === 503) {
       throw new Error(await response.text());
     }
+
+    return false;
   };
 }
