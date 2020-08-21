@@ -1,6 +1,8 @@
 import { observable, action } from "mobx";
 import { retry } from "@lifeomic/attempt";
 import { electronStore, LOCAL_SERVER_URL, RPC_SERVER_PORT } from "../../config";
+import "../../errors/FetchError";
+import FetchError from "../../errors/FetchError";
 
 const retryOptions = {
   delay: 100,
@@ -94,20 +96,24 @@ export default class StandaloneStore {
           }
         })
         .catch((error) => {
-          console.log(`Failed to fetch standalone. Abort: ${error}`);
-          context.abort();
+          if (error instanceof FetchError) {
+            console.log(`Failed to fetch standalone. Abort: ${error}`);
+            context.abort();
+          }
+
           throw error;
         });
     }, retryOptions);
   };
 
   needRetry = async (response: Response) => {
-    if (response.status === 409) {
-      return true;
+    if (response.status === 200) {
+      return false;
     } else if (response.status === 503) {
-      throw new Error(await response.text());
+      throw new FetchError(await response.text(), 503);
     }
 
-    return false;
+    // Excluding 200 & 503, retry.
+    return true;
   };
 }
