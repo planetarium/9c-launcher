@@ -90,10 +90,6 @@ function createRenderConfig(isDev) {
     },
 
     plugins: [
-      new CleanWebpackPlugin({
-        cleanOnceBeforeBuildPatterns: ["polyfill.*.js", "render.*.js"], // config for electron-main deletes this file
-      }),
-
       new MiniCssExtractPlugin({
         filename: "main.css",
       }),
