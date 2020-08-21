@@ -43,13 +43,40 @@ export default class StandaloneStore {
   @action
   runStandalone = () => {
     console.log("Running standalone service...");
+    return this.retryPromise("run-standalone", "");
+  };
+
+  @action
+  setPrivateKey = (privateKey: string) => {
+    console.log("Setting private key.");
+    const body = JSON.stringify({
+      PrivateKeyString: privateKey,
+    });
+    return this.retryPromise("set-private-key", body);
+  };
+
+  @action
+  setMining = (mine: boolean) => {
+    console.log("Setting mining.");
+    electronStore.set("NoMiner", !mine);
+    const body = JSON.stringify({
+      Mine: mine,
+    });
+    return this.retryPromise("set-mining", body);
+  };
+
+  retryPromise = (addr: string, body: string) => {
     return retry(async (context) => {
       if (this.AbortRequested) {
         context.abort();
       }
 
-      await fetch(`http://${LOCAL_SERVER_URL}/run-standalone`, {
+      await fetch(`http://${LOCAL_SERVER_URL}/${addr}`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: body,
       })
         .then((resp) => this.checkIsOk(resp))
         .then(() => {
@@ -57,50 +84,6 @@ export default class StandaloneStore {
             `Successfully fetched standalone in ${context.attemptNum} retries.`
           );
         })
-        .catch((error) => {
-          console.log(
-            `Failed to fetch standalone. Retrying... ${context.attemptNum}/${
-              context.attemptsRemaining + context.attemptNum
-            }`
-          );
-          throw error;
-        });
-    }, retryOptions);
-  };
-
-  @action
-  setMining = (mine: boolean, privateKey: string) => {
-    electronStore.set("NoMiner", !mine);
-    return retry(async (context) => {
-      if (this.AbortRequested) {
-        context.abort();
-      }
-
-      await fetch(`http://${LOCAL_SERVER_URL}/set-private-key`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          PrivateKeyString: privateKey,
-        }),
-      })
-        .then((resp) => this.checkIsOk(resp))
-        .then((_) => {
-          console.log(
-            `Successfully fetched standalone in ${context.attemptNum} retries.`
-          );
-          return fetch(`http://${LOCAL_SERVER_URL}/set-mining`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              Mine: mine,
-            }),
-          });
-        })
-        .then((resp) => this.checkIsOk(resp))
         .catch((error) => {
           console.log(
             `Failed to fetch standalone. Retrying... ${context.attemptNum}/${

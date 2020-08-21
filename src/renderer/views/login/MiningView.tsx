@@ -11,10 +11,9 @@ const MiningView = observer(
     const classes = miningViewStyle();
     const setMining = (isMining: boolean) => {
       standaloneStore
-        .setMining(isMining, accountStore.privateKey)
-        .then(() => {
-          standaloneStore.setPrivateKeyEnded();
-        })
+        .setPrivateKey(accountStore.privateKey)
+        .then(() => standaloneStore.setPrivateKeyEnded())
+        .then((_) => standaloneStore.setMining(isMining))
         .catch((error) => {
           console.log(error);
           routerStore.push("/error");
