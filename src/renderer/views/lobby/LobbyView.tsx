@@ -10,8 +10,8 @@ import mixpanel from "mixpanel-browser";
 import { IStoreContainer } from "../../../interfaces/store";
 import { inject, observer } from "mobx-react";
 import {
-  useActivationQuery,
   useActivateMutation,
+  useActivationLazyQuery,
 } from "../../../generated/graphql";
 import lobbyViewStyle from "./LobbyView.style";
 
@@ -30,12 +30,10 @@ const Button = (
 const LobbyView = observer((props: ILobbyViewProps) => {
   const classes = lobbyViewStyle();
   const { accountStore, gameStore, standaloneStore } = props;
-  const {
-    loading,
-    error: statusError,
-    data: status,
-    refetch,
-  } = useActivationQuery();
+  const [
+    activation,
+    { loading, error: statusError, data: status },
+  ] = useActivationLazyQuery();
   const [
     activate,
     { data: isActivated, error: activatedError },
@@ -54,8 +52,8 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       setPollingState(true);
       while (true) {
         await sleep(1000);
-        const value = await refetch();
-        if (value.data.activationStatus.activated) break;
+        await activation();
+        if (status?.activationStatus.activated) break;
       }
       setPollingState(false);
     });
@@ -76,10 +74,13 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   }, [activatedError]);
 
   React.useEffect(() => {
-    if (standaloneStore.IsPreloadEnded) {
-      refetch();
+    if (
+      standaloneStore.IsPreloadEnded &&
+      standaloneStore.IsSetPrivateKeyEnded
+    ) {
+      activation();
     }
-  }, [standaloneStore.IsPreloadEnded]);
+  }, [standaloneStore.IsPreloadEnded, standaloneStore.IsSetPrivateKeyEnded]);
 
   let child: JSX.Element;
 

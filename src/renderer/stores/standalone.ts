@@ -18,17 +18,26 @@ export default class StandaloneStore {
   @observable
   public IsPreloadEnded: boolean;
 
+  @observable
+  public IsSetPrivateKeyEnded: boolean;
+
   private AbortRequested: boolean;
 
   constructor() {
     this.NoMiner = electronStore.get("NoMiner") as boolean;
     this.IsPreloadEnded = false;
     this.AbortRequested = false;
+    this.IsSetPrivateKeyEnded = false;
   }
 
   @action
   abort = () => {
     this.AbortRequested = true;
+  };
+
+  @action
+  setPrivateKeyEnded = () => {
+    this.IsSetPrivateKeyEnded = true;
   };
 
   @action
