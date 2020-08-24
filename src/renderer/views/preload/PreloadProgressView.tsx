@@ -126,12 +126,12 @@ const PreloadProgressView = () => {
       .runStandalone()
       .then(() => {
         if (accountStore.isLogin && accountStore.privateKey !== "") {
-          standaloneStore.setPrivateKey(accountStore.privateKey);
+          return standaloneStore.setPrivateKey(accountStore.privateKey);
         }
       })
       .then(() => {
         if (accountStore.isLogin && accountStore.privateKey !== "") {
-          standaloneStore.setMining(standaloneStore.NoMiner);
+          return standaloneStore.setMining(standaloneStore.NoMiner);
         }
       })
       .catch((error) => {
