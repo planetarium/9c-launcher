@@ -1,7 +1,6 @@
 import { observable, action } from "mobx";
 import { retry } from "@lifeomic/attempt";
 import { electronStore, LOCAL_SERVER_URL, RPC_SERVER_PORT } from "../../config";
-import "../../errors/FetchError";
 import FetchError from "../../errors/FetchError";
 
 const retryOptions = {
@@ -106,7 +105,7 @@ export default class StandaloneStore {
     }, retryOptions);
   };
 
-  needRetry = async (response: Response) => {
+  needRetry = async (response: Response): Promise<boolean> => {
     if (response.status === 200) {
       return false;
     } else if (response.status === 503) {
