@@ -11,9 +11,10 @@ const MiningView = observer(
     const classes = miningViewStyle();
     const setMining = (isMining: boolean) => {
       standaloneStore
-        .setMining(isMining, accountStore.privateKey)
+        .setPrivateKey(accountStore.privateKey)
         .then(() => {
           standaloneStore.setPrivateKeyEnded();
+          standaloneStore.setMining(isMining);
         })
         .catch((error) => {
           console.log(error);
