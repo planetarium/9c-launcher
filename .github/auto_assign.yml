@@ -1,0 +1,8 @@
+addReviewers: true
+addAssignees: author
+
+reviewers:
+  - limebell
+  - earlbread
+  - riemannulus
+  - x86chi
