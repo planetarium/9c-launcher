@@ -14,7 +14,7 @@ const MiningView = observer(
         .setPrivateKey(accountStore.privateKey)
         .then(() => {
           standaloneStore.setPrivateKeyEnded();
-          standaloneStore.setMining(isMining);
+          return standaloneStore.setMining(isMining);
         })
         .catch((error) => {
           console.log(error);
