@@ -11,14 +11,6 @@ import {
 import preloadProgressViewStyle from "./PreloadProgressView.style";
 import { electronStore } from "../../../config";
 
-enum PreloadProgressPhase {
-  ActionExecutionState,
-  BlockDownloadState,
-  BlockHashDownloadState,
-  BlockVerificationState,
-  StateDownloadState,
-}
-
 const PreloadProgressView = () => {
   const { accountStore, routerStore, standaloneStore } = useStores();
   const classes = preloadProgressViewStyle();
@@ -201,9 +193,6 @@ const PreloadProgressView = () => {
 const statusMessage = [
   "Validating Snapshot",
   "Downloading Snapshot",
-  "Extracting Snapshot",
-  "Verifying block headers",
-  "Downloading block hashes",
   "Extracting Snapshot",
   "Verifying block headers",
   "Downloading block hashes",
