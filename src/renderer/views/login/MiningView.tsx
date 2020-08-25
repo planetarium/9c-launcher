@@ -48,7 +48,9 @@ const MiningView = observer(
               setMining(false);
             }}
           >
-            Not now
+            <p>
+              Turn Mining<p className={classes.emphasize}>Off</p>
+            </p>
           </Button>
           <Button
             className={`${classes.button} ${classes.buttonRight}`}
@@ -58,7 +60,9 @@ const MiningView = observer(
               setMining(true);
             }}
           >
-            Got it!
+            <p>
+              Turn Mining<p className={classes.emphasize}>On</p>
+            </p>
           </Button>
         </Box>
       </Container>
