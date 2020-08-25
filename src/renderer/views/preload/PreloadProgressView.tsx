@@ -36,8 +36,8 @@ const PreloadProgressView = () => {
     ipcRenderer.on("standalone exited", () => {
       // Standalone exited abnormally. This indicates that
       // standalone has different version, or the genesis block
-      // is invalid.
-      gotoErrorPage();
+      // is invalid. Mainly something broken in config.json.
+      gotoErrorPage("reinstall");
     });
 
     ipcRenderer.on("metadata downloaded", (_, meta) => {
@@ -124,14 +124,14 @@ const PreloadProgressView = () => {
       })
       .catch((error) => {
         console.log(error);
-        gotoErrorPage();
+        gotoErrorPage("relaunch");
       });
   };
 
-  const gotoErrorPage = () => {
+  const gotoErrorPage = (page: string) => {
     standaloneStore.abort();
     setAborted(true);
-    routerStore.push("/error");
+    routerStore.push(`/error/${page}`);
   };
 
   React.useEffect(() => {
@@ -161,7 +161,7 @@ const PreloadProgressView = () => {
           phase !== "StateDownloadState" &&
           electronStore.get("PeerStrings").length > 0)
       ) {
-        gotoErrorPage();
+        gotoErrorPage("relaunch");
       }
     }
   }, [isPreloadEnded, preloadProgress?.extra]);

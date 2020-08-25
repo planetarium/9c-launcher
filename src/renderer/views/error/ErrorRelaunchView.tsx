@@ -1,13 +1,10 @@
 import * as React from "react";
 import { remote } from "electron";
 import mixpanel from "mixpanel-browser";
-import { observer, inject } from "mobx-react";
-import { IStoreContainer } from "../../../interfaces/store";
-import { useProtectedPrivateKeysQuery } from "../../../generated/graphql";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Container, Typography } from "@material-ui/core";
 
-const ErrorView: React.FC<{}> = () => {
+const ErrorRelaunchView: React.FC<{}> = () => {
   const classes = errorViewStyle();
   const handleRelaunch = React.useCallback(() => {
     remote.app.relaunch();
@@ -15,7 +12,7 @@ const ErrorView: React.FC<{}> = () => {
   }, []);
 
   React.useEffect(() => {
-    mixpanel.track("Launcher/FatalError");
+    mixpanel.track("Launcher/ErrorRelaunch");
   }, []);
   return (
     <Container className={classes.root}>
@@ -25,10 +22,10 @@ const ErrorView: React.FC<{}> = () => {
       <Typography variant="subtitle1">Please follow step below.</Typography>
       <ol>
         <li>Relaunch &ldquo;Nine Chornicles&rdquo;</li>
-        <li>Click Clear Cache</li>
         <li>Login once again</li>
       </ol>
       <Button
+        className={classes.button}
         color="primary"
         variant="contained"
         fullWidth
@@ -40,4 +37,4 @@ const ErrorView: React.FC<{}> = () => {
   );
 };
 
-export default ErrorView;
+export default ErrorRelaunchView;

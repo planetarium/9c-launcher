@@ -18,7 +18,7 @@ const MiningView = observer(
         })
         .catch((error) => {
           console.log(error);
-          routerStore.push("/error");
+          routerStore.push("/error/relaunch");
         });
       routerStore.push("/lobby/preload");
     };
