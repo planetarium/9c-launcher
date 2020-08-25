@@ -1,0 +1,13 @@
+addReviewers: true
+addAssignees: author
+
+reviewers:
+  - dahlia
+  - longfin
+  - limebell
+  - earlbread
+  - riemannulus
+  - moreal
+  - x86chi
+
+numberOfReviewers: 0
