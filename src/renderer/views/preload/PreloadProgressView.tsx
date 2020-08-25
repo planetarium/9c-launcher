@@ -3,7 +3,6 @@ import mixpanel from "mixpanel-browser";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import useStores from "../../../hooks/useStores";
 import { Container, Typography, CircularProgress } from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
 import {
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
@@ -11,9 +10,6 @@ import {
 } from "../../../generated/graphql";
 import preloadProgressViewStyle from "./PreloadProgressView.style";
 import { electronStore } from "../../../config";
-import { RouterStore } from "mobx-react-router";
-
-import useDidUpdateEffect from "../../hooks/useDidUpdateEffect";
 
 enum PreloadProgressPhase {
   ActionExecutionState,
@@ -109,7 +105,7 @@ const PreloadProgressView = () => {
     }
   }, [data?.validation.metadata]);
 
-  useDidUpdateEffect(() => {
+  React.useEffect(() => {
     mixpanel.track(`Launcher/${statusMessage[step]}`);
   }, [step]);
 
