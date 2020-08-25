@@ -6,6 +6,7 @@ import {
   WIN_GAME_PATH,
   RPC_LOOPBACK_HOST,
   RPC_SERVER_PORT,
+  REQUIRED_DISK_SPACE,
 } from "../config";
 import isDev from "electron-is-dev";
 import {
@@ -31,6 +32,7 @@ import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/g
 import { BencodexDict, decode } from "bencodex";
 import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
+import checkDiskSpace from "check-disk-space";
 
 initializeSentry();
 
@@ -46,12 +48,6 @@ let standaloneExited: boolean = false;
 let standaloneRetried: boolean = false;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
-const blockchainStorePath = path.join(
-  electronStore.get("BlockchainStoreDirParent") === ""
-    ? BLOCKCHAIN_STORE_PATH
-    : electronStore.get("BlockchainStoreDirParent"),
-  electronStore.get("BlockchainStoreDirName")
-);
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -79,7 +75,7 @@ function executeStandalone() {
       `-G=${electronStore.get("GenesisBlockPath")}`,
       `-D=${electronStore.get("MinimumDifficulty")}`,
       `--store-type=${electronStore.get("StoreType")}`,
-      `--store-path=${blockchainStorePath}`,
+      `--store-path=${BLOCKCHAIN_STORE_PATH}`,
       ...electronStore
         .get("IceServerStrings")
         .map((iceServerString) => `-I=${iceServerString}`),
@@ -129,6 +125,18 @@ function initializeApp() {
 }
 
 function initializeIpc() {
+  ipcMain.on("check disk space", (event) => {
+    checkDiskSpace(BLOCKCHAIN_STORE_PATH).then((diskSpace) => {
+      if (diskSpace.free < REQUIRED_DISK_SPACE) {
+        event.returnValue = false;
+        console.log("Disk space is not enough: ", diskSpace.free);
+        win?.webContents.send("not enough space on the disk");
+      } else {
+        event.returnValue = true;
+      }
+    });
+  });
+
   ipcMain.on("check standalone", (event) => {
     if (!standaloneRetried && standaloneExited) {
       downloadSnapshot({ properties: {} }, false);
@@ -421,7 +429,7 @@ function initializeIpc() {
     // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
     setTimeout(() => {
       try {
-        deleteBlockchainStore(blockchainStorePath);
+        deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
         event.returnValue = true;
       } catch (e) {
         console.log(e);
@@ -559,11 +567,11 @@ function createTray(iconPath: string) {
 
 function extractSnapshot(snapshotPath: string) {
   console.log(`extract started.
-extractPath: [ ${blockchainStorePath} ],
+extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
 extractTarget: [ ${snapshotPath} ]`);
   try {
     return extractZip(snapshotPath, {
-      dir: blockchainStorePath,
+      dir: BLOCKCHAIN_STORE_PATH,
       onEntry: (_, zipfile) => {
         const progress = zipfile.entriesRead / zipfile.entryCount;
         win?.webContents.send("extract progress", progress);
@@ -627,7 +635,7 @@ function downloadSnapshot(
   }
   // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
   setTimeout(() => {
-    deleteBlockchainStore(blockchainStorePath);
+    deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
     options.properties.onProgress = (status: IDownloadProgress) =>
       win?.webContents.send("download progress", status);
     options.properties.directory = app.getPath("userData");
