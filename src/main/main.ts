@@ -16,11 +16,10 @@ import {
   nativeImage,
   ipcMain,
   DownloadItem,
-  autoUpdater,
 } from "electron";
 import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
-import fs, { copyFile } from "fs";
+import fs from "fs";
 import { ChildProcess, spawn } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import logoImage from "./resources/logo.png";
@@ -29,14 +28,13 @@ import "@babel/polyfill";
 import extractZip from "extract-zip";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
-import { BencodexDict, decode, encode } from "bencodex";
-import zlib from "zlib";
-import tmp, { tmpName } from "tmp-promise";
-import extract from "extract-zip";
+import { BencodexDict, decode } from "bencodex";
+import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
 
 initializeSentry();
 
+log.transports.file.maxSize = 1024 * 1024 * 15;
 Object.assign(console, log.functions);
 
 let win: BrowserWindow | null = null;
