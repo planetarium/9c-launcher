@@ -156,10 +156,9 @@ const PreloadProgressView = () => {
       const phase = preloadProgress?.extra.type;
 
       if (
-        phase === undefined ||
-        (phase !== "ActionExecutionState" &&
-          phase !== "StateDownloadState" &&
-          electronStore.get("PeerStrings").length > 0)
+        electronStore.get("PeerStrings").length > 0 &&
+        (phase === undefined ||
+          (phase !== "ActionExecutionState" && phase !== "StateDownloadState"))
       ) {
         gotoErrorPage("relaunch");
       }
@@ -177,7 +176,11 @@ const PreloadProgressView = () => {
       {aborted ? (
         <></>
       ) : isPreloadEnded ? (
-        <Typography className={classes.text}>Preload Completed.</Typography>
+        <Typography className={classes.text}>
+          {electronStore.get("PeerStrings").length > 0
+            ? "Preload Completed."
+            : "No Peers Were Given."}
+        </Typography>
       ) : (
         <>
           <CircularProgress className={classes.circularProgress} size={12} />
