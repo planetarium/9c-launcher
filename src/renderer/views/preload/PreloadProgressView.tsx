@@ -197,9 +197,9 @@ const statusMessage = [
   "Validating Snapshot",
   "Downloading Snapshot",
   "Extracting Snapshot",
-  "Verifying block headers",
   "Downloading block hashes",
   "Downloading blocks",
+  "Verifying block headers",
   "Downloading states",
   "Executing actions",
 ];
