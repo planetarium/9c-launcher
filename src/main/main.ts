@@ -663,19 +663,14 @@ async function downloadSnapshot(
   options.properties.filename = "snapshot.zip";
   console.log(win);
   if (win != null) {
-    download(
+    const dl = await download(
       win,
       (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
       options.properties
-    )
-      .then((dl) => {
-        win?.webContents.send("download complete", dl.getSavePath());
-        return dl.getSavePath();
-      })
-      .then((path) => extractSnapshot(path))
-      .then(() => {
-        standaloneNode = executeStandalone();
-      })
-      .then(() => win?.webContents.send("snapshot complete"));
+    );
+    win?.webContents.send("download complete", dl.getSavePath());
+    await extractSnapshot(dl.getSavePath());
+    standaloneNode = executeStandalone();
+    win?.webContents.send("snapshot complete");
   }
 }
