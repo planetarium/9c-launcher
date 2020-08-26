@@ -9,6 +9,15 @@ const errorViewStyle = makeStyles({
     fontWeight: "bold",
     fontSize: "1.5em",
   },
+  button: {
+    marginTop: "20px",
+  },
+  link: {
+    fontWeight: "bold",
+    textDecoration: "underline",
+    bold: "true",
+    cursor: "pointer",
+  },
 });
 
 export default errorViewStyle;

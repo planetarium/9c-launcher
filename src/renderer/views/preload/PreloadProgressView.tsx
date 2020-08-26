@@ -36,8 +36,8 @@ const PreloadProgressView = () => {
     ipcRenderer.on("standalone exited", () => {
       // Standalone exited abnormally. This indicates that
       // standalone has different version, or the genesis block
-      // is invalid.
-      gotoErrorPage();
+      // is invalid. Mainly something broken in config.json.
+      gotoErrorPage("reinstall");
     });
 
     ipcRenderer.on("metadata downloaded", (_, meta) => {
@@ -124,14 +124,14 @@ const PreloadProgressView = () => {
       })
       .catch((error) => {
         console.log(error);
-        gotoErrorPage();
+        gotoErrorPage("relaunch");
       });
   };
 
-  const gotoErrorPage = () => {
+  const gotoErrorPage = (page: string) => {
     standaloneStore.abort();
     setAborted(true);
-    routerStore.push("/error");
+    routerStore.push(`/error/${page}`);
   };
 
   React.useEffect(() => {
@@ -156,12 +156,11 @@ const PreloadProgressView = () => {
       const phase = preloadProgress?.extra.type;
 
       if (
-        phase === undefined ||
-        (phase !== "ActionExecutionState" &&
-          phase !== "StateDownloadState" &&
-          electronStore.get("PeerStrings").length > 0)
+        electronStore.get("PeerStrings").length > 0 &&
+        (phase === undefined ||
+          (phase !== "ActionExecutionState" && phase !== "StateDownloadState"))
       ) {
-        gotoErrorPage();
+        gotoErrorPage("relaunch");
       }
     }
   }, [isPreloadEnded, preloadProgress?.extra]);
@@ -177,7 +176,11 @@ const PreloadProgressView = () => {
       {aborted ? (
         <></>
       ) : isPreloadEnded ? (
-        <Typography className={classes.text}>Preload Completed.</Typography>
+        <Typography className={classes.text}>
+          {electronStore.get("PeerStrings").length > 0
+            ? "Preload Completed."
+            : "No Peers Were Given."}
+        </Typography>
       ) : (
         <>
           <CircularProgress className={classes.circularProgress} size={12} />
