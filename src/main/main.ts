@@ -633,7 +633,7 @@ function downloadSnapshot(
     if (win != null) {
       download(
         win,
-        (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
+        electronStore.get("SNAPSHOT_DOWNLOAD_PATH") + ".zip",
         options.properties
       )
         .then((dl) => {
