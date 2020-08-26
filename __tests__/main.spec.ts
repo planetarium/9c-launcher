@@ -1,11 +1,7 @@
 import path from "path";
 
-import { Application, SpectronWebContents } from "spectron";
+import { Application } from "spectron";
 import electron from "electron";
-
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import assert from "assert";
 
 import "dotenv/config";
 
@@ -14,8 +10,6 @@ process.env.ELECTRON_IS_DEV = 0;
 const { PASSWORD } = process.env;
 
 if (PASSWORD === undefined) throw Error("failed to load password from .env");
-
-chai.use(chaiAsPromised);
 
 describe("test", function () {
   this.timeout(10000);
