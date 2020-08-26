@@ -46,7 +46,9 @@ let standaloneExited: boolean = false;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 const blockchainStorePath = path.join(
-  BLOCKCHAIN_STORE_PATH,
+  electronStore.get("BlockchainStoreDirParent") === ""
+    ? BLOCKCHAIN_STORE_PATH
+    : electronStore.get("BlockchainStoreDirParent"),
   electronStore.get("BlockchainStoreDirName")
 );
 
