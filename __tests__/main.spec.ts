@@ -63,7 +63,11 @@ describe("test", function () {
 
     await app.client.waitUntil(
       async function () {
-        submitButton = await app.client.$("#start-game");
+        try {
+          submitButton = await app.client.$("#start-game");
+        } catch {
+          return false;
+        }
         const text = await submitButton.getText();
         return text === "Start Game";
       },
