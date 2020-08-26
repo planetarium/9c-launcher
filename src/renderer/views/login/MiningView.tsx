@@ -42,6 +42,7 @@ const MiningView = observer(
         <Box className={classes.buttonContainer}>
           <Button
             className={`${classes.button} ${classes.buttonLeft}`}
+            id="mining-off"
             variant="contained"
             onClick={() => {
               mixpanel.track("Launcher/Mining Off");

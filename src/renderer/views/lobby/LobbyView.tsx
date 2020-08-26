@@ -141,6 +141,7 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
       disabled={gameStore.isGameStarted}
       onClick={handleStartGame}
       className={classes.gameStartButton}
+      id="start-game"
     >
       {gameStore.isGameStarted ? "Now Running..." : "Start Game"}
     </Button>
