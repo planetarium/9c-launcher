@@ -50,12 +50,12 @@ describe("test", function () {
     await inputPassword.setValue(PASSWORD);
 
     const submitButton = await app.client.$('button[type="submit"]');
-    submitButton.click();
+    await submitButton.click();
   });
 
   it("마이닝 끄기", async function () {
     const miningOffButton = await app.client.$("#mining-off");
-    miningOffButton.click();
+    await miningOffButton.click();
   });
 
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
@@ -73,7 +73,7 @@ describe("test", function () {
       },
       { timeout: 120000, timeoutMsg: "실행 버튼이 나오지 않았습니다." }
     );
-    submitButton.click();
+    await submitButton.click();
   });
 
   after(function () {
