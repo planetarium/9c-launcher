@@ -48,7 +48,7 @@ const MiningView = observer(
               setMining(false);
             }}
           >
-            Not now
+            OFF
           </Button>
           <Button
             className={`${classes.button} ${classes.buttonRight}`}
@@ -58,7 +58,7 @@ const MiningView = observer(
               setMining(true);
             }}
           >
-            Got it!
+            ON
           </Button>
         </Box>
       </Container>
