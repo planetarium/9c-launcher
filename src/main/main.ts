@@ -660,6 +660,7 @@ async function downloadSnapshot(
   options.properties.onProgress = (status: IDownloadProgress) =>
     win?.webContents.send("download progress", status);
   options.properties.directory = app.getPath("userData");
+  options.properties.filename = "snapshot.zip";
   console.log(win);
   if (win != null) {
     download(
