@@ -4,6 +4,7 @@ const miningViewStyle = makeStyles({
   root: {
     color: "white",
   },
+
   title: {
     fontWeight: "bold",
   },
@@ -12,6 +13,8 @@ const miningViewStyle = makeStyles({
     borderRadius: "0",
     width: "150px",
     height: "70px",
+    fontWeight: "bold",
+    fontSize: "larger",
   },
 
   buttonLeft: {
@@ -25,12 +28,6 @@ const miningViewStyle = makeStyles({
   buttonContainer: {
     position: "relative",
     bottom: "-5px",
-  },
-
-  emphasize: {
-    fontWeight: "bold",
-    fontSize: "larger",
-    margin: "0px",
   },
 
   requirement: {
