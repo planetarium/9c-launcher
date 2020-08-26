@@ -45,7 +45,6 @@ describe("test", function () {
   });
 
   it("로그인 하기", async function () {
-    this.timeout(1000);
     const inputPassword = await app.client.$('input[type="password"]');
     await inputPassword.setValue(PASSWORD);
 
@@ -59,6 +58,9 @@ describe("test", function () {
   });
 
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
+    const timeout = 1800000;
+    this.timeout(timeout);
+
     let submitButton = await app.client.$("body");
 
     await app.client.waitUntil(
@@ -71,7 +73,7 @@ describe("test", function () {
         const text = await submitButton.getText();
         return text === "Start Game";
       },
-      { timeout: 120000, timeoutMsg: "실행 버튼이 나오지 않았습니다." }
+      { timeout, timeoutMsg: "실행 버튼이 나오지 않았습니다." }
     );
     await submitButton.click();
   });
