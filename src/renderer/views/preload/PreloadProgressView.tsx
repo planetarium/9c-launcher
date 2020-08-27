@@ -76,6 +76,11 @@ const PreloadProgressView = () => {
       startPreloading();
     });
 
+    if (!ipcRenderer.sendSync("check disk permission")) {
+      gotoErrorPage("no-permission");
+      return;
+    }
+
     const result = ipcRenderer.sendSync("check disk space");
     if (!result) {
       console.error("Disk space is not enough.");

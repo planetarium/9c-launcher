@@ -126,6 +126,22 @@ function initializeApp() {
 }
 
 function initializeIpc() {
+  ipcMain.on("check disk permission", (event) => {
+    fs.promises
+      .access(BLOCKCHAIN_STORE_PATH, fs.constants.F_OK)
+      .then(() => {
+        event.returnValue = true;
+      })
+      .catch((err) => {
+        event.returnValue = false;
+        console.log(
+          "No read/write access to the path: ",
+          BLOCKCHAIN_STORE_PATH,
+          err
+        );
+      });
+  });
+
   ipcMain.on("check disk space", (event) => {
     checkDiskSpace(BLOCKCHAIN_STORE_PATH).then((diskSpace) => {
       if (diskSpace.free < REQUIRED_DISK_SPACE) {
