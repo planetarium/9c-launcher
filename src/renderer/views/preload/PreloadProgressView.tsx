@@ -72,7 +72,7 @@ const PreloadProgressView = () => {
       startPreloading();
     });
 
-    ipcRenderer.send("check standalone");
+    ipcRenderer.sendSync("check standalone");
 
     // 여기서 스냅샷을 받을지 여부를 결정 가능
     if (electronStore.get("UseSnapshot")) {

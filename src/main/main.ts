@@ -43,6 +43,7 @@ let runningPids: number[] = [];
 let isQuiting: boolean = false;
 let standaloneNode: ChildProcess;
 let standaloneExited: boolean = false;
+let standaloneRetried: boolean = false;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 const blockchainStorePath = path.join(
@@ -126,8 +127,14 @@ function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on("check standalone", (_) => {
-    if (standaloneExited) setStandaloneExited();
+  ipcMain.on("check standalone", (event) => {
+    if (!standaloneRetried && standaloneExited) {
+      downloadSnapshot({ properties: {} }, false);
+      standaloneRetried = true;
+    } else if (standaloneExited) {
+      setStandaloneExited();
+    }
+    event.returnValue = standaloneExited;
   });
 
   ipcMain.on("download metadata", (_, options: IDownloadOptions) => {
@@ -157,32 +164,7 @@ function initializeIpc() {
   ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
     console.log("downloading snapshot.");
     // Prevent the exit event lead renderer to error page because it's intended.
-    standaloneNode.removeAllListeners("exit");
-    quitAllProcesses();
-    // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
-    setTimeout(() => {
-      deleteBlockchainStore(blockchainStorePath);
-      options.properties.onProgress = (status: IDownloadProgress) =>
-        win?.webContents.send("download progress", status);
-      options.properties.directory = app.getPath("userData");
-      console.log(win);
-      if (win != null) {
-        download(
-          win,
-          (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
-          options.properties
-        )
-          .then((dl) => {
-            win?.webContents.send("download complete", dl.getSavePath());
-            return dl.getSavePath();
-          })
-          .then((path) => extractSnapshot(path))
-          .then(() => {
-            standaloneNode = executeStandalone();
-          })
-          .then(() => win?.webContents.send("snapshot complete"));
-      }
-    }, 1000);
+    downloadSnapshot(options);
   });
 
   ipcMain.on(
@@ -631,4 +613,38 @@ async function copyDir(srcDir: string, dstDir: string) {
 function setStandaloneExited() {
   standaloneExited = true;
   win?.webContents.send("standalone exited");
+}
+
+function downloadSnapshot(
+  options: IDownloadOptions,
+  quitProcess: boolean = true
+) {
+  standaloneNode.removeAllListeners("exit");
+  if (quitProcess) {
+    quitAllProcesses();
+  }
+  // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
+  setTimeout(() => {
+    deleteBlockchainStore(blockchainStorePath);
+    options.properties.onProgress = (status: IDownloadProgress) =>
+      win?.webContents.send("download progress", status);
+    options.properties.directory = app.getPath("userData");
+    console.log(win);
+    if (win != null) {
+      download(
+        win,
+        electronStore.get("SNAPSHOT_DOWNLOAD_PATH") + ".zip",
+        options.properties
+      )
+        .then((dl) => {
+          win?.webContents.send("download complete", dl.getSavePath());
+          return dl.getSavePath();
+        })
+        .then((path) => extractSnapshot(path))
+        .then(() => {
+          standaloneNode = executeStandalone();
+        })
+        .then(() => win?.webContents.send("snapshot complete"));
+    }
+  }, 1000);
 }
