@@ -10,5 +10,6 @@ export interface IElectronStore {
   IceServerStrings: string[];
   PeerStrings: string[];
   NoTrustedStateValidators: boolean;
+  BlockchainStoreDirParent: string;
   BlockchainStoreDirName: string;
 }

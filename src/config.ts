@@ -66,6 +66,10 @@ export const electronStore = new Store<IElectronStore>({
       type: "boolean",
       default: false,
     },
+    BlockchainStoreDirParent: {
+      type: "string",
+      default: "",
+    },
     BlockchainStoreDirName: {
       type: "string",
       default: "9c",
