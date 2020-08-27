@@ -21,22 +21,27 @@ const ErrorNoPermissionView: React.FC<{}> = () => {
         No permission.
       </Typography>
       <Typography variant="subtitle1">
-        Application does not have permission for: {BLOCKCHAIN_STORE_PATH}.
+        Application does not have permission for:
+        <br />
+        <code className={classes.code}>{BLOCKCHAIN_STORE_PATH}</code>
+        <br />
         Please change chain directory by following steps below.
       </Typography>
       <ol>
         <li>
           Open config.json file using your text editor. (e.g. Notepad, TextEdit)
           The file is located at:
-          <br />"
-          {process.platform === "darwin"
-            ? `${remote.app.getAppPath()}/Contents/Resources/app/config.json`
-            : `${remote.app.getAppPath()}\\resources\\app\\config.json`}
-          "
+          <br />
+          <code className={classes.code}>
+            {process.platform === "darwin"
+              ? `${remote.app.getAppPath()}/Contents/Resources/app/config.json`
+              : `${remote.app.getAppPath()}\\resources\\app\\config.json`}
+          </code>
         </li>
         <li>
-          Modify "BlockchainStoreDirParent" field. If the field does not exists,
-          please create one.
+          Modify{" "}
+          <code className={classes.code}>"BlockchainStoreDirParent"</code>{" "}
+          field. If the field does not exists, please create one.
         </li>
         <li>Restart launcher.</li>
       </ol>
