@@ -134,7 +134,7 @@ function initializeIpc() {
       })
       .catch((err) => {
         event.returnValue = false;
-        console.log(
+        console.error(
           "No read/write access to the path: ",
           BLOCKCHAIN_STORE_PATH,
           err

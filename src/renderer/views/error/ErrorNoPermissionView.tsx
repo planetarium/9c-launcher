@@ -27,7 +27,12 @@ const ErrorNoPermissionView: React.FC<{}> = () => {
       <ol>
         <li>
           Open config.json file using your text editor. (e.g. Notepad, TextEdit)
-          The file is located under the path where the game is installed.
+          The file is located at:
+          <br />"
+          {process.platform === "darwin"
+            ? `${remote.app.getAppPath()}/Contents/Resources/app/config.json`
+            : `${remote.app.getAppPath()}\\resources\\app\\config.json`}
+          "
         </li>
         <li>
           Modify "BlockchainStoreDirParent" field. If the field does not exists,
