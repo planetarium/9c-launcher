@@ -103,6 +103,12 @@ const getLocalApplicationDataPath = (): string => {
   }
 };
 
+const blockchainStoreDirParent =
+  electronStore.get("BlockchainStoreDirParent") === ""
+    ? path.join(getLocalApplicationDataPath(), "planetarium")
+    : electronStore.get("BlockchainStoreDirParent");
+
+export const REQUIRED_DISK_SPACE = 2 * 1000 * 1000 * 1000;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
 export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";
@@ -112,6 +118,6 @@ export const GRAPHQL_SERVER_URL = GraphQLServer();
 export const LOCAL_SERVER_PORT = LocalServerPort();
 export const RPC_SERVER_PORT = RpcServerPort();
 export const BLOCKCHAIN_STORE_PATH = path.join(
-  getLocalApplicationDataPath(),
-  "planetarium"
+  blockchainStoreDirParent,
+  electronStore.get("BlockchainStoreDirName")
 );

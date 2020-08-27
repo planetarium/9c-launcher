@@ -14,6 +14,7 @@ import LoginView from "./views/login/LoginView";
 import MiningView from "./views/login/MiningView";
 import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
 import ErrorReinstallView from "./views/error/ErrorReinstallView";
+import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
 import { InputPrivateKeyView } from "./views/account/reset/InputPrivateKeyView";
 import { RegisterPrivateKeyView } from "./views/account/reset/RegisterPrivateKeyView";
 import PreloadView from "./views/lobby/PreloadView";
@@ -38,6 +39,11 @@ class Root extends React.Component {
               exact
               path="/error/reinstall"
               component={ErrorReinstallView}
+            />
+            <Route
+              exact
+              path="/error/disk-space"
+              component={ErrorDiskSpaceView}
             />
             <Route exact path="/account" component={AccountView} />
             <Route exact path="/account/create" component={CreateAccountView} />

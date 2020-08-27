@@ -33,6 +33,10 @@ const PreloadProgressView = () => {
   ] = useValidateSnapshotLazyQuery();
 
   React.useEffect(() => {
+    ipcRenderer.on("not enough space on the disk", () => {
+      gotoErrorPage("disk-space");
+    });
+
     ipcRenderer.on("standalone exited", () => {
       // Standalone exited abnormally. This indicates that
       // standalone has different version, or the genesis block
@@ -72,6 +76,12 @@ const PreloadProgressView = () => {
       startPreloading();
     });
 
+    const result = ipcRenderer.sendSync("check disk space");
+    if (!result) {
+      console.error("Disk space is not enough.");
+      return;
+    }
+
     ipcRenderer.sendSync("check standalone");
 
     // 여기서 스냅샷을 받을지 여부를 결정 가능
@@ -91,7 +101,7 @@ const PreloadProgressView = () => {
         console.log("Snapshot is valid. Start downloading.");
         ipcRenderer.send("download snapshot", options);
       } else {
-        console.log("Snapshot is invalid or redundent. Skip snapshot.");
+        console.log("Snapshot is invalid or redundant. Skip snapshot.");
         startPreloading();
       }
     }
