@@ -33,6 +33,7 @@ import { BencodexDict, decode } from "bencodex";
 import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
 import checkDiskSpace from "check-disk-space";
+import { retry } from "@lifeomic/attempt";
 
 initializeSentry();
 
@@ -137,9 +138,9 @@ function initializeIpc() {
     });
   });
 
-  ipcMain.on("check standalone", (event) => {
+  ipcMain.on("check standalone", async (event) => {
     if (!standaloneRetried && standaloneExited) {
-      downloadSnapshot({ properties: {} }, false);
+      await downloadSnapshot({ properties: {} }, false);
       standaloneRetried = true;
     } else if (standaloneExited) {
       setStandaloneExited();
@@ -171,10 +172,8 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.on("download snapshot", (_, options: IDownloadOptions) => {
-    console.log("downloading snapshot.");
-    // Prevent the exit event lead renderer to error page because it's intended.
-    downloadSnapshot(options);
+  ipcMain.on("download snapshot", async (_, options: IDownloadOptions) => {
+    await downloadSnapshot(options);
   });
 
   ipcMain.on(
@@ -625,36 +624,53 @@ function setStandaloneExited() {
   win?.webContents.send("standalone exited");
 }
 
-function downloadSnapshot(
+async function downloadSnapshot(
   options: IDownloadOptions,
   quitProcess: boolean = true
-) {
-  standaloneNode.removeAllListeners("exit");
+): Promise<void> {
+  console.log("downloading snapshot.");
   if (quitProcess) {
+    // Prevent the exit event lead renderer to error page because it's intended.
+    standaloneNode.removeAllListeners("exit");
     quitAllProcesses();
   }
-  // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
-  setTimeout(() => {
-    deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
-    options.properties.onProgress = (status: IDownloadProgress) =>
-      win?.webContents.send("download progress", status);
-    options.properties.directory = app.getPath("userData");
-    console.log(win);
-    if (win != null) {
-      download(
-        win,
-        electronStore.get("SNAPSHOT_DOWNLOAD_PATH") + ".zip",
-        options.properties
-      )
-        .then((dl) => {
-          win?.webContents.send("download complete", dl.getSavePath());
-          return dl.getSavePath();
-        })
-        .then((path) => extractSnapshot(path))
-        .then(() => {
-          standaloneNode = executeStandalone();
-        })
-        .then(() => win?.webContents.send("snapshot complete"));
-    }
-  }, 1000);
+
+  await retry(
+    async (context) => {
+      try {
+        console.log(
+          `Trying to delete chain (${context.attemptNum}/${
+            context.attemptNum + context.attemptsRemaining
+          })`
+        );
+        deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
+      } catch (err) {
+        if (err.code !== "EBUSY" && err.code !== "EPERM") {
+          console.error(
+            `Unhandled error occurred during delete blockchain store. ${err}`
+          );
+          context.abort();
+        }
+
+        throw err;
+      }
+    },
+    { factor: 2, maxAttempts: 5 }
+  );
+  options.properties.onProgress = (status: IDownloadProgress) =>
+    win?.webContents.send("download progress", status);
+  options.properties.directory = app.getPath("userData");
+  options.properties.filename = "snapshot.zip";
+  console.log(win);
+  if (win != null) {
+    const dl = await download(
+      win,
+      (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
+      options.properties
+    );
+    win?.webContents.send("download complete", dl.getSavePath());
+    await extractSnapshot(dl.getSavePath());
+    standaloneNode = executeStandalone();
+    win?.webContents.send("snapshot complete");
+  }
 }
