@@ -3,6 +3,7 @@ import { Button, Container, TextField, FormLabel } from "@material-ui/core";
 import useStores from "../../../hooks/useStores";
 import { electronStore, blockchainStoreDirParent } from "../../../config";
 import { RootChainFormEvent } from "../../../interfaces/event";
+import configurationViewStyle from "./ConfigurationView.style";
 
 const ConfigurationView = () => {
   const handleSubmit = (event: RootChainFormEvent) => {
@@ -14,8 +15,10 @@ const ConfigurationView = () => {
   };
 
   const { routerStore } = useStores();
+  const classes = configurationViewStyle();
+
   return (
-    <div>
+    <div className={classes.root}>
       <Container>
         <form onSubmit={handleSubmit}>
           <FormLabel>Root chain store path</FormLabel>
@@ -30,13 +33,16 @@ const ConfigurationView = () => {
             name="chain"
             defaultValue={electronStore.get("BlockchainStoreDirName")}
           />
-          <Button type="submit">OK</Button>
+          <Button type="submit" className={classes.submit}>
+            OK
+          </Button>
         </form>
       </Container>
       <Button
         onClick={() => routerStore.goBack()}
         variant="contained"
         color="primary"
+        className={classes.return}
       >
         Return
       </Button>
