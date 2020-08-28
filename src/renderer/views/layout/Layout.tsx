@@ -6,11 +6,23 @@ import DiscordIcon from "../../components/DiscordIcon";
 import SettingsIcon from "@material-ui/icons/Settings";
 import "../../styles/layout/layout.scss";
 import useStores from "../../../hooks/useStores";
+import { observer } from "mobx-react";
 
 export interface ILayoutProps {}
 
-export const Layout: React.FC<ILayoutProps> = ({ children }) => {
+export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
   const { routerStore } = useStores();
+  const [isSettingsPage, setSettingPageState] = React.useState(false);
+
+  React.useEffect(() => {
+    if (routerStore.location.pathname === "/config") {
+      setSettingPageState(true);
+    } else {
+      setSettingPageState(false);
+    }
+    console.log(isSettingsPage);
+  }, [routerStore.location.pathname]);
+
   return (
     <div className="layout">
       <div className="container">
@@ -39,6 +51,7 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
             <li>
               <Button
                 startIcon={<SettingsIcon />}
+                disabled={isSettingsPage}
                 onClick={() => {
                   routerStore.push("/config");
                 }}
@@ -52,4 +65,4 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
       </div>
     </div>
   );
-};
+});
