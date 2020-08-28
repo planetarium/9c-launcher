@@ -19,6 +19,9 @@ const ConfigurationView = () => {
 
   return (
     <div className={classes.root}>
+      <Button onClick={() => routerStore.goBack()} className={classes.exit}>
+        X
+      </Button>
       <Container>
         <form onSubmit={handleSubmit}>
           <FormLabel>Root chain store path</FormLabel>
@@ -33,19 +36,16 @@ const ConfigurationView = () => {
             name="chain"
             defaultValue={electronStore.get("BlockchainStoreDirName")}
           />
-          <Button type="submit" className={classes.submit}>
+          <Button
+            type="submit"
+            className={classes.submit}
+            color="primary"
+            variant="contained"
+          >
             OK
           </Button>
         </form>
       </Container>
-      <Button
-        onClick={() => routerStore.goBack()}
-        variant="contained"
-        color="primary"
-        className={classes.return}
-      >
-        Return
-      </Button>
       <br />
       <br />
     </div>

@@ -6,14 +6,15 @@ const configurationViewStyle = makeStyles({
   },
   submit: {
     display: "block",
-    "margin-right": "0",
-    "margin-left": "auto",
-  },
-  return: {
-    display: "block",
-    margin: "50px auto 0 auto",
+    margin: "300px auto 0 auto",
     width: "200px",
     height: "50px",
+  },
+  exit: {
+    display: "block",
+    "margin-right": "0px",
+    "margin-left": "auto",
+    "font-weight": "bold",
   },
 });
 
