@@ -4,8 +4,17 @@ import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Container, Typography } from "@material-ui/core";
 
+import { useLocale } from "../../i18n";
+
 const ErrorReinstallView: React.FC<{}> = () => {
   const classes = errorViewStyle();
+  const locale = useLocale("errorReinstall");
+
+  const steps = locale("steps");
+
+  if (typeof steps === "string")
+    throw Error("errorReinstall.steps is not array in src/i18n/index.json");
+
   const handleExit = React.useCallback(() => {
     remote.app.exit();
   }, []);
@@ -16,13 +25,13 @@ const ErrorReinstallView: React.FC<{}> = () => {
   return (
     <Container className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        Something went wrong.
+        {locale("title")}
       </Typography>
-      <Typography variant="subtitle1">Please follow step below.</Typography>
+      <Typography variant="subtitle1">{locale("subtitle")}</Typography>
       <ol>
-        <li>Press close button</li>
-        <li>Delete &ldquo;Nine Chornicles&rdquo;</li>
-        <li>Install &ldquo;Nine Chornicles&rdquo;</li>
+        {steps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
       </ol>
       <Typography>
         If you met this page again after reinstall, please contact us via&nbsp;
@@ -32,7 +41,7 @@ const ErrorReinstallView: React.FC<{}> = () => {
             shell.openExternal("https://forum.nine-chronicles.com");
           }}
         >
-          Discord
+          {locale("discord")}
         </a>
         .
       </Typography>
@@ -43,7 +52,7 @@ const ErrorReinstallView: React.FC<{}> = () => {
         fullWidth
         onClick={handleExit}
       >
-        Close
+        {locale("close")}
       </Button>
     </Container>
   );

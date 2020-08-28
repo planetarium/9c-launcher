@@ -8,6 +8,9 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
+
+import { P } from "../../styles/styled";
+
 import { ExecutionResult } from "react-apollo";
 import { useState } from "react";
 import { IStoreContainer } from "../../../interfaces/store";
@@ -19,6 +22,8 @@ import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CreateAccountView.style";
 import { RouterStore } from "mobx-react-router";
 
+import { useLocale } from "../../i18n";
+
 interface ICreateAccountProps {
   accountStore: AccountStore;
   routerStore: RouterStore;
@@ -29,6 +34,13 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
     const [createAccount, { data }] = useCreatePrivateKeyMutation();
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
+
+    const locale = useLocale("createAccount");
+
+    const info = locale("info");
+    if (typeof info === "string")
+      throw Error("createAccount.info is not array in src/i18n/index.json");
+
     const classes = createAccountViewStyle();
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,13 +78,15 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
     return (
       <div className={`create-account ${classes.root}`}>
         <Typography className={classes.info}>
-          Please set the password <br /> to complete account creation.
+          {info.map((paragraph) => (
+            <P key={paragraph}>{paragraph}</P>
+          ))}
         </Typography>
         <form noValidate autoComplete="off" onSubmit={handleSubmit}>
           <FormControl fullWidth>
             <TextField
               id="password-input"
-              label="Password"
+              label={locale("password")}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -84,7 +98,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
           <FormControl fullWidth>
             <TextField
               id="password-confirm-input"
-              label="Password (Confirm)"
+              label={locale("confirm")}
               error={password !== passwordConfirm}
               variant="outlined"
               InputLabelProps={{
@@ -101,7 +115,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
             className={classes.submit}
             variant="contained"
           >
-            Done
+            {locale("done")}
           </Button>
         </form>
       </div>

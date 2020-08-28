@@ -12,6 +12,8 @@ import {
 import preloadProgressViewStyle from "./PreloadProgressView.style";
 import { electronStore } from "../../../config";
 
+import { useLocale } from "../../i18n";
+
 const PreloadProgressView = observer(() => {
   const { accountStore, routerStore, standaloneStore } = useStores();
   const classes = preloadProgressViewStyle();
@@ -32,6 +34,8 @@ const PreloadProgressView = observer(() => {
     validateSnapshot,
     { loading, data, error },
   ] = useValidateSnapshotLazyQuery();
+
+  const locale = useLocale("preloadProgress");
 
   React.useEffect(() => {
     ipcRenderer.on("not enough space on the disk", () => {
@@ -201,7 +205,8 @@ const PreloadProgressView = observer(() => {
         <>
           <CircularProgress className={classes.circularProgress} size={12} />
           <Typography className={classes.text}>
-            {statusMessage[step]} ... ({step + 1}/8) {Math.floor(progress)}%
+            {locale(statusMessage[step])} ... ({step + 1}/8){" "}
+            {Math.floor(progress)}%
           </Typography>
         </>
       )}

@@ -9,6 +9,8 @@ import { useRevokePrivateKeyMutation } from "../../../generated/graphql";
 import revokeAccountViewStyle from "./RevokeAccountView.style";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
+import { useLocale } from "../../i18n";
+
 interface IRevokeAccountProps {
   accountStore: AccountStore;
   routerStore: RouterStore;
@@ -17,6 +19,16 @@ interface IRevokeAccountProps {
 const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
   ({ accountStore, routerStore }: IRevokeAccountProps) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
+
+    const locale = useLocale("revokeAccount");
+
+    const description = locale("description");
+
+    if (typeof description === "string")
+      throw Error(
+        "revokeAccount.description is not array in src/i18n/index.json"
+      );
+
     const classes = revokeAccountViewStyle();
     return (
       <div className={classes.root}>
@@ -26,20 +38,19 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
             routerStore.push("/");
           }}
         >
-          Back
+          {locale("back")}
         </Button>
-        <Typography className={classes.title}>Revoke your account</Typography>
+        <Typography className={classes.title}>{locale("title")}</Typography>
         <Typography>
-          Delete all records related to your account.
+          {description[0]}
           <br />
           <br />
-          Nine Chronicles is a fully decentralized game. Therefore, there is no
-          central server that manages your password. <br />
-          If you don’t remember your private key, you must create a new account
-          to play the game from the beginning. <br />
+          {description[1]}
           <br />
-          Private keys can be found in the Settings menu of the game, so make
-          sure to copy them separately next time and keep them in a safe place.
+          {description[2]}
+          <br />
+          <br />
+          {description[3]}
         </Typography>
         <Button
           variant="contained"
@@ -66,7 +77,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
             });
           }}
         >
-          Revoke Key
+          {locale("revoke")}
         </Button>
       </div>
     );

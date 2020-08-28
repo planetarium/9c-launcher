@@ -1,11 +1,16 @@
 import * as React from "react";
 import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
+
 import { Button, TextField, Typography } from "@material-ui/core";
+import { P } from "../../styles/styled";
+
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CopyCreatedPrivateKeyView.style";
 import { RouterStore } from "mobx-react-router";
 import { clipboard } from "electron";
+
+import { useLocale } from "../../i18n";
 
 interface ICopyCreatedPrivateKeyProps {
   accountStore: AccountStore;
@@ -16,30 +21,28 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
   ({ accountStore, routerStore }: ICopyCreatedPrivateKeyProps) => {
     const classes = createAccountViewStyle();
 
+    const locale = useLocale("copyPrivateKey");
+
     return (
       <div className={classes.root}>
         <Typography className={classes.title}>
-          Almost done!
-          <br />
-          Please copy and store
-          <br />
-          your private key in a safe place.
+          {(locale("title") as string[]).map((paragraph) => (
+            <P key={paragraph}>{paragraph}</P>
+          ))}
         </Typography>
         <Typography className={classes.description}>
-          Nine Chronicles is a fully decentralized game.
-          <br />
-          Therefore, there is no central server that manages your password.
+          {(locale("description") as string[]).map((paragraph) => (
+            <P key={paragraph}>{paragraph}</P>
+          ))}
         </Typography>
         <br />
         <Typography className={classes.warning}>
-          This key is the only means to recover your password.
-          <br />
-          Never expose the private key to others.
-          <br />
-          Anyone can steal your assets if this key is exposed.
+          {(locale("warning") as string[]).map((paragraph) => (
+            <P key={paragraph}>{paragraph}</P>
+          ))}
         </Typography>
         <div className={classes.privateKeyContainer}>
-          <h3 className={classes.privateKeyText}>Your Private key</h3>
+          <h3 className={classes.privateKeyText}>{locale("privateKeyText")}</h3>
           <TextField
             id="created-private-key"
             variant="outlined"
@@ -59,7 +62,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
               clipboard.writeText(accountStore.privateKey);
             }}
           >
-            Copy
+            {locale("copy")}
           </Button>
         </div>
         <Button
@@ -72,7 +75,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             routerStore.push("/");
           }}
         >
-          Done
+          {locale("done")}
         </Button>
       </div>
     );

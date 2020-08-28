@@ -8,10 +8,14 @@ import "../../styles/layout/layout.scss";
 import useStores from "../../../hooks/useStores";
 import { observer } from "mobx-react";
 
+import { useLocale } from "../../i18n";
+
 export interface ILayoutProps {}
 
-export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
+export const Layout: React.FC<ILayoutProps> = ({ children }) => {
   const { routerStore } = useStores();
+
+  const locale = useLocale("menu");
 
   return (
     <div className="layout">
@@ -25,7 +29,7 @@ export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
                   shell.openExternal("https://forum.nine-chronicles.com");
                 }}
               >
-                Forum
+                {locale("forum")}
               </Button>
             </li>
             <li>
@@ -35,7 +39,7 @@ export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
                   shell.openExternal("https://discord.gg/planetarium");
                 }}
               >
-                Discord
+                {locale("discord")}
               </Button>
             </li>
             <li>
@@ -55,4 +59,4 @@ export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
       </div>
     </div>
   );
-});
+};
