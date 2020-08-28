@@ -12,4 +12,5 @@ export interface IElectronStore {
   NoTrustedStateValidators: boolean;
   BlockchainStoreDirParent: string;
   BlockchainStoreDirName: string;
+  MPT: boolean;
 }

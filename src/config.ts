@@ -74,6 +74,10 @@ export const electronStore = new Store<IElectronStore>({
       type: "string",
       default: "9c",
     },
+    MPT: {
+      type: "boolean",
+      default: "false",
+    },
   },
 });
 
