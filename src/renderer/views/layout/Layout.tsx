@@ -12,16 +12,6 @@ export interface ILayoutProps {}
 
 export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
   const { routerStore } = useStores();
-  const [isSettingsPage, setSettingPageState] = React.useState(false);
-
-  React.useEffect(() => {
-    if (routerStore.location.pathname === "/config") {
-      setSettingPageState(true);
-    } else {
-      setSettingPageState(false);
-    }
-    console.log(isSettingsPage);
-  }, [routerStore.location.pathname]);
 
   return (
     <div className="layout">
@@ -51,7 +41,7 @@ export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
             <li>
               <Button
                 startIcon={<SettingsIcon />}
-                disabled={isSettingsPage}
+                disabled={routerStore.location.pathname === "/config"}
                 onClick={() => {
                   routerStore.push("/config");
                 }}
