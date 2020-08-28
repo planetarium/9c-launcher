@@ -1,0 +1,317 @@
+{
+  "intro": {
+    "loading": {
+      "en": "now loading..."
+    }
+  },
+  "menu": {
+    "forum": {
+      "en": "Forum"
+    },
+    "discord": {
+      "en": "Discord"
+    }
+  },
+  "main": {
+    "title": {
+      "en": "Welcome to nine chronicles!",
+      "ko": "나인크로니클에 오신 걸 환영합니다!"
+    },
+    "description": {
+      "en": [
+        "It is a fantasy world on the blockchain.",
+        "To start the game, you need to create your account."
+      ],
+      "ko": [
+        "블럭체인 위의 판타지 세계입니다.",
+        "게임을 시작하기 전에, 계정 생성이 필요합니다"
+      ]
+    },
+    "createAccount": {
+      "en": "Create Account",
+      "ko": "계정 만들기"
+    }
+  },
+  "login": {
+    "clearCache": {
+      "en": "CLEAR CACHE",
+      "ko": "캐시 지우기"
+    },
+    "ID": {
+      "en": "ID",
+      "ko": "아이디"
+    },
+    "password": {
+      "en": "Password",
+      "ko": "비밀번호"
+    },
+    "login": {
+      "en": "Login",
+      "ko": "로그인"
+    },
+    "forgotPassword": {
+      "en": "Forgot password?",
+      "ko": "비밀번호 찾기"
+    }
+  },
+  "mining": {
+    "title": {
+      "en": "Do you want to turn mining on?",
+      "ko": "채굴 기능이 필요하시나요?"
+    },
+    "description": {
+      "en": "Nine Chronicles pursues an in-game economy that users create together.You can produce gold just by playing games. Instead, you will contribute your computer resources to the operation of NineChronicles.",
+      "ko": "Nine Chronicles는 사용자가 함께 만드는 게임 내 경제를 추구합니다. 게임을 하는 것만으로도 자원을 받을 수 있지만 Nine Chronicles의 운영에 컴퓨터 자원을 기부 할 것입니다."
+    },
+    "requirement": {
+      "en": [
+        "REQUIRE:",
+        "Requires a 64-bit processor and operating system",
+        "Processor: Quad core CPU 3.0 GHz",
+        " Memory: 16 GB RAM"
+      ],
+      "ko": [
+        "요구사양:",
+        "64비트 프로세서와 운영체제",
+        "프로세서: 쿼드코어 CPU 3.0 GHz",
+        " 메모리: 16 GB RAM"
+      ]
+    },
+    "off": {
+      "en": "OFF",
+      "ko": "끄기"
+    },
+    "on": {
+      "en": "ON",
+      "ko": "켜기"
+    }
+  },
+  "lobby": {
+    "verifying": {
+      "en": "Verifying...",
+      "ko": "확인 중"
+    },
+    "preloading": {
+      "en": "Preloading...",
+      "ko": "프리로드 중"
+    },
+    "nowRunning": {
+      "en": "Now Running...",
+      "ko": "지금 실행하는 중"
+    },
+    "startGame": {
+      "en": "Start Game",
+      "ko": "게임 시작하기"
+    },
+    "activation": {
+      "en": "Activation",
+      "ko": "활성화"
+    },
+    "activationKey": {
+      "en": "Activation Key"
+    }
+  },
+  "preload": {
+    "title": {
+      "en": [
+        "Receiving data from other users.",
+        "Let's watch teaser and contents!"
+      ]
+    },
+    "blockExplorer": {
+      "en": "Block Explorer",
+      "ko": "블럭 탐색기"
+    },
+    "playerGuide": {
+      "en": "Nine Chronicles Player Guide",
+      "ko": "Nine Chronicles 플레이어 가이드"
+    }
+  },
+  "errorRelaunch": {
+    "title": {
+      "en": "Something went wrong.",
+      "ko": "무언가 잘못 되었습니다"
+    },
+    "subtitle": {
+      "en": "Please follow step below.",
+      "ko": "아래 절차를 따라해주세요."
+    },
+    "steps": {
+      "en": ["Relaunch “Nine Chornicles”", "Login once again"],
+      "ko": ["나인 크로니클을 재실행하고", "다시 로그인 하세요"]
+    },
+    "relaunch": {
+      "en": "Relaunch",
+      "ko": "재실행하기"
+    }
+  },
+  "errorReinstall": {
+    "title": {
+      "en": "Something went wrong."
+    },
+    "subtitle": {
+      "en": "Please follow step below."
+    },
+    "steps": {
+      "en": [
+        "Press close button",
+        "Delete “Nine Chornicles”",
+        "Install “Nine Chornicles”"
+      ]
+    },
+    "note": {
+      "en": "If you met this page again after reinstall, please contact us via&nbsp;"
+    },
+    "discord": {
+      "en": "Discord"
+    },
+    "close": {
+      "en": "Close"
+    }
+  },
+  "account": {
+    "create": {
+      "en": "create key"
+    },
+    "revoke": {
+      "en": "revoke key"
+    },
+    "reset": {
+      "en": "reset key"
+    },
+    "back": {
+      "en": "back to the home"
+    }
+  },
+  "createAccount": {
+    "info": {
+      "en": ["Please set the password to", "complete account creation."]
+    },
+    "password": {
+      "en": "Password"
+    },
+    "confirm": {
+      "en": "Password (Confirm)"
+    },
+    "done": {
+      "en": "Done"
+    }
+  },
+  "copyPrivateKey": {
+    "title": {
+      "en": [
+        "Almost done!",
+        "Please copy and store",
+        "your private key in a safe place."
+      ]
+    },
+    "description": {
+      "en": [
+        "Nine Chronicles is a fully decentralized game.",
+        "Therefore, there is no central server that manages your password."
+      ]
+    },
+    "warning": {
+      "en": [
+        "This key is the only means to recover your password.",
+        "Never expose the private key to others.",
+        "Anyone can steal your assets if this key is exposed."
+      ]
+    },
+    "privateKeyText": {
+      "en": "Your Private key"
+    },
+    "copy": {
+      "en": "Copy"
+    },
+    "done": {
+      "en": "Done"
+    }
+  },
+  "revokeAccount": {
+    "back": {
+      "en": "Back"
+    },
+    "title": {
+      "en": "Revoke your account"
+    },
+    "description": {
+      "en": [
+        "Delete all records related to your account.",
+
+        "Nine Chronicles is a fully decentralized game. Therefore, there is no central server that manages your password.",
+        "If you don’t remember your private key, you must create a new account to play the game from the beginning.",
+
+        "Private keys can be found in the Settings menu of the game, so make sure to copy them separately next time and keep them in a safe place."
+      ]
+    },
+    "revoke": {
+      "en": "revoke key"
+    }
+  },
+  "inputPrivateKey": {
+    "title": {
+      "en": "Enter your private key to reset your password"
+    },
+    "label": {
+      "en": "Private Key"
+    },
+    "enter": {
+      "en": "Enter"
+    },
+    "forgotPrivateKey": {
+      "en": "Forgot private key?"
+    }
+  },
+  "registerPrivateKey": {
+    "title": {
+      "en": "Please reset the password."
+    },
+    "password": {
+      "en": "Password"
+    },
+    "retypePassword": {
+      "en": "Retype Password"
+    },
+    "notEqual": {
+      "en": "Password is not equal."
+    },
+    "done": {
+      "en": "Done"
+    }
+  },
+  "configuration": {
+    "title": {
+      "en": "Settings"
+    },
+    "save": {
+      "en": "Save"
+    }
+  },
+  "preloadProgress": {
+    "Validating Snapshot": {
+      "en": "Validating Snapshot"
+    },
+    "Downloading Snapshot": {
+      "en": "Downloading Snapshot"
+    },
+    "Extracting Snapshot": {
+      "en": "Extracting Snapshot"
+    },
+    "Verifying block headers": {
+      "en": "Verifying block headers"
+    },
+    "Downloading block hashes": {
+      "en": "Downloading block hashes"
+    },
+    "Downloading blocks": {
+      "en": "Downloading blocks"
+    },
+    "Downloading states": {
+      "en": "Downloading states"
+    },
+    "Executing actions": {
+      "en": "Executing actions"
+    }
+  }
+}
