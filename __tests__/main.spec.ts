@@ -4,6 +4,7 @@ import { Application } from "spectron";
 import electron from "electron";
 
 import "dotenv/config";
+import { expect } from "chai";
 
 // @ts-ignore
 process.env.ELECTRON_IS_DEV = 0;
@@ -21,8 +22,6 @@ describe("test", function () {
       path: (electron as unknown) as string,
       args: [path.join(__dirname, "..", "dist")],
     });
-    // @ts-ignore
-    chaiAsPromised.transferPromiseness = app.transferPromiseness;
     return app.start();
   });
 
@@ -55,26 +54,14 @@ describe("test", function () {
     const timeout = 1800000;
     this.timeout(timeout);
 
-    let submitButton = await app.client.$("body");
-
-    await app.client.waitUntil(
-      async function () {
-        try {
-          submitButton = await app.client.$("#start-game");
-        } catch {
-          return false;
-        }
-        const text = await submitButton.getText();
-        return text === "Start Game";
-      },
-      { timeout, timeoutMsg: "실행 버튼이 나오지 않았습니다." }
-    );
-    await submitButton.click();
+    const submitButton = await app.client.$("#start-game");
+    const text = await submitButton.getText();
+    expect(text).to.equal("NOW RUNNING...");
   });
 
   after(function () {
     if (app?.isRunning()) {
-      app.mainProcess.exit(0);
+      return app.mainProcess.exit(0);
     }
   });
 });
