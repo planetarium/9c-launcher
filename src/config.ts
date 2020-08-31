@@ -76,7 +76,7 @@ export const electronStore = new Store<IElectronStore>({
     },
     Locale: {
       type: "string",
-      default: app.getLocale().slice(0, 2),
+      default: app.getLocale(),
     },
   },
 });
