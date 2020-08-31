@@ -5,6 +5,10 @@ const errorViewStyle = makeStyles({
     color: "#FFFFFF",
     padding: "24px",
   },
+  code: {
+    fontFamily: "Consolas, monospace",
+    overflowWrap: "anywhere",
+  },
   title: {
     fontWeight: "bold",
     fontSize: "1.5em",
