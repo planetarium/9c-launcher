@@ -7,10 +7,6 @@ import { BLOCKCHAIN_STORE_PATH } from "../../../config";
 
 const ErrorNoPermissionView: React.FC<{}> = () => {
   const classes = errorViewStyle();
-  const handleRelaunch = React.useCallback(() => {
-    remote.app.relaunch();
-    remote.app.exit();
-  }, []);
 
   React.useEffect(() => {
     mixpanel.track("Launcher/ErrorNoPerm");
@@ -28,32 +24,13 @@ const ErrorNoPermissionView: React.FC<{}> = () => {
         Please change chain directory by following steps below.
       </Typography>
       <ol>
+        <li>Open SETTINGS page by clicking the button at the right side.</li>
         <li>
-          Open config.json file using your text editor. (e.g. Notepad, TextEdit)
-          The file is located at:
-          <br />
-          <code className={classes.code}>
-            {process.platform === "darwin"
-              ? `${remote.app.getAppPath()}/Contents/Resources/app/config.json`
-              : `${remote.app.getAppPath()}\\resources\\app\\config.json`}
-          </code>
-        </li>
-        <li>
-          Modify{" "}
-          <code className={classes.code}>"BlockchainStoreDirParent"</code>{" "}
-          field. If the field does not exists, please create one.
+          Modify "Root chain store path" and "Chain store directory name" then
+          click OK.
         </li>
         <li>Restart launcher.</li>
       </ol>
-      <Button
-        className={classes.button}
-        color="primary"
-        variant="contained"
-        fullWidth
-        onClick={handleRelaunch}
-      >
-        Relaunch
-      </Button>
     </Container>
   );
 };
