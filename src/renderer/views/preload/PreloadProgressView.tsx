@@ -1,4 +1,5 @@
 import React from "react";
+import { observer } from "mobx-react";
 import mixpanel from "mixpanel-browser";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import useStores from "../../../hooks/useStores";
@@ -11,7 +12,7 @@ import {
 import preloadProgressViewStyle from "./PreloadProgressView.style";
 import { electronStore } from "../../../config";
 
-const PreloadProgressView = () => {
+const PreloadProgressView = observer(() => {
   const { accountStore, routerStore, standaloneStore } = useStores();
   const classes = preloadProgressViewStyle();
   const {
@@ -206,7 +207,7 @@ const PreloadProgressView = () => {
       )}
     </Container>
   );
-};
+});
 
 const statusMessage = [
   "Validating Snapshot",
