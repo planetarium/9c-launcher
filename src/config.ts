@@ -103,7 +103,7 @@ const getLocalApplicationDataPath = (): string => {
   }
 };
 
-const blockchainStoreDirParent =
+export const blockchainStoreDirParent =
   electronStore.get("BlockchainStoreDirParent") === ""
     ? path.join(getLocalApplicationDataPath(), "planetarium")
     : electronStore.get("BlockchainStoreDirParent");

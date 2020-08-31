@@ -1,9 +1,18 @@
 import { FormEvent } from "react";
 
-interface FormElement extends HTMLFormElement {
+interface LoginFormElement extends HTMLFormElement {
   password: HTMLInputElement;
 }
 
-export interface LoginFormEvent extends React.FormEvent<FormElement> {
-  target: FormElement;
+interface RootChainFormElement extends HTMLFormElement {
+  rootchain: HTMLInputElement;
+  chain: HTMLInputElement;
+}
+
+export interface LoginFormEvent extends React.FormEvent<LoginFormElement> {
+  target: LoginFormElement;
+}
+
+export interface RootChainFormEvent extends React.FormEvent<LoginFormElement> {
+  target: RootChainFormElement;
 }
