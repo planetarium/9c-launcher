@@ -44,7 +44,7 @@
     "pack-all:electron-builder": "run-script-os",
     "pack-all:electron-builder:windows": "npm run before-pack && npm run build-prod && npx electron-builder --windows",
     "pack-all:electron-builder:darwin": "npm run before-pack && npm run build-prod && npx electron-builder --mac",
-    "test": "mocha --require ts-node/register __tests__/**/*.spec.ts"
+    "test": "mocha --require ts-node/register __tests__/**/*.spec.ts --exit"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
