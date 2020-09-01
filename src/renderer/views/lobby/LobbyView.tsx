@@ -109,7 +109,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
           className={classes.activation}
           type="submit"
         >
-          {locale("activation")}
+          {locale("Activation")}
         </ButtonOrigin>
       </form>
     );
