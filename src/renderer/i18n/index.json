@@ -14,54 +14,41 @@
   },
   "main": {
     "title": {
-      "en": "Welcome to nine chronicles!",
-      "ko": "나인크로니클에 오신 걸 환영합니다!"
+      "en": "Welcome to nine chronicles!"
     },
     "description": {
       "en": [
         "It is a fantasy world on the blockchain.",
         "To start the game, you need to create your account."
-      ],
-      "ko": [
-        "블럭체인 위의 판타지 세계입니다.",
-        "게임을 시작하기 전에, 계정 생성이 필요합니다"
       ]
     },
     "createAccount": {
-      "en": "Create Account",
-      "ko": "계정 만들기"
+      "en": "Create Account"
     }
   },
   "login": {
     "clearCache": {
-      "en": "CLEAR CACHE",
-      "ko": "캐시 지우기"
+      "en": "CLEAR CACHE"
     },
     "ID": {
-      "en": "ID",
-      "ko": "아이디"
+      "en": "ID"
     },
     "password": {
-      "en": "Password",
-      "ko": "비밀번호"
+      "en": "Password"
     },
     "login": {
-      "en": "Login",
-      "ko": "로그인"
+      "en": "Login"
     },
     "forgotPassword": {
-      "en": "Forgot password?",
-      "ko": "비밀번호 찾기"
+      "en": "Forgot password?"
     }
   },
   "mining": {
     "title": {
-      "en": "Do you want to turn mining on?",
-      "ko": "채굴 기능이 필요하시나요?"
+      "en": "Do you want to turn mining on?"
     },
     "description": {
-      "en": "Nine Chronicles pursues an in-game economy that users create together.You can produce gold just by playing games. Instead, you will contribute your computer resources to the operation of NineChronicles.",
-      "ko": "Nine Chronicles는 사용자가 함께 만드는 게임 내 경제를 추구합니다. 게임을 하는 것만으로도 자원을 받을 수 있지만 Nine Chronicles의 운영에 컴퓨터 자원을 기부 할 것입니다."
+      "en": "Nine Chronicles pursues an in-game economy that users create together.You can produce gold just by playing games. Instead, you will contribute your computer resources to the operation of NineChronicles."
     },
     "requirement": {
       "en": [
@@ -69,43 +56,30 @@
         "Requires a 64-bit processor and operating system",
         "Processor: Quad core CPU 3.0 GHz",
         " Memory: 16 GB RAM"
-      ],
-      "ko": [
-        "요구사양:",
-        "64비트 프로세서와 운영체제",
-        "프로세서: 쿼드코어 CPU 3.0 GHz",
-        " 메모리: 16 GB RAM"
       ]
     },
     "off": {
-      "en": "OFF",
-      "ko": "끄기"
+      "en": "OFF"
     },
     "on": {
-      "en": "ON",
-      "ko": "켜기"
+      "en": "ON"
     }
   },
   "lobby": {
     "verifying": {
-      "en": "Verifying...",
-      "ko": "확인 중"
+      "en": "Verifying..."
     },
     "preloading": {
-      "en": "Preloading...",
-      "ko": "프리로드 중"
+      "en": "Preloading..."
     },
     "nowRunning": {
-      "en": "Now Running...",
-      "ko": "지금 실행하는 중"
+      "en": "Now Running..."
     },
     "startGame": {
-      "en": "Start Game",
-      "ko": "게임 시작하기"
+      "en": "Start Game"
     },
     "activation": {
-      "en": "Activation",
-      "ko": "활성화"
+      "en": "Activation"
     },
     "activationKey": {
       "en": "Activation Key"
@@ -119,30 +93,24 @@
       ]
     },
     "blockExplorer": {
-      "en": "Block Explorer",
-      "ko": "블럭 탐색기"
+      "en": "Block Explorer"
     },
     "playerGuide": {
-      "en": "Nine Chronicles Player Guide",
-      "ko": "Nine Chronicles 플레이어 가이드"
+      "en": "Nine Chronicles Player Guide"
     }
   },
   "errorRelaunch": {
     "title": {
-      "en": "Something went wrong.",
-      "ko": "무언가 잘못 되었습니다"
+      "en": "Something went wrong."
     },
     "subtitle": {
-      "en": "Please follow step below.",
-      "ko": "아래 절차를 따라해주세요."
+      "en": "Please follow step below."
     },
     "steps": {
-      "en": ["Relaunch “Nine Chornicles”", "Login once again"],
-      "ko": ["나인 크로니클을 재실행하고", "다시 로그인 하세요"]
+      "en": ["Relaunch “Nine Chornicles”", "Login once again"]
     },
     "relaunch": {
-      "en": "Relaunch",
-      "ko": "재실행하기"
+      "en": "Relaunch"
     }
   },
   "errorReinstall": {
