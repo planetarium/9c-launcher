@@ -26,9 +26,11 @@ const ErrorRelaunchView: React.FC<{}> = () => {
   return (
     <Container className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("title")}
+        {locale("Something went wrong.")}
       </Typography>
-      <Typography variant="subtitle1">{locale("subtitle")}</Typography>
+      <Typography variant="subtitle1">
+        {locale("Please follow step below.")}
+      </Typography>
       <ol>
         {steps.map((step) => (
           <li key={step}>{step}</li>
@@ -41,7 +43,7 @@ const ErrorRelaunchView: React.FC<{}> = () => {
         fullWidth
         onClick={handleRelaunch}
       >
-        {locale("relaunch")}
+        {locale("Relaunch")}
       </Button>
     </Container>
   );

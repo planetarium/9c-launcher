@@ -34,7 +34,7 @@ const ConfigurationView = observer(() => {
       </Button>
       <Container>
         <Typography variant="h1" gutterBottom className={classes.title}>
-          {locale("title")}
+          {locale("Settings")}
         </Typography>
         <form onSubmit={handleSubmit}>
           <FormLabel>Root chain store path</FormLabel>
@@ -57,7 +57,7 @@ const ConfigurationView = observer(() => {
             color="primary"
             variant="contained"
           >
-            {locale("save")}
+            {locale("Save")}
           </Button>
         </form>
       </Container>

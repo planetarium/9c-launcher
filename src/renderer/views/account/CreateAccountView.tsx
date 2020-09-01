@@ -37,10 +37,6 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
 
     const locale = useLocale("createAccount");
 
-    const info = locale("info");
-    if (typeof info === "string")
-      throw Error("createAccount.info is not array in src/i18n/index.json");
-
     const classes = createAccountViewStyle();
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +74,9 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
     return (
       <div className={`create-account ${classes.root}`}>
         <Typography className={classes.info}>
-          {info.map((paragraph) => (
+          {(locale(
+            "Please set the password to complete account creation."
+          ) as string[]).map((paragraph) => (
             <P key={paragraph}>{paragraph}</P>
           ))}
         </Typography>
@@ -86,7 +84,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
           <FormControl fullWidth>
             <TextField
               id="password-input"
-              label={locale("password")}
+              label={locale("Password")}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -98,7 +96,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
           <FormControl fullWidth>
             <TextField
               id="password-confirm-input"
-              label={locale("confirm")}
+              label={locale("Confirm")}
               error={password !== passwordConfirm}
               variant="outlined"
               InputLabelProps={{
@@ -115,7 +113,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
             className={classes.submit}
             variant="contained"
           >
-            {locale("done")}
+            {locale("Done")}
           </Button>
         </form>
       </div>

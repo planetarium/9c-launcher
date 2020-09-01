@@ -29,7 +29,7 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
                   shell.openExternal("https://forum.nine-chronicles.com");
                 }}
               >
-                {locale("forum")}
+                {locale("Forum")}
               </Button>
             </li>
             <li>
@@ -39,7 +39,7 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
                   shell.openExternal("https://discord.gg/planetarium");
                 }}
               >
-                {locale("discord")}
+                {locale("Discord")}
               </Button>
             </li>
             <li>
@@ -50,7 +50,7 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
                   routerStore.push("/config");
                 }}
               >
-                Settings
+                {locale("Settings")}
               </Button>
             </li>
           </ul>

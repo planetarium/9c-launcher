@@ -42,7 +42,9 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
           ))}
         </Typography>
         <div className={classes.privateKeyContainer}>
-          <h3 className={classes.privateKeyText}>{locale("privateKeyText")}</h3>
+          <h3 className={classes.privateKeyText}>
+            {locale("Your Private key")}
+          </h3>
           <TextField
             id="created-private-key"
             variant="outlined"
@@ -62,7 +64,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
               clipboard.writeText(accountStore.privateKey);
             }}
           >
-            {locale("copy")}
+            {locale("Copy")}
           </Button>
         </div>
         <Button
@@ -75,7 +77,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             routerStore.push("/");
           }}
         >
-          {locale("done")}
+          {locale("Done")}
         </Button>
       </div>
     );

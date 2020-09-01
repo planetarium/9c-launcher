@@ -18,28 +18,28 @@ const AccountView: React.FC<IStoreContainer> = observer(
             routerStore.push("/account/create");
           }}
         >
-          {locale("create")}
+          {locale("create key")}
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/revoke");
           }}
         >
-          {locale("revoke")}
+          {locale("revoke key")}
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/reset/input/private-key");
           }}
         >
-          {locale("reset")}
+          {locale("reset key")}
         </button>
         <button
           onClick={() => {
             routerStore.push("/");
           }}
         >
-          {locale("back")}
+          {locale("back to the home")}
         </button>
       </div>
     );

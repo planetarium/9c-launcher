@@ -48,18 +48,21 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
 
     return (
       <>
-        <p>{locale("title")}</p>
-        <TextField label="Private Key" onChange={privateKeyChangeHandle} />
+        <p>{locale("Enter your private key to reset your password")}</p>
+        <TextField
+          label={locale("Private Key")}
+          onChange={privateKeyChangeHandle}
+        />
         <br />
         <Button
           color={IsPrivateKeyValid ? "primary" : "secondary"}
           onClick={handleSubmit}
         >
-          {locale("enter")}
+          {locale("Enter")}
         </Button>
         <br />
         {/* FIXME: https://github.com/planetarium/9c-launcher/pull/109#discussion_r448705979 */}
-        <a href="/account/revoke">{locale("forgotPrivateKey")}</a>
+        <a href="/account/revoke">{locale("Forgot private key?")}</a>
       </>
     );
   })

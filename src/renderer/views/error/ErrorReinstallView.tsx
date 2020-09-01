@@ -25,23 +25,27 @@ const ErrorReinstallView: React.FC<{}> = () => {
   return (
     <Container className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("title")}
+        {locale("Something went wrong.")}
       </Typography>
-      <Typography variant="subtitle1">{locale("subtitle")}</Typography>
+      <Typography variant="subtitle1">
+        {locale("Please follow step below.")}
+      </Typography>
       <ol>
         {steps.map((step) => (
           <li key={step}>{step}</li>
         ))}
       </ol>
       <Typography>
-        If you met this page again after reinstall, please contact us via&nbsp;
+        {`${locale(
+          "If you met this page again after reinstall, please contact us via"
+        )} `}
         <a
           className={classes.link}
           onClick={() => {
             shell.openExternal("https://forum.nine-chronicles.com");
           }}
         >
-          {locale("discord")}
+          {locale("Discord")}
         </a>
         .
       </Typography>
@@ -52,7 +56,7 @@ const ErrorReinstallView: React.FC<{}> = () => {
         fullWidth
         onClick={handleExit}
       >
-        {locale("close")}
+        {locale("Close")}
       </Button>
     </Container>
   );

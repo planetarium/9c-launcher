@@ -198,8 +198,8 @@ const PreloadProgressView = observer(() => {
       ) : isPreloadEnded ? (
         <Typography className={classes.text}>
           {electronStore.get("PeerStrings").length > 0
-            ? "Preload Completed."
-            : "No Peers Were Given."}
+            ? locale("Preload Completed.")
+            : locale("No Peers Were Given.")}
         </Typography>
       ) : (
         <>

@@ -1,19 +1,22 @@
 {
   "intro": {
-    "loading": {
+    "now loading...": {
       "en": "now loading..."
     }
   },
   "menu": {
-    "forum": {
+    "Forum": {
       "en": "Forum"
     },
-    "discord": {
+    "Discord": {
       "en": "Discord"
+    },
+    "Settings": {
+      "en": "Settings"
     }
   },
   "main": {
-    "title": {
+    "Welcome to nine chronicles!": {
       "en": "Welcome to nine chronicles!"
     },
     "description": {
@@ -22,29 +25,29 @@
         "To start the game, you need to create your account."
       ]
     },
-    "createAccount": {
+    "Create Account": {
       "en": "Create Account"
     }
   },
   "login": {
-    "clearCache": {
+    "CLEAR CACHE": {
       "en": "CLEAR CACHE"
     },
     "ID": {
       "en": "ID"
     },
-    "password": {
+    "Password": {
       "en": "Password"
     },
-    "login": {
+    "Login": {
       "en": "Login"
     },
-    "forgotPassword": {
+    "Forgot password?": {
       "en": "Forgot password?"
     }
   },
   "mining": {
-    "title": {
+    "Do you want to turn mining on?": {
       "en": "Do you want to turn mining on?"
     },
     "description": {
@@ -58,66 +61,66 @@
         " Memory: 16 GB RAM"
       ]
     },
-    "off": {
+    "OFF": {
       "en": "OFF"
     },
-    "on": {
+    "ON": {
       "en": "ON"
     }
   },
   "lobby": {
-    "verifying": {
+    "Verifying...": {
       "en": "Verifying..."
     },
-    "preloading": {
+    "Preloading...": {
       "en": "Preloading..."
     },
-    "nowRunning": {
+    "Now Running...": {
       "en": "Now Running..."
     },
-    "startGame": {
+    "Start Game": {
       "en": "Start Game"
     },
-    "activation": {
+    "Activation": {
       "en": "Activation"
     },
-    "activationKey": {
+    "Activation Key": {
       "en": "Activation Key"
     }
   },
   "preload": {
-    "title": {
+    "Receiving data from other users. Let's watch teaser and contents!": {
       "en": [
         "Receiving data from other users.",
         "Let's watch teaser and contents!"
       ]
     },
-    "blockExplorer": {
+    "Block Explorer": {
       "en": "Block Explorer"
     },
-    "playerGuide": {
+    "Nine Chronicles Player Guide": {
       "en": "Nine Chronicles Player Guide"
     }
   },
   "errorRelaunch": {
-    "title": {
+    "Something went wrong.": {
       "en": "Something went wrong."
     },
-    "subtitle": {
+    "Please follow step below.": {
       "en": "Please follow step below."
     },
     "steps": {
       "en": ["Relaunch “Nine Chornicles”", "Login once again"]
     },
-    "relaunch": {
+    "Relaunch": {
       "en": "Relaunch"
     }
   },
   "errorReinstall": {
-    "title": {
+    "Something went wrong.": {
       "en": "Something went wrong."
     },
-    "subtitle": {
+    "Please follow step below.": {
       "en": "Please follow step below."
     },
     "steps": {
@@ -127,41 +130,41 @@
         "Install “Nine Chornicles”"
       ]
     },
-    "note": {
-      "en": "If you met this page again after reinstall, please contact us via&nbsp;"
+    "If you met this page again after reinstall, please contact us via": {
+      "en": "If you met this page again after reinstall, please contact us via"
     },
-    "discord": {
+    "Discord": {
       "en": "Discord"
     },
-    "close": {
+    "Close": {
       "en": "Close"
     }
   },
   "account": {
-    "create": {
+    "create key": {
       "en": "create key"
     },
-    "revoke": {
+    "revoke key": {
       "en": "revoke key"
     },
-    "reset": {
+    "reset key": {
       "en": "reset key"
     },
-    "back": {
+    "back to the home": {
       "en": "back to the home"
     }
   },
   "createAccount": {
-    "info": {
+    "Please set the password to complete account creation.": {
       "en": ["Please set the password to", "complete account creation."]
     },
-    "password": {
+    "Password": {
       "en": "Password"
     },
-    "confirm": {
+    "Confirm": {
       "en": "Password (Confirm)"
     },
-    "done": {
+    "Done": {
       "en": "Done"
     }
   },
@@ -186,21 +189,21 @@
         "Anyone can steal your assets if this key is exposed."
       ]
     },
-    "privateKeyText": {
+    "Your Private key": {
       "en": "Your Private key"
     },
-    "copy": {
+    "Copy": {
       "en": "Copy"
     },
-    "done": {
+    "Done": {
       "en": "Done"
     }
   },
   "revokeAccount": {
-    "back": {
+    "Back": {
       "en": "Back"
     },
-    "title": {
+    "Revoke your account": {
       "en": "Revoke your account"
     },
     "description": {
@@ -213,50 +216,62 @@
         "Private keys can be found in the Settings menu of the game, so make sure to copy them separately next time and keep them in a safe place."
       ]
     },
-    "revoke": {
+    "revoke key": {
       "en": "revoke key"
     }
   },
   "inputPrivateKey": {
-    "title": {
+    "Enter your private key to reset your password": {
       "en": "Enter your private key to reset your password"
     },
-    "label": {
+    "Private Key": {
       "en": "Private Key"
     },
-    "enter": {
+    "Enter": {
       "en": "Enter"
     },
-    "forgotPrivateKey": {
+    "Forgot private key?": {
       "en": "Forgot private key?"
     }
   },
   "registerPrivateKey": {
-    "title": {
+    "Please reset the password.": {
       "en": "Please reset the password."
     },
-    "password": {
+    "Password": {
       "en": "Password"
     },
-    "retypePassword": {
+    "Retype Password": {
       "en": "Retype Password"
     },
-    "notEqual": {
+    "Password is not equal.": {
       "en": "Password is not equal."
     },
-    "done": {
+    "Done": {
       "en": "Done"
     }
   },
   "configuration": {
-    "title": {
+    "Settings": {
       "en": "Settings"
     },
-    "save": {
+    "Save": {
       "en": "Save"
+    },
+    "Root chain store path": {
+      "en": "Root chain store path"
+    },
+    "Chain store directory name": {
+      "en": "Chain store directory name"
     }
   },
   "preloadProgress": {
+    "Preload Completed.": {
+      "en": "Preload Completed."
+    },
+    "No Peers Were Given.": {
+      "en": "No Peers Were Given."
+    },
     "Validating Snapshot": {
       "en": "Validating Snapshot"
     },

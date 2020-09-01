@@ -33,7 +33,9 @@ const MiningView = observer(
 
     return (
       <Container className={classes.root}>
-        <h3 className={classes.title}>{locale("title")}</h3>
+        <h3 className={classes.title}>
+          {locale("Do you want to turn mining on?")}
+        </h3>
         <img className={classes.jade} src={jade} />
         <p>{locale("description")}</p>
         {requirement.map((paragraph) => (
@@ -51,7 +53,7 @@ const MiningView = observer(
               setMining(false);
             }}
           >
-            {locale("off")}
+            {locale("OFF")}
           </Button>
           <Button
             className={`${classes.button} ${classes.buttonRight}`}
@@ -61,7 +63,7 @@ const MiningView = observer(
               setMining(true);
             }}
           >
-            {locale("on")}
+            {locale("ON")}
           </Button>
         </Box>
       </Container>

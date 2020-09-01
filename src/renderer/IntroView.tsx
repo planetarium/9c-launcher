@@ -31,7 +31,7 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
     }
   }, [loading, data]);
 
-  return <div>{locale("loading")}</div>;
+  return <div>{locale("now loading...")}</div>;
 });
 
 export default inject("accountStore", "routerStore")(IntroView);

@@ -81,7 +81,7 @@ const LoginView = observer(
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
         <ClearCacheButton className={classes.cacheButton}>
-          {locale("clearCache")}
+          {locale("CLEAR CACHE")}
         </ClearCacheButton>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
@@ -94,7 +94,7 @@ const LoginView = observer(
               />
             </Grid>
             <Grid item xs={12}>
-              <InputLabel>{locale("password")}</InputLabel>
+              <InputLabel>{locale("Password")}</InputLabel>
               <TextField
                 type="password"
                 name="password"
@@ -112,14 +112,14 @@ const LoginView = observer(
               variant="contained"
               color="primary"
             >
-              {locale("login")}
+              {locale("Login")}
             </Button>
             <Link
               className={classes.revokeLink}
               href="#"
               onClick={handleRevokeAccount}
             >
-              {locale("forgotPassword")}
+              {locale("Forgot password?")}
             </Link>
           </Box>
         </form>

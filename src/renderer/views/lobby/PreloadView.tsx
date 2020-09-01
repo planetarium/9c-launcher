@@ -37,11 +37,6 @@ const PreloadView = observer((props: IStoreContainer) => {
 
   const locale = useLocale("preload");
 
-  const title = locale("title");
-
-  if (typeof title === "string")
-    throw Error("prelaod.title is not array in src/i18n/index.json");
-
   const videoOpts: IYoutubeOption = {
     width: "330",
     height: "220",
@@ -76,7 +71,9 @@ const PreloadView = observer((props: IStoreContainer) => {
   return (
     <Container className={classes.root}>
       <Headline paragraph>
-        {title.map((paragraph) => (
+        {(locale(
+          "Receiving data from other users. Let's watch teaser and contents!"
+        ) as string[]).map((paragraph) => (
           <P key={paragraph}>{paragraph}</P>
         ))}
       </Headline>
@@ -88,7 +85,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary={locale("blockExplorer")}
+            primary={locale("Block Explorer")}
           />
         </ListItem>
         <ListItem button onClick={handleClickPlayerGuide}>
@@ -97,7 +94,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary={locale("playerGuide")}
+            primary={locale("Nine Chronicles Player Guide")}
           />
         </ListItem>
       </List>

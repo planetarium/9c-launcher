@@ -71,23 +71,23 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
 
     return (
       <>
-        <p>{locale("title")}</p>
+        <p>{locale("Please reset the password.")}</p>
 
         <TextField
-          label={locale("password")}
+          label={locale("Password")}
           type="password"
           onChange={makeHandlePasswordChange(setFirstPassword)}
         />
         <br />
         <TextField
           error={!passwordMatched}
-          label={locale("retypePassword")}
+          label={locale("Retype Password")}
           type="password"
           onChange={makeHandlePasswordChange(setSecondPassword)}
-          helperText={!passwordMatched ? locale("notEqual") : ""}
+          helperText={!passwordMatched ? locale("Password is not equal.") : ""}
         />
         <br />
-        <Button onClick={handleSubmit}>{locale("done")}</Button>
+        <Button onClick={handleSubmit}>{locale("Done")}</Button>
       </>
     );
   })

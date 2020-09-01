@@ -89,7 +89,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   let child: JSX.Element;
 
   if (loading || polling) {
-    child = <p className={classes.verifing}>{locale("verifying")}</p>;
+    child = <p className={classes.verifing}>{locale("Verifying...")}</p>;
   } else if (!standaloneStore.IsPreloadEnded) {
     child = <PreloadWaitingButton />;
   } else if (status?.activationStatus.activated) {
@@ -99,7 +99,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       <form onSubmit={handleActivateSubmit}>
         <TextField
           error={handleIsActivationSuccess()}
-          label={locale("activationKey")}
+          label={locale("Activation Key")}
           onChange={privateKeyChangeHandle}
           fullWidth
         />
@@ -121,7 +121,7 @@ const PreloadWaitingButton = () => {
   const locale = useLocale("lobby");
   return (
     <Button disabled={true} className={lobbyViewStyle().gameStartButton}>
-      {locale("preloading")}
+      {locale("Preloading...")}
     </Button>
   );
 };
@@ -151,8 +151,8 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
       id="start-game"
     >
       {gameStore.isGameStarted
-        ? `${locale("nowRunning")}`
-        : `${locale("startGame")}`}
+        ? `${locale("Now Running...")}`
+        : `${locale("Start Game")}`}
     </Button>
   );
 });

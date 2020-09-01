@@ -22,7 +22,9 @@ const MainView = observer(
     return (
       <Container className={classes.root}>
         <NineChroniclesLogo />
-        <h3 className={classes.title}>{locale("title")}</h3>
+        <h3 className={classes.title}>
+          {locale("Welcome to nine chronicles!")}
+        </h3>
         {description.map((paragraph) => (
           <p key={paragraph} className={classes.body}>
             {paragraph}
@@ -36,7 +38,7 @@ const MainView = observer(
             color="primary"
             className={classes.button}
           >
-            {locale("createAccount")}
+            {locale("Create Account")}
           </Button>
         </Box>
       </Container>
