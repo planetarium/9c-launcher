@@ -1,4 +1,5 @@
 import * as React from "react";
+import { observer } from "mobx-react";
 import {
   Button,
   Container,
@@ -10,8 +11,14 @@ import useStores from "../../../hooks/useStores";
 import { electronStore, blockchainStoreDirParent } from "../../../config";
 import { RootChainFormEvent } from "../../../interfaces/event";
 import configurationViewStyle from "./ConfigurationView.style";
+import { useLocale } from "../../i18n";
 
-const ConfigurationView = () => {
+const ConfigurationView = observer(() => {
+  const { routerStore } = useStores();
+  const locale = useLocale("configuration");
+
+  const classes = configurationViewStyle();
+
   const handleSubmit = (event: RootChainFormEvent) => {
     event.preventDefault();
     const rootChainPath = event.target.rootchain.value;
@@ -20,9 +27,6 @@ const ConfigurationView = () => {
     electronStore.set("BlockchainStoreDirName", chainDir);
   };
 
-  const { routerStore } = useStores();
-  const classes = configurationViewStyle();
-
   return (
     <div className={classes.root}>
       <Button onClick={routerStore.goBack} className={classes.exit}>
@@ -30,7 +34,7 @@ const ConfigurationView = () => {
       </Button>
       <Container>
         <Typography variant="h1" gutterBottom className={classes.title}>
-          Settings
+          {locale("Settings")}
         </Typography>
         <form onSubmit={handleSubmit}>
           <FormLabel>Root chain store path</FormLabel>
@@ -53,7 +57,7 @@ const ConfigurationView = () => {
             color="primary"
             variant="contained"
           >
-            Save
+            {locale("Save")}
           </Button>
         </form>
       </Container>
@@ -61,6 +65,6 @@ const ConfigurationView = () => {
       <br />
     </div>
   );
-};
+});
 
 export default ConfigurationView;

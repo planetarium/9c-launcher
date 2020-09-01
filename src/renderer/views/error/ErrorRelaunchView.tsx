@@ -4,8 +4,17 @@ import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Container, Typography } from "@material-ui/core";
 
+import { useLocale } from "../../i18n";
+
 const ErrorRelaunchView: React.FC<{}> = () => {
   const classes = errorViewStyle();
+
+  const locale = useLocale("errorRelaunch");
+
+  const steps = locale("steps");
+  if (typeof steps === "string")
+    throw Error("errorRelaunch.steps is not array in src/i18n/index.json");
+
   const handleRelaunch = React.useCallback(() => {
     remote.app.relaunch();
     remote.app.exit();
@@ -17,12 +26,15 @@ const ErrorRelaunchView: React.FC<{}> = () => {
   return (
     <Container className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        Something went wrong.
+        {locale("Something went wrong.")}
       </Typography>
-      <Typography variant="subtitle1">Please follow step below.</Typography>
+      <Typography variant="subtitle1">
+        {locale("Please follow step below.")}
+      </Typography>
       <ol>
-        <li>Relaunch &ldquo;Nine Chornicles&rdquo;</li>
-        <li>Login once again</li>
+        {steps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
       </ol>
       <Button
         className={classes.button}
@@ -31,7 +43,7 @@ const ErrorRelaunchView: React.FC<{}> = () => {
         fullWidth
         onClick={handleRelaunch}
       >
-        Relaunch
+        {locale("Relaunch")}
       </Button>
     </Container>
   );

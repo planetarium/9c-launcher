@@ -8,17 +8,29 @@ import { Button, Container, Box } from "@material-ui/core";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import mainViewStyle from "./MainView.style";
 
+import { useLocale } from "../../i18n";
+
 const MainView = observer(
   ({ accountStore, routerStore, gameStore }: IStoreContainer) => {
     const classes = mainViewStyle();
+    const locale = useLocale("main");
+
+    const description = locale("description");
+    if (typeof description === "string")
+      throw Error("main.description is not array in src/i18n/index.json");
+
     return (
       <Container className={classes.root}>
         <NineChroniclesLogo />
-        <h3 className={classes.title}>Welcome to nine chronicles!</h3>
-        <p className={classes.body}>It is a fantasy world on the blockchain.</p>
-        <p className={classes.body}>
-          To start the game, you need to create your account.
-        </p>
+        <h3 className={classes.title}>
+          {locale("Welcome to nine chronicles!")}
+        </h3>
+        {description.map((paragraph) => (
+          <p key={paragraph} className={classes.body}>
+            {paragraph}
+          </p>
+        ))}
+
         <Box className={classes.buttonContainer}>
           <Button
             onClick={() => routerStore.push("/account/create")}
@@ -26,7 +38,7 @@ const MainView = observer(
             color="primary"
             className={classes.button}
           >
-            Create Account
+            {locale("Create Account")}
           </Button>
         </Box>
       </Container>

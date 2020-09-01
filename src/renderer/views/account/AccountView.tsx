@@ -5,8 +5,12 @@ import { Container, InputLabel } from "@material-ui/core";
 import CreateAccountView from "./CreateAccountView";
 import RevokeAccountView from "./RevokeAccountView";
 
+import { useLocale } from "../../i18n";
+
 const AccountView: React.FC<IStoreContainer> = observer(
   ({ accountStore, routerStore }: IStoreContainer) => {
+    const locale = useLocale("account");
+
     return (
       <div>
         <button
@@ -14,28 +18,28 @@ const AccountView: React.FC<IStoreContainer> = observer(
             routerStore.push("/account/create");
           }}
         >
-          create key
+          {locale("create key")}
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/revoke");
           }}
         >
-          revoke key
+          {locale("revoke key")}
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/reset/input/private-key");
           }}
         >
-          reset account
+          {locale("reset key")}
         </button>
         <button
           onClick={() => {
             routerStore.push("/");
           }}
         >
-          back to the home
+          {locale("back to the home")}
         </button>
       </div>
     );

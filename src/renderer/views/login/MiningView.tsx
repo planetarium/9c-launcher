@@ -5,6 +5,8 @@ import { Button, Container, Box } from "@material-ui/core";
 import miningViewStyle from "./MiningView.style";
 import jade from "../../resources/miningJade.png";
 import mixpanel from "mixpanel-browser";
+import { useLocale } from "../../i18n";
+import { P } from "../../styles/styled";
 
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
@@ -23,22 +25,24 @@ const MiningView = observer(
       routerStore.push("/lobby/preload");
     };
 
+    const locale = useLocale("mining");
+
+    const requirement = locale("requirement");
+    if (typeof requirement === "string")
+      throw Error("mining.requirement is not array in src/i18n/index.json");
+
     return (
       <Container className={classes.root}>
-        <h3 className={classes.title}>Do you want to turn mining on?</h3>
+        <h3 className={classes.title}>
+          {locale("Do you want to turn mining on?")}
+        </h3>
         <img className={classes.jade} src={jade} />
-        <p>
-          Nine Chronicles pursues an in-game economy that users create together.
-          You can produce gold just by playing games. Instead, you will
-          contribute your computer resources to the operation of Nine
-          Chronicles.
-        </p>
-        <p className={classes.requirement}>
-          REQUIRE: <br />
-          Requires a 64-bit processor and operating system <br />
-          Processor: Quad core CPU 3.0 GHz <br />
-          Memory: 16 GB RAM
-        </p>
+        <p>{locale("description")}</p>
+        {requirement.map((paragraph) => (
+          <P key={paragraph} className={classes.requirement}>
+            {paragraph}
+          </P>
+        ))}
         <Box className={classes.buttonContainer}>
           <Button
             className={`${classes.button} ${classes.buttonLeft}`}
@@ -49,7 +53,7 @@ const MiningView = observer(
               setMining(false);
             }}
           >
-            OFF
+            {locale("OFF")}
           </Button>
           <Button
             className={`${classes.button} ${classes.buttonRight}`}
@@ -59,7 +63,7 @@ const MiningView = observer(
               setMining(true);
             }}
           >
-            ON
+            {locale("ON")}
           </Button>
         </Box>
       </Container>

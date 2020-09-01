@@ -74,6 +74,10 @@ export const electronStore = new Store<IElectronStore>({
       type: "string",
       default: "9c",
     },
+    Locale: {
+      type: "string",
+      default: app.getLocale(),
+    },
   },
 });
 

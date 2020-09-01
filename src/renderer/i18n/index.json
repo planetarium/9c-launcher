@@ -1,0 +1,300 @@
+{
+  "intro": {
+    "now loading...": {
+      "en": "now loading..."
+    }
+  },
+  "menu": {
+    "Forum": {
+      "en": "Forum"
+    },
+    "Discord": {
+      "en": "Discord"
+    },
+    "Settings": {
+      "en": "Settings"
+    }
+  },
+  "main": {
+    "Welcome to nine chronicles!": {
+      "en": "Welcome to nine chronicles!"
+    },
+    "description": {
+      "en": [
+        "It is a fantasy world on the blockchain.",
+        "To start the game, you need to create your account."
+      ]
+    },
+    "Create Account": {
+      "en": "Create Account"
+    }
+  },
+  "login": {
+    "CLEAR CACHE": {
+      "en": "CLEAR CACHE"
+    },
+    "ID": {
+      "en": "ID"
+    },
+    "Password": {
+      "en": "Password"
+    },
+    "Login": {
+      "en": "Login"
+    },
+    "Forgot password?": {
+      "en": "Forgot password?"
+    }
+  },
+  "mining": {
+    "Do you want to turn mining on?": {
+      "en": "Do you want to turn mining on?"
+    },
+    "description": {
+      "en": "Nine Chronicles pursues an in-game economy that users create together.You can produce gold just by playing games. Instead, you will contribute your computer resources to the operation of NineChronicles."
+    },
+    "requirement": {
+      "en": [
+        "REQUIRE:",
+        "Requires a 64-bit processor and operating system",
+        "Processor: Quad core CPU 3.0 GHz",
+        " Memory: 16 GB RAM"
+      ]
+    },
+    "OFF": {
+      "en": "OFF"
+    },
+    "ON": {
+      "en": "ON"
+    }
+  },
+  "lobby": {
+    "Verifying...": {
+      "en": "Verifying..."
+    },
+    "Preloading...": {
+      "en": "Preloading..."
+    },
+    "Now Running...": {
+      "en": "Now Running..."
+    },
+    "Start Game": {
+      "en": "Start Game"
+    },
+    "Activation": {
+      "en": "Activation"
+    },
+    "Activation Key": {
+      "en": "Activation Key"
+    }
+  },
+  "preload": {
+    "Receiving data from other users. Let's watch teaser and contents!": {
+      "en": [
+        "Receiving data from other users.",
+        "Let's watch teaser and contents!"
+      ]
+    },
+    "Block Explorer": {
+      "en": "Block Explorer"
+    },
+    "Nine Chronicles Player Guide": {
+      "en": "Nine Chronicles Player Guide"
+    }
+  },
+  "errorRelaunch": {
+    "Something went wrong.": {
+      "en": "Something went wrong."
+    },
+    "Please follow step below.": {
+      "en": "Please follow step below."
+    },
+    "steps": {
+      "en": ["Relaunch “Nine Chornicles”", "Login once again"]
+    },
+    "Relaunch": {
+      "en": "Relaunch"
+    }
+  },
+  "errorReinstall": {
+    "Something went wrong.": {
+      "en": "Something went wrong."
+    },
+    "Please follow step below.": {
+      "en": "Please follow step below."
+    },
+    "steps": {
+      "en": [
+        "Press close button",
+        "Delete “Nine Chornicles”",
+        "Install “Nine Chornicles”"
+      ]
+    },
+    "If you met this page again after reinstall, please contact us via": {
+      "en": "If you met this page again after reinstall, please contact us via"
+    },
+    "Discord": {
+      "en": "Discord"
+    },
+    "Close": {
+      "en": "Close"
+    }
+  },
+  "account": {
+    "create key": {
+      "en": "create key"
+    },
+    "revoke key": {
+      "en": "revoke key"
+    },
+    "reset key": {
+      "en": "reset key"
+    },
+    "back to the home": {
+      "en": "back to the home"
+    }
+  },
+  "createAccount": {
+    "Please set the password to complete account creation.": {
+      "en": ["Please set the password to", "complete account creation."]
+    },
+    "Password": {
+      "en": "Password"
+    },
+    "Confirm": {
+      "en": "Password (Confirm)"
+    },
+    "Done": {
+      "en": "Done"
+    }
+  },
+  "copyPrivateKey": {
+    "title": {
+      "en": [
+        "Almost done!",
+        "Please copy and store",
+        "your private key in a safe place."
+      ]
+    },
+    "description": {
+      "en": [
+        "Nine Chronicles is a fully decentralized game.",
+        "Therefore, there is no central server that manages your password."
+      ]
+    },
+    "warning": {
+      "en": [
+        "This key is the only means to recover your password.",
+        "Never expose the private key to others.",
+        "Anyone can steal your assets if this key is exposed."
+      ]
+    },
+    "Your Private key": {
+      "en": "Your Private key"
+    },
+    "Copy": {
+      "en": "Copy"
+    },
+    "Done": {
+      "en": "Done"
+    }
+  },
+  "revokeAccount": {
+    "Back": {
+      "en": "Back"
+    },
+    "Revoke your account": {
+      "en": "Revoke your account"
+    },
+    "description": {
+      "en": [
+        "Delete all records related to your account.",
+
+        "Nine Chronicles is a fully decentralized game. Therefore, there is no central server that manages your password.",
+        "If you don’t remember your private key, you must create a new account to play the game from the beginning.",
+
+        "Private keys can be found in the Settings menu of the game, so make sure to copy them separately next time and keep them in a safe place."
+      ]
+    },
+    "revoke key": {
+      "en": "revoke key"
+    }
+  },
+  "inputPrivateKey": {
+    "Enter your private key to reset your password": {
+      "en": "Enter your private key to reset your password"
+    },
+    "Private Key": {
+      "en": "Private Key"
+    },
+    "Enter": {
+      "en": "Enter"
+    },
+    "Forgot private key?": {
+      "en": "Forgot private key?"
+    }
+  },
+  "registerPrivateKey": {
+    "Please reset the password.": {
+      "en": "Please reset the password."
+    },
+    "Password": {
+      "en": "Password"
+    },
+    "Retype Password": {
+      "en": "Retype Password"
+    },
+    "Password is not equal.": {
+      "en": "Password is not equal."
+    },
+    "Done": {
+      "en": "Done"
+    }
+  },
+  "configuration": {
+    "Settings": {
+      "en": "Settings"
+    },
+    "Save": {
+      "en": "Save"
+    },
+    "Root chain store path": {
+      "en": "Root chain store path"
+    },
+    "Chain store directory name": {
+      "en": "Chain store directory name"
+    }
+  },
+  "preloadProgress": {
+    "Preload Completed.": {
+      "en": "Preload Completed."
+    },
+    "No Peers Were Given.": {
+      "en": "No Peers Were Given."
+    },
+    "Validating Snapshot": {
+      "en": "Validating Snapshot"
+    },
+    "Downloading Snapshot": {
+      "en": "Downloading Snapshot"
+    },
+    "Extracting Snapshot": {
+      "en": "Extracting Snapshot"
+    },
+    "Verifying block headers": {
+      "en": "Verifying block headers"
+    },
+    "Downloading block hashes": {
+      "en": "Downloading block hashes"
+    },
+    "Downloading blocks": {
+      "en": "Downloading blocks"
+    },
+    "Downloading states": {
+      "en": "Downloading states"
+    },
+    "Executing actions": {
+      "en": "Executing actions"
+    }
+  }
+}

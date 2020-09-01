@@ -9,6 +9,8 @@ import {
 import AccountStore from "../../../stores/account";
 import { inject, observer } from "mobx-react";
 
+import { useLocale } from "../../../i18n";
+
 interface IRegisterPrivateKeyViewProps {
   accountStore: AccountStore;
   routerStore: RouterStore;
@@ -23,6 +25,8 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
   observer(({ accountStore, routerStore }) => {
     const [firstPassword, setFirstPassword] = useState("");
     const [secondPassword, setSecondPassword] = useState("");
+
+    const locale = useLocale("registerPrivateKey");
 
     const makeHandlePasswordChange = (fn: StateSetter<string>) => {
       const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,23 +71,23 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
 
     return (
       <>
-        <p>Please reset the password.</p>
+        <p>{locale("Please reset the password.")}</p>
 
         <TextField
-          label="Password"
+          label={locale("Password")}
           type="password"
           onChange={makeHandlePasswordChange(setFirstPassword)}
         />
         <br />
         <TextField
           error={!passwordMatched}
-          label="Retype Password"
+          label={locale("Retype Password")}
           type="password"
           onChange={makeHandlePasswordChange(setSecondPassword)}
-          helperText={!passwordMatched ? "Password is not equal." : ""}
+          helperText={!passwordMatched ? locale("Password is not equal.") : ""}
         />
         <br />
-        <Button onClick={handleSubmit}>Done</Button>
+        <Button onClick={handleSubmit}>{locale("Done")}</Button>
       </>
     );
   })

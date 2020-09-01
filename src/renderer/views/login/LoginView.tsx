@@ -20,6 +20,7 @@ import { AccountSelect } from "../../components/AccountSelect";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import loginViewStyle from "./LoginView.style";
+import { useLocale } from "../../i18n";
 
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
@@ -43,10 +44,10 @@ const LoginView = observer(
 
     React.useEffect(() => {
       /**
-      * 에러가 아니어도 error에 값이 들어옴. 해당 값이 실제 error인지 검사하기 위해서는 error 안에 메세지가 있는지 검사해야 함.
-      * error가 undefined인 경우: Query를 수행하지 않은 경우
-      * error.message가 undefined인 경우: 에러가 아님
-      **/
+       * 에러가 아니어도 error에 값이 들어옴. 해당 값이 실제 error인지 검사하기 위해서는 error 안에 메세지가 있는지 검사해야 함.
+       * error가 undefined인 경우: Query를 수행하지 않은 경우
+       * error.message가 undefined인 경우: 에러가 아님
+       **/
       if (error?.message !== undefined) {
         setInvalid(true);
       }
@@ -74,14 +75,18 @@ const LoginView = observer(
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }
 
+    const locale = useLocale("login");
+
     return (
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
-        <ClearCacheButton className={classes.cacheButton} />
+        <ClearCacheButton className={classes.cacheButton}>
+          {locale("CLEAR CACHE")}
+        </ClearCacheButton>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <InputLabel>ID</InputLabel>
+              <InputLabel>{locale("ID")}</InputLabel>
               <AccountSelect
                 addresses={accountStore.addresses}
                 onChangeAddress={accountStore.setSelectedAddress}
@@ -89,7 +94,7 @@ const LoginView = observer(
               />
             </Grid>
             <Grid item xs={12}>
-              <InputLabel>Password</InputLabel>
+              <InputLabel>{locale("Password")}</InputLabel>
               <TextField
                 type="password"
                 name="password"
@@ -107,14 +112,14 @@ const LoginView = observer(
               variant="contained"
               color="primary"
             >
-              Login
+              {locale("Login")}
             </Button>
             <Link
               className={classes.revokeLink}
               href="#"
               onClick={handleRevokeAccount}
             >
-              Forgot password?
+              {locale("Forgot password?")}
             </Link>
           </Box>
         </form>

@@ -29,9 +29,7 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
       onClick={() => handleClick()}
       color="default"
       variant="text"
-    >
-      Clear Cache
-    </Button>
+    />
   );
 };
 

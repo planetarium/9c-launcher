@@ -15,6 +15,8 @@ import {
 } from "../../../generated/graphql";
 import lobbyViewStyle from "./LobbyView.style";
 
+import { useLocale } from "../../i18n";
+
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
 }
@@ -40,6 +42,8 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   ] = useActivateMutation();
   const [activationKey, setActivationKey] = React.useState("");
   const [polling, setPollingState] = React.useState(false);
+
+  const locale = useLocale("lobby");
 
   const handleActivateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -85,7 +89,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   let child: JSX.Element;
 
   if (loading || polling) {
-    child = <p className={classes.verifing}>Verifing...</p>;
+    child = <p className={classes.verifing}>{locale("Verifying...")}</p>;
   } else if (!standaloneStore.IsPreloadEnded) {
     child = <PreloadWaitingButton />;
   } else if (status?.activationStatus.activated) {
@@ -95,7 +99,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       <form onSubmit={handleActivateSubmit}>
         <TextField
           error={handleIsActivationSuccess()}
-          label="Activation Key"
+          label={locale("Activation Key")}
           onChange={privateKeyChangeHandle}
           fullWidth
         />
@@ -105,7 +109,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
           className={classes.activation}
           type="submit"
         >
-          Activation
+          {locale("activation")}
         </ButtonOrigin>
       </form>
     );
@@ -114,9 +118,10 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 });
 
 const PreloadWaitingButton = () => {
+  const locale = useLocale("lobby");
   return (
     <Button disabled={true} className={lobbyViewStyle().gameStartButton}>
-      Preloading...
+      {locale("Preloading...")}
     </Button>
   );
 };
@@ -129,6 +134,8 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
     gameStore.startGame(accountStore.privateKey);
     props.onLaunch();
   };
+
+  const locale = useLocale("lobby");
 
   React.useEffect(() => {
     if (standaloneStore.IsPreloadEnded) {
@@ -143,7 +150,9 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
       className={classes.gameStartButton}
       id="start-game"
     >
-      {gameStore.isGameStarted ? "Now Running..." : "Start Game"}
+      {gameStore.isGameStarted
+        ? `${locale("Now Running...")}`
+        : `${locale("Start Game")}`}
     </Button>
   );
 });

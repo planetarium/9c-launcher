@@ -27,10 +27,15 @@ import LobbyView from "./LobbyView";
 import { electronStore } from "../../../config";
 import { YouTubeInternal } from "../../../interfaces/refs";
 
+import { useLocale } from "../../i18n";
+import { P } from "../../styles/styled";
+
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore, standaloneStore } = props;
   const classes = preloadViewStyle();
   const [progress, setProgress] = React.useState(0);
+
+  const locale = useLocale("preload");
 
   const videoOpts: IYoutubeOption = {
     width: "330",
@@ -66,8 +71,11 @@ const PreloadView = observer((props: IStoreContainer) => {
   return (
     <Container className={classes.root}>
       <Headline paragraph>
-        Receiving data from other users. <br />
-        Let's watch teaser and contents!
+        {(locale(
+          "Receiving data from other users. Let's watch teaser and contents!"
+        ) as string[]).map((paragraph) => (
+          <P key={paragraph}>{paragraph}</P>
+        ))}
       </Headline>
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
       <List component="nav">
@@ -77,7 +85,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary="Block Explorer"
+            primary={locale("Block Explorer")}
           />
         </ListItem>
         <ListItem button onClick={handleClickPlayerGuide}>
@@ -86,7 +94,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary="Nine Chronicles Player Guide"
+            primary={locale("Nine Chronicles Player Guide")}
           />
         </ListItem>
       </List>

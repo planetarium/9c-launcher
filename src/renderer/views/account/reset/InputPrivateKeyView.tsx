@@ -5,6 +5,8 @@ import { RouterStore } from "mobx-react-router";
 import { observer, inject } from "mobx-react";
 import AccountStore from "../../../stores/account";
 
+import { useLocale } from "../../../i18n";
+
 interface IInputPrivateKeyViewProps {
   accountStore: AccountStore;
   routerStore: RouterStore;
@@ -22,6 +24,8 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
         privateKey,
       },
     });
+
+    const locale = useLocale("inputPrivateKey");
 
     // 스탠드얼론에서 미처 감싸지 못한 예외들이 GraphQL ExecutionError로 나옵니다.
     console.error(error);
@@ -44,18 +48,21 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
 
     return (
       <>
-        <p>Enter your private key to reset your password</p>
-        <TextField label="Private Key" onChange={privateKeyChangeHandle} />
+        <p>{locale("Enter your private key to reset your password")}</p>
+        <TextField
+          label={locale("Private Key")}
+          onChange={privateKeyChangeHandle}
+        />
         <br />
         <Button
           color={IsPrivateKeyValid ? "primary" : "secondary"}
           onClick={handleSubmit}
         >
-          Enter
+          {locale("Enter")}
         </Button>
         <br />
         {/* FIXME: https://github.com/planetarium/9c-launcher/pull/109#discussion_r448705979 */}
-        <a href="/account/revoke">Forgot private key?</a>
+        <a href="/account/revoke">{locale("Forgot private key?")}</a>
       </>
     );
   })

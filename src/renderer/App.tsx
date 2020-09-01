@@ -15,7 +15,7 @@ import { Provider } from "mobx-react";
 import AccountStore from "./stores/account";
 import { IStoreContainer } from "../interfaces/store";
 import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
-import { LOCAL_SERVER_URL } from "../config";
+import { LOCAL_SERVER_URL, electronStore } from "../config";
 import GameStore from "./stores/game";
 import Root from "./Root";
 import StandaloneStore from "./stores/standalone";
@@ -23,6 +23,8 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
 import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
 import montserrat from "./styles/font";
+
+import LocaleProvider from "./i18n";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -94,7 +96,11 @@ function App() {
       <Router history={history}>
         <Provider {...Store}>
           <ThemeProvider theme={theme}>
-            <Root />
+            <LocaleProvider
+              value={{ locale: electronStore.get("Locale") as string }}
+            >
+              <Root />
+            </LocaleProvider>
           </ThemeProvider>
         </Provider>
       </Router>
