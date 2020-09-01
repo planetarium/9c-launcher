@@ -13,4 +13,5 @@ export interface IElectronStore {
   BlockchainStoreDirParent: string;
   BlockchainStoreDirName: string;
   Locale: string;
+  MPT: boolean;
 }
