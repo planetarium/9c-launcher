@@ -3,14 +3,19 @@ import path from "path";
 import { Application } from "spectron";
 import electron from "electron";
 
-import "dotenv/config";
+import dotenv from "dotenv";
 import { expect } from "chai";
 
 // @ts-ignore
 process.env.ELECTRON_IS_DEV = 0;
+
+dotenv.config();
+
 const { PASSWORD } = process.env;
 
-if (PASSWORD === undefined) throw Error("failed to load password from .env");
+if (PASSWORD === undefined) {
+  throw Error("failed to load password from .env");
+}
 
 describe("test", function () {
   this.timeout(10000);
@@ -51,9 +56,6 @@ describe("test", function () {
   });
 
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
-    const timeout = 1800000;
-    this.timeout(timeout);
-
     const submitButton = await app.client.$("#start-game");
     const text = await submitButton.getText();
     expect(text).to.equal("NOW RUNNING...");

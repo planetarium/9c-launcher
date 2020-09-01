@@ -16,7 +16,7 @@ export const electronStore = new Store<IElectronStore>({
     },
     UseSnapshot: {
       type: "boolean",
-      default: true,
+      default: false,
     },
     AppProtocolVersion: {
       type: "string",
@@ -25,8 +25,7 @@ export const electronStore = new Store<IElectronStore>({
     },
     GenesisBlockPath: {
       type: "string",
-      default:
-        "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-9c-beta-3",
+      default: path.resolve("__tests__", "fixture", "genesis-block"),
     },
     MinimumDifficulty: {
       type: "integer",
