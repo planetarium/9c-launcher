@@ -49,21 +49,21 @@ const ConfigurationView = observer(() => {
           {locale("Settings")}
         </Typography>
         <form onSubmit={handleSubmit}>
-          <FormLabel>Root chain store path</FormLabel>
+          <FormLabel>{locale("Root chain store path")}</FormLabel>
           <TextField
             fullWidth
             name="rootchain"
             className={classes.textField}
             defaultValue={blockchainStoreDirParent}
           />
-          <FormLabel>Chain store directory name</FormLabel>
+          <FormLabel>{locale("Chain store directory name")}</FormLabel>
           <TextField
             fullWidth
             name="chain"
             className={classes.textField}
             defaultValue={electronStore.get("BlockchainStoreDirName")}
           />
-          <FormLabel>Select Language</FormLabel>
+          <FormLabel>{locale("Select Language")}</FormLabel>
           <Select
             name="select"
             className={classes.select}
@@ -71,7 +71,9 @@ const ConfigurationView = observer(() => {
             defaultValue={supportLocales[selectedLocale] ?? "English"}
           />
           <FormLabel className={classes.label}>
-            Please restart the launcher to apply the updated settings.
+            {locale(
+              "Please restart the launcher to apply the updated settings."
+            )}
           </FormLabel>
           <Button
             type="submit"

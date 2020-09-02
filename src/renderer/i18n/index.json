@@ -263,6 +263,12 @@
     },
     "Chain store directory name": {
       "en": "Chain store directory name"
+    },
+    "Select Language": {
+      "en": "Select Language"
+    },
+    "Please restart the launcher to apply the updated settings.": {
+      "en": "Please restart the launcher to apply the updated settings."
     }
   },
   "preloadProgress": {
