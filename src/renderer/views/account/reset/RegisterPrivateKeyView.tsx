@@ -84,7 +84,9 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
           label={locale("Retype Password")}
           type="password"
           onChange={makeHandlePasswordChange(setSecondPassword)}
-          helperText={!passwordMatched ? locale("Password is not equal.") : ""}
+          helperText={
+            !passwordMatched ? locale("Password does not match.") : ""
+          }
         />
         <br />
         <Button onClick={handleSubmit}>{locale("Done")}</Button>

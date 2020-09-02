@@ -244,8 +244,8 @@
     "Retype Password": {
       "en": "Retype Password"
     },
-    "Password is not equal.": {
-      "en": "Password is not equal."
+    "Password does not match.": {
+      "en": "Password does not match."
     },
     "Done": {
       "en": "Done"
