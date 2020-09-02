@@ -6,7 +6,6 @@ import miningViewStyle from "./MiningView.style";
 import jade from "../../resources/miningJade.png";
 import mixpanel from "mixpanel-browser";
 import { useLocale } from "../../i18n";
-import { P } from "../../styles/styled";
 
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
@@ -39,9 +38,9 @@ const MiningView = observer(
         <img className={classes.jade} src={jade} />
         <p>{locale("description")}</p>
         {requirement.map((paragraph) => (
-          <P key={paragraph} className={classes.requirement}>
+          <p key={paragraph} className={classes.requirement}>
             {paragraph}
-          </P>
+          </p>
         ))}
         <Box className={classes.buttonContainer}>
           <Button

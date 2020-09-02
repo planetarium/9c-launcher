@@ -28,7 +28,6 @@ import { electronStore } from "../../../config";
 import { YouTubeInternal } from "../../../interfaces/refs";
 
 import { useLocale } from "../../i18n";
-import { P } from "../../styles/styled";
 
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore, standaloneStore } = props;
@@ -55,12 +54,6 @@ const PreloadView = observer((props: IStoreContainer) => {
     );
   }, []);
 
-  const Headline = styled(Typography)({
-    marginTop: "30px",
-    fontWeight: "bold",
-    lineHeight: 1.25,
-  });
-
   const youtubeRef = React.useRef<YouTubeInternal>(null);
   const handleLaunch = React.useCallback(() => {
     const player = youtubeRef.current?.internalPlayer;
@@ -70,13 +63,13 @@ const PreloadView = observer((props: IStoreContainer) => {
 
   return (
     <Container className={classes.root}>
-      <Headline paragraph>
+      <h1 className={classes.title}>
         {(locale(
           "Receiving data from other users. Let's watch teaser and contents!"
         ) as string[]).map((paragraph) => (
-          <P key={paragraph}>{paragraph}</P>
+          <p key={paragraph}>{paragraph}</p>
         ))}
-      </Headline>
+      </h1>
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
       <List component="nav">
         <ListItem button onClick={handleClickBlockExplorer}>

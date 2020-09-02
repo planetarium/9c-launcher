@@ -9,8 +9,6 @@ import {
   Typography,
 } from "@material-ui/core";
 
-import { P } from "../../styles/styled";
-
 import { ExecutionResult } from "react-apollo";
 import { useState } from "react";
 import { IStoreContainer } from "../../../interfaces/store";
@@ -73,13 +71,13 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
 
     return (
       <div className={`create-account ${classes.root}`}>
-        <Typography className={classes.info}>
-          {(locale(
-            "Please set the password to complete account creation."
-          ) as string[]).map((paragraph) => (
-            <P key={paragraph}>{paragraph}</P>
-          ))}
-        </Typography>
+        {(locale(
+          "Please set the password to complete account creation."
+        ) as string[]).map((paragraph) => (
+          <Typography className={classes.info} key={paragraph}>
+            {paragraph}
+          </Typography>
+        ))}
         <form noValidate autoComplete="off" onSubmit={handleSubmit}>
           <FormControl fullWidth>
             <TextField
