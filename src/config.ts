@@ -80,7 +80,7 @@ export const electronStore = new Store<IElectronStore>({
     },
     MPT: {
       type: "boolean",
-      default: "false",
+      default: false,
     },
   },
 });
