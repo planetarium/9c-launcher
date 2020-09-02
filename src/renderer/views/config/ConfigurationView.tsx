@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import useStores from "../../../hooks/useStores";
 import { electronStore, blockchainStoreDirParent } from "../../../config";
-import { RootChainFormEvent } from "../../../interfaces/event";
+import { SettingsFormEvent } from "../../../interfaces/event";
 import configurationViewStyle from "./ConfigurationView.style";
 import { useLocale } from "../../i18n";
 import { Select } from "../../components/Select";
@@ -19,8 +19,7 @@ const ConfigurationView = observer(() => {
   const { locale, supportLocales, selectedLocale } = useLocale("configuration");
 
   const classes = configurationViewStyle();
-
-  const handleSubmit = (event: RootChainFormEvent) => {
+  const handleSubmit = (event: SettingsFormEvent) => {
     event.preventDefault();
     const rootChainPath = event.target.rootchain.value;
     const chainDir = event.target.chain.value;
