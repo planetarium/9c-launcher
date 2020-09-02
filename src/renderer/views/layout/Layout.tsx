@@ -15,7 +15,7 @@ export interface ILayoutProps {}
 export const Layout: React.FC<ILayoutProps> = ({ children }) => {
   const { routerStore } = useStores();
 
-  const locale = useLocale("menu");
+  const { locale } = useLocale("menu");
 
   return (
     <div className="layout">

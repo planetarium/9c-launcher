@@ -12,7 +12,7 @@ const configurationViewStyle = makeStyles({
   },
   submit: {
     display: "block",
-    margin: "230px auto 0 auto",
+    margin: "122px auto 0 auto",
     borderRadius: "0",
     width: "60%",
     height: "60px",
@@ -27,6 +27,12 @@ const configurationViewStyle = makeStyles({
     "margin-right": "0px",
     "margin-left": "auto",
     "font-weight": "bold",
+  },
+  select: {
+    margin: "4px auto",
+  },
+  label: {
+    color: "#f50057",
   },
 });
 

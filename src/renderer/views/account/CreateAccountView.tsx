@@ -35,7 +35,7 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
 
-    const locale = useLocale("createAccount");
+    const { locale } = useLocale("createAccount");
 
     const classes = createAccountViewStyle();
 

@@ -13,7 +13,7 @@ import { useLocale } from "../../i18n";
 const MainView = observer(
   ({ accountStore, routerStore, gameStore }: IStoreContainer) => {
     const classes = mainViewStyle();
-    const locale = useLocale("main");
+    const { locale } = useLocale("main");
 
     const description = locale("description");
     if (typeof description === "string")

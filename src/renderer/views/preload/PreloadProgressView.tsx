@@ -35,7 +35,7 @@ const PreloadProgressView = observer(() => {
     { loading, data, error },
   ] = useValidateSnapshotLazyQuery();
 
-  const locale = useLocale("preloadProgress");
+  const { locale } = useLocale("preloadProgress");
 
   React.useEffect(() => {
     ipcRenderer.on("not enough space on the disk", () => {

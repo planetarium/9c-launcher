@@ -8,7 +8,7 @@ import { useLocale } from "../../i18n";
 
 const ErrorReinstallView: React.FC<{}> = () => {
   const classes = errorViewStyle();
-  const locale = useLocale("errorReinstall");
+  const { locale } = useLocale("errorReinstall");
 
   const steps = locale("steps");
 

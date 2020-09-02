@@ -10,7 +10,7 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
     fetchPolicy: "no-cache",
   });
 
-  const locale = useLocale("intro");
+  const { locale } = useLocale("intro");
 
   React.useEffect(() => {
     if (!loading && data?.keyStore?.protectedPrivateKeys !== undefined) {

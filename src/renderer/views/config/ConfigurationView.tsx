@@ -12,10 +12,11 @@ import { electronStore, blockchainStoreDirParent } from "../../../config";
 import { RootChainFormEvent } from "../../../interfaces/event";
 import configurationViewStyle from "./ConfigurationView.style";
 import { useLocale } from "../../i18n";
+import { Select } from "../../components/Select";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
-  const locale = useLocale("configuration");
+  const { locale, supportLocales, selectedLocale } = useLocale("configuration");
 
   const classes = configurationViewStyle();
 
@@ -25,7 +26,18 @@ const ConfigurationView = observer(() => {
     const chainDir = event.target.chain.value;
     electronStore.set("BlockchainStoreDirParent", rootChainPath);
     electronStore.set("BlockchainStoreDirName", chainDir);
+
+    const localeName = SupportLocalesKeyValueSwap[event.target.select.value];
+    electronStore.set("Locale", localeName);
   };
+
+  const SupportLocalesKeyValueSwap = Object.entries(supportLocales).reduce(
+    (pre, [key, value]) => {
+      pre[value] = key;
+      return pre;
+    },
+    {} as Record<string, string>
+  );
 
   return (
     <div className={classes.root}>
@@ -51,6 +63,16 @@ const ConfigurationView = observer(() => {
             className={classes.textField}
             defaultValue={electronStore.get("BlockchainStoreDirName")}
           />
+          <FormLabel>Select Language</FormLabel>
+          <Select
+            name="select"
+            className={classes.select}
+            items={Object.values(supportLocales)}
+            defaultValue={supportLocales[selectedLocale] ?? "English"}
+          />
+          <FormLabel className={classes.label}>
+            Please restart the launcher to apply the updated settings.
+          </FormLabel>
           <Button
             type="submit"
             className={classes.submit}
