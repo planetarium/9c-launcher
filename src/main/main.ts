@@ -133,6 +133,12 @@ function initializeIpc() {
         console.log("Create directory for given blockchain path.");
         fs.mkdirSync(BLOCKCHAIN_STORE_PATH, { recursive: true });
       }
+    } catch (err) {
+      console.error("Error occurred while creating directory.", err);
+      if (err.code === "EACCES" || err.code === "EPERM") return false;
+    }
+
+    try {
       fs.accessSync(BLOCKCHAIN_STORE_PATH, fs.constants.F_OK);
       event.returnValue = true;
     } catch (err) {
