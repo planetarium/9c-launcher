@@ -21,6 +21,9 @@ const createAccountViewStyle = makeStyles({
       color: "#ffffff",
     },
   },
+  label: {
+    marginLeft: "14px",
+  },
   submit: {
     display: "block",
     margin: "0 auto 0 auto",
