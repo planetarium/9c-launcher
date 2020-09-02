@@ -3,7 +3,6 @@ import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
 
 import { Button, TextField, Typography } from "@material-ui/core";
-import { P } from "../../styles/styled";
 
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CopyCreatedPrivateKeyView.style";
@@ -25,22 +24,22 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
 
     return (
       <div className={classes.root}>
-        <Typography className={classes.title}>
+        <h1 className={classes.title}>
           {(locale("title") as string[]).map((paragraph) => (
-            <P key={paragraph}>{paragraph}</P>
+            <p key={paragraph}>{paragraph}</p>
           ))}
-        </Typography>
-        <Typography className={classes.description}>
-          {(locale("description") as string[]).map((paragraph) => (
-            <P key={paragraph}>{paragraph}</P>
-          ))}
-        </Typography>
+        </h1>
+        {(locale("description") as string[]).map((paragraph) => (
+          <Typography className={classes.description} key={paragraph}>
+            {paragraph}
+          </Typography>
+        ))}
         <br />
-        <Typography className={classes.warning}>
-          {(locale("warning") as string[]).map((paragraph) => (
-            <P key={paragraph}>{paragraph}</P>
-          ))}
-        </Typography>
+        {(locale("warning") as string[]).map((paragraph) => (
+          <Typography className={classes.warning} key={paragraph}>
+            {paragraph}
+          </Typography>
+        ))}
         <div className={classes.privateKeyContainer}>
           <h3 className={classes.privateKeyText}>
             {locale("Your Private key")}
