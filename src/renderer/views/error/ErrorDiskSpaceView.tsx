@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Container, Typography } from "@material-ui/core";

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { remote } from "electron";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";

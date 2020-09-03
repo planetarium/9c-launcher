@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
 
