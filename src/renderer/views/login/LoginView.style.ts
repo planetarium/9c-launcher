@@ -19,6 +19,7 @@ const loginViewStyle = makeStyles({
   },
   revokeLink: {
     margin: "10px auto",
+    textAlign: "center",
     display: "block",
     width: "150px",
     color: "white",
