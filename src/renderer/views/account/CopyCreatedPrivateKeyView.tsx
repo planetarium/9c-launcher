@@ -17,7 +17,7 @@ interface ICopyCreatedPrivateKeyProps {
 }
 
 const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observer(
-  ({ accountStore, routerStore }: ICopyCreatedPrivateKeyProps) => {
+  ({ accountStore, routerStore }) => {
     const classes = createAccountViewStyle();
 
     const { locale } = useLocale("copyPrivateKey");

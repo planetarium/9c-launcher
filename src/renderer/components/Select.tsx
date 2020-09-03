@@ -15,7 +15,7 @@ interface ISelectProps extends Omit<SelectProps, "onChange"> {
 }
 
 export const Select: React.FC<ISelectProps> = observer(
-  ({ items, value, onChange, ...props }: ISelectProps) => {
+  ({ items, value, onChange, ...props }) => {
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
       onChange && onChange(event.target.value as string);
     };

@@ -8,7 +8,7 @@ import RevokeAccountView from "./RevokeAccountView";
 import { useLocale } from "../../i18n";
 
 const AccountView: React.FC<IStoreContainer> = observer(
-  ({ accountStore, routerStore }: IStoreContainer) => {
+  ({ accountStore, routerStore }) => {
     const { locale } = useLocale("account");
 
     return (

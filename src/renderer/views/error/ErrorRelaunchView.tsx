@@ -6,7 +6,7 @@ import { Button, Container, Typography } from "@material-ui/core";
 
 import { useLocale } from "../../i18n";
 
-const ErrorRelaunchView: React.FC<{}> = () => {
+const ErrorRelaunchView = () => {
   const classes = errorViewStyle();
 
   const { locale } = useLocale("errorRelaunch");

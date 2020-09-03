@@ -16,7 +16,7 @@ interface IRevokeAccountProps {
 }
 
 const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
-  ({ accountStore, routerStore }: IRevokeAccountProps) => {
+  ({ accountStore, routerStore }) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
 
     const { locale } = useLocale("revokeAccount");

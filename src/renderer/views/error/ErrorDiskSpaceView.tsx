@@ -5,7 +5,7 @@ import { Container, Typography } from "@material-ui/core";
 import prettyBytes from "pretty-bytes";
 import { BLOCKCHAIN_STORE_PATH, REQUIRED_DISK_SPACE } from "../../../config";
 
-const ErrorDiskSpaceView: React.FC<{}> = () => {
+const ErrorDiskSpaceView = () => {
   const classes = errorViewStyle();
 
   useEffect(() => {
