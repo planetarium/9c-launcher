@@ -21,5 +21,10 @@ jobs:
           APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
       - name: Build Launcher
         run: npm run build-prod
+      - name: Load .env file
+        id: dotenv
+        uses: falti/dotenv-action@v0.2.4
       - name: Run E2E Test
         run: npm run test
+        env:
+          PASSWORD: ${{ steps.dotenv.outputs.password }}
