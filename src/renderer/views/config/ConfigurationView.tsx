@@ -1,3 +1,5 @@
+import path from "path";
+
 import { ipcRenderer } from "electron";
 import React from "react";
 import { observer } from "mobx-react";
@@ -40,7 +42,7 @@ const ConfigurationView = observer(() => {
 
   const handleChangeDir = () => {
     const directory = ipcRenderer.sendSync("select-directory") as string[];
-    setRootChainPath(directory.join("/"));
+    setRootChainPath(path.join(...directory));
   };
 
   const SupportLocalesKeyValueSwap = Object.entries(supportedLocales).reduce(
