@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { ipcRenderer } from "electron";
 import { Button, ButtonProps } from "@material-ui/core";
@@ -10,7 +10,7 @@ interface IClearCacheButtonProps extends ButtonProps {
 }
 
 const ClearCacheButton = (props: IClearCacheButtonProps) => {
-  const [isCleared, setClearState] = React.useState(false);
+  const [isCleared, setClearState] = useState(false);
 
   const handleClick = () => {
     if (

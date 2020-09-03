@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useEffect } from "react";
 import { Router } from "react-router";
 import { createBrowserHistory } from "history";
 import "./styles/common.scss";
@@ -65,7 +65,7 @@ const Store: IStoreContainer = {
 const history = syncHistoryWithStore(createBrowserHistory(), Store.routerStore);
 
 function App() {
-  const theme = React.useMemo(
+  const theme = useMemo(
     () =>
       createMuiTheme({
         palette: {
@@ -85,7 +85,7 @@ function App() {
     []
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     mixpanel.track("Launcher/Start");
   }, []);
 

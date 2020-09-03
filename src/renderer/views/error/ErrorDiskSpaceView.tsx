@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Container, Typography } from "@material-ui/core";
@@ -8,7 +8,7 @@ import { BLOCKCHAIN_STORE_PATH, REQUIRED_DISK_SPACE } from "../../../config";
 const ErrorDiskSpaceView: React.FC<{}> = () => {
   const classes = errorViewStyle();
 
-  React.useEffect(() => {
+  useEffect(() => {
     mixpanel.track("Launcher/ErrorDiskSpace");
   }, []);
   return (

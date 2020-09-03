@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { remote } from "electron";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Container, Typography } from "@material-ui/core";
 import { BLOCKCHAIN_STORE_PATH } from "../../../config";
 
-const ErrorNoPermissionView: React.FC<{}> = () => {
+const ErrorNoPermissionView = () => {
   const classes = errorViewStyle();
 
-  React.useEffect(() => {
+  useEffect(() => {
     mixpanel.track("Launcher/ErrorNoPerm");
   }, []);
   return (

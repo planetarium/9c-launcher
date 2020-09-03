@@ -1,4 +1,4 @@
-import React from "react";
+import { createContext, useContext } from "react";
 
 import pages from "./index.json";
 
@@ -6,14 +6,14 @@ interface LocaleContext {
   locale: string;
 }
 
-const context = React.createContext<LocaleContext>({
+const context = createContext<LocaleContext>({
   locale: "en",
 });
 
 const supportedLocales = { en: "English" } as Record<string, string>;
 
 export function useLocale(pageName: keyof typeof pages) {
-  const { locale } = React.useContext(context);
+  const { locale } = useContext(context);
 
   const selectedLocale = locale.startsWith("en") ? "en" : locale;
 

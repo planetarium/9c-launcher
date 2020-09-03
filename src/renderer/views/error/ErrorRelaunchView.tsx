@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { remote } from "electron";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
@@ -15,12 +15,12 @@ const ErrorRelaunchView: React.FC<{}> = () => {
   if (typeof steps === "string")
     throw Error("errorRelaunch.steps is not array in src/i18n/index.json");
 
-  const handleRelaunch = React.useCallback(() => {
+  const handleRelaunch = useCallback(() => {
     remote.app.relaunch();
     remote.app.exit();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     mixpanel.track("Launcher/ErrorRelaunch");
   }, []);
   return (
