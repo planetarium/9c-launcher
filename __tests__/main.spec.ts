@@ -1,27 +1,12 @@
 import path from "path";
-import fs from "fs";
 
 import { Application } from "spectron";
 import electron from "electron";
 
-import dotenv from "dotenv";
 import { expect } from "chai";
 
 // @ts-ignore
 process.env.ELECTRON_IS_DEV = 0;
-console.log(path.resolve(".env"));
-if (fs.existsSync(path.resolve(".env"))) {
-  dotenv.config({ path: path.resolve(".env") });
-  fs.readFile(path.resolve(".env"), "utf8", function (err, data) {
-    console.log(`.env file read: ${data}`);
-  });
-} else {
-  console.log("Cannot find file");
-}
-
-fs.readdir(".", function (error, filelist) {
-  console.log(filelist);
-});
 
 const { PASSWORD } = process.env;
 

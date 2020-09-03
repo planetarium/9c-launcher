@@ -156,7 +156,11 @@ function initializeIpc() {
   });
 
   ipcMain.on("check standalone", async (event) => {
-    if (!standaloneRetried && standaloneExited) {
+    if (
+      !standaloneRetried &&
+      standaloneExited &&
+      electronStore.get("UseSnapshot")
+    ) {
       await downloadSnapshot({ properties: {} }, false);
       standaloneRetried = true;
     } else if (standaloneExited) {
