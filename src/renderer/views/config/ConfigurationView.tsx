@@ -16,7 +16,9 @@ import { Select } from "../../components/Select";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
-  const { locale, supportLocales, selectedLocale } = useLocale("configuration");
+  const { locale, supportedLocales, selectedLocale } = useLocale(
+    "configuration"
+  );
 
   const classes = configurationViewStyle();
   const handleSubmit = (event: SettingsFormEvent) => {
@@ -30,7 +32,7 @@ const ConfigurationView = observer(() => {
     electronStore.set("Locale", localeName);
   };
 
-  const SupportLocalesKeyValueSwap = Object.entries(supportLocales).reduce(
+  const SupportLocalesKeyValueSwap = Object.entries(supportedLocales).reduce(
     (pre, [key, value]) => {
       pre[value] = key;
       return pre;
@@ -66,8 +68,8 @@ const ConfigurationView = observer(() => {
           <Select
             name="select"
             className={classes.select}
-            items={Object.values(supportLocales)}
-            defaultValue={supportLocales[selectedLocale] ?? "English"}
+            items={Object.values(supportedLocales)}
+            defaultValue={supportedLocales[selectedLocale] ?? "English"}
           />
           <FormLabel className={classes.label}>
             {locale(

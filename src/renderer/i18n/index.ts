@@ -10,7 +10,7 @@ const context = React.createContext<LocaleContext>({
   locale: "en",
 });
 
-const supportLocales = { en: "English" } as Record<string, string>;
+const supportedLocales = { en: "English" } as Record<string, string>;
 
 export function useLocale(pageName: keyof typeof pages) {
   const { locale } = React.useContext(context);
@@ -20,7 +20,7 @@ export function useLocale(pageName: keyof typeof pages) {
   const page = pages[pageName];
   return {
     selectedLocale,
-    supportLocales,
+    supportedLocales,
     locale: function (name: string) {
       // @ts-ignore
       const message = page[name] as {
