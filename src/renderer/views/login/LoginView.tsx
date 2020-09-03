@@ -16,7 +16,7 @@ import {
 import { observer, inject } from "mobx-react";
 import "../../styles/login/login.scss";
 import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
-import { AccountSelect } from "../../components/AccountSelect";
+import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import loginViewStyle from "./LoginView.style";
@@ -75,7 +75,7 @@ const LoginView = observer(
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }
 
-    const locale = useLocale("login");
+    const { locale } = useLocale("login");
 
     return (
       <div className={`login ${classes.root}`}>
@@ -87,10 +87,10 @@ const LoginView = observer(
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <InputLabel>{locale("ID")}</InputLabel>
-              <AccountSelect
-                addresses={accountStore.addresses}
-                onChangeAddress={accountStore.setSelectedAddress}
-                selectedAddress={accountStore.selectedAddress}
+              <Select
+                items={accountStore.addresses}
+                onChange={accountStore.setSelectedAddress}
+                value={accountStore.selectedAddress}
               />
             </Grid>
             <Grid item xs={12}>

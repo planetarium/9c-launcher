@@ -34,7 +34,7 @@ const PreloadView = observer((props: IStoreContainer) => {
   const classes = preloadViewStyle();
   const [progress, setProgress] = React.useState(0);
 
-  const locale = useLocale("preload");
+  const { locale } = useLocale("preload");
 
   const videoOpts: IYoutubeOption = {
     width: "330",

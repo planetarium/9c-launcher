@@ -20,7 +20,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
   ({ accountStore, routerStore }: ICopyCreatedPrivateKeyProps) => {
     const classes = createAccountViewStyle();
 
-    const locale = useLocale("copyPrivateKey");
+    const { locale } = useLocale("copyPrivateKey");
 
     return (
       <div className={classes.root}>

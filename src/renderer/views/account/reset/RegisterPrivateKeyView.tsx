@@ -26,7 +26,7 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
     const [firstPassword, setFirstPassword] = useState("");
     const [secondPassword, setSecondPassword] = useState("");
 
-    const locale = useLocale("registerPrivateKey");
+    const { locale } = useLocale("registerPrivateKey");
 
     const makeHandlePasswordChange = (fn: StateSetter<string>) => {
       const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

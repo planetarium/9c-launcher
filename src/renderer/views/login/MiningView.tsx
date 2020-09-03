@@ -24,7 +24,7 @@ const MiningView = observer(
       routerStore.push("/lobby/preload");
     };
 
-    const locale = useLocale("mining");
+    const { locale } = useLocale("mining");
 
     const requirement = locale("requirement");
     if (typeof requirement === "string")

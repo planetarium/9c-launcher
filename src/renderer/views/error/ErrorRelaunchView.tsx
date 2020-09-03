@@ -9,7 +9,7 @@ import { useLocale } from "../../i18n";
 const ErrorRelaunchView: React.FC<{}> = () => {
   const classes = errorViewStyle();
 
-  const locale = useLocale("errorRelaunch");
+  const { locale } = useLocale("errorRelaunch");
 
   const steps = locale("steps");
   if (typeof steps === "string")

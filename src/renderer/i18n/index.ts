@@ -10,19 +10,25 @@ const context = React.createContext<LocaleContext>({
   locale: "en",
 });
 
+const supportedLocales = { en: "English" } as Record<string, string>;
+
 export function useLocale(pageName: keyof typeof pages) {
   const { locale } = React.useContext(context);
 
-  const fixedLocale = locale.startsWith("en") ? "en" : locale;
+  const selectedLocale = locale.startsWith("en") ? "en" : locale;
 
   const page = pages[pageName];
-  return function (name: string) {
-    // @ts-ignore
-    const message = page[name] as {
-      [locale: string]: string | string[] | undefined;
-      en: string | string[];
-    };
-    return message[fixedLocale] ?? message.en;
+  return {
+    selectedLocale,
+    supportedLocales,
+    locale: function (name: string) {
+      // @ts-ignore
+      const message = page[name] as {
+        [locale: string]: string | string[] | undefined;
+        en: string | string[];
+      };
+      return message[selectedLocale] ?? message.en;
+    },
   };
 }
 

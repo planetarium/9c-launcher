@@ -43,7 +43,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   const [activationKey, setActivationKey] = React.useState("");
   const [polling, setPollingState] = React.useState(false);
 
-  const locale = useLocale("lobby");
+  const { locale } = useLocale("lobby");
 
   const handleActivateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -118,7 +118,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 });
 
 const PreloadWaitingButton = () => {
-  const locale = useLocale("lobby");
+  const { locale } = useLocale("lobby");
   return (
     <Button disabled={true} className={lobbyViewStyle().gameStartButton}>
       {locale("Preloading...")}
@@ -135,7 +135,7 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
     props.onLaunch();
   };
 
-  const locale = useLocale("lobby");
+  const { locale } = useLocale("lobby");
 
   React.useEffect(() => {
     if (standaloneStore.IsPreloadEnded) {

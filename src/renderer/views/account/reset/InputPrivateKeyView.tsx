@@ -25,7 +25,7 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
       },
     });
 
-    const locale = useLocale("inputPrivateKey");
+    const { locale } = useLocale("inputPrivateKey");
 
     // 스탠드얼론에서 미처 감싸지 못한 예외들이 GraphQL ExecutionError로 나옵니다.
     console.error(error);
