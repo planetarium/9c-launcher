@@ -1,8 +1,7 @@
-import * as React from "react";
+import React from "react";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import YouTube, { Options as IYoutubeOption } from "react-youtube";
 import { useDifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
-import { useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -15,14 +14,14 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,
 }) => {
   // FIXME: DownloadSnapshotButton과 중복되는 로직을 줄일 수 있을까
-  const [isExtract, setExtractState] = useState(false);
-  const [isDownload, setDownloadState] = useState(false);
-  const [isCopying, setCopyingState] = useState(false);
-  const [variant, setVariant] = useState<
+  const [isExtract, setExtractState] = React.useState(false);
+  const [isDownload, setDownloadState] = React.useState(false);
+  const [isCopying, setCopyingState] = React.useState(false);
+  const [variant, setVariant] = React.useState<
     "indeterminate" | "determinate" | undefined
   >("determinate");
   // FIXME: file lock이 제대로 걸려있지 않아서 파일을 여러 번 받아서 프로그레스가 뒤로 가는 경우가 있습니다.
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = React.useState(0);
   const videoOpts: IYoutubeOption = {
     width: "600",
     playerVars: {
