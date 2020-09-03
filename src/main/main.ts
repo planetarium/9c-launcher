@@ -17,6 +17,7 @@ import {
   nativeImage,
   ipcMain,
   DownloadItem,
+  dialog,
 } from "electron";
 import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
@@ -465,6 +466,14 @@ function initializeIpc() {
         app.exit();
       }
     }, 1000);
+  });
+
+  ipcMain.on("select-directory", async (event) => {
+    if (win === null) throw Error("BrowserWindow is null");
+    const directory = await dialog.showOpenDialog(win, {
+      properties: ["openDirectory"],
+    });
+    event.returnValue = directory.filePaths;
   });
 }
 
