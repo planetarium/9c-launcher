@@ -33,6 +33,7 @@ const miningViewStyle = makeStyles({
   requirement: {
     fontSize: "small",
     color: "darkgray",
+    margin: 0,
   },
 
   jade: {
