@@ -18,13 +18,18 @@ const createAccountViewStyle = makeStyles({
   },
   description: {
     marginTop: "12px",
-    fontSize: "13px",
     lineHeight: 1.375,
+    marginBottom: "1em",
+    "& p": {
+      fontSize: "13px",
+    },
   },
   warning: {
     color: "#FF7171",
-    fontSize: "12px",
     lineHeight: 1.375,
+    "& p": {
+      fontSize: "12px",
+    },
   },
   privateKeyContainer: {
     marginTop: "33px",

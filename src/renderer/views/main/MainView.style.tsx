@@ -17,7 +17,9 @@ const mainViewStyle = makeStyles({
     fontSize: "1.17em",
   },
   body: {
-    fontSize: "16px",
+    "& p": {
+      fontSize: "16px",
+    },
   },
   buttonContainer: {
     position: "relative",
