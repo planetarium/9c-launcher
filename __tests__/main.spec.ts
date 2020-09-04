@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 
 import { Application } from "spectron";
 import electron from "electron";
@@ -10,9 +11,20 @@ import { expect } from "chai";
 process.env.ELECTRON_IS_DEV = 0;
 
 dotenv.config();
-const { PASSWORD } = process.env;
 
-if (PASSWORD === undefined) throw Error("failed to load password from .env");
+if (process.env.PASSWORD === undefined) {
+  throw Error("failed to load password from .env");
+}
+
+// FOR GitHub Action
+if (process.env.PASSWORD === "CI") {
+  fs.readFile(path.resolve(".env"), "utf8", function (err, data) {
+    process.env.PASSWORD = data.split("=")[1];
+  });
+}
+
+const { PASSWORD } = process.env;
+console.log(PASSWORD);
 
 describe("test", function () {
   this.timeout(10000);
@@ -59,6 +71,9 @@ describe("test", function () {
   });
 
   it("마이닝 끄기", async function () {
+    const miningOffButton = await app.client.$("#mining-off");
+    await miningOffButton.click();
+
     app.client.waitUntil(
       async function () {
         const pathname = await app.webContents.executeJavaScript(
@@ -69,9 +84,6 @@ describe("test", function () {
       },
       { timeoutMsg: "오류가 일어났습니다." }
     );
-
-    const miningOffButton = await app.client.$("#mining-off");
-    await miningOffButton.click();
   });
 
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
