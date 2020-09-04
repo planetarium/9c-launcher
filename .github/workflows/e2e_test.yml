@@ -26,5 +26,3 @@ jobs:
         run: npm run build-prod
       - name: Run E2E Test
         run: npm run test
-        env:
-          PASSWORD: ${{ steps.gen-key.outputs.passphrase }}
