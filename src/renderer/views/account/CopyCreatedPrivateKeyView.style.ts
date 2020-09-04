@@ -12,8 +12,8 @@ const createAccountViewStyle = makeStyles({
     fontWeight: "bold",
     fontSize: "18px",
     lineHeight: 1.25,
-    "& p": {
-      margin: 0,
+    "& span": {
+      display: "block",
     },
   },
   description: {
