@@ -1,67 +1,43 @@
 @import "../pallet";
 
-.layout {
+main {
   height: 100%;
-  .container {
-    height: 100%;
-    display: grid;
-    grid-template-columns: 50% 50%;
-  }
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
 
-  .banner {
-    grid-row: 1;
-    grid-column: 2 / 3;
-    background-image: url("../../resources/bg.jpg");
-    background-size: cover;
-    background-position: 55%;
-    display: inline-flex;
-    padding: 24px;
+.contents {
+  background-color: #1d1e1f;
+  padding: 5px;
+  position: relative;
+}
 
-    .nav {
-      align-self: flex-end;
-      padding-left: 0;
+.banner {
+  background-image: url("../../resources/bg.jpg");
+  background-size: cover;
+  background-position: 55%;
+  display: inline-flex;
+  padding: 24px;
 
-      li {
-        list-style-type: none;
+  .nav {
+    align-self: flex-end;
+    padding-left: 0;
 
-        button {
-          color: white;
-        }
+    li {
+      list-style-type: none;
+
+      button {
+        color: white;
       }
     }
   }
+}
 
-  .header {
-    grid-row: 1;
-    grid-column: 1 / span 2;
-    background-color: $color2;
-    color: $color3;
-    padding: 16px;
-  }
-
-  .sidebar {
-    padding: 16px;
-    grid-column: 1;
-    background-color: $color1;
-    a {
-      color: $color3;
-      display: block;
-      margin-top: 32px;
-    }
-  }
-  .body {
-    grid-row: 1;
-    grid-column: 1 / 2;
-    background-color: #1d1e1f;
-    padding: 5px;
-    position: relative;
-  }
-  .footer {
-    position: absolute;
-    padding: 0px;
-    bottom: 0px;
-    width: 97%;
-    height: 30px;
-    background-color: "transparent";
-  }
+.footer {
+  position: absolute;
+  padding: 0px;
+  bottom: 0px;
+  width: 97%;
+  height: 30px;
+  background-color: "transparent";
 }

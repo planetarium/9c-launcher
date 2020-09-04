@@ -24,26 +24,25 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
 
     return (
       <div className={classes.root}>
-        <h1 className={classes.title}>
+        <Typography variant="h1" className={classes.title}>
           {(locale("title") as string[]).map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+            <span key={paragraph}>{paragraph}</span>
           ))}
-        </h1>
-        {(locale("description") as string[]).map((paragraph) => (
-          <Typography className={classes.description} key={paragraph}>
-            {paragraph}
-          </Typography>
-        ))}
-        <br />
-        {(locale("warning") as string[]).map((paragraph) => (
-          <Typography className={classes.warning} key={paragraph}>
-            {paragraph}
-          </Typography>
-        ))}
+        </Typography>
+        <article className={classes.description}>
+          {(locale("description") as string[]).map((paragraph) => (
+            <Typography key={paragraph}>{paragraph}</Typography>
+          ))}
+        </article>
+        <article className={classes.warning}>
+          {(locale("warning") as string[]).map((paragraph) => (
+            <Typography key={paragraph}>{paragraph}</Typography>
+          ))}
+        </article>
         <div className={classes.privateKeyContainer}>
-          <h3 className={classes.privateKeyText}>
+          <h2 className={classes.privateKeyText}>
             {locale("Your Private key")}
-          </h3>
+          </h2>
           <TextField
             id="created-private-key"
             variant="outlined"

@@ -71,13 +71,13 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
 
     return (
       <div className={`create-account ${classes.root}`}>
-        {(locale(
-          "Please set the password to complete account creation."
-        ) as string[]).map((paragraph) => (
-          <Typography className={classes.info} key={paragraph}>
-            {paragraph}
-          </Typography>
-        ))}
+        <Typography variant="h1" className={classes.info}>
+          {(locale(
+            "Please set the password to complete account creation."
+          ) as string[]).map((paragraph) => (
+            <span key={paragraph}>{paragraph}</span>
+          ))}
+        </Typography>
         <form noValidate autoComplete="off" onSubmit={handleSubmit}>
           <FormControl fullWidth>
             <TextField

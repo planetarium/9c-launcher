@@ -18,45 +18,43 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
   const { locale } = useLocale("menu");
 
   return (
-    <div className="layout">
-      <div className="container">
-        <div className="banner">
-          <ul className="nav">
-            <li>
-              <Button
-                startIcon={<HomeIcon />}
-                onClick={() => {
-                  shell.openExternal("https://forum.nine-chronicles.com");
-                }}
-              >
-                {locale("Forum")}
-              </Button>
-            </li>
-            <li>
-              <Button
-                startIcon={<DiscordIcon />}
-                onClick={() => {
-                  shell.openExternal("https://discord.gg/planetarium");
-                }}
-              >
-                {locale("Discord")}
-              </Button>
-            </li>
-            <li>
-              <Button
-                startIcon={<SettingsIcon />}
-                disabled={routerStore.location.pathname === "/config"}
-                onClick={() => {
-                  routerStore.push("/config");
-                }}
-              >
-                {locale("Settings")}
-              </Button>
-            </li>
-          </ul>
-        </div>
-        <div className="body">{children}</div>
-      </div>
-    </div>
+    <main>
+      <section className="contents">{children}</section>
+      <section className="banner">
+        <ul className="nav">
+          <li>
+            <Button
+              startIcon={<HomeIcon />}
+              onClick={() => {
+                shell.openExternal("https://forum.nine-chronicles.com");
+              }}
+            >
+              {locale("Forum")}
+            </Button>
+          </li>
+          <li>
+            <Button
+              startIcon={<DiscordIcon />}
+              onClick={() => {
+                shell.openExternal("https://discord.gg/planetarium");
+              }}
+            >
+              {locale("Discord")}
+            </Button>
+          </li>
+          <li>
+            <Button
+              startIcon={<SettingsIcon />}
+              disabled={routerStore.location.pathname === "/config"}
+              onClick={() => {
+                routerStore.push("/config");
+              }}
+            >
+              {locale("Settings")}
+            </Button>
+          </li>
+        </ul>
+      </section>
+    </main>
   );
 };

@@ -22,14 +22,14 @@ const MainView = observer(
     return (
       <Container className={classes.root}>
         <NineChroniclesLogo />
-        <h3 className={classes.title}>
+        <h1 className={classes.title}>
           {locale("Welcome to nine chronicles!")}
-        </h3>
-        {description.map((paragraph) => (
-          <p key={paragraph} className={classes.body}>
-            {paragraph}
-          </p>
-        ))}
+        </h1>
+        <article className={classes.body}>
+          {description.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </article>
 
         <Box className={classes.buttonContainer}>
           <Button

@@ -32,9 +32,9 @@ const MiningView = observer(
 
     return (
       <Container className={classes.root}>
-        <h3 className={classes.title}>
+        <h1 className={classes.title}>
           {locale("Do you want to turn mining on?")}
-        </h3>
+        </h1>
         <img className={classes.jade} src={jade} />
         <p>{locale("description")}</p>
         {requirement.map((paragraph) => (
