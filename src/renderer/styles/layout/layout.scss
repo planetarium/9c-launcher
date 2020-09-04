@@ -33,25 +33,6 @@ main {
   }
 }
 
-.header {
-  grid-row: 1;
-  grid-column: 1 / span 2;
-  background-color: $color2;
-  color: $color3;
-  padding: 16px;
-}
-
-.sidebar {
-  padding: 16px;
-  grid-column: 1;
-  background-color: $color1;
-  a {
-    color: $color3;
-    display: block;
-    margin-top: 32px;
-  }
-}
-
 .footer {
   position: absolute;
   padding: 0px;
