@@ -6,6 +6,7 @@ const miningViewStyle = makeStyles({
   },
 
   title: {
+    fontSize: "1.17em",
     fontWeight: "bold",
   },
 

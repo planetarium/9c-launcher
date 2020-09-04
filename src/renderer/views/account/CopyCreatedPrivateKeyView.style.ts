@@ -31,6 +31,7 @@ const createAccountViewStyle = makeStyles({
     marginBottom: "30px",
   },
   privateKeyText: {
+    fontSize: "1.17em",
     fontWeight: "normal",
     marginBottom: "10px",
   },

@@ -14,6 +14,7 @@ const mainViewStyle = makeStyles({
   },
   title: {
     fontWeight: "bold",
+    fontSize: "1.17em",
   },
   body: {
     fontSize: "16px",

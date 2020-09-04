@@ -41,9 +41,9 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
           </Typography>
         ))}
         <div className={classes.privateKeyContainer}>
-          <h3 className={classes.privateKeyText}>
+          <h2 className={classes.privateKeyText}>
             {locale("Your Private key")}
-          </h3>
+          </h2>
           <TextField
             id="created-private-key"
             variant="outlined"
