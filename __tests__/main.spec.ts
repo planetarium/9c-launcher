@@ -3,11 +3,13 @@ import path from "path";
 import { Application } from "spectron";
 import electron from "electron";
 
+import dotenv from "dotenv";
 import { expect } from "chai";
 
 // @ts-ignore
 process.env.ELECTRON_IS_DEV = 0;
 
+dotenv.config();
 const { PASSWORD } = process.env;
 
 if (PASSWORD === undefined) throw Error("failed to load password from .env");
@@ -38,6 +40,17 @@ describe("test", function () {
   });
 
   it("로그인 하기", async function () {
+    app.client.waitUntil(
+      async function () {
+        const pathname = await app.webContents.executeJavaScript(
+          "location.pathname"
+        );
+        console.log(pathname);
+        return true;
+      },
+      { timeoutMsg: "오류가 일어났습니다." }
+    );
+
     const inputPassword = await app.client.$('input[type="password"]');
     await inputPassword.setValue(PASSWORD);
 
@@ -46,11 +59,33 @@ describe("test", function () {
   });
 
   it("마이닝 끄기", async function () {
+    app.client.waitUntil(
+      async function () {
+        const pathname = await app.webContents.executeJavaScript(
+          "location.pathname"
+        );
+        console.log(pathname);
+        return true;
+      },
+      { timeoutMsg: "오류가 일어났습니다." }
+    );
+
     const miningOffButton = await app.client.$("#mining-off");
     await miningOffButton.click();
   });
 
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
+    app.client.waitUntil(
+      async function () {
+        const pathname = await app.webContents.executeJavaScript(
+          "location.pathname"
+        );
+        console.log(pathname);
+        return true;
+      },
+      { timeoutMsg: "오류가 일어났습니다." }
+    );
+
     const timeout = 1800000;
     this.timeout(timeout);
 
