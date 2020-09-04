@@ -1,12 +1,10 @@
-import React from "react";
+import React, { MouseEvent } from "react";
 
 import { InputAdornment, IconButton } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 
-import { ClickEvent } from "../../types/events";
-
 interface VisibilityAdornmentProps {
-  onClick: (e: ClickEvent) => void;
+  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
   show: boolean;
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, MouseEvent } from "react";
 import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
 import {
@@ -18,8 +18,6 @@ import VisibilityAdornment from "../../components/VisibilityAdornment";
 
 import { ExecutionResult } from "react-apollo";
 import { IStoreContainer } from "../../../interfaces/store";
-
-import { ChangeEvent, ClickEvent } from "../../../types/events";
 
 import {
   useCreatePrivateKeyMutation,
@@ -50,19 +48,19 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
 
     const classes = createAccountViewStyle();
 
-    const handlePasswordChange = (e: ChangeEvent) => {
+    const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
       setPassword(e.target.value);
     };
 
-    const handlePasswordConfirmChange = (e: ChangeEvent) => {
+    const handlePasswordConfirmChange = (e: ChangeEvent<HTMLInputElement>) => {
       setPasswordConfirm(e.target.value);
     };
 
-    const handleShowPassword = (e: ClickEvent) => {
+    const handleShowPassword = (e: MouseEvent<HTMLButtonElement>) => {
       setShowPassword(!showPassword);
     };
 
-    const handleShowPasswordConfirm = (e: ClickEvent) => {
+    const handleShowPasswordConfirm = (e: MouseEvent<HTMLButtonElement>) => {
       setShowPasswordConfirm(!showPasswordConfirm);
     };
 

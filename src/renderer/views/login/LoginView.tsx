@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, MouseEvent } from "react";
 import mixpanel from "mixpanel-browser";
 import { IStoreContainer } from "../../../interfaces/store";
 import { LoginFormEvent } from "../../../interfaces/event";
@@ -24,8 +24,6 @@ import VisibilityAdornment from "../../components/VisibilityAdornment";
 
 import loginViewStyle from "./LoginView.style";
 import { useLocale } from "../../i18n";
-
-import { ClickEvent } from "../../../types/events";
 
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
@@ -71,14 +69,12 @@ const LoginView = observer(
       });
     };
 
-    const handleRevokeAccount = (
-      e: React.MouseEvent<HTMLAnchorElement & HTMLSpanElement, MouseEvent>
-    ) => {
+    const handleRevokeAccount = (e: MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault();
       routerStore.push("/account/revoke");
     };
 
-    const handleShowPassword = (e: ClickEvent) => {
+    const handleShowPassword = (e: MouseEvent<HTMLButtonElement>) => {
       setShowPassword(!showPassword);
     };
 
