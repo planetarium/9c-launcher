@@ -25,11 +25,11 @@ const MainView = observer(
         <h1 className={classes.title}>
           {locale("Welcome to nine chronicles!")}
         </h1>
-        {description.map((paragraph) => (
-          <p key={paragraph} className={classes.body}>
-            {paragraph}
-          </p>
-        ))}
+        <article className={classes.body}>
+          {description.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </article>
 
         <Box className={classes.buttonContainer}>
           <Button

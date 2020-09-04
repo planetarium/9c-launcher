@@ -29,17 +29,16 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             <span key={paragraph}>{paragraph}</span>
           ))}
         </Typography>
-        {(locale("description") as string[]).map((paragraph) => (
-          <Typography className={classes.description} key={paragraph}>
-            {paragraph}
-          </Typography>
-        ))}
-        <br />
-        {(locale("warning") as string[]).map((paragraph) => (
-          <Typography className={classes.warning} key={paragraph}>
-            {paragraph}
-          </Typography>
-        ))}
+        <article className={classes.description}>
+          {(locale("description") as string[]).map((paragraph) => (
+            <Typography key={paragraph}>{paragraph}</Typography>
+          ))}
+        </article>
+        <article className={classes.warning}>
+          {(locale("warning") as string[]).map((paragraph) => (
+            <Typography key={paragraph}>{paragraph}</Typography>
+          ))}
+        </article>
         <div className={classes.privateKeyContainer}>
           <h2 className={classes.privateKeyText}>
             {locale("Your Private key")}
