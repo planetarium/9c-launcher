@@ -16,7 +16,8 @@ jobs:
         run: npm install
       - run: npm install @planetarium/cli
       - name: Generate key
-        run: powershell scripts\\create-key.ps1
+        id: gen-key
+        run: 'echo "::set-output name=passphrase::$(scripts\\create-key.ps1)"'
         env:
           APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
       - name: Build Standalone
@@ -26,4 +27,4 @@ jobs:
       - name: Run E2E Test
         run: npm run test
         env:
-          PASSWORD: "CI"
+          PASSWORD: ${{ steps.gen-key.outputs.passphrase }}

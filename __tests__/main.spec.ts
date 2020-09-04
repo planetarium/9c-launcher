@@ -12,19 +12,13 @@ process.env.ELECTRON_IS_DEV = 0;
 
 dotenv.config();
 
-if (process.env.PASSWORD === undefined) {
+const { PASSWORD } = process.env;
+
+if (PASSWORD === undefined) {
   throw Error("failed to load password from .env");
 }
 
-// FOR GitHub Action
-if (process.env.PASSWORD === "CI") {
-  fs.readFile(path.resolve(".env"), "utf8", function (err, data) {
-    process.env.PASSWORD = data.split("=")[1];
-  });
-}
-
-const { PASSWORD } = process.env;
-console.log(PASSWORD);
+console.log(`PASSWORD=${PASSWORD}`);
 
 describe("test", function () {
   this.timeout(10000);
