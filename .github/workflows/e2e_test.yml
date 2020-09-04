@@ -1,0 +1,28 @@
+name: E2E Test
+on: [push, pull_request]
+
+jobs:
+  run-test:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          ssh-key: ${{ secrets.SUBMODULE_PULL_KEY }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+      - name: Install dependencies
+        run: npm install
+      - run: npm install @planetarium/cli
+      - name: Generate key
+        id: gen-key
+        run: 'echo "::set-output name=passphrase::$(scripts\\create-key.ps1)"'
+        env:
+          APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
+      - name: Build Standalone
+        run: npm run build-headless
+      - name: Build Launcher
+        run: npm run build-prod
+      - name: Run E2E Test
+        run: npm run test

@@ -8,6 +8,7 @@ import { expect } from "chai";
 
 // @ts-ignore
 process.env.ELECTRON_IS_DEV = 0;
+
 const { PASSWORD } = process.env;
 
 if (PASSWORD === undefined) throw Error("failed to load password from .env");
@@ -51,9 +52,6 @@ describe("test", function () {
   });
 
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
-    const timeout = 1800000;
-    this.timeout(timeout);
-
     const submitButton = await app.client.$("#start-game");
     const text = await submitButton.getText();
     expect(text).to.equal("NOW RUNNING...");
