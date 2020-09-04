@@ -111,8 +111,6 @@ const ConfigurationView = observer(() => {
           </FormLabel>
         </form>
       </Container>
-      <br />
-      <br />
     </div>
   );
 });
