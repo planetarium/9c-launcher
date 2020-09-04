@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useState } from "react";
+import React, { useState, MouseEvent } from "react";
 import mixpanel from "mixpanel-browser";
 import { IStoreContainer } from "../../../interfaces/store";
 import { LoginFormEvent } from "../../../interfaces/event";
@@ -12,6 +11,8 @@ import {
   Link,
   TextField,
   Typography,
+  FormControl,
+  OutlinedInput,
 } from "@material-ui/core";
 import { observer, inject } from "mobx-react";
 import "../../styles/login/login.scss";
@@ -19,6 +20,8 @@ import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
+import VisibilityAdornment from "../../components/VisibilityAdornment";
+
 import loginViewStyle from "./LoginView.style";
 import { useLocale } from "../../i18n";
 
@@ -26,6 +29,9 @@ const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
     const [isInvalid, setInvalid] = useState(false);
+
+    const [showPassword, setShowPassword] = useState(false);
+
     const [
       getDecreyptedKey,
       { loading, error, data },
@@ -63,11 +69,13 @@ const LoginView = observer(
       });
     };
 
-    const handleRevokeAccount = (
-      e: React.MouseEvent<HTMLAnchorElement & HTMLSpanElement, MouseEvent>
-    ) => {
+    const handleRevokeAccount = (e: MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault();
       routerStore.push("/account/revoke");
+    };
+
+    const handleShowPassword = (e: MouseEvent<HTMLButtonElement>) => {
+      setShowPassword(!showPassword);
     };
 
     // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
@@ -95,14 +103,20 @@ const LoginView = observer(
             </Grid>
             <Grid item xs={12}>
               <InputLabel>{locale("Password")}</InputLabel>
-              <TextField
-                type="password"
-                name="password"
-                variant="outlined"
-                error={isInvalid}
-                onChange={() => setInvalid(false)}
-                fullWidth
-              ></TextField>
+              <FormControl fullWidth>
+                <OutlinedInput
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  error={isInvalid}
+                  onChange={() => setInvalid(false)}
+                  endAdornment={
+                    <VisibilityAdornment
+                      onClick={handleShowPassword}
+                      show={showPassword}
+                    />
+                  }
+                />
+              </FormControl>
             </Grid>
           </Grid>
           <Box>

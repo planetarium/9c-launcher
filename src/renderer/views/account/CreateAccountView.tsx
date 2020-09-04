@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, ChangeEvent, MouseEvent } from "react";
 import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
 import {
@@ -7,15 +7,23 @@ import {
   InputLabel,
   TextField,
   Typography,
+  Checkbox,
+  FormControlLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
 } from "@material-ui/core";
 
+import VisibilityAdornment from "../../components/VisibilityAdornment";
+
 import { ExecutionResult } from "react-apollo";
-import { useState } from "react";
 import { IStoreContainer } from "../../../interfaces/store";
+
 import {
   useCreatePrivateKeyMutation,
   CreatePrivateKeyMutation,
 } from "../../../generated/graphql";
+
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CreateAccountView.style";
 import { RouterStore } from "mobx-react-router";
@@ -33,18 +41,27 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
 
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+
     const { locale } = useLocale("createAccount");
 
     const classes = createAccountViewStyle();
 
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
       setPassword(e.target.value);
     };
 
-    const handlePasswordConfirmChange = (
-      e: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handlePasswordConfirmChange = (e: ChangeEvent<HTMLInputElement>) => {
       setPasswordConfirm(e.target.value);
+    };
+
+    const handleShowPassword = (e: MouseEvent<HTMLButtonElement>) => {
+      setShowPassword(!showPassword);
+    };
+
+    const handleShowPasswordConfirm = (e: MouseEvent<HTMLButtonElement>) => {
+      setShowPasswordConfirm(!showPasswordConfirm);
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -80,28 +97,38 @@ const CreateAccountView: React.FC<ICreateAccountProps> = observer(
         </Typography>
         <form noValidate autoComplete="off" onSubmit={handleSubmit}>
           <FormControl fullWidth>
-            <TextField
+            <InputLabel className={classes.label}>
+              {locale("Password")}
+            </InputLabel>
+            <OutlinedInput
               id="password-input"
-              label={locale("Password")}
-              variant="outlined"
-              InputLabelProps={{
-                shrink: true,
-              }}
               onChange={handlePasswordChange}
               className={classes.textInput}
+              type={showPassword ? "text" : "password"}
+              endAdornment={
+                <VisibilityAdornment
+                  onClick={handleShowPassword}
+                  show={showPassword}
+                />
+              }
             />
           </FormControl>
           <FormControl fullWidth>
-            <TextField
+            <InputLabel className={classes.label}>
+              {locale("Confirm")}
+            </InputLabel>
+            <OutlinedInput
               id="password-confirm-input"
-              label={locale("Confirm")}
               error={password !== passwordConfirm}
-              variant="outlined"
-              InputLabelProps={{
-                shrink: true,
-              }}
+              type={showPasswordConfirm ? "text" : "password"}
               onChange={handlePasswordConfirmChange}
               className={classes.textInput}
+              endAdornment={
+                <VisibilityAdornment
+                  onClick={handleShowPasswordConfirm}
+                  show={showPasswordConfirm}
+                />
+              }
             />
           </FormControl>
           <Button
