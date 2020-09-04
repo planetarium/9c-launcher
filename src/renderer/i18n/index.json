@@ -261,6 +261,9 @@
     "Root chain store path": {
       "en": "Root chain store path"
     },
+    "Select path": {
+      "en": "Select path"
+    },
     "Chain store directory name": {
       "en": "Chain store directory name"
     },

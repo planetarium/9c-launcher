@@ -1,4 +1,7 @@
-import * as React from "react";
+import path from "path";
+
+import { ipcRenderer } from "electron";
+import React from "react";
 import { observer } from "mobx-react";
 import {
   Button,
@@ -7,6 +10,7 @@ import {
   FormLabel,
   Typography,
 } from "@material-ui/core";
+import { FolderOpen } from "@material-ui/icons";
 import useStores from "../../../hooks/useStores";
 import { electronStore, blockchainStoreDirParent } from "../../../config";
 import { SettingsFormEvent } from "../../../interfaces/event";
@@ -16,6 +20,11 @@ import { Select } from "../../components/Select";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
+
+  const [rootChainPath, setRootChainPath] = React.useState<string>(
+    blockchainStoreDirParent
+  );
+
   const { locale, supportedLocales, selectedLocale } = useLocale(
     "configuration"
   );
@@ -23,13 +32,17 @@ const ConfigurationView = observer(() => {
   const classes = configurationViewStyle();
   const handleSubmit = (event: SettingsFormEvent) => {
     event.preventDefault();
-    const rootChainPath = event.target.rootchain.value;
     const chainDir = event.target.chain.value;
     electronStore.set("BlockchainStoreDirParent", rootChainPath);
     electronStore.set("BlockchainStoreDirName", chainDir);
 
     const localeName = SupportLocalesKeyValueSwap[event.target.select.value];
     electronStore.set("Locale", localeName);
+  };
+
+  const handleChangeDir = () => {
+    const directory = ipcRenderer.sendSync("select-directory") as string[];
+    setRootChainPath(path.join(...directory));
   };
 
   const SupportLocalesKeyValueSwap = Object.entries(supportedLocales).reduce(
@@ -55,9 +68,21 @@ const ConfigurationView = observer(() => {
             fullWidth
             name="rootchain"
             className={classes.textField}
-            defaultValue={blockchainStoreDirParent}
+            value={rootChainPath}
+            disabled
           />
-          <FormLabel>{locale("Chain store directory name")}</FormLabel>
+          <Button
+            onClick={handleChangeDir}
+            variant="outlined"
+            color="inherit"
+            className={classes.selectDir}
+            startIcon={<FolderOpen />}
+          >
+            {locale("Select path")}
+          </Button>
+          <FormLabel className={classes.newLine}>
+            {locale("Chain store directory name")}
+          </FormLabel>
           <TextField
             fullWidth
             name="chain"
@@ -67,7 +92,7 @@ const ConfigurationView = observer(() => {
           <FormLabel>{locale("Select Language")}</FormLabel>
           <Select
             name="select"
-            className={classes.select}
+            className={classes.selectLocale}
             items={Object.values(supportedLocales)}
             defaultValue={supportedLocales[selectedLocale] ?? "English"}
           />
