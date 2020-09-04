@@ -13,8 +13,6 @@ const { PASSWORD } = process.env;
 
 if (PASSWORD === undefined) throw Error("failed to load password from .env");
 
-console.log(PASSWORD);
-
 describe("test", function () {
   this.timeout(10000);
 
