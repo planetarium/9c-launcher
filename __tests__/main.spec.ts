@@ -3,19 +3,17 @@ import path from "path";
 import { Application } from "spectron";
 import electron from "electron";
 
-import dotenv from "dotenv";
+import "dotenv/config";
 import { expect } from "chai";
 
 // @ts-ignore
 process.env.ELECTRON_IS_DEV = 0;
 
-dotenv.config();
-
 const { PASSWORD } = process.env;
 
-if (PASSWORD === undefined) {
-  throw Error("failed to load password from .env");
-}
+if (PASSWORD === undefined) throw Error("failed to load password from .env");
+
+console.log(PASSWORD);
 
 describe("test", function () {
   this.timeout(10000);

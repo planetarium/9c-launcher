@@ -55,11 +55,7 @@ export const electronStore = new Store<IElectronStore>({
     },
     PeerStrings: {
       type: "array",
-      default: [
-        "027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,9c-beta-seed-1.planetarium.dev,31234",
-        "02f164e3139e53eef2c17e52d99d343b8cbdb09eeed88af46c352b1c8be6329d71,9c-beta-seed-2.planetarium.dev,31234",
-        "0247e289aa332260b99dfd50e578f779df9e6702d67e50848bb68f3e0737d9b9a5,9c-beta-seed-3.planetarium.dev,31234",
-      ],
+      default: [],
     },
     NoTrustedStateValidators: {
       type: "boolean",
