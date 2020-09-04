@@ -1,6 +1,6 @@
 import path from "path";
 
-import { ipcRenderer } from "electron";
+import { ipcRenderer, remote } from "electron";
 import React from "react";
 import { observer } from "mobx-react";
 import {
@@ -38,6 +38,8 @@ const ConfigurationView = observer(() => {
 
     const localeName = SupportLocalesKeyValueSwap[event.target.select.value];
     electronStore.set("Locale", localeName);
+    remote.app.relaunch();
+    remote.app.exit();
   };
 
   const handleChangeDir = () => {
@@ -96,11 +98,6 @@ const ConfigurationView = observer(() => {
             items={Object.values(supportedLocales)}
             defaultValue={supportedLocales[selectedLocale] ?? "English"}
           />
-          <FormLabel className={classes.label}>
-            {locale(
-              "Please restart the launcher to apply the updated settings."
-            )}
-          </FormLabel>
           <Button
             type="submit"
             className={classes.submit}
@@ -109,6 +106,9 @@ const ConfigurationView = observer(() => {
           >
             {locale("Save")}
           </Button>
+          <FormLabel className={classes.label}>
+            {locale("After saving, the launcher will restart.")}
+          </FormLabel>
         </form>
       </Container>
       <br />
