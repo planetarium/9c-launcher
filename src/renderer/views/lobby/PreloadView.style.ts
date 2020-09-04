@@ -7,11 +7,12 @@ const preloadViewStyle = makeStyles({
 
   title: {
     marginTop: "30px",
+    marginBottom: "1em",
     fontWeight: "bold",
-    fontSize: "1rem",
+    fontSize: "1em",
     lineHeight: 1.25,
-    "& p": {
-      margin: 0,
+    "& span": {
+      display: "block",
     },
   },
 

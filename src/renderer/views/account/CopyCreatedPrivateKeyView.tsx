@@ -24,11 +24,11 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
 
     return (
       <div className={classes.root}>
-        <h1 className={classes.title}>
+        <Typography variant="h1" className={classes.title}>
           {(locale("title") as string[]).map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+            <span key={paragraph}>{paragraph}</span>
           ))}
-        </h1>
+        </Typography>
         {(locale("description") as string[]).map((paragraph) => (
           <Typography className={classes.description} key={paragraph}>
             {paragraph}

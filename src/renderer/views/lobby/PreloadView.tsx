@@ -63,13 +63,13 @@ const PreloadView = observer((props: IStoreContainer) => {
 
   return (
     <Container className={classes.root}>
-      <h1 className={classes.title}>
+      <Typography variant="h1" className={classes.title}>
         {(locale(
           "Receiving data from other users. Let's watch teaser and contents!"
         ) as string[]).map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
+          <span key={paragraph}>{paragraph}</span>
         ))}
-      </h1>
+      </Typography>
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
       <List component="nav">
         <ListItem button onClick={handleClickBlockExplorer}>
