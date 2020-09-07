@@ -32,7 +32,8 @@ describe("test", function () {
         const pathname = await app.webContents.executeJavaScript(
           "location.pathname"
         );
-        return typeof pathname === "string" && pathname !== "/error";
+        console.log(pathname);
+        return typeof pathname === "string" && !pathname.includes("/error");
       },
       { timeoutMsg: "오류가 일어났습니다." }
     );
