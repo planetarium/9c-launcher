@@ -49,7 +49,6 @@ describe("test", function () {
 
   it("마이닝 끄기", async function () {
     const miningOffButton = await app.client.$("#mining-off");
-    console.log(miningOffButton.isEnabled);
     await miningOffButton.click();
   });
 
