@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { Button, Typography } from "@material-ui/core";
@@ -16,7 +16,7 @@ interface IRevokeAccountProps {
 }
 
 const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
-  ({ accountStore, routerStore }: IRevokeAccountProps) => {
+  ({ accountStore, routerStore }) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
 
     const { locale } = useLocale("revokeAccount");

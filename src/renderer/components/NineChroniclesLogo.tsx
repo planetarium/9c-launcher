@@ -11,11 +11,8 @@ const useStyles = makeStyles({
   },
 });
 
-export const NineChroniclesLogo: React.FC<{}> = ({}) => {
-  const classes = useStyles();
-  return (
-    <Container>
-      <img src={logo} className={classes.img} />
-    </Container>
-  );
-};
+export const NineChroniclesLogo = () => (
+  <Container>
+    <img src={logo} className={useStyles().img} />
+  </Container>
+);

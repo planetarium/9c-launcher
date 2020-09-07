@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../interfaces/store";
 import { useProtectedPrivateKeysQuery } from "../generated/graphql";
@@ -12,7 +12,7 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
 
   const { locale } = useLocale("intro");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading && data?.keyStore?.protectedPrivateKeys !== undefined) {
       if (data?.keyStore?.protectedPrivateKeys.length < 1) {
         routerStore.push("/main");

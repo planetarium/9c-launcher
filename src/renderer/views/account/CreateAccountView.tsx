@@ -35,7 +35,7 @@ interface ICreateAccountProps {
   routerStore: RouterStore;
 }
 
-const CreateAccountView: React.FC<ICreateAccountProps> = observer(
+const CreateAccountView = observer(
   ({ accountStore, routerStore }: ICreateAccountProps) => {
     const [createAccount, { data }] = useCreatePrivateKeyMutation();
     const [password, setPassword] = useState("");

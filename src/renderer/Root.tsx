@@ -1,5 +1,5 @@
 import { hot } from "react-hot-loader";
-import * as React from "react";
+import React from "react";
 import { Route, Switch, Redirect } from "react-router";
 import { Layout } from "./views/layout/Layout";
 import "./styles/common.scss";

@@ -10,10 +10,10 @@ interface SettingsFormElement extends HTMLFormElement {
   select: HTMLInputElement;
 }
 
-export interface LoginFormEvent extends React.FormEvent<LoginFormElement> {
+export interface LoginFormEvent extends FormEvent<LoginFormElement> {
   target: LoginFormElement;
 }
 
-export interface SettingsFormEvent extends React.FormEvent<LoginFormElement> {
+export interface SettingsFormEvent extends FormEvent<LoginFormElement> {
   target: SettingsFormElement;
 }

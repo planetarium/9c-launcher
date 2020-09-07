@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useCallback, useEffect } from "react";
 import { shell, remote } from "electron";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
@@ -6,7 +6,7 @@ import { Button, Container, Typography } from "@material-ui/core";
 
 import { useLocale } from "../../i18n";
 
-const ErrorReinstallView: React.FC<{}> = () => {
+const ErrorReinstallView = () => {
   const classes = errorViewStyle();
   const { locale } = useLocale("errorReinstall");
 
@@ -15,11 +15,11 @@ const ErrorReinstallView: React.FC<{}> = () => {
   if (typeof steps === "string")
     throw Error("errorReinstall.steps is not array in src/i18n/index.json");
 
-  const handleExit = React.useCallback(() => {
+  const handleExit = useCallback(() => {
     remote.app.exit();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     mixpanel.track("Launcher/ErrorReinstall");
   }, []);
   return (

@@ -1,5 +1,5 @@
 import { shell } from "electron";
-import React from "react";
+import React, { useState, useRef, useCallback } from "react";
 import YouTube, { Options as IYoutubeOption } from "react-youtube";
 import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
@@ -32,7 +32,7 @@ import { useLocale } from "../../i18n";
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore, standaloneStore } = props;
   const classes = preloadViewStyle();
-  const [progress, setProgress] = React.useState(0);
+  const [progress, setProgress] = useState(0);
 
   const { locale } = useLocale("preload");
 
@@ -44,18 +44,18 @@ const PreloadView = observer((props: IStoreContainer) => {
     },
   };
 
-  const handleClickBlockExplorer = React.useCallback(() => {
+  const handleClickBlockExplorer = useCallback(() => {
     shell.openExternal("https://explorer.libplanet.io/9c-beta/");
   }, []);
 
-  const handleClickPlayerGuide = React.useCallback(() => {
+  const handleClickPlayerGuide = useCallback(() => {
     shell.openExternal(
       "https://forum.nine-chronicles.com/t/nine-chronicles-quick-game-guide/31"
     );
   }, []);
 
-  const youtubeRef = React.useRef<YouTubeInternal>(null);
-  const handleLaunch = React.useCallback(() => {
+  const youtubeRef = useRef<YouTubeInternal>(null);
+  const handleLaunch = useCallback(() => {
     const player = youtubeRef.current?.internalPlayer;
     if (player === undefined) throw Error("YouTube Player not found");
     player.pauseVideo();

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { observer, inject } from "mobx-react";
 import { Button, Container, Box } from "@material-ui/core";

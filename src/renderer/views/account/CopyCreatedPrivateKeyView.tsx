@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
 
@@ -17,7 +17,7 @@ interface ICopyCreatedPrivateKeyProps {
 }
 
 const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observer(
-  ({ accountStore, routerStore }: ICopyCreatedPrivateKeyProps) => {
+  ({ accountStore, routerStore }) => {
     const classes = createAccountViewStyle();
 
     const { locale } = useLocale("copyPrivateKey");
