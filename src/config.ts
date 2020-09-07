@@ -98,17 +98,19 @@ const LocalServerPort = (): number => {
   return 23061;
 };
 
+const isMacOS = process.platform === "darwin";
+
 const getLocalApplicationDataPath = (): string => {
-  if (process.platform === "darwin") {
-    return path.join(app.getPath("home"), ".local", "share");
-  } else {
-    return path.join(app.getPath("home"), "AppData", "Local");
-  }
+  if (isMacOS) return path.join(app.getPath("home"), ".local", "share");
+  return path.join(app.getPath("home"), "AppData", "Local");
 };
 
 export const blockchainStoreDirParent =
   electronStore.get("BlockchainStoreDirParent") === ""
-    ? path.join(getLocalApplicationDataPath(), "planetarium")
+    ? path.join(
+        isMacOS ? app.getPath("appData") : getLocalApplicationDataPath(),
+        "planetarium"
+      )
     : electronStore.get("BlockchainStoreDirParent");
 
 export const REQUIRED_DISK_SPACE = 2 * 1000 * 1000 * 1000;
