@@ -77,6 +77,10 @@ export const electronStore = new Store<IElectronStore>({
       type: "boolean",
       default: false,
     },
+    Workers: {
+      type: "integer",
+      default: 20,
+    },
   },
 });
 
