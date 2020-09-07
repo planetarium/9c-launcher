@@ -13,8 +13,6 @@ const { PASSWORD } = process.env;
 
 if (PASSWORD === undefined) throw Error("failed to load password from .env");
 
-console.log(`PASSWORD=${PASSWORD}`);
-
 describe("test", function () {
   this.timeout(10000);
 
@@ -34,7 +32,8 @@ describe("test", function () {
         const pathname = await app.webContents.executeJavaScript(
           "location.pathname"
         );
-        return typeof pathname === "string" && pathname !== "/error";
+        console.log(pathname);
+        return typeof pathname === "string" && pathname.includes("/error");
       },
       { timeoutMsg: "오류가 일어났습니다." }
     );
@@ -50,6 +49,7 @@ describe("test", function () {
 
   it("마이닝 끄기", async function () {
     const miningOffButton = await app.client.$("#mining-off");
+    console.log(miningOffButton.isEnabled);
     await miningOffButton.click();
   });
 
