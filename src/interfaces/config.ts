@@ -14,4 +14,5 @@ export interface IElectronStore {
   BlockchainStoreDirName: string;
   Locale: string;
   MPT: boolean;
+  Workers: number;
 }
