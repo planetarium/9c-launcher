@@ -33,7 +33,7 @@ describe("test", function () {
           "location.pathname"
         );
         console.log(pathname);
-        return typeof pathname === "string" && pathname.includes("/error");
+        return typeof pathname === "string" && !pathname.includes("/error");
       },
       { timeoutMsg: "오류가 일어났습니다." }
     );
