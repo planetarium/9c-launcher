@@ -81,6 +81,10 @@ export const electronStore = new Store<IElectronStore>({
       type: "integer",
       default: 20,
     },
+    Confirmations: {
+      type: "integer",
+      default: 0,
+    },
   },
 });
 
