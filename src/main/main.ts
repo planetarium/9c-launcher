@@ -101,6 +101,7 @@ function executeStandalone() {
       `--graphql-port=${LOCAL_SERVER_PORT}`,
       `--mpt=${electronStore.get("MPT")}`,
       `--workers=${electronStore.get("Workers")}`,
+      `--confirmations=${electronStore.get("Confirmations")}`,
     ]
   );
   node.addListener("exit", (code) => {

@@ -15,4 +15,5 @@ export interface IElectronStore {
   Locale: string;
   MPT: boolean;
   Workers: number;
+  Confirmations: number;
 }
