@@ -2,8 +2,8 @@ import React, { useCallback, useEffect } from "react";
 import { shell, remote } from "electron";
 import mixpanel from "mixpanel-browser";
 import { Button, Container, Typography } from "@material-ui/core";
+import TextButton from "../../components/TextButton";
 import errorViewStyle from "./ErrorView.style";
-
 import { useLocale } from "../../i18n";
 
 const ErrorReinstallView = () => {
@@ -39,14 +39,14 @@ const ErrorReinstallView = () => {
         {`${locale(
           "If you met this page again after reinstall, please contact us via"
         )} `}
-        <a
+        <TextButton
           className={classes.link}
           onClick={() => {
             shell.openExternal("https://forum.nine-chronicles.com");
           }}
         >
           {locale("Discord")}
-        </a>
+        </TextButton>
         .
       </Typography>
       <Button

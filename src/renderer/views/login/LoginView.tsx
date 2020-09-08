@@ -5,7 +5,6 @@ import {
   Button,
   Grid,
   InputLabel,
-  Link,
   FormControl,
   OutlinedInput,
 } from "@material-ui/core";
@@ -19,6 +18,7 @@ import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import VisibilityAdornment from "../../components/VisibilityAdornment";
+import TextButton from "../../components/TextButton";
 
 import loginViewStyle from "./LoginView.style";
 import { useLocale } from "../../i18n";
@@ -66,7 +66,7 @@ const LoginView = observer(({ accountStore, routerStore }: IStoreContainer) => {
     });
   };
 
-  const handleRevokeAccount = (e: MouseEvent<HTMLAnchorElement>) => {
+  const handleRevokeAccount = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     routerStore.push("/account/revoke");
   };
@@ -121,13 +121,13 @@ const LoginView = observer(({ accountStore, routerStore }: IStoreContainer) => {
           >
             {locale("Login")}
           </Button>
-          <Link
+          <TextButton
             className={classes.revokeLink}
             href="#"
             onClick={handleRevokeAccount}
           >
             {locale("Forgot password?")}
-          </Link>
+          </TextButton>
         </Box>
       </form>
     </div>
