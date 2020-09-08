@@ -111,6 +111,8 @@ jobs:
       - run: npx pretty-quick --check --branch "${{ github.base_ref }}"
       - name: Generate GraphQL types
         run: npm run codegen
+      - name: Check ESLint rules
+        run: npx eslint --ext .ts,.tsx src
       - name: Type Check
         run: npx tsc --noEmit
         if: github.event_name == 'pull_request'
