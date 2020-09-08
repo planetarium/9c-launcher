@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import { shell, remote } from "electron";
 import mixpanel from "mixpanel-browser";
-import errorViewStyle from "./ErrorView.style";
 import { Button, Container, Typography } from "@material-ui/core";
+import errorViewStyle from "./ErrorView.style";
 
 import { useLocale } from "../../i18n";
 

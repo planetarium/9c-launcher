@@ -20,7 +20,8 @@ export function NotificationSubscriptionProvider() {
       }
 
       if (title && body) {
-        new Notification(title, { body: body });
+        // eslint-disable-next-line no-new
+        new Notification(title, { body });
       }
     }
   }, [loading, data]);

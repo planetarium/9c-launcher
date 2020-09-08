@@ -1,42 +1,30 @@
 import { shell } from "electron";
-import React, { useState, useRef, useCallback } from "react";
-import YouTube, { Options as IYoutubeOption } from "react-youtube";
-import mixpanel from "mixpanel-browser";
+import React, { useRef, useCallback } from "react";
+import YouTube, { Options as IYouTubeOption } from "react-youtube";
 import { observer, inject } from "mobx-react";
-import { IStoreContainer } from "../../../interfaces/store";
 import {
-  Box,
   Container,
   Typography,
-  LinearProgress,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
 } from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 import GrainIcon from "@material-ui/icons/Grain";
-import { LinearProgressWithLabel } from "../../components/LinerProgressWithLabel";
-import {
-  useNodeStatusSubscriptionSubscription,
-  usePreloadProgressSubscriptionSubscription,
-} from "../../../generated/graphql";
+import { IStoreContainer } from "../../../interfaces/store";
 import preloadViewStyle from "./PreloadView.style";
 import LobbyView from "./LobbyView";
-import { electronStore } from "../../../config";
 import { YouTubeInternal } from "../../../interfaces/refs";
 
 import { useLocale } from "../../i18n";
 
 const PreloadView = observer((props: IStoreContainer) => {
-  const { routerStore, standaloneStore } = props;
   const classes = preloadViewStyle();
-  const [progress, setProgress] = useState(0);
 
   const { locale } = useLocale("preload");
 
-  const videoOpts: IYoutubeOption = {
+  const videoOpts: IYouTubeOption = {
     width: "330",
     height: "220",
     playerVars: {
@@ -95,14 +83,5 @@ const PreloadView = observer((props: IStoreContainer) => {
     </Container>
   );
 });
-
-const getProgress = (
-  current: number | undefined,
-  total: number | undefined
-) => {
-  if (current === undefined) return 0;
-  if (total === undefined) return 0;
-  return total === 0 ? 0 : Math.round((current / total) * 100);
-};
 
 export default inject("routerStore", "standaloneStore")(PreloadView);

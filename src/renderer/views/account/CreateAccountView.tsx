@@ -5,19 +5,13 @@ import {
   Button,
   FormControl,
   InputLabel,
-  TextField,
   Typography,
-  Checkbox,
-  FormControlLabel,
   OutlinedInput,
-  InputAdornment,
-  IconButton,
 } from "@material-ui/core";
 
-import VisibilityAdornment from "../../components/VisibilityAdornment";
-
 import { ExecutionResult } from "react-apollo";
-import { IStoreContainer } from "../../../interfaces/store";
+import { RouterStore } from "mobx-react-router";
+import VisibilityAdornment from "../../components/VisibilityAdornment";
 
 import {
   useCreatePrivateKeyMutation,
@@ -26,7 +20,6 @@ import {
 
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CreateAccountView.style";
-import { RouterStore } from "mobx-react-router";
 
 import { useLocale } from "../../i18n";
 
@@ -37,7 +30,7 @@ interface ICreateAccountProps {
 
 const CreateAccountView = observer(
   ({ accountStore, routerStore }: ICreateAccountProps) => {
-    const [createAccount, { data }] = useCreatePrivateKeyMutation();
+    const [createAccount] = useCreatePrivateKeyMutation();
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
 
@@ -56,10 +49,12 @@ const CreateAccountView = observer(
       setPasswordConfirm(e.target.value);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleShowPassword = (e: MouseEvent<HTMLButtonElement>) => {
       setShowPassword(!showPassword);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleShowPasswordConfirm = (e: MouseEvent<HTMLButtonElement>) => {
       setShowPasswordConfirm(!showPasswordConfirm);
     };
@@ -73,10 +68,9 @@ const CreateAccountView = observer(
         },
       }).then((e: ExecutionResult<CreatePrivateKeyMutation>) => {
         const keyStore = e.data?.keyStore;
-        if (null == keyStore) {
-          return;
-        }
-        const address = keyStore.createPrivateKey.publicKey.address;
+        if (keyStore == null) return;
+
+        const { address } = keyStore.createPrivateKey.publicKey;
         const privateKey = keyStore.createPrivateKey.hex;
 
         accountStore.setPrivateKey(privateKey);

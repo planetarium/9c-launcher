@@ -2,17 +2,14 @@ import { shell } from "electron";
 import React from "react";
 import Button from "@material-ui/core/Button";
 import HomeIcon from "@material-ui/icons/Home";
-import DiscordIcon from "../../components/DiscordIcon";
 import SettingsIcon from "@material-ui/icons/Settings";
+import DiscordIcon from "../../components/DiscordIcon";
 import "../../styles/layout/layout.scss";
 import useStores from "../../../hooks/useStores";
-import { observer } from "mobx-react";
 
 import { useLocale } from "../../i18n";
 
-export interface ILayoutProps {}
-
-export const Layout: React.FC<ILayoutProps> = ({ children }) => {
+export const Layout: React.FC = ({ children }) => {
   const { routerStore } = useStores();
 
   const { locale } = useLocale("menu");

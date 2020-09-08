@@ -4,10 +4,10 @@ import { observer, inject } from "mobx-react";
 
 import { Button, TextField, Typography } from "@material-ui/core";
 
-import AccountStore from "../../stores/account";
-import createAccountViewStyle from "./CopyCreatedPrivateKeyView.style";
 import { RouterStore } from "mobx-react-router";
 import { clipboard } from "electron";
+import AccountStore from "../../stores/account";
+import createAccountViewStyle from "./CopyCreatedPrivateKeyView.style";
 
 import { useLocale } from "../../i18n";
 

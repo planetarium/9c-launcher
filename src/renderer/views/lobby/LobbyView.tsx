@@ -9,12 +9,11 @@ import {
   Button as ButtonOrigin,
   ButtonProps,
   Container,
-  LinearProgress,
   TextField,
 } from "@material-ui/core";
 import mixpanel from "mixpanel-browser";
-import { IStoreContainer } from "../../../interfaces/store";
 import { inject, observer } from "mobx-react";
+import { IStoreContainer } from "../../../interfaces/store";
 import {
   useActivateMutation,
   useActivationLazyQuery,
@@ -37,15 +36,9 @@ const Button = (
 
 const LobbyView = observer((props: ILobbyViewProps) => {
   const classes = lobbyViewStyle();
-  const { accountStore, gameStore, standaloneStore } = props;
-  const [
-    activation,
-    { loading, error: statusError, data: status },
-  ] = useActivationLazyQuery();
-  const [
-    activate,
-    { data: isActivated, error: activatedError },
-  ] = useActivateMutation();
+  const { standaloneStore } = props;
+  const [activation, { loading, data: status }] = useActivationLazyQuery();
+  const [activate, { error: activatedError }] = useActivateMutation();
   const [activationKey, setActivationKey] = useState("");
   const [polling, setPollingState] = useState(false);
 
@@ -69,12 +62,9 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     });
   };
 
-  const privateKeyChangeHandle = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setActivationKey(event.target.value);
-    },
-    [event]
-  );
+  const privateKeyChangeHandle = (event: ChangeEvent<HTMLInputElement>) => {
+    setActivationKey(event.target.value);
+  };
 
   const handleIsActivationSuccess = useCallback(() => {
     if (activatedError?.message !== undefined) {
@@ -126,7 +116,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 const PreloadWaitingButton = () => {
   const { locale } = useLocale("lobby");
   return (
-    <Button disabled={true} className={lobbyViewStyle().gameStartButton}>
+    <Button disabled className={lobbyViewStyle().gameStartButton}>
       {locale("Preloading...")}
     </Button>
   );
@@ -163,8 +153,4 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
   );
 });
 
-export default inject(
-  "accountStore",
-  "gameStore",
-  "standaloneStore"
-)(LobbyView);
+export default inject("standaloneStore")(LobbyView);

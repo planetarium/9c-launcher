@@ -1,6 +1,6 @@
 import { observable, action } from "mobx";
 import { retry } from "@lifeomic/attempt";
-import { electronStore, LOCAL_SERVER_URL, RPC_SERVER_PORT } from "../../config";
+import { electronStore, LOCAL_SERVER_URL } from "../../config";
 import FetchError from "../../errors/FetchError";
 
 const retryOptions = {
@@ -77,7 +77,7 @@ export default class StandaloneStore {
         headers: {
           "Content-Type": "application/json",
         },
-        body: body,
+        body,
       })
         .then((resp) => this.needRetry(resp))
         .then((needRetry) => {
@@ -106,11 +106,10 @@ export default class StandaloneStore {
   };
 
   needRetry = async (response: Response): Promise<boolean> => {
-    if (response.status === 200) {
-      return false;
-    } else if (response.status === 503) {
+    if (response.status === 200) return false;
+
+    if (response.status === 503)
       throw new FetchError(await response.text(), 503);
-    }
 
     // Excluding 200 & 503, retry.
     return true;

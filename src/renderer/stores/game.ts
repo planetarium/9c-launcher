@@ -1,5 +1,5 @@
 import { observable, action, computed } from "mobx";
-import { ipcRenderer, IpcRendererEvent } from "electron";
+import { ipcRenderer } from "electron";
 import {
   RPC_LOOPBACK_HOST,
   RPC_SERVER_PORT,
@@ -8,12 +8,12 @@ import {
 
 export default class GameStore {
   @observable
-  private _isGameStarted: boolean = false;
+  private _isGameStarted = false;
 
   private _genesisBlockPath: string;
 
   public constructor() {
-    ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
+    ipcRenderer.on("game closed", () => {
       this._isGameStarted = false;
     });
     this._genesisBlockPath = electronStore.get("GenesisBlockPath") as string;

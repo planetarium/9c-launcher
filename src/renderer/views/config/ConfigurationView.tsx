@@ -18,6 +18,8 @@ import configurationViewStyle from "./ConfigurationView.style";
 import { useLocale } from "../../i18n";
 import { Select } from "../../components/Select";
 
+type SupportLocales = Record<string, string>;
+
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
 
@@ -46,11 +48,12 @@ const ConfigurationView = observer(() => {
   };
 
   const SupportLocalesKeyValueSwap = Object.entries(supportedLocales).reduce(
-    (pre, [key, value]) => {
-      pre[value] = key;
-      return pre;
+    (previous, [key, value]) => {
+      const newValue: SupportLocales = {};
+      newValue[value] = key;
+      return { ...previous, ...newValue };
     },
-    {} as Record<string, string>
+    {} as SupportLocales
   );
 
   return (

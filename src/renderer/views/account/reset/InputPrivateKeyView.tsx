@@ -1,8 +1,8 @@
 import React, { useState, MouseEvent, ChangeEvent } from "react";
-import { TextField, InputLabel, Button } from "@material-ui/core";
-import { useValidatePrivateKeyQuery } from "../../../../generated/graphql";
+import { TextField, Button } from "@material-ui/core";
 import { RouterStore } from "mobx-react-router";
 import { observer, inject } from "mobx-react";
+import { useValidatePrivateKeyQuery } from "../../../../generated/graphql";
 import AccountStore from "../../../stores/account";
 
 import { useLocale } from "../../../i18n";
@@ -37,6 +37,7 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
     const IsPrivateKeyValid =
       undefined === error && !loading && data?.validation.privateKey;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
       if (IsPrivateKeyValid) {
         accountStore.setPrivateKey(privateKey);

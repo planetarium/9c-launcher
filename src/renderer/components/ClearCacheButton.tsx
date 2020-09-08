@@ -25,7 +25,6 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
     <Button
       {...props}
       startIcon={isCleared ? <CheckCircleIcon /> : <DeleteIcon />}
-      disabled={props.disabled}
       onClick={() => handleClick()}
       color="default"
       variant="text"

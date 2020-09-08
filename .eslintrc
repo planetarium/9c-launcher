@@ -3,19 +3,52 @@
   "plugins": ["@typescript-eslint"],
   "extends": [
     "airbnb",
-    "airbnb/hooks",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
+    "prettier",
     "plugin:react/recommended"
   ],
   "rules": {
-    "react/prop-types": 0,
-    "no-underscore-dangle": 0,
-    "import/imports-first": ["error", "absolute-first"],
-    "import/newline-after-import": "error",
-    "import/prefer-default-export": 0,
-    "semi": "error",
-    "require-await": "error"
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-var-requires": "off",
+    "consistent-return": "warn",
+    "import/extensions": "off",
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": [
+          "@lifeomic/attempt",
+          "@material-ui/core/*",
+          "@material-ui/icons/*",
+          "@material-ui/lab/Alert",
+          "electron-dl",
+          "electron-is-dev",
+          "electron-store",
+          "pretty-bytes"
+        ]
+      }
+    ],
+    "import/prefer-default-export": "off",
+    "jsx-a11y/alt-text": "off",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "no-await-in-loop": "warn",
+    "no-console": "off",
+    "no-nested-ternary": "warn",
+    "no-shadow": "off",
+    "no-underscore-dangle": "off",
+    "no-use-before-define": "off",
+    "prettier/prettier": "off",
+    "react/jsx-filename-extension": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/jsx-wrap-multilines": "off",
+    "react/prefer-stateless-function": "off",
+    "react/prop-types": "off",
+    "require-await": "error",
+    "semi": "error"
   },
   "globals": {
     "window": true,
@@ -28,5 +61,12 @@
     "Headers": true,
     "Request": true,
     "fetch": true
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".ts", ".tsx"]
+      }
+    }
   }
 }

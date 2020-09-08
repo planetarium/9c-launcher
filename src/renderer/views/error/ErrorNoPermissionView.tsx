@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { remote } from "electron";
 import mixpanel from "mixpanel-browser";
+import { Container, Typography } from "@material-ui/core";
 import errorViewStyle from "./ErrorView.style";
-import { Button, Container, Typography } from "@material-ui/core";
 import { BLOCKCHAIN_STORE_PATH } from "../../../config";
 
 const ErrorNoPermissionView = () => {
@@ -26,8 +25,8 @@ const ErrorNoPermissionView = () => {
       <ol>
         <li>Open SETTINGS page by clicking the button at the right side.</li>
         <li>
-          Modify "Root chain store path" and "Chain store directory name" then
-          click OK.
+          {`Modify "Root chain store path" and "Chain store directory name" then
+          click OK.`}
         </li>
         <li>Restart launcher.</li>
       </ol>

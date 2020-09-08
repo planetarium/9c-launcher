@@ -1,12 +1,11 @@
 import React from "react";
 import { observer, inject } from "mobx-react";
-import { IStoreContainer } from "../../../interfaces/store";
 import { Button, Typography } from "@material-ui/core";
-import AccountStore from "../../stores/account";
 import { RouterStore } from "mobx-react-router";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import AccountStore from "../../stores/account";
 import { useRevokePrivateKeyMutation } from "../../../generated/graphql";
 import revokeAccountViewStyle from "./RevokeAccountView.style";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 import { useLocale } from "../../i18n";
 

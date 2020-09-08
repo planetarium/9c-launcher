@@ -8,14 +8,17 @@ interface VisibilityAdornmentProps {
   show: boolean;
 }
 
-const VisibilityAdornment: React.FC<VisibilityAdornmentProps> = (props) => (
+const VisibilityAdornment: React.FC<VisibilityAdornmentProps> = ({
+  onClick,
+  show,
+}) => (
   <InputAdornment position="end">
     <IconButton
-      onClick={props.onClick}
+      onClick={onClick}
       onMouseDown={(e) => e.preventDefault()}
       edge="end"
     >
-      {props.show ? <VisibilityOff /> : <Visibility />}
+      {show ? <VisibilityOff /> : <Visibility />}
     </IconButton>
   </InputAdornment>
 );

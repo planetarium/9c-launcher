@@ -6,7 +6,7 @@ import { useProtectedPrivateKeysQuery } from "../generated/graphql";
 import { useLocale } from "./i18n";
 
 const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
-  const { loading, error, data } = useProtectedPrivateKeysQuery({
+  const { loading, data } = useProtectedPrivateKeysQuery({
     fetchPolicy: "no-cache",
   });
 
@@ -20,10 +20,10 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
         const addresses = data.keyStore.protectedPrivateKeys.map(
           (value) => value?.address
         );
-        addresses.map((value) => {
-          accountStore.addresses.includes(value)
-            ? null
-            : accountStore.addAddress(value);
+        addresses.forEach((value) => {
+          if (accountStore.addresses.includes(value)) {
+            accountStore.addAddress(value);
+          }
         });
 
         routerStore.push("/login");

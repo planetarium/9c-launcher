@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import mixpanel from "mixpanel-browser";
-import errorViewStyle from "./ErrorView.style";
 import { Container, Typography } from "@material-ui/core";
 import prettyBytes from "pretty-bytes";
+import errorViewStyle from "./ErrorView.style";
 import { BLOCKCHAIN_STORE_PATH, REQUIRED_DISK_SPACE } from "../../../config";
 
 const ErrorDiskSpaceView = () => {

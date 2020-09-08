@@ -1,4 +1,4 @@
-import { observable, action, decorate } from "mobx";
+import { observable, action } from "mobx";
 
 export interface IAccountStore {
   addresses: string[];
@@ -13,13 +13,13 @@ export default class AccountStore implements IAccountStore {
   public readonly addresses = observable<string>([]);
 
   @observable
-  public privateKey: string = "";
+  public privateKey = "";
 
   @observable
-  public selectedAddress: string = "";
+  public selectedAddress = "";
 
   @observable
-  public isLogin: boolean = false;
+  public isLogin = false;
 
   @action
   setPrivateKey = (privateKey: string) => {

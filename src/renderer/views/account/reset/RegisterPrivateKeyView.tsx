@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { TextField, Button } from "@material-ui/core";
 import { RouterStore } from "mobx-react-router";
+import { inject, observer } from "mobx-react";
 import {
   useConvertPrivateKeyToAddressQuery,
   useRevokePrivateKeyMutation,
   useCreatePrivateKeyMutation,
 } from "../../../../generated/graphql";
 import AccountStore from "../../../stores/account";
-import { inject, observer } from "mobx-react";
 
 import { useLocale } from "../../../i18n";
 
@@ -36,7 +36,7 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
     };
 
     const passwordMatched =
-      "" !== secondPassword && firstPassword === secondPassword;
+      secondPassword !== "" && firstPassword === secondPassword;
     const {
       loading: loadingAddress,
       data,
@@ -45,9 +45,10 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
         privateKey: accountStore.privateKey,
       },
     });
-    const [revokePrivateKey, {}] = useRevokePrivateKeyMutation();
-    const [createPrivateKey, {}] = useCreatePrivateKeyMutation();
+    const [revokePrivateKey] = useRevokePrivateKeyMutation();
+    const [createPrivateKey] = useCreatePrivateKeyMutation();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
       if (passwordMatched) {
         const address = data?.keyStore?.privateKey.publicKey.address;
@@ -60,7 +61,7 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
             await createPrivateKey({
               variables: {
                 privateKey: accountStore.privateKey,
-                passphrase: passphrase,
+                passphrase,
               },
             });
             routerStore.push("/");

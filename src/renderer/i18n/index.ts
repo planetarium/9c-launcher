@@ -21,7 +21,7 @@ export function useLocale(pageName: keyof typeof pages) {
   return {
     selectedLocale,
     supportedLocales,
-    locale: function (name: string) {
+    locale(name: string) {
       // @ts-ignore
       const message = page[name] as {
         [locale: string]: string | string[] | undefined;

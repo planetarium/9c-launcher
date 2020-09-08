@@ -1,10 +1,10 @@
 import React from "react";
-import { IStoreContainer } from "../../../interfaces/store";
 import { observer, inject } from "mobx-react";
 import { Button, Container, Box } from "@material-ui/core";
+import mixpanel from "mixpanel-browser";
+import { IStoreContainer } from "../../../interfaces/store";
 import miningViewStyle from "./MiningView.style";
 import jade from "../../resources/miningJade.png";
-import mixpanel from "mixpanel-browser";
 import { useLocale } from "../../i18n";
 
 const MiningView = observer(

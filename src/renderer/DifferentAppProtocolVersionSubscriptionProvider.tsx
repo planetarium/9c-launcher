@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import YouTube, { Options as IYoutubeOption } from "react-youtube";
+import YouTube, { Options as IYouTubeOption } from "react-youtube";
+import { Box, Container, Typography, LinearProgress } from "@material-ui/core";
 import { useDifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Typography,
-  LinearProgress,
-} from "@material-ui/core";
 
 export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,
@@ -22,7 +16,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   >("determinate");
   // FIXME: file lock이 제대로 걸려있지 않아서 파일을 여러 번 받아서 프로그레스가 뒤로 가는 경우가 있습니다.
   const [progress, setProgress] = useState(0);
-  const videoOpts: IYoutubeOption = {
+  const videoOpts: IYouTubeOption = {
     width: "600",
     playerVars: {
       autoplay: 1,
@@ -36,7 +30,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
       setProgress(progress * 100);
     });
 
-    ipcRenderer.on("update extract complete", (event) => {
+    ipcRenderer.on("update extract complete", () => {
       setExtractState(false);
     });
 
@@ -72,7 +66,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   useEffect(() => {
     if (
       !loading &&
-      null !== data?.differentAppProtocolVersionEncounter &&
+      data?.differentAppProtocolVersionEncounter !== null &&
       undefined !== data?.differentAppProtocolVersionEncounter
     ) {
       ipcRenderer.send("encounter different version", data);
@@ -95,9 +89,9 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
           </Box>
           {variant === "determinate" && (
             <Box minWidth={35}>
-              <Typography variant="body2" color="textSecondary">{`${Math.round(
-                progress
-              )}%`}</Typography>
+              <Typography variant="body2" color="textSecondary">
+                {`${Math.round(progress)}%`}
+              </Typography>
             </Box>
           )}
         </Box>

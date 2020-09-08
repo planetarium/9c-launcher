@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect } from "react";
 import { Router } from "react-router";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { createBrowserHistory } from "history";
 import "./styles/common.scss";
 import ApolloClient from "apollo-client";
@@ -7,19 +8,20 @@ import { ApolloLink, split } from "apollo-link";
 import { RetryLink } from "apollo-link-retry";
 import { WebSocketLink } from "apollo-link-ws";
 import { ApolloProvider } from "react-apollo";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { getMainDefinition } from "apollo-utilities";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import mixpanel from "mixpanel-browser";
 import { Provider } from "mobx-react";
+import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import AccountStore from "./stores/account";
 import { IStoreContainer } from "../interfaces/store";
-import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
 import { LOCAL_SERVER_URL, electronStore } from "../config";
 import GameStore from "./stores/game";
 import Root from "./Root";
 import StandaloneStore from "./stores/standalone";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
 import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
 import montserrat from "./styles/font";
@@ -51,7 +53,7 @@ const apiLink = split(
 const link = ApolloLink.from([new RetryLink(), apiLink]);
 
 const client = new ApolloClient({
-  link: link,
+  link,
   cache: new InMemoryCache(),
 });
 

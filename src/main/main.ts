@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   LOCAL_SERVER_PORT,
   electronStore,
@@ -24,17 +25,17 @@ import path from "path";
 import fs from "fs";
 import { ChildProcess, spawn } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
-import logoImage from "./resources/logo.png";
-import { initializeSentry } from "../preload/sentry";
 import "@babel/polyfill";
 import extractZip from "extract-zip";
 import log from "electron-log";
-import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
 import { BencodexDict, decode } from "bencodex";
 import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
 import checkDiskSpace from "check-disk-space";
 import { retry } from "@lifeomic/attempt";
+import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
+import { initializeSentry } from "../preload/sentry";
+import logoImage from "./resources/logo.png";
 
 initializeSentry();
 
@@ -44,17 +45,18 @@ Object.assign(console, log.functions);
 let win: BrowserWindow | null = null;
 let tray: Tray;
 let runningPids: number[] = [];
-let isQuiting: boolean = false;
+let isQuiting = false;
 let standaloneNode: ChildProcess;
-let standaloneExited: boolean = false;
-let standaloneRetried: boolean = false;
+let standaloneExited = false;
+let standaloneRetried = false;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on("second-instance", (event, commandLine, workingDirectory) => {
+  app.on("second-instance", () => {
+    // eslint-disable-next-line no-unused-expressions
     win?.show();
   });
 
@@ -182,12 +184,12 @@ function initializeIpc() {
     if (win != null) {
       download(
         win,
-        (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".json",
+        `${electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string}.json`,
         options.properties
       )
         .then(async (dl) => {
-          var path = dl.getSavePath();
-          var meta = await fs.promises.readFile(path, "utf-8");
+          const path = dl.getSavePath();
+          const meta = await fs.promises.readFile(path, "utf-8");
           console.log("Metadata download complete: ", meta);
           win?.webContents.send("metadata downloaded", meta);
         })
@@ -242,17 +244,16 @@ function initializeIpc() {
           "'encounter different version' event seems running already. Stop this flow."
         );
         return;
-      } else {
-        try {
-          lockfile.lockSync(lockfilePath);
-          console.log(
-            "Created 'encounter different version' lockfile at ",
-            lockfilePath
-          );
-        } catch (e) {
-          console.error("Error occurred during trying lock.");
-          throw e;
-        }
+      }
+      try {
+        lockfile.lockSync(lockfilePath);
+        console.log(
+          "Created 'encounter different version' lockfile at ",
+          lockfilePath
+        );
+      } catch (e) {
+        console.error("Error occurred during trying lock.");
+        throw e;
       }
 
       // TODO: 이어받기 되면 좋을 듯
@@ -300,7 +301,7 @@ function initializeIpc() {
         const src = app.getPath("exe");
         const basename = path.basename(src);
         const dirname = path.dirname(src);
-        const dst = path.join(dirname, "bak_" + basename);
+        const dst = path.join(dirname, `bak_${basename}`);
         await fs.promises.rename(src, dst);
         console.log("The executing file has renamed from", src, "to", dst);
 
@@ -522,7 +523,7 @@ function cleanUpAfterUpdate() {
   const executable = app.getPath("exe");
   const basename = path.basename(executable);
   const dirname = path.dirname(executable);
-  const bakExecutable = path.join(dirname, "bak_" + basename);
+  const bakExecutable = path.join(dirname, `bak_${basename}`);
 
   if (fs.existsSync(bakExecutable)) {
     console.log(
@@ -548,7 +549,7 @@ function execute(binaryPath: string, args: string[]) {
   if (isDev) {
     console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
   }
-  let node = spawn(binaryPath, args);
+  const node = spawn(binaryPath, args);
   runningPids.push(node.pid);
 
   node.stdout?.on("data", (data) => {
@@ -581,13 +582,13 @@ function createTray(iconPath: string) {
     Menu.buildFromTemplate([
       {
         label: "Open Window",
-        click: function () {
+        click() {
           win?.show();
         },
       },
       {
         label: "Quit Launcher",
-        click: function () {
+        click() {
           isQuiting = true;
           app.quit();
         },
@@ -662,7 +663,7 @@ function setStandaloneExited() {
 
 async function downloadSnapshot(
   options: IDownloadOptions,
-  quitProcess: boolean = true
+  quitProcess = true
 ): Promise<void> {
   console.log("downloading snapshot.");
   if (quitProcess) {
@@ -701,7 +702,7 @@ async function downloadSnapshot(
   if (win != null) {
     const dl = await download(
       win,
-      (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
+      `${electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string}.zip`,
       options.properties
     );
     win?.webContents.send("download complete", dl.getSavePath());

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react";
 import mixpanel from "mixpanel-browser";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import useStores from "../../../hooks/useStores";
 import { Container, Typography, CircularProgress } from "@material-ui/core";
+import useStores from "../../../hooks/useStores";
 import {
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
@@ -63,6 +63,7 @@ const PreloadProgressView = observer(() => {
       }
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ipcRenderer.on("download complete", (_, path: string) => {
       // download completed...
     });
@@ -72,11 +73,11 @@ const PreloadProgressView = observer(() => {
       setProgress(progress * 100);
     });
 
-    ipcRenderer.on("extract complete", (event) => {
+    ipcRenderer.on("extract complete", () => {
       // snapshot extraction completed, but node service did not launched yet.
     });
 
-    ipcRenderer.on("snapshot complete", (event) => {
+    ipcRenderer.on("snapshot complete", () => {
       console.log("Snapshot extraction completed. Start IBD.");
       startPreloading();
     });

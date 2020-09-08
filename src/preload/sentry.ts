@@ -1,4 +1,5 @@
 import isDev from "electron-is-dev";
+
 const { init } =
   process.type === "browser"
     ? require("@sentry/electron/dist/main")
