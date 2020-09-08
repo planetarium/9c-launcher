@@ -3,6 +3,7 @@
   "plugins": ["@typescript-eslint"],
   "extends": [
     "airbnb",
+    "airbnb/hooks",
     "plugin:@typescript-eslint/recommended",
     "prettier",
     "plugin:react/recommended"
@@ -41,6 +42,7 @@
     "no-underscore-dangle": "off",
     "no-use-before-define": "off",
     "prettier/prettier": "off",
+    "react-hooks/exhaustive-deps": "warn",
     "react/jsx-filename-extension": "off",
     "react/jsx-one-expression-per-line": "off",
     "react/jsx-props-no-spreading": "off",
