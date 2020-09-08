@@ -12,7 +12,7 @@ const configurationViewStyle = makeStyles({
   },
   submit: {
     display: "block",
-    margin: "58px auto 0 auto",
+    margin: "0 auto 0 auto",
     borderRadius: "0",
     width: "60%",
     height: "60px",
@@ -42,6 +42,15 @@ const configurationViewStyle = makeStyles({
     display: "block",
     marginTop: "1em",
     textAlign: "center",
+  },
+  checkbox: {
+    padding: "7px",
+  },
+  checkboxGroup: {
+    marginTop: "6px",
+  },
+  checkboxHelper: {
+    margin: 0,
   },
 });
 

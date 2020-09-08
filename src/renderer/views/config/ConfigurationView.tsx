@@ -9,6 +9,11 @@ import {
   TextField,
   FormLabel,
   Typography,
+  FormControlLabel,
+  Checkbox,
+  FormGroup,
+  FormControl,
+  FormHelperText,
 } from "@material-ui/core";
 import { FolderOpen } from "@material-ui/icons";
 import useStores from "../../../hooks/useStores";
@@ -38,6 +43,13 @@ const ConfigurationView = observer(() => {
 
     const localeName = SupportLocalesKeyValueSwap[event.target.select.value];
     electronStore.set("Locale", localeName);
+
+    const agreeAnalytic = event.target.analytic.checked;
+    electronStore.set("Mixpanel", agreeAnalytic);
+
+    const isEnableSentry = event.target.sentry.checked;
+    electronStore.set("Sentry", isEnableSentry);
+
     remote.app.relaunch();
     remote.app.exit();
   };
@@ -98,6 +110,36 @@ const ConfigurationView = observer(() => {
             items={Object.values(supportedLocales)}
             defaultValue={supportedLocales[selectedLocale] ?? "English"}
           />
+          <FormControl className={classes.checkboxGroup}>
+            <FormLabel>{locale("Send Information")}</FormLabel>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    className={classes.checkbox}
+                    defaultChecked={electronStore.get("Sentry")}
+                    color="default"
+                    name="sentry"
+                  />
+                }
+                label={locale("Report Error")}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    className={classes.checkbox}
+                    defaultChecked={electronStore.get("Mixpanel")}
+                    color="default"
+                    name="analytic"
+                  />
+                }
+                label={locale("Behavior Analytic")}
+              />
+            </FormGroup>
+            <FormHelperText className={classes.checkboxHelper}>
+              {locale("These data are helpful for Game development.")}
+            </FormHelperText>
+          </FormControl>
           <Button
             type="submit"
             className={classes.submit}

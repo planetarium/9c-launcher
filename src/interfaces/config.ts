@@ -16,4 +16,6 @@ export interface IElectronStore {
   MPT: boolean;
   Workers: number;
   Confirmations: number;
+  Mixpanel: boolean;
+  Sentry: boolean;
 }

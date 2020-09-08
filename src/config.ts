@@ -85,6 +85,14 @@ export const electronStore = new Store<IElectronStore>({
       type: "integer",
       default: 0,
     },
+    Mixpanel: {
+      type: "boolean",
+      default: true,
+    },
+    Sentry: {
+      type: "boolean",
+      default: true,
+    },
   },
 });
 
@@ -109,9 +117,8 @@ const LocalServerPort = (): number => {
 const getLocalApplicationDataPath = (): string => {
   if (process.platform === "darwin") {
     return path.join(app.getPath("home"), ".local", "share");
-  } else {
-    return path.join(app.getPath("home"), "AppData", "Local");
   }
+  return path.join(app.getPath("home"), "AppData", "Local");
 };
 
 export const blockchainStoreDirParent =
