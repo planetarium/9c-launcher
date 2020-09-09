@@ -172,20 +172,6 @@ const PreloadProgressView = observer(() => {
   }, [preloadProgress?.extra]);
 
   useEffect(() => {
-    if (isPreloadEnded) {
-      const phase = preloadProgress?.extra.type;
-
-      if (
-        electronStore.get("PeerStrings").length > 0 &&
-        (phase === undefined ||
-          (phase !== "ActionExecutionState" && phase !== "StateDownloadState"))
-      ) {
-        gotoErrorPage("relaunch");
-      }
-    }
-  }, [isPreloadEnded, preloadProgress?.extra]);
-
-  useEffect(() => {
     if (preloadProgress !== undefined) {
       setStep(preloadProgress?.currentPhase + 2);
     }
