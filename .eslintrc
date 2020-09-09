@@ -39,15 +39,12 @@
     "no-shadow": "off",
     "no-underscore-dangle": "off",
     "no-use-before-define": "off",
-    "prettier/prettier": "off",
     "react-hooks/exhaustive-deps": "warn",
     "react/jsx-filename-extension": "off",
     "react/jsx-one-expression-per-line": "off",
     "react/jsx-props-no-spreading": "off",
     "react/jsx-wrap-multilines": "off",
-    "react/prop-types": "off",
-    "require-await": "error",
-    "semi": "error"
+    "react/prop-types": "off"
   },
   "globals": {
     "window": true,
