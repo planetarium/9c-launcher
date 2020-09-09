@@ -69,14 +69,16 @@ const ConfigurationView = observer(() => {
 
   return (
     <div className={classes.root}>
-      <Button onClick={routerStore.goBack} className={classes.exit}>
-        X
-      </Button>
-      <Container>
+      <section className={classes.titleWarp}>
         <Typography variant="h1" gutterBottom className={classes.title}>
           {locale("Settings")}
         </Typography>
-        <form onSubmit={handleSubmit}>
+        <Button onClick={routerStore.goBack} className={classes.exit}>
+          X
+        </Button>
+      </section>
+      <form onSubmit={handleSubmit}>
+        <article className={classes.fields}>
           <FormLabel>{locale("Root chain store path")}</FormLabel>
           <TextField
             fullWidth
@@ -140,19 +142,19 @@ const ConfigurationView = observer(() => {
               {locale("These data are helpful for Game development.")}
             </FormHelperText>
           </FormControl>
-          <Button
-            type="submit"
-            className={classes.submit}
-            color="primary"
-            variant="contained"
-          >
-            {locale("Save")}
-          </Button>
-          <FormLabel className={classes.label}>
-            {locale("After saving, the launcher will restart.")}
-          </FormLabel>
-        </form>
-      </Container>
+        </article>
+        <Button
+          type="submit"
+          className={classes.submit}
+          color="primary"
+          variant="contained"
+        >
+          {locale("Save")}
+        </Button>
+        <FormLabel className={classes.label}>
+          {locale("After saving, the launcher will restart.")}
+        </FormLabel>
+      </form>
     </div>
   );
 });

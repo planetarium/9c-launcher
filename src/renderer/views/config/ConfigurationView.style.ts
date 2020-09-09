@@ -2,13 +2,25 @@ import { makeStyles } from "@material-ui/core";
 
 const configurationViewStyle = makeStyles({
   root: {
-    margin: "15px",
+    marginTop: "24px",
     color: "white",
+  },
+  titleWarp: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginLeft: "45px",
+    marginRight: "45px",
+    marginBottom: "10px",
+  },
+  fields: {
+    height: "350px",
+    overflow: "hidden auto",
+    marginBottom: "16px",
+    padding: "0 45px",
   },
   title: {
     fontWeight: "bold",
     fontSize: "1.5em",
-    "padding-bottom": "10px",
   },
   submit: {
     display: "block",
