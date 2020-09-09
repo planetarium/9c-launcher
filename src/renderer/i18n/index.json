@@ -270,8 +270,8 @@
     "Select Language": {
       "en": "Select Language"
     },
-    "Please restart the launcher to apply the updated settings.": {
-      "en": "Please restart the launcher to apply the updated settings."
+    "After saving, the launcher will restart.": {
+      "en": "After saving, the launcher will restart."
     }
   },
   "preloadProgress": {

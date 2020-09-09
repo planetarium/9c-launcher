@@ -39,7 +39,9 @@ const configurationViewStyle = makeStyles({
     display: "block",
   },
   label: {
-    color: "#f50057",
+    display: "block",
+    marginTop: "1em",
+    textAlign: "center",
   },
 });
 
