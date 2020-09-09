@@ -4,7 +4,7 @@ import YouTube, { Options as IYouTubeOption } from "react-youtube";
 import { Box, Container, Typography, LinearProgress } from "@material-ui/core";
 import { useDifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
 
-export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
+const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,
 }) => {
   // FIXME: DownloadSnapshotButton과 중복되는 로직을 줄일 수 있을까
@@ -108,3 +108,5 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
     <>{children}</>
   );
 };
+
+export default DifferentAppProtocolVersionSubscriptionProvider;

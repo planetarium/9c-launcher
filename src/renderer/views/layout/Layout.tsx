@@ -9,7 +9,7 @@ import useStores from "../../../hooks/useStores";
 
 import { useLocale } from "../../i18n";
 
-export const Layout: React.FC = ({ children }) => {
+const Layout: React.FC = ({ children }) => {
   const { routerStore } = useStores();
 
   const { locale } = useLocale("menu");
@@ -55,3 +55,5 @@ export const Layout: React.FC = ({ children }) => {
     </main>
   );
 };
+
+export default Layout;

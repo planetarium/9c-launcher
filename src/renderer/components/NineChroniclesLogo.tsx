@@ -11,8 +11,10 @@ const useStyles = makeStyles({
   },
 });
 
-export const NineChroniclesLogo = () => (
+const NineChroniclesLogo = () => (
   <Container>
     <img src={logo} className={useStyles().img} />
   </Container>
 );
+
+export default NineChroniclesLogo;

@@ -2,7 +2,7 @@ import React from "react";
 import { observer, inject } from "mobx-react";
 import { Button, Container, Box } from "@material-ui/core";
 import { IStoreContainer } from "../../../interfaces/store";
-import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
+import NineChroniclesLogo from "../../components/NineChroniclesLogo";
 import mainViewStyle from "./MainView.style";
 
 import { useLocale } from "../../i18n";

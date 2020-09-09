@@ -18,11 +18,8 @@ interface IRegisterPrivateKeyViewProps {
 
 type StateSetter<T> = (value: T) => void;
 
-export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = inject(
-  "accountStore",
-  "routerStore"
-)(
-  observer(({ accountStore, routerStore }) => {
+const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = observer(
+  ({ accountStore, routerStore }) => {
     const [firstPassword, setFirstPassword] = useState("");
     const [secondPassword, setSecondPassword] = useState("");
 
@@ -93,5 +90,7 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
         <Button onClick={handleSubmit}>{locale("Done")}</Button>
       </>
     );
-  })
+  }
 );
+
+export default inject("accountStore", "routerStore")(RegisterPrivateKeyView);

@@ -12,11 +12,8 @@ interface IInputPrivateKeyViewProps {
   routerStore: RouterStore;
 }
 
-export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
-  "accountStore",
-  "routerStore"
-)(
-  observer(({ accountStore, routerStore }) => {
+const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = observer(
+  ({ accountStore, routerStore }) => {
     const [privateKey, setPrivateKeyState] = useState("");
 
     const { loading, data, error } = useValidatePrivateKeyQuery({
@@ -64,5 +61,7 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
         <a href="/account/revoke">{locale("Forgot private key?")}</a>
       </>
     );
-  })
+  }
 );
+
+export default inject("accountStore", "routerStore")(InputPrivateKeyView);

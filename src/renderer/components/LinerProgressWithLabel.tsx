@@ -6,7 +6,7 @@ import {
 } from "@material-ui/core";
 import React from "react";
 
-export const LinearProgressWithLabel = (
+const LinearProgressWithLabel = (
   props: LinearProgressProps & { value: number }
 ) => {
   return (
@@ -23,3 +23,5 @@ export const LinearProgressWithLabel = (
     </Box>
   );
 };
+
+export default LinearProgressWithLabel;

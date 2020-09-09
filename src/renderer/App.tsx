@@ -22,8 +22,8 @@ import { LOCAL_SERVER_URL, electronStore } from "../config";
 import GameStore from "./stores/game";
 import Root from "./Root";
 import StandaloneStore from "./stores/standalone";
-import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
-import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
+import DifferentAppProtocolVersionSubscriptionProvider from "./DifferentAppProtocolVersionSubscriptionProvider";
+import NotificationSubscriptionProvider from "./NotificationSubscriptionProvider";
 import montserrat from "./styles/font";
 
 import LocaleProvider from "./i18n";

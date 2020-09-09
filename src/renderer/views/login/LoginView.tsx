@@ -14,9 +14,9 @@ import { LoginFormEvent } from "../../../interfaces/event";
 
 import "../../styles/login/login.scss";
 import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
-import { Select } from "../../components/Select";
+import Select from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
-import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
+import NineChroniclesLogo from "../../components/NineChroniclesLogo";
 import VisibilityAdornment from "../../components/VisibilityAdornment";
 import TextButton from "../../components/TextButton";
 

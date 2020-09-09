@@ -16,7 +16,7 @@ import { electronStore, blockchainStoreDirParent } from "../../../config";
 import { SettingsFormEvent } from "../../../interfaces/event";
 import configurationViewStyle from "./ConfigurationView.style";
 import { useLocale } from "../../i18n";
-import { Select } from "../../components/Select";
+import Select from "../../components/Select";
 
 type SupportLocales = Record<string, string>;
 

@@ -5,7 +5,7 @@ enum NotificationEnum {
   Refill = "REFILL",
 }
 
-export function NotificationSubscriptionProvider() {
+export default function NotificationSubscriptionProvider() {
   const { loading, data } = useNotificationSubscription();
 
   useEffect(() => {

@@ -34,7 +34,7 @@ import lockfile from "lockfile";
 import checkDiskSpace from "check-disk-space";
 import { retry } from "@lifeomic/attempt";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
-import { initializeSentry } from "../preload/sentry";
+import initializeSentry from "../preload/sentry";
 import logoImage from "./resources/logo.png";
 
 initializeSentry();
