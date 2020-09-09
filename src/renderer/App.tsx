@@ -21,7 +21,7 @@ import Root from "./Root";
 import StandaloneStore from "./stores/standalone";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
-import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
+import useNotification from "../hooks/useNotification";
 import montserrat from "./styles/font";
 
 import LocaleProvider from "./i18n";
@@ -85,6 +85,8 @@ function App() {
     []
   );
 
+  useNotification();
+
   useEffect(() => {
     mixpanel.track("Launcher/Start");
   }, []);
@@ -92,7 +94,6 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <DifferentAppProtocolVersionSubscriptionProvider />
-      <NotificationSubscriptionProvider />
       <Router history={history}>
         <Provider {...Store}>
           <ThemeProvider theme={theme}>
