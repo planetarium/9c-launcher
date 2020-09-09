@@ -4,12 +4,16 @@ import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Container, Typography } from "@material-ui/core";
 import { BLOCKCHAIN_STORE_PATH } from "../../../config";
+import * as Sentry from "@sentry/electron";
 
 const ErrorNoPermissionView = () => {
   const classes = errorViewStyle();
 
   useEffect(() => {
     mixpanel.track("Launcher/ErrorNoPerm");
+    Sentry.captureException(
+      new Error("Error occurred while creating directory.")
+    );
   }, []);
   return (
     <Container className={classes.root}>

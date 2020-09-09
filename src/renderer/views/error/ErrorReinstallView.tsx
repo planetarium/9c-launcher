@@ -3,6 +3,7 @@ import { shell, remote } from "electron";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Container, Typography } from "@material-ui/core";
+import * as Sentry from "@sentry/electron";
 
 import { useLocale } from "../../i18n";
 
@@ -21,6 +22,7 @@ const ErrorReinstallView = () => {
 
   useEffect(() => {
     mixpanel.track("Launcher/ErrorReinstall");
+    Sentry.captureException(new Error("Reinstall required."));
   }, []);
   return (
     <Container className={classes.root}>
