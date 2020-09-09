@@ -45,7 +45,6 @@
     "react/jsx-one-expression-per-line": "off",
     "react/jsx-props-no-spreading": "off",
     "react/jsx-wrap-multilines": "off",
-    "react/prefer-stateless-function": "off",
     "react/prop-types": "off",
     "require-await": "error",
     "semi": "error"
