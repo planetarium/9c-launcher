@@ -244,8 +244,8 @@
     "Retype Password": {
       "en": "Retype Password"
     },
-    "Password is not equal.": {
-      "en": "Password is not equal."
+    "Password does not match.": {
+      "en": "Password does not match."
     },
     "Done": {
       "en": "Done"
@@ -261,8 +261,17 @@
     "Root chain store path": {
       "en": "Root chain store path"
     },
+    "Select path": {
+      "en": "Select path"
+    },
     "Chain store directory name": {
       "en": "Chain store directory name"
+    },
+    "Select Language": {
+      "en": "Select Language"
+    },
+    "Please restart the launcher to apply the updated settings.": {
+      "en": "Please restart the launcher to apply the updated settings."
     }
   },
   "preloadProgress": {

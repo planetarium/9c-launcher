@@ -1,5 +1,5 @@
 import { shell } from "electron";
-import React from "react";
+import React, { useState, useRef, useCallback } from "react";
 import YouTube, { Options as IYoutubeOption } from "react-youtube";
 import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
@@ -28,14 +28,13 @@ import { electronStore } from "../../../config";
 import { YouTubeInternal } from "../../../interfaces/refs";
 
 import { useLocale } from "../../i18n";
-import { P } from "../../styles/styled";
 
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore, standaloneStore } = props;
   const classes = preloadViewStyle();
-  const [progress, setProgress] = React.useState(0);
+  const [progress, setProgress] = useState(0);
 
-  const locale = useLocale("preload");
+  const { locale } = useLocale("preload");
 
   const videoOpts: IYoutubeOption = {
     width: "330",
@@ -45,24 +44,18 @@ const PreloadView = observer((props: IStoreContainer) => {
     },
   };
 
-  const handleClickBlockExplorer = React.useCallback(() => {
+  const handleClickBlockExplorer = useCallback(() => {
     shell.openExternal("https://explorer.libplanet.io/9c-beta/");
   }, []);
 
-  const handleClickPlayerGuide = React.useCallback(() => {
+  const handleClickPlayerGuide = useCallback(() => {
     shell.openExternal(
       "https://forum.nine-chronicles.com/t/nine-chronicles-quick-game-guide/31"
     );
   }, []);
 
-  const Headline = styled(Typography)({
-    marginTop: "30px",
-    fontWeight: "bold",
-    lineHeight: 1.25,
-  });
-
-  const youtubeRef = React.useRef<YouTubeInternal>(null);
-  const handleLaunch = React.useCallback(() => {
+  const youtubeRef = useRef<YouTubeInternal>(null);
+  const handleLaunch = useCallback(() => {
     const player = youtubeRef.current?.internalPlayer;
     if (player === undefined) throw Error("YouTube Player not found");
     player.pauseVideo();
@@ -70,13 +63,13 @@ const PreloadView = observer((props: IStoreContainer) => {
 
   return (
     <Container className={classes.root}>
-      <Headline paragraph>
+      <Typography variant="h1" className={classes.title}>
         {(locale(
           "Receiving data from other users. Let's watch teaser and contents!"
         ) as string[]).map((paragraph) => (
-          <P key={paragraph}>{paragraph}</P>
+          <span key={paragraph}>{paragraph}</span>
         ))}
-      </Headline>
+      </Typography>
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
       <List component="nav">
         <ListItem button onClick={handleClickBlockExplorer}>

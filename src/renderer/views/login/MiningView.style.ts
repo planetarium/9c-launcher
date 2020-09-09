@@ -6,6 +6,7 @@ const miningViewStyle = makeStyles({
   },
 
   title: {
+    fontSize: "1.17em",
     fontWeight: "bold",
   },
 
@@ -33,6 +34,7 @@ const miningViewStyle = makeStyles({
   requirement: {
     fontSize: "small",
     color: "darkgray",
+    margin: 0,
   },
 
   jade: {

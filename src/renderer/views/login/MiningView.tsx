@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { observer, inject } from "mobx-react";
 import { Button, Container, Box } from "@material-ui/core";
@@ -6,7 +6,6 @@ import miningViewStyle from "./MiningView.style";
 import jade from "../../resources/miningJade.png";
 import mixpanel from "mixpanel-browser";
 import { useLocale } from "../../i18n";
-import { P } from "../../styles/styled";
 
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
@@ -25,7 +24,7 @@ const MiningView = observer(
       routerStore.push("/lobby/preload");
     };
 
-    const locale = useLocale("mining");
+    const { locale } = useLocale("mining");
 
     const requirement = locale("requirement");
     if (typeof requirement === "string")
@@ -33,15 +32,15 @@ const MiningView = observer(
 
     return (
       <Container className={classes.root}>
-        <h3 className={classes.title}>
+        <h1 className={classes.title}>
           {locale("Do you want to turn mining on?")}
-        </h3>
+        </h1>
         <img className={classes.jade} src={jade} />
         <p>{locale("description")}</p>
         {requirement.map((paragraph) => (
-          <P key={paragraph} className={classes.requirement}>
+          <p key={paragraph} className={classes.requirement}>
             {paragraph}
-          </P>
+          </p>
         ))}
         <Box className={classes.buttonContainer}>
           <Button

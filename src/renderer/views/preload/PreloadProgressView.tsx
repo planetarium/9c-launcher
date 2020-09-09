@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react";
 import mixpanel from "mixpanel-browser";
 import { ipcRenderer, IpcRendererEvent } from "electron";
@@ -25,19 +25,19 @@ const PreloadProgressView = observer(() => {
   } = useNodeStatusSubscriptionSubscription();
   const preloadProgress = preloadProgressSubscriptionResult?.preloadProgress;
 
-  const [isPreloadEnded, setPreloadStats] = React.useState(false);
-  const [progress, setProgress] = React.useState(0);
-  const [step, setStep] = React.useState(0);
-  const [aborted, setAborted] = React.useState(false);
+  const [isPreloadEnded, setPreloadStats] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [step, setStep] = useState(0);
+  const [aborted, setAborted] = useState(false);
 
   const [
     validateSnapshot,
     { loading, data, error },
   ] = useValidateSnapshotLazyQuery();
 
-  const locale = useLocale("preloadProgress");
+  const { locale } = useLocale("preloadProgress");
 
-  React.useEffect(() => {
+  useEffect(() => {
     ipcRenderer.on("not enough space on the disk", () => {
       gotoErrorPage("disk-space");
     });
@@ -102,7 +102,7 @@ const PreloadProgressView = observer(() => {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (undefined === error && !loading && data !== undefined) {
       if (data.validation.metadata) {
         const options: IDownloadOptions = {
@@ -117,7 +117,7 @@ const PreloadProgressView = observer(() => {
     }
   }, [data?.validation.metadata]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     mixpanel.track(`Launcher/${statusMessage[step]}`);
   }, [step]);
 
@@ -154,16 +154,16 @@ const PreloadProgressView = observer(() => {
     routerStore.push(`/error/${page}`);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
     setPreloadStats(isEnded === undefined ? false : isEnded);
   }, [nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     standaloneStore.IsPreloadEnded = isPreloadEnded;
   }, [isPreloadEnded]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const prog = getProgress(
       preloadProgressSubscriptionResult?.preloadProgress?.extra.currentCount,
       preloadProgressSubscriptionResult?.preloadProgress?.extra.totalCount
@@ -171,7 +171,7 @@ const PreloadProgressView = observer(() => {
     setProgress(prog);
   }, [preloadProgress?.extra]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (preloadProgress !== undefined) {
       setStep(preloadProgress?.currentPhase + 2);
     }

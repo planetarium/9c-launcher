@@ -17,6 +17,7 @@ import {
   nativeImage,
   ipcMain,
   DownloadItem,
+  dialog,
 } from "electron";
 import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
@@ -99,6 +100,8 @@ function executeStandalone() {
       "--graphql-host=localhost",
       `--graphql-port=${LOCAL_SERVER_PORT}`,
       `--mpt=${electronStore.get("MPT")}`,
+      `--workers=${electronStore.get("Workers")}`,
+      `--confirmations=${electronStore.get("Confirmations")}`,
     ]
   );
   node.addListener("exit", (code) => {
@@ -128,19 +131,27 @@ function initializeApp() {
 
 function initializeIpc() {
   ipcMain.on("check disk permission", (event) => {
-    fs.promises
-      .access(BLOCKCHAIN_STORE_PATH, fs.constants.F_OK)
-      .then(() => {
-        event.returnValue = true;
-      })
-      .catch((err) => {
-        event.returnValue = false;
-        console.error(
-          "No read/write access to the path: ",
-          BLOCKCHAIN_STORE_PATH,
-          err
-        );
-      });
+    try {
+      if (!fs.existsSync(BLOCKCHAIN_STORE_PATH)) {
+        console.log("Create directory for given blockchain path.");
+        fs.mkdirSync(BLOCKCHAIN_STORE_PATH, { recursive: true });
+      }
+    } catch (err) {
+      console.error("Error occurred while creating directory.", err);
+      if (err.code === "EACCES" || err.code === "EPERM") return false;
+    }
+
+    try {
+      fs.accessSync(BLOCKCHAIN_STORE_PATH, fs.constants.F_OK);
+      event.returnValue = true;
+    } catch (err) {
+      event.returnValue = false;
+      console.error(
+        "No read/write access to the path: ",
+        BLOCKCHAIN_STORE_PATH,
+        err
+      );
+    }
   });
 
   ipcMain.on("check disk space", (event) => {
@@ -457,6 +468,14 @@ function initializeIpc() {
         app.exit();
       }
     }, 1000);
+  });
+
+  ipcMain.on("select-directory", async (event) => {
+    if (win === null) throw Error("BrowserWindow is null");
+    const directory = await dialog.showOpenDialog(win, {
+      properties: ["openDirectory"],
+    });
+    event.returnValue = directory.filePaths;
   });
 }
 

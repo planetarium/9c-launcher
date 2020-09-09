@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { useNotificationSubscription } from "../generated/graphql";
 
 enum NotificationEnum {
@@ -8,7 +8,7 @@ enum NotificationEnum {
 export function NotificationSubscriptionProvider() {
   const { loading, data } = useNotificationSubscription();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading && data) {
       const { type } = data.notification;
       let title = "";

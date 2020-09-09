@@ -1,8 +1,7 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import YouTube, { Options as IYoutubeOption } from "react-youtube";
 import { useDifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
-import { useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -30,7 +29,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
     },
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     ipcRenderer.on("update extract progress", (event, progress) => {
       setExtractState(true);
       setVariant("determinate");
@@ -70,7 +69,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
     loading,
     data,
   } = useDifferentAppProtocolVersionEncounterSubscription();
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       !loading &&
       null !== data?.differentAppProtocolVersionEncounter &&

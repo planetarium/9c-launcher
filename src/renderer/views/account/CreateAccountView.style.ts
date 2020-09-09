@@ -6,17 +6,23 @@ const createAccountViewStyle = makeStyles({
   },
   info: {
     color: "white",
-    display: "block",
     marginTop: "140px",
     marginBottom: "30px",
     fontWeight: "bold",
     lineHeight: 1.25,
+    fontSize: "1em",
+    "& span": {
+      display: "block",
+    },
   },
   textInput: {
     marginBottom: "40px;",
     "& .Mui-focused": {
       color: "#ffffff",
     },
+  },
+  label: {
+    marginLeft: "14px",
   },
   submit: {
     display: "block",

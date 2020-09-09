@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, MouseEvent, ChangeEvent } from "react";
 import { TextField, InputLabel, Button } from "@material-ui/core";
 import { useValidatePrivateKeyQuery } from "../../../../generated/graphql";
 import { RouterStore } from "mobx-react-router";
@@ -25,21 +25,19 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
       },
     });
 
-    const locale = useLocale("inputPrivateKey");
+    const { locale } = useLocale("inputPrivateKey");
 
     // 스탠드얼론에서 미처 감싸지 못한 예외들이 GraphQL ExecutionError로 나옵니다.
     console.error(error);
 
-    const privateKeyChangeHandle = (
-      event: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const privateKeyChangeHandle = (event: ChangeEvent<HTMLInputElement>) => {
       setPrivateKeyState(event.target.value);
     };
 
     const IsPrivateKeyValid =
       undefined === error && !loading && data?.validation.privateKey;
 
-    const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
       if (IsPrivateKeyValid) {
         accountStore.setPrivateKey(privateKey);
         routerStore.push("/account/reset/input/passphrase");

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { observer, inject } from "mobx-react";
 import LobbyView from "../lobby/LobbyView";
 import LoginView from "../login/LoginView";
@@ -13,7 +13,7 @@ import { useLocale } from "../../i18n";
 const MainView = observer(
   ({ accountStore, routerStore, gameStore }: IStoreContainer) => {
     const classes = mainViewStyle();
-    const locale = useLocale("main");
+    const { locale } = useLocale("main");
 
     const description = locale("description");
     if (typeof description === "string")
@@ -22,14 +22,14 @@ const MainView = observer(
     return (
       <Container className={classes.root}>
         <NineChroniclesLogo />
-        <h3 className={classes.title}>
+        <h1 className={classes.title}>
           {locale("Welcome to nine chronicles!")}
-        </h3>
-        {description.map((paragraph) => (
-          <p key={paragraph} className={classes.body}>
-            {paragraph}
-          </p>
-        ))}
+        </h1>
+        <article className={classes.body}>
+          {description.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </article>
 
         <Box className={classes.buttonContainer}>
           <Button

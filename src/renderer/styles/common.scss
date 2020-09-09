@@ -30,3 +30,8 @@ button:disabled {
   background-color: $color4;
   color: $color3;
 }
+
+input[type="password"] {
+  -webkit-text-stroke-width: 0.2em;
+  letter-spacing: 0.3em;
+}

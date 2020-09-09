@@ -5,6 +5,17 @@ const preloadViewStyle = makeStyles({
     color: "#FFFFFF",
   },
 
+  title: {
+    marginTop: "30px",
+    marginBottom: "1em",
+    fontWeight: "bold",
+    fontSize: "1em",
+    lineHeight: 1.25,
+    "& span": {
+      display: "block",
+    },
+  },
+
   listItemText: {
     textDecoration: "underline",
   },

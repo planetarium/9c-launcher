@@ -1,4 +1,10 @@
-import * as React from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  ChangeEvent,
+  FormEvent,
+} from "react";
 import {
   Button as ButtonOrigin,
   ButtonProps,
@@ -40,12 +46,12 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     activate,
     { data: isActivated, error: activatedError },
   ] = useActivateMutation();
-  const [activationKey, setActivationKey] = React.useState("");
-  const [polling, setPollingState] = React.useState(false);
+  const [activationKey, setActivationKey] = useState("");
+  const [polling, setPollingState] = useState(false);
 
-  const locale = useLocale("lobby");
+  const { locale } = useLocale("lobby");
 
-  const handleActivateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleActivateSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     activate({
       variables: {
@@ -63,21 +69,21 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     });
   };
 
-  const privateKeyChangeHandle = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+  const privateKeyChangeHandle = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
       setActivationKey(event.target.value);
     },
     [event]
   );
 
-  const handleIsActivationSuccess = React.useCallback(() => {
+  const handleIsActivationSuccess = useCallback(() => {
     if (activatedError?.message !== undefined) {
       return true;
     }
     return false;
   }, [activatedError]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       standaloneStore.IsPreloadEnded &&
       standaloneStore.IsSetPrivateKeyEnded
@@ -118,7 +124,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 });
 
 const PreloadWaitingButton = () => {
-  const locale = useLocale("lobby");
+  const { locale } = useLocale("lobby");
   return (
     <Button disabled={true} className={lobbyViewStyle().gameStartButton}>
       {locale("Preloading...")}
@@ -135,9 +141,9 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
     props.onLaunch();
   };
 
-  const locale = useLocale("lobby");
+  const { locale } = useLocale("lobby");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (standaloneStore.IsPreloadEnded) {
       handleStartGame();
     }

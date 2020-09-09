@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core";
 const loginViewStyle = makeStyles({
   root: {
     margin: "15px",
+    width: "47vw",
   },
   cacheButton: {
     float: "right",
@@ -19,6 +20,7 @@ const loginViewStyle = makeStyles({
   },
   revokeLink: {
     margin: "10px auto",
+    textAlign: "center",
     display: "block",
     width: "150px",
     color: "white",

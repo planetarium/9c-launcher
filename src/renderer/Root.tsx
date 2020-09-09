@@ -1,5 +1,5 @@
 import { hot } from "react-hot-loader";
-import * as React from "react";
+import React from "react";
 import { Route, Switch, Redirect } from "react-router";
 import { Layout } from "./views/layout/Layout";
 import "./styles/common.scss";
@@ -27,53 +27,47 @@ class Root extends React.Component {
   render() {
     return (
       <Layout>
-        <Box>
-          <Switch>
-            <Route exact path="/" component={IntroView} />
-            <Route exact path="/main" component={MainView} />
-            <Route exact path="/login" component={LoginView} />
-            <Route exact path="/login/mining" component={MiningView} />
-            <Route exact path="/lobby" component={LobbyView} />
-            <Route exact path="/lobby/preload" component={PreloadView} />
-            <Route exact path="/error/relaunch" component={ErrorRelaunchView} />
-            <Route
-              exact
-              path="/error/reinstall"
-              component={ErrorReinstallView}
-            />
-            <Route
-              exact
-              path="/error/no-permission"
-              component={ErrorNoPermissionView}
-            />
-            <Route
-              exact
-              path="/error/disk-space"
-              component={ErrorDiskSpaceView}
-            />
-            <Route exact path="/account" component={AccountView} />
-            <Route exact path="/account/create" component={CreateAccountView} />
-            <Route
-              exact
-              path="/account/create/copy"
-              component={CopyCreatedPrivateKeyView}
-            />
-            <Route exact path="/account/revoke" component={RevokeAccountView} />
-            <Route
-              exact
-              path="/account/reset/input/private-key"
-              component={InputPrivateKeyView}
-            />
-            <Route
-              exact
-              path="/account/reset/input/passphrase"
-              component={RegisterPrivateKeyView}
-            />
-            <Route exact path="/config" component={ConfigurationView} />
-            <Redirect from="*" to="/" />
-          </Switch>
-          <PreloadProgressView />
-        </Box>
+        <Switch>
+          <Route exact path="/" component={IntroView} />
+          <Route exact path="/main" component={MainView} />
+          <Route exact path="/login" component={LoginView} />
+          <Route exact path="/login/mining" component={MiningView} />
+          <Route exact path="/lobby" component={LobbyView} />
+          <Route exact path="/lobby/preload" component={PreloadView} />
+          <Route exact path="/error/relaunch" component={ErrorRelaunchView} />
+          <Route exact path="/error/reinstall" component={ErrorReinstallView} />
+          <Route
+            exact
+            path="/error/no-permission"
+            component={ErrorNoPermissionView}
+          />
+          <Route
+            exact
+            path="/error/disk-space"
+            component={ErrorDiskSpaceView}
+          />
+          <Route exact path="/account" component={AccountView} />
+          <Route exact path="/account/create" component={CreateAccountView} />
+          <Route
+            exact
+            path="/account/create/copy"
+            component={CopyCreatedPrivateKeyView}
+          />
+          <Route exact path="/account/revoke" component={RevokeAccountView} />
+          <Route
+            exact
+            path="/account/reset/input/private-key"
+            component={InputPrivateKeyView}
+          />
+          <Route
+            exact
+            path="/account/reset/input/passphrase"
+            component={RegisterPrivateKeyView}
+          />
+          <Route exact path="/config" component={ConfigurationView} />
+          <Redirect from="*" to="/" />
+        </Switch>
+        <PreloadProgressView />
       </Layout>
     );
   }

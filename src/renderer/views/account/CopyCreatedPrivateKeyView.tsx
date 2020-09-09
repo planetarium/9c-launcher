@@ -1,9 +1,8 @@
-import * as React from "react";
+import React from "react";
 import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
 
 import { Button, TextField, Typography } from "@material-ui/core";
-import { P } from "../../styles/styled";
 
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CopyCreatedPrivateKeyView.style";
@@ -18,33 +17,32 @@ interface ICopyCreatedPrivateKeyProps {
 }
 
 const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observer(
-  ({ accountStore, routerStore }: ICopyCreatedPrivateKeyProps) => {
+  ({ accountStore, routerStore }) => {
     const classes = createAccountViewStyle();
 
-    const locale = useLocale("copyPrivateKey");
+    const { locale } = useLocale("copyPrivateKey");
 
     return (
       <div className={classes.root}>
-        <Typography className={classes.title}>
+        <Typography variant="h1" className={classes.title}>
           {(locale("title") as string[]).map((paragraph) => (
-            <P key={paragraph}>{paragraph}</P>
+            <span key={paragraph}>{paragraph}</span>
           ))}
         </Typography>
-        <Typography className={classes.description}>
+        <article className={classes.description}>
           {(locale("description") as string[]).map((paragraph) => (
-            <P key={paragraph}>{paragraph}</P>
+            <Typography key={paragraph}>{paragraph}</Typography>
           ))}
-        </Typography>
-        <br />
-        <Typography className={classes.warning}>
+        </article>
+        <article className={classes.warning}>
           {(locale("warning") as string[]).map((paragraph) => (
-            <P key={paragraph}>{paragraph}</P>
+            <Typography key={paragraph}>{paragraph}</Typography>
           ))}
-        </Typography>
+        </article>
         <div className={classes.privateKeyContainer}>
-          <h3 className={classes.privateKeyText}>
+          <h2 className={classes.privateKeyText}>
             {locale("Your Private key")}
-          </h3>
+          </h2>
           <TextField
             id="created-private-key"
             variant="outlined"

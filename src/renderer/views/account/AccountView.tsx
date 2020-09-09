@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { Container, InputLabel } from "@material-ui/core";
@@ -8,8 +8,8 @@ import RevokeAccountView from "./RevokeAccountView";
 import { useLocale } from "../../i18n";
 
 const AccountView: React.FC<IStoreContainer> = observer(
-  ({ accountStore, routerStore }: IStoreContainer) => {
-    const locale = useLocale("account");
+  ({ accountStore, routerStore }) => {
+    const { locale } = useLocale("account");
 
     return (
       <div>

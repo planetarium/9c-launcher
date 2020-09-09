@@ -1,10 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import { Button, Typography } from "@material-ui/core";
 import AccountStore from "../../stores/account";
 import { RouterStore } from "mobx-react-router";
-import { AccountSelect } from "../../components/AccountSelect";
 import { useRevokePrivateKeyMutation } from "../../../generated/graphql";
 import revokeAccountViewStyle from "./RevokeAccountView.style";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
@@ -17,10 +16,10 @@ interface IRevokeAccountProps {
 }
 
 const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
-  ({ accountStore, routerStore }: IRevokeAccountProps) => {
+  ({ accountStore, routerStore }) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
 
-    const locale = useLocale("revokeAccount");
+    const { locale } = useLocale("revokeAccount");
 
     const description = locale("description");
 
