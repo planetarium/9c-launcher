@@ -45,6 +45,7 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
           <li>
             <Button
               startIcon={<SettingsIcon />}
+              className="settings-icon"
               disabled={routerStore.location.pathname === "/config"}
               onClick={() => {
                 routerStore.push("/config");
