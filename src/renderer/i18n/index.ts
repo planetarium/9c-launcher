@@ -10,7 +10,19 @@ const context = createContext<LocaleContext>({
   locale: "en",
 });
 
-const supportedLocales = { en: "English" } as Record<string, string>;
+const supportedLocales = {
+  en: "English",
+  id: "Indonesian",
+  ja: "Japanese",
+  km: "Khmer",
+  lt: "Lithuanian",
+  nl: "Dutch",
+  pl: "Polish",
+  pt: "Portuguese",
+  "pt-BR": "Portuguese (Brazil)",
+  th: "Thai",
+  es: "Spanish",
+} as Record<string, string>;
 
 export function useLocale(pageName: keyof typeof pages) {
   const { locale } = useContext(context);
