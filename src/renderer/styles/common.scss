@@ -26,9 +26,13 @@ button {
   border-style: none;
 }
 
-button:disabled {
+button:disabled:not(.settings-icon) {
   background-color: $color4;
   color: $color3;
+}
+
+button.settings-icon:hover {
+  all: unset;
 }
 
 input[type="password"] {
