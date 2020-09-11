@@ -69,14 +69,14 @@ const ConfigurationView = observer(() => {
 
   return (
     <div className={classes.root}>
-      <section className={classes.titleWarp}>
+      <header className={classes.titleWarp}>
         <Typography variant="h1" gutterBottom className={classes.title}>
           {locale("Settings")}
         </Typography>
         <Button onClick={routerStore.goBack} className={classes.exit}>
           X
         </Button>
-      </section>
+      </header>
       <form onSubmit={handleSubmit}>
         <article className={classes.fields}>
           <FormLabel>{locale("Root chain store path")}</FormLabel>
