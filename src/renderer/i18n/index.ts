@@ -12,16 +12,16 @@ const context = createContext<LocaleContext>({
 
 const supportedLocales = {
   en: "English",
-  id: "Indonesian",
-  ja: "Japanese",
-  km: "Khmer",
-  lt: "Lithuanian",
-  nl: "Dutch",
-  pl: "Polish",
-  pt: "Portuguese",
-  "pt-BR": "Portuguese (Brazil)",
-  th: "Thai",
-  es: "Spanish",
+  es: "Español",
+  id: "Bahasa Indonesia",
+  ja: "日本語",
+  km: "ភាសាខ្មែរ",
+  lt: "Lietuvių",
+  nl: "Nederlands",
+  pl: "polski",
+  pt: "Português",
+  "pt-BR": "Português (Brazil)",
+  th: "ภาษาไทย",
 } as Record<string, string>;
 
 export function useLocale(pageName: keyof typeof pages) {
