@@ -12,7 +12,7 @@ import { useLocale } from "../../i18n";
 
 export interface ILayoutProps {}
 
-export const Layout: React.FC<ILayoutProps> = ({ children }) => {
+export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
   const { routerStore } = useStores();
 
   const { locale } = useLocale("menu");
@@ -58,4 +58,4 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
       </section>
     </main>
   );
-};
+});
