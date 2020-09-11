@@ -65,7 +65,7 @@ const PreloadView = observer((props: IStoreContainer) => {
     <Container className={classes.root}>
       <Typography variant="h1" className={classes.title}>
         {(locale(
-          "Receiving data from other users. Let's watch teaser and contents!"
+          "Receiving data from other users. Let's watch the trailer and new content!"
         ) as string[]).map((paragraph) => (
           <span key={paragraph}>{paragraph}</span>
         ))}

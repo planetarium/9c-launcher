@@ -28,7 +28,7 @@ const ErrorReinstallView = () => {
         {locale("Something went wrong.")}
       </Typography>
       <Typography variant="subtitle1">
-        {locale("Please follow step below.")}
+        {locale("Please follow the steps below.")}
       </Typography>
       <ol>
         {steps.map((step) => (
@@ -37,7 +37,7 @@ const ErrorReinstallView = () => {
       </ol>
       <Typography>
         {`${locale(
-          "If you met this page again after reinstall, please contact us via"
+          "If you are still seeing this page after reinstall, please contact support via"
         )} `}
         <a
           className={classes.link}

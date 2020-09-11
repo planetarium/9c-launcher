@@ -1,57 +1,204 @@
 {
   "intro": {
     "now loading...": {
-      "en": "now loading..."
+      "en": "Now Loading...",
+      "pl": "Wczytywanie...",
+      "pt": "Carregando...",
+      "lt": "Kraunasi...",
+      "nl": "Laden...",
+      "es": "Cargando...",
+      "pt-BR": "Carregando...",
+      "km": "កំពុងដំណើរការ...",
+      "id": "sedang memuat...",
+      "th": "กำลังโหลด...",
+      "ja": "読み込み中..."
     }
   },
   "menu": {
     "Forum": {
-      "en": "Forum"
+      "en": "Forum",
+      "pl": "Forum",
+      "th": "Forum",
+      "ja": "Forum"
     },
     "Discord": {
-      "en": "Discord"
+      "en": "Discord",
+      "pl": "Discord",
+      "th": "Discord",
+      "ja": "Discord"
     },
     "Settings": {
-      "en": "Settings"
+      "en": "Settings",
+      "pl": "Ustawienia",
+      "th": "Settings",
+      "ja": "Settings"
     }
   },
   "main": {
     "Welcome to nine chronicles!": {
-      "en": "Welcome to nine chronicles!"
+      "en": "Welcome to Nine Chronicles!",
+      "pl": "Witaj w Nine Chronicles!",
+      "pt": "Bem vindo a Nine Chronicles!",
+      "lt": "Sveiki atvyke į Devynias Kronikas!",
+      "nl": "Welkom bij Nine Chronicles!",
+      "es": "Bienvenido a Nine Chronicles",
+      "pt-BR": "Bem Vindo a Nine Chronicles!",
+      "km": "ស្វាគមន៍មកកាន់ Nine Chronicles!",
+      "id": "selamat datang di Nine Chronicles!",
+      "th": "ยินดีต้อนรับสู่ Nine Chronicles!",
+      "ja": "ナインクロニクルへようこそ！"
     },
     "description": {
       "en": [
-        "It is a fantasy world on the blockchain.",
-        "To start the game, you need to create your account."
+        "This is a fantasy world on the blockchain.",
+        "You need to create an account to start the game."
+      ],
+      "pl": [
+        "To świat fantasy zbudowany na blockchainie",
+        "Aby rozpocząć grę musisz najpierw utworzyć konto."
+      ],
+      "pt": [
+        "Isto é um mundo de fantasia de blockchain.",
+        "Para começar o jogo, precisas de criar uma conta."
+      ],
+      "lt": [
+        "Šis fantazijos pasaulis yra sukurtas blokų grandinės principu.",
+        "Prieš pradėdamas žaidimą tu turi susikurti paskyrą."
+      ],
+      "nl": [
+        "Dit is een fantasiewereld op de blockchain.",
+        "Om het spel te starten, moet je een account aanmaken."
+      ],
+      "es": [
+        "Este es un mundo de fantasia en blockchain",
+        "Para iniciar el juego, debes crearte una cuenta."
+      ],
+      "pt-BR": [
+        "Esse é o mundo de fantasia de blockchain.",
+        "Para iniciar o jogo, você precisa criar sua conta."
+      ],
+      "km": [
+        "នេះគឺជាពិភពរវើរវាយនៅលើ blockchain.",
+        "អ្នកត្រូវបង្កើតគណនីដើម្បីចាប់ផ្តើមហ្គេម។"
+      ],
+      "id": [
+        "dunia fantasi di blockchain.",
+        "anda harus membuat akun untuk mulai bermain."
+      ],
+      "th": [
+        "นี่คือโลกแฟนตาซีบนบล็อคเชน",
+        "คุณจำเป็นต้องสร้างบัญชีเพื่อเริ่มเกม"
+      ],
+      "ja": [
+        "ここはブロックチェーン上のファンタジーワールドです。",
+        "まずはアカウントを作成してみましょう。"
       ]
     },
     "Create Account": {
-      "en": "Create Account"
+      "en": "Create Account",
+      "pl": "Utwórz konto",
+      "pt": "Criar Conta",
+      "lt": "Susikurti paskyrą",
+      "nl": "Account aanmaken",
+      "es": "Crear cuenta",
+      "pt-BR": "Criar Conta",
+      "km": "បង្កើតគណនី",
+      "id": "Buat Akun",
+      "th": "สร้างบัญชี",
+      "ja": "アカウント作成"
     }
   },
   "login": {
     "CLEAR CACHE": {
-      "en": "CLEAR CACHE"
+      "en": "CLEAR CACHE",
+      "pl": "OPRÓŻNIJ PAMIĘĆ PODRĘCZNĄ",
+      "pt": "Limpar Cache",
+      "lt": "Išvalyti talpyklą",
+      "nl": "Verwijder cache",
+      "es": "Limpiar caché",
+      "pt-BR": "Limpar Cache",
+      "km": "លុប CACHE",
+      "id": "Bersihkan CACHE",
+      "th": "ล้างแคช",
+      "ja": "キャッシュをクリア"
     },
     "ID": {
-      "en": "ID"
+      "en": "ID",
+      "pl": "ID",
+      "pt": "ID",
+      "lt": "ID",
+      "nl": "ID",
+      "es": "ID",
+      "pt-BR": "ID",
+      "km": "ID",
+      "id": "ID",
+      "th": "ID",
+      "ja": "ID"
     },
     "Password": {
-      "en": "Password"
+      "en": "Password",
+      "pl": "Hasło",
+      "pt": "Palavra-passe",
+      "lt": "Slaptažodis",
+      "nl": "Wachtwoord",
+      "es": "Contraseña",
+      "pt-BR": "Senha",
+      "km": "ពាក្យសម្ងាត់",
+      "id": "Kata Sandi",
+      "th": "รหัสผ่าน",
+      "ja": "パスワード"
     },
     "Login": {
-      "en": "Login"
+      "en": "Login",
+      "pl": "Login",
+      "pt": "Logar",
+      "lt": "Prisijungti",
+      "nl": "Login",
+      "es": "Ingresar",
+      "pt-BR": "Login",
+      "km": "ចូល",
+      "id": "Masuk",
+      "th": "ล็อคอิน",
+      "ja": "ログイン"
     },
     "Forgot password?": {
-      "en": "Forgot password?"
+      "en": "Forgot password?",
+      "pl": "Zapomniałeś hasła?",
+      "pt": "Esqueceu-se da palavra-passe?",
+      "lt": "Pamiršai slaptažodį?",
+      "nl": "Wachtwoord vergeten?",
+      "es": "Olvidó su contraseña?",
+      "pt-BR": "Esquecer Senha?",
+      "km": "ភ្លេចពាក្យសំងាត់",
+      "id": "Lupa password",
+      "th": "ลืมรหัสผ่าน?",
+      "ja": "パスワードを忘れましたか？"
     }
   },
   "mining": {
-    "Do you want to turn mining on?": {
-      "en": "Do you want to turn mining on?"
+    "Do you want to turn the mining feature on?": {
+      "en": "Do you want to turn the mining feature on?",
+      "pl": "Czy chcesz włączyć wydobywanie?",
+      "pt": "Queres ligar a mineração ?",
+      "lt": "Ar įjugti kasimo funkciją?",
+      "nl": "Wil je mijnen aanzetten?",
+      "pt-BR": "Deseja ligar a mineração?",
+      "km": "តើអ្នកចង់បើកលក្ខណៈរុករករ៉ែទេ?",
+      "id": "Apakah anda mau menyalakan fitur mining ?",
+      "th": "คุณต้องการเปิดระบบขุดเหรียญหรือไม่?",
+      "ja": "マイニングをオンにしますか？"
     },
     "description": {
-      "en": "Nine Chronicles pursues an in-game economy that users create together.You can produce gold just by playing games. Instead, you will contribute your computer resources to the operation of NineChronicles."
+      "en": "Nine Chronicles pursues an in-game economy that users create together. You can produce Nine Chronicles Gold just by playing the game. During gameplay, you may contribute your computer resources to the operation of Nine Chronicles to earn gold.",
+      "pl": "Nine Chronicles dąży do ekonomii gry, którą użytkownicy tworzą razem. Możesz wyprodukować walutę Nine Chronicles po prostu grając w grę. Podczas rozgrywki możesz także przekierować część zasobów komputera dla Nine Chronicles, aby zdobyć dodatkowe złoto.",
+      "pt": "Nine Chronicles procura uma economia dentro do jogo, em que os utilizadores a criam juntos.Tu podes produzir Nine Chronicles ouro só por jogares o jogo. Durante o jogo, tu deves contibuir com os recursos do teu computador para a operação de Nine Chronicles para ganhares ouro.",
+      "lt": "Devynios Kronikos ekonomika yra pilnai valdoma žaidėjų. Tu gali uždirbti Devinių Kronikų auksą tiesiog žaidžiant žaidimą. Žaidimo eigoje galima dalintis savo kompiuterio ištekliais ir taip užsidirbti Devynių Kronikų auksą",
+      "nl": "Nine Chronicles streeft naar een in-game economy die spelers samen bouwen. Je kan Nine Chronicles Goud produceren door enkel het spel te spelen. Tijdens het spelen van het spel heb je de mogelijkheid om je computers rekenkracht te gebruiken om Nine Chronicles goud te verdienen.",
+      "pt-BR": "Nine Chronicles procura uma econômia que os jogadores criam juntos. Você pode produzir Ouro Nine Chronicles só jogando o jogo. Durante a gameplay, você pode contribuir com os recursos de seu computador para as operações do Nine Chronicles para ganhar dinheiro.",
+      "km": "Nine Chronicles ស្វែងរកសេដ្ឋកិច្ចនៅក្នុងហ្គេមដែលអ្នកប្រើប្រាស់បង្កើតជាមួយគ្នា។ អ្នកអាចផលិត Nine Chronicles Gold ដោយគ្រាន់តែលេងហ្គេម។ ក្នុងកំឡុងពេលលេងហ្គេមអ្នកអាចចូលរួមវិភាគទានធនធានកុំព្យូទ័ររបស់អ្នកក្នុងប្រតិបត្តិការរបស់ Nine Chronicles ដើម្បីរកប្រាក់បាន។",
+      "th": "Nine Chronicles จะเน้นไปทางระบบเศรษฐกิจที่ผู้ใช้สามารถสร้างร่วมกันได้ คุณสามารถขุดเหรียญ Nine Chronicles Gold ได้เพียงแค่เล่นเกม ในระหว่างการเล่นเกมคุณจะใช้กำลังคอมพิวเตอร์ส่วนหนึ่งในการดำเนินการของ Nine Chronicles เพื่อรับเหรียญฟรี",
+      "id": "Nine Chronicles mempunyai ekonomi dalam game yang dibuat bersama-sama dengan pengguna. Anda dapat menghasilkan Nine Chronicles Gold hanya dengan memainkan game ini. Selama permainan, anda dapat berkontribusi dengan sumber daya komputer anda untuk operasi Nine Chronicle untuk menghasilkan emas.",
+      "ja": "ナインクロニクルはユーザーと共につくるゲーム内経済圏の形成を目指しています。ユーザーはゲームをプレイするだけでナインクロニクルの通貨（ゴールド）を手に入れることができます。ゲームをプレイしている間、コンピューターのリソースをナインクロニクルの運用に充てることによってゴールドが入手できます。"
     },
     "requirement": {
       "en": [
@@ -59,113 +206,495 @@
         "Requires a 64-bit processor and operating system",
         "Processor: Quad core CPU 3.0 GHz",
         " Memory: 16 GB RAM"
+      ],
+      "pl": [
+        "Wymagania:",
+        "Wymagany jest procesor 64-bitowy oraz system operacyjny",
+        "Procesor: Quad core CPU 3.0 GHz",
+        " Pamięć RAM: 16 GB"
+      ],
+      "pt": [
+        "Requerimentos:",
+        "Requere um processador de 64-bits e um sistema operativo",
+        "Processador: Quad core CPU 3.0 GHz ",
+        "Memória: 16 GB RAM"
+      ],
+      "lt": [
+        "Reikalavimai:",
+        "Reikia 64 Bitų procesoriaus ir operacinės sistemos",
+        "Procesorius: Keturių branduolių CPU 3.0 GHz",
+        " Atmintis: 16 GB RAM"
+      ],
+      "nl": [
+        "Vereisten:",
+        "Een 64-bit processor met een besturingssysteem.",
+        "Processor: Quad core CPU 3.0 GHz",
+        "Werkgeheugen: 16 GB RAM"
+      ],
+      "pt-BR": [
+        "Requerimentos:",
+        "Requer um processador de 64-bits e um sistema operacional",
+        "Processador: Quad core CPU 3.0 GHz",
+        "Memory: 16 GB RAM"
+      ],
+      "km": [
+        "តម្រូវការ:",
+        "តម្រូវឱ្យមានប្រព័ន្ធដំណើរការនិងប្រព័ន្ធប្រតិបត្តិការ 64-bits",
+        "ឧបករណ៍ដំណើរការ: Quad core CPU 3.0 GHz",
+        "Memory: 16 GB RAM"
+      ],
+      "th": [
+        "REQUIRE:",
+        "Requires a 64-bit processor and operating system",
+        "Processor: Quad core CPU 3.0 GHz",
+        "Memory: 16 GB RAM"
+      ],
+      "id": [
+        "Membutuhkan processor dan sistem operasi 64-bit",
+        "Processor: Quad core CPU 3.0GHz",
+        "Memori: 16 GB RAM"
+      ],
+      "ja": [
+        "システム要件",
+        "64ビットの CPU および OS",
+        "Quad core CPU 3.0 GHz 以上",
+        "16 GB 以上の RAM"
       ]
     },
     "OFF": {
-      "en": "OFF"
+      "en": "OFF",
+      "pl": "WYŁĄCZ",
+      "pt": "Desligar",
+      "lt": "Išjungti",
+      "nl": "UIT",
+      "pt-BR": "Desligado",
+      "km": "បិទ",
+      "th": "ปิด",
+      "id": "Matikan",
+      "ja": "OFF"
     },
     "ON": {
-      "en": "ON"
+      "en": "ON",
+      "pl": "WŁĄCZ",
+      "pt": "Ligado",
+      "lt": "Įjungti",
+      "nl": "AAN",
+      "pt-BR": "Ligado",
+      "km": "បើក",
+      "th": "เปิด",
+      "id": "Nyalakan",
+      "ja": "ON"
     }
   },
   "lobby": {
     "Verifying...": {
-      "en": "Verifying..."
+      "en": "Verifying...",
+      "pl": "Weryfikowanie",
+      "pt": "Verificando",
+      "lt": "Tikrinama...",
+      "nl": "Verifiëren",
+      "pt-BR": "Verificando",
+      "km": "ការផ្ទៀងផ្ទាត់",
+      "th": "กำลังตรวจสอบ ...",
+      "id": "Memverifikasi ...",
+      "ja": "検証中..."
     },
     "Preloading...": {
-      "en": "Preloading..."
+      "en": "Preloading...",
+      "pl": "Wczytywanie...",
+      "pt": "Pré-carregando",
+      "lt": "Išankstinis krovimasis...",
+      "nl": "Voor-laden",
+      "pt-BR": "Pré Carregamento",
+      "km": "កំពុងផ្ទុកជាមុន",
+      "th": "กำลังโหลดล่วงหน้า ...",
+      "id": "Preloading ...",
+      "ja": "読み込み中..."
     },
     "Now Running...": {
-      "en": "Now Running..."
+      "en": "Now Running...",
+      "pl": "Uruchamianie...",
+      "pt": "Agora Correndo",
+      "lt": "Leidžiasi",
+      "nl": "Nu Actief",
+      "pt-BR": "Executando Agora",
+      "km": "ឥឡូវកំពុងដំណើរការ",
+      "th": "กำลังทำงานอยู่ ...",
+      "id": "Sedang Berjalan ...",
+      "ja": "実行中..."
     },
     "Start Game": {
-      "en": "Start Game"
+      "en": "Start Game",
+      "pl": "Rozpocznij grę",
+      "pt": "Começar o Jogo",
+      "lt": "Pradėti žaidimą",
+      "nl": "Start Spel",
+      "pt-BR": "Iniciar Jogo",
+      "km": "ចាប់ផ្តើមហ្គេម",
+      "th": "เริ่มเกม",
+      "id": "Mulai Game",
+      "ja": "ゲームを始める"
     },
     "Activation": {
-      "en": "Activation"
+      "en": "Activation",
+      "pl": "Aktywacja",
+      "pt": "Ativação",
+      "lt": "Aktyvacija",
+      "nl": "Activeren",
+      "pt-BR": "Ativar",
+      "km": "ការធ្វើឱ្យសកម្ម",
+      "th": "การเปิดใช้งาน",
+      "id": "Aktivasi",
+      "ja": "アクティベーション"
     },
     "Activation Key": {
-      "en": "Activation Key"
+      "en": "Activation Key",
+      "pl": "Klucz aktywacyjny",
+      "pt": "Chave de Ativação",
+      "lt": "Aktyvacijos raktas",
+      "nl": "Activatie Sleutel",
+      "pt-BR": "Chave de Ativação",
+      "km": "ប៊ូតុងធ្វើឱ្យសកម្ម",
+      "th": "เปิดใช้งานรหัส",
+      "id": "Kunci Aktivasi",
+      "ja": "アクティベーションキー"
     }
   },
   "preload": {
-    "Receiving data from other users. Let's watch teaser and contents!": {
+    "Receiving data from other users. Let's watch the trailer and new content!": {
       "en": [
         "Receiving data from other users.",
-        "Let's watch teaser and contents!"
+        "Let's watch the trailer and new content!"
+      ],
+      "pl": [
+        "Otrzymywanie danych od innych użytkowników.",
+        "Obejrzyjmy trailer i nowy kontent!"
+      ],
+      "pt": [
+        "Recebendo os dados dos outros utilizadores",
+        "Vamos ver o trailer e o novo conteudo!"
+      ],
+      "lt": [
+        "Gaunami duomenys iš kitų vartotoju",
+        "Pažiūrekime anonsą ir naujienas!"
+      ],
+      "nl": [
+        "Gegevens van andere spelers ontvangen.",
+        "Laten we de trailer en de nieuwe content bekijken!"
+      ],
+      "pt-BR": [
+        "Recebendo data de outros usuários.",
+        "Vamos ver o trailer e o conteúdo novo!"
+      ],
+      "km": [
+        "កំពុងទទួលទិន្នន័យពីអ្នកប្រើប្រាស់ផ្សេងទៀត",
+        "តោះទស្សនាឈុតខ្លីៗនិងមាតិការថ្មី"
+      ],
+      "th": [
+        "กำลังรับข้อมูลจากผู้เล่นรายอื่น",
+        "ไปชมตัวอย่างและเนื้อหาใหม่กันเลย!"
+      ],
+      "id": [
+        "Menerima data dari user lain.",
+        "Mari tonton trailer dan konten barunya!"
+      ],
+      "ja": [
+        "他のユーザーからデータをロード中です。",
+        "トレーラー映像をご覧ください！"
       ]
     },
     "Block Explorer": {
-      "en": "Block Explorer"
+      "en": "Block Explorer",
+      "pl": "Poszukiwacz bloków",
+      "pt": "Exploração de blocos",
+      "lt": "Blokų tyrinėtojas",
+      "nl": "Blok Onderzoeker",
+      "pt-BR": "Exploração de Blocos",
+      "km": "អ្នករុករក Block",
+      "th": "Block Explorer",
+      "id": "Block Explorer",
+      "ja": "Block Explorer"
     },
     "Nine Chronicles Player Guide": {
-      "en": "Nine Chronicles Player Guide"
+      "en": "Nine Chronicles Player Guide",
+      "pl": "Przewodnik po Nine Chronicles",
+      "pt": "Nine Chronicles Guia do jogador",
+      "lt": "Devynių Kronikų žaidėjų vadovas",
+      "nl": "Nine Chronicles Speler Handleiding",
+      "pt-BR": "Nine Chronicles Guia do Jogador",
+      "km": "ការណែនាំអ្នកលេង Nine Chronicles",
+      "th": "คู่มือผู้เล่น Nine Chronicles",
+      "id": "Panduan player Nine Chronicles",
+      "ja": "Nine Chronicles Player Guide"
     }
   },
   "errorRelaunch": {
     "Something went wrong.": {
-      "en": "Something went wrong."
+      "en": "Something went wrong.",
+      "pl": "Coś poszło nie tak",
+      "pt": "Alguma coisa correu mal",
+      "lt": "Kažkas negerai",
+      "nl": "Iets ging verkeerd",
+      "pt-BR": "Aconteceu algo de errado.",
+      "km": "មានអ្វីមួយមិនប្រក្រតី។",
+      "th": "มีบางอย่างผิดพลาด.",
+      "id": "Terjadi suatu kesalahan.",
+      "ja": "問題が発生しました。"
     },
-    "Please follow step below.": {
-      "en": "Please follow step below."
+    "Please follow the steps below.": {
+      "en": "Please follow the steps below.",
+      "pl": "Proszę wykonaj poniższe kroki.",
+      "pt": "Por favor siga os passos abaixo.",
+      "lt": "Prašome vykdyti nuroditus žingsnius žemiau",
+      "nl": "Volg alsjeblieft de volgende stappen.",
+      "pt-BR": "Por favor siga esses passos abaixo.",
+      "km": "សូមអនុវត្តតាមជំហានខាងក្រោម។",
+      "th": "โปรดทำตามขั้นตอนด้านล่างนี้",
+      "id": "Ikuti langkah dibawah ini.",
+      "ja": "以下のステップに従って下さい。"
     },
     "steps": {
-      "en": ["Relaunch “Nine Chornicles”", "Login once again"]
+      "en": ["Relaunch “Nine Chronicles”", "Login once again"],
+      "pl": ["Uruchom ponownie “Nine Chronicles”", "Zaloguj się ponownie"],
+      "pt": ["Volte a iniciar o laucher “Nine Chronicles”", " Volte a logar"],
+      "lt": ["Paleiskite “Nine Chronicles” iš naujo", "Prisijungite dar kartą"],
+      "nl": ["Herstart “Nine Chronicles”", "Log opnieuw in"],
+      "pt-BR": ["Reinicie o launcher “Nine Chronicles”", "Logue Novamente"],
+      "km": ["បើកដំណើរការឡើងវិញ “Nine Chronicles”", "ចូលម្តងទៀត"],
+      "th": ["ปิดเปิด “Nine Chronicles”", "เพื่อเข้าสู่ระบบอีกครั้ง"],
+      "id": ["Buka ulang “Nine Chronicles”", "Masukkan akun ulang"],
+      "ja": [
+        "ナインクロニクル を再起動して下さい。",
+        "もう一度ログインして下さい"
+      ]
     },
     "Relaunch": {
-      "en": "Relaunch"
+      "en": "Relaunch",
+      "pl": "Uruchom ponownie",
+      "pt": "Volte a iniciar",
+      "lt": "Paleiskite iš naujo",
+      "nl": "Herstarten",
+      "pt-BR": "Reiniciar",
+      "km": "បើកដំណើរការឡើងវិញ",
+      "th": "เริ่มเปิดใหม่",
+      "id": "Luncurkan ulang",
+      "ja": "再起動"
     }
   },
   "errorReinstall": {
     "Something went wrong.": {
-      "en": "Something went wrong."
+      "en": "Something went wrong.",
+      "pl": "Coś poszło nie tak.",
+      "pt": "Alguma coisa correu mal.",
+      "lt": "Kažkas negerai",
+      "nl": "Iets ging verkeerd",
+      "pt-BR": "Aconteceu algo de errado.",
+      "km": "មានអ្វីមួយមិនប្រក្រតី។",
+      "th": "บางอย่างผิดพลาด",
+      "id": "Terjadi kesalahan.",
+      "ja": "問題が発生しました。"
     },
-    "Please follow step below.": {
-      "en": "Please follow step below."
+    "Please follow the steps below.": {
+      "en": "Please follow the steps below.",
+      "pl": "Proszę wykonaj poniższe kroki.",
+      "pt": "Por favor siga os passos abaixo.",
+      "lt": "Prašome vykdyti nuroditus žingsnius žemiau",
+      "nl": "Volg alsjeblieft de volgende stappen.",
+      "pt-BR": "Por favor siga os passos abaixo.",
+      "km": "សូមអនុវត្តតាមជំហានខាងក្រោម។",
+      "th": "โปรดทำตามขั้นตอนด้านล่างนี้",
+      "id": "Ikuti langkah dibawah ini.",
+      "ja": "以下のステップに従って下さい。"
     },
     "steps": {
       "en": [
-        "Press close button",
-        "Delete “Nine Chornicles”",
-        "Install “Nine Chornicles”"
+        "Press the close button",
+        "Delete “Nine Chronicles”",
+        "Install “Nine Chronicles”"
+      ],
+      "pl": [
+        "Wciśnij przycisk zamknij",
+        "Usuń “Nine Chronicles”",
+        "Zainstaluj “Nine Chronicles”"
+      ],
+      "pt": [
+        "Pressione o botão fechar",
+        "Deletar “Nine Chronicles”",
+        "Instalar ”Nine Chronicles”"
+      ],
+      "lt": [
+        "paspauskite uždaryti mygtuką",
+        "Ištrinkite “Nine Chronicles”",
+        "Įdiekite “Nine Chronicles”"
+      ],
+      "nl": [
+        "Klik op de sluit knop",
+        "Verwijder “Nine Chronicles”",
+        "Installeer “Nine Chronicles”"
+      ],
+      "pt-BR": [
+        "Pressione o botão de fechar",
+        "Deletar “Nine Chronicles”",
+        "Instalar ”Nine Chronicles”"
+      ],
+      "km": [
+        "ចុចប៊ូតុងបិទ",
+        "លុប “Nine Chronicles”",
+        "អ្នកដំឡើង ”Nine Chronicles”"
+      ],
+      "th": ["กดปุ่มปิด", "ลบ “Nine Chronicles”", "ติดตั้ง “Nine Chronicles”"],
+      "id": [
+        "Tutup “Nine Chronicles”",
+        "Delete “Nine Chronicles”",
+        "Install ulang “Nine Chronicles”"
+      ],
+      "ja": [
+        "ナインクロニクル を終了して下さい",
+        "ナインクロニクル をアンインストールして下さい",
+        "ナインクロニクル を再度インストールして下さい"
       ]
     },
-    "If you met this page again after reinstall, please contact us via": {
-      "en": "If you met this page again after reinstall, please contact us via"
+    "If you are still seeing this page after reinstall, please contact support via": {
+      "en": "If you are still seeing this page after reinstall, please contact support via",
+      "pl": "Jeśli widzisz tę stronę po przeinstalowaniu gry, prosimy o kontakt z supportem via",
+      "pt": "Se vires esta página outra vez reinstala, por favor contacta o suporte via",
+      "lt": "Jei vis dar matote šį langą po perrašymo, prašome praneškite mums",
+      "nl": "Als je deze pagina nog steeds ziet na de herinstalatie, neem dan contact op met support via",
+      "pt-BR": "Se você continua vendo essa página após reinstalar, por favor contáte o suporte via",
+      "km": "ប្រសិនបើអ្នកនៅតែឃើញទំព័រនេះបន្ទាប់ពីតំឡើងម្តងទៀតសូមទាក់ទងជំនួយ via",
+      "th": "หากคุณยังคงเห็นหน้านี้หลังจากติดตั้งใหม่โปรดติดต่อฝ่ายซัพพอร์ตผ่าน",
+      "id": "Jika anda masih melihat halaman ini setelah melakukan install ulang , silahkan kontak suport melalui",
+      "ja": "再インストールしても直らない場合は、以下のサポートに連絡して下さい"
     },
     "Discord": {
-      "en": "Discord"
+      "en": "Discord",
+      "pl": "Discord",
+      "pt": "Discord",
+      "lt": "Discord",
+      "nl": "Discord",
+      "pt-BR": "Discord",
+      "km": "Discord",
+      "th": "Discord",
+      "id": "Discord",
+      "ja": "Discord"
     },
     "Close": {
-      "en": "Close"
+      "en": "Close",
+      "pl": "Zamknij",
+      "pt": "Fechar",
+      "lt": "Uždaryti",
+      "nl": "Sluiten",
+      "pt-BR": "Fechar",
+      "km": "បិទ",
+      "th": "ปิด",
+      "id": "Tutup",
+      "ja": "閉じる"
     }
   },
   "account": {
     "create key": {
-      "en": "create key"
+      "en": "create key",
+      "pl": "Utwórz klucz",
+      "pt": "Criar chave",
+      "lt": "Sukurti raktą",
+      "nl": "Sleutel aanmaken",
+      "pt-BR": "Criar Chave",
+      "km": "បង្កើតកូនសោ",
+      "th": "สร้างคีย์",
+      "id": "buat kunci",
+      "ja": "キーを生成"
     },
     "revoke key": {
-      "en": "revoke key"
+      "en": "revoke key",
+      "pl": "Anuluj klucz",
+      "pt": "Anular chave",
+      "lt": "Panaikinti raktą",
+      "nl": "Sleutel intrekken",
+      "pt-BR": "Revogar Chave",
+      "km": "ដកហូតសោ",
+      "th": "เพิกถอนคีย์",
+      "id": "hapus kunci",
+      "ja": "キーを無効化"
     },
     "reset key": {
-      "en": "reset key"
+      "en": "reset key",
+      "pl": "zresetuj klucz",
+      "pt": "Resetar chave",
+      "lt": "Atitaisyti raktą",
+      "nl": "Sleutel resetten",
+      "pt-BR": "Resetar Chave",
+      "km": "កំណត់កូនសោឡើងវិញ",
+      "th": "รีเซ็ตคีย์",
+      "id": "reset kunci",
+      "ja": "キーをリセット"
     },
     "back to the home": {
-      "en": "back to the home"
+      "en": "back to the home",
+      "pl": "Wróc",
+      "pt": "Voltar a casa",
+      "lt": "Grįžti į pradžią",
+      "nl": "terug naar huis",
+      "pt-BR": "Voltar para casa",
+      "km": "ត្រឡប់មកផ្ទះវិញទៅផ្ទាំដេីមវិញ",
+      "th": "กลับไปที่หน้าหลัก",
+      "id": "kembali ke home",
+      "ja": "ホームへ戻る"
     }
   },
   "createAccount": {
     "Please set the password to complete account creation.": {
-      "en": ["Please set the password to", "complete account creation."]
+      "en": ["Please set the password to", "complete account creation."],
+      "pl": ["Ustaw hasło na", "aby zakończ tworzenie konta."],
+      "pt": [
+        "Por favor mete palavra passe para",
+        "completar a criação de conta."
+      ],
+      "lt": ["Prašome uždėti slaptažodį", " kad sukurti vartotoją."],
+      "nl": [
+        "Zet alsjeblieft het wachtwoord naar",
+        "creëren van het account te volbrengen."
+      ],
+      "pt-BR": ["Por favor coloque a senha", "Criação de conta completa."],
+      "km": ["សូមកំណត់ពាក្យសម្ងាត់ដេីម្បី", "បង្កើតគណនីពេញលេញ។"],
+      "th": ["โปรดตั้งรหัสผ่านเพื่อ", "สร้างบัญชีให้เสร็จสมบูรณ์"],
+      "id": ["Harap atur kata sandi untuk", "menyelesaikan pembuatan akun"],
+      "ja": ["パスワードを設定して", "アカウント作成を完了して下さい"]
     },
     "Password": {
-      "en": "Password"
+      "en": "Password",
+      "pl": "Hasło",
+      "pt": "Palavra-passe",
+      "lt": "Slaptažodis",
+      "nl": "Wachtwoord",
+      "pt-BR": "Senha",
+      "km": "ពាក្យសម្ងាត់",
+      "th": "รหัสผ่าน",
+      "id": "Kata sandi",
+      "ja": "パスワード"
     },
     "Confirm": {
-      "en": "Password (Confirm)"
+      "en": "Password (Confirm)",
+      "pl": "Hasło (potwierdź)",
+      "pt": "Palavra-passe (confirme)",
+      "lt": "Slaptažodis (Patvirtinti)",
+      "nl": "Wachtwoord (bevestiging)",
+      "pt-BR": "Senha (Confirme)",
+      "km": "ពាក្យសម្ងាត់ (បញ្ជាក់)",
+      "th": "รหัสผ่าน (ยืนยัน)",
+      "id": "konfirmasi kata sandi",
+      "ja": "パスワード（確認）"
     },
     "Done": {
-      "en": "Done"
+      "en": "Done",
+      "pl": "Gotowe",
+      "pt": "Feito",
+      "lt": "Gatava",
+      "nl": "Klaar",
+      "pt-BR": "Pronto",
+      "km": "រួចរាល់",
+      "th": "เสร็จสิ้น",
+      "id": "selesai",
+      "ja": "完了"
     }
   },
   "copyPrivateKey": {
@@ -174,136 +703,544 @@
         "Almost done!",
         "Please copy and store",
         "your private key in a safe place."
+      ],
+      "pl": [
+        "Prawie gotowe!",
+        "Proszę skopiuj i zapisz",
+        "Twój klucz w bezpiecznym miejscu."
+      ],
+      "pt": [
+        "Quase feito!",
+        "Por favor copie e guarde",
+        "a sua chave privada num lugar seguro."
+      ],
+      "lt": [
+        "Beveik baigta!",
+        "Prašome nukopijuoti ir saugoti",
+        "savo privatų raktą saugioje vietoje."
+      ],
+      "nl": [
+        "Bijna klaar!",
+        "Kopieer en bewaar",
+        "je privésleutel op een veilige plek."
+      ],
+      "pt-BR": [
+        "Quase Pronto!",
+        "Por favor copie e guarde",
+        "Sua chave de segurança em um local seguro."
+      ],
+      "km": [
+        "ជិតរួចរាល់ហើយ!",
+        "សូមចម្លងនិងរក្សាទុក",
+        "កូនសោឯកជនរបស់អ្នកនៅក្នុងកន្លែងមានសុវត្ថិភាព។"
+      ],
+      "th": [
+        "เกือบเสร็จสิ้นแล้ว!",
+        "กรุณาคัดลอกและจัดเก็บ",
+        "private key ของคุณไว้ในที่ปลอดภัย"
+      ],
+      "id": [
+        "Hampir selesai!",
+        "Harap salin dan simpan",
+        "private key anda di tempat yang aman"
+      ],
+      "ja": [
+        "もう少しで完了です！",
+        "プライベートキーをコピーして",
+        "安全な場所で保管して下さい。"
       ]
     },
     "description": {
       "en": [
         "Nine Chronicles is a fully decentralized game.",
-        "Therefore, there is no central server that manages your password."
+        "Therefore, there is not a server that stores your password."
+      ],
+      "pl": [
+        "Nine Chronicles to zdecentralizowana gra.",
+        "W związku z tym nie ma serwera, który przechowuje Twoje hasło."
+      ],
+      "pt": [
+        "Nine Chronicles é um jogo completamente descentralizado.",
+        "Portanto, não existe um servidor que guarda a tua palavra-passe."
+      ],
+      "lt": [
+        "Nine Chronicles yra pilnai decentralizuotas žaidimas.",
+        "Taigi, jame nėra serverio, kuris saugotu tavo slaptažodį."
+      ],
+      "nl": [
+        "Nine Chronicles is een volledig gedecentraliseerd spel.",
+        "Daardoor is er geen server die je wachtwoord opslaat."
+      ],
+      "pt-BR": [
+        "Nine Chronicles é um jogo completamente descentralizado.",
+        "Portanto, nenhum servidor vai salvar sua senha."
+      ],
+      "km": ["Nine Chronicles គឺជាហ្គេមវិមជ្ឈការពេញលេញ។"],
+      "th": [
+        "Nine Chronicles เป็นเกมที่กระจายอำนาจอย่างเต็มที่",
+        "ดังนั้นจึงไม่มีเซิร์ฟเวอร์ที่เก็บรหัสผ่านของคุณ"
+      ],
+      "id": [
+        "Nine Chronicles adalah game yang sepenuhnya terdesentralisasi",
+        "Oleh karena itu, server tidak menyimpan kata sandi anda"
+      ],
+      "ja": [
+        "ナインクロニクルは完全な分散型ゲームです。",
+        "あなたのパスワードはどのサーバーにも保管されません。"
       ]
     },
     "warning": {
       "en": [
         "This key is the only means to recover your password.",
-        "Never expose the private key to others.",
+        "Never expose your private key to others.",
         "Anyone can steal your assets if this key is exposed."
+      ],
+      "pl": [
+        "Ten klucz to jedyny sposób na odzyskanie hasła.",
+        "Nigdy nie ujawniaj klucza prywatnego innym osobom.",
+        "Każdy może ukraść Twoje aktywa, jeśli ten klucz zostanie ujawniony."
+      ],
+      "pt": [
+        "Esta chave só serve para recuperares a tua palavra-passe.",
+        "Nunca exponhas a tua chave privada a outros.",
+        "Alguém pode roubar os teus assets se a chave for exposta."
+      ],
+      "lt": [
+        "Raktas yra vienintelis būdas atgauti slaptažodį.",
+        "Niekada su nieko nesidalink savo privačiu raktu.",
+        "Viskas, įskaitant ir tavo pinigus gali būti pavogti."
+      ],
+      "nl": [
+        "Deze sleutel is enkel bedoeld om je wachtwoord te herstellen.",
+        "Stel je privésleutel nooit bloot aan anderen.",
+        "Iedereen kan je spullen stelen als je sleutel is blootgesteld."
+      ],
+      "pt-BR": [
+        "Essa chave é a unica forma de recuperar sua senha.",
+        "Nunca mostre sua chave de segurança a outros.",
+        "Qualquer um pode roubar seus dados se sua chave for exposta."
+      ],
+      "km": ["កូនសោនេះគឺជាមធ្យោបាយតែមួយគត់ដើម្បីសង្គ្រោះពាក្យសម្ងាត់របស់អ្នក។"],
+      "th": [
+        "คีย์นี้เป็นวิธีเดียวในการกู้คืนรหัสผ่านของคุณ",
+        "อย่าเปิดเผยคีย์ส่วนตัวของคุณแก่ผู้อื่น",
+        "ใครก็ตามสามารถขโมยทรัพย์สินของคุณได้หากกุญแจนี้ถูกเปิดเผย"
+      ],
+      "id": [
+        "Kunci ini adalah satu satunya cara anda untuk menrecover kata sandi anda.",
+        "Jangan beritahunkan private key anda ke orang lain.",
+        "Siapapun dapat mengambil asset anda jika kunci ini diketahui orang lain."
+      ],
+      "ja": [
+        "このキーはあなたのパスワードを復元するための唯一の手段です。",
+        "絶対に他人に知られないようにして下さい。",
+        "もし他人に知られると、あなたの資産が盗まれる危険性があります。"
       ]
     },
     "Your Private key": {
-      "en": "Your Private key"
+      "en": "Your Private key",
+      "pl": "Twój klucz prywatny",
+      "pt": "A tua chave privada",
+      "lt": "Tavo Privatus raktas",
+      "nl": "Je privésleutel",
+      "pt-BR": "Sua Chave de Segurança",
+      "km": "កូនសោឯកជនរបស់អ្នក",
+      "th": "Private key ของคุณ",
+      "id": "Private key anda",
+      "ja": "あなたのプライベートキー"
     },
     "Copy": {
-      "en": "Copy"
+      "en": "Copy",
+      "pl": "Kopiuj",
+      "pt": "Copiar",
+      "lt": "Kopijuoti",
+      "nl": "Kopieer",
+      "pt-BR": "Copiar",
+      "km": "ចម្លង",
+      "th": "Copy",
+      "id": "salin",
+      "ja": "コピー"
     },
     "Done": {
-      "en": "Done"
+      "en": "Done",
+      "pl": "Gotowe",
+      "pt": "Feito",
+      "lt": "Gatava",
+      "nl": "Klaar",
+      "pt-BR": "Pronto",
+      "km": "រួចរាល់",
+      "th": "เสร็จสิ้น",
+      "id": "Selesai",
+      "ja": "完了"
     }
   },
   "revokeAccount": {
     "Back": {
-      "en": "Back"
+      "en": "Back",
+      "pl": "Cofnij",
+      "pt": "voltar",
+      "lt": "Atgal",
+      "nl": "Terug",
+      "pt-BR": "Voltar",
+      "km": "ថយក្រោយ",
+      "th": "กลับ",
+      "id": "Kembali",
+      "ja": "戻る"
     },
     "Revoke your account": {
-      "en": "Revoke your account"
+      "en": "Revoke your account",
+      "pl": "Unieważnij swoje konto",
+      "pt": "Anular a tua conta",
+      "lt": "Ištrinti vartotoją",
+      "nl": "Account verwijderen",
+      "pt-BR": "Revogar sua conta",
+      "km": "បញ្ឈប់គណនីរបស់អ្នក",
+      "th": "เพิกถอนบัญชีของคุณ",
+      "id": "Hapus akun",
+      "ja": "アカウントを無効化"
     },
     "description": {
       "en": [
         "Delete all records related to your account.",
-
         "Nine Chronicles is a fully decentralized game. Therefore, there is no central server that manages your password.",
-        "If you don’t remember your private key, you must create a new account to play the game from the beginning.",
-
+        "If you lose your private key, you must create a new account to play the game from the beginning.",
         "Private keys can be found in the Settings menu of the game, so make sure to copy them separately next time and keep them in a safe place."
+      ],
+      "pl": [
+        "Usuń wszystkie rekordy związane z twoim kontem.",
+        "Nine Chronicles to w pełni zdecentralizowana gra. Dlatego nie ma centralnego serwera, który zarządzałby Twoim hasłem.",
+        "Jeśli nie pamiętasz swojego klucza prywatnego, musisz utworzyć nowe konto, aby zagrać w grę od początku.",
+        "Klucze prywatne można znaleźć w menu Ustawieniach gry, więc następnym razem koniecznie skopiuj je osobno i przechowuj w bezpiecznym miejscu."
+      ],
+      "pt": [
+        "Apagar todos os registo relacionados há tua conta.",
+        "Nine Chronicles é um jogo completamente descentralizado. Portanto, não existe nenhum server principal que controla a tua palavra-passe",
+        "Se não te lembrares da tua chave privada, tens de cirar uma nova conta e jogar o jogo do início",
+        "Chaves privadas podem ser encontradas nas defenições do jogo, por isso têm a certesa que os copias separadamente na próxima vez e mantens num sítio seguro"
+      ],
+      "lt": [
+        "Ištrinti visus duomenis susijusius su vartotoju.",
+        "Nine Chronicles yra pilnai decentralizuotas žaidimas. Jame nėra serverio, kuris saugotu tavo slaptažodį.",
+        "Jei pamesi savo privatų raktą, turėsi susikurti naują vartotoja ir pradėti viską iš naujo.",
+        "Privatų raktą galite pažiūrėti nuėjus į Nustatymus žaidime, taigi būtinai jį nusikopijuokite ir išsaugokite."
+      ],
+      "nl": [
+        "Verwijder alle gegevens gerelateerd aan je account.",
+        "Nine Chronicles is een volledig gedecentraliseerd spel. Daardoor is er geen server die je wachtwoord opslaat.",
+        "Als je je privesleutel kwijtraakt, moet je een nieuw account aanmaken en zul je vanaf het begin moeten beginnen",
+        "Privésleutels kunnen gevonden worden in de Instellingen van het spel, zorg ervoor dat je ze de volgende keer kopieerd en opslaat op een veilige plek."
+      ],
+      "pt-BR": [
+        "Delete todos os registros sobre sua conta.",
+        "Nine Chronicles é um jogo completamente descentralizado. Portanto, não possui um servidor central que gerencie sua senha.",
+        "Se perder sua Chave de segurança, terá que criar uma conta nova e começar denovo.",
+        "A chave de segurança pode ser encontrada nas Configurações do jogo, então tenha certeza de copiala separadamente e a mantenha em um lugar seguro."
+      ],
+      "km": [
+        "លុបកំណត់ត្រាទាំងអស់ដែលទាក់ទងនឹងគណនីរបស់អ្នក.",
+        "Nine Chronicles គឺជាហ្គេមវិមជ្ឈការពេញលេញ។ ដូច្នេះមិនមានម៉ាស៊ីនមេកណ្តាលដែលគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នកទេ។"
+      ],
+      "th": [
+        "ลบบันทึกทั้งหมดที่เกี่ยวข้องกับบัญชีของคุณ",
+        "Nine Chronicles เป็นเกมที่กระจายอำนาจอย่างสมบูรณ์ดังนั้นจึงไม่มีเซิร์ฟเวอร์กลางที่จัดการรหัสผ่านของคุณ",
+        "หากคุณทำ private key หายคุณจะต้องสร้างบัญชีใหม่เพื่อเล่นเกมตั้งแต่เริ่มต้น",
+        "คีย์ส่วนตัวสามารถพบได้ในเมนูการตั้งค่าของเกมดังนั้นอย่าลืมคัดลอกแยกต่างหากในครั้งต่อไปและเก็บไว้ในที่ปลอดภัย"
+      ],
+      "id": [
+        "Menghapus semua data yang berhubungan dengan akun anda.",
+        "Nine Chronicles adalah game yang sepenuhnya terdesentralisasiOleh karena itu , server tidak menyimpan kata sandi anda",
+        "Jika anda kehilangan private key , anda harus membuat ulang akun dan mengulan dari awal",
+        "Private key dapat di dapatkan dari membuka pengaturan di dalam game, pastikan untuk mensalin dan menyimpannya di tempat yang aman."
+      ],
+      "ja": [
+        "全てのアカウント情報を削除します。",
+        "ナインクロニクルは完全な分散型ゲームです。あなたのパスワードはどのサーバーにも保管されません。",
+        "もしプライベートキーを失くしてしまうと、ゲームをプレイするためには新しいアカウントを作って最初から始める必要があります。",
+        "プライベートキーはゲーム内の設定メニューから見ることができます。必ずコピーして安全な場所に保管しておいて下さい。"
       ]
     },
     "revoke key": {
-      "en": "revoke key"
+      "en": "revoke key",
+      "pl": "Unieważnij klucz",
+      "pt": "Anular chave",
+      "lt": "Ištrinti raktą",
+      "nl": "sleutel intrekken",
+      "pt-BR": "Revogar chave",
+      "km": "ដកហូតកូនសោ",
+      "th": "เพิกถอนคีย์",
+      "id": "hapus kunci",
+      "ja": "キーを無効化"
     }
   },
   "inputPrivateKey": {
     "Enter your private key to reset your password": {
-      "en": "Enter your private key to reset your password"
+      "en": "Enter your private key to reset your password",
+      "pl": "Wprowadź swój klucz prywatny, aby zresetować hasło",
+      "pt": "Entra a tua chave privada para resetar a tua palavra-chave",
+      "lt": "Įveskite savo privatų raktą, kad atstatyti slaptažodį",
+      "nl": "Voer je privésleutel in om je wachtwoord te resetten",
+      "pt-BR": "Coloque sua chave de segurança para resetar sua senha",
+      "km": "បញ្ចូលកូនសោឯកជនរបស់អ្នកដើម្បីកំណត់ពាក្យសម្ងាត់របស់អ្នកឡើងវិញ",
+      "th": "ใส่ private key ของคุณเพื่อรีเซ็ตรหัสผ่าน",
+      "id": "Masukkan private key anda untuk menreset kata sandi",
+      "ja": "パスワードをリセットするにはプライベートキーを入力して下さい"
     },
     "Private Key": {
-      "en": "Private Key"
+      "en": "Private Key",
+      "pl": "Klucz prywatny",
+      "pt": "Chave privada",
+      "lt": "Privatus Raktas",
+      "nl": "Privésleutel",
+      "pt-BR": "Chave de Segurança",
+      "km": "កូនសោឯកជន",
+      "th": "Private Key",
+      "id": "Private Key",
+      "ja": "プライベートキー"
     },
     "Enter": {
-      "en": "Enter"
+      "en": "Enter",
+      "pl": "Wprowadź",
+      "pt": "Enter",
+      "lt": "Įeiti",
+      "nl": "Enter",
+      "pt-BR": "Entrar",
+      "km": "បញ្ចូល",
+      "th": "Enter",
+      "id": "Masuk",
+      "ja": "入力"
     },
     "Forgot private key?": {
-      "en": "Forgot private key?"
+      "en": "Forgot private key?",
+      "pl": "Zapomniałeś klucza prywatnego?",
+      "pt": "Esqueceu a chave privada?",
+      "lt": "Pamiršai privatų raktą?",
+      "nl": "Privésleutel vergeten?",
+      "pt-BR": "Esqueceu a chave de segurança?",
+      "km": "ភ្លេចកូនសោឯកជន?",
+      "th": "ลืม private key?",
+      "id": "Lupa private key?",
+      "ja": "プライベートキーを忘れましたか？"
     }
   },
   "registerPrivateKey": {
     "Please reset the password.": {
-      "en": "Please reset the password."
+      "en": "Please reset the password.",
+      "pl": "Proszę zresetuj hasło.",
+      "pt": "Por favor redefina a sua palavra-passe.",
+      "lt": "Prašome atstatyti slaptažodį",
+      "nl": "Reset je wachtwoord alsjeblieft.",
+      "pt-BR": "Por favor resete a senha.",
+      "km": "សូមកំណត់ពាក្យសម្ងាត់ឡើងវិញ។",
+      "th": "รีเซ็ตรหัสผ่าน",
+      "id": "Dimohon untuk menreset kata sandi",
+      "ja": "パスワードをリセットしてください。"
     },
     "Password": {
-      "en": "Password"
+      "en": "Password",
+      "pl": "Hasło",
+      "pt": "Palavra-passe",
+      "lt": "Slaptažodis",
+      "nl": "Wachtwoord",
+      "pt-BR": "Senha",
+      "km": "ពាក្យសម្ងាត់",
+      "th": "รหัสผ่าน",
+      "id": "kata sandi",
+      "ja": "パスワード"
     },
     "Retype Password": {
-      "en": "Retype Password"
+      "en": "Retype Password",
+      "pl": "Powtórz hasło",
+      "pt": "Reescreva a sua palavra-passe",
+      "lt": "Įveskite slaptažodi dar kartą",
+      "nl": "Hertyp Wachtwoord",
+      "pt-BR": "Reescreva sua senha",
+      "km": "វាយពាក្យសម្ងាត់ម្តងទៀត",
+      "th": "รหัสผ่าน",
+      "id": "Ketik ulang kata sandi",
+      "ja": "パスワード再入力"
     },
     "Password does not match.": {
-      "en": "Password does not match."
+      "en": "Password does not match.",
+      "pl": "Hasła się nie pokrywają.",
+      "pt": " A sua palavra-pass não está igual.",
+      "lt": "Slaptažodžiai nesutampa",
+      "nl": "Wachtwoord komt niet overeen.",
+      "pt-BR": "Suas senhas não são iguais",
+      "km": "ពាក្យសម្ងាត់មិនត្រូវគ្នា។",
+      "th": "รหัสผ่านไม่ตรงกัน",
+      "id": "Kata sandi tidak sesuai",
+      "ja": "パスワードが一致しません。"
     },
     "Done": {
-      "en": "Done"
+      "en": "Done",
+      "pl": "Gotowe",
+      "pt": "feito",
+      "lt": "Gatava",
+      "nl": "Klaar",
+      "pt-BR": "Pronto",
+      "km": "រួចរាល់",
+      "th": "เสร็จสิ้น",
+      "id": "Selesai",
+      "ja": "完了"
     }
   },
   "configuration": {
     "Settings": {
-      "en": "Settings"
+      "en": "Settings",
+      "pl": "Ustawienia",
+      "ja": "設定"
     },
     "Save": {
-      "en": "Save"
+      "en": "Save",
+      "pl": "Zapisz",
+      "ja": "保存"
     },
     "Root chain store path": {
-      "en": "Root chain store path"
-    },
-    "Select path": {
-      "en": "Select path"
+      "en": "Root chain store path",
+      "pl": "Ścieżka głównego sklepu sieciowego",
+      "ja": "チェーンストアのルートパス"
     },
     "Chain store directory name": {
-      "en": "Chain store directory name"
+      "en": "Chain store directory name",
+      "pl": "Nazwa katalogu sieci sklepów",
+      "ja": "チェーンストアのディレクトリ名"
     },
     "Select Language": {
-      "en": "Select Language"
+      "en": "Select Language",
+      "pl": "Wybierz język",
+      "ja": "言語を選択"
     },
     "After saving, the launcher will restart.": {
-      "en": "After saving, the launcher will restart."
+      "en": "After saving, the launcher will restart.",
+      "pl": "Po zapisie, launcher uruchomi się ponownie"
+    },
+    "Send Information": {
+      "en": "Send Information",
+      "pl": "Wyślij dane",
+      "id": "Kirim Informasi"
+    },
+    "Behavior Analytic": {
+      "en": "Behavior Analytic",
+      "pl": "Analiza zachowań",
+      "id": "Analitik Perilaku"
+    },
+    "Report Error": {
+      "en": "Report Error",
+      "pl": "Zgłoś błąd",
+      "id": "Laporkan kesalahan"
+    },
+    "These data are helpful for Game development.": {
+      "en": "These data are helpful for Game development.",
+      "pl": "Te dane są bardzo pomocne w rozwoju gry",
+      "id": "Data ini berguna untuk pengembangan Game."
     }
   },
   "preloadProgress": {
     "Preload Completed.": {
-      "en": "Preload Completed."
+      "en": "Preload Completed.",
+      "pl": "Wstępne ładowanie zakończone.",
+      "ja": "ロード完了"
     },
     "No Peers Were Given.": {
-      "en": "No Peers Were Given."
+      "en": "No Peers Were Given.",
+      "pl": "Nie dano rówieśników.",
+      "ja": "ピア接続できませんでした。"
     },
     "Validating Snapshot": {
-      "en": "Validating Snapshot"
+      "en": "Validating Snapshot",
+      "pl": "Potiwerdzanie snapshota",
+      "pt": "Validando o Snapshot",
+      "lt": "Nuotraukos pratvirtinimas",
+      "nl": "Snapshot valideren",
+      "pt-BR": "Validando Snapshot",
+      "km": "ការធ្វើឱ្យ Snapshot មានសុពលភាព",
+      "th": "กำลังตรวจสอบ Snapshot",
+      "id": "memvalidasi Snapshot",
+      "ja": "スナップショットを検証しています"
     },
     "Downloading Snapshot": {
-      "en": "Downloading Snapshot"
+      "en": "Downloading Snapshot",
+      "pl": "Pobieranie snapshota",
+      "pt": "Fazendo download do snapshot",
+      "lt": "Atsisiunčia nuotrauką",
+      "nl": "Snapshot downloaden",
+      "pt-BR": "Baixando Snapshot",
+      "km": "កំពុងទាញយក Snapshot",
+      "th": "กำลังดาวน์โหลด Snapshot",
+      "id": "Mengunduh Snapshot",
+      "ja": "スナップショットをダウンロードしています"
     },
     "Extracting Snapshot": {
-      "en": "Extracting Snapshot"
+      "en": "Extracting Snapshot",
+      "pl": "Wypakowywanie snapshota",
+      "pt": "Extraindo o snapshot",
+      "lt": "Išpakuoja nuotraukas",
+      "nl": "Snapshot uitpakken",
+      "pt-BR": "Extraindo Snapshot",
+      "km": "កំពុងស្រង់ចេញ Snapshot",
+      "th": "กำลังแยก Snapshot",
+      "id": "mengekstrak Snapshot",
+      "ja": "スナップショットを抽出しています"
     },
     "Verifying block headers": {
-      "en": "Verifying block headers"
+      "en": "Verifying Block Headers",
+      "pl": "Weryfikowanie nagłówków bloków",
+      "pt": "Verificando a Block Headers",
+      "lt": "Patvirtina blokų antraštes",
+      "nl": "Block Headers valideren",
+      "pt-BR": "Verificando Block Headers",
+      "km": "កំពុងផ្ទៀងផ្ទាត់ Block Headers",
+      "th": "กำลังตรวจสอบส่วนหัวของบล็อก",
+      "id": "Memverifikasi block Headers",
+      "ja": "ブロックヘッダを検証しています"
     },
     "Downloading block hashes": {
-      "en": "Downloading block hashes"
+      "en": "Downloading Block Hashes",
+      "pl": "Pobieranie hashy bloków",
+      "pt": "Fazendo o download de Block Hashes",
+      "lt": "Atsisiunčia blokų antraštes",
+      "nl": "Block Hashes downloaden",
+      "pt-BR": "Baixando Block Hashes",
+      "km": "កំពុងទាញយក Block Hashes",
+      "th": "กำลังดาวน์โหลด Block Hashes",
+      "id": "Mengunduh Block Hashes",
+      "ja": "ブロックハッシュをダウンロードしています"
     },
     "Downloading blocks": {
-      "en": "Downloading blocks"
+      "en": "Downloading Blocks",
+      "pl": "Pobieranie bloków",
+      "pt": "Fazendo download de blocos",
+      "lt": "Atsisiunčia Blokus",
+      "nl": "Blokken downloaden",
+      "pt-BR": "Baixando Blocos",
+      "km": "កំពុងទាញយក Block",
+      "th": "กำลังดาวน์โหลด Blocks",
+      "id": "Mengunduh Blocks",
+      "ja": "ブロックをダウンロードしています"
     },
     "Downloading states": {
-      "en": "Downloading states"
+      "en": "Downloading States",
+      "pl": "Pobieranie stanów",
+      "pt": "Fazendo download de states",
+      "lt": "Atsisiunčia states",
+      "nl": "Posities downloaden",
+      "pt-BR": "Baixando States",
+      "km": "កំពុងទាញយក States",
+      "th": "กำลังดาวน์โหลด States",
+      "id": "Mengunduh States",
+      "ja": "ステータスをダウンロードしています"
     },
     "Executing actions": {
-      "en": "Executing actions"
+      "en": "Executing Actions",
+      "pl": "Wykonywanie czynności",
+      "pt": "Execução de acções",
+      "lt": "Veiksmų vygdimas",
+      "nl": "Acties uitvoeren",
+      "pt-BR": "Executando Ações",
+      "km": "កំពុងប្រតិបត្តិសកម្មភាព",
+      "th": "การดำเนินการ",
+      "id": "Menjalankan aksi",
+      "ja": "処理を実行しています"
     }
   }
 }
