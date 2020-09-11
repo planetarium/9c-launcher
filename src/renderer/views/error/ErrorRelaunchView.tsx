@@ -29,7 +29,7 @@ const ErrorRelaunchView = () => {
         {locale("Something went wrong.")}
       </Typography>
       <Typography variant="subtitle1">
-        {locale("Please follow step below.")}
+        {locale("Please follow the steps below.")}
       </Typography>
       <ol>
         {steps.map((step) => (

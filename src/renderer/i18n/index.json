@@ -161,7 +161,7 @@
       "th": "ล็อคอิน",
       "ja": "ログイン"
     },
-    "Forgot password": {
+    "Forgot password?": {
       "en": "Forgot password?",
       "pl": "Zapomniałeś hasła?",
       "pt": "Esqueceu-se da palavra-passe?",
@@ -361,7 +361,7 @@
     }
   },
   "preload": {
-    "Receiving data from other users. Let's watch teaser and contents!": {
+    "Receiving data from other users. Let's watch the trailer and new content!": {
       "en": [
         "Receiving data from other users.",
         "Let's watch the trailer and new content!"
@@ -463,7 +463,7 @@
       "km": ["បើកដំណើរការឡើងវិញ “Nine Chronicles”", "ចូលម្តងទៀត"],
       "th": ["ปิดเปิด “Nine Chronicles”", "เพื่อเข้าสู่ระบบอีกครั้ง"],
       "id": ["Buka ulang “Nine Chronicles”", "Masukkan akun ulang"],
-      "en": [
+      "ja": [
         "ナインクロニクル を再起動して下さい。",
         "もう一度ログインして下さい"
       ]
@@ -578,7 +578,7 @@
       "id": "Discord",
       "ja": "Discord"
     },
-    "close": {
+    "Close": {
       "en": "Close",
       "pl": "Zamknij",
       "pt": "Fechar",
