@@ -31,10 +31,6 @@ button:disabled:not(.settings-icon) {
   color: $color3;
 }
 
-button.settings-icon:hover {
-  all: unset;
-}
-
 input[type="password"] {
   -webkit-text-stroke-width: 0.2em;
   letter-spacing: 0.3em;
