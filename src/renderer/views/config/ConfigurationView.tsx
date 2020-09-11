@@ -9,6 +9,11 @@ import {
   TextField,
   FormLabel,
   Typography,
+  FormControlLabel,
+  Checkbox,
+  FormGroup,
+  FormControl,
+  FormHelperText,
 } from "@material-ui/core";
 import { FolderOpen } from "@material-ui/icons";
 import useStores from "../../../hooks/useStores";
@@ -38,6 +43,13 @@ const ConfigurationView = observer(() => {
 
     const localeName = SupportLocalesKeyValueSwap[event.target.select.value];
     electronStore.set("Locale", localeName);
+
+    const agreeAnalytic = event.target.analytic.checked;
+    electronStore.set("Mixpanel", agreeAnalytic);
+
+    const isEnableSentry = event.target.sentry.checked;
+    electronStore.set("Sentry", isEnableSentry);
+
     remote.app.relaunch();
     remote.app.exit();
   };
@@ -57,14 +69,16 @@ const ConfigurationView = observer(() => {
 
   return (
     <div className={classes.root}>
-      <Button onClick={routerStore.goBack} className={classes.exit}>
-        X
-      </Button>
-      <Container>
+      <header className={classes.titleWarp}>
         <Typography variant="h1" gutterBottom className={classes.title}>
           {locale("Settings")}
         </Typography>
-        <form onSubmit={handleSubmit}>
+        <Button onClick={routerStore.goBack} className={classes.exit}>
+          X
+        </Button>
+      </header>
+      <form onSubmit={handleSubmit}>
+        <article className={classes.fields}>
           <FormLabel>{locale("Root chain store path")}</FormLabel>
           <TextField
             fullWidth
@@ -98,19 +112,49 @@ const ConfigurationView = observer(() => {
             items={Object.values(supportedLocales)}
             defaultValue={supportedLocales[selectedLocale] ?? "English"}
           />
-          <Button
-            type="submit"
-            className={classes.submit}
-            color="primary"
-            variant="contained"
-          >
-            {locale("Save")}
-          </Button>
-          <FormLabel className={classes.label}>
-            {locale("After saving, the launcher will restart.")}
-          </FormLabel>
-        </form>
-      </Container>
+          <FormControl className={classes.checkboxGroup}>
+            <FormLabel>{locale("Send Information")}</FormLabel>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    className={classes.checkbox}
+                    defaultChecked={electronStore.get("Sentry")}
+                    color="default"
+                    name="sentry"
+                  />
+                }
+                label={locale("Report Error")}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    className={classes.checkbox}
+                    defaultChecked={electronStore.get("Mixpanel")}
+                    color="default"
+                    name="analytic"
+                  />
+                }
+                label={locale("Behavior Analytic")}
+              />
+            </FormGroup>
+            <FormHelperText className={classes.checkboxHelper}>
+              {locale("These data are helpful for Game development.")}
+            </FormHelperText>
+          </FormControl>
+        </article>
+        <Button
+          type="submit"
+          className={classes.submit}
+          color="primary"
+          variant="contained"
+        >
+          {locale("Save")}
+        </Button>
+        <FormLabel className={classes.label}>
+          {locale("After saving, the launcher will restart.")}
+        </FormLabel>
+      </form>
     </div>
   );
 });
