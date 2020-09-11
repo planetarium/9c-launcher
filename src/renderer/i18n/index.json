@@ -1100,6 +1100,9 @@
       "pl": "Ścieżka głównego sklepu sieciowego",
       "ja": "チェーンストアのルートパス"
     },
+    "Select path": {
+      "en": "Select path"
+    },
     "Chain store directory name": {
       "en": "Chain store directory name",
       "pl": "Nazwa katalogu sieci sklepów",
