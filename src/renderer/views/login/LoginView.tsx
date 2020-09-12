@@ -8,13 +8,18 @@ import {
   Button,
   Grid,
   InputLabel,
+  IconButton,
   Link,
   TextField,
   Typography,
   FormControl,
   OutlinedInput,
+  Popover,
 } from "@material-ui/core";
+import { FileCopy } from "@material-ui/icons";
+import { clipboard } from "electron";
 import { observer, inject } from "mobx-react";
+
 import "../../styles/login/login.scss";
 import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import { Select } from "../../components/Select";
@@ -31,6 +36,7 @@ const LoginView = observer(
     const [isInvalid, setInvalid] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const [
       getDecreyptedKey,
@@ -78,12 +84,20 @@ const LoginView = observer(
       setShowPassword(!showPassword);
     };
 
+    const copyAddress = (e: MouseEvent<HTMLButtonElement>) => {
+      clipboard.writeText(accountStore.selectedAddress);
+      setAnchorEl(e.currentTarget);
+    };
+
     // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
     if (!accountStore.selectedAddress && accountStore.addresses.length > 0) {
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }
 
     const { locale } = useLocale("login");
+
+    const popoverOpen = Boolean(anchorEl);
+    const popoverId = popoverOpen ? "simple-popover" : undefined;
 
     return (
       <div className={`login ${classes.root}`}>
@@ -94,7 +108,30 @@ const LoginView = observer(
         <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <InputLabel>{locale("ID")}</InputLabel>
+              <InputLabel>
+                {locale("ID")}
+                <IconButton size="small" component="span" onClick={copyAddress}>
+                  <FileCopy fontSize="small" />
+                </IconButton>
+              </InputLabel>
+              <Popover
+                id={popoverId}
+                open={popoverOpen}
+                anchorEl={anchorEl}
+                onClose={() => {
+                  setAnchorEl(null);
+                }}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+              >
+                {locale("Copied to clipboard!")}
+              </Popover>
               <Select
                 items={accountStore.addresses}
                 onChange={accountStore.setSelectedAddress}
