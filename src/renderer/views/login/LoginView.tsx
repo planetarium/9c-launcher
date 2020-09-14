@@ -8,13 +8,20 @@ import {
   Button,
   Grid,
   InputLabel,
+  IconButton,
   Link,
   TextField,
   Typography,
   FormControl,
   OutlinedInput,
+  Popover,
+  PopoverProps,
 } from "@material-ui/core";
+import { FileCopy } from "@material-ui/icons";
+import { usePopupState, bindPopover } from "material-ui-popup-state/hooks";
+import { clipboard } from "electron";
 import { observer, inject } from "mobx-react";
+
 import "../../styles/login/login.scss";
 import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import { Select } from "../../components/Select";
@@ -25,12 +32,27 @@ import VisibilityAdornment from "../../components/VisibilityAdornment";
 import loginViewStyle from "./LoginView.style";
 import { useLocale } from "../../i18n";
 
+const popoverLayout: Pick<PopoverProps, "anchorOrigin" | "transformOrigin"> = {
+  anchorOrigin: {
+    vertical: "bottom",
+    horizontal: "center",
+  },
+  transformOrigin: {
+    vertical: "top",
+    horizontal: "center",
+  },
+};
+
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
     const [isInvalid, setInvalid] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
+    const addressCopiedPopupState = usePopupState({
+      variant: "popover",
+      popupId: "addressCopiedPopup",
+    });
 
     const [
       getDecreyptedKey,
@@ -78,13 +100,17 @@ const LoginView = observer(
       setShowPassword(!showPassword);
     };
 
+    const copyAddress = (e: MouseEvent<HTMLButtonElement>) => {
+      clipboard.writeText(accountStore.selectedAddress);
+      addressCopiedPopupState.open(e.currentTarget);
+    };
+
     // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
     if (!accountStore.selectedAddress && accountStore.addresses.length > 0) {
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }
 
     const { locale } = useLocale("login");
-
     return (
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
@@ -94,7 +120,18 @@ const LoginView = observer(
         <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <InputLabel>{locale("ID")}</InputLabel>
+              <InputLabel>
+                {locale("ID")}
+                <IconButton size="small" component="span" onClick={copyAddress}>
+                  <FileCopy fontSize="small" />
+                </IconButton>
+              </InputLabel>
+              <Popover
+                {...bindPopover(addressCopiedPopupState)}
+                {...popoverLayout}
+              >
+                {locale("Copied to clipboard!")}
+              </Popover>
               <Select
                 items={accountStore.addresses}
                 onChange={accountStore.setSelectedAddress}
