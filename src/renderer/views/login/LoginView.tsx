@@ -15,8 +15,10 @@ import {
   FormControl,
   OutlinedInput,
   Popover,
+  PopoverProps,
 } from "@material-ui/core";
 import { FileCopy } from "@material-ui/icons";
+import { usePopupState, bindPopover } from "material-ui-popup-state/hooks";
 import { clipboard } from "electron";
 import { observer, inject } from "mobx-react";
 
@@ -30,13 +32,27 @@ import VisibilityAdornment from "../../components/VisibilityAdornment";
 import loginViewStyle from "./LoginView.style";
 import { useLocale } from "../../i18n";
 
+const popoverLayout: Pick<PopoverProps, "anchorOrigin" | "transformOrigin"> = {
+  anchorOrigin: {
+    vertical: "bottom",
+    horizontal: "center",
+  },
+  transformOrigin: {
+    vertical: "top",
+    horizontal: "center",
+  },
+};
+
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
     const [isInvalid, setInvalid] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const addressCopiedPopupState = usePopupState({
+      variant: "popover",
+      popupId: "addressCopiedPopup",
+    });
 
     const [
       getDecreyptedKey,
@@ -86,7 +102,7 @@ const LoginView = observer(
 
     const copyAddress = (e: MouseEvent<HTMLButtonElement>) => {
       clipboard.writeText(accountStore.selectedAddress);
-      setAnchorEl(e.currentTarget);
+      addressCopiedPopupState.open(e.currentTarget);
     };
 
     // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
@@ -95,10 +111,6 @@ const LoginView = observer(
     }
 
     const { locale } = useLocale("login");
-
-    const popoverOpen = Boolean(anchorEl);
-    const popoverId = popoverOpen ? "simple-popover" : undefined;
-
     return (
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
@@ -115,20 +127,8 @@ const LoginView = observer(
                 </IconButton>
               </InputLabel>
               <Popover
-                id={popoverId}
-                open={popoverOpen}
-                anchorEl={anchorEl}
-                onClose={() => {
-                  setAnchorEl(null);
-                }}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "center",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "center",
-                }}
+                {...bindPopover(addressCopiedPopupState)}
+                {...popoverLayout}
               >
                 {locale("Copied to clipboard!")}
               </Popover>
