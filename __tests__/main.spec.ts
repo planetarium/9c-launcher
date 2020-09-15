@@ -6,7 +6,7 @@ import electron from "electron";
 import "dotenv/config";
 import { expect } from "chai";
 
-const prefix = process.platform === "win32" ? "/C:" : "";
+const isWindows = process.platform === "win32";
 const lastPath = "/lobby";
 
 // @ts-ignore
@@ -20,7 +20,7 @@ describe("test", function () {
   this.timeout(10000);
 
   let app: Application;
-  let history = [`${prefix}/login`];
+  const history: string[] = [];
 
   before(function () {
     app = new Application({
@@ -36,8 +36,14 @@ describe("test", function () {
     );
     if (typeof pathname !== "string")
       throw Error("현재 경로를 가져오지 못했습니다");
+
     if (pathname.includes("/error"))
       throw Error("오류 페이지로 이동이 되었습니다");
+
+    if (history.length === 0) {
+      history.push(pathname);
+      return;
+    }
 
     const perviousPath = history[history.length - 1];
 
@@ -46,7 +52,7 @@ describe("test", function () {
     if (perviousPath === pathname)
       throw Error(
         `"${
-          prefix === "/C:" ? pathname.slice(3) : pathname
+          isWindows ? pathname.slice(3) : pathname
         }"에서 다음 페이지로 이동에 실패했습니다.`
       );
 
