@@ -25,7 +25,7 @@ export const electronStore = new Store<IElectronStore>({
     },
     GenesisBlockPath: {
       type: "string",
-      default: path.resolve("__tests__", "fixture", "genesis-block"),
+      default: "",
     },
     MinimumDifficulty: {
       type: "integer",
