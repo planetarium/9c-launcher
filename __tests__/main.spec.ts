@@ -38,7 +38,9 @@ describe("test", function () {
       throw Error("현재 경로를 가져오지 못했습니다");
 
     if (pathname.includes("/error"))
-      throw Error("오류 페이지로 이동이 되었습니다");
+      throw Error(
+        `오류 페이지로 이동이 되었습니다. 이동한 오류 페이지 경로는 "${pathname}" 입니다.`
+      );
 
     if (history.length === 0) {
       history.push(pathname);
