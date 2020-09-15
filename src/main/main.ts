@@ -35,6 +35,7 @@ import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
 import checkDiskSpace from "check-disk-space";
 import { retry } from "@lifeomic/attempt";
+import mixpanel from "mixpanel-browser";
 
 initializeSentry();
 
@@ -56,6 +57,10 @@ if (!app.requestSingleInstanceLock()) {
 } else {
   app.on("second-instance", (event, commandLine, workingDirectory) => {
     win?.show();
+  });
+
+  app.on("quit", (event, exitCode) => {
+    mixpanel.track("Launcher/Quit", { event, exitCode });
   });
 
   cleanUp();
