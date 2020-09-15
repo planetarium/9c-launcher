@@ -27,10 +27,10 @@ const ErrorReinstallView = () => {
   return (
     <Container className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("Something went wrong.")}
+        {locale("무언가 잘못 되었습니다.")}
       </Typography>
       <Typography variant="subtitle1">
-        {locale("Please follow the steps below.")}
+        {locale("아래 절차를 따라 해주세요.")}
       </Typography>
       <ol>
         {steps.map((step) => (
@@ -39,7 +39,7 @@ const ErrorReinstallView = () => {
       </ol>
       <Typography>
         {`${locale(
-          "If you are still seeing this page after reinstall, please contact support via"
+          "혹시 이 페이지를 재설치 후에 여전히 보셨다면, 다음을 통해 지원을 받으세요."
         )} `}
         <a
           className={classes.link}

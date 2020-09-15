@@ -98,7 +98,7 @@ const CreateAccountView = observer(
         <form noValidate autoComplete="off" onSubmit={handleSubmit}>
           <FormControl fullWidth>
             <InputLabel className={classes.label}>
-              {locale("Password")}
+              {locale("비밀번호")}
             </InputLabel>
             <OutlinedInput
               id="password-input"
@@ -115,7 +115,7 @@ const CreateAccountView = observer(
           </FormControl>
           <FormControl fullWidth>
             <InputLabel className={classes.label}>
-              {locale("Confirm")}
+              {locale("비밀번호 (확인)")}
             </InputLabel>
             <OutlinedInput
               id="password-confirm-input"
@@ -138,7 +138,7 @@ const CreateAccountView = observer(
             className={classes.submit}
             variant="contained"
           >
-            {locale("Done")}
+            {locale("마치기")}
           </Button>
         </form>
       </div>

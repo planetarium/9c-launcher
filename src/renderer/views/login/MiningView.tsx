@@ -32,9 +32,7 @@ const MiningView = observer(
 
     return (
       <Container className={classes.root}>
-        <h1 className={classes.title}>
-          {locale("Do you want to turn the mining feature on?")}
-        </h1>
+        <h1 className={classes.title}>{locale("채굴 기능을 켜시겠습니까?")}</h1>
         <img className={classes.jade} src={jade} />
         <p>{locale("description")}</p>
         {requirement.map((paragraph) => (
@@ -52,7 +50,7 @@ const MiningView = observer(
               setMining(false);
             }}
           >
-            {locale("OFF")}
+            {locale("끄기")}
           </Button>
           <Button
             className={`${classes.button} ${classes.buttonRight}`}
@@ -62,7 +60,7 @@ const MiningView = observer(
               setMining(true);
             }}
           >
-            {locale("ON")}
+            {locale("켜기")}
           </Button>
         </Box>
       </Container>

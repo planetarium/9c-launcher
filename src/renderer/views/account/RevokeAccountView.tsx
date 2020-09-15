@@ -37,10 +37,10 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
             routerStore.push("/");
           }}
         >
-          {locale("Back")}
+          {locale("뒤로")}
         </Button>
         <Typography className={classes.title}>
-          {locale("Revoke your account")}
+          {locale("계정 지우기")}
         </Typography>
         <Typography>
           {description[0]}
@@ -78,7 +78,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
             });
           }}
         >
-          {locale("revoke key")}
+          {locale("키 지우기")}
         </Button>
       </div>
     );

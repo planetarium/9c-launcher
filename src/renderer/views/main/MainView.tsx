@@ -23,7 +23,7 @@ const MainView = observer(
       <Container className={classes.root}>
         <NineChroniclesLogo />
         <h1 className={classes.title}>
-          {locale("Welcome to nine chronicles!")}
+          {locale("나인 크로니클에 오신 걸 환영합니다!")}
         </h1>
         <article className={classes.body}>
           {description.map((paragraph) => (
@@ -38,7 +38,7 @@ const MainView = observer(
             color="primary"
             className={classes.button}
           >
-            {locale("Create Account")}
+            {locale("계정 생성하기")}
           </Button>
         </Box>
       </Container>

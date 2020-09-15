@@ -51,7 +51,7 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
 
     return (
       <>
-        <p>{locale("Enter your private key to reset your password")}</p>
+        <p>{locale("비밀번호를 재설정하기 위해 개인키를 입력해주세요.")}</p>
         <TextField
           label={locale("Private Key")}
           onChange={privateKeyChangeHandle}
@@ -65,7 +65,7 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
         </Button>
         <br />
         <TextButton onClick={handleRevokeAccount}>
-          {locale("Forgot private key?")}
+          {locale("개인키를 잊으셨나요?")}
         </TextButton>
       </>
     );

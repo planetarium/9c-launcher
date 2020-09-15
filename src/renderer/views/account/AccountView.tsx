@@ -25,7 +25,7 @@ const AccountView: React.FC<IStoreContainer> = observer(
             routerStore.push("/account/revoke");
           }}
         >
-          {locale("revoke key")}
+          {locale("키 지우기")}
         </button>
         <button
           onClick={() => {

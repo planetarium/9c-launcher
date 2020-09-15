@@ -28,10 +28,10 @@ const ErrorRelaunchView = () => {
   return (
     <Container className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("Something went wrong.")}
+        {locale("무언가 잘못 되었습니다.")}
       </Typography>
       <Typography variant="subtitle1">
-        {locale("Please follow the steps below.")}
+        {locale("아래 절차를 따라 해주세요.")}
       </Typography>
       <ol>
         {steps.map((step) => (
