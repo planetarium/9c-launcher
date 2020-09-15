@@ -7,6 +7,7 @@ import "dotenv/config";
 import { expect } from "chai";
 
 const prefix = process.platform === "win32" ? "/C:" : "";
+const lastPath = "/lobby";
 
 // @ts-ignore
 process.env.ELECTRON_IS_DEV = 0;
@@ -38,7 +39,11 @@ describe("test", function () {
     if (pathname.includes("/error"))
       throw Error("오류 페이지로 이동이 되었습니다");
 
-    if (history[history.length - 1] === pathname)
+    const perviousPath = history[history.length - 1];
+
+    if (perviousPath.includes(lastPath) && pathname.includes(lastPath)) return;
+
+    if (perviousPath === pathname)
       throw Error(
         `"${
           prefix === "/C:" ? pathname.slice(3) : pathname
