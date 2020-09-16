@@ -115,18 +115,24 @@ const LoginView = observer(
     return (
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
-        <ClearCacheButton className={classes.cacheButton}>
-          {locale("CLEAR CACHE")}
-        </ClearCacheButton>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <InputLabel>
-                {locale("ID")}
-                <IconButton size="small" component="span" onClick={copyAddress}>
-                  <FileCopy fontSize="small" />
-                </IconButton>
-              </InputLabel>
+              <article className={classes.ID}>
+                <InputLabel className={classes.label}>
+                  {locale("ID")}
+                  <IconButton
+                    size="small"
+                    component="span"
+                    onClick={copyAddress}
+                  >
+                    <FileCopy fontSize="small" />
+                  </IconButton>
+                </InputLabel>
+                <ClearCacheButton className={classes.cacheButton}>
+                  {locale("CLEAR CACHE")}
+                </ClearCacheButton>
+              </article>
               <Popover
                 {...bindPopover(addressCopiedPopupState)}
                 {...popoverLayout}
@@ -140,7 +146,9 @@ const LoginView = observer(
               />
             </Grid>
             <Grid item xs={12}>
-              <InputLabel>{locale("Password")}</InputLabel>
+              <InputLabel className={classes.label}>
+                {locale("Password")}
+              </InputLabel>
               <FormControl fullWidth>
                 <OutlinedInput
                   type={showPassword ? "text" : "password"}

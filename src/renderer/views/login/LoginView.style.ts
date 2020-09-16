@@ -4,6 +4,13 @@ const loginViewStyle = makeStyles({
   root: {
     margin: "20px",
   },
+  ID: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  label: {
+    padding: "6px 0",
+  },
   cacheButton: {
     float: "right",
     color: "#929292",
