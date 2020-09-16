@@ -14,8 +14,9 @@ import {
   FormGroup,
   FormControl,
   FormHelperText,
+  IconButton,
 } from "@material-ui/core";
-import { FolderOpen } from "@material-ui/icons";
+import { FolderOpen, Close } from "@material-ui/icons";
 import useStores from "../../../hooks/useStores";
 import { electronStore, blockchainStoreDirParent } from "../../../config";
 import { SettingsFormEvent } from "../../../interfaces/event";
@@ -73,9 +74,9 @@ const ConfigurationView = observer(() => {
         <Typography variant="h1" gutterBottom className={classes.title}>
           {locale("Settings")}
         </Typography>
-        <Button onClick={routerStore.goBack} className={classes.exit}>
-          X
-        </Button>
+        <IconButton onClick={routerStore.goBack}>
+          <Close />
+        </IconButton>
       </header>
       <form onSubmit={handleSubmit}>
         <article className={classes.fields}>

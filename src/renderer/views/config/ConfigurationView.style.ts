@@ -21,6 +21,7 @@ const configurationViewStyle = makeStyles({
   title: {
     fontWeight: "bold",
     fontSize: "1.5em",
+    paddingTop: "12px",
   },
   submit: {
     display: "block",
@@ -33,12 +34,6 @@ const configurationViewStyle = makeStyles({
   },
   textField: {
     "padding-bottom": "10px",
-  },
-  exit: {
-    display: "block",
-    "margin-right": "0px",
-    "margin-left": "auto",
-    "font-weight": "bold",
   },
   selectDir: {
     marginBottom: "10px",
