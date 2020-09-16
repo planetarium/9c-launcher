@@ -4,6 +4,7 @@ const mainViewStyle = makeStyles({
   root: {
     color: "white",
     textAlign: "center",
+    margin: "5px",
   },
   button: {
     width: "310px",

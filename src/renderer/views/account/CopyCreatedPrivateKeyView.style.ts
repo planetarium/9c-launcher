@@ -2,9 +2,9 @@ import { makeStyles } from "@material-ui/core";
 
 const createAccountViewStyle = makeStyles({
   root: {
-    marginLeft: "30px",
-    marginRight: "29px",
-    marginTop: "78px",
+    marginLeft: "35px",
+    marginRight: "35px",
+    marginTop: "83px",
     color: "white",
   },
   title: {

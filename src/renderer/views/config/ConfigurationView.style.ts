@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core";
 
 const configurationViewStyle = makeStyles({
   root: {
-    marginTop: "24px",
+    marginTop: "29px",
     color: "white",
   },
   titleWarp: {

@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core";
 const lobbyViewStyle = makeStyles({
   root: {
     color: "#FFFFFF",
+    margin: "5px",
   },
 
   activation: {

@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core";
 
 const createAccountViewStyle = makeStyles({
   root: {
-    margin: "15px",
+    margin: "20px",
   },
   info: {
     color: "white",

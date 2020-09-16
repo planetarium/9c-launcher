@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core";
 const miningViewStyle = makeStyles({
   root: {
     color: "white",
+    margin: "5px",
   },
 
   title: {

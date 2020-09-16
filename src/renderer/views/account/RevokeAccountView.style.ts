@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core";
 
 const revokeAccountViewStyle = makeStyles({
   root: {
-    margin: "15px",
+    margin: "20px",
     color: "white",
   },
   title: {
