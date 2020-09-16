@@ -78,6 +78,7 @@ const LoginView = observer(
        **/
       if (error?.message !== undefined) {
         setInvalid(true);
+        mixpanel.track("Launcher/LoginFailed");
       }
     }, [error]);
 
