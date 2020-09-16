@@ -30,8 +30,10 @@ npm install
 - 9C Headless (Standalone): `npm run build-headless`로 빌드 가능
   (.NET Core SDK 필요)
 - 9C Unity Player (_9c.exe_/_9c.app_): `npm run bundle-player`로 다운로드 가능
+  - `npm run bundle-player` 는 `nekoyume-unity` git 서브 모듈의 커밋 해시를 기준으로 nekoyume-unity 저장소 CI에서 미리 빌드된 바이너리를 다운로드 받습니다.
+  - 빌드가 끝나지 않은 경우 다운로드에 실패하는데, 이 경우엔 Unity 에디터에서 `dist` 디렉토리를 출력 디렉토리로 하여 직접 빌드하시면 됩니다.
 
-또는 두 개의 바이너리를 해당 디렉터리와 같게 배치해 주십시오.
+두 개의 바이너리를 해당 디렉터리와 같게 배치해 주십시오.
 
 ```
 ./src
