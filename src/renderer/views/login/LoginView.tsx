@@ -175,6 +175,7 @@ const LoginView = observer(
               {locale("Login")}
             </Button>
             <TextButton
+              id="reset-password"
               className={classes.revokeLink}
               onClick={handleResetPassword}
             >

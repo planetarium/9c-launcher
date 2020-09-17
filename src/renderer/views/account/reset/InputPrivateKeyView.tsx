@@ -7,6 +7,7 @@ import { observer, inject } from "mobx-react";
 import AccountStore from "../../../stores/account";
 
 import { useLocale } from "../../../i18n";
+import inputPrivateKeyViewStyle from "./inputPrivateKeyView.style";
 
 interface IInputPrivateKeyViewProps {
   accountStore: AccountStore;
@@ -25,6 +26,8 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
         privateKey,
       },
     });
+
+    const classes = inputPrivateKeyViewStyle();
 
     const { locale } = useLocale("inputPrivateKey");
 
@@ -51,20 +54,28 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
 
     return (
       <>
-        <p>{locale("Enter your private key to reset your password")}</p>
+        <h1 className={classes.title}>
+          {locale("Enter your private key to reset your password")}
+        </h1>
         <TextField
           label={locale("Private Key")}
+          id="privateKey-input"
           onChange={privateKeyChangeHandle}
+          className={classes.newLine}
         />
-        <br />
         <Button
+          id="submit"
           color={IsPrivateKeyValid ? "primary" : "secondary"}
           onClick={handleSubmit}
+          className={classes.newLine}
         >
           {locale("Enter")}
         </Button>
-        <br />
-        <TextButton onClick={handleRevokeAccount}>
+        <TextButton
+          id="revoke-key"
+          onClick={handleRevokeAccount}
+          className={classes.newLine}
+        >
           {locale("Forgot private key?")}
         </TextButton>
       </>

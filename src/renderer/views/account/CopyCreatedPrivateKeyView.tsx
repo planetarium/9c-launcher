@@ -44,7 +44,6 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             {locale("Your Private key")}
           </h2>
           <TextField
-            id="created-private-key"
             variant="outlined"
             type="password"
             size="small"
@@ -54,6 +53,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
           />
           <Button
             className={classes.copyButton}
+            id="copy-private-key"
             variant="outlined"
             onClick={(e) => {
               e.preventDefault();
@@ -67,7 +67,6 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
         </div>
         <Button
           color="primary"
-          type="submit"
           className={classes.done}
           variant="contained"
           onClick={(e) => {

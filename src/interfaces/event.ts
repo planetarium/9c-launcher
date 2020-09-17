@@ -12,10 +12,19 @@ interface SettingsFormElement extends HTMLFormElement {
   sentry: HTMLInputElement;
 }
 
+interface RegisterPrivateKeyElement extends LoginFormElement {
+  passwordConfirm: HTMLInputElement;
+}
+
 export interface LoginFormEvent extends FormEvent<LoginFormElement> {
   target: LoginFormElement;
 }
 
 export interface SettingsFormEvent extends FormEvent<SettingsFormElement> {
   target: SettingsFormElement;
+}
+
+export interface RegisterPrivateKeyEvent
+  extends FormEvent<RegisterPrivateKeyElement> {
+  target: RegisterPrivateKeyElement;
 }

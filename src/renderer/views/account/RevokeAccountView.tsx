@@ -57,6 +57,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
           variant="contained"
           color="primary"
           className={classes.revoke}
+          id="revoke-key"
           fullWidth
           onClick={(event) => {
             event.preventDefault();
@@ -74,7 +75,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
                   r.data?.keyStore?.revokePrivateKey?.address;
                 if (revokedAddress) accountStore.removeAddress(revokedAddress);
               });
-              routerStore.push("/main");
+              routerStore.push("/");
             });
           }}
         >

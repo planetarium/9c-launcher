@@ -10,6 +10,8 @@ import AccountStore from "../../../stores/account";
 import { inject, observer } from "mobx-react";
 
 import { useLocale } from "../../../i18n";
+import registerPrivateKeyViewStyle from "./RegisterPrivateKeyView.style";
+import { RegisterPrivateKeyEvent } from "../../../../interfaces/event";
 
 interface IRegisterPrivateKeyViewProps {
   accountStore: AccountStore;
@@ -23,20 +25,16 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
   "routerStore"
 )(
   observer(({ accountStore, routerStore }) => {
-    const [firstPassword, setFirstPassword] = useState("");
-    const [secondPassword, setSecondPassword] = useState("");
+    const [isInvalid, setIsInvalid] = useState(false);
+
+    const classes = registerPrivateKeyViewStyle();
 
     const { locale } = useLocale("registerPrivateKey");
 
-    const makeHandlePasswordChange = (fn: StateSetter<string>) => {
-      const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        fn(event.target.value);
-      };
-      return handleChange;
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setIsInvalid(false);
     };
 
-    const passwordMatched =
-      "" !== secondPassword && firstPassword === secondPassword;
     const {
       loading: loadingAddress,
       data,
@@ -45,52 +43,61 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
         privateKey: accountStore.privateKey,
       },
     });
-    const [revokePrivateKey, {}] = useRevokePrivateKeyMutation();
-    const [createPrivateKey, {}] = useCreatePrivateKeyMutation();
+    const [revokePrivateKey] = useRevokePrivateKeyMutation();
+    const [createPrivateKey] = useCreatePrivateKeyMutation();
 
-    const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
-      if (passwordMatched) {
-        const address = data?.keyStore?.privateKey.publicKey.address;
-        if (address === undefined) throw Error("Address not found");
-        const passphrase = firstPassword;
-        if (!loadingAddress) {
-          await revokePrivateKey({
-            variables: { address },
-          }).finally(async () => {
-            await createPrivateKey({
-              variables: {
-                privateKey: accountStore.privateKey,
-                passphrase: passphrase,
-              },
-            });
-            routerStore.push("/");
+    const handleSubmit = async (event: RegisterPrivateKeyEvent) => {
+      const password = event.target.password.value;
+      const passwordConfirm = event.target.passwordConfirm.value;
+
+      if (password !== passwordConfirm) {
+        setIsInvalid(true);
+        return;
+      }
+
+      const address = data?.keyStore?.privateKey.publicKey.address;
+      if (address === undefined) throw Error("Address not found");
+      if (!loadingAddress) {
+        await revokePrivateKey({
+          variables: { address },
+        }).finally(async () => {
+          await createPrivateKey({
+            variables: {
+              privateKey: accountStore.privateKey,
+              passphrase: password,
+            },
           });
-        }
+          routerStore.push("/");
+        });
       }
     };
 
     return (
-      <>
-        <p>{locale("Please reset the password.")}</p>
+      <form onSubmit={handleSubmit}>
+        <h1 className={classes.title}>
+          {locale("Please reset the password.")}
+        </h1>
 
         <TextField
           label={locale("Password")}
           type="password"
-          onChange={makeHandlePasswordChange(setFirstPassword)}
+          name="password"
+          className={classes.newLine}
+          onChange={handleChange}
         />
-        <br />
         <TextField
-          error={!passwordMatched}
+          error={isInvalid}
           label={locale("Retype Password")}
           type="password"
-          onChange={makeHandlePasswordChange(setSecondPassword)}
-          helperText={
-            !passwordMatched ? locale("Password does not match.") : ""
-          }
+          name="passwordConfirm"
+          helperText={isInvalid ? locale("Password does not match.") : ""}
+          className={classes.newLine}
+          onChange={handleChange}
         />
-        <br />
-        <Button onClick={handleSubmit}>{locale("Done")}</Button>
-      </>
+        <Button type="submit" className={classes.newLine}>
+          {locale("Done")}
+        </Button>
+      </form>
     );
   })
 );
