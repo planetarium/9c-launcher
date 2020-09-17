@@ -2,7 +2,7 @@ name: E2E Test
 on: [push, pull_request]
 
 jobs:
-  run-test:
+  manage-key:
     runs-on: windows-2019
     steps:
       - uses: actions/checkout@v2
@@ -14,17 +14,49 @@ jobs:
           node-version: "14"
       - name: Install dependencies
         run: npm install
+      - name: Build Standalone
+        run: npm run build-headless
+      - name: Build Launcher
+        run: npm run build
+      - name: Cache node_modules for next Test
+        uses: actions/upload-artifact@v2
+        with:
+          name: node-modules
+          path: node_modules
+      - name: Cache nekoume-unity for next Test
+        uses: actions/upload-artifact@v2
+        with:
+          name: nekoume-unity
+          path: nekoyume-unity
+      - name: Cache NineChronicles.Standalone for next Test
+        uses: actions/upload-artifact@v2
+        with:
+          name: Standalone
+          path: NineChronicles.Standalone
+      - name: Cache dist for next Test
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+      - name: Run E2E Test
+        run: npm run test:manage-key
+        with:
+          PASSWORD: "test account"
+  launch-game:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - uses: actions/download-artifact@v2
+        with:
+          node-version: "14"
       - run: npm install @planetarium/cli
       - name: Generate key
         id: gen-key
         run: 'echo "::set-output name=passphrase::$(scripts\\create-key.ps1)"'
         env:
           APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
-      - name: Build Standalone
-        run: npm run build-headless
-      - name: Build Launcher
-        run: npm run build-prod
       - name: Copy config
         run: scripts\copy-config.ps1
       - name: Run E2E Test
-        run: npm run test
+        run: npm run test:launch-game
