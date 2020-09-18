@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core";
 const errorViewStyle = makeStyles({
   root: {
     color: "#FFFFFF",
-    padding: "24px",
+    margin: "29px",
   },
   code: {
     fontFamily: "Consolas, monospace",
