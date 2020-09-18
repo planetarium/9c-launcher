@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { remote } from "electron";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
-import { Button, Container, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { BLOCKCHAIN_STORE_PATH } from "../../../config";
 import * as Sentry from "@sentry/electron";
 
@@ -16,7 +16,7 @@ const ErrorNoPermissionView = () => {
     );
   }, []);
   return (
-    <Container className={classes.root}>
+    <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
         No permission.
       </Typography>
@@ -35,7 +35,7 @@ const ErrorNoPermissionView = () => {
         </li>
         <li>Restart launcher.</li>
       </ol>
-    </Container>
+    </div>
   );
 };
 
