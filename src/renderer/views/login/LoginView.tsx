@@ -9,7 +9,6 @@ import {
   Grid,
   InputLabel,
   IconButton,
-  Link,
   TextField,
   Typography,
   FormControl,
@@ -31,6 +30,7 @@ import VisibilityAdornment from "../../components/VisibilityAdornment";
 
 import loginViewStyle from "./LoginView.style";
 import { useLocale } from "../../i18n";
+import TextButton from "../../components/TextButton";
 
 const popoverLayout: Pick<PopoverProps, "anchorOrigin" | "transformOrigin"> = {
   anchorOrigin: {
@@ -92,7 +92,7 @@ const LoginView = observer(
       });
     };
 
-    const handleRevokeAccount = (e: MouseEvent<HTMLAnchorElement>) => {
+    const handleResetPassword = (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       routerStore.push("/account/revoke");
     };
@@ -166,13 +166,12 @@ const LoginView = observer(
             >
               {locale("Login")}
             </Button>
-            <Link
+            <TextButton
               className={classes.revokeLink}
-              href="#"
-              onClick={handleRevokeAccount}
+              onClick={handleResetPassword}
             >
               {locale("Forgot password?")}
-            </Link>
+            </TextButton>
           </Box>
         </form>
       </div>

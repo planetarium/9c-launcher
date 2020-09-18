@@ -21,24 +21,19 @@ const configurationViewStyle = makeStyles({
   title: {
     fontWeight: "bold",
     fontSize: "1.5em",
+    paddingTop: "12px",
   },
   submit: {
     display: "block",
     margin: "0 auto 0 auto",
     borderRadius: "0",
-    width: "60%",
+    width: "210px",
     height: "60px",
-    fontSize: "150%",
+    fontSize: "1.5em",
     fontWeight: "bold",
   },
   textField: {
     "padding-bottom": "10px",
-  },
-  exit: {
-    display: "block",
-    "margin-right": "0px",
-    "margin-left": "auto",
-    "font-weight": "bold",
   },
   selectDir: {
     marginBottom: "10px",

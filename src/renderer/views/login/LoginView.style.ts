@@ -13,9 +13,9 @@ const loginViewStyle = makeStyles({
     display: "block",
     margin: "50px auto 0 auto",
     borderRadius: "0",
-    width: "60%",
+    width: "210px",
     height: "60px",
-    fontSize: "150%",
+    fontSize: "1.5em",
     fontWeight: "bold",
   },
   revokeLink: {

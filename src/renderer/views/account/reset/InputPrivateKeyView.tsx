@@ -1,5 +1,6 @@
 import React, { useState, MouseEvent, ChangeEvent } from "react";
 import { TextField, InputLabel, Button } from "@material-ui/core";
+import TextButton from "../../../components/TextButton";
 import { useValidatePrivateKeyQuery } from "../../../../generated/graphql";
 import { RouterStore } from "mobx-react-router";
 import { observer, inject } from "mobx-react";
@@ -44,6 +45,10 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
       }
     };
 
+    const handleRevokeAccount = (event: MouseEvent<HTMLButtonElement>) => {
+      routerStore.push("/account/revoke");
+    };
+
     return (
       <>
         <p>{locale("Enter your private key to reset your password")}</p>
@@ -59,8 +64,9 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
           {locale("Enter")}
         </Button>
         <br />
-        {/* FIXME: https://github.com/planetarium/9c-launcher/pull/109#discussion_r448705979 */}
-        <a href="/account/revoke">{locale("Forgot private key?")}</a>
+        <TextButton onClick={handleRevokeAccount}>
+          {locale("Forgot private key?")}
+        </TextButton>
       </>
     );
   })
