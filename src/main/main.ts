@@ -569,6 +569,14 @@ async function initializeStandalone(): Promise<void> {
   } finally {
     initializeStandaloneCts = null;
   }
+
+  ipcMain.on("get installer mixpanel uuid", async (event) => {
+    event.returnValue = (
+      await fs.promises.readFile(
+        path.join(app.getAppPath(), ".installer_mixpanel_uuid")
+      )
+    ).toString();
+  });
 }
 
 function createWindow(): BrowserWindow {
