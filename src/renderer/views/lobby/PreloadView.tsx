@@ -28,13 +28,14 @@ import { electronStore } from "../../../config";
 import { YouTubeInternal } from "../../../interfaces/refs";
 
 import { useLocale } from "../../i18n";
+import { Preload } from "../../../interfaces/i18n";
 
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore, standaloneStore } = props;
   const classes = preloadViewStyle();
   const [progress, setProgress] = useState(0);
 
-  const { locale } = useLocale("preload");
+  const { locale } = useLocale<Preload>("preload");
 
   const videoOpts: IYoutubeOption = {
     width: "330",
@@ -78,7 +79,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary={locale("블록 익스플로어")}
+            primary={locale("블록 익스플로러")}
           />
         </ListItem>
         <ListItem button onClick={handleClickPlayerGuide}>

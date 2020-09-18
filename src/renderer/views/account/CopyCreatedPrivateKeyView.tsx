@@ -10,6 +10,7 @@ import { RouterStore } from "mobx-react-router";
 import { clipboard } from "electron";
 
 import { useLocale } from "../../i18n";
+import { CopyPrivateKey } from "../../../interfaces/i18n";
 
 interface ICopyCreatedPrivateKeyProps {
   accountStore: AccountStore;
@@ -20,7 +21,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
   ({ accountStore, routerStore }) => {
     const classes = createAccountViewStyle();
 
-    const { locale } = useLocale("copyPrivateKey");
+    const { locale } = useLocale<CopyPrivateKey>("copyPrivateKey");
 
     return (
       <div className={classes.root}>

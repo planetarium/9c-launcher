@@ -10,6 +10,7 @@ import AccountStore from "../../../stores/account";
 import { inject, observer } from "mobx-react";
 
 import { useLocale } from "../../../i18n";
+import { RegisterPrivateKey } from "../../../../interfaces/i18n";
 
 interface IRegisterPrivateKeyViewProps {
   accountStore: AccountStore;
@@ -26,7 +27,7 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
     const [firstPassword, setFirstPassword] = useState("");
     const [secondPassword, setSecondPassword] = useState("");
 
-    const { locale } = useLocale("registerPrivateKey");
+    const { locale } = useLocale<RegisterPrivateKey>("registerPrivateKey");
 
     const makeHandlePasswordChange = (fn: StateSetter<string>) => {
       const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

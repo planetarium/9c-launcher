@@ -13,6 +13,7 @@ import preloadProgressViewStyle from "./PreloadProgressView.style";
 import { electronStore } from "../../../config";
 
 import { useLocale } from "../../i18n";
+import { PreloadProgress } from "../../../interfaces/i18n";
 
 const PreloadProgressView = observer(() => {
   const { accountStore, routerStore, standaloneStore } = useStores();
@@ -35,7 +36,7 @@ const PreloadProgressView = observer(() => {
     { loading, data, error },
   ] = useValidateSnapshotLazyQuery();
 
-  const { locale } = useLocale("preloadProgress");
+  const { locale } = useLocale<PreloadProgress>("preloadProgress");
 
   useEffect(() => {
     ipcRenderer.on("not enough space on the disk", () => {
@@ -209,7 +210,7 @@ const statusMessage = [
   "Verifying block headers",
   "Downloading states",
   "Executing actions",
-];
+] as const;
 
 const getProgress = (
   current: number | undefined,

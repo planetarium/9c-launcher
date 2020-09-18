@@ -6,11 +6,12 @@ import { Button, Container, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
 
 import { useLocale } from "../../i18n";
+import { ErrorRelaunch } from "../../../interfaces/i18n";
 
 const ErrorRelaunchView = () => {
   const classes = errorViewStyle();
 
-  const { locale } = useLocale("errorRelaunch");
+  const { locale } = useLocale<ErrorRelaunch>("errorRelaunch");
 
   const steps = locale("steps");
   if (typeof steps === "string")

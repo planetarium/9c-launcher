@@ -9,13 +9,14 @@ import useStores from "../../../hooks/useStores";
 import { observer } from "mobx-react";
 
 import { useLocale } from "../../i18n";
+import { Menu } from "../../../interfaces/i18n";
 
 export interface ILayoutProps {}
 
 export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
   const { routerStore } = useStores();
 
-  const { locale } = useLocale("menu");
+  const { locale } = useLocale<Menu>("menu");
 
   return (
     <main>

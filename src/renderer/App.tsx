@@ -25,6 +25,7 @@ import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProv
 import montserrat from "./styles/font";
 
 import LocaleProvider from "./i18n";
+import { Locale } from "../interfaces/i18n";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -97,7 +98,7 @@ function App() {
         <Provider {...Store}>
           <ThemeProvider theme={theme}>
             <LocaleProvider
-              value={{ locale: electronStore.get("Locale") as string }}
+              value={{ locale: electronStore.get("Locale") as Locale }}
             >
               <Root />
             </LocaleProvider>

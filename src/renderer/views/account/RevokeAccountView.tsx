@@ -9,6 +9,7 @@ import revokeAccountViewStyle from "./RevokeAccountView.style";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 import { useLocale } from "../../i18n";
+import { RevokeAccount } from "../../../interfaces/i18n";
 
 interface IRevokeAccountProps {
   accountStore: AccountStore;
@@ -19,7 +20,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
   ({ accountStore, routerStore }) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
 
-    const { locale } = useLocale("revokeAccount");
+    const { locale } = useLocale<RevokeAccount>("revokeAccount");
 
     const description = locale("description");
 

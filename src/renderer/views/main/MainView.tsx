@@ -9,11 +9,12 @@ import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import mainViewStyle from "./MainView.style";
 
 import { useLocale } from "../../i18n";
+import { Main } from "../../../interfaces/i18n";
 
 const MainView = observer(
   ({ accountStore, routerStore, gameStore }: IStoreContainer) => {
     const classes = mainViewStyle();
-    const { locale } = useLocale("main");
+    const { locale } = useLocale<Main>("main");
 
     const description = locale("description");
     if (typeof description === "string")

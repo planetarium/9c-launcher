@@ -1,9 +1,16 @@
 import { createContext, useContext } from "react";
 
-import pages from "./index.json";
+import I18n, {
+  Locale,
+  OptionalLocale,
+  RequireLocale,
+  Phrases,
+} from "../../interfaces/i18n";
+
+import pages from "./pages-load";
 
 interface LocaleContext {
-  locale: string;
+  locale: Locale;
 }
 
 const context = createContext<LocaleContext>({
@@ -11,6 +18,7 @@ const context = createContext<LocaleContext>({
 });
 
 const supportedLocales = {
+  ko: "한국어",
   en: "English",
   es: "Español",
   id: "Bahasa Indonesia",
@@ -22,9 +30,11 @@ const supportedLocales = {
   pt: "Português",
   "pt-BR": "Português (Brazil)",
   th: "ภาษาไทย",
-} as Record<string, string>;
+} as Record<Locale, string>;
 
-export function useLocale(pageName: keyof typeof pages) {
+type PageKey = keyof I18n;
+
+export function useLocale<Page extends I18n[PageKey]>(pageName: PageKey) {
   const { locale } = useContext(context);
 
   const selectedLocale = locale.startsWith("en") ? "en" : locale;
@@ -33,12 +43,9 @@ export function useLocale(pageName: keyof typeof pages) {
   return {
     selectedLocale,
     supportedLocales,
-    locale: function (name: string) {
+    locale: function (name: keyof Page) {
       // @ts-ignore
-      const message = page[name] as {
-        [locale: string]: string | string[] | undefined;
-        en: string | string[];
-      };
+      const message = page[name] as Phrases;
       return message[selectedLocale] ?? message.en;
     },
   };

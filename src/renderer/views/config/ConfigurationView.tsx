@@ -23,6 +23,7 @@ import { SettingsFormEvent } from "../../../interfaces/event";
 import configurationViewStyle from "./ConfigurationView.style";
 import { useLocale } from "../../i18n";
 import { Select } from "../../components/Select";
+import { Configuration } from "../../../interfaces/i18n";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
@@ -31,7 +32,7 @@ const ConfigurationView = observer(() => {
     blockchainStoreDirParent
   );
 
-  const { locale, supportedLocales, selectedLocale } = useLocale(
+  const { locale, supportedLocales, selectedLocale } = useLocale<Configuration>(
     "configuration"
   );
 
@@ -98,7 +99,7 @@ const ConfigurationView = observer(() => {
             {locale("경로 선택하기")}
           </Button>
           <FormLabel className={classes.newLine}>
-            {locale("Chain store directory name")}
+            {locale("체인이 저장되는 경로")}
           </FormLabel>
           <TextField
             fullWidth

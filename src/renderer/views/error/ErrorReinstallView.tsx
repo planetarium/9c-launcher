@@ -6,10 +6,11 @@ import { Button, Container, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
 
 import { useLocale } from "../../i18n";
+import { ErrorReinstall } from "../../../interfaces/i18n";
 
 const ErrorReinstallView = () => {
   const classes = errorViewStyle();
-  const { locale } = useLocale("errorReinstall");
+  const { locale } = useLocale<ErrorReinstall>("errorReinstall");
 
   const steps = locale("steps");
 
@@ -58,7 +59,7 @@ const ErrorReinstallView = () => {
         fullWidth
         onClick={handleExit}
       >
-        {locale("Close")}
+        {locale("닫기")}
       </Button>
     </Container>
   );

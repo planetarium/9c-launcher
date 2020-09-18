@@ -6,6 +6,7 @@ import { IStoreContainer } from "../../../interfaces/store";
 import miningViewStyle from "./MiningView.style";
 import jade from "../../resources/miningJade.png";
 import { useLocale } from "../../i18n";
+import { Mining } from "../../../interfaces/i18n";
 
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
@@ -24,7 +25,7 @@ const MiningView = observer(
       routerStore.push("/lobby/preload");
     };
 
-    const { locale } = useLocale("mining");
+    const { locale } = useLocale<Mining>("mining");
 
     const requirement = locale("requirement");
     if (typeof requirement === "string")

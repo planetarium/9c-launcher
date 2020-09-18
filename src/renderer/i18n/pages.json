@@ -24,12 +24,14 @@
       "ja": "Forum"
     },
     "Discord": {
+      "ko": "Discord",
       "en": "Discord",
       "pl": "Discord",
       "th": "Discord",
       "ja": "Discord"
     },
     "Settings": {
+      "ko": "설정",
       "en": "Settings",
       "pl": "Ustawienia",
       "th": "Settings",
@@ -654,8 +656,8 @@
       "id": "buat kunci",
       "ja": "キーを生成"
     },
-    "키 무효화하기": {
-      "ko": "키 무효화하기",
+    "키 지우기": {
+      "ko": "키 지우기",
       "en": "revoke key",
       "pl": "Anuluj klucz",
       "pt": "Anular chave",
@@ -1223,6 +1225,7 @@
       "id": "Kirim Informasi"
     },
     "행동 분석": {
+      "ko": "행동 분석",
       "en": "Behavior Analysis",
       "pl": "Analiza zachowań",
       "id": "Analitik Perilaku"

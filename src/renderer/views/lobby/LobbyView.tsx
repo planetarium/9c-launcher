@@ -22,6 +22,7 @@ import {
 import lobbyViewStyle from "./LobbyView.style";
 
 import { useLocale } from "../../i18n";
+import { Lobby } from "../../../interfaces/i18n";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
@@ -49,7 +50,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   const [activationKey, setActivationKey] = useState("");
   const [polling, setPollingState] = useState(false);
 
-  const { locale } = useLocale("lobby");
+  const { locale } = useLocale<Lobby>("lobby");
 
   const handleActivateSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -124,7 +125,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 });
 
 const PreloadWaitingButton = () => {
-  const { locale } = useLocale("lobby");
+  const { locale } = useLocale<Lobby>("lobby");
   return (
     <Button disabled={true} className={lobbyViewStyle().gameStartButton}>
       {locale("프리로딩 중...")}
@@ -141,7 +142,7 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
     props.onLaunch();
   };
 
-  const { locale } = useLocale("lobby");
+  const { locale } = useLocale<Lobby>("lobby");
 
   useEffect(() => {
     if (standaloneStore.IsPreloadEnded) {

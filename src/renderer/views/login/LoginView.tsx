@@ -31,6 +31,7 @@ import VisibilityAdornment from "../../components/VisibilityAdornment";
 import loginViewStyle from "./LoginView.style";
 import { useLocale } from "../../i18n";
 import TextButton from "../../components/TextButton";
+import { Login } from "../../../interfaces/i18n";
 
 const popoverLayout: Pick<PopoverProps, "anchorOrigin" | "transformOrigin"> = {
   anchorOrigin: {
@@ -111,7 +112,7 @@ const LoginView = observer(
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }
 
-    const { locale } = useLocale("login");
+    const { locale } = useLocale<Login>("login");
     return (
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
@@ -133,7 +134,7 @@ const LoginView = observer(
                   </IconButton>
                 </InputLabel>
                 <ClearCacheButton className={classes.cacheButton}>
-                  {locale("CLEAR CACHE")}
+                  {locale("캐시 지우기")}
                 </ClearCacheButton>
               </article>
               <Popover
