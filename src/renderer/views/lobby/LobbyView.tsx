@@ -40,7 +40,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   const { accountStore, gameStore, standaloneStore } = props;
   const [
     activation,
-    { loading, error: statusError, data: status },
+    { loading, error: statusError, data: status, refetch: activationRefetch },
   ] = useActivationLazyQuery();
   const [
     activate,
@@ -62,8 +62,8 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       setPollingState(true);
       while (true) {
         await sleep(1000);
-        await activation();
-        if (status?.activationStatus.activated) break;
+        const result = await activationRefetch();
+        if (result.data.activationStatus.activated) break;
       }
       setPollingState(false);
     });
