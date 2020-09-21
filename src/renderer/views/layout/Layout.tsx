@@ -11,18 +11,16 @@ import { observer } from "mobx-react";
 import { useLocale } from "../../i18n";
 import { Menu } from "../../../interfaces/i18n";
 
-export interface ILayoutProps {}
-
-export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
+export const Layout: React.FC = observer(({ children }) => {
   const { routerStore } = useStores();
 
   const { locale } = useLocale<Menu>("menu");
 
   return (
-    <main>
-      <section className="contents">{children}</section>
-      <section className="banner">
-        <ul className="nav">
+    <>
+      <main>{children}</main>
+      <nav>
+        <ul>
           <li>
             <Button
               startIcon={<HomeIcon />}
@@ -56,7 +54,7 @@ export const Layout: React.FC<ILayoutProps> = observer(({ children }) => {
             </Button>
           </li>
         </ul>
-      </section>
-    </main>
+      </nav>
+    </>
   );
 });
