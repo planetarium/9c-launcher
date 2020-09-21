@@ -14,11 +14,8 @@ interface IInputPrivateKeyViewProps {
   routerStore: RouterStore;
 }
 
-export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
-  "accountStore",
-  "routerStore"
-)(
-  observer(({ accountStore, routerStore }) => {
+const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = observer(
+  ({ accountStore, routerStore }) => {
     const [privateKey, setPrivateKeyState] = useState("");
 
     const { loading, data, error } = useValidatePrivateKeyQuery({
@@ -30,17 +27,17 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
     const { locale } = useLocale<InputPrivateKey>("inputPrivateKey");
 
     // 스탠드얼론에서 미처 감싸지 못한 예외들이 GraphQL ExecutionError로 나옵니다.
-    console.error(error);
+    if (error) console.error(error);
 
     const privateKeyChangeHandle = (event: ChangeEvent<HTMLInputElement>) => {
       setPrivateKeyState(event.target.value);
     };
 
-    const IsPrivateKeyValid =
-      undefined === error && !loading && data?.validation.privateKey;
+    const isPrivateKeyValid =
+      error === undefined && !loading && (data?.validation.privateKey ?? false);
 
     const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
-      if (IsPrivateKeyValid) {
+      if (isPrivateKeyValid) {
         accountStore.setPrivateKey(privateKey);
         routerStore.push("/account/reset/input/passphrase");
       }
@@ -54,18 +51,18 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
       <>
         <p>{locale("비밀번호를 재설정하기 위해 개인키를 입력해주세요.")}</p>
         <TextField label={locale("개인키")} onChange={privateKeyChangeHandle} />
-        <br />
         <Button
-          color={IsPrivateKeyValid ? "primary" : "secondary"}
+          color={isPrivateKeyValid ? "primary" : "secondary"}
           onClick={handleSubmit}
         >
           {locale("Enter")}
         </Button>
-        <br />
         <TextButton onClick={handleRevokeAccount}>
           {locale("개인키를 잊으셨나요?")}
         </TextButton>
       </>
     );
-  })
+  }
 );
+
+export default inject("accountStore", "routerStore")(InputPrivateKeyView);

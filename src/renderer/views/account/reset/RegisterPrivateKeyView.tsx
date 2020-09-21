@@ -17,19 +17,14 @@ interface IRegisterPrivateKeyViewProps {
   routerStore: RouterStore;
 }
 
-type StateSetter<T> = (value: T) => void;
-
-export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = inject(
-  "accountStore",
-  "routerStore"
-)(
-  observer(({ accountStore, routerStore }) => {
+const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = observer(
+  ({ accountStore, routerStore }) => {
     const [firstPassword, setFirstPassword] = useState("");
     const [secondPassword, setSecondPassword] = useState("");
 
     const { locale } = useLocale<RegisterPrivateKey>("registerPrivateKey");
 
-    const makeHandlePasswordChange = (fn: StateSetter<string>) => {
+    const makeHandlePasswordChange = (fn: (value: string) => void) => {
       const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         fn(event.target.value);
       };
@@ -37,7 +32,7 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
     };
 
     const passwordMatched =
-      "" !== secondPassword && firstPassword === secondPassword;
+      secondPassword.length > 0 && firstPassword === secondPassword;
     const {
       loading: loadingAddress,
       data,
@@ -46,8 +41,8 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
         privateKey: accountStore.privateKey,
       },
     });
-    const [revokePrivateKey, {}] = useRevokePrivateKeyMutation();
-    const [createPrivateKey, {}] = useCreatePrivateKeyMutation();
+    const [revokePrivateKey] = useRevokePrivateKeyMutation();
+    const [createPrivateKey] = useCreatePrivateKeyMutation();
 
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
       if (passwordMatched) {
@@ -93,5 +88,7 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
         <Button onClick={handleSubmit}>{locale("마치기")}</Button>
       </>
     );
-  })
+  }
 );
+
+export default inject("accountStore", "routerStore")(RegisterPrivateKeyView);
