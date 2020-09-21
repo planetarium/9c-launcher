@@ -31,6 +31,7 @@ import VisibilityAdornment from "../../components/VisibilityAdornment";
 import loginViewStyle from "./LoginView.style";
 import { useLocale } from "../../i18n";
 import TextButton from "../../components/TextButton";
+import { Login } from "../../../interfaces/i18n";
 
 const popoverLayout: Pick<PopoverProps, "anchorOrigin" | "transformOrigin"> = {
   anchorOrigin: {
@@ -111,10 +112,13 @@ const LoginView = observer(
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }
 
-    const { locale } = useLocale("login");
+    const { locale } = useLocale<Login>("login");
     return (
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
+        <ClearCacheButton className={classes.cacheButton}>
+          {locale("캐시 지우기")}
+        </ClearCacheButton>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
@@ -130,14 +134,14 @@ const LoginView = observer(
                   </IconButton>
                 </InputLabel>
                 <ClearCacheButton className={classes.cacheButton}>
-                  {locale("CLEAR CACHE")}
+                  {locale("캐시 지우기")}
                 </ClearCacheButton>
               </article>
               <Popover
                 {...bindPopover(addressCopiedPopupState)}
                 {...popoverLayout}
               >
-                {locale("Copied to clipboard!")}
+                {locale("클립보드에 복사되었습니다!")}
               </Popover>
               <Select
                 items={accountStore.addresses}
@@ -147,7 +151,7 @@ const LoginView = observer(
             </Grid>
             <Grid item xs={12}>
               <InputLabel className={classes.label}>
-                {locale("Password")}
+                {locale("비밀번호")}
               </InputLabel>
               <FormControl fullWidth>
                 <OutlinedInput
@@ -172,13 +176,13 @@ const LoginView = observer(
               variant="contained"
               color="primary"
             >
-              {locale("Login")}
+              {locale("로그인")}
             </Button>
             <TextButton
               className={classes.revokeLink}
               onClick={handleResetPassword}
             >
-              {locale("Forgot password?")}
+              {locale("비밀번호 찾기")}
             </TextButton>
           </Box>
         </form>

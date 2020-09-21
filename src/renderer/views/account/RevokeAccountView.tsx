@@ -9,6 +9,7 @@ import revokeAccountViewStyle from "./RevokeAccountView.style";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 import { useLocale } from "../../i18n";
+import { RevokeAccount } from "../../../interfaces/i18n";
 
 interface IRevokeAccountProps {
   accountStore: AccountStore;
@@ -19,7 +20,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
   ({ accountStore, routerStore }) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
 
-    const { locale } = useLocale("revokeAccount");
+    const { locale } = useLocale<RevokeAccount>("revokeAccount");
 
     const description = locale("description");
 
@@ -37,10 +38,10 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
             routerStore.push("/");
           }}
         >
-          {locale("Back")}
+          {locale("뒤로")}
         </Button>
         <Typography className={classes.title}>
-          {locale("Revoke your account")}
+          {locale("계정 지우기")}
         </Typography>
         <Typography>
           {description[0]}
@@ -78,7 +79,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
             });
           }}
         >
-          {locale("revoke key")}
+          {locale("키 지우기")}
         </Button>
       </div>
     );

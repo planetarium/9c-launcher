@@ -10,6 +10,7 @@ import AccountStore from "../../../stores/account";
 import { inject, observer } from "mobx-react";
 
 import { useLocale } from "../../../i18n";
+import { RegisterPrivateKey } from "../../../../interfaces/i18n";
 
 interface IRegisterPrivateKeyViewProps {
   accountStore: AccountStore;
@@ -26,7 +27,7 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
     const [firstPassword, setFirstPassword] = useState("");
     const [secondPassword, setSecondPassword] = useState("");
 
-    const { locale } = useLocale("registerPrivateKey");
+    const { locale } = useLocale<RegisterPrivateKey>("registerPrivateKey");
 
     const makeHandlePasswordChange = (fn: StateSetter<string>) => {
       const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,25 +72,25 @@ export const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = in
 
     return (
       <>
-        <p>{locale("Please reset the password.")}</p>
+        <p>{locale("비밀번호를 재설정해주세요.")}</p>
 
         <TextField
-          label={locale("Password")}
+          label={locale("비밀번호")}
           type="password"
           onChange={makeHandlePasswordChange(setFirstPassword)}
         />
         <br />
         <TextField
           error={!passwordMatched}
-          label={locale("Retype Password")}
+          label={locale("비밀번호 재입력")}
           type="password"
           onChange={makeHandlePasswordChange(setSecondPassword)}
           helperText={
-            !passwordMatched ? locale("Password does not match.") : ""
+            !passwordMatched ? locale("비밀번호가 알맞지 않습니다") : ""
           }
         />
         <br />
-        <Button onClick={handleSubmit}>{locale("Done")}</Button>
+        <Button onClick={handleSubmit}>{locale("마치기")}</Button>
       </>
     );
   })

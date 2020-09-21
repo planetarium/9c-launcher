@@ -29,6 +29,7 @@ import createAccountViewStyle from "./CreateAccountView.style";
 import { RouterStore } from "mobx-react-router";
 
 import { useLocale } from "../../i18n";
+import { CreateAccount } from "../../../interfaces/i18n";
 
 interface ICreateAccountProps {
   accountStore: AccountStore;
@@ -44,7 +45,7 @@ const CreateAccountView = observer(
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
-    const { locale } = useLocale("createAccount");
+    const { locale } = useLocale<CreateAccount>("createAccount");
 
     const classes = createAccountViewStyle();
 
@@ -90,7 +91,7 @@ const CreateAccountView = observer(
       <div className={`create-account ${classes.root}`}>
         <Typography variant="h1" className={classes.info}>
           {(locale(
-            "Please set the password to complete account creation."
+            "계정 생성을 마치기 위해 비밀번호를 설정해주세요."
           ) as string[]).map((paragraph) => (
             <span key={paragraph}>{paragraph}</span>
           ))}
@@ -98,7 +99,7 @@ const CreateAccountView = observer(
         <form noValidate autoComplete="off" onSubmit={handleSubmit}>
           <FormControl fullWidth>
             <InputLabel className={classes.label}>
-              {locale("Password")}
+              {locale("비밀번호")}
             </InputLabel>
             <OutlinedInput
               id="password-input"
@@ -115,7 +116,7 @@ const CreateAccountView = observer(
           </FormControl>
           <FormControl fullWidth>
             <InputLabel className={classes.label}>
-              {locale("Confirm")}
+              {locale("비밀번호 (확인)")}
             </InputLabel>
             <OutlinedInput
               id="password-confirm-input"
@@ -138,7 +139,7 @@ const CreateAccountView = observer(
             className={classes.submit}
             variant="contained"
           >
-            {locale("Done")}
+            {locale("마치기")}
           </Button>
         </form>
       </div>

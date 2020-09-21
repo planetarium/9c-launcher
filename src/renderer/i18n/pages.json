@@ -1,6 +1,7 @@
 {
   "intro": {
-    "now loading...": {
+    "불러오는 중...": {
+      "ko": "불러오는 중...",
       "en": "Now Loading...",
       "pl": "Wczytywanie...",
       "pt": "Carregando...",
@@ -16,18 +17,21 @@
   },
   "menu": {
     "Forum": {
+      "ko": "Forum",
       "en": "Forum",
       "pl": "Forum",
       "th": "Forum",
       "ja": "Forum"
     },
     "Discord": {
+      "ko": "Discord",
       "en": "Discord",
       "pl": "Discord",
       "th": "Discord",
       "ja": "Discord"
     },
     "Settings": {
+      "ko": "설정",
       "en": "Settings",
       "pl": "Ustawienia",
       "th": "Settings",
@@ -35,7 +39,8 @@
     }
   },
   "main": {
-    "Welcome to nine chronicles!": {
+    "나인 크로니클에 오신 걸 환영합니다!": {
+      "ko": "나인 크로니클에 오신 걸 환영합니다!",
       "en": "Welcome to Nine Chronicles!",
       "pl": "Witaj w Nine Chronicles!",
       "pt": "Bem vindo a Nine Chronicles!",
@@ -49,6 +54,10 @@
       "ja": "ナインクロニクルへようこそ！"
     },
     "description": {
+      "ko": [
+        "블록체인 위의 판타지 세계입니다.",
+        "게임을 시작하기 전에, 계정 생성이 필요합니다"
+      ],
       "en": [
         "This is a fantasy world on the blockchain.",
         "You need to create an account to start the game."
@@ -94,7 +103,8 @@
         "まずはアカウントを作成してみましょう。"
       ]
     },
-    "Create Account": {
+    "계정 생성하기": {
+      "ko": "계정 생성하기",
       "en": "Create Account",
       "pl": "Utwórz konto",
       "pt": "Criar Conta",
@@ -109,7 +119,8 @@
     }
   },
   "login": {
-    "CLEAR CACHE": {
+    "캐시 지우기": {
+      "ko": "캐시 지우기",
       "en": "CLEAR CACHE",
       "pl": "OPRÓŻNIJ PAMIĘĆ PODRĘCZNĄ",
       "pt": "Limpar Cache",
@@ -123,6 +134,7 @@
       "ja": "キャッシュをクリア"
     },
     "ID": {
+      "ko": "ID",
       "en": "ID",
       "pl": "ID",
       "pt": "ID",
@@ -135,10 +147,12 @@
       "th": "ID",
       "ja": "ID"
     },
-    "Copied to clipboard!": {
+    "클립보드에 복사되었습니다!": {
+      "ko": "클립보드에 복사되었습니다!",
       "en": "Copied to clipboard!"
     },
-    "Password": {
+    "비밀번호": {
+      "ko": "비밀번호",
       "en": "Password",
       "pl": "Hasło",
       "pt": "Palavra-passe",
@@ -151,7 +165,8 @@
       "th": "รหัสผ่าน",
       "ja": "パスワード"
     },
-    "Login": {
+    "로그인": {
+      "ko": "로그인",
       "en": "Login",
       "pl": "Login",
       "pt": "Logar",
@@ -164,7 +179,8 @@
       "th": "ล็อคอิน",
       "ja": "ログイン"
     },
-    "Forgot password?": {
+    "비밀번호 찾기": {
+      "ko": "비밀번호 찾기",
       "en": "Forgot password?",
       "pl": "Zapomniałeś hasła?",
       "pt": "Esqueceu-se da palavra-passe?",
@@ -179,7 +195,8 @@
     }
   },
   "mining": {
-    "Do you want to turn the mining feature on?": {
+    "채굴 기능을 켜시겠습니까?": {
+      "ko": "채굴 기능을 켜시겠습니까?",
       "en": "Do you want to turn the mining feature on?",
       "pl": "Czy chcesz włączyć wydobywanie?",
       "pt": "Queres ligar a mineração ?",
@@ -192,6 +209,7 @@
       "ja": "マイニングをオンにしますか？"
     },
     "description": {
+      "ko": "나인 크로니클은 플레이어가 함께 만드는 게임 경제를 추구합니다. 게임을 플레이하는 것만으로도 나인 크로니클의 운영에 컴퓨터 자원을 기여하고, 그 보상으로 게임 골드를 얻을 수 있습니다.",
       "en": "Nine Chronicles pursues an in-game economy that users create together. You can produce Nine Chronicles Gold just by playing the game. During gameplay, you may contribute your computer resources to the operation of Nine Chronicles to earn gold.",
       "pl": "Nine Chronicles dąży do ekonomii gry, którą użytkownicy tworzą razem. Możesz wyprodukować walutę Nine Chronicles po prostu grając w grę. Podczas rozgrywki możesz także przekierować część zasobów komputera dla Nine Chronicles, aby zdobyć dodatkowe złoto.",
       "pt": "Nine Chronicles procura uma economia dentro do jogo, em que os utilizadores a criam juntos.Tu podes produzir Nine Chronicles ouro só por jogares o jogo. Durante o jogo, tu deves contibuir com os recursos do teu computador para a operação de Nine Chronicles para ganhares ouro.",
@@ -204,17 +222,23 @@
       "ja": "ナインクロニクルはユーザーと共につくるゲーム内経済圏の形成を目指しています。ユーザーはゲームをプレイするだけでナインクロニクルの通貨（ゴールド）を手に入れることができます。ゲームをプレイしている間、コンピューターのリソースをナインクロニクルの運用に充てることによってゴールドが入手できます。"
     },
     "requirement": {
+      "ko": [
+        "시스템 요구 사양:",
+        "64비트 프로세서와 운영체제",
+        "프로세서: 쿼드코어 CPU 3.0 GHz",
+        " 메모리: 16 GB RAM"
+      ],
       "en": [
         "REQUIRE:",
         "Requires a 64-bit processor and operating system",
         "Processor: Quad core CPU 3.0 GHz",
-        " Memory: 16 GB RAM"
+        "Memory: 16 GB RAM"
       ],
       "pl": [
         "Wymagania:",
         "Wymagany jest procesor 64-bitowy oraz system operacyjny",
         "Procesor: Quad core CPU 3.0 GHz",
-        " Pamięć RAM: 16 GB"
+        "Pamięć RAM: 16 GB"
       ],
       "pt": [
         "Requerimentos:",
@@ -226,7 +250,7 @@
         "Reikalavimai:",
         "Reikia 64 Bitų procesoriaus ir operacinės sistemos",
         "Procesorius: Keturių branduolių CPU 3.0 GHz",
-        " Atmintis: 16 GB RAM"
+        "Atmintis: 16 GB RAM"
       ],
       "nl": [
         "Vereisten:",
@@ -264,7 +288,8 @@
         "16 GB 以上の RAM"
       ]
     },
-    "OFF": {
+    "끄기": {
+      "ko": "끄기",
       "en": "OFF",
       "pl": "WYŁĄCZ",
       "pt": "Desligar",
@@ -276,7 +301,8 @@
       "id": "Matikan",
       "ja": "OFF"
     },
-    "ON": {
+    "켜기": {
+      "ko": "켜기",
       "en": "ON",
       "pl": "WŁĄCZ",
       "pt": "Ligado",
@@ -290,7 +316,8 @@
     }
   },
   "lobby": {
-    "Verifying...": {
+    "확인 중...": {
+      "ko": "확인 중...",
       "en": "Verifying...",
       "pl": "Weryfikowanie",
       "pt": "Verificando",
@@ -302,7 +329,8 @@
       "id": "Memverifikasi ...",
       "ja": "検証中..."
     },
-    "Preloading...": {
+    "프리로딩 중...": {
+      "ko": "프리로딩 중...",
       "en": "Preloading...",
       "pl": "Wczytywanie...",
       "pt": "Pré-carregando",
@@ -314,7 +342,8 @@
       "id": "Preloading ...",
       "ja": "読み込み中..."
     },
-    "Now Running...": {
+    "실행 중...": {
+      "ko": "실행 중...",
       "en": "Now Running...",
       "pl": "Uruchamianie...",
       "pt": "Agora Correndo",
@@ -326,7 +355,8 @@
       "id": "Sedang Berjalan ...",
       "ja": "実行中..."
     },
-    "Start Game": {
+    "게임 시작하기": {
+      "ko": "게임 시작하기",
       "en": "Start Game",
       "pl": "Rozpocznij grę",
       "pt": "Começar o Jogo",
@@ -338,7 +368,8 @@
       "id": "Mulai Game",
       "ja": "ゲームを始める"
     },
-    "Activation": {
+    "활성화": {
+      "ko": "활성화",
       "en": "Activation",
       "pl": "Aktywacja",
       "pt": "Ativação",
@@ -350,7 +381,8 @@
       "id": "Aktivasi",
       "ja": "アクティベーション"
     },
-    "Activation Key": {
+    "활성화 키": {
+      "ko": "활성화 키",
       "en": "Activation Key",
       "pl": "Klucz aktywacyjny",
       "pt": "Chave de Ativação",
@@ -364,7 +396,11 @@
     }
   },
   "preload": {
-    "Receiving data from other users. Let's watch the trailer and new content!": {
+    "다른 사용자에게 데이터를 받는 중입니다. 트레일러와 새로운 콘텐츠를 봅시다!": {
+      "ko": [
+        "다른 사용자에게 데이터를 받는 중입니다.",
+        "트레일러와 새로운 콘텐츠를 봅시다!"
+      ],
       "en": [
         "Receiving data from other users.",
         "Let's watch the trailer and new content!"
@@ -406,7 +442,8 @@
         "トレーラー映像をご覧ください！"
       ]
     },
-    "Block Explorer": {
+    "블록 익스플로러": {
+      "ko": "블록 익스플로러",
       "en": "Block Explorer",
       "pl": "Poszukiwacz bloków",
       "pt": "Exploração de blocos",
@@ -418,7 +455,8 @@
       "id": "Block Explorer",
       "ja": "Block Explorer"
     },
-    "Nine Chronicles Player Guide": {
+    "나인 크로니클 플레이어 가이드": {
+      "ko": "나인 크로니클 플레이어 가이드",
       "en": "Nine Chronicles Player Guide",
       "pl": "Przewodnik po Nine Chronicles",
       "pt": "Nine Chronicles Guia do jogador",
@@ -432,7 +470,8 @@
     }
   },
   "errorRelaunch": {
-    "Something went wrong.": {
+    "무언가 잘못 되었습니다.": {
+      "ko": "무언가 잘못 되었습니다.",
       "en": "Something went wrong.",
       "pl": "Coś poszło nie tak",
       "pt": "Alguma coisa correu mal",
@@ -444,7 +483,8 @@
       "id": "Terjadi suatu kesalahan.",
       "ja": "問題が発生しました。"
     },
-    "Please follow the steps below.": {
+    "아래 절차를 따라 해주세요.": {
+      "ko": "아래 절차를 따라 해주세요.",
       "en": "Please follow the steps below.",
       "pl": "Proszę wykonaj poniższe kroki.",
       "pt": "Por favor siga os passos abaixo.",
@@ -457,6 +497,7 @@
       "ja": "以下のステップに従って下さい。"
     },
     "steps": {
+      "ko": ["나인 크로니클을 재실행하고, 다시 로그인해주세요."],
       "en": ["Relaunch “Nine Chronicles”", "Login once again"],
       "pl": ["Uruchom ponownie “Nine Chronicles”", "Zaloguj się ponownie"],
       "pt": ["Volte a iniciar o laucher “Nine Chronicles”", " Volte a logar"],
@@ -472,6 +513,7 @@
       ]
     },
     "Relaunch": {
+      "ko": "재실행",
       "en": "Relaunch",
       "pl": "Uruchom ponownie",
       "pt": "Volte a iniciar",
@@ -485,7 +527,8 @@
     }
   },
   "errorReinstall": {
-    "Something went wrong.": {
+    "무언가 잘못 되었습니다.": {
+      "ko": "무언가 잘못 되었습니다.",
       "en": "Something went wrong.",
       "pl": "Coś poszło nie tak.",
       "pt": "Alguma coisa correu mal.",
@@ -497,7 +540,8 @@
       "id": "Terjadi kesalahan.",
       "ja": "問題が発生しました。"
     },
-    "Please follow the steps below.": {
+    "아래 절차를 따라 해주세요.": {
+      "ko": "아래 절차를 따라 해주세요.",
       "en": "Please follow the steps below.",
       "pl": "Proszę wykonaj poniższe kroki.",
       "pt": "Por favor siga os passos abaixo.",
@@ -510,6 +554,7 @@
       "ja": "以下のステップに従って下さい。"
     },
     "steps": {
+      "ko": ["닫기 버튼을 누르고 나인 크로니클을 새로 설치해주세요."],
       "en": [
         "Press the close button",
         "Delete “Nine Chronicles”",
@@ -557,7 +602,8 @@
         "ナインクロニクル を再度インストールして下さい"
       ]
     },
-    "If you are still seeing this page after reinstall, please contact support via": {
+    "혹시 이 페이지를 재설치 후에 여전히 보셨다면, 다음을 통해 지원을 받으세요.": {
+      "ko": "혹시 이 페이지를 재설치 후에 여전히 보셨다면, 다음을 통해 지원을 받으세요.",
       "en": "If you are still seeing this page after reinstall, please contact support via",
       "pl": "Jeśli widzisz tę stronę po przeinstalowaniu gry, prosimy o kontakt z supportem via",
       "pt": "Se vires esta página outra vez reinstala, por favor contacta o suporte via",
@@ -570,6 +616,7 @@
       "ja": "再インストールしても直らない場合は、以下のサポートに連絡して下さい"
     },
     "Discord": {
+      "ko": "Discord",
       "en": "Discord",
       "pl": "Discord",
       "pt": "Discord",
@@ -581,7 +628,8 @@
       "id": "Discord",
       "ja": "Discord"
     },
-    "Close": {
+    "닫기": {
+      "ko": "닫기",
       "en": "Close",
       "pl": "Zamknij",
       "pt": "Fechar",
@@ -595,7 +643,8 @@
     }
   },
   "account": {
-    "create key": {
+    "키 생성하기": {
+      "ko": "키 생성하기",
       "en": "create key",
       "pl": "Utwórz klucz",
       "pt": "Criar chave",
@@ -607,7 +656,8 @@
       "id": "buat kunci",
       "ja": "キーを生成"
     },
-    "revoke key": {
+    "키 지우기": {
+      "ko": "키 지우기",
       "en": "revoke key",
       "pl": "Anuluj klucz",
       "pt": "Anular chave",
@@ -619,7 +669,8 @@
       "id": "hapus kunci",
       "ja": "キーを無効化"
     },
-    "reset key": {
+    "키 초기화하기": {
+      "ko": "키 초기화하기",
       "en": "reset key",
       "pl": "zresetuj klucz",
       "pt": "Resetar chave",
@@ -631,7 +682,8 @@
       "id": "reset kunci",
       "ja": "キーをリセット"
     },
-    "back to the home": {
+    "홈으로 돌아가기": {
+      "ko": "홈으로 돌아가기",
       "en": "back to the home",
       "pl": "Wróc",
       "pt": "Voltar a casa",
@@ -645,7 +697,8 @@
     }
   },
   "createAccount": {
-    "Please set the password to complete account creation.": {
+    "계정 생성을 마치기 위해 비밀번호를 설정해주세요.": {
+      "ko": ["계정 생성을 마치기 위해", "비밀번호를 설정해주세요."],
       "en": ["Please set the password to", "complete account creation."],
       "pl": ["Ustaw hasło na", "aby zakończ tworzenie konta."],
       "pt": [
@@ -663,7 +716,8 @@
       "id": ["Harap atur kata sandi untuk", "menyelesaikan pembuatan akun"],
       "ja": ["パスワードを設定して", "アカウント作成を完了して下さい"]
     },
-    "Password": {
+    "비밀번호": {
+      "ko": "비밀번호",
       "en": "Password",
       "pl": "Hasło",
       "pt": "Palavra-passe",
@@ -675,7 +729,8 @@
       "id": "Kata sandi",
       "ja": "パスワード"
     },
-    "Confirm": {
+    "비밀번호 (확인)": {
+      "ko": "비밀번호 (확인)",
       "en": "Password (Confirm)",
       "pl": "Hasło (potwierdź)",
       "pt": "Palavra-passe (confirme)",
@@ -687,7 +742,8 @@
       "id": "konfirmasi kata sandi",
       "ja": "パスワード（確認）"
     },
-    "Done": {
+    "마치기": {
+      "ko": "마치기",
       "en": "Done",
       "pl": "Gotowe",
       "pt": "Feito",
@@ -702,6 +758,11 @@
   },
   "copyPrivateKey": {
     "title": {
+      "ko": [
+        "거의 끝났습니다!",
+        "개인키를 안전한 장소에",
+        "복사하고 저장해두세요."
+      ],
       "en": [
         "Almost done!",
         "Please copy and store",
@@ -754,6 +815,10 @@
       ]
     },
     "description": {
+      "ko": [
+        "나인 크로니클은 완전한 탈중앙 게임입니다.",
+        "그래서 비밀번호를 저장하는 서버가 없습니다."
+      ],
       "en": [
         "Nine Chronicles is a fully decentralized game.",
         "Therefore, there is not a server that stores your password."
@@ -793,6 +858,11 @@
       ]
     },
     "warning": {
+      "ko": [
+        "이 키는 계정을 복구하는 유일한 방법입니다.",
+        "비밀 키를 다른 사람에게 노출하지 마십시오.",
+        "키가 노출되었을 경우 누군가 자산을 훔칠 수 있습니다."
+      ],
       "en": [
         "This key is the only means to recover your password.",
         "Never expose your private key to others.",
@@ -840,7 +910,8 @@
         "もし他人に知られると、あなたの資産が盗まれる危険性があります。"
       ]
     },
-    "Your Private key": {
+    "개인키": {
+      "ko": "개인키",
       "en": "Your Private key",
       "pl": "Twój klucz prywatny",
       "pt": "A tua chave privada",
@@ -852,7 +923,8 @@
       "id": "Private key anda",
       "ja": "あなたのプライベートキー"
     },
-    "Copy": {
+    "복사하기": {
+      "ko": "복사하기",
       "en": "Copy",
       "pl": "Kopiuj",
       "pt": "Copiar",
@@ -864,7 +936,8 @@
       "id": "salin",
       "ja": "コピー"
     },
-    "Done": {
+    "마치기": {
+      "ko": "마치기",
       "en": "Done",
       "pl": "Gotowe",
       "pt": "Feito",
@@ -878,7 +951,8 @@
     }
   },
   "revokeAccount": {
-    "Back": {
+    "뒤로": {
+      "ko": "뒤로",
       "en": "Back",
       "pl": "Cofnij",
       "pt": "voltar",
@@ -890,7 +964,8 @@
       "id": "Kembali",
       "ja": "戻る"
     },
-    "Revoke your account": {
+    "계정 지우기": {
+      "ko": "계정 지우기",
       "en": "Revoke your account",
       "pl": "Unieważnij swoje konto",
       "pt": "Anular a tua conta",
@@ -903,11 +978,17 @@
       "ja": "アカウントを無効化"
     },
     "description": {
+      "ko": [
+        "계정과 관련된 모든 기록을 삭제합니다.",
+        "나인 크로니클은 완전한 탈중앙화 게임이므로 비밀번호를 관리하는 중앙서버가 없습니다.",
+        "개인키를 잊어버린 경우, 처음부터 시작하기 위해 새로운 계정을 만들어야 됩니다.",
+        "개인키는 게임 내의 설정 메뉴에서 찾을 수 있습니다. 따라서 다음에 따로 복사하여 안전한 곳에 보관하십시오."
+      ],
       "en": [
         "Delete all records related to your account.",
         "Nine Chronicles is a fully decentralized game. Therefore, there is no central server that manages your password.",
         "If you lose your private key, you must create a new account to play the game from the beginning.",
-        "Private keys can be found in the Settings menu of the game, so make sure to copy them separately next time and keep them in a safe place."
+        "Private keys can be found in the Settings menu of the in-game, so make sure to copy them separately next time and keep them in a safe place."
       ],
       "pl": [
         "Usuń wszystkie rekordy związane z twoim kontem.",
@@ -962,7 +1043,8 @@
         "プライベートキーはゲーム内の設定メニューから見ることができます。必ずコピーして安全な場所に保管しておいて下さい。"
       ]
     },
-    "revoke key": {
+    "키 지우기": {
+      "ko": "키 지우기",
       "en": "revoke key",
       "pl": "Unieważnij klucz",
       "pt": "Anular chave",
@@ -976,7 +1058,8 @@
     }
   },
   "inputPrivateKey": {
-    "Enter your private key to reset your password": {
+    "비밀번호를 재설정하기 위해 개인키를 입력해주세요.": {
+      "ko": "비밀번호를 재설정하기 위해 개인키를 입력해주세요.",
       "en": "Enter your private key to reset your password",
       "pl": "Wprowadź swój klucz prywatny, aby zresetować hasło",
       "pt": "Entra a tua chave privada para resetar a tua palavra-chave",
@@ -988,7 +1071,8 @@
       "id": "Masukkan private key anda untuk menreset kata sandi",
       "ja": "パスワードをリセットするにはプライベートキーを入力して下さい"
     },
-    "Private Key": {
+    "개인키": {
+      "ko": "개인키",
       "en": "Private Key",
       "pl": "Klucz prywatny",
       "pt": "Chave privada",
@@ -1001,6 +1085,7 @@
       "ja": "プライベートキー"
     },
     "Enter": {
+      "ko": "Enter",
       "en": "Enter",
       "pl": "Wprowadź",
       "pt": "Enter",
@@ -1012,7 +1097,8 @@
       "id": "Masuk",
       "ja": "入力"
     },
-    "Forgot private key?": {
+    "개인키를 잊으셨나요?": {
+      "ko": "개인키를 잊으셨나요?",
       "en": "Forgot private key?",
       "pl": "Zapomniałeś klucza prywatnego?",
       "pt": "Esqueceu a chave privada?",
@@ -1026,7 +1112,8 @@
     }
   },
   "registerPrivateKey": {
-    "Please reset the password.": {
+    "비밀번호를 재설정해주세요.": {
+      "ko": "비밀번호를 재설정해주세요.",
       "en": "Please reset the password.",
       "pl": "Proszę zresetuj hasło.",
       "pt": "Por favor redefina a sua palavra-passe.",
@@ -1038,7 +1125,8 @@
       "id": "Dimohon untuk menreset kata sandi",
       "ja": "パスワードをリセットしてください。"
     },
-    "Password": {
+    "비밀번호": {
+      "ko": "비밀번호",
       "en": "Password",
       "pl": "Hasło",
       "pt": "Palavra-passe",
@@ -1050,7 +1138,8 @@
       "id": "kata sandi",
       "ja": "パスワード"
     },
-    "Retype Password": {
+    "비밀번호 재입력": {
+      "ko": "비밀번호 재입력",
       "en": "Retype Password",
       "pl": "Powtórz hasło",
       "pt": "Reescreva a sua palavra-passe",
@@ -1062,7 +1151,8 @@
       "id": "Ketik ulang kata sandi",
       "ja": "パスワード再入力"
     },
-    "Password does not match.": {
+    "비밀번호가 알맞지 않습니다": {
+      "ko": "비밀번호가 알맞지 않습니다",
       "en": "Password does not match.",
       "pl": "Hasła się nie pokrywają.",
       "pt": " A sua palavra-pass não está igual.",
@@ -1074,7 +1164,8 @@
       "id": "Kata sandi tidak sesuai",
       "ja": "パスワードが一致しません。"
     },
-    "Done": {
+    "마치기": {
+      "ko": "마치기",
       "en": "Done",
       "pl": "Gotowe",
       "pt": "feito",
@@ -1088,71 +1179,85 @@
     }
   },
   "configuration": {
-    "Settings": {
+    "설정": {
+      "ko": "설정",
       "en": "Settings",
       "pl": "Ustawienia",
       "ja": "設定"
     },
-    "Save": {
+    "저장하기": {
+      "ko": "저장하기",
       "en": "Save",
       "pl": "Zapisz",
       "ja": "保存"
     },
-    "Root chain store path": {
+    "체인이 저장되는 경로": {
+      "ko": "체인이 저장되는 경로",
       "en": "Root chain store path",
       "pl": "Ścieżka głównego sklepu sieciowego",
       "ja": "チェーンストアのルートパス"
     },
-    "Select path": {
+    "경로 선택하기": {
+      "ko": "경로 선택하기",
       "en": "Select path"
     },
-    "Chain store directory name": {
+    "체인 폴더의 이름": {
+      "ko": "체인 폴더의 이름",
       "en": "Chain store directory name",
       "pl": "Nazwa katalogu sieci sklepów",
       "ja": "チェーンストアのディレクトリ名"
     },
-    "Select Language": {
+    "언어 선택하기": {
+      "ko": "언어 선택하기",
       "en": "Select Language",
       "pl": "Wybierz język",
       "ja": "言語を選択"
     },
-    "After saving, the launcher will restart.": {
+    "저장 후 론처가 재시작 됩니다.": {
+      "ko": "저장 후 론처가 재시작 됩니다.",
       "en": "After saving, the launcher will restart.",
       "pl": "Po zapisie, launcher uruchomi się ponownie"
     },
-    "Send Information": {
+    "정보 보내기": {
+      "ko": "정보 보내기",
       "en": "Send Information",
       "pl": "Wyślij dane",
       "id": "Kirim Informasi"
     },
-    "Behavior Analytic": {
-      "en": "Behavior Analytic",
+    "행동 분석": {
+      "ko": "행동 분석",
+      "en": "Behavior Analysis",
       "pl": "Analiza zachowań",
       "id": "Analitik Perilaku"
     },
-    "Report Error": {
+    "오류 보고하기": {
+      "ko": "오류 보고하기",
       "en": "Report Error",
       "pl": "Zgłoś błąd",
       "id": "Laporkan kesalahan"
     },
-    "These data are helpful for Game development.": {
-      "en": "These data are helpful for Game development.",
+    "두 데이터는 게임 개발에 도움이 됩니다.": {
+      "ko": "두 데이터는 게임 개발에 도움이 됩니다.",
+      "en": "These data is helpful for Game development.",
       "pl": "Te dane są bardzo pomocne w rozwoju gry",
       "id": "Data ini berguna untuk pengembangan Game."
     }
   },
   "preloadProgress": {
     "Preload Completed.": {
+      "ko": "프리로드를 마쳤습니다.",
       "en": "Preload Completed.",
       "pl": "Wstępne ładowanie zakończone.",
       "ja": "ロード完了"
     },
     "No Peers Were Given.": {
-      "en": "No Peers Were Given.",
+      "ko": "시드 노드가 설정되지 않았습니다.",
+      "en": "no seed nodes were configured",
       "pl": "Nie dano rówieśników.",
       "ja": "ピア接続できませんでした。"
     },
     "Validating Snapshot": {
+      "ko": "스냅샷 확인 중",
       "en": "Validating Snapshot",
       "pl": "Potiwerdzanie snapshota",
       "pt": "Validando o Snapshot",
@@ -1165,6 +1270,7 @@
       "ja": "スナップショットを検証しています"
     },
     "Downloading Snapshot": {
+      "ko": "스냅샷 내려받는 중",
       "en": "Downloading Snapshot",
       "pl": "Pobieranie snapshota",
       "pt": "Fazendo download do snapshot",
@@ -1177,6 +1283,7 @@
       "ja": "スナップショットをダウンロードしています"
     },
     "Extracting Snapshot": {
+      "ko": "스냅샷을 추출하는 중",
       "en": "Extracting Snapshot",
       "pl": "Wypakowywanie snapshota",
       "pt": "Extraindo o snapshot",
@@ -1189,6 +1296,7 @@
       "ja": "スナップショットを抽出しています"
     },
     "Verifying block headers": {
+      "ko": "블록 헤더를 확인하는 중",
       "en": "Verifying Block Headers",
       "pl": "Weryfikowanie nagłówków bloków",
       "pt": "Verificando a Block Headers",
@@ -1201,6 +1309,7 @@
       "ja": "ブロックヘッダを検証しています"
     },
     "Downloading block hashes": {
+      "ko": "블록 해시를 내려받는 중",
       "en": "Downloading Block Hashes",
       "pl": "Pobieranie hashy bloków",
       "pt": "Fazendo o download de Block Hashes",
@@ -1213,6 +1322,7 @@
       "ja": "ブロックハッシュをダウンロードしています"
     },
     "Downloading blocks": {
+      "ko": "블록을 내려받는 중",
       "en": "Downloading Blocks",
       "pl": "Pobieranie bloków",
       "pt": "Fazendo download de blocos",
@@ -1225,6 +1335,7 @@
       "ja": "ブロックをダウンロードしています"
     },
     "Downloading states": {
+      "ko": "상태를 내려받는 중",
       "en": "Downloading States",
       "pl": "Pobieranie stanów",
       "pt": "Fazendo download de states",
@@ -1237,6 +1348,7 @@
       "ja": "ステータスをダウンロードしています"
     },
     "Executing actions": {
+      "ko": "액션을 실행하는 중",
       "en": "Executing Actions",
       "pl": "Wykonywanie czynności",
       "pt": "Execução de acções",

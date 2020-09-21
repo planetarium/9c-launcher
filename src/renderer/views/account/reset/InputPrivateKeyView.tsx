@@ -7,6 +7,7 @@ import { observer, inject } from "mobx-react";
 import AccountStore from "../../../stores/account";
 
 import { useLocale } from "../../../i18n";
+import { InputPrivateKey } from "../../../../interfaces/i18n";
 
 interface IInputPrivateKeyViewProps {
   accountStore: AccountStore;
@@ -26,7 +27,7 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
       },
     });
 
-    const { locale } = useLocale("inputPrivateKey");
+    const { locale } = useLocale<InputPrivateKey>("inputPrivateKey");
 
     // 스탠드얼론에서 미처 감싸지 못한 예외들이 GraphQL ExecutionError로 나옵니다.
     console.error(error);
@@ -51,11 +52,8 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
 
     return (
       <>
-        <p>{locale("Enter your private key to reset your password")}</p>
-        <TextField
-          label={locale("Private Key")}
-          onChange={privateKeyChangeHandle}
-        />
+        <p>{locale("비밀번호를 재설정하기 위해 개인키를 입력해주세요.")}</p>
+        <TextField label={locale("개인키")} onChange={privateKeyChangeHandle} />
         <br />
         <Button
           color={IsPrivateKeyValid ? "primary" : "secondary"}
@@ -65,7 +63,7 @@ export const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = inject(
         </Button>
         <br />
         <TextButton onClick={handleRevokeAccount}>
-          {locale("Forgot private key?")}
+          {locale("개인키를 잊으셨나요?")}
         </TextButton>
       </>
     );

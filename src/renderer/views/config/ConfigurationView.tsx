@@ -23,6 +23,7 @@ import { SettingsFormEvent } from "../../../interfaces/event";
 import configurationViewStyle from "./ConfigurationView.style";
 import { useLocale } from "../../i18n";
 import { Select } from "../../components/Select";
+import { Configuration } from "../../../interfaces/i18n";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
@@ -31,7 +32,7 @@ const ConfigurationView = observer(() => {
     blockchainStoreDirParent
   );
 
-  const { locale, supportedLocales, selectedLocale } = useLocale(
+  const { locale, supportedLocales, selectedLocale } = useLocale<Configuration>(
     "configuration"
   );
 
@@ -72,7 +73,7 @@ const ConfigurationView = observer(() => {
     <div className={classes.root}>
       <header className={classes.titleWarp}>
         <Typography variant="h1" gutterBottom className={classes.title}>
-          {locale("Settings")}
+          {locale("설정")}
         </Typography>
         <IconButton onClick={routerStore.goBack}>
           <Close />
@@ -80,7 +81,7 @@ const ConfigurationView = observer(() => {
       </header>
       <form onSubmit={handleSubmit}>
         <article className={classes.fields}>
-          <FormLabel>{locale("Root chain store path")}</FormLabel>
+          <FormLabel>{locale("체인이 저장되는 경로")}</FormLabel>
           <TextField
             fullWidth
             name="rootchain"
@@ -95,10 +96,10 @@ const ConfigurationView = observer(() => {
             className={classes.selectDir}
             startIcon={<FolderOpen />}
           >
-            {locale("Select path")}
+            {locale("경로 선택하기")}
           </Button>
           <FormLabel className={classes.newLine}>
-            {locale("Chain store directory name")}
+            {locale("체인이 저장되는 경로")}
           </FormLabel>
           <TextField
             fullWidth
@@ -106,7 +107,7 @@ const ConfigurationView = observer(() => {
             className={classes.textField}
             defaultValue={electronStore.get("BlockchainStoreDirName")}
           />
-          <FormLabel>{locale("Select Language")}</FormLabel>
+          <FormLabel>{locale("언어 선택하기")}</FormLabel>
           <Select
             name="select"
             className={classes.selectLocale}
@@ -114,7 +115,7 @@ const ConfigurationView = observer(() => {
             defaultValue={supportedLocales[selectedLocale] ?? "English"}
           />
           <FormControl className={classes.checkboxGroup}>
-            <FormLabel>{locale("Send Information")}</FormLabel>
+            <FormLabel>{locale("정보 보내기")}</FormLabel>
             <FormGroup>
               <FormControlLabel
                 control={
@@ -125,7 +126,7 @@ const ConfigurationView = observer(() => {
                     name="sentry"
                   />
                 }
-                label={locale("Report Error")}
+                label={locale("오류 보고하기")}
               />
               <FormControlLabel
                 control={
@@ -136,11 +137,11 @@ const ConfigurationView = observer(() => {
                     name="analytic"
                   />
                 }
-                label={locale("Behavior Analytic")}
+                label={locale("행동 분석")}
               />
             </FormGroup>
             <FormHelperText className={classes.checkboxHelper}>
-              {locale("These data are helpful for Game development.")}
+              {locale("두 데이터는 게임 개발에 도움이 됩니다.")}
             </FormHelperText>
           </FormControl>
         </article>
@@ -150,10 +151,10 @@ const ConfigurationView = observer(() => {
           color="primary"
           variant="contained"
         >
-          {locale("Save")}
+          {locale("저장하기")}
         </Button>
         <FormLabel className={classes.label}>
-          {locale("After saving, the launcher will restart.")}
+          {locale("저장 후 론처가 재시작 됩니다.")}
         </FormLabel>
       </form>
     </div>

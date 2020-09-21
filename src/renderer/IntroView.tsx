@@ -4,13 +4,14 @@ import { IStoreContainer } from "../interfaces/store";
 import { useProtectedPrivateKeysQuery } from "../generated/graphql";
 
 import { useLocale } from "./i18n";
+import { Intro } from "../interfaces/i18n";
 
 const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
   const { loading, error, data } = useProtectedPrivateKeysQuery({
     fetchPolicy: "no-cache",
   });
 
-  const { locale } = useLocale("intro");
+  const { locale } = useLocale<Intro>("intro");
 
   useEffect(() => {
     if (!loading && data?.keyStore?.protectedPrivateKeys !== undefined) {
@@ -31,7 +32,7 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
     }
   }, [loading, data]);
 
-  return <div>{locale("now loading...")}</div>;
+  return <div>{locale("불러오는 중...")}</div>;
 });
 
 export default inject("accountStore", "routerStore")(IntroView);

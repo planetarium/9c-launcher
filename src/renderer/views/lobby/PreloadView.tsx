@@ -28,13 +28,14 @@ import { electronStore } from "../../../config";
 import { YouTubeInternal } from "../../../interfaces/refs";
 
 import { useLocale } from "../../i18n";
+import { Preload } from "../../../interfaces/i18n";
 
 const PreloadView = observer((props: IStoreContainer) => {
   const { routerStore, standaloneStore } = props;
   const classes = preloadViewStyle();
   const [progress, setProgress] = useState(0);
 
-  const { locale } = useLocale("preload");
+  const { locale } = useLocale<Preload>("preload");
 
   const videoOpts: IYoutubeOption = {
     width: "330",
@@ -65,7 +66,7 @@ const PreloadView = observer((props: IStoreContainer) => {
     <Container className={classes.root}>
       <Typography variant="h1" className={classes.title}>
         {(locale(
-          "Receiving data from other users. Let's watch the trailer and new content!"
+          "다른 사용자에게 데이터를 받는 중입니다. 트레일러와 새로운 콘텐츠를 봅시다!"
         ) as string[]).map((paragraph) => (
           <span key={paragraph}>{paragraph}</span>
         ))}
@@ -78,7 +79,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary={locale("Block Explorer")}
+            primary={locale("블록 익스플로러")}
           />
         </ListItem>
         <ListItem button onClick={handleClickPlayerGuide}>
@@ -87,7 +88,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary={locale("Nine Chronicles Player Guide")}
+            primary={locale("나인 크로니클 플레이어 가이드")}
           />
         </ListItem>
       </List>

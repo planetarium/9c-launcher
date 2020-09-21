@@ -6,11 +6,11 @@ import CreateAccountView from "./CreateAccountView";
 import RevokeAccountView from "./RevokeAccountView";
 
 import { useLocale } from "../../i18n";
+import { Account } from "../../../interfaces/i18n";
 
 const AccountView: React.FC<IStoreContainer> = observer(
   ({ accountStore, routerStore }) => {
-    const { locale } = useLocale("account");
-
+    const { locale } = useLocale<Account>("account");
     return (
       <div>
         <button
@@ -18,28 +18,28 @@ const AccountView: React.FC<IStoreContainer> = observer(
             routerStore.push("/account/create");
           }}
         >
-          {locale("create key")}
+          {locale("키 생성하기")}
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/revoke");
           }}
         >
-          {locale("revoke key")}
+          {locale("키 지우기")}
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/reset/input/private-key");
           }}
         >
-          {locale("reset key")}
+          {locale("키 초기화하기")}
         </button>
         <button
           onClick={() => {
             routerStore.push("/");
           }}
         >
-          {locale("back to the home")}
+          {locale("홈으로 돌아가기")}
         </button>
       </div>
     );

@@ -6,11 +6,12 @@ import { Button, Container, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
 
 import { useLocale } from "../../i18n";
+import { ErrorRelaunch } from "../../../interfaces/i18n";
 
 const ErrorRelaunchView = () => {
   const classes = errorViewStyle();
 
-  const { locale } = useLocale("errorRelaunch");
+  const { locale } = useLocale<ErrorRelaunch>("errorRelaunch");
 
   const steps = locale("steps");
   if (typeof steps === "string")
@@ -28,10 +29,10 @@ const ErrorRelaunchView = () => {
   return (
     <Container className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("Something went wrong.")}
+        {locale("무언가 잘못 되었습니다.")}
       </Typography>
       <Typography variant="subtitle1">
-        {locale("Please follow the steps below.")}
+        {locale("아래 절차를 따라 해주세요.")}
       </Typography>
       <ol>
         {steps.map((step) => (

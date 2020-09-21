@@ -10,6 +10,7 @@ import { RouterStore } from "mobx-react-router";
 import { clipboard } from "electron";
 
 import { useLocale } from "../../i18n";
+import { CopyPrivateKey } from "../../../interfaces/i18n";
 
 interface ICopyCreatedPrivateKeyProps {
   accountStore: AccountStore;
@@ -20,7 +21,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
   ({ accountStore, routerStore }) => {
     const classes = createAccountViewStyle();
 
-    const { locale } = useLocale("copyPrivateKey");
+    const { locale } = useLocale<CopyPrivateKey>("copyPrivateKey");
 
     return (
       <div className={classes.root}>
@@ -40,9 +41,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
           ))}
         </article>
         <div className={classes.privateKeyContainer}>
-          <h2 className={classes.privateKeyText}>
-            {locale("Your Private key")}
-          </h2>
+          <h2 className={classes.privateKeyText}>{locale("개인키")}</h2>
           <TextField
             id="created-private-key"
             variant="outlined"
@@ -62,7 +61,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
               clipboard.writeText(accountStore.privateKey);
             }}
           >
-            {locale("Copy")}
+            {locale("복사하기")}
           </Button>
         </div>
         <Button
@@ -75,7 +74,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             routerStore.push("/");
           }}
         >
-          {locale("Done")}
+          {locale("마치기")}
         </Button>
       </div>
     );
