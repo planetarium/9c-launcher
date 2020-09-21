@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core";
 
-const registerPrivateKeyViewStyle = makeStyles({
+const resetPasswordViewStyle = makeStyles({
   root: {
     color: "white",
     display: "flex",
@@ -17,4 +17,4 @@ const registerPrivateKeyViewStyle = makeStyles({
   },
 });
 
-export default registerPrivateKeyViewStyle;
+export default resetPasswordViewStyle;

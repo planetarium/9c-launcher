@@ -16,8 +16,8 @@ import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
 import ErrorReinstallView from "./views/error/ErrorReinstallView";
 import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
 import ErrorNoPermissionView from "./views/error/ErrorNoPermissionView";
-import InputPrivateKeyView from "./views/account/reset/InputPrivateKeyView";
-import RegisterPrivateKeyView from "./views/account/reset/RegisterPrivateKeyView";
+import ReviewPrivateKeyView from "./views/account/reset/ReviewPrivateKeyView";
+import ResetPasswordView from "./views/account/reset/ResetPasswordView";
 import PreloadView from "./views/lobby/PreloadView";
 import CopyCreatedPrivateKeyView from "./views/account/CopyCreatedPrivateKeyView";
 import PreloadProgressView from "./views/preload/PreloadProgressView";
@@ -56,13 +56,13 @@ class Root extends React.Component {
           <Route exact path="/account/revoke" component={RevokeAccountView} />
           <Route
             exact
-            path="/account/reset/input/private-key"
-            component={InputPrivateKeyView}
+            path="/account/reset/review-private-key"
+            component={ReviewPrivateKeyView}
           />
           <Route
             exact
-            path="/account/reset/input/passphrase"
-            component={RegisterPrivateKeyView}
+            path="/account/reset/reset-password"
+            component={ResetPasswordView}
           />
           <Route exact path="/config" component={ConfigurationView} />
           <Redirect from="*" to="/" />

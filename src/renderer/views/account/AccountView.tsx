@@ -29,7 +29,7 @@ const AccountView: React.FC<IStoreContainer> = observer(
         </button>
         <button
           onClick={() => {
-            routerStore.push("/account/reset/input/private-key");
+            routerStore.push("/account/reset/review-private-key");
           }}
         >
           {locale("키 초기화하기")}

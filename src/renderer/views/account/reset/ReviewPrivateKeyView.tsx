@@ -14,20 +14,20 @@ import AccountStore from "../../../stores/account";
 
 import { useLocale } from "../../../i18n";
 import { InputPrivateKey } from "../../../../interfaces/i18n";
-import inputPrivateKeyViewStyle from "./InputPrivateKeyView.style";
+import reviewPrivateKeyViewStyle from "./ReviewPrivateKeyView.style";
 import TextButton from "../../../components/TextButton";
 
-interface IInputPrivateKeyViewProps {
+interface IReviewPrivateKeyViewProps {
   accountStore: AccountStore;
   routerStore: RouterStore;
 }
 
-const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = observer(
+const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
   ({ accountStore, routerStore }) => {
     const [privateKey, setPrivateKey] = useState("");
     const [isInvalid, setIsInvalid] = useState<boolean>();
 
-    const classes = inputPrivateKeyViewStyle();
+    const classes = reviewPrivateKeyViewStyle();
 
     const { loading, data, error } = useValidatePrivateKeyQuery({
       variables: {
@@ -53,7 +53,7 @@ const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = observer(
         return;
       }
       accountStore.setPrivateKey(privateKey);
-      routerStore.push("/account/reset/input/passphrase");
+      routerStore.push("/account/reset/reset-password");
     };
 
     const handleRevokeAccount = (event: MouseEvent<HTMLButtonElement>) => {
@@ -84,4 +84,4 @@ const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = observer(
   }
 );
 
-export default inject("accountStore", "routerStore")(InputPrivateKeyView);
+export default inject("accountStore", "routerStore")(ReviewPrivateKeyView);

@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core";
 
-const inputPrivateKeyViewStyle = makeStyles({
+const reviewPrivateKeyViewStyle = makeStyles({
   root: {
     color: "white",
     display: "flex",
@@ -32,4 +32,4 @@ const inputPrivateKeyViewStyle = makeStyles({
   },
 });
 
-export default inputPrivateKeyViewStyle;
+export default reviewPrivateKeyViewStyle;

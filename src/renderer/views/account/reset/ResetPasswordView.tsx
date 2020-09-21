@@ -9,18 +9,18 @@ import {
 import AccountStore from "../../../stores/account";
 import { inject, observer } from "mobx-react";
 
-import registerPrivateKeyViewStyle from "./RegisterPrivateKeyView.style";
+import registerPrivateKeyViewStyle from "./ResetPasswordView.style";
 
 import { useLocale } from "../../../i18n";
 import { RegisterPrivateKey } from "../../../../interfaces/i18n";
 import RetypePasswordForm from "../../../components/RetypePasswordForm";
 
-interface IRegisterPrivateKeyViewProps {
+interface IResetPasswordViewProps {
   accountStore: AccountStore;
   routerStore: RouterStore;
 }
 
-const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = observer(
+const ResetPasswordView: React.FC<IResetPasswordViewProps> = observer(
   ({ accountStore, routerStore }) => {
     const [firstPassword, setFirstPassword] = useState("");
     const [secondPassword, setSecondPassword] = useState("");
@@ -70,4 +70,4 @@ const RegisterPrivateKeyView: React.FC<IRegisterPrivateKeyViewProps> = observer(
   }
 );
 
-export default inject("accountStore", "routerStore")(RegisterPrivateKeyView);
+export default inject("accountStore", "routerStore")(ResetPasswordView);
