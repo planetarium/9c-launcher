@@ -169,7 +169,7 @@ const LoginView = observer(
               </FormControl>
             </Grid>
           </Grid>
-          <Box>
+          <Box className={classes.submitWrapper}>
             <Button
               className={classes.loginButton}
               type="submit"
@@ -179,7 +179,7 @@ const LoginView = observer(
               {locale("로그인")}
             </Button>
             <TextButton
-              className={classes.revokeLink}
+              className={classes.resetLink}
               onClick={handleResetPassword}
             >
               {locale("비밀번호 찾기")}

@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core";
 const preloadViewStyle = makeStyles({
   root: {
     color: "#FFFFFF",
-    margin: "5px",
   },
 
   title: {

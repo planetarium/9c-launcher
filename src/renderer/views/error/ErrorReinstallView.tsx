@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { shell, remote } from "electron";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
-import { Button, Container, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
 
 import { useLocale } from "../../i18n";
@@ -26,7 +26,7 @@ const ErrorReinstallView = () => {
     Sentry.captureException(new Error("Reinstall required."));
   }, []);
   return (
-    <Container className={classes.root}>
+    <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
         {locale("무언가 잘못 되었습니다.")}
       </Typography>
@@ -61,7 +61,7 @@ const ErrorReinstallView = () => {
       >
         {locale("닫기")}
       </Button>
-    </Container>
+    </div>
   );
 };
 

@@ -15,21 +15,23 @@ const loginViewStyle = makeStyles({
     float: "right",
     color: "#929292",
   },
+  submitWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: "50px",
+  },
   loginButton: {
     display: "block",
-    margin: "50px auto 0 auto",
     borderRadius: "0",
     width: "210px",
     height: "60px",
     fontSize: "1.5em",
     fontWeight: "bold",
   },
-  revokeLink: {
-    margin: "10px auto",
-    textAlign: "center",
-    display: "block",
-    width: "150px",
-    color: "white",
+  resetLink: {
+    marginTop: "10px !important",
+    color: "white !important",
   },
 });
 
