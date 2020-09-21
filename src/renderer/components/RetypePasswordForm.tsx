@@ -11,7 +11,7 @@ import {
 import VisibilityAdornment from "./VisibilityAdornment";
 import { makeStyles } from "@material-ui/styles";
 
-import { CreateAccount } from "../../interfaces/i18n";
+import { RetypePassword } from "../../interfaces/i18n";
 
 interface RetypePasswordFormProps {
   onSubmit: (password: string) => void;
@@ -24,7 +24,7 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
-  const { locale } = useLocale<CreateAccount>("createAccount");
+  const { locale } = useLocale<RetypePassword>("retypePassword");
 
   const classes = createStyle();
 

@@ -715,7 +715,9 @@
       "th": ["โปรดตั้งรหัสผ่านเพื่อ", "สร้างบัญชีให้เสร็จสมบูรณ์"],
       "id": ["Harap atur kata sandi untuk", "menyelesaikan pembuatan akun"],
       "ja": ["パスワードを設定して", "アカウント作成を完了して下さい"]
-    },
+    }
+  },
+  "retypePassword": {
     "비밀번호": {
       "ko": "비밀번호",
       "en": "Password",

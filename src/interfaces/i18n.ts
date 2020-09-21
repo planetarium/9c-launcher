@@ -10,6 +10,7 @@ export default interface I18n {
   errorReinstall: ErrorReinstall;
   account: Account;
   createAccount: CreateAccount;
+  retypePassword: RetypePassword;
   copyPrivateKey: CopyPrivateKey;
   revokeAccount: RevokeAccount;
   inputPrivateKey: InputPrivateKey;
@@ -115,6 +116,9 @@ export interface Account {
 
 export interface CreateAccount {
   "계정 생성을 마치기 위해 비밀번호를 설정해주세요.": Description;
+}
+
+export interface RetypePassword {
   비밀번호: LocaleRecord;
   "비밀번호 (확인)": LocaleRecord;
   확인: LocaleRecord;
