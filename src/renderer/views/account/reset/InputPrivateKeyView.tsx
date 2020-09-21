@@ -1,6 +1,12 @@
 import React, { useState, MouseEvent, ChangeEvent } from "react";
-import { TextField, InputLabel, Button } from "@material-ui/core";
-import TextButton from "../../../components/TextButton";
+import {
+  TextField,
+  InputLabel,
+  Button,
+  Typography,
+  FormControl,
+  OutlinedInput,
+} from "@material-ui/core";
 import { useValidatePrivateKeyQuery } from "../../../../generated/graphql";
 import { RouterStore } from "mobx-react-router";
 import { observer, inject } from "mobx-react";
@@ -8,6 +14,8 @@ import AccountStore from "../../../stores/account";
 
 import { useLocale } from "../../../i18n";
 import { InputPrivateKey } from "../../../../interfaces/i18n";
+import inputPrivateKeyViewStyle from "./InputPrivateKeyView.style";
+import TextButton from "../../../components/TextButton";
 
 interface IInputPrivateKeyViewProps {
   accountStore: AccountStore;
@@ -16,7 +24,10 @@ interface IInputPrivateKeyViewProps {
 
 const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = observer(
   ({ accountStore, routerStore }) => {
-    const [privateKey, setPrivateKeyState] = useState("");
+    const [privateKey, setPrivateKey] = useState("");
+    const [isInvalid, setIsInvalid] = useState<boolean>();
+
+    const classes = inputPrivateKeyViewStyle();
 
     const { loading, data, error } = useValidatePrivateKeyQuery({
       variables: {
@@ -30,7 +41,7 @@ const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = observer(
     if (error) console.error(error);
 
     const privateKeyChangeHandle = (event: ChangeEvent<HTMLInputElement>) => {
-      setPrivateKeyState(event.target.value);
+      setPrivateKey(event.target.value);
     };
 
     const isPrivateKeyValid =
@@ -38,9 +49,11 @@ const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = observer(
 
     const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
       if (isPrivateKeyValid) {
-        accountStore.setPrivateKey(privateKey);
-        routerStore.push("/account/reset/input/passphrase");
+        setIsInvalid(true);
+        return;
       }
+      accountStore.setPrivateKey(privateKey);
+      routerStore.push("/account/reset/input/passphrase");
     };
 
     const handleRevokeAccount = (event: MouseEvent<HTMLButtonElement>) => {
@@ -48,19 +61,25 @@ const InputPrivateKeyView: React.FC<IInputPrivateKeyViewProps> = observer(
     };
 
     return (
-      <>
-        <p>{locale("비밀번호를 재설정하기 위해 개인키를 입력해주세요.")}</p>
-        <TextField label={locale("개인키")} onChange={privateKeyChangeHandle} />
+      <div role="application" className={classes.root}>
+        <Typography variant="h1" className={classes.title}>
+          {locale("비밀번호를 재설정하기 위해 개인키를 입력해주세요.")}
+        </Typography>
+        <FormControl fullWidth>
+          <InputLabel className={classes.label}>{locale("개인키")}</InputLabel>
+          <OutlinedInput error={isInvalid} onChange={privateKeyChangeHandle} />
+        </FormControl>
         <Button
-          color={isPrivateKeyValid ? "primary" : "secondary"}
+          color="primary"
+          className={classes.submit}
           onClick={handleSubmit}
         >
           {locale("Enter")}
         </Button>
-        <TextButton onClick={handleRevokeAccount}>
+        <TextButton onClick={handleRevokeAccount} className={classes.revoke}>
           {locale("개인키를 잊으셨나요?")}
         </TextButton>
-      </>
+      </div>
     );
   }
 );
