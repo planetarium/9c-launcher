@@ -742,8 +742,8 @@
       "id": "konfirmasi kata sandi",
       "ja": "パスワード（確認）"
     },
-    "마치기": {
-      "ko": "마치기",
+    "확인": {
+      "ko": "확인",
       "en": "Done",
       "pl": "Gotowe",
       "pt": "Feito",
@@ -936,8 +936,8 @@
       "id": "salin",
       "ja": "コピー"
     },
-    "마치기": {
-      "ko": "마치기",
+    "확인": {
+      "ko": "확인",
       "en": "Done",
       "pl": "Gotowe",
       "pt": "Feito",
@@ -1125,47 +1125,8 @@
       "id": "Dimohon untuk menreset kata sandi",
       "ja": "パスワードをリセットしてください。"
     },
-    "비밀번호": {
-      "ko": "비밀번호",
-      "en": "Password",
-      "pl": "Hasło",
-      "pt": "Palavra-passe",
-      "lt": "Slaptažodis",
-      "nl": "Wachtwoord",
-      "pt-BR": "Senha",
-      "km": "ពាក្យសម្ងាត់",
-      "th": "รหัสผ่าน",
-      "id": "kata sandi",
-      "ja": "パスワード"
-    },
-    "비밀번호 재입력": {
-      "ko": "비밀번호 재입력",
-      "en": "Retype Password",
-      "pl": "Powtórz hasło",
-      "pt": "Reescreva a sua palavra-passe",
-      "lt": "Įveskite slaptažodi dar kartą",
-      "nl": "Hertyp Wachtwoord",
-      "pt-BR": "Reescreva sua senha",
-      "km": "វាយពាក្យសម្ងាត់ម្តងទៀត",
-      "th": "รหัสผ่าน",
-      "id": "Ketik ulang kata sandi",
-      "ja": "パスワード再入力"
-    },
-    "비밀번호가 알맞지 않습니다": {
-      "ko": "비밀번호가 알맞지 않습니다",
-      "en": "Password does not match.",
-      "pl": "Hasła się nie pokrywają.",
-      "pt": " A sua palavra-pass não está igual.",
-      "lt": "Slaptažodžiai nesutampa",
-      "nl": "Wachtwoord komt niet overeen.",
-      "pt-BR": "Suas senhas não são iguais",
-      "km": "ពាក្យសម្ងាត់មិនត្រូវគ្នា។",
-      "th": "รหัสผ่านไม่ตรงกัน",
-      "id": "Kata sandi tidak sesuai",
-      "ja": "パスワードが一致しません。"
-    },
-    "마치기": {
-      "ko": "마치기",
+    "확인": {
+      "ko": "확인",
       "en": "Done",
       "pl": "Gotowe",
       "pt": "feito",
