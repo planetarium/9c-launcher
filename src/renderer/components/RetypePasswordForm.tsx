@@ -1,10 +1,13 @@
 import React, { useState, ChangeEvent, MouseEvent } from "react";
 
+import zxcvbn from "zxcvbn";
+
 import { useLocale } from "../i18n";
 
 import {
   Button,
   FormControl,
+  FormHelperText,
   InputLabel,
   OutlinedInput,
 } from "@material-ui/core";
@@ -77,6 +80,9 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
             />
           }
         />
+        <FormHelperText className={classes.helperText}>
+          {password.length > 0 && strengthHint(password)}
+        </FormHelperText>
       </FormControl>
       <FormControl
         fullWidth
@@ -97,6 +103,9 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
             />
           }
         />
+        <FormHelperText className={classes.helperText}>
+          {passwordConfirm.length > 0 && strengthHint(passwordConfirm)}
+        </FormHelperText>
       </FormControl>
       <Button
         disabled={disabled}
@@ -113,12 +122,20 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
 
 export default RetypePasswordForm;
 
+function strengthHint(password: string) {
+  const result = zxcvbn(password);
+  return result.feedback.warning;
+}
+
 const createStyle = makeStyles({
   formControl: {
     marginBottom: "0.5em",
   },
   label: {
     marginLeft: "14px",
+  },
+  helperText: {
+    height: "38px",
   },
   submit: {
     display: "block",
