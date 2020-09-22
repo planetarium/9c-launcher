@@ -22,7 +22,7 @@ import { clipboard } from "electron";
 import { observer, inject } from "mobx-react";
 
 import "../../styles/login/login.scss";
-import { useDecreyptedPrivateKeyLazyQuery } from "../../../generated/graphql";
+import { useDecryptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
@@ -56,9 +56,9 @@ const LoginView = observer(
     });
 
     const [
-      getDecreyptedKey,
+      getDecryptedKey,
       { loading, error, data },
-    ] = useDecreyptedPrivateKeyLazyQuery();
+    ] = useDecryptedPrivateKeyLazyQuery();
 
     useEffect(() => {
       if (data?.keyStore?.decryptedPrivateKey !== undefined) {
@@ -85,7 +85,7 @@ const LoginView = observer(
 
     const handleSubmit = (event: LoginFormEvent) => {
       event.preventDefault();
-      getDecreyptedKey({
+      getDecryptedKey({
         variables: {
           address: accountStore.selectedAddress,
           passphrase: event.target.password.value,
