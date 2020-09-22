@@ -116,9 +116,6 @@ const LoginView = observer(
     return (
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
-        <ClearCacheButton className={classes.cacheButton}>
-          {locale("캐시 지우기")}
-        </ClearCacheButton>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
