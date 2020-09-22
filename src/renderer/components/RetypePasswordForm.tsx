@@ -44,7 +44,13 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
     setShowPasswordConfirm(!showPasswordConfirm);
   };
 
-  const disabled = password.length === 0 || password !== passwordConfirm;
+  const isPasswordBlank = password.trim().length === 0;
+
+  const isPasswordConfirmInitialValue = passwordConfirm.length === 0;
+  const isPasswordConfirmBlank = passwordConfirm.trim().length === 0;
+  const isNotEqual = password !== passwordConfirm;
+
+  const disabled = isPasswordConfirmBlank || isNotEqual;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,12 +60,15 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
 
   return (
     <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-      <FormControl fullWidth>
+      <FormControl
+        fullWidth
+        error={password.length > 0 && isPasswordBlank}
+        className={classes.formControl}
+      >
         <InputLabel className={classes.label}>{locale("비밀번호")}</InputLabel>
         <OutlinedInput
           id="password-input"
           onChange={handlePasswordChange}
-          className={classes.textInput}
           type={showPassword ? "text" : "password"}
           endAdornment={
             <VisibilityAdornment
@@ -69,16 +78,18 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
           }
         />
       </FormControl>
-      <FormControl fullWidth>
+      <FormControl
+        fullWidth
+        error={!isPasswordConfirmInitialValue && disabled}
+        className={classes.formControl}
+      >
         <InputLabel className={classes.label}>
           {locale("비밀번호 (확인)")}
         </InputLabel>
         <OutlinedInput
           id="password-confirm-input"
-          error={password !== passwordConfirm}
           type={showPasswordConfirm ? "text" : "password"}
           onChange={handlePasswordConfirmChange}
-          className={classes.textInput}
           endAdornment={
             <VisibilityAdornment
               onClick={handleShowPasswordConfirm}
@@ -103,11 +114,8 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
 export default RetypePasswordForm;
 
 const createStyle = makeStyles({
-  textInput: {
-    marginBottom: "40px;",
-    "& .Mui-focused": {
-      color: "#ffffff",
-    },
+  formControl: {
+    marginBottom: "0.5em",
   },
   label: {
     marginLeft: "14px",
