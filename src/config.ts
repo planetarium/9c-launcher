@@ -93,6 +93,10 @@ export const electronStore = new Store<IElectronStore>({
       type: "boolean",
       default: true,
     },
+    MuteTeaser: {
+      type: "boolean",
+      default: false,
+    },
   },
 });
 
