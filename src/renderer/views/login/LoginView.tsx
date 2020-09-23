@@ -95,7 +95,7 @@ const LoginView = observer(
 
     const handleResetPassword = (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      routerStore.push("/account/reset/input/private-key");
+      routerStore.push("/account/reset/review-private-key");
     };
 
     const handleShowPassword = (e: MouseEvent<HTMLButtonElement>) => {
