@@ -15,21 +15,6 @@ const createAccountViewStyle = makeStyles({
       display: "block",
     },
   },
-  textInput: {
-    marginBottom: "40px;",
-    "& .Mui-focused": {
-      color: "#ffffff",
-    },
-  },
-  label: {
-    marginLeft: "14px",
-  },
-  submit: {
-    display: "block",
-    margin: "0 auto 0 auto",
-    width: "200px",
-    height: "50px",
-  },
 });
 
 export default createAccountViewStyle;

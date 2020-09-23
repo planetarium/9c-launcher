@@ -10,6 +10,7 @@ export default interface I18n {
   errorReinstall: ErrorReinstall;
   account: Account;
   createAccount: CreateAccount;
+  retypePassword: RetypePassword;
   copyPrivateKey: CopyPrivateKey;
   revokeAccount: RevokeAccount;
   inputPrivateKey: InputPrivateKey;
@@ -115,9 +116,12 @@ export interface Account {
 
 export interface CreateAccount {
   "계정 생성을 마치기 위해 비밀번호를 설정해주세요.": Description;
+}
+
+export interface RetypePassword {
   비밀번호: LocaleRecord;
   "비밀번호 (확인)": LocaleRecord;
-  마치기: LocaleRecord;
+  확인: LocaleRecord;
 }
 
 export interface CopyPrivateKey {
@@ -126,7 +130,7 @@ export interface CopyPrivateKey {
   warning: Description;
   개인키: LocaleRecord;
   복사하기: LocaleRecord;
-  마치기: LocaleRecord;
+  확인: LocaleRecord;
 }
 
 export interface RevokeAccount {
@@ -145,10 +149,6 @@ export interface InputPrivateKey {
 
 export interface RegisterPrivateKey {
   "비밀번호를 재설정해주세요.": LocaleRecord;
-  비밀번호: LocaleRecord;
-  "비밀번호 재입력": LocaleRecord;
-  "비밀번호가 알맞지 않습니다": LocaleRecord;
-  마치기: LocaleRecord;
 }
 
 export interface Configuration {

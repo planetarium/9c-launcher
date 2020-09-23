@@ -74,7 +74,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             routerStore.push("/");
           }}
         >
-          {locale("마치기")}
+          {locale("확인")}
         </Button>
       </div>
     );
