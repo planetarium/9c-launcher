@@ -18,4 +18,5 @@ export interface IElectronStore {
   Confirmations: number;
   Mixpanel: boolean;
   Sentry: boolean;
+  MuteTeaser: boolean;
 }

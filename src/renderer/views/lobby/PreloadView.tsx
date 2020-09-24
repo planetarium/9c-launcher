@@ -42,6 +42,7 @@ const PreloadView = observer((props: IStoreContainer) => {
     height: "220",
     playerVars: {
       autoplay: 1,
+      mute: electronStore.get("MuteTeaser") ? 1 : 0,
     },
   };
 
@@ -59,6 +60,7 @@ const PreloadView = observer((props: IStoreContainer) => {
   const handleLaunch = useCallback(() => {
     const player = youtubeRef.current?.internalPlayer;
     if (player === undefined) throw Error("YouTube Player not found");
+    if (videoOpts.playerVars?.mute === 0) electronStore.set("MuteTeaser", true);
     player.pauseVideo();
   }, [youtubeRef]);
 
