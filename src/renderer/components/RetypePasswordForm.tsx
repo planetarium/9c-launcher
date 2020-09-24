@@ -61,6 +61,12 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
     onSubmit(password);
   };
 
+  function strengthHint(password: string) {
+    const { warning } = zxcvbn(password).feedback;
+    if (warning === "") return "";
+    return locale(warning);
+  }
+
   return (
     <form noValidate autoComplete="off" onSubmit={handleSubmit}>
       <FormControl
@@ -121,11 +127,6 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
 };
 
 export default RetypePasswordForm;
-
-function strengthHint(password: string) {
-  const result = zxcvbn(password);
-  return result.feedback.warning;
-}
 
 const createStyle = makeStyles({
   formControl: {

@@ -1,3 +1,5 @@
+import { ZXCVBNFeedbackWarning } from "zxcvbn";
+
 export default interface I18n {
   intro: Intro;
   menu: Menu;
@@ -118,11 +120,16 @@ export interface CreateAccount {
   "계정 생성을 마치기 위해 비밀번호를 설정해주세요.": Description;
 }
 
-export interface RetypePassword {
+export interface RetypePassword extends ZXCVBNFeedbackWarningLocale {
   비밀번호: LocaleRecord;
   "비밀번호 (확인)": LocaleRecord;
   확인: LocaleRecord;
 }
+
+type ZXCVBNFeedbackWarningLocale = Record<
+  Exclude<ZXCVBNFeedbackWarning, "">,
+  LocaleRecord
+>;
 
 export interface CopyPrivateKey {
   title: Description;
