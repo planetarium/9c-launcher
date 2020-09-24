@@ -8,6 +8,7 @@ import React, {
 import {
   Button as ButtonOrigin,
   ButtonProps,
+  CircularProgress,
   Container,
   LinearProgress,
   TextField,
@@ -54,13 +55,14 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   const handleActivateSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setPollingState(true);
     activate({
       variables: {
         encodedActivationKey: activationKey,
       },
     }).then(async (value) => {
       if (!value.data?.activationStatus?.activateAccount) return;
-      setPollingState(true);
+
       while (true) {
         await sleep(1000);
         const result = await activationRefetch();
@@ -96,7 +98,12 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   let child: JSX.Element;
 
   if (loading || polling) {
-    child = <p className={classes.verifing}>{locale("확인 중...")}</p>;
+    child = (
+      <>
+        <p className={classes.verifing}>{locale("확인 중...")}</p>
+        <CircularProgress />
+      </>
+    );
   } else if (!standaloneStore.IsPreloadEnded) {
     child = <PreloadWaitingButton />;
   } else if (status?.activationStatus.activated) {
