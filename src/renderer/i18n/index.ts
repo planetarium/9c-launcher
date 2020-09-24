@@ -30,6 +30,7 @@ const supportedLocales = {
   pt: "Português",
   "pt-BR": "Português (Brazil)",
   th: "ภาษาไทย",
+  de: "Deutsch",
 } as Record<Locale, string>;
 
 type PageKey = keyof I18n;
