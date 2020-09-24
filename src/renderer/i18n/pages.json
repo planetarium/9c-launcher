@@ -469,6 +469,42 @@
       "ja": "Nine Chronicles Player Guide"
     }
   },
+  "errorDiskSpace": {
+    "디스크 공간이 충분하지 않습니다": {
+      "ko": "디스크 용량이 충분하지 않습니다",
+      "en": "Disk space is not enough."
+    },
+    "필요한 여유 공간:": {
+      "ko": "필요한 여유 공간:",
+      "en": "Required free space:"
+    },
+    "체인 경로:": {
+      "ko": "체인 경로:",
+      "en": "Root chain store path:"
+    }
+  },
+  "errorNoPermission": {
+    "권한이 없습니다.": {
+      "ko": "권한이 없습니다.",
+      "en": "No permission."
+    },
+    "아래 경로에 애플리케이션이 접근할 수 없습니다:": {
+      "ko": "아래 경로에 애플리케이션이 접근할 수 없습니다:",
+      "en": "Application does not have permission at below path:"
+    },
+    "체인 경로를 아래의 단계를 따라 바꿔주세요.": {
+      "ko": "체인 경로를 아래의 단계를 따라 바꿔주세요.",
+      "en": "Please change chain directory by following steps below."
+    },
+    "오른쪽의 버튼을 클릭하여 설정 페이지를 여세요.": {
+      "ko": "오른쪽의 버튼을 클릭하여 설정 페이지를 여세요.",
+      "en": "Open SETTINGS page by clicking the button at the right side."
+    },
+    "\"경로 선택하기\" 버튼을 클릭해서 체인이 저장되는 경로를 바꿔주세요.": {
+      "ko": "\"경로 선택하기\" 버튼을 클릭해서 체인이 저장되는 경로를 바꿔주세요.",
+      "en": "Change \"Root chain store path\" by click \"SELECT PATH\" Button"
+    }
+  },
   "errorRelaunch": {
     "무언가 잘못 되었습니다.": {
       "ko": "무언가 잘못 되었습니다.",
