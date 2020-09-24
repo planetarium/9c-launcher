@@ -138,6 +138,7 @@ type StandaloneSubscription {
   notification: NotificationType!
   preloadProgress: PreloadStateType
   tipChanged: TipChanged
+  nodeException: NodeExceptionType!
 }
 
 type TipChanged {
@@ -175,4 +176,9 @@ type NotificationType {
 }
 enum NotificationEnum {
   REFILL
+}
+
+type NodeExceptionType {
+  code: Int!
+  message: String!
 }
