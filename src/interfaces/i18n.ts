@@ -8,6 +8,8 @@ export default interface I18n {
   mining: Mining;
   lobby: Lobby;
   preload: Preload;
+  errorDiskSpace: ErrorDiskSpace;
+  errorNoPermission: ErrorNoPermission;
   errorRelaunch: ErrorRelaunch;
   errorReinstall: ErrorReinstall;
   account: Account;
@@ -91,6 +93,20 @@ export interface Preload {
   "다른 사용자에게 데이터를 받는 중입니다. 트레일러와 새로운 콘텐츠를 봅시다!": Description;
   "블록 익스플로러": LocaleRecord;
   "나인 크로니클 플레이어 가이드": LocaleRecord;
+}
+
+export interface ErrorDiskSpace {
+  "디스크 공간이 충분하지 않습니다": LocaleRecord;
+  "필요한 여유 공간:": LocaleRecord;
+  "체인 경로:": LocaleRecord;
+}
+
+export interface ErrorNoPermission {
+  "권한이 없습니다.": LocaleRecord;
+  "아래 경로에 애플리케이션이 접근할 수 없습니다:": LocaleRecord;
+  "체인 경로를 아래의 단계를 따라 바꿔주세요.": LocaleRecord;
+  "오른쪽의 버튼을 클릭하여 설정 페이지를 여세요.": LocaleRecord;
+  '"경로 선택하기" 버튼을 클릭해서 체인이 저장되는 경로를 바꿔주세요.': LocaleRecord;
 }
 
 export interface ErrorRelaunch {

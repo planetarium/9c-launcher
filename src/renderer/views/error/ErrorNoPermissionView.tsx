@@ -5,9 +5,13 @@ import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import { BLOCKCHAIN_STORE_PATH } from "../../../config";
 import * as Sentry from "@sentry/electron";
+import { useLocale } from "../../i18n";
+import { ErrorNoPermission } from "../../../interfaces/i18n";
 
 const ErrorNoPermissionView = () => {
   const classes = errorViewStyle();
+
+  const { locale } = useLocale<ErrorNoPermission>("errorNoPermission");
 
   useEffect(() => {
     mixpanel.track("Launcher/ErrorNoPerm");
@@ -18,22 +22,22 @@ const ErrorNoPermissionView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        No permission.
+        {locale("권한이 없습니다.")}
       </Typography>
       <Typography variant="subtitle1">
-        Application does not have permission for:
+        {locale("아래 경로에 애플리케이션이 접근할 수 없습니다:")}
         <br />
         <code className={classes.code}>{BLOCKCHAIN_STORE_PATH}</code>
         <br />
-        Please change chain directory by following steps below.
+        {locale("체인 경로를 아래의 단계를 따라 바꿔주세요.")}
       </Typography>
       <ol>
-        <li>Open SETTINGS page by clicking the button at the right side.</li>
+        <li>{locale("오른쪽의 버튼을 클릭하여 설정 페이지를 여세요.")}</li>
         <li>
-          Modify "Root chain store path" and "Chain store directory name" then
-          click OK.
+          {locale(
+            '"경로 선택하기" 버튼을 클릭해서 체인이 저장되는 경로를 바꿔주세요.'
+          )}
         </li>
-        <li>Restart launcher.</li>
       </ol>
     </div>
   );
