@@ -99,10 +99,10 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   if (loading || polling) {
     child = (
-      <div>
+      <>
         <p className={classes.verifing}>{locale("확인 중...")}</p>
         <CircularProgress />
-      </div>
+      </>
     );
   } else if (!standaloneStore.IsPreloadEnded) {
     child = <PreloadWaitingButton />;
