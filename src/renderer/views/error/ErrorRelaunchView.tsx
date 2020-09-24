@@ -24,7 +24,7 @@ const ErrorRelaunchView = () => {
 
   useEffect(() => {
     mixpanel.track("Launcher/ErrorRelaunch");
-    Sentry.captureException(new Error("Reinstall required."));
+    Sentry.captureException(new Error("Relaunch required."));
   }, []);
   return (
     <div className={classes.root}>
