@@ -1,6 +1,6 @@
 import path from "path";
 
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer, remote, shell } from "electron";
 import React from "react";
 import { observer } from "mobx-react";
 import {
@@ -114,6 +114,18 @@ const ConfigurationView = observer(() => {
             items={Object.values(supportedLocales)}
             defaultValue={supportedLocales[selectedLocale] ?? "English"}
           />
+          <FormLabel className={classes.labelPath}>
+            {locale("키 저장 경로")}
+          </FormLabel>
+          <Button
+            onClick={handleOpenKeyStorePath}
+            variant="outlined"
+            color="inherit"
+            className={classes.openPath}
+            startIcon={<FolderOpen />}
+          >
+            {locale("경로 열기")}
+          </Button>
           <FormControl className={classes.checkboxGroup}>
             <FormLabel>{locale("정보 보내기")}</FormLabel>
             <FormGroup>
@@ -153,12 +165,20 @@ const ConfigurationView = observer(() => {
         >
           {locale("저장하기")}
         </Button>
-        <FormLabel className={classes.label}>
+        <FormLabel className={classes.labelRelaunch}>
           {locale("저장 후 론처가 재시작 됩니다.")}
         </FormLabel>
       </form>
     </div>
   );
 });
+
+function handleOpenKeyStorePath() {
+  const home = remote.app.getPath("home");
+  const middlePath = process.platform === "win32" ? "AppData" : ".config";
+  shell.showItemInFolder(
+    path.join(home, middlePath, "planetarium", "keystore")
+  );
+}
 
 export default ConfigurationView;

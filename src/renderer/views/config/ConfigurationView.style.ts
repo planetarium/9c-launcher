@@ -33,10 +33,18 @@ const configurationViewStyle = makeStyles({
     fontWeight: "bold",
   },
   textField: {
-    "padding-bottom": "10px",
+    paddingBottom: "10px",
   },
   selectDir: {
     marginBottom: "10px",
+  },
+  labelPath: {
+    display: "block",
+    marginTop: "6px",
+  },
+  openPath: {
+    marginTop: "6px",
+    marginBottom: "4px",
   },
   selectLocale: {
     marginTop: "6px",
@@ -45,7 +53,7 @@ const configurationViewStyle = makeStyles({
   newLine: {
     display: "block",
   },
-  label: {
+  labelRelaunch: {
     display: "block",
     marginTop: "1em",
     textAlign: "center",
