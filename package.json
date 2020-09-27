@@ -90,6 +90,7 @@
     "react-router-dom": "^5.2.0",
     "react-youtube": "^7.11.3",
     "subscriptions-transport-ws": "^0.9.16",
+    "textfit": "^2.4.0",
     "tmp-promise": "^3.0.2",
     "url-loader": "^4.1.0",
     "zxcvbn": "4.4.2"
