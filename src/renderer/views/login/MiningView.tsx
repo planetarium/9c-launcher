@@ -33,13 +33,13 @@ const MiningView = observer(
 
     useEffect(() => {
       if (descriptionEl.current instanceof HTMLParagraphElement) {
-        textFit(descriptionEl.current, { multiLine: true });
+        textFit(descriptionEl.current, { multiLine: true, maxFontSize: 16 });
       }
     }, [descriptionEl.current]);
 
     useEffect(() => {
       if (requirementEl.current instanceof HTMLParagraphElement) {
-        textFit(requirementEl.current, { multiLine: true });
+        textFit(requirementEl.current, { multiLine: true, maxFontSize: 13 });
       }
     }, [requirementEl.current]);
 
