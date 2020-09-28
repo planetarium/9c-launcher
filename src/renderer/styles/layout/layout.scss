@@ -1,35 +1,28 @@
 @import "../pallet";
 
-main {
+#root {
   height: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
-.contents {
+main {
   background-color: #1d1e1f;
   position: relative;
   width: 50vw;
 }
 
-.banner {
+nav {
   background-image: url("../../resources/bg.jpg");
   background-size: cover;
   background-position: 55%;
   display: inline-flex;
   padding: 24px;
 
-  .nav {
+  ul {
     align-self: flex-end;
     padding-left: 0;
-
-    li {
-      list-style-type: none;
-
-      button {
-        color: white;
-      }
-    }
+    list-style: none;
   }
 }
 
