@@ -14,7 +14,7 @@ const miningViewStyle = makeStyles({
   button: {
     borderRadius: "0",
     width: "150px",
-    height: "70px",
+    height: "60px",
     fontWeight: "bold",
     fontSize: "larger",
   },
@@ -28,16 +28,19 @@ const miningViewStyle = makeStyles({
   },
 
   buttonContainer: {
-    position: "relative",
-    bottom: "-5px",
+    position: "absolute",
+    bottom: "32px",
+    display: "flex",
+    justifyContent: "space-between",
   },
-
+  description: {
+    marginBottom: "0.5em",
+  },
   requirement: {
     fontSize: "small",
     color: "darkgray",
     margin: 0,
   },
-
   jade: {
     width: "100%",
   },
