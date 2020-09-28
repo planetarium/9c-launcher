@@ -5,7 +5,6 @@ import {
   Select as OriginalSelect,
   SelectProps,
 } from "@material-ui/core";
-import { observer } from "mobx-react";
 import { SelectInputProps } from "@material-ui/core/Select/SelectInput";
 
 interface ISelectProps extends Omit<SelectProps, "onChange"> {
@@ -14,28 +13,31 @@ interface ISelectProps extends Omit<SelectProps, "onChange"> {
   onChange?: (item: string) => void;
 }
 
-export const Select: React.FC<ISelectProps> = observer(
-  ({ items, value, onChange, ...props }) => {
-    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-      onChange && onChange(event.target.value as string);
-    };
+export const Select: React.FC<ISelectProps> = ({
+  items,
+  value,
+  onChange,
+  ...props
+}) => {
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    onChange && onChange(event.target.value as string);
+  };
 
-    return (
-      <OriginalSelect
-        id="select"
-        variant="outlined"
-        value={value}
-        // @ts-ignore
-        onChange={handleChange}
-        fullWidth
-        {...props}
-      >
-        {items.map((value) => (
-          <MenuItem key={value} value={value}>
-            {value}
-          </MenuItem>
-        ))}
-      </OriginalSelect>
-    );
-  }
-);
+  return (
+    <OriginalSelect
+      id="select"
+      variant="outlined"
+      value={value}
+      // @ts-ignore
+      onChange={handleChange}
+      fullWidth
+      {...props}
+    >
+      {items.map((value) => (
+        <MenuItem key={value} value={value}>
+          {value}
+        </MenuItem>
+      ))}
+    </OriginalSelect>
+  );
+};
