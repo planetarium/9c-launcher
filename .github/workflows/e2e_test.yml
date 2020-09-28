@@ -23,7 +23,7 @@ jobs:
       - name: Build Standalone
         run: npm run build-headless
       - name: Build Launcher
-        run: npm run build-prod
+        run: npm run build
       - name: Copy config
         run: scripts\copy-config.ps1
       - name: Run E2E Test
