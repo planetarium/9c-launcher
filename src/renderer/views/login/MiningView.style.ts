@@ -34,12 +34,14 @@ const miningViewStyle = makeStyles({
     justifyContent: "space-between",
   },
   description: {
+    height: "133px",
     marginBottom: "0.5em",
   },
   requirement: {
     fontSize: "small",
     color: "darkgray",
     margin: 0,
+    height: "64px",
   },
   jade: {
     width: "100%",

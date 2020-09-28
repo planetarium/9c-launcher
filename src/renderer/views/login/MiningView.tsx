@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, Fragment } from "react";
 import { observer, inject } from "mobx-react";
 import { Button, Container, Box } from "@material-ui/core";
 import mixpanel from "mixpanel-browser";
@@ -7,6 +7,7 @@ import miningViewStyle from "./MiningView.style";
 import jade from "../../resources/miningJade.png";
 import { useLocale } from "../../i18n";
 import { Mining } from "../../../interfaces/i18n";
+import textFit from "textfit";
 
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
@@ -27,7 +28,23 @@ const MiningView = observer(
 
     const { locale } = useLocale<Mining>("mining");
 
+    const descriptionEl = useRef<HTMLParagraphElement>(null);
+    const requirementEl = useRef<HTMLParagraphElement>(null);
+
+    useEffect(() => {
+      if (descriptionEl.current instanceof HTMLParagraphElement) {
+        textFit(descriptionEl.current, { multiLine: true, maxFontSize: 16 });
+      }
+    }, [descriptionEl.current]);
+
+    useEffect(() => {
+      if (requirementEl.current instanceof HTMLParagraphElement) {
+        textFit(requirementEl.current, { multiLine: true, maxFontSize: 13 });
+      }
+    }, [requirementEl.current]);
+
     const requirement = locale("requirement");
+    const requirementMaxRange = requirement.length - 1;
     if (typeof requirement === "string")
       throw Error("mining.requirement is not array in src/i18n/index.json");
 
@@ -35,12 +52,16 @@ const MiningView = observer(
       <Container className={classes.root}>
         <h1 className={classes.title}>{locale("채굴 기능을 켜시겠습니까?")}</h1>
         <img className={classes.jade} src={jade} />
-        <p className={classes.description}>{locale("description")}</p>
-        {requirement.map((paragraph) => (
-          <p key={paragraph} className={classes.requirement}>
-            {paragraph}
-          </p>
-        ))}
+        <p ref={descriptionEl} className={classes.description}>
+          {locale("description")}
+        </p>
+        <p ref={requirementEl} className={classes.requirement}>
+          {requirement.map((paragraph, index) => (
+            <Fragment key={paragraph}>
+              {paragraph} {index < requirementMaxRange && <br />}
+            </Fragment>
+          ))}
+        </p>
         <Box className={classes.buttonContainer}>
           <Button
             className={`${classes.button} ${classes.buttonLeft}`}
