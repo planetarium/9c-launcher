@@ -176,15 +176,15 @@ export interface RegisterPrivateKey {
 
 export interface Configuration {
   설정: LocaleRecord;
-  저장하기: LocaleRecord;
+  저장: LocaleRecord;
   "체인이 저장되는 경로": LocaleRecord;
-  "경로 선택하기": LocaleRecord;
+  "경로 선택": LocaleRecord;
   "체인 폴더의 이름": LocaleRecord;
-  "언어 선택하기": LocaleRecord;
+  "언어 선택": LocaleRecord;
   "저장 후 론처가 재시작 됩니다.": LocaleRecord;
-  "정보 보내기": LocaleRecord;
+  "정보 수집": LocaleRecord;
   "행동 분석": LocaleRecord;
-  "오류 보고하기": LocaleRecord;
+  "오류 보고": LocaleRecord;
   "두 데이터는 게임 개발에 도움이 됩니다.": LocaleRecord;
 }
 

@@ -1355,8 +1355,8 @@
       "th": "การตั้งค่า",
       "id": "Pengaturan"
     },
-    "저장하기": {
-      "ko": "저장하기",
+    "저장": {
+      "ko": "저장",
       "en": "Save",
       "pt-BR": "Salvar",
       "pl": "Zapisz",
@@ -1375,8 +1375,8 @@
       "th": "Root chain store path",
       "id": "Lokasi penyimpanan root chain"
     },
-    "경로 선택하기": {
-      "ko": "경로 선택하기",
+    "경로 선택": {
+      "ko": "경로 선택",
       "en": "Select path",
       "pt-BR": "Selecione o caminho",
       "th": "เลือก path",
@@ -1393,8 +1393,8 @@
       "th": "Chain store directory name",
       "id": "Direktori untuk menyimpan chain"
     },
-    "언어 선택하기": {
-      "ko": "언어 선택하기",
+    "언어 선택": {
+      "ko": "언어 선택",
       "en": "Select Language",
       "pt-BR": "Selecione o idioma",
       "pl": "Wybierz język",
@@ -1413,8 +1413,8 @@
       "th": "หลังจากบันทึกแล้วตัวเรียกใช้งานจะรีสตาร์ท",
       "id": "Setelah menyimpan, launcher akan restart"
     },
-    "정보 보내기": {
-      "ko": "정보 보내기",
+    "정보 수집": {
+      "ko": "정보 수집",
       "en": "Send Information",
       "pt-BR": "Enviando informação",
       "pl": "Wyślij dane",
@@ -1433,8 +1433,8 @@
       "de": "Analysiere Verhalten.",
       "th": "การวิเคราะห์พฤติกรรม"
     },
-    "오류 보고하기": {
-      "ko": "오류 보고하기",
+    "오류 보고": {
+      "ko": "오류 보고",
       "en": "Report Error",
       "pt-BR": "Reportar erro",
       "pl": "Zgłoś błąd",
