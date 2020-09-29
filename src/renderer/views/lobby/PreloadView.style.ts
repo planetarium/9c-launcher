@@ -23,6 +23,10 @@ const preloadViewStyle = makeStyles({
   listItemIcon: {
     minWidth: "32px",
   },
+
+  links: {
+    listStyle: "none",
+  },
 });
 
 export default preloadViewStyle;
