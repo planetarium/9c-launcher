@@ -96,7 +96,7 @@ const ConfigurationView = observer(() => {
             className={classes.selectDir}
             startIcon={<FolderOpen />}
           >
-            {locale("경로 선택하기")}
+            {locale("경로 선택")}
           </Button>
           <FormLabel className={classes.newLine}>
             {locale("체인이 저장되는 경로")}
@@ -107,7 +107,7 @@ const ConfigurationView = observer(() => {
             className={classes.textField}
             defaultValue={electronStore.get("BlockchainStoreDirName")}
           />
-          <FormLabel>{locale("언어 선택하기")}</FormLabel>
+          <FormLabel>{locale("언어 선택")}</FormLabel>
           <Select
             name="select"
             className={classes.selectLocale}
@@ -127,7 +127,7 @@ const ConfigurationView = observer(() => {
             {locale("경로 열기")}
           </Button>
           <FormControl className={classes.checkboxGroup}>
-            <FormLabel>{locale("정보 보내기")}</FormLabel>
+            <FormLabel>{locale("정보 수집")}</FormLabel>
             <FormGroup>
               <FormControlLabel
                 control={
@@ -138,7 +138,7 @@ const ConfigurationView = observer(() => {
                     name="sentry"
                   />
                 }
-                label={locale("오류 보고하기")}
+                label={locale("오류 보고")}
               />
               <FormControlLabel
                 control={
@@ -163,7 +163,7 @@ const ConfigurationView = observer(() => {
           color="primary"
           variant="contained"
         >
-          {locale("저장하기")}
+          {locale("저장")}
         </Button>
         <FormLabel className={classes.labelRelaunch}>
           {locale("저장 후 론처가 재시작 됩니다.")}
