@@ -6,6 +6,7 @@ import initializeMixpanel from "../preload/mixpanel";
 import electronLog from "electron-log";
 import mixpanel from "mixpanel-browser";
 import * as Sentry from "@sentry/electron";
+import isDev from "electron-is-dev";
 
 initializeSentry();
 initializeMixpanel();
@@ -22,5 +23,11 @@ Sentry.configureScope((scope) => {
 });
 
 Object.assign(console, electronLog.functions);
+
+if (isDev) {
+  const mobxDevTools = document.createElement("script");
+  mobxDevTools.setAttribute("src", "//localhost:8098");
+  document.head.appendChild(mobxDevTools);
+}
 
 DOM.render(<App />, document.getElementById("root"));
