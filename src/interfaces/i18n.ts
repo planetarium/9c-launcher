@@ -186,6 +186,8 @@ export interface Configuration {
   "행동 분석": LocaleRecord;
   "오류 보고하기": LocaleRecord;
   "두 데이터는 게임 개발에 도움이 됩니다.": LocaleRecord;
+  "키 저장 경로": LocaleRecord;
+  "경로 열기": LocaleRecord;
 }
 
 export interface PreloadProgress {

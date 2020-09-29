@@ -1452,6 +1452,14 @@
       "ja": "これらのデータはゲームの開発に役立ちます。",
       "de": "Diese Daten sind hilfreich für die Spieleentwicklung.",
       "th": "ข้อมูลเหล่านี้มีประโยชน์สำหรับการพัฒนาเกม"
+    },
+    "키 저장 경로": {
+      "ko": "키 저장 경로",
+      "en": "Key store path"
+    },
+    "경로 열기": {
+      "ko": "경로 열기",
+      "en": "Open Path"
     }
   },
   "preloadProgress": {
