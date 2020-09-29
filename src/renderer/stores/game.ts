@@ -12,11 +12,14 @@ export default class GameStore {
 
   private _genesisBlockPath: string;
 
+  private _language: string;
+
   public constructor() {
     ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
       this._isGameStarted = false;
     });
     this._genesisBlockPath = electronStore.get("GenesisBlockPath") as string;
+    this._language = electronStore.get("Locale") as string;
   }
 
   @computed
@@ -38,6 +41,7 @@ export default class GameStore {
         `--rpc-server-host=${RPC_LOOPBACK_HOST}`,
         `--rpc-server-port=${RPC_SERVER_PORT}`,
         `--genesis-block-path=${this._genesisBlockPath}`,
+        `--language=${this._language}`,
       ],
     });
     this._isGameStarted = true;
