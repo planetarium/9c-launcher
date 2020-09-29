@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 
 import { Application } from "spectron";
 import electron from "electron";
@@ -8,6 +9,9 @@ import { expect } from "chai";
 
 const isWindows = process.platform === "win32";
 const lastPath = "/lobby";
+const snapshotDir = path.join(__dirname, "snapshots");
+
+if (!fs.existsSync(snapshotDir)) fs.mkdirSync(snapshotDir);
 
 // @ts-ignore
 process.env.ELECTRON_IS_DEV = 0;
@@ -62,6 +66,8 @@ describe("test", function () {
   });
 
   it("로그인 하기", async function () {
+    await app.client.saveScreenshot(path.join(snapshotDir, `login.png`));
+
     const inputPassword = await app.client.$('input[type="password"]');
     await inputPassword.setValue(PASSWORD);
 
@@ -71,10 +77,14 @@ describe("test", function () {
 
   it("마이닝 끄기", async function () {
     const miningOffButton = await app.client.$("#mining-off");
+
+    await app.client.saveScreenshot(path.join(snapshotDir, `mining.png`));
     await miningOffButton.click();
   });
 
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
+    await app.client.saveScreenshot(path.join(snapshotDir, `lobby.png`));
+
     const submitButton = await app.client.$("#start-game");
     const text = await submitButton.getText();
     expect(text).to.equal("NOW RUNNING...");

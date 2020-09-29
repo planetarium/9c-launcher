@@ -39,3 +39,8 @@ jobs:
         run: scripts\copy-config.ps1
       - name: Run E2E Test
         run: npm run test
+      - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: Upload snapshots
+          path: __tests__/snapshots
