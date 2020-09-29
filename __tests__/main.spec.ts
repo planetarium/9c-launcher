@@ -76,9 +76,9 @@ describe("test", function () {
   });
 
   it("마이닝 끄기", async function () {
-    await app.client.saveScreenshot(path.join(snapshotDir, `mining.png`));
-
     const miningOffButton = await app.client.$("#mining-off");
+
+    await app.client.saveScreenshot(path.join(snapshotDir, `mining.png`));
     await miningOffButton.click();
   });
 
