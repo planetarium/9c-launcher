@@ -63,6 +63,7 @@ const configurationViewStyle = makeStyles({
   },
   checkboxGroup: {
     marginTop: "6px",
+    display: "block",
   },
   checkboxHelper: {
     margin: 0,
