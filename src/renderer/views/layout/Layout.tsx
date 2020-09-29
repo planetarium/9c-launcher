@@ -19,7 +19,7 @@ export const Layout: React.FC = observer(({ children }) => {
   return (
     <>
       <main>{children}</main>
-      <nav>
+      <nav className="hero">
         <ul>
           <li>
             <Button
