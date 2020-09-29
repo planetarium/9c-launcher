@@ -74,7 +74,7 @@ const PreloadView = observer((props: IStoreContainer) => {
         ))}
       </Typography>
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
-      <List component="nav">
+      <List className={classes.links}>
         <ListItem button onClick={handleClickBlockExplorer}>
           <ListItemIcon className={classes.listItemIcon}>
             <GrainIcon />
