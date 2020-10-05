@@ -5,6 +5,7 @@ import { ipcRenderer, IpcRendererEvent } from "electron";
 import useStores from "../../../hooks/useStores";
 import { Container, Typography, CircularProgress } from "@material-ui/core";
 import {
+  useNodeExceptionSubscription,
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
   useValidateSnapshotLazyQuery,
@@ -24,6 +25,9 @@ const PreloadProgressView = observer(() => {
   const {
     data: nodeStatusSubscriptionResult,
   } = useNodeStatusSubscriptionSubscription();
+  const {
+    data: nodeExceptionSubscriptionResult,
+  } = useNodeExceptionSubscription();
   const preloadProgress = preloadProgressSubscriptionResult?.preloadProgress;
 
   const [isPreloadEnded, setPreloadStats] = useState(false);
@@ -159,6 +163,16 @@ const PreloadProgressView = observer(() => {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
     setPreloadStats(isEnded === undefined ? false : isEnded);
   }, [nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded]);
+
+  useEffect(() => {
+    const code = nodeExceptionSubscriptionResult?.nodeException?.code;
+    switch (code) {
+      case 0x01:
+        console.error("No any peers. Redirect to relaunch page.");
+        gotoErrorPage("relaunch");
+        break;
+    }
+  }, [nodeExceptionSubscriptionResult?.nodeException?.code]);
 
   useEffect(() => {
     standaloneStore.IsPreloadEnded = isPreloadEnded;

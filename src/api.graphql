@@ -43,6 +43,13 @@ subscription NodeStatusSubscription {
   }
 }
 
+subscription NodeException {
+  nodeException {
+    code
+    message
+  }
+}
+
 query DecryptedPrivateKey($address: Address!, $passphrase: String!) {
   keyStore {
     decryptedPrivateKey(address: $address, passphrase: $passphrase)
