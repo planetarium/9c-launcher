@@ -35,7 +35,8 @@ export type OptionalLocale =
   | "th"
   | "id"
   | "ja"
-  | "es";
+  | "es"
+  | "zh-Hans";
 
 export type RequireLocale = "en" | "ko";
 
