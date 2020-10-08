@@ -73,10 +73,6 @@ export const electronStore = new Store<IElectronStore>({
       type: "string",
       default: app.getLocale(),
     },
-    MPT: {
-      type: "boolean",
-      default: false,
-    },
     Workers: {
       type: "integer",
       default: 20,
