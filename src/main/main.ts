@@ -104,7 +104,6 @@ function executeStandalone() {
       "--graphql-server",
       "--graphql-host=localhost",
       `--graphql-port=${LOCAL_SERVER_PORT}`,
-      `--mpt=${electronStore.get("MPT")}`,
       `--workers=${electronStore.get("Workers")}`,
       `--confirmations=${electronStore.get("Confirmations")}`,
     ]
