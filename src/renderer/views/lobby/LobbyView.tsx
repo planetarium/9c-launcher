@@ -10,6 +10,7 @@ import {
   ButtonProps,
   CircularProgress,
   Container,
+  FormHelperText,
   LinearProgress,
   TextField,
 } from "@material-ui/core";
@@ -60,16 +61,21 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       variables: {
         encodedActivationKey: activationKey,
       },
-    }).then(async (value) => {
-      if (!value.data?.activationStatus?.activateAccount) return;
+    })
+      .then(async (value) => {
+        if (!value.data?.activationStatus?.activateAccount) {
+          return;
+        }
 
-      while (true) {
-        await sleep(1000);
-        const result = await activationRefetch();
-        if (result.data.activationStatus.activated) break;
-      }
-      setPollingState(false);
-    });
+        while (true) {
+          await sleep(1000);
+          const result = await activationRefetch();
+          if (result.data.activationStatus.activated) break;
+        }
+      })
+      .finally(() => {
+        setPollingState(false);
+      });
   };
 
   const privateKeyChangeHandle = useCallback(
@@ -78,13 +84,6 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     },
     [event]
   );
-
-  const handleIsActivationSuccess = useCallback(() => {
-    if (activatedError?.message !== undefined) {
-      return true;
-    }
-    return false;
-  }, [activatedError]);
 
   useEffect(() => {
     if (
@@ -96,7 +95,6 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   }, [standaloneStore.IsPreloadEnded, standaloneStore.IsSetPrivateKeyEnded]);
 
   let child: JSX.Element;
-
   if (loading || polling) {
     child = (
       <>
@@ -112,11 +110,22 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     child = (
       <form onSubmit={handleActivateSubmit}>
         <TextField
-          error={handleIsActivationSuccess()}
+          error={activatedError?.message !== undefined}
           label={locale("활성화 키")}
           onChange={privateKeyChangeHandle}
           fullWidth
         />
+        {activatedError?.message !== undefined && (
+          <FormHelperText>
+            {/* FIXME 예외 타입으로 구분해서 메시지 국제화 할 것 */}
+            {activatedError?.message
+              ?.split("\n")
+              ?.shift()
+              ?.split(":")
+              ?.pop()
+              ?.trim()}
+          </FormHelperText>
+        )}
         <ButtonOrigin
           color="primary"
           variant="contained"
