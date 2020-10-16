@@ -92,19 +92,20 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <DifferentAppProtocolVersionSubscriptionProvider />
-      <NotificationSubscriptionProvider />
-      <Router history={history}>
-        <Provider {...Store}>
-          <ThemeProvider theme={theme}>
-            <LocaleProvider
-              value={{ locale: electronStore.get("Locale") as Locale }}
-            >
-              <Root />
-            </LocaleProvider>
-          </ThemeProvider>
-        </Provider>
-      </Router>
+      <DifferentAppProtocolVersionSubscriptionProvider>
+        <NotificationSubscriptionProvider />
+        <Router history={history}>
+          <Provider {...Store}>
+            <ThemeProvider theme={theme}>
+              <LocaleProvider
+                value={{ locale: electronStore.get("Locale") as Locale }}
+              >
+                <Root />
+              </LocaleProvider>
+            </ThemeProvider>
+          </Provider>
+        </Router>
+      </DifferentAppProtocolVersionSubscriptionProvider>
     </ApolloProvider>
   );
 }

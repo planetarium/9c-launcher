@@ -21,7 +21,7 @@ const { PASSWORD } = process.env;
 if (PASSWORD === undefined) throw Error("failed to load password from .env");
 
 describe("test", function () {
-  this.timeout(10000);
+  this.timeout(30 * 1000);
 
   let app: Application;
   const history: string[] = [];
