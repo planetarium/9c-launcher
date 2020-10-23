@@ -38,7 +38,9 @@ export type OptionalLocale =
   | "es"
   | "zh-Hans";
 
-export type RequireLocale = "en" | "ko";
+export type RequireLocale =
+  //  | "ko"
+  "en";
 
 export type Phrases = LocaleRecord | Description;
 
