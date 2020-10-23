@@ -1,5 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
+import { supportedLocales } from "../i18n";
 import {
   RPC_LOOPBACK_HOST,
   RPC_SERVER_PORT,
@@ -20,6 +21,10 @@ export default class GameStore {
     });
     this._genesisBlockPath = electronStore.get("GenesisBlockPath") as string;
     this._language = electronStore.get("Locale") as string;
+
+    if (!(this._language in supportedLocales)) {
+      this._language = "en";
+    }
   }
 
   @computed

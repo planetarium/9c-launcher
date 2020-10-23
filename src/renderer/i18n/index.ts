@@ -17,7 +17,7 @@ const context = createContext<LocaleContext>({
   locale: "en",
 });
 
-const supportedLocales = {
+export const supportedLocales = {
   //  ko: "한국어",
   en: "English",
   es: "Español",
@@ -38,8 +38,7 @@ type PageKey = keyof I18n;
 
 export function useLocale<Page extends I18n[PageKey]>(pageName: PageKey) {
   const { locale } = useContext(context);
-
-  const selectedLocale = locale.startsWith("en") ? "en" : locale;
+  const selectedLocale = locale in supportedLocales ? locale : "en";
 
   const page = pages[pageName];
   return {
