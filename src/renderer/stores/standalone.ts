@@ -58,7 +58,7 @@ export default class StandaloneStore {
 
   @action
   setMining = (mine: boolean) => {
-    console.log("Setting mining.");
+    console.log(`Setting mining: ${mine}`);
     electronStore.set("NoMiner", !mine);
     const body = JSON.stringify({
       Mine: mine,

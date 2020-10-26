@@ -144,7 +144,7 @@ const PreloadProgressView = observer(() => {
       })
       .then(() => {
         if (accountStore.isLogin && accountStore.privateKey !== "") {
-          return standaloneStore.setMining(standaloneStore.NoMiner);
+          return standaloneStore.setMining(!standaloneStore.NoMiner);
         }
       })
       .catch((error) => {
