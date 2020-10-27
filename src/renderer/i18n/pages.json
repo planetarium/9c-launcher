@@ -132,6 +132,10 @@
       "th": "สร้างบัญชี",
       "ja": "アカウント作成",
       "de": "Erstelle ein Konto"
+    },
+    "이미 개인키를 가지고 있습니다": {
+      "ko": "이미 개인키를 가지고 있습니다",
+      "en": "I already have my private key"
     }
   },
   "login": {

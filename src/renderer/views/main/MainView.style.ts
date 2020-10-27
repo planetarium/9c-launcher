@@ -26,6 +26,9 @@ const mainViewStyle = makeStyles({
     position: "relative",
     bottom: "-106px",
   },
+  revoke: {
+    marginTop: "15px",
+  },
 });
 
 export default mainViewStyle;

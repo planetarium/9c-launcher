@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, MouseEvent, ChangeEvent } from "react";
 import { observer, inject } from "mobx-react";
 import LobbyView from "../lobby/LobbyView";
 import LoginView from "../login/LoginView";
@@ -10,11 +10,17 @@ import mainViewStyle from "./MainView.style";
 
 import { useLocale } from "../../i18n";
 import { Main } from "../../../interfaces/i18n";
+import TextButton from "../../components/TextButton";
 
 const MainView = observer(
   ({ accountStore, routerStore, gameStore }: IStoreContainer) => {
     const classes = mainViewStyle();
     const { locale } = useLocale<Main>("main");
+
+    const handleResetPassword = (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      routerStore.push("/account/reset/review-private-key");
+    };
 
     const description = locale("description");
     if (typeof description === "string")
@@ -41,6 +47,9 @@ const MainView = observer(
           >
             {locale("계정 생성하기")}
           </Button>
+          <TextButton onClick={handleResetPassword} className={classes.revoke}>
+            {locale("이미 개인키를 가지고 있습니다")}
+          </TextButton>
         </Box>
       </Container>
     );
