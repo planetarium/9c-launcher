@@ -5,6 +5,9 @@ const TextButton = styled(Button)({
   all: "unset",
   cursor: "pointer",
   fontSize: "inherit",
+  "& .MuiTouchRipple-root": {
+    display: "none",
+  },
 });
 
 export default TextButton;
