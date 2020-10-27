@@ -48,7 +48,7 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
       error === undefined && !loading && (data?.validation.privateKey ?? false);
 
     const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
-      if (isPrivateKeyValid) {
+      if (!isPrivateKeyValid) {
         setIsInvalid(true);
         return;
       }
