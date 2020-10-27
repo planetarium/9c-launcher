@@ -28,6 +28,7 @@ const mainViewStyle = makeStyles({
   },
   revoke: {
     marginTop: "15px",
+    textDecoration: "underline",
   },
 });
 
