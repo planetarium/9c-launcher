@@ -26,6 +26,10 @@ const mainViewStyle = makeStyles({
     position: "relative",
     bottom: "-106px",
   },
+  revoke: {
+    marginTop: "15px",
+    textDecoration: "underline",
+  },
 });
 
 export default mainViewStyle;

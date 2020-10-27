@@ -64,6 +64,7 @@ export interface Main {
   "나인 크로니클에 오신 걸 환영합니다!": LocaleRecord;
   description: Description;
   "계정 생성하기": LocaleRecord;
+  "이미 개인키를 가지고 있습니다": LocaleRecord;
 }
 
 export interface Login {
