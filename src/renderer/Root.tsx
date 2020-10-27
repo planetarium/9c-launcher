@@ -1,32 +1,55 @@
 import { hot } from "react-hot-loader";
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Route, Switch, Redirect } from "react-router";
 import { Layout } from "./views/layout/Layout";
 import "./styles/common.scss";
-import MainView from "./views/main/MainView";
-import AccountView from "./views/account/AccountView";
-import ConfigurationView from "./views/config/ConfigurationView";
-import CreateAccountView from "./views/account/CreateAccountView";
-import RevokeAccountView from "./views/account/RevokeAccountView";
-import LobbyView from "./views/lobby/LobbyView";
-import IntroView from "./IntroView";
-import LoginView from "./views/login/LoginView";
-import MiningView from "./views/login/MiningView";
-import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
-import ErrorReinstallView from "./views/error/ErrorReinstallView";
-import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
-import ErrorNoPermissionView from "./views/error/ErrorNoPermissionView";
-import ReviewPrivateKeyView from "./views/account/reset/ReviewPrivateKeyView";
-import ResetPasswordView from "./views/account/reset/ResetPasswordView";
-import PreloadView from "./views/lobby/PreloadView";
-import CopyCreatedPrivateKeyView from "./views/account/CopyCreatedPrivateKeyView";
-import PreloadProgressView from "./views/preload/PreloadProgressView";
-import { Box } from "@material-ui/core";
+import { useLocale } from "./i18n";
+import { Intro } from "src/interfaces/i18n";
 
-class Root extends React.Component {
-  render() {
-    return (
-      <Layout>
+const MainView = lazy(() => import("./views/main/MainView"));
+const AccountView = lazy(() => import("./views/account/AccountView"));
+const ConfigurationView = lazy(() =>
+  import("./views/config/ConfigurationView")
+);
+const CreateAccountView = lazy(() =>
+  import("./views/account/CreateAccountView")
+);
+const RevokeAccountView = lazy(() =>
+  import("./views/account/RevokeAccountView")
+);
+const LobbyView = lazy(() => import("./views/lobby/LobbyView"));
+const IntroView = lazy(() => import("./IntroView"));
+const LoginView = lazy(() => import("./views/login/LoginView"));
+const MiningView = lazy(() => import("./views/login/MiningView"));
+const ErrorRelaunchView = lazy(() => import("./views/error/ErrorRelaunchView"));
+const ErrorReinstallView = lazy(() =>
+  import("./views/error/ErrorReinstallView")
+);
+const ErrorDiskSpaceView = lazy(() =>
+  import("./views/error/ErrorDiskSpaceView")
+);
+const ErrorNoPermissionView = lazy(() =>
+  import("./views/error/ErrorNoPermissionView")
+);
+const ReviewPrivateKeyView = lazy(() =>
+  import("./views/account/reset/ReviewPrivateKeyView")
+);
+const ResetPasswordView = lazy(() =>
+  import("./views/account/reset/ResetPasswordView")
+);
+const PreloadView = lazy(() => import("./views/lobby/PreloadView"));
+const CopyCreatedPrivateKeyView = lazy(() =>
+  import("./views/account/CopyCreatedPrivateKeyView")
+);
+const PreloadProgressView = lazy(() =>
+  import("./views/preload/PreloadProgressView")
+);
+
+function Root() {
+  const { locale } = useLocale<Intro>("intro");
+  return (
+    <Layout>
+      <Suspense fallback={<div>{locale("불러오는 중...")}</div>}>
         <Switch>
           <Route exact path="/" component={IntroView} />
           <Route exact path="/main" component={MainView} />
@@ -67,10 +90,10 @@ class Root extends React.Component {
           <Route exact path="/config" component={ConfigurationView} />
           <Redirect from="*" to="/" />
         </Switch>
-        <PreloadProgressView />
-      </Layout>
-    );
-  }
+      </Suspense>
+      <PreloadProgressView />
+    </Layout>
+  );
 }
 
 export default hot(module)(Root);
