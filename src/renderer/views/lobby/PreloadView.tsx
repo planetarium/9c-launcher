@@ -47,7 +47,7 @@ const PreloadView = observer((props: IStoreContainer) => {
   };
 
   const handleClickBlockExplorer = useCallback(() => {
-    shell.openExternal("https://explorer.libplanet.io/9c-beta/");
+    shell.openExternal("https://explorer.libplanet.io/9c-main/");
   }, []);
 
   const handleClickPlayerGuide = useCallback(() => {
