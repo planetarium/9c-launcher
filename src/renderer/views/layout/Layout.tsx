@@ -10,9 +10,10 @@ import { observer } from "mobx-react";
 
 import { useLocale } from "../../i18n";
 import { Menu } from "../../../interfaces/i18n";
+import { electronStore } from "../../../config";
 
 export const Layout: React.FC = observer(({ children }) => {
-  const { routerStore } = useStores();
+  const { accountStore, routerStore } = useStores();
 
   const { locale } = useLocale<Menu>("menu");
 
@@ -54,6 +55,19 @@ export const Layout: React.FC = observer(({ children }) => {
             </Button>
           </li>
         </ul>
+        <div>
+          <ul>
+            <li>
+              APV=
+              {
+                (electronStore.get("AppProtocolVersion") as string).split(
+                  "/"
+                )[0]
+              }
+            </li>
+            <li>ADDRESS={accountStore.selectedAddress}</li>
+          </ul>
+        </div>
       </nav>
     </>
   );

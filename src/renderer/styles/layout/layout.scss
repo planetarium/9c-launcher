@@ -24,6 +24,21 @@ main {
     padding-left: 0;
     list-style: none;
   }
+
+  div {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    font-size: 9px;
+    color: antiquewhite;
+    left: 415px;
+    bottom: 10px;
+    margin: 0px 10px;
+    padding: -5px;
+
+    ul {
+      margin: 5px;
+    }
+  }
 }
 
 .footer {
