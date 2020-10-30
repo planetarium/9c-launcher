@@ -1464,6 +1464,14 @@
     "경로 열기": {
       "ko": "경로 열기",
       "en": "Open Path"
+    },
+    "캐시 비우기": {
+      "ko": "캐시 비우기",
+      "en": "Clear cache"
+    },
+    "비우기": {
+      "ko": "비우기",
+      "en": "clear"
     }
   },
   "preloadProgress": {
