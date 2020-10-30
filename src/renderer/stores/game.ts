@@ -15,12 +15,17 @@ export default class GameStore {
 
   private _language: string;
 
+  private _appProtocolVersion: string;
+
   public constructor() {
     ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
       this._isGameStarted = false;
     });
     this._genesisBlockPath = electronStore.get("GenesisBlockPath") as string;
     this._language = electronStore.get("Locale") as string;
+    this._appProtocolVersion = electronStore.get(
+      "AppProtocolVersion"
+    ) as string;
 
     if (!(this._language in supportedLocales)) {
       this._language = "en";
@@ -47,6 +52,7 @@ export default class GameStore {
         `--rpc-server-port=${RPC_SERVER_PORT}`,
         `--genesis-block-path=${this._genesisBlockPath}`,
         `--language=${this._language}`,
+        `--app-protocol-version=${this._appProtocolVersion}`,
       ],
     });
     this._isGameStarted = true;
