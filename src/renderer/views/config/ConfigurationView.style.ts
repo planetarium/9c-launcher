@@ -52,6 +52,10 @@ const configurationViewStyle = makeStyles({
   },
   newLine: {
     display: "block",
+    marginTop: "20px",
+  },
+  line: {
+    display: "block",
   },
   labelRelaunch: {
     display: "block",
