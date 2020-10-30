@@ -325,6 +325,18 @@ function initializeIpc() {
         console.log("The zip archive", dlPath, "has extracted to", tempDir);
         win?.webContents.send("update copying progress");
         await copyDir(tempDir, extractPath);
+        console.log("Copied extracted files from", tempDir, "to", extractPath);
+        try {
+          await fs.promises.rmdir(tempDir, { recursive: true });
+          console.log("Removed all temporary files from", tempDir);
+        } catch (e) {
+          console.warn(
+            "Failed to remove temporary files from",
+            tempDir,
+            "\n",
+            e
+          );
+        }
         win?.webContents.send("update copying complete");
       } else if (process.platform == "darwin") {
         // .tar.{gz,bz2} 해제
