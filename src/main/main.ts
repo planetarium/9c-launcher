@@ -215,6 +215,7 @@ function initializeIpc() {
 
       console.log("Encounter a different version:", data);
       if (win == null) return;
+      console.log("standaloneExited", standaloneExited);
 
       const { differentAppProtocolVersionEncounter } = data;
       console.log(differentAppProtocolVersionEncounter);
@@ -313,6 +314,7 @@ function initializeIpc() {
 
         // ZIP 압축 해제
         console.log("Start to extract the zip archive", dlPath, "to", tempDir);
+        console.log("standaloneExited", standaloneExited);
 
         await extractZip(dlPath, {
           dir: tempDir,
