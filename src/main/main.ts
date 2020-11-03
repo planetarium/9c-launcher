@@ -396,8 +396,7 @@ function initializeIpc() {
       );
 
       // 재시작
-      app.relaunch();
-      app.exit();
+      relaunch();
 
       /*
       Electron이 제공하는 autoUpdater는 macOS에서는 무조건 코드사이닝 되어야 동작.
@@ -462,8 +461,7 @@ function initializeIpc() {
     node.on("close", (code) => {
       // Code 21: ERROR_NOT_READY
       if (code === 21) {
-        app.relaunch();
-        app.exit();
+        relaunch();
       }
       win?.webContents.send("game closed");
       win?.show();
@@ -487,8 +485,7 @@ function initializeIpc() {
       } finally {
         // Clear cache한 후 앱을 종료합니다.
         isQuiting = true;
-        app.relaunch();
-        app.exit();
+        relaunch();
       }
     }, 1000);
   });
@@ -676,6 +673,11 @@ async function copyDir(srcDir: string, dstDir: string) {
       }
     }
   }
+}
+
+function relaunch() {
+  app.relaunch();
+  app.exit();
 }
 
 function setStandaloneExited() {
