@@ -460,6 +460,11 @@ function initializeIpc() {
       info.args
     );
     node.on("close", (code) => {
+      // Code 21: ERROR_NOT_READY
+      if (code === 21) {
+        app.relaunch();
+        app.exit();
+      }
       win?.webContents.send("game closed");
       win?.show();
     });
