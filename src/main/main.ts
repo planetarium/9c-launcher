@@ -21,7 +21,7 @@ import {
 } from "electron";
 import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
-import fs from "fs";
+import fs, { openSync } from "fs";
 import { ChildProcess, spawn } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import logoImage from "./resources/logo.png";
@@ -36,6 +36,7 @@ import lockfile from "lockfile";
 import checkDiskSpace from "check-disk-space";
 import { retry } from "@lifeomic/attempt";
 import mixpanel from "mixpanel-browser";
+import { sleep } from "../util";
 
 initializeSentry();
 
@@ -51,6 +52,11 @@ let standaloneExited: boolean = false;
 let standaloneRetried: boolean = false;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
+const standaloneExecutablePath = path.join(
+  app.getAppPath(),
+  "publish",
+  "NineChronicles.Standalone.Executable.exe"
+);
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -71,43 +77,36 @@ if (!app.requestSingleInstanceLock()) {
 
 function executeStandalone() {
   standaloneExited = false;
-  const node = execute(
-    path.join(
-      app.getAppPath(),
-      "publish",
-      "NineChronicles.Standalone.Executable"
-    ),
-    [
-      `-V=${electronStore.get("AppProtocolVersion")}`,
-      `-G=${electronStore.get("GenesisBlockPath")}`,
-      `-D=${electronStore.get("MinimumDifficulty")}`,
-      `--store-type=${electronStore.get("StoreType")}`,
-      `--store-path=${BLOCKCHAIN_STORE_PATH}`,
-      ...electronStore
-        .get("IceServerStrings")
-        .map((iceServerString) => `-I=${iceServerString}`),
-      ...electronStore
-        .get("PeerStrings")
-        .map((peerString) => `--peer=${peerString}`),
-      ...electronStore
-        .get("TrustedAppProtocolVersionSigners")
-        .map(
-          (trustedAppProtocolVersionSigner) =>
-            `-T=${trustedAppProtocolVersionSigner}`
-        ),
-      `--no-trusted-state-validators=${electronStore.get(
-        "NoTrustedStateValidators"
-      )}`,
-      "--rpc-server",
-      `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
-      `--rpc-listen-port=${RPC_SERVER_PORT}`,
-      "--graphql-server",
-      "--graphql-host=localhost",
-      `--graphql-port=${LOCAL_SERVER_PORT}`,
-      `--workers=${electronStore.get("Workers")}`,
-      `--confirmations=${electronStore.get("Confirmations")}`,
-    ]
-  );
+  const node = execute(standaloneExecutablePath, [
+    `-V=${electronStore.get("AppProtocolVersion")}`,
+    `-G=${electronStore.get("GenesisBlockPath")}`,
+    `-D=${electronStore.get("MinimumDifficulty")}`,
+    `--store-type=${electronStore.get("StoreType")}`,
+    `--store-path=${BLOCKCHAIN_STORE_PATH}`,
+    ...electronStore
+      .get("IceServerStrings")
+      .map((iceServerString) => `-I=${iceServerString}`),
+    ...electronStore
+      .get("PeerStrings")
+      .map((peerString) => `--peer=${peerString}`),
+    ...electronStore
+      .get("TrustedAppProtocolVersionSigners")
+      .map(
+        (trustedAppProtocolVersionSigner) =>
+          `-T=${trustedAppProtocolVersionSigner}`
+      ),
+    `--no-trusted-state-validators=${electronStore.get(
+      "NoTrustedStateValidators"
+    )}`,
+    "--rpc-server",
+    `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
+    `--rpc-listen-port=${RPC_SERVER_PORT}`,
+    "--graphql-server",
+    "--graphql-host=localhost",
+    `--graphql-port=${LOCAL_SERVER_PORT}`,
+    `--workers=${electronStore.get("Workers")}`,
+    `--confirmations=${electronStore.get("Confirmations")}`,
+  ]);
   node.addListener("exit", (code) => {
     console.error(`Standalone exited with exit code: ${code}`);
     setStandaloneExited();
@@ -211,7 +210,36 @@ function initializeIpc() {
   ipcMain.on(
     "encounter different version",
     async (event, data: DifferentAppProtocolVersionEncounterSubscription) => {
+      if (lockfile.checkSync(lockfilePath)) {
+        console.log(
+          "'encounter different version' event seems running already. Stop this flow."
+        );
+        return;
+      } else {
+        try {
+          lockfile.lockSync(lockfilePath);
+          console.log(
+            "Created 'encounter different version' lockfile at ",
+            lockfilePath
+          );
+        } catch (e) {
+          console.error("Error occurred during trying lock.");
+          throw e;
+        }
+      }
+
       quitAllProcesses();
+
+      while (true) {
+        try {
+          console.log("Wait for standalone quit...");
+          openSync(standaloneExecutablePath, "w");
+          break;
+        } catch (error) {
+          console.error(error);
+        }
+        await sleep(100);
+      }
 
       console.log("Encounter a different version:", data);
       if (win == null) return;
@@ -241,24 +269,6 @@ function initializeIpc() {
           : null;
 
       if (downloadUrl == null) return; // 지원 안 하는 플랫폼이니 무시.
-
-      if (lockfile.checkSync(lockfilePath)) {
-        console.log(
-          "'encounter different version' event seems running already. Stop this flow."
-        );
-        return;
-      } else {
-        try {
-          lockfile.lockSync(lockfilePath);
-          console.log(
-            "Created 'encounter different version' lockfile at ",
-            lockfilePath
-          );
-        } catch (e) {
-          console.error("Error occurred during trying lock.");
-          throw e;
-        }
-      }
 
       // TODO: 이어받기 되면 좋을 듯
       const options: ElectronDLOptions = {
@@ -584,8 +594,9 @@ function execute(binaryPath: string, args: string[]) {
 function quitAllProcesses() {
   runningPids.forEach((pid) => {
     if (process.platform == "darwin") process.kill(pid);
-    if (process.platform == "win32")
-      execute("taskkill", ["/pid", pid.toString(), "/f", "/t"]);
+    if (process.platform == "win32") {
+      process.kill(pid, "SIGINT");
+    }
   });
   runningPids = [];
 }
