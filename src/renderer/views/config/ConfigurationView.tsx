@@ -1,6 +1,6 @@
 import path from "path";
 
-import { ipcRenderer, remote, shell } from "electron";
+import { ipcRenderer, remote } from "electron";
 import React from "react";
 import { observer } from "mobx-react";
 import {
@@ -195,7 +195,7 @@ const ConfigurationView = observer(() => {
 function handleOpenKeyStorePath() {
   const home = remote.app.getPath("home");
   const middlePath = process.platform === "win32" ? "AppData" : ".config";
-  shell.showItemInFolder(
+  remote.shell.showItemInFolder(
     path.join(home, middlePath, "planetarium", "keystore")
   );
 }
