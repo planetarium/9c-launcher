@@ -25,13 +25,10 @@ import lobbyViewStyle from "./LobbyView.style";
 
 import { useLocale } from "../../i18n";
 import { Lobby } from "../../../interfaces/i18n";
+import { sleep } from "../../../util";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
-}
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 const Button = (
