@@ -170,6 +170,9 @@ function createMainConfig(isDev) {
             loader: "babel-loader",
             options: {
               presets: ["@babel/preset-typescript", "@babel/preset-env"],
+              plugins: [
+                ["@babel/plugin-proposal-class-properties", { loose: true }],
+              ],
             },
           },
         },
