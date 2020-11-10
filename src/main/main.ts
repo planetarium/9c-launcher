@@ -355,22 +355,11 @@ function initializeIpc() {
     gameNode = node;
   });
 
-  ipcMain.on("clear cache", (event) => {
-    quitAllProcesses();
-    // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
-    setTimeout(() => {
-      try {
-        deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
-        event.returnValue = true;
-      } catch (e) {
-        console.log(e);
-        event.returnValue = false;
-      } finally {
-        // Clear cache한 후 앱을 종료합니다.
-        isQuiting = true;
-        relaunch();
-      }
-    }, 1000);
+  ipcMain.on("clear cache", async (event) => {
+    await quitAllProcesses();
+    utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
+    initializeStandalone();
+    event.returnValue = true;
   });
 
   ipcMain.on("select-directory", async (event) => {
