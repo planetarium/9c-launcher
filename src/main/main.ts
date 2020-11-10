@@ -21,8 +21,8 @@ import {
 } from "electron";
 import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
-import fs, { openSync } from "fs";
-import { ChildProcess, spawn } from "child_process";
+import fs from "fs";
+import { ChildProcessWithoutNullStreams } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import logoImage from "./resources/logo.png";
 import { initializeSentry } from "../preload/sentry";
@@ -33,10 +33,10 @@ import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/g
 import { BencodexDict, decode } from "bencodex";
 import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
-import checkDiskSpace from "check-disk-space";
-import { retry } from "@lifeomic/attempt";
 import mixpanel from "mixpanel-browser";
-import { sleep } from "../util";
+import * as utils from "../utils";
+import * as snapshot from "./snapshot";
+import Standalone from "./standalone";
 
 initializeSentry();
 
@@ -45,11 +45,9 @@ Object.assign(console, log.functions);
 
 let win: BrowserWindow | null = null;
 let tray: Tray;
-let runningPids: number[] = [];
 let isQuiting: boolean = false;
-let standaloneNode: ChildProcess;
-let standaloneExited: boolean = false;
-let standaloneRetried: boolean = false;
+let gameNode: ChildProcessWithoutNullStreams | null = null;
+let standalone: Standalone;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 const standaloneExecutablePath = path.join(
@@ -75,51 +73,11 @@ if (!app.requestSingleInstanceLock()) {
   initializeIpc();
 }
 
-function executeStandalone() {
-  standaloneExited = false;
-  const node = execute(standaloneExecutablePath, [
-    `-V=${electronStore.get("AppProtocolVersion")}`,
-    `-G=${electronStore.get("GenesisBlockPath")}`,
-    `-D=${electronStore.get("MinimumDifficulty")}`,
-    `--store-type=${electronStore.get("StoreType")}`,
-    `--store-path=${BLOCKCHAIN_STORE_PATH}`,
-    ...electronStore
-      .get("IceServerStrings")
-      .map((iceServerString) => `-I=${iceServerString}`),
-    ...electronStore
-      .get("PeerStrings")
-      .map((peerString) => `--peer=${peerString}`),
-    ...electronStore
-      .get("TrustedAppProtocolVersionSigners")
-      .map(
-        (trustedAppProtocolVersionSigner) =>
-          `-T=${trustedAppProtocolVersionSigner}`
-      ),
-    `--no-trusted-state-validators=${electronStore.get(
-      "NoTrustedStateValidators"
-    )}`,
-    "--rpc-server",
-    `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
-    `--rpc-listen-port=${RPC_SERVER_PORT}`,
-    "--graphql-server",
-    "--graphql-host=localhost",
-    `--graphql-port=${LOCAL_SERVER_PORT}`,
-    `--workers=${electronStore.get("Workers")}`,
-    `--confirmations=${electronStore.get("Confirmations")}`,
-  ]);
-  node.addListener("exit", (code) => {
-    console.error(`Standalone exited with exit code: ${code}`);
-    setStandaloneExited();
-  });
-
-  return node;
-}
-
 function initializeApp() {
   app.on("ready", () => {
-    standaloneNode = executeStandalone();
-    createWindow();
+    win = createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
+    win.webContents.on("dom-ready", (event) => initializeStandalone());
   });
 
   app.on("quit", (event) => {
@@ -133,80 +91,6 @@ function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on("check disk permission", (event) => {
-    try {
-      if (!fs.existsSync(BLOCKCHAIN_STORE_PATH)) {
-        console.log("Create directory for given blockchain path.");
-        fs.mkdirSync(BLOCKCHAIN_STORE_PATH, { recursive: true });
-      }
-    } catch (err) {
-      console.error("Error occurred while creating directory.", err);
-      if (err.code === "EACCES" || err.code === "EPERM") return false;
-    }
-
-    try {
-      fs.accessSync(BLOCKCHAIN_STORE_PATH, fs.constants.F_OK);
-      event.returnValue = true;
-    } catch (err) {
-      event.returnValue = false;
-      console.error(
-        "No read/write access to the path: ",
-        BLOCKCHAIN_STORE_PATH,
-        err
-      );
-    }
-  });
-
-  ipcMain.on("check disk space", (event) => {
-    checkDiskSpace(BLOCKCHAIN_STORE_PATH).then((diskSpace) => {
-      if (diskSpace.free < REQUIRED_DISK_SPACE) {
-        event.returnValue = false;
-        console.log("Disk space is not enough: ", diskSpace.free);
-        win?.webContents.send("not enough space on the disk");
-      } else {
-        event.returnValue = true;
-      }
-    });
-  });
-
-  ipcMain.on("check standalone", async (event) => {
-    if (!standaloneRetried && standaloneExited) {
-      await downloadSnapshot({ properties: {} }, false);
-      standaloneRetried = true;
-    } else if (standaloneExited) {
-      setStandaloneExited();
-    }
-    event.returnValue = standaloneExited;
-  });
-
-  ipcMain.on("download metadata", (_, options: IDownloadOptions) => {
-    options.properties.directory = app.getPath("userData");
-    options.properties.filename = "meta.json";
-    if (win != null) {
-      download(
-        win,
-        (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".json",
-        options.properties
-      )
-        .then(async (dl) => {
-          var path = dl.getSavePath();
-          var meta = await fs.promises.readFile(path, "utf-8");
-          console.log("Metadata download complete: ", meta);
-          win?.webContents.send("metadata downloaded", meta);
-        })
-        .catch((error) => {
-          console.log(
-            `An error occurred during downloading metadata: ${error}`
-          );
-          win?.webContents.send("snapshot complete");
-        });
-    }
-  });
-
-  ipcMain.on("download snapshot", async (_, options: IDownloadOptions) => {
-    await downloadSnapshot(options);
-  });
-
   ipcMain.on(
     "encounter different version",
     async (event, data: DifferentAppProtocolVersionEncounterSubscription) => {
@@ -228,22 +112,10 @@ function initializeIpc() {
         }
       }
 
-      quitAllProcesses();
-
-      while (true) {
-        try {
-          console.log("Wait for standalone quit...");
-          openSync(standaloneExecutablePath, "w");
-          break;
-        } catch (error) {
-          console.error(error);
-        }
-        await sleep(100);
-      }
+      await quitAllProcesses();
 
       console.log("Encounter a different version:", data);
       if (win == null) return;
-      console.log("standaloneExited", standaloneExited);
 
       const { differentAppProtocolVersionEncounter } = data;
       console.log(differentAppProtocolVersionEncounter);
@@ -324,7 +196,6 @@ function initializeIpc() {
 
         // ZIP 압축 해제
         console.log("Start to extract the zip archive", dlPath, "to", tempDir);
-        console.log("standaloneExited", standaloneExited);
 
         await extractZip(dlPath, {
           dir: tempDir,
@@ -336,7 +207,7 @@ function initializeIpc() {
         win?.webContents.send("update extract complete");
         console.log("The zip archive", dlPath, "has extracted to", tempDir);
         win?.webContents.send("update copying progress");
-        await copyDir(tempDir, extractPath);
+        await utils.copyDir(tempDir, extractPath);
         console.log("Copied extracted files from", tempDir, "to", extractPath);
         try {
           await fs.promises.rmdir(tempDir, { recursive: true });
@@ -461,7 +332,7 @@ function initializeIpc() {
   );
 
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
-    const node = execute(
+    const node = utils.execute(
       path.join(
         app.getAppPath(),
         process.platform === "darwin" ? MAC_GAME_PATH : WIN_GAME_PATH
@@ -479,25 +350,16 @@ function initializeIpc() {
     node.on("exit", (code) => {
       win?.webContents.send("game closed");
       win?.show();
+      gameNode = null;
     });
+    gameNode = node;
   });
 
-  ipcMain.on("clear cache", (event) => {
-    quitAllProcesses();
-    // FIXME: taskkill을 해도 블록 파일에 락이 남아있어서 1초를 기다리는데, 조금 더 정밀한 방법으로 해야 함
-    setTimeout(() => {
-      try {
-        deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
-        event.returnValue = true;
-      } catch (e) {
-        console.log(e);
-        event.returnValue = false;
-      } finally {
-        // Clear cache한 후 앱을 종료합니다.
-        isQuiting = true;
-        relaunch();
-      }
-    }, 1000);
+  ipcMain.on("clear cache", async (event) => {
+    await quitAllProcesses();
+    utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
+    initializeStandalone();
+    event.returnValue = true;
   });
 
   ipcMain.on("select-directory", async (event) => {
@@ -507,10 +369,117 @@ function initializeIpc() {
     });
     event.returnValue = directory.filePaths;
   });
+
+  ipcMain.on("relaunch standalone", async (event) => {
+    await standalone.kill();
+    initializeStandalone();
+    event.returnValue = true;
+  });
 }
 
-function createWindow() {
-  win = new BrowserWindow({
+async function initializeStandalone(): Promise<void> {
+  /*
+  1. Check disk (permission, storage).
+  2. Execute standalone.
+  3. If use snapshot, download metadata.
+  4. Validate metadata via graphql.
+  5. If metadata is valid, download snapshot.
+  6. Kill standalone and extract downloaded snapshot.
+  7. Execute standalone.
+  8. Run standalone.
+  */
+  console.log(`Initialize standalone. (win: ${win})`);
+
+  if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
+    console.error(`Not enough permission. ${BLOCKCHAIN_STORE_PATH}`);
+    win?.webContents.send("no permission");
+    return;
+  }
+
+  let freeSpace = await utils.getDiskSpace(BLOCKCHAIN_STORE_PATH);
+  if (freeSpace < REQUIRED_DISK_SPACE) {
+    console.error(
+      `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
+    );
+    win?.webContents.send("not enough space");
+    return;
+  }
+
+  let standalonePath = path.join(
+    app.getAppPath(),
+    "publish",
+    "NineChronicles.Standalone.Executable"
+  );
+  let args = [
+    `-V=${electronStore.get("AppProtocolVersion")}`,
+    `-G=${electronStore.get("GenesisBlockPath")}`,
+    `-D=${electronStore.get("MinimumDifficulty")}`,
+    `--store-type=${electronStore.get("StoreType")}`,
+    `--store-path=${BLOCKCHAIN_STORE_PATH}`,
+    ...electronStore
+      .get("IceServerStrings")
+      .map((iceServerString) => `-I=${iceServerString}`),
+    ...electronStore
+      .get("PeerStrings")
+      .map((peerString) => `--peer=${peerString}`),
+    ...electronStore
+      .get("TrustedAppProtocolVersionSigners")
+      .map(
+        (trustedAppProtocolVersionSigner) =>
+          `-T=${trustedAppProtocolVersionSigner}`
+      ),
+    `--no-trusted-state-validators=${electronStore.get(
+      "NoTrustedStateValidators"
+    )}`,
+    "--rpc-server",
+    `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
+    `--rpc-listen-port=${RPC_SERVER_PORT}`,
+    "--graphql-server",
+    "--graphql-host=localhost",
+    `--graphql-port=${LOCAL_SERVER_PORT}`,
+    `--workers=${electronStore.get("Workers")}`,
+    `--confirmations=${electronStore.get("Confirmations")}`,
+  ];
+  standalone = new Standalone(standalonePath);
+  await standalone.execute(args);
+  win?.webContents.send("start bootstrap");
+
+  if (electronStore.get("UseSnapshot") && win != null) {
+    try {
+      let metadata = await snapshot.downloadMetadata(win);
+      let valid = await snapshot.validateMetadata(metadata);
+      if (valid) {
+        let snapshotDir = await snapshot.downloadSnapshot(win, (status) => {
+          win?.webContents.send("download progress", status);
+        });
+        await standalone.kill();
+        utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
+        await snapshot.extractSnapshot(snapshotDir, (progress: number) => {
+          win?.webContents.send("extract progress", progress);
+        });
+      } else {
+        console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
+      }
+    } catch (exception) {
+      console.error(
+        `Unexpected error occurred during download / extract snapshot. ${exception}`
+      );
+    } finally {
+      if (!standalone.alive) {
+        await standalone.execute(args);
+      }
+    }
+  }
+
+  if (!(await standalone.run())) {
+    // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
+    win?.webContents.send("error/clear-cache");
+    return;
+  }
+}
+
+function createWindow(): BrowserWindow {
+  let _win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -526,18 +495,20 @@ function createWindow() {
   console.log(app.getAppPath());
 
   if (isDev) {
-    win.loadURL("http://localhost:9000");
-    win.webContents.openDevTools();
+    _win.loadURL("http://localhost:9000");
+    _win.webContents.openDevTools();
   } else {
-    win.loadFile("index.html");
+    _win.loadFile("index.html");
   }
 
-  win.on("close", function (event: any) {
+  _win.on("close", function (event: any) {
     if (!isQuiting) {
       event.preventDefault();
-      win?.hide();
+      _win?.hide();
     }
   });
+
+  return _win;
 }
 
 /**
@@ -574,31 +545,12 @@ function cleanUpLockfile() {
   }
 }
 
-function execute(binaryPath: string, args: string[]) {
-  if (isDev) {
-    console.log(`Execute subprocess: ${binaryPath} ${args.join(" ")}`);
-  }
-  let node = spawn(binaryPath, args);
-  runningPids.push(node.pid);
-
-  node.stdout?.on("data", (data) => {
-    console.log(`${data}`);
-  });
-
-  node.stderr?.on("data", (data) => {
-    console.log(`${data}`);
-  });
-  return node;
-}
-
-function quitAllProcesses() {
-  runningPids.forEach((pid) => {
-    if (process.platform == "darwin") process.kill(pid);
-    if (process.platform == "win32") {
-      process.kill(pid, "SIGINT");
-    }
-  });
-  runningPids = [];
+async function quitAllProcesses() {
+  await standalone.kill();
+  if (gameNode === null) return;
+  let pid = gameNode.pid;
+  process.kill(pid, "SIGINT");
+  gameNode = null;
 }
 
 function createTray(iconPath: string) {
@@ -631,118 +583,7 @@ function createTray(iconPath: string) {
   return tray;
 }
 
-function extractSnapshot(snapshotPath: string) {
-  console.log(`extract started.
-extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
-extractTarget: [ ${snapshotPath} ]`);
-  try {
-    return extractZip(snapshotPath, {
-      dir: BLOCKCHAIN_STORE_PATH,
-      onEntry: (_, zipfile) => {
-        const progress = zipfile.entriesRead / zipfile.entryCount;
-        win?.webContents.send("extract progress", progress);
-      },
-    }).then((_) => {
-      win?.webContents.send("extract complete");
-      fs.unlinkSync(snapshotPath);
-    });
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-function deleteBlockchainStore(path: string) {
-  fs.rmdirSync(path, { recursive: true });
-}
-
-async function copyDir(srcDir: string, dstDir: string) {
-  try {
-    const stat = await fs.promises.stat(dstDir);
-
-    if (!stat.isDirectory()) {
-      await fs.promises.unlink(dstDir);
-      await fs.promises.mkdir(dstDir, { recursive: true });
-    }
-  } catch (e) {
-    if (e.code === "ENOENT") {
-      await fs.promises.mkdir(dstDir, { recursive: true });
-    }
-  }
-
-  for (const ent of await fs.promises.readdir(srcDir, {
-    withFileTypes: true,
-  })) {
-    const src = path.join(srcDir, ent.name);
-    const dst = path.join(dstDir, ent.name);
-    if (ent.isDirectory()) {
-      await copyDir(src, dst);
-    } else {
-      try {
-        await fs.promises.copyFile(src, dst);
-      } catch (e) {
-        console.warn("Failed to copy a file", src, "->", dst, ":\n", e);
-      }
-    }
-  }
-}
-
 function relaunch() {
   app.relaunch();
   app.exit();
-}
-
-function setStandaloneExited() {
-  standaloneExited = true;
-  win?.webContents.send("standalone exited");
-}
-
-async function downloadSnapshot(
-  options: IDownloadOptions,
-  quitProcess: boolean = true
-): Promise<void> {
-  console.log("downloading snapshot.");
-  if (quitProcess) {
-    // Prevent the exit event lead renderer to error page because it's intended.
-    standaloneNode.removeAllListeners("exit");
-    quitAllProcesses();
-  }
-
-  await retry(
-    async (context) => {
-      try {
-        console.log(
-          `Trying to delete chain (${context.attemptNum}/${
-            context.attemptNum + context.attemptsRemaining
-          })`
-        );
-        deleteBlockchainStore(BLOCKCHAIN_STORE_PATH);
-      } catch (err) {
-        if (err.code !== "EBUSY" && err.code !== "EPERM") {
-          console.error(
-            `Unhandled error occurred during delete blockchain store. ${err}`
-          );
-          context.abort();
-        }
-
-        throw err;
-      }
-    },
-    { factor: 2, maxAttempts: 5 }
-  );
-  options.properties.onProgress = (status: IDownloadProgress) =>
-    win?.webContents.send("download progress", status);
-  options.properties.directory = app.getPath("userData");
-  options.properties.filename = "snapshot.zip";
-  console.log(win);
-  if (win != null) {
-    const dl = await download(
-      win,
-      (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
-      options.properties
-    );
-    win?.webContents.send("download complete", dl.getSavePath());
-    await extractSnapshot(dl.getSavePath());
-    standaloneNode = executeStandalone();
-    win?.webContents.send("snapshot complete");
-  }
 }

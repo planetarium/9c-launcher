@@ -8,22 +8,25 @@ import jade from "../../resources/miningJade.png";
 import { useLocale } from "../../i18n";
 import { Mining } from "../../../interfaces/i18n";
 import textFit from "textfit";
+import { ipcRenderer } from "electron";
 
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
     const classes = miningViewStyle();
     const setMining = (isMining: boolean) => {
-      standaloneStore
-        .setPrivateKey(accountStore.privateKey)
-        .then(() => {
-          standaloneStore.setPrivateKeyEnded();
-          return standaloneStore.setMining(isMining);
-        })
-        .catch((error) => {
-          console.log(error);
-          routerStore.push("/error/relaunch");
-        });
       routerStore.push("/lobby/preload");
+      if (
+        !ipcRenderer.sendSync(
+          "standalone/set-private-key",
+          accountStore.privateKey
+        )
+      ) {
+        routerStore.push("/error/relaunch");
+      }
+      standaloneStore.setPrivateKeyEnded(true);
+      if (!ipcRenderer.sendSync("standalone/set-mining", isMining)) {
+        routerStore.push("/error/relaunch");
+      }
     };
 
     const { locale } = useLocale<Mining>("mining");

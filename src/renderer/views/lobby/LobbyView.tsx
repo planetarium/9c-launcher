@@ -25,7 +25,7 @@ import lobbyViewStyle from "./LobbyView.style";
 
 import { useLocale } from "../../i18n";
 import { Lobby } from "../../../interfaces/i18n";
-import { sleep } from "../../../util";
+import { sleep } from "../../../utils";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
@@ -83,13 +83,10 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   );
 
   useEffect(() => {
-    if (
-      standaloneStore.IsPreloadEnded &&
-      standaloneStore.IsSetPrivateKeyEnded
-    ) {
+    if (standaloneStore.Ready && standaloneStore.IsSetPrivateKeyEnded) {
       activation();
     }
-  }, [standaloneStore.IsPreloadEnded, standaloneStore.IsSetPrivateKeyEnded]);
+  }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
 
   let child: JSX.Element;
   if (loading || polling) {
@@ -99,7 +96,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
         <CircularProgress />
       </>
     );
-  } else if (!standaloneStore.IsPreloadEnded) {
+  } else if (!standaloneStore.Ready) {
     child = <PreloadWaitingButton />;
   } else if (status?.activationStatus.activated) {
     child = <GameStartButton {...props} />;
@@ -158,10 +155,10 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
   const { locale } = useLocale<Lobby>("lobby");
 
   useEffect(() => {
-    if (standaloneStore.IsPreloadEnded) {
+    if (standaloneStore.Ready) {
       handleStartGame();
     }
-  }, [standaloneStore.IsPreloadEnded]);
+  }, [standaloneStore.Ready]);
 
   return (
     <Button
