@@ -8,7 +8,6 @@ import {
   useNodeExceptionSubscription,
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
-  useValidateSnapshotLazyQuery,
 } from "../../../generated/graphql";
 import preloadProgressViewStyle from "./PreloadProgressView.style";
 import { electronStore } from "../../../config";
@@ -17,7 +16,7 @@ import { useLocale } from "../../i18n";
 import { PreloadProgress } from "../../../interfaces/i18n";
 
 const PreloadProgressView = observer(() => {
-  const { accountStore, routerStore, standaloneStore } = useStores();
+  const { routerStore, standaloneStore } = useStores();
   const classes = preloadProgressViewStyle();
   const {
     data: preloadProgressSubscriptionResult,
@@ -33,31 +32,30 @@ const PreloadProgressView = observer(() => {
   const [isPreloadEnded, setPreloadStats] = useState(false);
   const [progress, setProgress] = useState(0);
   const [step, setStep] = useState(0);
-  const [aborted, setAborted] = useState(false);
-
-  const [
-    validateSnapshot,
-    { loading, data, error },
-  ] = useValidateSnapshotLazyQuery();
-
   const { locale } = useLocale<PreloadProgress>("preloadProgress");
 
   useEffect(() => {
-    ipcRenderer.on("not enough space on the disk", () => {
+    ipcRenderer.on("not enough space", () => {
       gotoErrorPage("disk-space");
     });
 
+    ipcRenderer.on("no permission", () => {
+      gotoErrorPage("no-permission");
+    });
+
     ipcRenderer.on("standalone exited", () => {
-      // Standalone exited abnormally. This indicates that
-      // standalone has different version, or the genesis block
-      // is invalid. Mainly something broken in config.json.
       gotoErrorPage("reinstall");
     });
 
-    ipcRenderer.on("metadata downloaded", (_, meta) => {
+    ipcRenderer.on("start bootstrap", () => {
+      standaloneStore.setReady(false);
+      setPreloadStats(false);
+      setProgress(0);
+      setStep(0);
+    });
+
+    ipcRenderer.on("metadata downloaded", () => {
       console.log("Metadata downloded. Verifying...");
-      validateSnapshot({ variables: { raw: meta } });
-      // returns true iff snapshot need to be downloaded
     });
 
     ipcRenderer.on(
@@ -72,96 +70,37 @@ const PreloadProgressView = observer(() => {
       // download completed...
     });
 
-    ipcRenderer.on("extract progress", (event, progress) => {
-      setStep(2);
-      setProgress(progress * 100);
-    });
+    ipcRenderer.on(
+      "extract progress",
+      (event: IpcRendererEvent, progress: number) => {
+        setStep(2);
+        setProgress(progress * 100);
+      }
+    );
 
-    ipcRenderer.on("extract complete", (event) => {
+    ipcRenderer.on("extract complete", (event: IpcRendererEvent) => {
       // snapshot extraction completed, but node service did not launched yet.
     });
 
-    ipcRenderer.on("snapshot complete", (event) => {
-      console.log("Snapshot extraction completed. Start IBD.");
-      startPreloading();
-    });
-
-    if (!ipcRenderer.sendSync("check disk permission")) {
-      gotoErrorPage("no-permission");
-      return;
-    }
-
-    const result = ipcRenderer.sendSync("check disk space");
-    if (!result) {
-      console.error("Disk space is not enough.");
-      return;
-    }
-
-    ipcRenderer.sendSync("check standalone");
-
-    // 여기서 스냅샷을 받을지 여부를 결정 가능
-    if (electronStore.get("UseSnapshot")) {
-      downloadSnapShot();
-    } else {
-      startPreloading();
-    }
+    //@ts-ignore
+    window.relaunchStandalone = () => ipcRenderer.send("relaunch standalone");
   }, []);
-
-  useEffect(() => {
-    if (undefined === error && !loading && data !== undefined) {
-      if (data.validation.metadata) {
-        const options: IDownloadOptions = {
-          properties: {},
-        };
-        console.log("Snapshot is valid. Start downloading.");
-        ipcRenderer.send("download snapshot", options);
-      } else {
-        console.log("Snapshot is invalid or redundant. Skip snapshot.");
-        startPreloading();
-      }
-    }
-  }, [data?.validation.metadata]);
 
   useEffect(() => {
     mixpanel.track(`Launcher/${statusMessage[step]}`);
   }, [step]);
 
-  const downloadSnapShot = () => {
-    const options: IDownloadOptions = {
-      properties: {},
-    };
-    ipcRenderer.send("download metadata", options);
-  };
-
-  const startPreloading = () => {
-    mixpanel.track("Launcher/IBD Start");
-    standaloneStore
-      .runStandalone()
-      .then(() => {
-        if (accountStore.isLogin && accountStore.privateKey !== "") {
-          return standaloneStore.setPrivateKey(accountStore.privateKey);
-        }
-      })
-      .then(() => {
-        if (accountStore.isLogin && accountStore.privateKey !== "") {
-          return standaloneStore.setMining(!standaloneStore.NoMiner);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        gotoErrorPage("relaunch");
-      });
-  };
-
   const gotoErrorPage = (page: string) => {
-    standaloneStore.abort();
-    setAborted(true);
+    standaloneStore.setReady(false);
     routerStore.push(`/error/${page}`);
   };
 
   useEffect(() => {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
     setPreloadStats(isEnded === undefined ? false : isEnded);
+    if (isEnded) {
+      standaloneStore.setReady(true);
+    }
   }, [nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded]);
 
   useEffect(() => {
@@ -173,10 +112,6 @@ const PreloadProgressView = observer(() => {
         break;
     }
   }, [nodeExceptionSubscriptionResult?.nodeException?.code]);
-
-  useEffect(() => {
-    standaloneStore.IsPreloadEnded = isPreloadEnded;
-  }, [isPreloadEnded]);
 
   useEffect(() => {
     const prog = getProgress(
@@ -194,9 +129,7 @@ const PreloadProgressView = observer(() => {
 
   return (
     <Container className="footer">
-      {aborted ? (
-        <></>
-      ) : isPreloadEnded ? (
+      {isPreloadEnded ? (
         <Typography className={classes.text}>
           {electronStore.get("PeerStrings").length > 0
             ? locale("Preload Completed.")

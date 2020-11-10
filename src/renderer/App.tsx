@@ -18,7 +18,7 @@ import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
 import { LOCAL_SERVER_URL, electronStore } from "../config";
 import GameStore from "./stores/game";
 import Root from "./Root";
-import StandaloneStore from "./stores/standalone";
+import StandaloneStore from "./stores/standaloneStore";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
 import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";

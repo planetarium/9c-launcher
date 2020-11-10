@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import { ipcRenderer } from "electron";
 import { Button, ButtonProps } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
