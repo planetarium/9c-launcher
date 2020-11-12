@@ -275,7 +275,9 @@ function initializeIpc() {
         "Removed 'encounter different version' lockfile at ",
         lockfilePath
       );
-
+      // 정상적으로 새 버전이 받아지고 캐시 클리어
+      await utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
+      await initializeStandalone();
       // 재시작
       relaunch();
 
