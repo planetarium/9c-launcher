@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect } from "react";
-import { shell, remote } from "electron";
+import { shell, remote, ipcRenderer } from "electron";
 import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
-
 import { useLocale } from "../../i18n";
 import { ErrorReinstall } from "../../../interfaces/i18n";
 
@@ -18,6 +17,12 @@ const ErrorReinstallView = () => {
     throw Error("errorReinstall.steps is not array in src/i18n/index.json");
 
   const handleExit = useCallback(() => {
+    if (
+      window.confirm("This will close launcher. Are you sure to clear cache?")
+    ) {
+      ipcRenderer.sendSync("clear cache");
+    }
+    remote.app.relaunch();
     remote.app.exit();
   }, []);
 
@@ -28,27 +33,27 @@ const ErrorReinstallView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("무언가 잘못 되었습니다.")}
+        {"Press the button below to clear the cache"}
       </Typography>
-      <Typography variant="subtitle1">
+      {/* <Typography variant="subtitle1">
         {locale("아래 절차를 따라 해주세요.")}
       </Typography>
       <ol>
         {steps.map((step) => (
           <li key={step}>{step}</li>
         ))}
-      </ol>
+      </ol> */}
       <Typography>
-        {`${locale(
-          "혹시 이 페이지를 재설치 후에 여전히 보셨다면, 다음을 통해 지원을 받으세요."
-        )} `}
+        {`${"If you are still seeing this page after clearing cache, please try to reinstall the app through the link below or get support via Discord."} `}
         <a
           className={classes.link}
           onClick={() => {
-            shell.openExternal("https://forum.nine-chronicles.com");
+            shell.openExternal(
+              "https://download.nine-chronicles.com/NineChroniclesInstaller.exe"
+            );
           }}
         >
-          {locale("Discord")}
+          {"Install Link"}
         </a>
         .
       </Typography>
@@ -59,7 +64,7 @@ const ErrorReinstallView = () => {
         fullWidth
         onClick={handleExit}
       >
-        {locale("닫기")}
+        {"Clear Cache & Restart"}
       </Button>
     </div>
   );
