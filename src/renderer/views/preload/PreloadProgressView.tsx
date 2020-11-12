@@ -141,6 +141,18 @@ const PreloadProgressView = observer(() => {
           <Typography className={classes.text}>
             {locale(statusMessage[step])} ... ({step + 1}/8){" "}
             {Math.floor(progress)}%
+            {step > 2 ? (
+              <small className={classes.blockCount}>
+                [
+                {
+                  preloadProgressSubscriptionResult?.preloadProgress?.extra
+                    .totalCount
+                }
+                ]
+              </small>
+            ) : (
+              <></>
+            )}
           </Typography>
         </>
       )}

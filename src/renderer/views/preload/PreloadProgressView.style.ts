@@ -15,6 +15,9 @@ const preloadProgressViewStyle = makeStyles({
     right: "0px",
     marginTop: "10px",
   },
+  blockCount: {
+    marginLeft: "4px",
+  },
 });
 
 export default preloadProgressViewStyle;
