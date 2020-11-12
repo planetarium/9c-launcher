@@ -37,6 +37,7 @@ import mixpanel from "mixpanel-browser";
 import * as utils from "../utils";
 import * as snapshot from "./snapshot";
 import Standalone from "./standalone";
+import StandaloneInitializeError from "src/errors/StandaloneInitializeError";
 
 initializeSentry();
 
@@ -49,12 +50,43 @@ const standaloneExecutablePath = path.join(
   "publish",
   "NineChronicles.Standalone.Executable.exe"
 );
+const standaloneExecutableArgs = [
+  `-V=${electronStore.get("AppProtocolVersion")}`,
+  `-G=${electronStore.get("GenesisBlockPath")}`,
+  `-D=${electronStore.get("MinimumDifficulty")}`,
+  `--store-type=${electronStore.get("StoreType")}`,
+  `--store-path=${BLOCKCHAIN_STORE_PATH}`,
+  ...electronStore
+    .get("IceServerStrings")
+    .map((iceServerString) => `-I=${iceServerString}`),
+  ...electronStore
+    .get("PeerStrings")
+    .map((peerString) => `--peer=${peerString}`),
+  ...electronStore
+    .get("TrustedAppProtocolVersionSigners")
+    .map(
+      (trustedAppProtocolVersionSigner) =>
+        `-T=${trustedAppProtocolVersionSigner}`
+    ),
+  `--no-trusted-state-validators=${electronStore.get(
+    "NoTrustedStateValidators"
+  )}`,
+  "--rpc-server",
+  `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
+  `--rpc-listen-port=${RPC_SERVER_PORT}`,
+  "--graphql-server",
+  "--graphql-host=localhost",
+  `--graphql-port=${LOCAL_SERVER_PORT}`,
+  `--workers=${electronStore.get("Workers")}`,
+  `--confirmations=${electronStore.get("Confirmations")}`,
+];
 
 let win: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Standalone = new Standalone(standaloneExecutablePath);
+let initializingStandalone: boolean = false;
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -404,85 +436,69 @@ async function initializeStandalone(): Promise<void> {
     console.error("Cannot initialize standalone while updater is running.");
     return;
   }
+  
+  initializingStandalone = true;
 
-  if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
-    console.error(`Not enough permission. ${BLOCKCHAIN_STORE_PATH}`);
-    win?.webContents.send("no permission");
-    return;
-  }
-
-  let freeSpace = await utils.getDiskSpace(BLOCKCHAIN_STORE_PATH);
-  if (freeSpace < REQUIRED_DISK_SPACE) {
-    console.error(
-      `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
-    );
-    win?.webContents.send("not enough space");
-    return;
-  }
-  let args = [
-    `-V=${electronStore.get("AppProtocolVersion")}`,
-    `-G=${electronStore.get("GenesisBlockPath")}`,
-    `-D=${electronStore.get("MinimumDifficulty")}`,
-    `--store-type=${electronStore.get("StoreType")}`,
-    `--store-path=${BLOCKCHAIN_STORE_PATH}`,
-    ...electronStore
-      .get("IceServerStrings")
-      .map((iceServerString) => `-I=${iceServerString}`),
-    ...electronStore
-      .get("PeerStrings")
-      .map((peerString) => `--peer=${peerString}`),
-    ...electronStore
-      .get("TrustedAppProtocolVersionSigners")
-      .map(
-        (trustedAppProtocolVersionSigner) =>
-          `-T=${trustedAppProtocolVersionSigner}`
-      ),
-    `--no-trusted-state-validators=${electronStore.get(
-      "NoTrustedStateValidators"
-    )}`,
-    "--rpc-server",
-    `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
-    `--rpc-listen-port=${RPC_SERVER_PORT}`,
-    "--graphql-server",
-    "--graphql-host=localhost",
-    `--graphql-port=${LOCAL_SERVER_PORT}`,
-    `--workers=${electronStore.get("Workers")}`,
-    `--confirmations=${electronStore.get("Confirmations")}`,
-  ];
-  await standalone.execute(args);
-  win?.webContents.send("start bootstrap");
-
-  if (electronStore.get("UseSnapshot") && win != null) {
-    try {
-      let metadata = await snapshot.downloadMetadata(win);
-      let valid = await snapshot.validateMetadata(metadata);
-      if (valid) {
-        let snapshotDir = await snapshot.downloadSnapshot(win, (status) => {
-          win?.webContents.send("download progress", status);
-        });
-        await standalone.kill();
-        utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
-        await snapshot.extractSnapshot(snapshotDir, (progress: number) => {
-          win?.webContents.send("extract progress", progress);
-        });
-      } else {
-        console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
-      }
-    } catch (exception) {
-      console.error(
-        `Unexpected error occurred during download / extract snapshot. ${exception}`
+  try {
+    if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
+      win?.webContents.send("no permission");
+      throw new StandaloneInitializeError(
+        `Not enough permission. ${BLOCKCHAIN_STORE_PATH}`
       );
-    } finally {
-      if (!standalone.alive) {
-        await standalone.execute(args);
+    }
+
+    let freeSpace = await utils.getDiskSpace(BLOCKCHAIN_STORE_PATH);
+    if (freeSpace < REQUIRED_DISK_SPACE) {
+      win?.webContents.send("not enough space");
+      throw new StandaloneInitializeError(
+        `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
+      );
+    }
+    await standalone.execute(standaloneExecutableArgs);
+    win?.webContents.send("start bootstrap");
+
+    if (electronStore.get("UseSnapshot") && win != null) {
+      try {
+        let metadata = await snapshot.downloadMetadata(win);
+        let valid = await snapshot.validateMetadata(metadata);
+        if (valid) {
+          let snapshotDir = await snapshot.downloadSnapshot(win, (status) => {
+            win?.webContents.send("download progress", status);
+          });
+          await standalone.kill();
+          utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
+          await snapshot.extractSnapshot(snapshotDir, (progress: number) => {
+            win?.webContents.send("extract progress", progress);
+          });
+        } else {
+          console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
+        }
+      } catch (exception) {
+        console.error(
+          `Unexpected error occurred during download / extract snapshot. ${exception}`
+        );
+      } finally {
+        if (!standalone.alive) {
+          await standalone.execute(standaloneExecutableArgs);
+        }
       }
     }
-  }
 
-  if (!(await standalone.run())) {
-    // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
-    win?.webContents.send("error/clear-cache");
-    return;
+    if (!(await standalone.run())) {
+      // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
+      win?.webContents.send("error/clear-cache");
+      throw new StandaloneInitializeError(
+        "Error in run. Redirect to clear cache page."
+      );
+    }
+  } catch (error) {
+    if (error instanceof StandaloneInitializeError) {
+      console.error(error.message);
+    } else {
+      throw error;
+    }
+  } finally {
+    initializingStandalone = false;
   }
 }
 
@@ -554,11 +570,18 @@ function cleanUpLockfile() {
 }
 
 async function quitAllProcesses() {
-  await standalone.kill();
+  await stopStandaloneProcess();
   if (gameNode === null) return;
   let pid = gameNode.pid;
   process.kill(pid, "SIGINT");
   gameNode = null;
+}
+
+async function stopStandaloneProcess(): Promise<void> {
+  if (initializingStandalone) {
+  }
+
+  await standalone.kill();
 }
 
 function createTray(iconPath: string) {
