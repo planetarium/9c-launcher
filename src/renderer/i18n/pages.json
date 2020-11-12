@@ -620,129 +620,21 @@
     }
   },
   "errorReinstall": {
-    "무언가 잘못 되었습니다.": {
-      "ko": "무언가 잘못 되었습니다.",
-      "en": "Something went wrong.",
-      "pl": "Coś poszło nie tak.",
-      "pt": "Alguma coisa correu mal.",
-      "lt": "Kažkas negerai",
-      "nl": "Iets ging verkeerd",
-      "pt-BR": "Aconteceu algo de errado.",
-      "km": "មានអ្វីមួយមិនប្រក្រតី។",
-      "th": "บางอย่างผิดพลาด",
-      "id": "Terjadi kesalahan.",
-      "ja": "問題が発生しました。",
-      "de": "Etwas ist schief gelaufen."
-    },
-    "아래 절차를 따라 해주세요.": {
-      "ko": "아래 절차를 따라 해주세요.",
-      "en": "Please follow the steps below.",
-      "pl": "Proszę wykonaj poniższe kroki.",
-      "pt": "Por favor siga os passos abaixo.",
-      "lt": "Prašome vykdyti nuroditus žingsnius žemiau",
-      "nl": "Volg alsjeblieft de volgende stappen.",
-      "pt-BR": "Por favor siga os passos abaixo.",
-      "km": "សូមអនុវត្តតាមជំហានខាងក្រោម។",
-      "th": "โปรดทำตามขั้นตอนด้านล่างนี้",
-      "id": "Ikuti langkah dibawah ini.",
-      "ja": "以下のステップに従って下さい。",
-      "de": "Bitte befolge die untenstehenden Schritte."
-    },
-    "steps": {
-      "ko": ["닫기 버튼을 누르고 나인 크로니클을 새로 설치해주세요."],
-      "en": [
-        "Press the close button",
-        "Delete “Nine Chronicles”",
-        "Install “Nine Chronicles”"
-      ],
-      "pl": [
-        "Wciśnij przycisk zamknij",
-        "Usuń “Nine Chronicles”",
-        "Zainstaluj “Nine Chronicles”"
-      ],
-      "pt": [
-        "Pressione o botão fechar",
-        "Deletar “Nine Chronicles”",
-        "Instalar ”Nine Chronicles”"
-      ],
-      "lt": [
-        "paspauskite uždaryti mygtuką",
-        "Ištrinkite “Nine Chronicles”",
-        "Įdiekite “Nine Chronicles”"
-      ],
-      "nl": [
-        "Klik op de sluit knop",
-        "Verwijder “Nine Chronicles”",
-        "Installeer “Nine Chronicles”"
-      ],
-      "pt-BR": [
-        "Pressione o botão de fechar",
-        "Deletar “Nine Chronicles”",
-        "Instalar ”Nine Chronicles”"
-      ],
-      "km": [
-        "ចុចប៊ូតុងបិទ",
-        "លុប “Nine Chronicles”",
-        "អ្នកដំឡើង ”Nine Chronicles”"
-      ],
-      "th": ["กดปุ่มปิด", "ลบ “Nine Chronicles”", "ติดตั้ง “Nine Chronicles”"],
-      "id": [
-        "Tutup “Nine Chronicles”",
-        "Delete “Nine Chronicles”",
-        "Install ulang “Nine Chronicles”"
-      ],
-      "ja": [
-        "ナインクロニクル を終了して下さい",
-        "ナインクロニクル をアンインストールして下さい",
-        "ナインクロニクル を再度インストールして下さい"
-      ],
-      "de": [
-        "Drücke die Schaltfläche zum Schließen",
-        "Lösche “Nine Chronicles”",
-        "Installiere “Nine Chronicles”"
-      ]
+    "클리어 캐시 버튼을 눌러 주십시오.": {
+      "ko": "클리어 캐시 버튼을 눌러 주십시오.",
+      "en": "Press the button below to clear the cache."
     },
     "혹시 이 페이지를 재설치 후에 여전히 보셨다면, 다음을 통해 지원을 받으세요.": {
-      "ko": "혹시 이 페이지를 재설치 후에 여전히 보셨다면, 다음을 통해 지원을 받으세요.",
-      "en": "If you are still seeing this page after reinstall, please contact support via",
-      "pl": "Jeśli widzisz tę stronę po przeinstalowaniu gry, prosimy o kontakt z supportem via",
-      "pt": "Se vires esta página outra vez reinstala, por favor contacta o suporte via",
-      "lt": "Jei vis dar matote šį langą po perrašymo, prašome praneškite mums",
-      "nl": "Als je deze pagina nog steeds ziet na de herinstalatie, neem dan contact op met support via",
-      "pt-BR": "Se você continua vendo essa página após reinstalar, por favor contáte o suporte via",
-      "km": "ប្រសិនបើអ្នកនៅតែឃើញទំព័រនេះបន្ទាប់ពីតំឡើងម្តងទៀតសូមទាក់ទងជំនួយ via",
-      "th": "หากคุณยังคงเห็นหน้านี้หลังจากติดตั้งใหม่โปรดติดต่อฝ่ายซัพพอร์ตผ่าน",
-      "id": "Jika anda masih melihat halaman ini setelah melakukan install ulang , silahkan kontak suport melalui",
-      "ja": "再インストールしても改善しない場合は、以下のサポートに連絡して下さい",
-      "de": "Wenn du diese Seite nach der Neuinstallation immer noch siehst, wende dich bitte an den Support über"
+      "ko": "혹시 이 페이지를 클리어 캐시 후에 여전히 보셨다면, 아래 링크로 앱을 재설치 하거나 디스코드에서 지원 요청해주시길 바랍니다.",
+      "en": "If you are still seeing this page after clearing cache, please try to reinstall the app through the link below or get support via Discord."
     },
-    "Discord": {
-      "ko": "Discord",
-      "en": "Discord",
-      "pl": "Discord",
-      "pt": "Discord",
-      "lt": "Discord",
-      "nl": "Discord",
-      "pt-BR": "Discord",
-      "km": "Discord",
-      "th": "Discord",
-      "id": "Discord",
-      "ja": "Discord",
-      "de": "Discord"
+    "Install Link": {
+      "ko": "Install Link",
+      "en": "Install Link"
     },
-    "닫기": {
-      "ko": "닫기",
-      "en": "Close",
-      "pl": "Zamknij",
-      "pt": "Fechar",
-      "lt": "Uždaryti",
-      "nl": "Sluiten",
-      "pt-BR": "Fechar",
-      "km": "បិទ",
-      "th": "ปิด",
-      "id": "Tutup",
-      "ja": "閉じる",
-      "de": "Schließen"
+    "캐시 클리어 & 재시작": {
+      "ko": "캐시 클리어 & 재시작",
+      "en": "Clear Cache & Restart"
     }
   },
   "account": {

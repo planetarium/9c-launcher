@@ -121,12 +121,10 @@ export interface ErrorRelaunch {
 }
 
 export interface ErrorReinstall {
-  "무언가 잘못 되었습니다.": LocaleRecord;
-  "아래 절차를 따라 해주세요.": LocaleRecord;
-  steps: Description;
+  "클리어 캐시 버튼을 눌러 주십시오.": LocaleRecord;
   "혹시 이 페이지를 재설치 후에 여전히 보셨다면, 다음을 통해 지원을 받으세요.": LocaleRecord;
-  Discord: LocaleRecord;
-  닫기: LocaleRecord;
+  "Install Link": LocaleRecord;
+  "캐시 클리어 & 재시작": LocaleRecord;
 }
 
 export interface Account {

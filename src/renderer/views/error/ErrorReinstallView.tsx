@@ -33,18 +33,12 @@ const ErrorReinstallView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {"Press the button below to clear the cache"}
+        {locale("클리어 캐시 버튼을 눌러 주십시오.")}
       </Typography>
-      {/* <Typography variant="subtitle1">
-        {locale("아래 절차를 따라 해주세요.")}
-      </Typography>
-      <ol>
-        {steps.map((step) => (
-          <li key={step}>{step}</li>
-        ))}
-      </ol> */}
       <Typography>
-        {`${"If you are still seeing this page after clearing cache, please try to reinstall the app through the link below or get support via Discord."} `}
+        {`${locale(
+          "혹시 이 페이지를 재설치 후에 여전히 보셨다면, 다음을 통해 지원을 받으세요."
+        )} `}
         <a
           className={classes.link}
           onClick={() => {
@@ -53,7 +47,7 @@ const ErrorReinstallView = () => {
             );
           }}
         >
-          {"Install Link"}
+          {locale("Install Link")}
         </a>
         .
       </Typography>
@@ -64,7 +58,7 @@ const ErrorReinstallView = () => {
         fullWidth
         onClick={handleExit}
       >
-        {"Clear Cache & Restart"}
+        {locale("캐시 클리어 & 재시작")}
       </Button>
     </div>
   );
