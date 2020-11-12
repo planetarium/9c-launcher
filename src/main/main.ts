@@ -337,6 +337,11 @@ function initializeIpc() {
       return;
     }
 
+    if (lockfile.checkSync(lockfilePath)) {
+      console.error("Cannot launch game while updater is running.");
+      return;
+    }
+
     const node = utils.execute(
       path.join(
         app.getAppPath(),
