@@ -38,6 +38,7 @@ import * as utils from "../utils";
 import * as snapshot from "./snapshot";
 import Standalone from "./standalone";
 import StandaloneInitializeError from "src/errors/StandaloneInitializeError";
+import CancellationToken from "cancellationtoken";
 
 initializeSentry();
 
@@ -86,7 +87,10 @@ let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Standalone = new Standalone(standaloneExecutablePath);
-let initializingStandalone: boolean = false;
+let initializeStandaloneCts: {
+  cancel: (reason?: any) => void;
+  token: CancellationToken;
+} | null = null;
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -413,7 +417,7 @@ function initializeIpc() {
   });
 
   ipcMain.on("relaunch standalone", async (event) => {
-    await standalone.kill();
+    await stopStandaloneProcess();
     initializeStandalone();
     event.returnValue = true;
   });
@@ -437,7 +441,7 @@ async function initializeStandalone(): Promise<void> {
     return;
   }
   
-  initializingStandalone = true;
+  initializeStandaloneCts = CancellationToken.create();
 
   try {
     if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
@@ -459,31 +463,50 @@ async function initializeStandalone(): Promise<void> {
 
     if (electronStore.get("UseSnapshot") && win != null) {
       try {
-        let metadata = await snapshot.downloadMetadata(win);
-        let valid = await snapshot.validateMetadata(metadata);
+        let metadata = await snapshot.downloadMetadata(
+          win,
+          initializeStandaloneCts.token
+        );
+        let valid = await snapshot.validateMetadata(
+          metadata,
+          initializeStandaloneCts.token
+        );
         if (valid) {
-          let snapshotDir = await snapshot.downloadSnapshot(win, (status) => {
-            win?.webContents.send("download progress", status);
-          });
+          let snapshotDir = await snapshot.downloadSnapshot(
+            win,
+            (status) => {
+              win?.webContents.send("download progress", status);
+            },
+            initializeStandaloneCts.token
+          );
           await standalone.kill();
           utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
-          await snapshot.extractSnapshot(snapshotDir, (progress: number) => {
-            win?.webContents.send("extract progress", progress);
-          });
+          await snapshot.extractSnapshot(
+            snapshotDir,
+            (progress: number) => {
+              win?.webContents.send("extract progress", progress);
+            },
+            initializeStandaloneCts.token
+          );
         } else {
           console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
         }
-      } catch (exception) {
+      } catch (error) {
         console.error(
-          `Unexpected error occurred during download / extract snapshot. ${exception}`
+          `Unexpected error occurred during download / extract snapshot. ${error}`
         );
+
+        if (error instanceof CancellationToken.CancellationError) {
+          throw error;
+        }
       } finally {
-        if (!standalone.alive) {
+        if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
           await standalone.execute(standaloneExecutableArgs);
         }
       }
     }
 
+    initializeStandaloneCts.token.throwIfCancelled();
     if (!(await standalone.run())) {
       // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
       win?.webContents.send("error/clear-cache");
@@ -492,13 +515,16 @@ async function initializeStandalone(): Promise<void> {
       );
     }
   } catch (error) {
-    if (error instanceof StandaloneInitializeError) {
+    if (
+      error instanceof StandaloneInitializeError ||
+      error instanceof CancellationToken.CancellationError
+    ) {
       console.error(error.message);
     } else {
       throw error;
     }
   } finally {
-    initializingStandalone = false;
+    initializeStandaloneCts = null;
   }
 }
 
@@ -578,9 +604,7 @@ async function quitAllProcesses() {
 }
 
 async function stopStandaloneProcess(): Promise<void> {
-  if (initializingStandalone) {
-  }
-
+  initializeStandaloneCts?.cancel();
   await standalone.kill();
 }
 
