@@ -32,7 +32,7 @@ const ErrorReinstallView = () => {
       </Typography>
       <Typography>
         {`${locale(
-          "혹시 이 페이지를 재설치 후에 여전히 보셨다면, 다음을 통해 지원을 받으세요."
+          "혹시 이 페이지를 클리어 캐시 후에 여전히 보셨다면, 아래 링크로 앱을 재설치 하거나 디스코드에서 지원 요청해주시길 바랍니다."
         )} `}
         <a
           className={classes.link}
