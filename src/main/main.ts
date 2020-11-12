@@ -332,6 +332,16 @@ function initializeIpc() {
   );
 
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
+    if (gameNode !== null) {
+      console.error("Game is already running.");
+      return;
+    }
+
+    if (lockfile.checkSync(lockfilePath)) {
+      console.error("Cannot launch game while updater is running.");
+      return;
+    }
+
     const node = utils.execute(
       path.join(
         app.getAppPath(),
