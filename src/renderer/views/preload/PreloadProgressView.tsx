@@ -110,6 +110,10 @@ const PreloadProgressView = observer(() => {
         console.error("No any peers. Redirect to relaunch page.");
         gotoErrorPage("relaunch");
         break;
+      case 0x02:
+        console.error("Chain is too low. Automatically relaunch.");
+        ipcRenderer.send("relaunch standalone");
+        break;
     }
   }, [nodeExceptionSubscriptionResult?.nodeException?.code]);
 
