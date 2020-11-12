@@ -332,6 +332,11 @@ function initializeIpc() {
   );
 
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
+    if (gameNode !== null) {
+      console.error("Game is already running.");
+      return;
+    }
+
     const node = utils.execute(
       path.join(
         app.getAppPath(),
