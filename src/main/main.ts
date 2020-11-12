@@ -43,18 +43,18 @@ initializeSentry();
 log.transports.file.maxSize = 1024 * 1024 * 15;
 Object.assign(console, log.functions);
 
-let win: BrowserWindow | null = null;
-let tray: Tray;
-let isQuiting: boolean = false;
-let gameNode: ChildProcessWithoutNullStreams | null = null;
-let standalone: Standalone;
-
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 const standaloneExecutablePath = path.join(
   app.getAppPath(),
   "publish",
   "NineChronicles.Standalone.Executable.exe"
 );
+
+let win: BrowserWindow | null = null;
+let tray: Tray;
+let isQuiting: boolean = false;
+let gameNode: ChildProcessWithoutNullStreams | null = null;
+let standalone: Standalone = new Standalone(standaloneExecutablePath);
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -419,12 +419,6 @@ async function initializeStandalone(): Promise<void> {
     win?.webContents.send("not enough space");
     return;
   }
-
-  let standalonePath = path.join(
-    app.getAppPath(),
-    "publish",
-    "NineChronicles.Standalone.Executable"
-  );
   let args = [
     `-V=${electronStore.get("AppProtocolVersion")}`,
     `-G=${electronStore.get("GenesisBlockPath")}`,
@@ -455,7 +449,6 @@ async function initializeStandalone(): Promise<void> {
     `--workers=${electronStore.get("Workers")}`,
     `--confirmations=${electronStore.get("Confirmations")}`,
   ];
-  standalone = new Standalone(standalonePath);
   await standalone.execute(args);
   win?.webContents.send("start bootstrap");
 
