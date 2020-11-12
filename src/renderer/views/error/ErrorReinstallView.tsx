@@ -11,11 +11,6 @@ const ErrorReinstallView = () => {
   const classes = errorViewStyle();
   const { locale } = useLocale<ErrorReinstall>("errorReinstall");
 
-  const steps = locale("steps");
-
-  if (typeof steps === "string")
-    throw Error("errorReinstall.steps is not array in src/i18n/index.json");
-
   const handleExit = useCallback(() => {
     if (
       window.confirm("This will close launcher. Are you sure to clear cache?")
