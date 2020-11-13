@@ -71,6 +71,10 @@ class Standalone {
 
   public async execute(args: string[]): Promise<void> {
     console.log(`Executing standalone. ${this._path} ${args}`);
+    if (NODESTATUS.Node !== null) {
+      throw new Error("Cannot execute standalone while standalone is alive.");
+    }
+
     let node = execute(this._path, args);
     node.addListener("exit", this.exitedHandler);
     NODESTATUS.Node = node;
@@ -147,7 +151,7 @@ class Standalone {
       if (!this.alive) {
         console.log("Standalone is not alive. Abort...");
         context.abort();
-        return false;
+        throw new Error("RetriableFetch: Standalone is not alive.");
       }
 
       try {
