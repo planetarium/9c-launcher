@@ -2,6 +2,10 @@ import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import checkDiskSpace from "check-disk-space";
 import path from "path";
 import fs from "fs";
+import { BrowserWindow, DownloadItem } from "electron";
+import { IDownloadOptions } from "./interfaces/ipc";
+import CancellationToken from "cancellationtoken";
+import { download } from "electron-dl";
 
 export async function getDiskSpace(diskpath: string): Promise<number> {
   let diskSpace = await checkDiskSpace(diskpath);
@@ -84,4 +88,31 @@ export async function copyDir(srcDir: string, dstDir: string): Promise<void> {
 
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function cancellableDownload(
+  win: BrowserWindow,
+  url: string,
+  options: IDownloadOptions,
+  token: CancellationToken
+): Promise<DownloadItem> {
+  return new Promise((resolve, reject) => {
+    options.properties.onStarted = async (item: DownloadItem) => {
+      let unregister: () => void = () => {};
+      item.once("done", (event, state) => {
+        unregister();
+        if (state === "completed") {
+          resolve(item);
+        } else {
+          console.log(`Download failed: ${state}`);
+        }
+      });
+      unregister = token.onCancelled((_) => item.cancel());
+    };
+    options.properties.onCancel = async (item: DownloadItem) => {
+      console.log(`Download of ${url} is cancelled.`);
+      reject(new CancellationToken.CancellationError(token.reason));
+    };
+    download(win, url, options.properties);
+  });
 }

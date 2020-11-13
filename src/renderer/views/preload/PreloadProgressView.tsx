@@ -14,6 +14,7 @@ import { electronStore } from "../../../config";
 
 import { useLocale } from "../../i18n";
 import { PreloadProgress } from "../../../interfaces/i18n";
+import { IDownloadProgress } from "../../../interfaces/ipc";
 
 const PreloadProgressView = observer(() => {
   const { routerStore, standaloneStore } = useStores();

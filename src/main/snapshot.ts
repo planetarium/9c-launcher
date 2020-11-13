@@ -5,30 +5,42 @@ import {
 } from "../config";
 import { app, BrowserWindow } from "electron";
 import fs from "fs";
-import { download } from "electron-dl";
 import extractZip from "extract-zip";
 import { retry } from "@lifeomic/attempt";
 import { request, gql } from "graphql-request";
+import CancellationToken from "cancellationtoken";
+import { IDownloadOptions, IDownloadProgress } from "../interfaces/ipc";
+import { cancellableDownload } from "../utils";
 
-export async function downloadMetadata(win: BrowserWindow): Promise<string> {
+export async function downloadMetadata(
+  win: BrowserWindow,
+  token: CancellationToken
+): Promise<string> {
+  token.throwIfCancelled();
   console.log("Downloading metadata.");
   const options: IDownloadOptions = {
     properties: { onProgress: () => {} },
   };
   options.properties.directory = app.getPath("userData");
   options.properties.filename = "meta.json";
-  let dl = await download(
+  let dl = await cancellableDownload(
     win,
     (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".json",
-    options.properties
+    options,
+    token
   );
+  token.throwIfCancelled();
 
   let meta = await fs.promises.readFile(dl.getSavePath(), "utf-8");
   console.log("Metadata download complete: ", meta);
   return meta;
 }
 
-export async function validateMetadata(meta: string): Promise<boolean> {
+export async function validateMetadata(
+  meta: string,
+  token: CancellationToken
+): Promise<boolean> {
+  token.throwIfCancelled();
   let parsedmeta = meta.replace(/"/g, '\\"');
   console.log(`Validating metadata. ${parsedmeta}`);
   let query = gql`
@@ -40,6 +52,11 @@ export async function validateMetadata(meta: string): Promise<boolean> {
   let data = await retry(
     async (context) => {
       try {
+        if (token.isCancelled) {
+          context.abort();
+          token.throwIfCancelled();
+        }
+
         let _data = await request(
           `http://localhost:${LOCAL_SERVER_PORT}/graphql`,
           query
@@ -62,6 +79,7 @@ export async function validateMetadata(meta: string): Promise<boolean> {
       minDelay: 100,
     }
   );
+  token.throwIfCancelled();
 
   let validity: boolean = data.validation.metadata;
   console.log(`Validation query requested. ${validity}`);
@@ -70,8 +88,10 @@ export async function validateMetadata(meta: string): Promise<boolean> {
 
 export async function downloadSnapshot(
   win: BrowserWindow,
-  onProgress: (status: IDownloadProgress) => void
+  onProgress: (status: IDownloadProgress) => void,
+  token: CancellationToken
 ): Promise<string> {
+  token.throwIfCancelled();
   console.log("Downloading snapshot.");
   const options: IDownloadOptions = {
     properties: {},
@@ -80,11 +100,13 @@ export async function downloadSnapshot(
     onProgress(status);
   options.properties.directory = app.getPath("userData");
   options.properties.filename = "snapshot.zip";
-  const dl = await download(
+  const dl = await cancellableDownload(
     win,
     (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
-    options.properties
+    options,
+    token
   );
+  token.throwIfCancelled();
   let dir = dl.getSavePath();
   console.log("Snapshot download complete. Directory: ", dir);
   return dir;
@@ -92,8 +114,10 @@ export async function downloadSnapshot(
 
 export async function extractSnapshot(
   snapshotPath: string,
-  onProgress: (progress: number) => void
+  onProgress: (progress: number) => void,
+  token: CancellationToken
 ): Promise<void> {
+  token.throwIfCancelled();
   console.log(`Extracting snapshot.
 extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
 extractTarget: [ ${snapshotPath} ]`);
