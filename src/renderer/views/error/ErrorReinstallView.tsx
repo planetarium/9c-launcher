@@ -13,7 +13,9 @@ const ErrorReinstallView = () => {
 
   const handleExit = useCallback(() => {
     if (
-      window.confirm("This will close launcher. Are you sure to clear cache?")
+      window.confirm(
+        "This will close launcher. Are you sure you want to clear cache and restart?"
+      )
     ) {
       ipcRenderer.sendSync("clear cache");
     }

@@ -12,9 +12,7 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
   const [isCleared, setClearState] = useState(false);
 
   const handleClick = () => {
-    if (
-      window.confirm("This will close launcher. Are you sure to clear cache?")
-    ) {
+    if (window.confirm("Are you sure you want to clear cache?")) {
       const result = ipcRenderer.sendSync("clear cache");
       setClearState(result);
     }
