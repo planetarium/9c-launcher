@@ -276,7 +276,7 @@ function initializeIpc() {
         lockfilePath
       );
       // 정상적으로 새 버전이 받아지고 캐시 클리어
-      await utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
+      utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
       // 재시작
       relaunch();
 
