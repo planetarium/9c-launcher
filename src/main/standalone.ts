@@ -50,6 +50,7 @@ class Standalone {
   private _running: boolean;
   private _privateKey: string | undefined;
   private _mining: boolean | undefined;
+  private _isQuitting: boolean = false;
 
   // execute-kill
   public get alive(): boolean {
@@ -106,11 +107,15 @@ class Standalone {
   }
 
   public async kill(): Promise<void> {
+    if (this._isQuitting) return;
+
     console.log("Killing standalone.");
     if (NODESTATUS.Node === null) {
       console.log("Standalone is not alive.");
       return;
     }
+
+    this._isQuitting = true;
 
     let pid: number = NODESTATUS.Node.pid;
     process.kill(pid, "SIGINT");
@@ -120,6 +125,7 @@ class Standalone {
       await sleep(100);
     }
 
+    this._isQuitting = false;
     console.log("Standalone killed successfully.");
   }
 
