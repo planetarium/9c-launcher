@@ -400,6 +400,11 @@ async function initializeStandalone(): Promise<void> {
   */
   console.log(`Initialize standalone. (win: ${win})`);
 
+  if (lockfile.checkSync(lockfilePath)) {
+    console.error("Cannot initialize standalone while updater is running.");
+    return;
+  }
+
   if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
     console.error(`Not enough permission. ${BLOCKCHAIN_STORE_PATH}`);
     win?.webContents.send("no permission");
