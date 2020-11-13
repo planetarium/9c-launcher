@@ -1,18 +1,22 @@
-interface IDownloadOptions {
+import { DownloadItem } from "electron";
+
+export interface IDownloadOptions {
   properties: {
     saveAs?: boolean;
     directory?: string;
     filename?: string;
     onProgress?: (status: IDownloadProgress) => void;
+    onStarted?: (item: DownloadItem) => void;
+    onCancel?: (item: DownloadItem) => void;
   };
 }
 
-interface IDownloadProgress {
+export interface IDownloadProgress {
   percent: number;
   transferredBytes: number;
   totalBytes: number;
 }
 
-interface IGameStartOptions {
+export interface IGameStartOptions {
   args: string[];
 }

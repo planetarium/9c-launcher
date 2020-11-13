@@ -13,6 +13,7 @@ import {
   Typography,
   LinearProgress,
 } from "@material-ui/core";
+import { IDownloadProgress } from "../interfaces/ipc";
 
 export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,

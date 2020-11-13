@@ -5,11 +5,12 @@ import {
 } from "../config";
 import { app, BrowserWindow } from "electron";
 import fs from "fs";
-import { download } from "electron-dl";
 import extractZip from "extract-zip";
 import { retry } from "@lifeomic/attempt";
 import { request, gql } from "graphql-request";
 import CancellationToken from "cancellationtoken";
+import { IDownloadOptions, IDownloadProgress } from "../interfaces/ipc";
+import { cancellableDownload } from "../utils";
 
 export async function downloadMetadata(
   win: BrowserWindow,
@@ -22,10 +23,11 @@ export async function downloadMetadata(
   };
   options.properties.directory = app.getPath("userData");
   options.properties.filename = "meta.json";
-  let dl = await download(
+  let dl = await cancellableDownload(
     win,
     (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".json",
-    options.properties
+    options,
+    token
   );
   token.throwIfCancelled();
 
@@ -50,6 +52,11 @@ export async function validateMetadata(
   let data = await retry(
     async (context) => {
       try {
+        if (token.isCancelled) {
+          context.abort();
+          token.throwIfCancelled();
+        }
+
         let _data = await request(
           `http://localhost:${LOCAL_SERVER_PORT}/graphql`,
           query
@@ -93,10 +100,11 @@ export async function downloadSnapshot(
     onProgress(status);
   options.properties.directory = app.getPath("userData");
   options.properties.filename = "snapshot.zip";
-  const dl = await download(
+  const dl = await cancellableDownload(
     win,
     (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
-    options.properties
+    options,
+    token
   );
   token.throwIfCancelled();
   let dir = dl.getSavePath();

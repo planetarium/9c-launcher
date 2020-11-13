@@ -37,8 +37,9 @@ import mixpanel from "mixpanel-browser";
 import * as utils from "../utils";
 import * as snapshot from "./snapshot";
 import Standalone from "./standalone";
-import StandaloneInitializeError from "src/errors/StandaloneInitializeError";
+import StandaloneInitializeError from "../errors/StandaloneInitializeError";
 import CancellationToken from "cancellationtoken";
+import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 
 initializeSentry();
 
@@ -519,7 +520,7 @@ async function initializeStandalone(): Promise<void> {
       error instanceof StandaloneInitializeError ||
       error instanceof CancellationToken.CancellationError
     ) {
-      console.error(error.message);
+      console.error(`InitializeStandalone() halted: ${error}`);
     } else {
       throw error;
     }
@@ -604,7 +605,10 @@ async function quitAllProcesses() {
 }
 
 async function stopStandaloneProcess(): Promise<void> {
+  console.log("Cancelling initializeStandalone()");
   initializeStandaloneCts?.cancel();
+  while (initializeStandaloneCts !== null) await utils.sleep(100);
+  console.log("initializeStandalone() cancelled.");
   await standalone.kill();
 }
 
