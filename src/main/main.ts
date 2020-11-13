@@ -468,11 +468,11 @@ async function initializeStandalone(): Promise<void> {
           win,
           initializeStandaloneCts.token
         );
-        let valid = await snapshot.validateMetadata(
+        let needSnapshot = await snapshot.validateMetadata(
           metadata,
           initializeStandaloneCts.token
         );
-        if (valid) {
+        if (needSnapshot) {
           let snapshotDir = await snapshot.downloadSnapshot(
             win,
             (status) => {
