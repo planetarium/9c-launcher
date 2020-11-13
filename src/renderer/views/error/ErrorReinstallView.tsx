@@ -18,9 +18,9 @@ const ErrorReinstallView = () => {
       )
     ) {
       ipcRenderer.sendSync("clear cache");
+      remote.app.relaunch();
+      remote.app.exit();
     }
-    remote.app.relaunch();
-    remote.app.exit();
   }, []);
 
   useEffect(() => {
