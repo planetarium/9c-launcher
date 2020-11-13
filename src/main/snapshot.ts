@@ -65,7 +65,7 @@ export async function validateMetadata(
         return _data;
       } catch (error) {
         console.log(
-          `Unhandled exception occurred validating metadata. Abort: ${error}`
+          `Unhandled exception occurred validating metadata. Retrying... : ${error}`
         );
         throw error;
       }
@@ -73,10 +73,10 @@ export async function validateMetadata(
     {
       delay: 100,
       factor: 1.5,
-      maxAttempts: 100,
-      timeout: 30000,
+      maxAttempts: 15,
       jitter: true,
       minDelay: 100,
+      maxDelay: 5000,
     }
   );
   token.throwIfCancelled();
