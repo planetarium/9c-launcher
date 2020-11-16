@@ -8,7 +8,7 @@ on:
 jobs:
   # 서브모듈 확인
   check-submodule:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       # 클론
       - uses: actions/checkout@v2
