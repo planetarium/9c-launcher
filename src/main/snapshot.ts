@@ -7,7 +7,7 @@ import { app, BrowserWindow } from "electron";
 import fs from "fs";
 import extractZip from "extract-zip";
 import { retry } from "@lifeomic/attempt";
-import { request, gql } from "graphql-request";
+import { request, gql, ClientError } from "graphql-request";
 import CancellationToken from "cancellationtoken";
 import { IDownloadOptions, IDownloadProgress } from "../interfaces/ipc";
 import { cancellableDownload } from "../utils";
@@ -49,7 +49,7 @@ export async function validateMetadata(
     metadata(raw: "${parsedmeta}")
   }
 }`;
-  let data = await retry(
+  let validity = await retry(
     async (context) => {
       try {
         if (token.isCancelled) {
@@ -57,16 +57,35 @@ export async function validateMetadata(
           token.throwIfCancelled();
         }
 
-        let _data = await request(
+        let data = await request(
           `http://localhost:${LOCAL_SERVER_PORT}/graphql`,
           query
         );
 
-        return _data;
+        return data.validation.metadata;
       } catch (error) {
-        console.log(
-          `Unhandled exception occurred validating metadata. Retrying... : ${error}`
-        );
+        if (error instanceof ClientError) {
+          let status: number = error.response.status;
+          if (status == 404) {
+            // GraphQL server is not online
+            console.error(
+              `GraphQLError occurred validating metadata. Retrying... : ${error}`
+            );
+          } else if (status == 200) {
+            // Exception occurred during validation at standalone
+            console.error(
+              `Error occurred during validating metadata. Snapshot required. : ${JSON.stringify(
+                error.response.errors?.map((v) => v.message)
+              )}`
+            );
+            return true;
+          }
+        } else {
+          console.error(
+            `Unhandled error occurred during request... : ${error}`
+          );
+        }
+
         throw error;
       }
     },
@@ -79,9 +98,7 @@ export async function validateMetadata(
       maxDelay: 5000,
     }
   );
-  token.throwIfCancelled();
 
-  let validity: boolean = data.validation.metadata;
   console.log(`Validation query requested. ${validity}`);
   return validity;
 }
