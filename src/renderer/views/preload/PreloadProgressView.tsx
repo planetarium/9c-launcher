@@ -115,6 +115,10 @@ const PreloadProgressView = observer(() => {
         console.error("Chain is too low. Automatically relaunch.");
         ipcRenderer.send("relaunch standalone");
         break;
+      case 0x03:
+        console.error("Chain's tip is stale. Automatically relaunch.");
+        ipcRenderer.send("relaunch standalone");
+        break;
     }
   }, [nodeExceptionSubscriptionResult?.nodeException?.code]);
 
