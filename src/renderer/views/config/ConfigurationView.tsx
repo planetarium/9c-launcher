@@ -194,10 +194,11 @@ const ConfigurationView = observer(() => {
 
 function handleOpenKeyStorePath() {
   const home = remote.app.getPath("home");
-  const middlePath = process.platform === "win32" ? "AppData" : ".config";
-  shell.showItemInFolder(
-    path.join(home, middlePath, "planetarium", "keystore")
-  );
+  const middlePath =
+    process.platform === "win32" ? "AppData\\roaming" : ".config";
+  let openpath = path.join(home, middlePath, "planetarium", "keystore");
+  console.log(`Open keystore folder. ${openpath}`);
+  shell.showItemInFolder(openpath);
 }
 
 export default ConfigurationView;
