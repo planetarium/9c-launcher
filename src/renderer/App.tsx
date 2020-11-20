@@ -63,7 +63,12 @@ const Store: IStoreContainer = {
   standaloneStore: new StandaloneStore(),
 };
 
-const history = syncHistoryWithStore(createBrowserHistory(), Store.routerStore);
+const history = syncHistoryWithStore(
+  createBrowserHistory({
+    basename: window.location.pathname,
+  }),
+  Store.routerStore
+);
 
 function App() {
   const theme = useMemo(
