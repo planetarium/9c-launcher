@@ -17,7 +17,7 @@ main {
   background-size: cover;
   background-position: 55%;
   display: inline-flex;
-  padding: 24px;
+  padding: 24px 24px 48px 24px;
 
   ul {
     align-self: flex-end;
@@ -37,6 +37,15 @@ main {
 
     ul {
       margin: 5px;
+
+      code {
+        font-size: 10px;
+        font-family: "Courier New", Courier, monospace;
+
+        .details {
+          opacity: 0.25;
+        }
+      }
     }
   }
 }

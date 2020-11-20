@@ -24,6 +24,17 @@ query NodeStatus {
   }
 }
 
+query TopmostBlocks($limit: Int = 500, $miner: Address = null) {
+  nodeStatus {
+    topmostBlocks(limit: $limit, miner: $miner) {
+      id
+      hash
+      index
+      miner
+    }
+  }
+}
+
 subscription PreloadProgressSubscription {
   preloadProgress {
     currentPhase

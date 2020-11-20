@@ -4,61 +4,103 @@ schema {
   subscription: StandaloneSubscription
 }
 
-# The `Date` scalar type represents a year, month and day in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
-scalar Date
-
-# The `DateTime` scalar type represents a date and time. `DateTime` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
-scalar DateTime
-
-# The `DateTimeOffset` scalar type represents a date, time and offset from UTC. `DateTimeOffset` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
-scalar DateTimeOffset
-
-# The `Seconds` scalar type represents a period of time represented as the total number of seconds.
-scalar Seconds
-
-# The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds.
-scalar Milliseconds
-
-scalar Decimal
-
-scalar Uri
-
-scalar Guid
-
-scalar Short
-
-scalar UShort
-
-scalar UInt
-
-scalar Long
-
-scalar BigInt
-
-scalar ULong
-
-scalar Byte
-
-scalar SByte
-
-type StandaloneQuery {
-  activationStatus: ActivationStatusQuery!
-  keyStore: KeyStoreType
-  nodeStatus: NodeStatusType!
-  state(
-    # The address of state to fetch from the chain.
-    address: Address!
-    # The hash of the block used to fetch state from chain.
-    hash: ByteString
-  ): ByteString
-  # The validation method provider for Libplanet types.
-  validation: ValidationQuery!
+type ActionMutation {
+  buy(
+    sellerAgentAddress: String!
+    sellerAvatarAddress: String!
+    productId: String!
+  ): Boolean!
+  combinationEquipment(
+    recipeId: Decimal!
+    slotIndex: Decimal!
+    subRecipeId: Decimal
+  ): Boolean!
+  createAvatar: Boolean!
+  dailyReward: Boolean!
+  hackAndSlash(
+    weeklyArenaAddress: String!
+    rankingArenaAddress: String!
+  ): Boolean!
+  itemEnhancement(itemId: String!, materialIds: String!): Boolean!
+  sell(
+    sellerAvatarAddress: String!
+    productId: String!
+    itemId: String!
+    price: String!
+  ): Boolean!
 }
 
-scalar ByteString
+type ActivationStatusMutation {
+  activateAccount(encodedActivationKey: String!): Boolean!
+}
+
+type ActivationStatusQuery {
+  activated: Boolean!
+}
 
 scalar Address
 
+# A claim of a version.
+#             Every peer in network shows others their  information.
+#             As every peer can change its software by itself, this
+#             is theoretically arbitrary, hence a “claim.” (i.e., no authority).In
+# order to verify who claimed a version, every
+#             has its  which is made by its .
+#              method purposes to determine whether an information
+#             is claimed by its corresponding  in fact.
+type AppProtocolVersionType {
+  extra: ByteString
+  signature: ByteString!
+  signer: Address!
+  version: Int!
+}
+
+scalar BigInt
+
+type BlockHeader {
+  hash: String!
+  id: ID!
+  index: Int!
+  miner: Address
+}
+
+scalar Byte
+
+scalar ByteString
+
+# The `Date` scalar type represents a year, month and day in accordance with the
+# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar Date
+
+# The `DateTime` scalar type represents a date and time. `DateTime` expects
+# timestamps to be formatted in accordance with the
+# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar DateTime
+
+# The `DateTimeOffset` scalar type represents a date, time and offset from UTC.
+# `DateTimeOffset` expects timestamps to be formatted in accordance with the
+# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar DateTimeOffset
+
+scalar Decimal
+
+type DifferentAppProtocolVersionEncounterType {
+  localVersion: AppProtocolVersionType!
+  peer: String!
+  peerVersion: AppProtocolVersionType!
+}
+
+scalar Guid
+
+# The interface to store s.  An appropriate implementation
+#             should be used according to a running platform.
+type KeyStoreMutation {
+  createPrivateKey(passphrase: String!, privateKey: ByteString): PrivateKeyType!
+  revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
+}
+
+# The interface to store s.  An appropriate implementation
+#             should be used according to a running platform.
 type KeyStoreType {
   decryptedPrivateKey(address: Address!, passphrase: String!): ByteString!
   # An API to provide conversion to public-key, address.
@@ -69,10 +111,71 @@ type KeyStoreType {
   protectedPrivateKeys: [ProtectedPrivateKeyType!]!
 }
 
-type ProtectedPrivateKeyType {
-  address: Address!
+scalar Long
+
+# The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds.
+scalar Milliseconds
+
+type NodeExceptionType {
+  # The code of NodeException.
+  code: Int!
+  # The message of NodeException.
+  message: String!
 }
 
+type NodeStatusType {
+  bootstrapEnded: Boolean!
+  genesis: BlockHeader!
+  preloadEnded: Boolean!
+  # Staged TxIds from the current node.
+  stagedTxIds: [TxId]
+  tip: BlockHeader!
+  # The topmost blocks from the current node.
+  topmostBlocks(
+    # The number of blocks to get.
+    limit: Int!
+    # List only blocks mined by the given address.  (List everything if omitted.)
+    miner: Address
+  ): [BlockHeader]!
+}
+
+enum NotificationEnum {
+  REFILL
+}
+
+type NotificationType {
+  # The type of Notification.
+  type: NotificationEnum!
+}
+
+type PeerChainStateQuery {
+  state: [String]!
+}
+
+type PreloadStateExtraType {
+  currentCount: Long!
+  totalCount: Long!
+  type: String!
+}
+
+type PreloadStateType {
+  currentPhase: Long!
+  extra: PreloadStateExtraType!
+  totalPhase: Long!
+}
+
+# A secret part of a key pair involved in
+#             ECDSA, the digital
+#             signature algorithm on which the Libplanet is based.  It can be used to
+#             create signatures, which can be verified with the corresponding
+#             , as well as to decrypt
+#             messages which were encrypted with the corresponding
+#             .
+#             Note that it uses secp256k1 as the parameters of the elliptic curve, which is
+#             the same to Bitcoin and
+#             Ethereum.
+#             It means private keys generated for Bitcoin/Ethereum can be used by
+#             Libplanet-backed games/apps too.
 type PrivateKeyType {
   # A representation of private-key with hexadecimal format.
   hex: ByteString!
@@ -80,6 +183,23 @@ type PrivateKeyType {
   publicKey: PublicKeyType!
 }
 
+# Protects a  with a passphrase (i.e., password).
+type ProtectedPrivateKeyType {
+  address: Address!
+}
+
+# A public part of a key pair involved in
+#             ECDSA, the digital
+#             signature algorithm on which the Libplanet is based.
+#             It can be used to verify signatures created with the corresponding
+#              and to encrypt messages for someone
+#             possessing the corresponding .
+#             This can be distributed publicly, hence the name.
+#             Note that it uses secp256k1 as the parameters of the elliptic curve, which is same to
+#             Bitcoin and
+#             Ethereum.
+#             It means public keys generated for Bitcoin/Ethereum can be used by
+#             Libplanet-backed games/apps too.
 type PublicKeyType {
   # An address derived from the public-key.
   address: Address!
@@ -90,10 +210,75 @@ type PublicKeyType {
   ): ByteString!
 }
 
-type NodeStatusType {
-  bootstrapEnded: Boolean!
-  preloadEnded: Boolean!
+scalar SByte
+
+# The `Seconds` scalar type represents a period of time represented as the total number of seconds.
+scalar Seconds
+
+scalar Short
+
+type StandaloneMutation {
+  action: ActionMutation
+  activationStatus: ActivationStatusMutation
+  keyStore: KeyStoreMutation
+  # Add a new transaction to staging
+  stageTx(
+    # Hex-encoded bytes for new transaction.
+    payload: String!
+  ): Boolean!
+  transferGold(recipient: Address!, amount: String!): TxId
 }
+
+type StandaloneQuery {
+  # Check if the provided address is activated.
+  activationStatus: ActivationStatusQuery!
+  goldBalance(
+    # Target address to query
+    address: Address!
+    # Offset block hash for query.
+    hash: ByteString
+  ): String!
+  keyStore: KeyStoreType
+  nextTxNonce(
+    # Target address to query
+    address: Address!
+  ): Long!
+  nodeStatus: NodeStatusType!
+  # Get the peer's block chain state
+  peerChainState: PeerChainStateQuery!
+  state(
+    # The address of state to fetch from the chain.
+    address: Address!
+    # The hash of the block used to fetch state from chain.
+    hash: ByteString
+  ): ByteString
+  # The validation method provider for Libplanet types.
+  validation: ValidationQuery!
+}
+
+type StandaloneSubscription {
+  differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
+  nodeException: NodeExceptionType!
+  nodeStatus: NodeStatusType
+  notification: NotificationType!
+  preloadProgress: PreloadStateType
+  tipChanged: TipChanged
+}
+
+type TipChanged {
+  hash: ByteString
+  index: Long!
+}
+
+scalar TxId
+
+scalar UInt
+
+scalar ULong
+
+scalar Uri
+
+scalar UShort
 
 type ValidationQuery {
   metadata(
@@ -108,77 +293,4 @@ type ValidationQuery {
     # The raw value of public-key, presented as hexadecimal.
     hex: ByteString!
   ): Boolean!
-}
-
-type ActivationStatusQuery {
-  activated: Boolean!
-}
-
-type ActivationStatusQuery {
-  activated: Boolean!
-}
-
-type StandaloneMutation {
-  activationStatus: ActivationStatusMutation
-  keyStore: KeyStoreMutation
-}
-
-type KeyStoreMutation {
-  createPrivateKey(passphrase: String!, privateKey: ByteString): PrivateKeyType!
-  revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
-}
-
-type ActivationStatusMutation {
-  activateAccount(encodedActivationKey: String!): Boolean!
-}
-
-type StandaloneSubscription {
-  differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
-  nodeStatus: NodeStatusType
-  notification: NotificationType!
-  preloadProgress: PreloadStateType
-  tipChanged: TipChanged
-  nodeException: NodeExceptionType!
-}
-
-type TipChanged {
-  hash: ByteString
-  index: Long!
-}
-
-type PreloadStateType {
-  currentPhase: Long!
-  extra: PreloadStateExtraType!
-  totalPhase: Long!
-}
-
-type PreloadStateExtraType {
-  currentCount: Long!
-  totalCount: Long!
-  type: String!
-}
-
-type DifferentAppProtocolVersionEncounterType {
-  localVersion: AppProtocolVersionType!
-  peer: String!
-  peerVersion: AppProtocolVersionType!
-}
-
-type AppProtocolVersionType {
-  extra: ByteString
-  signature: ByteString!
-  signer: Address!
-  version: Int!
-}
-
-type NotificationType {
-  type: NotificationEnum!
-}
-enum NotificationEnum {
-  REFILL
-}
-
-type NodeExceptionType {
-  code: Int!
-  message: String!
 }
