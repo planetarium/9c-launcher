@@ -5,6 +5,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import DiscordIcon from "../../components/DiscordIcon";
 import SettingsIcon from "@material-ui/icons/Settings";
 import "../../styles/layout/layout.scss";
+import { useTopmostBlocksQuery } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import { observer } from "mobx-react";
 
@@ -16,6 +17,16 @@ export const Layout: React.FC = observer(({ children }) => {
   const { accountStore, routerStore } = useStores();
 
   const { locale } = useLocale<Menu>("menu");
+
+  const topmostBlocksResult = useTopmostBlocksQuery();
+  topmostBlocksResult.startPolling(1000 * 10); // 10 seconds
+  console.log(accountStore);
+  console.log(topmostBlocksResult);
+  const topmostBlocks = topmostBlocksResult.data?.nodeStatus.topmostBlocks;
+  const minedBlocks =
+    accountStore.isLogin && topmostBlocks != null
+      ? topmostBlocks.filter((b) => b?.miner == accountStore.selectedAddress)
+      : null;
 
   return (
     <>
@@ -58,14 +69,40 @@ export const Layout: React.FC = observer(({ children }) => {
         <div>
           <ul>
             <li>
-              APV=
-              {
-                (electronStore.get("AppProtocolVersion") as string).split(
-                  "/"
-                )[0]
-              }
+              APV:{" "}
+              <code>
+                {
+                  (electronStore.get("AppProtocolVersion") as string).split(
+                    "/"
+                  )[0]
+                }
+                <span className="details">
+                  /
+                  {
+                    (electronStore.get("AppProtocolVersion") as string).split(
+                      "/"
+                    )[1]
+                  }
+                </span>
+              </code>
             </li>
-            <li>ADDRESS={accountStore.selectedAddress}</li>
+            {accountStore.isLogin ? (
+              <li>
+                Address: <code>{accountStore.selectedAddress}</code>
+              </li>
+            ) : (
+              <></>
+            )}
+            {minedBlocks !== null ? (
+              <li>
+                Mined blocks: {minedBlocks.length} (out of recent{" "}
+                {topmostBlocks?.length} blocks)
+              </li>
+            ) : (
+              <li>
+                Debug: {accountStore.isLogin} / {topmostBlocksResult.loading}
+              </li>
+            )}
           </ul>
         </div>
       </nav>
