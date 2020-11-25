@@ -20,8 +20,6 @@ export const Layout: React.FC = observer(({ children }) => {
 
   const topmostBlocksResult = useTopmostBlocksQuery();
   topmostBlocksResult.startPolling(1000 * 10); // 10 seconds
-  console.log(accountStore);
-  console.log(topmostBlocksResult);
   const topmostBlocks = topmostBlocksResult.data?.nodeStatus.topmostBlocks;
   const minedBlocks =
     accountStore.isLogin && topmostBlocks != null
