@@ -18,4 +18,7 @@ export interface IElectronStore {
   Mixpanel: boolean;
   Sentry: boolean;
   MuteTeaser: boolean;
+  AwsAccessKey: string | undefined;
+  AwsSecretKey: string | undefined;
+  AwsRegion: string | undefined;
 }

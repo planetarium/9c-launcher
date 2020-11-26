@@ -83,6 +83,24 @@ const standaloneExecutableArgs = [
   `--confirmations=${electronStore.get("Confirmations")}`,
 ];
 
+{
+  const awsAccessKey = electronStore.get("AwsAccessKey");
+  const awsSecretKey = electronStore.get("AwsSecretKey");
+  const awsRegion = electronStore.get("AwsRegion");
+
+  if (
+    awsAccessKey !== undefined &&
+    awsSecretKey !== undefined &&
+    awsRegion !== undefined
+  ) {
+    standaloneExecutableArgs.push(
+      `--aws-access-key=${awsAccessKey}`,
+      `--aws-secret-key=${awsSecretKey}`,
+      `--aws-region=${awsRegion}`
+    );
+  }
+}
+
 let win: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;

@@ -93,6 +93,18 @@ export const electronStore = new Store<IElectronStore>({
       type: "boolean",
       default: false,
     },
+    AwsAccessKey: {
+      type: "string",
+      default: undefined,
+    },
+    AwsSecretKey: {
+      type: "string",
+      default: undefined,
+    },
+    AwsRegion: {
+      type: "string",
+      default: undefined,
+    },
   },
 });
 
