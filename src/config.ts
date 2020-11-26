@@ -81,6 +81,10 @@ export const electronStore = new Store<IElectronStore>({
       type: "integer",
       default: 0,
     },
+    HeadlessArgs: {
+      type: "array",
+      default: [],
+    },
     Mixpanel: {
       type: "boolean",
       default: true,

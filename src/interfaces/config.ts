@@ -15,6 +15,7 @@ export interface IElectronStore {
   Locale: string;
   Workers: number;
   Confirmations: number;
+  HeadlessArgs: string[];
   Mixpanel: boolean;
   Sentry: boolean;
   MuteTeaser: boolean;
