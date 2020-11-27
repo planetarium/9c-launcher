@@ -1,5 +1,5 @@
-import { shell } from "electron";
-import React from "react";
+import { ipcRenderer, shell } from "electron";
+import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import HomeIcon from "@material-ui/icons/Home";
 import DiscordIcon from "../../components/DiscordIcon";
@@ -15,6 +15,7 @@ import { electronStore } from "../../../config";
 
 export const Layout: React.FC = observer(({ children }) => {
   const { accountStore, routerStore } = useStores();
+  const [awsSinkCloudwatchGuid, setAwsSinkCloudwatchGuid] = useState<string>();
 
   const { locale } = useLocale<Menu>("menu");
 
@@ -25,6 +26,12 @@ export const Layout: React.FC = observer(({ children }) => {
     accountStore.isLogin && topmostBlocks != null
       ? topmostBlocks.filter((b) => b?.miner == accountStore.selectedAddress)
       : null;
+  useEffect(() => {
+    const awsSinkGuid: string = ipcRenderer.sendSync(
+      "get-aws-sink-cloudwatch-guid"
+    );
+    setAwsSinkCloudwatchGuid(awsSinkGuid);
+  }, []);
 
   return (
     <>
@@ -100,6 +107,11 @@ export const Layout: React.FC = observer(({ children }) => {
               <li>
                 Debug: {accountStore.isLogin} / {topmostBlocksResult.loading}
               </li>
+            )}
+            {awsSinkCloudwatchGuid !== null ? (
+              <li>Client ID: {awsSinkCloudwatchGuid}</li>
+            ) : (
+              <></>
             )}
           </ul>
         </div>
