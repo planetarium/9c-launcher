@@ -10,15 +10,9 @@ export default function initializeMixpanel() {
     return;
   }
 
-  if (electronStore.get("Mixpanel") === true) {
-    mixpanel.init(token);
-  } else {
-    console.debug("Mixpanel is disabled by config");
-    return;
-  }
-
-  if (isDev) {
-    console.debug("Mixpanel is disabled in development mode.");
+  mixpanel.init(token);
+  if (isDev || electronStore.get("Mixpanel") !== true) {
+    console.debug("Mixpanel is disabled.");
     mixpanel.disable();
   }
 }
