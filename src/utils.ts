@@ -6,6 +6,7 @@ import { BrowserWindow, DownloadItem } from "electron";
 import { IDownloadOptions } from "./interfaces/ipc";
 import CancellationToken from "cancellationtoken";
 import { download } from "electron-dl";
+import extractZip from "extract-zip";
 
 export async function getDiskSpace(diskpath: string): Promise<number> {
   let diskSpace = await checkDiskSpace(diskpath);
@@ -115,4 +116,32 @@ export function cancellableDownload(
     };
     download(win, url, options.properties);
   });
+}
+
+export async function cancellableExtract(
+  targetDir: string,
+  outputDir: string,
+  onProgress: (progress: number) => void,
+  token: CancellationToken
+): Promise<void> {
+  try {
+    await extractZip(targetDir, {
+      dir: outputDir,
+      onEntry: (_, zipfile) => {
+        if (token.isCancelled) {
+          console.log(`Extraction for ${targetDir} is cancelled.`);
+          zipfile.close();
+        }
+        const progress = zipfile.entriesRead / zipfile.entryCount;
+        onProgress(progress);
+      },
+    });
+  } catch (error) {
+    console.log(
+      `Unexpected error occurred during extracting ${targetDir} to ${outputDir}`
+    );
+  } finally {
+    fs.unlinkSync(targetDir);
+    token.throwIfCancelled();
+  }
 }
