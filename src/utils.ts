@@ -136,12 +136,11 @@ export async function cancellableExtract(
         onProgress(progress);
       },
     });
+    await fs.promises.unlink(targetDir);
   } catch (error) {
-    console.log(
-      `Unexpected error occurred during extracting ${targetDir} to ${outputDir}`
+    console.error(
+      `Unexpected error occurred during extracting ${targetDir} to ${outputDir}. ${error}`
     );
-  } finally {
-    fs.unlinkSync(targetDir);
-    token.throwIfCancelled();
+    throw error;
   }
 }
