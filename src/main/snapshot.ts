@@ -5,12 +5,11 @@ import {
 } from "../config";
 import { app, BrowserWindow } from "electron";
 import fs from "fs";
-import extractZip from "extract-zip";
 import { retry } from "@lifeomic/attempt";
 import { request, gql, ClientError } from "graphql-request";
 import CancellationToken from "cancellationtoken";
 import { IDownloadOptions, IDownloadProgress } from "../interfaces/ipc";
-import { cancellableDownload } from "../utils";
+import { cancellableDownload, cancellableExtract } from "../utils";
 
 export async function downloadMetadata(
   win: BrowserWindow,
@@ -138,13 +137,11 @@ export async function extractSnapshot(
   console.log(`Extracting snapshot.
 extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
 extractTarget: [ ${snapshotPath} ]`);
-  await extractZip(snapshotPath, {
-    dir: BLOCKCHAIN_STORE_PATH,
-    onEntry: (_, zipfile) => {
-      const progress = zipfile.entriesRead / zipfile.entryCount;
-      onProgress(progress);
-    },
-  });
-  fs.unlinkSync(snapshotPath);
+  await cancellableExtract(
+    snapshotPath,
+    BLOCKCHAIN_STORE_PATH,
+    onProgress,
+    token
+  );
   console.log("Snapshot extract complete.");
 }
