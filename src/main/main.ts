@@ -449,9 +449,15 @@ function initializeIpc() {
         "planetarium",
         ".aws_sink_cloudwatch_guid"
       );
-      event.returnValue = await fs.promises.readFile(guidPath, {
-        encoding: "utf-8",
-      });
+
+      if (fs.existsSync(guidPath)) {
+        event.returnValue = await fs.promises.readFile(guidPath, {
+          encoding: "utf-8",
+        });
+      } else {
+        event.returnValue = null;
+      }
+
       return;
     }
 
