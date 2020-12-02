@@ -81,6 +81,7 @@ const standaloneExecutableArgs = [
   `--graphql-port=${LOCAL_SERVER_PORT}`,
   `--workers=${electronStore.get("Workers")}`,
   `--confirmations=${electronStore.get("Confirmations")}`,
+  ...electronStore.get("HeadlessArgs", []),
 ];
 
 {
