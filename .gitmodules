@@ -1,6 +1,6 @@
-[submodule "NineChronicles.Standalone"]
-	path = NineChronicles.Standalone
-	url = git@github.com:planetarium/NineChronicles.Standalone
+[submodule "NineChronicles.Headless"]
+	path = NineChronicles.Headless
+	url = git@github.com:planetarium/NineChronicles.Headless.git
 [submodule "nekoyume-unity"]
 	path = nekoyume-unity
 	url = git@github.com:planetarium/nekoyume-unity.git

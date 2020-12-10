@@ -30,11 +30,11 @@ async function checkLib9c(): Promise<void> {
     "nekoyume-unity",
     "./nekoyume/Assets/_Scripts/Lib9c/Lib9c"
   );
-  const sha2 = await getSubmoduleHash("NineChronicles.Standalone", "./Lib9c");
+  const sha2 = await getSubmoduleHash("NineChronicles.Headless", "./Lib9c");
 
   if (sha1 !== sha2) {
     throw new Error(
-      `checkSubmodule.ts: Failed while checking ${Submodules.lib9c}. (nekoyume-unity: ${sha1}, NineChronicles.Standalone: ${sha2})`
+      `checkSubmodule.ts: Failed while checking ${Submodules.lib9c}. (nekoyume-unity: ${sha1}, NineChronicles.Headless: ${sha2})`
     );
   }
 
@@ -47,13 +47,13 @@ async function checkShared(): Promise<void> {
     "./nekoyume/Assets/_Scripts/NineChronicles.RPC.Shared"
   );
   const sha2 = await getSubmoduleHash(
-    "NineChronicles.Standalone",
+    "NineChronicles.Headless",
     "./NineChronicles.RPC.Shared"
   );
 
   if (sha1 !== sha2) {
     throw new Error(
-      `checkSubmodule.ts: Failed while checking ${Submodules.shared}. (nekoyume-unity: ${sha1}, NineChronicles.Standalone: ${sha2})`
+      `checkSubmodule.ts: Failed while checking ${Submodules.shared}. (nekoyume-unity: ${sha1}, NineChronicles.Headless: ${sha2})`
     );
   }
 

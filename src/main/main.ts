@@ -50,7 +50,7 @@ const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 const standaloneExecutablePath = path.join(
   app.getAppPath(),
   "publish",
-  "NineChronicles.Standalone.Executable"
+  "NineChronicles.Headless.Executable"
 );
 const standaloneExecutableArgs = [
   `-V=${electronStore.get("AppProtocolVersion")}`,
