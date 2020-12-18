@@ -14,6 +14,7 @@ import {
   LinearProgress,
 } from "@material-ui/core";
 import { IDownloadProgress } from "../interfaces/ipc";
+import UpdateView from "./views/update/UpdateView";
 
 export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,
@@ -27,12 +28,6 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   >("determinate");
   // FIXME: file lock이 제대로 걸려있지 않아서 파일을 여러 번 받아서 프로그레스가 뒤로 가는 경우가 있습니다.
   const [progress, setProgress] = useState(0);
-  const videoOpts: IYoutubeOption = {
-    width: "600",
-    playerVars: {
-      autoplay: 1,
-    },
-  };
 
   useEffect(() => {
     ipcRenderer.on("update extract progress", (event, progress) => {
@@ -110,37 +105,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   }, [loading, data]);
 
   // FIXME: 업데이트 중 뜨는 화면을 별개의 뷰로 분리하면 좋을 것 같습니다.
-  return isDownload || isExtract || isCopying ? (
-    <Container
-      style={{
-        display: "flex",
-        height: "100%",
-      }}
-    >
-      <Box m="auto" width="80%">
-        <YouTube videoId="Dfyugzqgd2M" opts={videoOpts} />
-        <Box display="flex" alignItems="center">
-          <Box width="100%" mr={1}>
-            <LinearProgress variant={variant} value={progress} />
-          </Box>
-          {variant === "determinate" && (
-            <Box minWidth={35}>
-              <Typography variant="body2" color="textSecondary">{`${Math.round(
-                progress
-              )}%`}</Typography>
-            </Box>
-          )}
-        </Box>
-        <Typography variant="caption">
-          {isDownload
-            ? "Downloading the new version..."
-            : isExtract
-            ? "Extracting the new version..."
-            : "Copying files..."}
-        </Typography>
-      </Box>
-    </Container>
-  ) : (
-    <>{children}</>
-  );
+  return isDownload || isExtract || isCopying
+    ? UpdateView()
+    : (<>{children}</>);
 };
