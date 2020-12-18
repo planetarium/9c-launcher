@@ -21,7 +21,6 @@ import ResetPasswordView from "./views/account/reset/ResetPasswordView";
 import PreloadView from "./views/lobby/PreloadView";
 import CopyCreatedPrivateKeyView from "./views/account/CopyCreatedPrivateKeyView";
 import PreloadProgressView from "./views/preload/PreloadProgressView";
-import { Box } from "@material-ui/core";
 
 class Root extends React.Component {
   render() {
