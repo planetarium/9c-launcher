@@ -12,7 +12,6 @@ import useStores from "../../../hooks/useStores";
 const UpdateView = observer(() =>{
     const [isExtract] = React.useState(false);
     const [isDownload] = React.useState(false);
-    const [isCopying] = React.useState(false);
     const [variant] = React.useState<"indeterminate" | "determinate" | undefined>("determinate");
     // FIXME: file lock이 제대로 걸려있지 않아서 파일을 여러 번 받아서 프로그레스가 뒤로 가는 경우가 있습니다.
     const [progress] = React.useState(0);
