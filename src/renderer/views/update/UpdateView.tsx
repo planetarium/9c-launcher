@@ -1,5 +1,4 @@
 import React from "react";
-import { observer } from "mobx-react";
 import {
     Box,
     Container,
@@ -7,14 +6,16 @@ import {
     LinearProgress,
   } from "@material-ui/core";
 import YouTube, { Options as IYoutubeOption } from "react-youtube";
-import useStores from "../../../hooks/useStores";
 
-const UpdateView = observer(() =>{
-    const [isExtract] = React.useState(false);
-    const [isDownload] = React.useState(false);
-    const [variant] = React.useState<"indeterminate" | "determinate" | undefined>("determinate");
+type UpdateViewProps = {
+  isDownload: boolean;
+  isExtract: boolean;
+  variant: "indeterminate" | "determinate" | undefined;
+  progress: number;
+};
+
+const UpdateView = ({isDownload, isExtract, variant, progress}: UpdateViewProps) => {
     // FIXME: file lock이 제대로 걸려있지 않아서 파일을 여러 번 받아서 프로그레스가 뒤로 가는 경우가 있습니다.
-    const [progress] = React.useState(0);
     const videoOpts: IYoutubeOption = {
         width: "600",
         playerVars: {
@@ -53,6 +54,6 @@ const UpdateView = observer(() =>{
       </Box>
     </Container>
   );
-});
+};
 
 export default UpdateView;
