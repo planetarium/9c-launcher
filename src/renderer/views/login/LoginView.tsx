@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import { FileCopy } from "@material-ui/icons";
 import { usePopupState, bindPopover } from "material-ui-popup-state/hooks";
-import { clipboard } from "electron";
+import { clipboard, ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 
 import "../../styles/login/login.scss";
@@ -65,8 +65,14 @@ const LoginView = observer(
         const privateKey = data.keyStore.decryptedPrivateKey;
         accountStore.setPrivateKey(privateKey);
         accountStore.toggleLogin();
-        mixpanel.track("Launcher/Login");
+        const installerUUID = ipcRenderer.sendSync(
+          "get-installer-mixpanel-uuid"
+        ) as string | null;
+        if (installerUUID !== null) {
+          mixpanel.alias(accountStore.selectedAddress, installerUUID);
+        }
         mixpanel.identify(accountStore.selectedAddress);
+        mixpanel.track("Launcher/Login");
         routerStore.push("/login/mining");
       }
     }, [data]);

@@ -464,6 +464,15 @@ function initializeIpc() {
 
     event.returnValue = "Not supported platform.";
   });
+
+  ipcMain.on("get-installer-mixpanel-uuid", async (event) => {
+    let guidPath = path.join(app.getAppPath(), ".installer_mixpanel_uuid");
+    if (process.platform === "win32" && fs.existsSync(guidPath)) {
+      event.returnValue = await fs.promises.readFile(guidPath).toString();
+    } else {
+      event.returnValue = null;
+    }
+  });
 }
 
 async function initializeStandalone(): Promise<void> {
