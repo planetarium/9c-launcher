@@ -685,6 +685,12 @@ function createTray(iconPath: string) {
           app.quit();
         },
       },
+      {
+        label: "Restart Launcher",
+        click: function () {
+          relaunch();
+        },
+      },
     ])
   );
   tray.on("click", function () {
