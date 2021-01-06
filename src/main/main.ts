@@ -70,9 +70,6 @@ const standaloneExecutableArgs = [
       (trustedAppProtocolVersionSigner) =>
         `-T=${trustedAppProtocolVersionSigner}`
     ),
-  `--no-trusted-state-validators=${electronStore.get(
-    "NoTrustedStateValidators"
-  )}`,
   "--rpc-server",
   `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
   `--rpc-listen-port=${RPC_SERVER_PORT}`,

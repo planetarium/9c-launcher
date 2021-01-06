@@ -10,5 +10,4 @@ interface StandaloneProperties {
   TrustedAppProtocolVersionSigners: string[];
   IceServerStrings: string[];
   PeerStrings: string[];
-  NoTrustedStateValidators: boolean;
 }
