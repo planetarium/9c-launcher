@@ -9,7 +9,6 @@ export interface IElectronStore {
   TrustedAppProtocolVersionSigners: string[];
   IceServerStrings: string[];
   PeerStrings: string[];
-  NoTrustedStateValidators: boolean;
   BlockchainStoreDirParent: string;
   BlockchainStoreDirName: string;
   Locale: string;

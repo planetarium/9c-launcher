@@ -70,9 +70,6 @@ const standaloneExecutableArgs = [
       (trustedAppProtocolVersionSigner) =>
         `-T=${trustedAppProtocolVersionSigner}`
     ),
-  `--no-trusted-state-validators=${electronStore.get(
-    "NoTrustedStateValidators"
-  )}`,
   "--rpc-server",
   `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
   `--rpc-listen-port=${RPC_SERVER_PORT}`,
@@ -679,16 +676,16 @@ function createTray(iconPath: string) {
         },
       },
       {
+        label: "Restart Launcher",
+        click: function () {
+          relaunch();
+        },
+      },
+      {
         label: "Quit Launcher",
         click: function () {
           isQuiting = true;
           app.quit();
-        },
-      },
-      {
-        label: "Restart Launcher",
-        click: function () {
-          relaunch();
         },
       },
     ])

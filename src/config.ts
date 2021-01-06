@@ -57,10 +57,6 @@ export const electronStore = new Store<IElectronStore>({
       type: "array",
       default: [],
     },
-    NoTrustedStateValidators: {
-      type: "boolean",
-      default: false,
-    },
     BlockchainStoreDirParent: {
       type: "string",
       default: "",
