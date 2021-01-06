@@ -676,16 +676,16 @@ function createTray(iconPath: string) {
         },
       },
       {
+        label: "Restart Launcher",
+        click: function () {
+          relaunch();
+        },
+      },
+      {
         label: "Quit Launcher",
         click: function () {
           isQuiting = true;
           app.quit();
-        },
-      },
-      {
-        label: "Restart Launcher",
-        click: function () {
-          relaunch();
         },
       },
     ])
