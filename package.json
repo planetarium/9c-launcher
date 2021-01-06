@@ -41,6 +41,7 @@
     "configure-apv": "npx ts-node scripts/configureApv.ts",
     "before-pack": "npm install && npm run build-headless && npm run bundle-player && npm run sign-apv",
     "pack-all": "npm run before-pack && npm run pack",
+    "build-ci": "npm run build-headless && npm run bundle-player && npm run sign-apv && npm run pack",
     "pack-all:electron-builder": "run-script-os",
     "pack-all:electron-builder:windows": "npm run before-pack && npm run build-prod && npx electron-builder --windows",
     "pack-all:electron-builder:darwin": "npm run before-pack && npm run build-prod && npx electron-builder --mac",

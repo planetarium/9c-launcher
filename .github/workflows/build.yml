@@ -105,32 +105,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      - name: Get npm cache directory
-        id: npm-cache
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-      - name: Restore npm cache
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
       # 의존성 설치
-      - run: npm install --loglevel verbose
-      # 코드 스타일 린트
-      - run: npx pretty-quick --check --branch "${{ github.base_ref }}"
-      - name: Generate GraphQL types
-        run: npm run codegen
-      - name: Type Check
-        run: npx tsc --noEmit
-        if: github.event_name == 'pull_request'
-      # 빌드
-      - run: npm run build-prod
+      - run: npm ci
       # 이전 릴리스 버전으로부터 config.json 복사
       - run: |
           set -ex
@@ -157,7 +133,7 @@ jobs:
         with:
           path: 9c-launcher-dist-${{ matrix.os }}.*
       # 패키지
-      - run: npm run pack-all
+      - run: npm run build-ci
         env:
           SKIP_APV_SIGN: "1" # 위에서 npm run sign-apv 따로 돌림
       # 패키지 아티팩트
