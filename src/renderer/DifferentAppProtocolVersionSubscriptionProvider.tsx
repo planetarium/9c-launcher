@@ -96,7 +96,6 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
     }
   }, [loading, data]);
 
-  // FIXME: 업데이트 중 뜨는 화면을 별개의 뷰로 분리하면 좋을 것 같습니다.
   return isDownload || isExtract || isCopying
     ? (<UpdateView isDownload={isDownload} isExtract={isExtract} variant={variant} progress={progress} />)
     : (<>{children}</>);
