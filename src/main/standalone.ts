@@ -1,9 +1,14 @@
 import { ChildProcess } from "child_process";
 import { ipcMain } from "electron";
-import { electronStore, LOCAL_SERVER_URL } from "../config";
+import {
+  electronStore,
+  GRAPHQL_SECRET_TOKEN_PATH,
+  LOCAL_SERVER_URL,
+} from "../config";
 import { retry } from "@lifeomic/attempt";
 import FetchError from "../errors/FetchError";
 import { execute, sleep } from "../utils";
+import fs from "fs";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
 
@@ -72,6 +77,14 @@ class Standalone {
 
   public get version() {
     return "Not implemented";
+  }
+
+  public async getSecretToken(): Promise<string | null> {
+    return fs.existsSync(GRAPHQL_SECRET_TOKEN_PATH)
+      ? await fs.promises.readFile(GRAPHQL_SECRET_TOKEN_PATH, {
+          encoding: "utf-8",
+        })
+      : null;
   }
 
   public async execute(args: string[]): Promise<void> {
@@ -174,10 +187,13 @@ class Standalone {
       }
 
       try {
+        const secretToken = await this.getSecretToken();
+        console.error("Secret Token:", secretToken);
         let response = await fetch(`http://${LOCAL_SERVER_URL}/${addr}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Basic ${secretToken}`,
           },
           body: body,
         });

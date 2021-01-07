@@ -7,12 +7,20 @@ import { useLocale } from "./i18n";
 import { Intro } from "../interfaces/i18n";
 
 const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
-  const { loading, error, data } = useProtectedPrivateKeysQuery({
+  const { loading, error, data, refetch } = useProtectedPrivateKeysQuery({
     fetchPolicy: "no-cache",
   });
 
   const { locale } = useLocale<Intro>("intro");
 
+  useEffect(() => {
+    if (
+      error?.graphQLErrors[0].extensions !== undefined &&
+      error?.graphQLErrors[0].extensions["code"] === "authorization"
+    ) {
+      refetch();
+    }
+  }, [error]);
   useEffect(() => {
     if (!loading && data?.keyStore?.protectedPrivateKeys !== undefined) {
       if (data?.keyStore?.protectedPrivateKeys.length < 1) {

@@ -147,6 +147,10 @@ export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
 export const LOCAL_SERVER_PORT = LocalServerPort();
 export const RPC_SERVER_PORT = RpcServerPort();
+export const GRAPHQL_SECRET_TOKEN_PATH = path.join(
+  app.getPath("appData"),
+  ".secret_token"
+);
 export const BLOCKCHAIN_STORE_PATH = path.join(
   blockchainStoreDirParent,
   electronStore.get("BlockchainStoreDirName")

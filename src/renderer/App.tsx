@@ -3,7 +3,7 @@ import { Router } from "react-router";
 import { createBrowserHistory } from "history";
 import "./styles/common.scss";
 import ApolloClient from "apollo-client";
-import { ApolloLink, split } from "apollo-link";
+import { ApolloLink, split, concat } from "apollo-link";
 import { RetryLink } from "apollo-link-retry";
 import { WebSocketLink } from "apollo-link-ws";
 import { ApolloProvider } from "react-apollo";
@@ -26,6 +26,7 @@ import montserrat from "./styles/font";
 
 import LocaleProvider from "./i18n";
 import { Locale } from "../interfaces/i18n";
+import { ipcRenderer } from "electron";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -49,7 +50,21 @@ const apiLink = split(
   httpLink
 );
 
-const link = ApolloLink.from([new RetryLink(), apiLink]);
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
+  let secretToken = ipcRenderer.sendSync("get-secret-token") as string | null;
+  if (secretToken !== null) {
+    operation.setContext({
+      headers: {
+        Authorization: `Basic ${secretToken}`,
+      },
+    });
+  }
+
+  return forward(operation);
+});
+
+const link = ApolloLink.from([authMiddleware, new RetryLink(), apiLink]);
 
 const client = new ApolloClient({
   link: link,

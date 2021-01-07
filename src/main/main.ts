@@ -7,6 +7,7 @@ import {
   RPC_LOOPBACK_HOST,
   RPC_SERVER_PORT,
   REQUIRED_DISK_SPACE,
+  GRAPHQL_SECRET_TOKEN_PATH,
 } from "../config";
 import isDev from "electron-is-dev";
 import {
@@ -77,6 +78,7 @@ const standaloneExecutableArgs = [
   "--graphql-server",
   "--graphql-host=localhost",
   `--graphql-port=${LOCAL_SERVER_PORT}`,
+  `--graphql-secret-token-path=${GRAPHQL_SECRET_TOKEN_PATH}`,
   `--workers=${electronStore.get("Workers")}`,
   `--confirmations=${electronStore.get("Confirmations")}`,
   ...electronStore.get("HeadlessArgs", []),
@@ -473,6 +475,10 @@ function initializeIpc() {
     } else {
       event.returnValue = null;
     }
+  });
+
+  ipcMain.on("get-secret-token", async (event) => {
+    event.returnValue = await standalone.getSecretToken();
   });
 }
 
