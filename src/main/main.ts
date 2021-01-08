@@ -497,7 +497,7 @@ async function initializeStandalone(): Promise<void> {
 
   try {
     if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
-      win?.webContents.send("no permission");
+      win?.webContents.send("go to error page", "no-permission");
       throw new StandaloneInitializeError(
         `Not enough permission. ${BLOCKCHAIN_STORE_PATH}`
       );
@@ -505,7 +505,7 @@ async function initializeStandalone(): Promise<void> {
 
     let freeSpace = await utils.getDiskSpace(BLOCKCHAIN_STORE_PATH);
     if (freeSpace < REQUIRED_DISK_SPACE) {
-      win?.webContents.send("not enough space");
+      win?.webContents.send("go to error page", "disk-space");
       throw new StandaloneInitializeError(
         `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
       );
@@ -561,7 +561,7 @@ async function initializeStandalone(): Promise<void> {
     initializeStandaloneCts.token.throwIfCancelled();
     if (!(await standalone.run())) {
       // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
-      win?.webContents.send("error/clear-cache");
+      win?.webContents.send("go to error page", "clear-cache");
       throw new StandaloneInitializeError(
         "Error in run. Redirect to clear cache page."
       );

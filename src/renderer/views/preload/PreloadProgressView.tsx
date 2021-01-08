@@ -36,12 +36,13 @@ const PreloadProgressView = observer(() => {
   const { locale } = useLocale<PreloadProgress>("preloadProgress");
 
   useEffect(() => {
-    ipcRenderer.on("not enough space", () => {
-      gotoErrorPage("disk-space");
-    });
+    ipcRenderer.on("go to error page", (event: IpcRendererEvent, args: any[]) => {
+      if (args.length !== 1) {
+        console.error("Number of argument of 'go to error page' should be 1.");
+        return;
+      }
 
-    ipcRenderer.on("no permission", () => {
-      gotoErrorPage("no-permission");
+      gotoErrorPage(args[0]);
     });
 
     ipcRenderer.on("standalone exited", () => {
