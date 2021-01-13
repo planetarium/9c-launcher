@@ -38,15 +38,8 @@ const PreloadProgressView = observer(() => {
   useEffect(() => {
     ipcRenderer.on(
       "go to error page",
-      (event: IpcRendererEvent, args: any[]) => {
-        if (args.length !== 1) {
-          console.error(
-            "Number of argument of 'go to error page' should be 1."
-          );
-          return;
-        }
-
-        gotoErrorPage(args[0]);
+      (event: IpcRendererEvent, arg: string) => {
+        gotoErrorPage(arg);
       }
     );
 
