@@ -44,10 +44,10 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: Upload snapshots
+          name: e2e-snapshots
           path: __tests__/snapshots
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: Upload logs
+          name: e2e-logs
           path: __tests__/logs
