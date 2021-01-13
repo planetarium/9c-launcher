@@ -43,10 +43,6 @@ const PreloadProgressView = observer(() => {
       }
     );
 
-    ipcRenderer.on("standalone exited", () => {
-      gotoErrorPage("reinstall");
-    });
-
     ipcRenderer.on("start bootstrap", () => {
       standaloneStore.setReady(false);
       setPreloadStats(false);

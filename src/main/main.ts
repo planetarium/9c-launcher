@@ -574,6 +574,7 @@ async function initializeStandalone(): Promise<void> {
     ) {
       console.error(`InitializeStandalone() halted: ${error}`);
     } else {
+      win?.webContents.send("go to error page", "reinstall");
       throw error;
     }
   } finally {
