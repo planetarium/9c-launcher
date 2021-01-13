@@ -46,3 +46,8 @@ jobs:
         with:
           name: Upload snapshots
           path: __tests__/snapshots
+      - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: Upload logs
+          path: __tests__/logs
