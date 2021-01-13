@@ -13,7 +13,7 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
 
   const handleClick = () => {
     if (window.confirm("Are you sure you want to clear cache?")) {
-      const result = ipcRenderer.sendSync("clear cache");
+      const result = ipcRenderer.sendSync("clear cache", true);
       setClearState(result);
     }
   };

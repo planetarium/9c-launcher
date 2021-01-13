@@ -419,10 +419,11 @@ function initializeIpc() {
     gameNode = node;
   });
 
-  ipcMain.on("clear cache", async (event) => {
+  ipcMain.on("clear cache", async (event, rerun: boolean) => {
+    console.log(`Clear cache is requested. (rerun: ${rerun})`);
     await quitAllProcesses();
     utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
-    initializeStandalone();
+    if (rerun) initializeStandalone();
     event.returnValue = true;
   });
 

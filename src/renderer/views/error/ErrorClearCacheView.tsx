@@ -14,7 +14,7 @@ const ErrorClearCacheView = () => {
   const { locale } = useLocale<ErrorClearCache>("errorClearCache");
 
   const handleClearCache = useCallback(() => {
-    ipcRenderer.sendSync("clear cache");
+    ipcRenderer.sendSync("clear cache", false);
     remote.app.relaunch();
     remote.app.exit();
   }, []);
