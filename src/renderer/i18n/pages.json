@@ -528,7 +528,7 @@
     },
     "아래 버튼을 눌러 캐시를 지워주세요. 론처가 자동으로 재시작됩니다.": {
       "ko": "아래 버튼을 눌러 캐시를 지워주세요. 론처가 자동으로 재시작됩니다.",
-      "en": "Please press the button below to clear cache. The launcher will be restarted automatically."
+      "en": "Please press the button below to clear cache. The launcher will restart automatically."
     },
     "ClearCache": {
       "ko": "클리어 캐시",
