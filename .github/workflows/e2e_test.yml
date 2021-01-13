@@ -32,7 +32,9 @@ jobs:
         env:
           APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
       - name: Build Standalone
-        run: npm run build-headless
+        run: |
+          dotnet clean -c Release && dotnet nuget locals all --clear
+          npm run build-headless
       - name: Build Launcher
         run: npm run build-prod
       - name: Copy config
