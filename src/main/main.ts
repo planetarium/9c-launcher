@@ -567,6 +567,7 @@ async function initializeStandalone(): Promise<void> {
       );
     }
   } catch (error) {
+    console.error(`Error occurred during initializeStandalone(). ${error}`);
     if (
       error instanceof StandaloneInitializeError ||
       error instanceof CancellationToken.CancellationError
@@ -576,6 +577,7 @@ async function initializeStandalone(): Promise<void> {
       throw error;
     }
   } finally {
+    console.log("initializeStandalone() finished.");
     initializeStandaloneCts = null;
   }
 }

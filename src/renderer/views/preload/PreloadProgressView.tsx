@@ -36,14 +36,19 @@ const PreloadProgressView = observer(() => {
   const { locale } = useLocale<PreloadProgress>("preloadProgress");
 
   useEffect(() => {
-    ipcRenderer.on("go to error page", (event: IpcRendererEvent, args: any[]) => {
-      if (args.length !== 1) {
-        console.error("Number of argument of 'go to error page' should be 1.");
-        return;
-      }
+    ipcRenderer.on(
+      "go to error page",
+      (event: IpcRendererEvent, args: any[]) => {
+        if (args.length !== 1) {
+          console.error(
+            "Number of argument of 'go to error page' should be 1."
+          );
+          return;
+        }
 
-      gotoErrorPage(args[0]);
-    });
+        gotoErrorPage(args[0]);
+      }
+    );
 
     ipcRenderer.on("standalone exited", () => {
       gotoErrorPage("reinstall");
@@ -93,6 +98,7 @@ const PreloadProgressView = observer(() => {
   }, [step]);
 
   const gotoErrorPage = (page: string) => {
+    console.log(`Direct to error page: ${page}`);
     standaloneStore.setReady(false);
     routerStore.push(`/error/${page}`);
   };
