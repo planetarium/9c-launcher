@@ -94,15 +94,18 @@ describe("test", function () {
 
   after(async function () {
     if (app?.isRunning()) {
-      const mainLogFileFd = fs.openSync(path.join(logsDir, "main.log"), "w");
-      const rendererLogFileFd = fs.openSync(
+      const mainLogFile = await fs.promises.open(
+        path.join(logsDir, "main.log"),
+        "w"
+      );
+      const rendererLogFile = await fs.promises.open(
         path.join(logsDir, "render.log"),
         "w"
       );
 
       for (const log of await app.client.getMainProcessLogs()) {
-        fs.writeSync(mainLogFileFd, log);
-        fs.writeSync(mainLogFileFd, "\n");
+        mainLogFile.write(log);
+        mainLogFile.write("\n");
       }
 
       type Log = {
@@ -113,8 +116,8 @@ describe("test", function () {
       };
 
       for (const log of (await app.client.getRenderProcessLogs()) as Log[]) {
-        fs.writeSync(rendererLogFileFd, `[${log.level}] ${log.message}`);
-        fs.writeSync(rendererLogFileFd, "\n");
+        rendererLogFile.write(`[${log.level}] ${log.message}`);
+        rendererLogFile.write("\n");
       }
 
       return app.mainProcess.exit(0);
