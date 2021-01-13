@@ -7,3 +7,6 @@ pack
 # ignore generated file by graphql-code-generator.
 src/generated
 .env
+
+__tests__/snapshots
+__tests__/logs
