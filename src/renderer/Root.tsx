@@ -12,6 +12,7 @@ import LobbyView from "./views/lobby/LobbyView";
 import IntroView from "./IntroView";
 import LoginView from "./views/login/LoginView";
 import MiningView from "./views/login/MiningView";
+import ErrorClearCacheView from "./views/error/ErrorClearCacheView";
 import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
 import ErrorReinstallView from "./views/error/ErrorReinstallView";
 import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
@@ -33,6 +34,11 @@ class Root extends React.Component {
           <Route exact path="/login/mining" component={MiningView} />
           <Route exact path="/lobby" component={LobbyView} />
           <Route exact path="/lobby/preload" component={PreloadView} />
+          <Route
+            exact
+            path="/error/clear-cache"
+            component={ErrorClearCacheView}
+          />
           <Route exact path="/error/relaunch" component={ErrorRelaunchView} />
           <Route exact path="/error/reinstall" component={ErrorReinstallView} />
           <Route
