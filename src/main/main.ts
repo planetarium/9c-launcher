@@ -567,6 +567,12 @@ async function initializeStandalone(): Promise<void> {
         "Error in run. Redirect to clear cache page."
       );
     }
+
+    console.log("Register exit handler.");
+    standalone.once("exit", () => {
+      console.error("Standalone exited by self.");
+      win?.webContents.send("go to error page", "relaunch");
+    });
   } catch (error) {
     console.error(`Error occurred during initializeStandalone(). ${error}`);
     if (
