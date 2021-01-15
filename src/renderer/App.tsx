@@ -1,7 +1,4 @@
-import React, { useMemo, useEffect } from "react";
-import { Router } from "react-router";
-import { createBrowserHistory } from "history";
-import "./styles/common.scss";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import ApolloClient from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
 import { RetryLink } from "apollo-link-retry";
@@ -10,22 +7,26 @@ import { ApolloProvider } from "react-apollo";
 import { getMainDefinition } from "apollo-utilities";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import { createBrowserHistory } from "history";
 import mixpanel from "mixpanel-browser";
 import { Provider } from "mobx-react";
-import AccountStore from "./stores/account";
-import { IStoreContainer } from "../interfaces/store";
 import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
-import { LOCAL_SERVER_URL, electronStore } from "../config";
-import GameStore from "./stores/game";
-import Root from "./Root";
-import StandaloneStore from "./stores/standaloneStore";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core";
-import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
-import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
-import montserrat from "./styles/font";
+import React, { useMemo, useEffect } from "react";
+import { Router } from "react-router";
 
-import LocaleProvider from "./i18n";
 import { Locale } from "../interfaces/i18n";
+import { IStoreContainer } from "../interfaces/store";
+import { LOCAL_SERVER_URL, electronStore } from "../config";
+
+import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
+import LocaleProvider from "./i18n";
+import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
+import Root from "./Root";
+import AccountStore from "./stores/account";
+import GameStore from "./stores/game";
+import StandaloneStore from "./stores/standaloneStore";
+import "./styles/common.scss";
+import montserrat from "./styles/font";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,

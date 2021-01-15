@@ -1,27 +1,26 @@
-import { hot } from "react-hot-loader";
 import React from "react";
+import { hot } from "react-hot-loader";
 import { Route, Switch, Redirect } from "react-router";
-import { Layout } from "./views/layout/Layout";
-import "./styles/common.scss";
-import MainView from "./views/main/MainView";
+
 import AccountView from "./views/account/AccountView";
-import ConfigurationView from "./views/config/ConfigurationView";
+import CopyCreatedPrivateKeyView from "./views/account/CopyCreatedPrivateKeyView";
 import CreateAccountView from "./views/account/CreateAccountView";
 import RevokeAccountView from "./views/account/RevokeAccountView";
-import LobbyView from "./views/lobby/LobbyView";
-import IntroView from "./IntroView";
-import LoginView from "./views/login/LoginView";
-import MiningView from "./views/login/MiningView";
-import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
-import ErrorReinstallView from "./views/error/ErrorReinstallView";
-import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
-import ErrorNoPermissionView from "./views/error/ErrorNoPermissionView";
 import ReviewPrivateKeyView from "./views/account/reset/ReviewPrivateKeyView";
 import ResetPasswordView from "./views/account/reset/ResetPasswordView";
+import ConfigurationView from "./views/config/ConfigurationView";
+import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
+import ErrorNoPermissionView from "./views/error/ErrorNoPermissionView";
+import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
+import ErrorReinstallView from "./views/error/ErrorReinstallView";
+import IndexView from "./views/index/IndexView";
+import Layout2 from "./views/layout/Layout2";
+import LobbyView from "./views/lobby/LobbyView";
 import PreloadView from "./views/lobby/PreloadView";
-import CopyCreatedPrivateKeyView from "./views/account/CopyCreatedPrivateKeyView";
+import MiningView from "./views/login/MiningView";
+import LoginView from "./views/login/LoginView";
+import MainView from "./views/main/MainView";
 import PreloadProgressView from "./views/preload/PreloadProgressView";
-import { Box } from "@material-ui/core";
 
 class Root extends React.Component {
   render() {
