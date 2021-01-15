@@ -25,9 +25,9 @@ import PreloadProgressView from "./views/preload/PreloadProgressView";
 class Root extends React.Component {
   render() {
     return (
-      <Layout>
+      <Layout2>
         <Switch>
-          <Route exact path="/" component={IntroView} />
+          <Route exact path="/" component={IndexView} />
           <Route exact path="/main" component={MainView} />
           <Route exact path="/login" component={LoginView} />
           <Route exact path="/login/mining" component={MiningView} />
@@ -67,7 +67,7 @@ class Root extends React.Component {
           <Redirect from="*" to="/" />
         </Switch>
         <PreloadProgressView />
-      </Layout>
+      </Layout2>
     );
   }
 }
