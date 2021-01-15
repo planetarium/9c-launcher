@@ -2,6 +2,7 @@ import { ZXCVBNFeedbackWarning } from "zxcvbn";
 
 export default interface I18n {
   intro: Intro;
+  index: Index;
   menu: Menu;
   main: Main;
   login: Login;
@@ -52,6 +53,13 @@ type Description = Record<RequireLocale, string[]> &
 
 export interface Intro {
   "불러오는 중...": LocaleRecord;
+}
+
+export interface Index {
+  "welcome": LocaleRecord;
+  "description": LocaleRecord;
+  "createAccount": LocaleRecord;
+  "alreadyHaveAccount": LocaleRecord;
 }
 
 export interface Menu {

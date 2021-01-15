@@ -16,6 +16,85 @@
       "de": "Wird geladen..."
     }
   },
+  "index": {
+    "welcome": {
+      "en": "Welcome to Nine Chronicles!",
+      "ko": "나인 크로니클에 오신 걸 환영합니다!",
+      "pl": "Witaj w Nine Chronicles!",
+      "pt": "Bem vindo a Nine Chronicles!",
+      "lt": "Sveiki atvyke į Devynias Kronikas!",
+      "nl": "Welkom bij Nine Chronicles!",
+      "es": "Bienvenido a Nine Chronicles",
+      "pt-BR": "Bem Vindo a Nine Chronicles!",
+      "km": "ស្វាគមន៍មកកាន់ Nine Chronicles!",
+      "id": "selamat datang di Nine Chronicles!",
+      "th": "ยินดีต้อนรับสู่ Nine Chronicles!",
+      "ja": "ナインクロニクルへようこそ！",
+      "de": "Willkommen zu Nine Cronicles!"
+    },
+    "description": {
+      "en": [
+        "This is a fantasy world on the blockchain.",
+        "You need to create an account to start the game."
+      ],
+      "ko": [
+        "블록체인 위의 판타지 세계입니다.",
+        "게임을 시작하기 전에, 계정 생성이 필요합니다"
+      ],
+      "pl": [
+        "To świat fantasy zbudowany na blockchainie",
+        "Aby rozpocząć grę musisz najpierw utworzyć konto."
+      ],
+      "pt": [
+        "Isto é um mundo de fantasia de blockchain.",
+        "Para começar o jogo, precisas de criar uma conta."
+      ],
+      "lt": [
+        "Šis fantazijos pasaulis yra sukurtas blokų grandinės principu.",
+        "Prieš pradėdamas žaidimą tu turi susikurti paskyrą."
+      ],
+      "nl": [
+        "Dit is een fantasiewereld op de blockchain.",
+        "Om het spel te starten, moet je een account aanmaken."
+      ],
+      "es": [
+        "Este es un mundo de fantasia en blockchain",
+        "Para iniciar el juego, debes crearte una cuenta."
+      ],
+      "pt-BR": [
+        "Esse é o mundo de fantasia de blockchain.",
+        "Para iniciar o jogo, você precisa criar sua conta."
+      ],
+      "km": [
+        "នេះគឺជាពិភពរវើរវាយនៅលើ blockchain.",
+        "អ្នកត្រូវបង្កើតគណនីដើម្បីចាប់ផ្តើមហ្គេម។"
+      ],
+      "id": [
+        "dunia fantasi di blockchain.",
+        "anda harus membuat akun untuk mulai bermain."
+      ],
+      "th": [
+        "นี่คือโลกแฟนตาซีบนบล็อคเชน",
+        "คุณจำเป็นต้องสร้างบัญชีเพื่อเริ่มเกม"
+      ],
+      "ja": [
+        "ここはブロックチェーン上のファンタジーワールドです。",
+        "まずはアカウントを作成してみましょう。"
+      ],
+      "de": [
+        "Es handelt sich um eine Phantasiewelt, die auf der Blockchain läuft.",
+        "Du musst ein Konto erstellen, um das Spiel zu beginnen zu können."
+      ]
+    },
+    "createAccount": {
+      "en": "Create New Account",
+      "ko": "새 계정 만들기"
+    },
+    "alreadyHaveAccount": {
+      "en": "I already have my private key",
+      "ko": "이미 개인키를 가지고 있습니다"
+    }
+  },
   "menu": {
     "Forum": {
       "ko": "Forum",
