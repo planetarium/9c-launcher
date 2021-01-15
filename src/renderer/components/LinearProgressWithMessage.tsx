@@ -47,11 +47,6 @@ const LinearProgressWithMessage = ({message, variant, value, valueBuffer}: Linea
     <div className={styles.root}>
       <p className={styles.message}>{message}</p>
       <StyledLinearProgress variant={variant} value={value} valueBuffer={valueBuffer} />
-      {/* {
-        variant === "buffer"
-          ? (<LinearProgress variant={variant} value={value} valueBuffer={valueBuffer} />)
-          : (<LinearProgress variant={variant} value={value} />)
-      } */}
     </div>
   );
 };
