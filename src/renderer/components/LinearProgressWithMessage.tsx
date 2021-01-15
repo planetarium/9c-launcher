@@ -8,7 +8,7 @@ type LinearProgressWithMessageProps = {
   valueBuffer?: number;
 };
 
-const LinearProgressWithMessageStyle = makeStyles({
+const linearProgressWithMessageStyle = makeStyles({
   root: {
     position: "absolute",
     top: 679,
@@ -24,7 +24,7 @@ const LinearProgressWithMessageStyle = makeStyles({
 });
 
 const LinearProgressWithMessage = ({message, variant, value, valueBuffer}: LinearProgressWithMessageProps) => {
-  const styles = LinearProgressWithMessageStyle();
+  const styles = linearProgressWithMessageStyle();
   const StyledLinearProgress = withStyles(() =>
     createStyles({
       root: {
