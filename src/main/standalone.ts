@@ -2,7 +2,7 @@ import { ChildProcess } from "child_process";
 import { ipcMain } from "electron";
 import { electronStore, LOCAL_SERVER_URL } from "../config";
 import { retry } from "@lifeomic/attempt";
-import FetchError from "../errors/FetchError";
+import { FetchError, StandaloneExitedError } from "../errors";
 import { execute, sleep } from "../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
@@ -170,7 +170,9 @@ class Standalone {
       if (!this.alive) {
         console.log("Standalone is not alive. Abort...");
         context.abort();
-        throw new Error("RetriableFetch: Standalone is not alive.");
+        throw new StandaloneExitedError(
+          "Standalone is exited during fetching."
+        );
       }
 
       try {
