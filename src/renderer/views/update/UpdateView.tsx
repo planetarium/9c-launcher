@@ -45,7 +45,7 @@ const UpdateView = ({ state, variant, progress }: UpdateViewProps) => {
   var progressMessage;
   switch (state) {
     case "copy":
-      progressMessage = `Copying files...${progressToString}`;
+      progressMessage = "Copying files...";
       break;
     case "download":
       progressMessage = `Downloading the new version...${progressToString}`;
