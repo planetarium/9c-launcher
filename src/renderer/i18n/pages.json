@@ -531,7 +531,7 @@
       "en": "Please press the button below to clear cache. The launcher will restart automatically."
     },
     "ClearCache": {
-      "ko": "클리어 캐시",
+      "ko": "캐시 지우기",
       "en": "Clear cache"
     }
   },
