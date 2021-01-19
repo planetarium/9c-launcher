@@ -119,6 +119,12 @@ const PreloadProgressView = observer(() => {
         console.error("Chain's tip is stale. Automatically relaunch.");
         ipcRenderer.send("relaunch standalone");
         break;
+      case 0x04:
+        console.error(
+          "Haven't received any messages for some time. Automatically relaunch."
+        );
+        ipcRenderer.send("relaunch standalone");
+        break;
       case 0x05:
         console.error("Action Timeout. Automatically relaunch.");
         ipcRenderer.send("relaunch standalone");
