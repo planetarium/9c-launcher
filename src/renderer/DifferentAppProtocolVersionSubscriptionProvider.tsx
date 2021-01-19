@@ -96,7 +96,10 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
     }
   }, [loading, data]);
 
-  return isDownload || isExtract || isCopying
-    ? (<UpdateView isDownload={isDownload} isExtract={isExtract} variant={variant} progress={progress} />)
+  return true // isDownload || isExtract || isCopying
+    ? (<UpdateView
+      state={isDownload ? "download" : isExtract ? "extract" : "copy"}
+      variant={variant}
+      progress={progress} />)
     : (<>{children}</>);
 };
