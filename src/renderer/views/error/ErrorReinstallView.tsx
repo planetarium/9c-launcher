@@ -17,7 +17,7 @@ const ErrorReinstallView = () => {
         "This will close launcher. Are you sure you want to clear cache and restart?"
       )
     ) {
-      ipcRenderer.sendSync("clear cache");
+      ipcRenderer.sendSync("clear cache", false);
       remote.app.relaunch();
       remote.app.exit();
     }

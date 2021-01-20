@@ -36,17 +36,12 @@ const PreloadProgressView = observer(() => {
   const { locale } = useLocale<PreloadProgress>("preloadProgress");
 
   useEffect(() => {
-    ipcRenderer.on("not enough space", () => {
-      gotoErrorPage("disk-space");
-    });
-
-    ipcRenderer.on("no permission", () => {
-      gotoErrorPage("no-permission");
-    });
-
-    ipcRenderer.on("standalone exited", () => {
-      gotoErrorPage("reinstall");
-    });
+    ipcRenderer.on(
+      "go to error page",
+      (event: IpcRendererEvent, arg: string) => {
+        gotoErrorPage(arg);
+      }
+    );
 
     ipcRenderer.on("start bootstrap", () => {
       standaloneStore.setReady(false);
@@ -92,6 +87,7 @@ const PreloadProgressView = observer(() => {
   }, [step]);
 
   const gotoErrorPage = (page: string) => {
+    console.log(`Direct to error page: ${page}`);
     standaloneStore.setReady(false);
     routerStore.push(`/error/${page}`);
   };
