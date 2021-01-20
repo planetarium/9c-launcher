@@ -18,6 +18,7 @@ import {
   ipcMain,
   DownloadItem,
   dialog,
+  shell,
 } from "electron";
 import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
@@ -607,6 +608,11 @@ function createWindow(): BrowserWindow {
       event.preventDefault();
       _win?.hide();
     }
+  });
+
+  _win.webContents.on("new-window", function(event: any, url: string) {
+    event.preventDefault();
+    shell.openExternal(url);
   });
 
   return _win;
