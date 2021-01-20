@@ -158,7 +158,10 @@ jobs:
           path: 9c-launcher-dist-${{ matrix.os }}.*
       # 패키지
       - run: |
-          dotnet clean -c Release && dotnet nuget locals all --clear
+          pushd NineChronicles.Headless
+            dotnet clean -c Release
+            dotnet nuget locals all --clear
+          popd
           npm run pack-all
         env:
           SKIP_APV_SIGN: "1" # 위에서 npm run sign-apv 따로 돌림
