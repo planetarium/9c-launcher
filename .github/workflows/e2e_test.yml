@@ -33,7 +33,10 @@ jobs:
           APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
       - name: Build Standalone
         run: |
-          dotnet clean -c Release && dotnet nuget locals all --clear
+          pushd NineChronicles.Headless
+            dotnet clean -c Release
+            dotnet nuget locals all --clear
+          popd
           npm run build-headless
       - name: Build Launcher
         run: npm run build-prod
