@@ -570,7 +570,7 @@ async function initializeStandalone(): Promise<void> {
 
     console.log("Register exit handler.");
     standalone.once("exit", () => {
-      console.error("Standalone exited by self.");
+      console.error("Headless exited by self.");
       win?.webContents.send("go to error page", "relaunch");
     });
   } catch (error) {

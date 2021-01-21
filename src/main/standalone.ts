@@ -156,7 +156,7 @@ class Standalone {
   private exitedHandler(code: number | null): void {
     console.error(`Standalone exited with exit code: ${code}`);
     if (!NODESTATUS.QuitRequested) {
-      console.error("Standalone exited unexpectedly.");
+      console.error("Headless exited unexpectedly.");
       eventEmitter.emit("exit");
     }
 
