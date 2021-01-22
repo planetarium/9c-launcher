@@ -5,6 +5,7 @@ import { retry } from "@lifeomic/attempt";
 import FetchError from "../errors/FetchError";
 import { execute, sleep } from "../utils";
 import fetch, { Response } from "electron-fetch";
+import { EventEmitter } from "ws";
 
 const retryOptions = {
   delay: 100,
@@ -17,13 +18,17 @@ const retryOptions = {
 
 interface NodeStatus {
   Node: ChildProcess | null;
+  QuitRequested: Boolean;
   ExitCode: number | null;
 }
 
 const NODESTATUS: NodeStatus = {
   Node: null,
+  QuitRequested: false,
   ExitCode: null,
 };
+
+const eventEmitter = new EventEmitter();
 
 class Standalone {
   constructor(path: string) {
@@ -50,7 +55,6 @@ class Standalone {
   private _running: boolean;
   private _privateKey: string | undefined;
   private _mining: boolean | undefined;
-  private _isQuitting: boolean = false;
 
   // execute-kill
   public get alive(): boolean {
@@ -111,7 +115,7 @@ class Standalone {
   }
 
   public async kill(): Promise<void> {
-    if (this._isQuitting) return;
+    if (NODESTATUS.QuitRequested) return;
 
     console.log("Killing standalone.");
     if (NODESTATUS.Node === null) {
@@ -119,7 +123,7 @@ class Standalone {
       return;
     }
 
-    this._isQuitting = true;
+    NODESTATUS.QuitRequested = true;
 
     let pid: number = NODESTATUS.Node.pid;
     process.kill(pid, "SIGINT");
@@ -129,7 +133,7 @@ class Standalone {
       await sleep(100);
     }
 
-    this._isQuitting = false;
+    NODESTATUS.QuitRequested = false;
     console.log("Standalone killed successfully.");
   }
 
@@ -145,8 +149,17 @@ class Standalone {
     return true;
   }
 
+  public once(event: string | symbol, listener: (...args: any[]) => void) {
+    eventEmitter.once(event, listener);
+  }
+
   private exitedHandler(code: number | null): void {
     console.error(`Standalone exited with exit code: ${code}`);
+    if (!NODESTATUS.QuitRequested) {
+      console.error("Headless exited unexpectedly.");
+      eventEmitter.emit("exit");
+    }
+
     NODESTATUS.Node = null;
     NODESTATUS.ExitCode = code;
   }

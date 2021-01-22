@@ -18,6 +18,7 @@ import {
   ipcMain,
   DownloadItem,
   dialog,
+  shell,
 } from "electron";
 import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
@@ -418,10 +419,11 @@ function initializeIpc() {
     gameNode = node;
   });
 
-  ipcMain.on("clear cache", async (event) => {
+  ipcMain.on("clear cache", async (event, rerun: boolean) => {
+    console.log(`Clear cache is requested. (rerun: ${rerun})`);
     await quitAllProcesses();
     utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
-    initializeStandalone();
+    if (rerun) initializeStandalone();
     event.returnValue = true;
   });
 
@@ -496,7 +498,7 @@ async function initializeStandalone(): Promise<void> {
 
   try {
     if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
-      win?.webContents.send("no permission");
+      win?.webContents.send("go to error page", "no-permission");
       throw new StandaloneInitializeError(
         `Not enough permission. ${BLOCKCHAIN_STORE_PATH}`
       );
@@ -504,7 +506,7 @@ async function initializeStandalone(): Promise<void> {
 
     let freeSpace = await utils.getDiskSpace(BLOCKCHAIN_STORE_PATH);
     if (freeSpace < REQUIRED_DISK_SPACE) {
-      win?.webContents.send("not enough space");
+      win?.webContents.send("go to error page", "disk-space");
       throw new StandaloneInitializeError(
         `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
       );
@@ -560,21 +562,30 @@ async function initializeStandalone(): Promise<void> {
     initializeStandaloneCts.token.throwIfCancelled();
     if (!(await standalone.run())) {
       // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
-      win?.webContents.send("error/clear-cache");
+      win?.webContents.send("go to error page", "clear-cache");
       throw new StandaloneInitializeError(
         "Error in run. Redirect to clear cache page."
       );
     }
+
+    console.log("Register exit handler.");
+    standalone.once("exit", () => {
+      console.error("Headless exited by self.");
+      win?.webContents.send("go to error page", "relaunch");
+    });
   } catch (error) {
+    console.error(`Error occurred during initializeStandalone(). ${error}`);
     if (
       error instanceof StandaloneInitializeError ||
       error instanceof CancellationToken.CancellationError
     ) {
       console.error(`InitializeStandalone() halted: ${error}`);
     } else {
+      win?.webContents.send("go to error page", "reinstall");
       throw error;
     }
   } finally {
+    console.log("initializeStandalone() finished.");
     initializeStandaloneCts = null;
   }
 }
@@ -608,6 +619,11 @@ function createWindow(): BrowserWindow {
       event.preventDefault();
       _win?.hide();
     }
+  });
+
+  _win.webContents.on("new-window", function(event: any, url: string) {
+    event.preventDefault();
+    shell.openExternal(url);
   });
 
   return _win;

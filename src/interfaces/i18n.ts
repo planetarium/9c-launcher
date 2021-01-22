@@ -9,6 +9,7 @@ export default interface I18n {
   mining: Mining;
   lobby: Lobby;
   preload: Preload;
+  errorClearCache: ErrorClearCache;
   errorDiskSpace: ErrorDiskSpace;
   errorNoPermission: ErrorNoPermission;
   errorRelaunch: ErrorRelaunch;
@@ -119,6 +120,12 @@ export interface ErrorNoPermission {
   "체인 경로를 아래의 단계를 따라 바꿔주세요.": LocaleRecord;
   "오른쪽의 버튼을 클릭하여 설정 페이지를 여세요.": LocaleRecord;
   '"경로 선택하기" 버튼을 클릭해서 체인이 저장되는 경로를 바꿔주세요.': LocaleRecord;
+}
+
+export interface ErrorClearCache {
+  "실행 도중 오류가 발생했습니다.": LocaleRecord;
+  "아래 버튼을 눌러 캐시를 지워주세요. 론처가 자동으로 재시작됩니다.": LocaleRecord;
+  ClearCache: LocaleRecord;
 }
 
 export interface ErrorRelaunch {

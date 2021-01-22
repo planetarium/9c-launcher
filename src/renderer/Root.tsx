@@ -9,6 +9,7 @@ import RevokeAccountView from "./views/account/RevokeAccountView";
 import ReviewPrivateKeyView from "./views/account/reset/ReviewPrivateKeyView";
 import ResetPasswordView from "./views/account/reset/ResetPasswordView";
 import ConfigurationView from "./views/config/ConfigurationView";
+import ErrorClearCacheView from "./views/error/ErrorClearCacheView";
 import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
 import ErrorNoPermissionView from "./views/error/ErrorNoPermissionView";
 import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
@@ -33,6 +34,11 @@ class Root extends React.Component {
           <Route exact path="/login/mining" component={MiningView} />
           <Route exact path="/lobby" component={LobbyView} />
           <Route exact path="/lobby/preload" component={PreloadView} />
+          <Route
+            exact
+            path="/error/clear-cache"
+            component={ErrorClearCacheView}
+          />
           <Route exact path="/error/relaunch" component={ErrorRelaunchView} />
           <Route exact path="/error/reinstall" component={ErrorReinstallView} />
           <Route

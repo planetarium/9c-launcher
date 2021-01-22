@@ -10,8 +10,10 @@ import { expect } from "chai";
 const isWindows = process.platform === "win32";
 const lastPath = "/lobby";
 const snapshotDir = path.join(__dirname, "snapshots");
+const logsDir = path.join(__dirname, "logs");
 
 if (!fs.existsSync(snapshotDir)) fs.mkdirSync(snapshotDir);
+if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
 
 // @ts-ignore
 process.env.ELECTRON_IS_DEV = 0;
@@ -90,8 +92,34 @@ describe("test", function () {
     expect(text).to.equal("NOW RUNNING...");
   });
 
-  after(function () {
+  after(async function () {
     if (app?.isRunning()) {
+      const mainLogFile = await fs.promises.open(
+        path.join(logsDir, "main.log"),
+        "w"
+      );
+      const rendererLogFile = await fs.promises.open(
+        path.join(logsDir, "render.log"),
+        "w"
+      );
+
+      for (const log of await app.client.getMainProcessLogs()) {
+        mainLogFile.write(log);
+        mainLogFile.write("\n");
+      }
+
+      type Log = {
+        level: unknown;
+        message: string;
+        source: string;
+        timestamp: unknown;
+      };
+
+      for (const log of (await app.client.getRenderProcessLogs()) as Log[]) {
+        rendererLogFile.write(`[${log.level}] ${log.message}`);
+        rendererLogFile.write("\n");
+      }
+
       return app.mainProcess.exit(0);
     }
   });
