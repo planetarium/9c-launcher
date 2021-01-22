@@ -10,6 +10,9 @@ body {
   margin: 0;
   font-family: Montserrat, sans-serif;
   overflow: hidden;
+
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
 }
 
 button {
@@ -19,6 +22,8 @@ button {
   font-weight: bold;
   border-radius: 4px;
   border-style: none;
+
+  -webkit-app-region: no-drag;
 }
 
 input[type="password"] {

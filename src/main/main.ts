@@ -602,6 +602,7 @@ function createWindow(): BrowserWindow {
     resizable: false,
     autoHideMenuBar: true,
     icon: path.join(app.getAppPath(), logoImage),
+    titleBarStyle: 'hidden',
   });
 
   console.log(app.getAppPath());
