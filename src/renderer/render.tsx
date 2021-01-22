@@ -1,12 +1,15 @@
-import * as DOM from "react-dom";
-import React from "react";
-import App from "./App";
-import { initializeSentry } from "../preload/sentry";
-import initializeMixpanel from "../preload/mixpanel";
-import electronLog from "electron-log";
-import mixpanel from "mixpanel-browser";
 import * as Sentry from "@sentry/electron";
 import isDev from "electron-is-dev";
+import electronLog from "electron-log";
+import mixpanel from "mixpanel-browser";
+import React from "react";
+import * as DOM from "react-dom";
+
+import { initializeSentry } from "../preload/sentry";
+import initializeMixpanel from "../preload/mixpanel";
+
+import App from "./App";
+
 
 initializeSentry();
 initializeMixpanel();
