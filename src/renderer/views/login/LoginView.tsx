@@ -21,7 +21,6 @@ import { usePopupState, bindPopover } from "material-ui-popup-state/hooks";
 import { clipboard, ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 
-import "../../styles/login/login.scss";
 import { useDecryptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
