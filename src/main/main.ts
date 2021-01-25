@@ -592,8 +592,8 @@ async function initializeStandalone(): Promise<void> {
 
 function createWindow(): BrowserWindow {
   let _win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1300,
+    height: 768,
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(app.getAppPath(), "preload.js"),
@@ -602,6 +602,7 @@ function createWindow(): BrowserWindow {
     resizable: false,
     autoHideMenuBar: true,
     icon: path.join(app.getAppPath(), logoImage),
+    titleBarStyle: 'hidden',
   });
 
   console.log(app.getAppPath());
