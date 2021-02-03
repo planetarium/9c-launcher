@@ -46,12 +46,14 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     activate,
     { data: isActivated, error: activatedError },
   ] = useActivateMutation();
-  const [activationKey, setActivationKey] = useState(accountStore.activationKey);
+  const [activationKey, setActivationKey] = useState(
+    accountStore.activationKey
+  );
   const [polling, setPollingState] = useState(false);
 
   const { locale } = useLocale<Lobby>("lobby");
 
-  const activationKeyChangeHandle = useCallback(
+  const handleActivationKeyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setActivationKey(event.target.value);
     },
@@ -64,6 +66,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   };
 
   const activateMutation = () => {
+    console.log("!! Invoke activateMutation()");
     setPollingState(true);
     activate({
       variables: {
@@ -71,30 +74,38 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       },
     })
       .then(async (value) => {
+        console.log("!! 1");
         if (!value.data?.activationStatus?.activateAccount) {
           return;
         }
 
         while (true) {
+          console.log("!! 2");
           await sleep(1000);
           const result = await activationRefetch();
-          if (result.data.activationStatus.activated) break;
+          if (result.data.activationStatus.activated) {
+            console.log("!! 3"); // NOTE: Not invoked when auto activate.
+            break;
+          }
         }
       })
       .finally(() => {
+        console.log("!! 4");
         setPollingState(false);
       });
   };
 
   useEffect(() => {
     if (standaloneStore.Ready && standaloneStore.IsSetPrivateKeyEnded) {
+      console.log("!! useEffect");
       activation();
+
+      if (activationKey !== "") {
+        console.log("!! 0");
+        activateMutation();
+      }
     }
   }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
-
-  if (activationKey !== "") {
-    activateMutation();
-  }
 
   let child: JSX.Element;
   if (loading || polling) {
@@ -114,7 +125,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
         <TextField
           error={activatedError?.message !== undefined}
           label={locale("활성화 키")}
-          onChange={activationKeyChangeHandle}
+          onChange={handleActivationKeyChange}
           fullWidth
         />
         {activatedError?.message !== undefined && (
