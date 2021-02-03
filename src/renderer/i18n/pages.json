@@ -763,6 +763,10 @@
       "ja": "パスワード（確認）",
       "de": "Bestätige"
     },
+    "invitationCode": {
+      "en": "Invitation Code",
+      "ko": "초대 코드"
+    },
     "확인": {
       "ko": "확인",
       "en": "Done",
