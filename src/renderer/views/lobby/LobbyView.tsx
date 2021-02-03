@@ -1,3 +1,13 @@
+import {
+  Button as ButtonOrigin,
+  ButtonProps,
+  CircularProgress,
+  Container,
+  FormHelperText,
+  TextField,
+} from "@material-ui/core";
+import mixpanel from "mixpanel-browser";
+import { inject, observer } from "mobx-react";
 import React, {
   useState,
   useEffect,
@@ -6,26 +16,16 @@ import React, {
   FormEvent,
 } from "react";
 import {
-  Button as ButtonOrigin,
-  ButtonProps,
-  CircularProgress,
-  Container,
-  FormHelperText,
-  LinearProgress,
-  TextField,
-} from "@material-ui/core";
-import mixpanel from "mixpanel-browser";
-import { IStoreContainer } from "../../../interfaces/store";
-import { inject, observer } from "mobx-react";
-import {
   useActivateMutation,
   useActivationLazyQuery,
 } from "../../../generated/graphql";
-import lobbyViewStyle from "./LobbyView.style";
+import { Lobby } from "../../../interfaces/i18n";
+import { IStoreContainer } from "../../../interfaces/store";
+import { sleep } from "../../../utils";
 
 import { useLocale } from "../../i18n";
-import { Lobby } from "../../../interfaces/i18n";
-import { sleep } from "../../../utils";
+
+import lobbyViewStyle from "./LobbyView.style";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
@@ -37,7 +37,7 @@ const Button = (
 
 const LobbyView = observer((props: ILobbyViewProps) => {
   const classes = lobbyViewStyle();
-  const { accountStore, gameStore, standaloneStore } = props;
+  const { accountStore, standaloneStore } = props;
   const [
     activation,
     { loading, error: statusError, data: status, refetch: activationRefetch },
@@ -46,13 +46,24 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     activate,
     { data: isActivated, error: activatedError },
   ] = useActivateMutation();
-  const [activationKey, setActivationKey] = useState("");
+  const [activationKey, setActivationKey] = useState(accountStore.activationKey);
   const [polling, setPollingState] = useState(false);
 
   const { locale } = useLocale<Lobby>("lobby");
 
-  const handleActivateSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const activationKeyChangeHandle = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setActivationKey(event.target.value);
+    },
+    [event]
+  );
+
+  const handleActivationKeySubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    activateMutation();
+  };
+
+  const activateMutation = () => {
     setPollingState(true);
     activate({
       variables: {
@@ -75,18 +86,15 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       });
   };
 
-  const privateKeyChangeHandle = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setActivationKey(event.target.value);
-    },
-    [event]
-  );
-
   useEffect(() => {
     if (standaloneStore.Ready && standaloneStore.IsSetPrivateKeyEnded) {
       activation();
     }
   }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
+
+  if (activationKey !== "") {
+    activateMutation();
+  }
 
   let child: JSX.Element;
   if (loading || polling) {
@@ -102,11 +110,11 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     child = <GameStartButton {...props} />;
   } else {
     child = (
-      <form onSubmit={handleActivateSubmit}>
+      <form onSubmit={handleActivationKeySubmit}>
         <TextField
           error={activatedError?.message !== undefined}
           label={locale("활성화 키")}
-          onChange={privateKeyChangeHandle}
+          onChange={activationKeyChangeHandle}
           fullWidth
         />
         {activatedError?.message !== undefined && (
