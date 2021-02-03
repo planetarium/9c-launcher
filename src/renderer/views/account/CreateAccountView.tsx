@@ -1,29 +1,17 @@
-import React, { useState, ChangeEvent, MouseEvent } from "react";
+import { Typography } from "@material-ui/core";
 import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
-import {
-  Typography,
-  OutlinedInput,
-  InputAdornment,
-  IconButton,
-} from "@material-ui/core";
-
-import RetypePasswordForm from "../../components/RetypePasswordForm";
-
-import { ExecutionResult } from "react-apollo";
-import { IStoreContainer } from "../../../interfaces/store";
-
-import {
-  useCreatePrivateKeyMutation,
-  CreatePrivateKeyMutation,
-} from "../../../generated/graphql";
-
-import AccountStore from "../../stores/account";
-import createAccountViewStyle from "./CreateAccountView.style";
 import { RouterStore } from "mobx-react-router";
+import React from "react";
+
+import { CreateAccount } from "../../../interfaces/i18n";
+import { useCreatePrivateKeyMutation } from "../../../generated/graphql";
 
 import { useLocale } from "../../i18n";
-import { CreateAccount } from "../../../interfaces/i18n";
+import RetypePasswordForm from "../../components/RetypePasswordForm";
+import AccountStore from "../../stores/account";
+
+import createAccountViewStyle from "./CreateAccountView.style";
 
 interface ICreateAccountProps {
   accountStore: AccountStore;
@@ -38,7 +26,7 @@ const CreateAccountView = observer(
 
     const classes = createAccountViewStyle();
 
-    const handleSubmit = async (password: string) => {
+    const handleSubmit = async (password: string, activationKey: string) => {
       mixpanel.track("Launcher/CreatePrivateKey");
       const executionResult = await createAccount({
         variables: {
@@ -56,6 +44,7 @@ const CreateAccountView = observer(
       accountStore.setPrivateKey(privateKey);
       accountStore.addAddress(address);
       accountStore.setSelectedAddress(address);
+      accountStore.setActivationKey(activationKey);
       routerStore.push("/account/create/copy");
     };
 
