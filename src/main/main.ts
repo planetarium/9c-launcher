@@ -38,7 +38,7 @@ import mixpanel from "mixpanel-browser";
 import * as utils from "../utils";
 import * as snapshot from "./snapshot";
 import Standalone from "./standalone";
-import { StandaloneExitedError, StandaloneInitializeError } from "../errors";
+import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 
@@ -580,8 +580,8 @@ async function initializeStandalone(): Promise<void> {
       error instanceof CancellationToken.CancellationError
     ) {
       console.error(`InitializeStandalone() halted: ${error}`);
-    } else if (error instanceof StandaloneExitedError) {
-      console.error("Standalone exited during initialization.");
+    } else if (error instanceof HeadlessExitedError) {
+      console.error("Headless exited during initialization.");
       win?.webContents.send("go to error page", "clear-cache");
     } else {
       win?.webContents.send("go to error page", "reinstall");

@@ -1,3 +1,3 @@
 export { default as FetchError } from "./FetchError";
-export { default as StandaloneExitedError } from "./StandaloneExitedError";
+export { default as HeadlessExitedError } from "./HeadlessExitedError";
 export { default as StandaloneInitializeError } from "./StandaloneInitializeError";
