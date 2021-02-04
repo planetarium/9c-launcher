@@ -50,6 +50,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     accountStore.activationKey
   );
   const [polling, setPollingState] = useState(false);
+  const [hasAutoActivateBegin, setHasAutoActivateBegin] = useState(false);
 
   const { locale } = useLocale<Lobby>("lobby");
 
@@ -99,13 +100,18 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     if (standaloneStore.Ready && standaloneStore.IsSetPrivateKeyEnded) {
       console.log("!! useEffect");
       activation();
-
-      if (activationKey !== "") {
-        console.log("!! 0");
-        activateMutation();
-      }
     }
   }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
+
+  if (!loading &&
+    !polling &&
+    !status?.activationStatus.activated &&
+    activationKey !== "" &&
+    !hasAutoActivateBegin) {
+    console.log("!! activateMutation");
+    setHasAutoActivateBegin(true);
+    activateMutation();
+  }
 
   let child: JSX.Element;
   if (loading || polling) {
