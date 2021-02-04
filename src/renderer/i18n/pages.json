@@ -426,19 +426,9 @@
       "ja": "アクティベーション",
       "de": "Aktivierung"
     },
-    "활성화 키": {
-      "ko": "활성화 키",
-      "en": "Activation Key",
-      "pl": "Klucz aktywacyjny",
-      "pt": "Chave de Ativação",
-      "lt": "Aktyvacijos raktas",
-      "nl": "Activatie Sleutel",
-      "pt-BR": "Chave de Ativação",
-      "km": "ប៊ូតុងធ្វើឱ្យសកម្ម",
-      "th": "เปิดใช้งานรหัส",
-      "id": "Kunci Aktivasi",
-      "ja": "アクティベーションキー",
-      "de": "Aktivierungsschlüssel"
+    "invitationCode": {
+      "ko": "초대 코드",
+      "en": "Invitation Code"
     }
   },
   "preload": {
