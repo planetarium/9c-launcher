@@ -148,6 +148,17 @@ function initializeIpc() {
   ipcMain.on(
     "encounter different version",
     async (event, data: DifferentAppProtocolVersionEncounterSubscription) => {
+      const localVersionNumber =
+        data.differentAppProtocolVersionEncounter.localVersion.version;
+      const peerVersionNumber =
+        data.differentAppProtocolVersionEncounter.peerVersion.version;
+      if (peerVersionNumber <= localVersionNumber) {
+        console.log(
+          "Encountered version is not higher than the local version. Abort update."
+        );
+        return;
+      }
+
       if (lockfile.checkSync(lockfilePath)) {
         console.log(
           "'encounter different version' event seems running already. Stop this flow."
@@ -623,7 +634,7 @@ function createWindow(): BrowserWindow {
     }
   });
 
-  _win.webContents.on("new-window", function(event: any, url: string) {
+  _win.webContents.on("new-window", function (event: any, url: string) {
     event.preventDefault();
     shell.openExternal(url);
   });
