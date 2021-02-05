@@ -476,8 +476,16 @@ function initializeIpc() {
   });
 
   ipcMain.on("get-installer-mixpanel-uuid", async (event) => {
-    let guidPath = path.join(app.getAppPath(), ".installer_mixpanel_uuid");
-    if (process.platform === "win32" && fs.existsSync(guidPath)) {
+    if (process.platform === "win32") {
+      let guidPath = path.join(
+        process.env.LOCALAPPDATA as string,
+        "planetarium",
+        ".installer_mixpanel_uuid"
+      );
+      if (!fs.existsSync(guidPath)) {
+        event.returnValue = null;
+      }
+
       event.returnValue = await fs.promises.readFile(guidPath, {
         encoding: "utf-8",
       });
