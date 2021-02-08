@@ -41,6 +41,7 @@ import Standalone from "./standalone";
 import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
+import { v4 as uuidv4 } from "uuid";
 
 initializeSentry();
 
@@ -483,12 +484,18 @@ function initializeIpc() {
         ".installer_mixpanel_uuid"
       );
       if (!fs.existsSync(guidPath)) {
-        event.returnValue = null;
+        const newUUID = uuidv4();
+        console.log(
+          `The installer mixpanel UUID doesn't exist at '${guidPath}'.`
+        );
+        await fs.promises.writeFile(guidPath, newUUID);
+        console.log(`Created new UUID ${newUUID} and stored.`);
+        event.returnValue = newUUID;
+      } else {
+        event.returnValue = await fs.promises.readFile(guidPath, {
+          encoding: "utf-8",
+        });
       }
-
-      event.returnValue = await fs.promises.readFile(guidPath, {
-        encoding: "utf-8",
-      });
     } else {
       event.returnValue = null;
     }

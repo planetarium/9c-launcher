@@ -26,6 +26,7 @@ import montserrat from "./styles/font";
 
 import LocaleProvider from "./i18n";
 import { Locale } from "../interfaces/i18n";
+import { ipcRenderer } from "electron";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -92,6 +93,14 @@ function App() {
   );
 
   useEffect(() => {
+    const installerMixpanelUUID = ipcRenderer.sendSync(
+      "get-installer-mixpanel-uuid"
+    ) as string | null;
+    if (installerMixpanelUUID !== null) {
+      console.debug(`Mixpanel identify with ${installerMixpanelUUID}`);
+      mixpanel.identify(installerMixpanelUUID);
+    }
+
     mixpanel.track("Launcher/Start");
   }, []);
 
