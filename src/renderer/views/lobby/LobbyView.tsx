@@ -105,7 +105,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       <form onSubmit={handleActivateSubmit}>
         <TextField
           error={activatedError?.message !== undefined}
-          label={locale("활성화 키")}
+          label={locale("초대 코드")}
           onChange={privateKeyChangeHandle}
           fullWidth
         />
