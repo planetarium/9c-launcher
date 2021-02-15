@@ -61,6 +61,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     };
 
     if (await activated()) {
+      setPollingState(false);
       return;
     }
 
@@ -71,17 +72,17 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     });
 
     if (!activateResult.data?.activationStatus?.activateAccount) {
+      setPollingState(false);
       return;
     }
 
     while (true) {
       await sleep(1000);
       if (await activated()) {
-        break;
+        setPollingState(false);
+        return;
       }
     }
-
-    setPollingState(false);
   };
 
   const privateKeyChangeHandle = useCallback(
