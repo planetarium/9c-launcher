@@ -426,19 +426,23 @@
       "ja": "アクティベーション",
       "de": "Aktivierung"
     },
-    "활성화 키": {
-      "ko": "활성화 키",
-      "en": "Activation Key",
-      "pl": "Klucz aktywacyjny",
-      "pt": "Chave de Ativação",
-      "lt": "Aktyvacijos raktas",
-      "nl": "Activatie Sleutel",
-      "pt-BR": "Chave de Ativação",
-      "km": "ប៊ូតុងធ្វើឱ្យសកម្ម",
-      "th": "เปิดใช้งานรหัส",
-      "id": "Kunci Aktivasi",
-      "ja": "アクティベーションキー",
-      "de": "Aktivierungsschlüssel"
+    "초대 코드": {
+      "ko": "초대 코드",
+      "en": "Invitation Code",
+      "pl": "Kod zaproszenia",
+      "pt": "Código de Convite",
+      "lt": "pakvietimo kodas",
+      "nl": "uitnodigingscode",
+      "pt-BR": "Código de Convite",
+      "km": "លេខ​កូដ​ការ​អញ្ជើញ",
+      "th": "รหัสการเชิญ",
+      "id": "Kode undangan",
+      "ja": "招待コード",
+      "de": "Einladungscode",
+      "es": "código de invitación",
+      "fr": "code d’invitation",
+      "ru": "Код приглашения",
+      "ch": "邀请代码"
     }
   },
   "preload": {
