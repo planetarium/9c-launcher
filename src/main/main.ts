@@ -38,7 +38,7 @@ import mixpanel from "mixpanel-browser";
 import * as utils from "../utils";
 import * as snapshot from "./snapshot";
 import Standalone from "./standalone";
-import StandaloneInitializeError from "../errors/StandaloneInitializeError";
+import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 
@@ -148,6 +148,17 @@ function initializeIpc() {
   ipcMain.on(
     "encounter different version",
     async (event, data: DifferentAppProtocolVersionEncounterSubscription) => {
+      const localVersionNumber =
+        data.differentAppProtocolVersionEncounter.localVersion.version;
+      const peerVersionNumber =
+        data.differentAppProtocolVersionEncounter.peerVersion.version;
+      if (peerVersionNumber <= localVersionNumber) {
+        console.log(
+          "Encountered version is not higher than the local version. Abort update."
+        );
+        return;
+      }
+
       if (lockfile.checkSync(lockfilePath)) {
         console.log(
           "'encounter different version' event seems running already. Stop this flow."
@@ -465,8 +476,16 @@ function initializeIpc() {
   });
 
   ipcMain.on("get-installer-mixpanel-uuid", async (event) => {
-    let guidPath = path.join(app.getAppPath(), ".installer_mixpanel_uuid");
-    if (process.platform === "win32" && fs.existsSync(guidPath)) {
+    if (process.platform === "win32") {
+      let guidPath = path.join(
+        process.env.LOCALAPPDATA as string,
+        "planetarium",
+        ".installer_mixpanel_uuid"
+      );
+      if (!fs.existsSync(guidPath)) {
+        event.returnValue = null;
+      }
+
       event.returnValue = await fs.promises.readFile(guidPath, {
         encoding: "utf-8",
       });
@@ -580,6 +599,9 @@ async function initializeStandalone(): Promise<void> {
       error instanceof CancellationToken.CancellationError
     ) {
       console.error(`InitializeStandalone() halted: ${error}`);
+    } else if (error instanceof HeadlessExitedError) {
+      console.error("Headless exited during initialization.");
+      win?.webContents.send("go to error page", "clear-cache");
     } else {
       win?.webContents.send("go to error page", "reinstall");
       throw error;
@@ -620,7 +642,7 @@ function createWindow(): BrowserWindow {
     }
   });
 
-  _win.webContents.on("new-window", function(event: any, url: string) {
+  _win.webContents.on("new-window", function (event: any, url: string) {
     event.preventDefault();
     shell.openExternal(url);
   });
