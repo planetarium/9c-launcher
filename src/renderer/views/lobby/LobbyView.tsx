@@ -51,28 +51,37 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   const { locale } = useLocale<Lobby>("lobby");
 
-  const handleActivateSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleActivateSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setPollingState(true);
-    activate({
+
+    const activated = async () => {
+      const result = await activationRefetch();
+      return result.data.activationStatus.activated;
+    };
+
+    if (await activated()) {
+      return;
+    }
+
+    const activateResult = await activate({
       variables: {
         encodedActivationKey: activationKey,
       },
-    })
-      .then(async (value) => {
-        if (!value.data?.activationStatus?.activateAccount) {
-          return;
-        }
+    });
 
-        while (true) {
-          await sleep(1000);
-          const result = await activationRefetch();
-          if (result.data.activationStatus.activated) break;
-        }
-      })
-      .finally(() => {
-        setPollingState(false);
-      });
+    if (!activateResult.data?.activationStatus?.activateAccount) {
+      return;
+    }
+
+    while (true) {
+      await sleep(1000);
+      if (await activated()) {
+        break;
+      }
+    }
+
+    setPollingState(false);
   };
 
   const privateKeyChangeHandle = useCallback(
