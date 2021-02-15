@@ -92,15 +92,17 @@ function App() {
     []
   );
 
-  useEffect(() => {
-    const installerMixpanelUUID = ipcRenderer.sendSync(
-      "get-installer-mixpanel-uuid"
-    ) as string | null;
-    if (installerMixpanelUUID !== null) {
-      console.debug(`Mixpanel identify with ${installerMixpanelUUID}`);
-      mixpanel.identify(installerMixpanelUUID);
-    }
+  const installerMixpanelUUID = ipcRenderer.sendSync(
+    "get-installer-mixpanel-uuid"
+  ) as string | null;
+  if (installerMixpanelUUID !== null) {
+    console.debug(`Use ${installerMixpanelUUID} as Mixpanel distinct_id`);
+    mixpanel.register({
+      distinct_id: installerMixpanelUUID,
+    });
+  }
 
+  useEffect(() => {
     mixpanel.track("Launcher/Start");
   }, []);
 
