@@ -533,47 +533,53 @@ async function initializeStandalone(): Promise<void> {
     await standalone.execute(standaloneExecutableArgs);
     win?.webContents.send("start bootstrap");
 
-    if (electronStore.get("UseSnapshot") && win != null) {
-      try {
-        let metadata = await snapshot.downloadMetadata(
-          win,
-          initializeStandaloneCts.token
-        );
-        let needSnapshot = await snapshot.validateMetadata(
-          metadata,
-          initializeStandaloneCts.token
-        );
-        if (needSnapshot) {
-          let snapshotDir = await snapshot.downloadSnapshot(
-            win,
-            (status) => {
-              win?.webContents.send("download progress", status);
-            },
-            initializeStandaloneCts.token
-          );
-          await standalone.kill();
-          utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
-          await snapshot.extractSnapshot(
-            snapshotDir,
-            (progress: number) => {
-              win?.webContents.send("extract progress", progress);
-            },
-            initializeStandaloneCts.token
-          );
-        } else {
-          console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
-        }
-      } catch (error) {
-        console.error(
-          `Unexpected error occurred during download / extract snapshot. ${error}`
-        );
+    const snapshotPaths: string[] = electronStore.get("SnapshotPaths");
+    if (snapshotPaths.length > 0 && win != null) {
+      for (const path of snapshotPaths) {
+        console.log(`Trying snapshot path: ${path}`);
 
-        if (error instanceof CancellationToken.CancellationError) {
-          throw error;
-        }
-      } finally {
-        if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
-          await standalone.execute(standaloneExecutableArgs);
+        try {
+          let metadata = await snapshot.downloadMetadata(
+            path,
+            win,
+            initializeStandaloneCts.token
+          );
+          let needSnapshot = await snapshot.validateMetadata(
+            metadata,
+            initializeStandaloneCts.token
+          );
+          if (needSnapshot) {
+            let snapshotDir = await snapshot.downloadSnapshot(
+              path,
+              win,
+              (status) => {
+                win?.webContents.send("download progress", status);
+              },
+              initializeStandaloneCts.token
+            );
+            await standalone.kill();
+            utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
+            await snapshot.extractSnapshot(
+              snapshotDir,
+              (progress: number) => {
+                win?.webContents.send("extract progress", progress);
+              },
+              initializeStandaloneCts.token
+            );
+          } else {
+            console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
+          }
+
+          break;
+        } catch (error) {
+          console.error(
+            `Unexpected error occurred during download / extract snapshot. ${error}` +
+              `path: ${path}`
+          );
+        } finally {
+          if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
+            await standalone.execute(standaloneExecutableArgs);
+          }
         }
       }
     }
