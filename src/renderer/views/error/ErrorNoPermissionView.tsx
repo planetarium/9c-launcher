@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { remote } from "electron";
-import mixpanel from "mixpanel-browser";
+import { mixpanelBrowser } from "../../../preload/mixpanel";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import { BLOCKCHAIN_STORE_PATH } from "../../../config";
@@ -14,7 +14,7 @@ const ErrorNoPermissionView = () => {
   const { locale } = useLocale<ErrorNoPermission>("errorNoPermission");
 
   useEffect(() => {
-    mixpanel.track("Launcher/ErrorNoPerm");
+    mixpanelBrowser.track("Launcher/ErrorNoPerm");
     Sentry.captureException(
       new Error("Error occurred while creating directory.")
     );

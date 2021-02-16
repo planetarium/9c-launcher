@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, MouseEvent } from "react";
-import mixpanel from "mixpanel-browser";
+import { mixpanelBrowser } from "../../../preload/mixpanel";
 import { observer, inject } from "mobx-react";
 import {
   Typography,
@@ -39,7 +39,7 @@ const CreateAccountView = observer(
     const classes = createAccountViewStyle();
 
     const handleSubmit = async (password: string) => {
-      mixpanel.track("Launcher/CreatePrivateKey");
+      mixpanelBrowser.track("Launcher/CreatePrivateKey");
       const executionResult = await createAccount({
         variables: {
           passphrase: password,

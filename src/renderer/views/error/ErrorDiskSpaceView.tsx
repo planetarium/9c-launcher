@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import mixpanel from "mixpanel-browser";
+import { mixpanelBrowser } from "../../../preload/mixpanel";
 import errorViewStyle from "./ErrorView.style";
 import { Typography } from "@material-ui/core";
 import prettyBytes from "pretty-bytes";
@@ -14,7 +14,7 @@ const ErrorDiskSpaceView = () => {
   const { locale } = useLocale<ErrorDiskSpace>("errorDiskSpace");
 
   useEffect(() => {
-    mixpanel.track("Launcher/ErrorDiskSpace");
+    mixpanelBrowser.track("Launcher/ErrorDiskSpace");
     Sentry.captureException(new Error("Disk space is not enough."));
   }, []);
   return (

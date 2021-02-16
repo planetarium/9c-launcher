@@ -14,7 +14,7 @@ import {
   LinearProgress,
   TextField,
 } from "@material-ui/core";
-import mixpanel from "mixpanel-browser";
+
 import { IStoreContainer } from "../../../interfaces/store";
 import { inject, observer } from "mobx-react";
 import {
@@ -26,6 +26,7 @@ import lobbyViewStyle from "./LobbyView.style";
 import { useLocale } from "../../i18n";
 import { Lobby } from "../../../interfaces/i18n";
 import { sleep } from "../../../utils";
+import { mixpanelBrowser } from "../../../preload/mixpanel";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
@@ -157,7 +158,7 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
   const { accountStore, gameStore, standaloneStore } = props;
   const classes = lobbyViewStyle();
   const handleStartGame = () => {
-    mixpanel.track("Launcher/Unity Player Start");
+    mixpanelBrowser.track("Launcher/Unity Player Start");
     gameStore.startGame(accountStore.privateKey);
     props.onLaunch();
   };

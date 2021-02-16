@@ -1,5 +1,5 @@
 import React, { useState, useEffect, MouseEvent } from "react";
-import mixpanel from "mixpanel-browser";
+import { mixpanelBrowser } from "../../../preload/mixpanel";
 import { IStoreContainer } from "../../../interfaces/store";
 import { LoginFormEvent } from "../../../interfaces/event";
 
@@ -69,10 +69,10 @@ const LoginView = observer(
           "get-installer-mixpanel-uuid"
         ) as string | null;
         if (installerUUID !== null) {
-          mixpanel.alias(accountStore.selectedAddress, installerUUID);
+          mixpanelBrowser.alias(accountStore.selectedAddress, installerUUID);
         }
-        mixpanel.identify(accountStore.selectedAddress);
-        mixpanel.track("Launcher/Login");
+        mixpanelBrowser.identify(accountStore.selectedAddress);
+        mixpanelBrowser.track("Launcher/Login");
         routerStore.push("/login/mining");
       }
     }, [data]);
@@ -85,7 +85,7 @@ const LoginView = observer(
        **/
       if (error?.message !== undefined) {
         setInvalid(true);
-        mixpanel.track("Launcher/LoginFailed");
+        mixpanelBrowser.track("Launcher/LoginFailed");
       }
     }, [error]);
 

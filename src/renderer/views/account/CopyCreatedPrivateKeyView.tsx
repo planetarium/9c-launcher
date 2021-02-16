@@ -1,5 +1,5 @@
 import React from "react";
-import mixpanel from "mixpanel-browser";
+import { mixpanelBrowser } from "../../../preload/mixpanel";
 import { observer, inject } from "mobx-react";
 
 import { Button, TextField, Typography } from "@material-ui/core";
@@ -56,7 +56,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             variant="outlined"
             onClick={(e) => {
               e.preventDefault();
-              mixpanel.track("Launcher/Copy Private Key");
+              mixpanelBrowser.track("Launcher/Copy Private Key");
               clipboard.clear();
               clipboard.writeText(accountStore.privateKey);
             }}

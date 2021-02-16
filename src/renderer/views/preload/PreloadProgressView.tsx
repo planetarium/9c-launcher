@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react";
-import mixpanel from "mixpanel-browser";
+
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import useStores from "../../../hooks/useStores";
 import { Container, Typography, CircularProgress } from "@material-ui/core";
@@ -15,6 +15,7 @@ import { electronStore } from "../../../config";
 import { useLocale } from "../../i18n";
 import { PreloadProgress } from "../../../interfaces/i18n";
 import { IDownloadProgress } from "../../../interfaces/ipc";
+import { mixpanelBrowser } from "../../../preload/mixpanel";
 
 const PreloadProgressView = observer(() => {
   const { routerStore, standaloneStore } = useStores();
@@ -83,7 +84,7 @@ const PreloadProgressView = observer(() => {
   }, []);
 
   useEffect(() => {
-    mixpanel.track(`Launcher/${statusMessage[step]}`);
+    mixpanelBrowser.track(`Launcher/${statusMessage[step]}`);
   }, [step]);
 
   const gotoErrorPage = (page: string) => {

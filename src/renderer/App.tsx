@@ -10,7 +10,7 @@ import { ApolloProvider } from "react-apollo";
 import { getMainDefinition } from "apollo-utilities";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import mixpanel from "mixpanel-browser";
+
 import { Provider } from "mobx-react";
 import AccountStore from "./stores/account";
 import { IStoreContainer } from "../interfaces/store";
@@ -27,6 +27,7 @@ import montserrat from "./styles/font";
 import LocaleProvider from "./i18n";
 import { Locale } from "../interfaces/i18n";
 import { ipcRenderer } from "electron";
+import { mixpanelBrowser } from "../preload/mixpanel";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -92,18 +93,16 @@ function App() {
     []
   );
 
-  const installerMixpanelUUID = ipcRenderer.sendSync(
-    "get-installer-mixpanel-uuid"
-  ) as string | null;
-  if (installerMixpanelUUID !== null) {
-    console.debug(`Use ${installerMixpanelUUID} as Mixpanel distinct_id`);
-    mixpanel.register({
-      distinct_id: installerMixpanelUUID,
-    });
-  }
-
   useEffect(() => {
-    mixpanel.track("Launcher/Start");
+    const installerMixpanelUUID = ipcRenderer.sendSync(
+      "get-installer-mixpanel-uuid"
+    ) as string | null;
+    if (installerMixpanelUUID !== null) {
+      console.debug(`Use ${installerMixpanelUUID} as Mixpanel distinct_id`);
+      mixpanelBrowser.init(installerMixpanelUUID);
+    }
+
+    mixpanelBrowser.track("Launcher/Start");
   }, []);
 
   return (
