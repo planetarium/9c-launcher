@@ -26,7 +26,7 @@ import lobbyViewStyle from "./LobbyView.style";
 import { useLocale } from "../../i18n";
 import { Lobby } from "../../../interfaces/i18n";
 import { sleep } from "../../../utils";
-import { mixpanelBrowser } from "../../../preload/mixpanel";
+import { ipcRenderer } from "electron";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
@@ -158,7 +158,7 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
   const { accountStore, gameStore, standaloneStore } = props;
   const classes = lobbyViewStyle();
   const handleStartGame = () => {
-    mixpanelBrowser.track("Launcher/Unity Player Start");
+    ipcRenderer.send("mixpanel-track-event", "Launcher/Unity Player Start");
     gameStore.startGame(accountStore.privateKey);
     props.onLaunch();
   };

@@ -1,5 +1,4 @@
 import React from "react";
-import { mixpanelBrowser } from "../../../preload/mixpanel";
 import { observer, inject } from "mobx-react";
 
 import { Button, TextField, Typography } from "@material-ui/core";
@@ -7,7 +6,7 @@ import { Button, TextField, Typography } from "@material-ui/core";
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CopyCreatedPrivateKeyView.style";
 import { RouterStore } from "mobx-react-router";
-import { clipboard } from "electron";
+import { clipboard, ipcRenderer } from "electron";
 
 import { useLocale } from "../../i18n";
 import { CopyPrivateKey } from "../../../interfaces/i18n";
@@ -56,7 +55,10 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             variant="outlined"
             onClick={(e) => {
               e.preventDefault();
-              mixpanelBrowser.track("Launcher/Copy Private Key");
+              ipcRenderer.send(
+                "mixpanel-track-event",
+                "Launcher/Copy Private Key"
+              );
               clipboard.clear();
               clipboard.writeText(accountStore.privateKey);
             }}

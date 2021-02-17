@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { remote } from "electron";
-import { mixpanelBrowser } from "../../../preload/mixpanel";
+import { ipcRenderer, remote } from "electron";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
@@ -23,7 +22,7 @@ const ErrorRelaunchView = () => {
   }, []);
 
   useEffect(() => {
-    mixpanelBrowser.track("Launcher/ErrorRelaunch");
+    ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorRelaunch");
     Sentry.captureException(new Error("Relaunch required."));
   }, []);
   return (

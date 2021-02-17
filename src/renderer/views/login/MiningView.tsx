@@ -9,7 +9,6 @@ import { useLocale } from "../../i18n";
 import { Mining } from "../../../interfaces/i18n";
 import textFit from "textfit";
 import { ipcRenderer } from "electron";
-import { mixpanelBrowser } from "../../../preload/mixpanel";
 
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
@@ -72,7 +71,7 @@ const MiningView = observer(
             id="mining-off"
             variant="contained"
             onClick={() => {
-              mixpanelBrowser.track("Launcher/Mining Off");
+              ipcRenderer.send("mixpanel-track-event", "Launcher/Mining Off");
               setMining(false);
             }}
           >
@@ -82,7 +81,7 @@ const MiningView = observer(
             className={`${classes.button} ${classes.buttonRight}`}
             variant="contained"
             onClick={() => {
-              mixpanelBrowser.track("Launcher/Mining On");
+              ipcRenderer.send("mixpanel-track-event", "Launcher/Mining On");
               setMining(true);
             }}
           >

@@ -145,3 +145,4 @@ export const BLOCKCHAIN_STORE_PATH = path.join(
   blockchainStoreDirParent,
   electronStore.get("BlockchainStoreDirName")
 );
+export const MIXPANEL_TOKEN = "80a1e14b57d050536185c7459d45195a";

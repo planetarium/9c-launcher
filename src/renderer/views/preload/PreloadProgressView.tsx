@@ -15,7 +15,6 @@ import { electronStore } from "../../../config";
 import { useLocale } from "../../i18n";
 import { PreloadProgress } from "../../../interfaces/i18n";
 import { IDownloadProgress } from "../../../interfaces/ipc";
-import { mixpanelBrowser } from "../../../preload/mixpanel";
 
 const PreloadProgressView = observer(() => {
   const { routerStore, standaloneStore } = useStores();
@@ -84,7 +83,7 @@ const PreloadProgressView = observer(() => {
   }, []);
 
   useEffect(() => {
-    mixpanelBrowser.track(`Launcher/${statusMessage[step]}`);
+    ipcRenderer.send("mixpanel-track-event", `Launcher/${statusMessage[step]}`);
   }, [step]);
 
   const gotoErrorPage = (page: string) => {

@@ -7,6 +7,7 @@ import {
   RPC_LOOPBACK_HOST,
   RPC_SERVER_PORT,
   REQUIRED_DISK_SPACE,
+  MIXPANEL_TOKEN,
 } from "../config";
 import isDev from "electron-is-dev";
 import {
@@ -34,7 +35,6 @@ import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/g
 import { BencodexDict, decode } from "bencodex";
 import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
-import mixpanel from "mixpanel-browser";
 import * as utils from "../utils";
 import * as snapshot from "./snapshot";
 import Standalone from "./standalone";
@@ -42,6 +42,8 @@ import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 import { v4 as uuidv4 } from "uuid";
+import { init as createMixpanel } from "mixpanel";
+import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 
 initializeSentry();
 
@@ -106,6 +108,8 @@ let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Standalone = new Standalone(standaloneExecutablePath);
+const mixpanelUUID = loadInstallerMixpanelUUID();
+const mixpanel = createMixpanel(MIXPANEL_TOKEN);
 let initializeStandaloneCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
@@ -476,28 +480,15 @@ function initializeIpc() {
     event.returnValue = "Not supported platform.";
   });
 
-  ipcMain.on("get-installer-mixpanel-uuid", async (event) => {
-    if (process.platform === "win32") {
-      let guidPath = path.join(
-        process.env.LOCALAPPDATA as string,
-        "planetarium",
-        ".installer_mixpanel_uuid"
-      );
-      if (!fs.existsSync(guidPath)) {
-        const newUUID = uuidv4();
-        console.log(
-          `The installer mixpanel UUID doesn't exist at '${guidPath}'.`
-        );
-        await fs.promises.writeFile(guidPath, newUUID);
-        console.log(`Created new UUID ${newUUID} and stored.`);
-        event.returnValue = newUUID;
-      } else {
-        event.returnValue = await fs.promises.readFile(guidPath, {
-          encoding: "utf-8",
-        });
-      }
-    } else {
-      event.returnValue = null;
+  ipcMain.on("mixpanel-track-event", async (_, eventName: string) => {
+    if (electronStore.get("Mixpanel") && !isDev) {
+      mixpanel.track(eventName, { distinct_id: mixpanelUUID });
+    }
+  });
+
+  ipcMain.on("mixpanel-alias", async (_, alias: string) => {
+    if (electronStore.get("Mixpanel") && !isDev) {
+      mixpanel.alias(mixpanelUUID, alias);
     }
   });
 }
@@ -694,6 +685,31 @@ function cleanUpAfterUpdate() {
 function cleanUpLockfile() {
   if (lockfile.checkSync(lockfilePath)) {
     lockfile.unlockSync(lockfilePath);
+  }
+}
+
+function loadInstallerMixpanelUUID(): string {
+  if (process.platform === "win32") {
+    let guidPath = path.join(
+      process.env.LOCALAPPDATA as string,
+      "planetarium",
+      ".installer_mixpanel_uuid"
+    );
+    if (!fs.existsSync(guidPath)) {
+      const newUUID = uuidv4();
+      console.log(
+        `The installer mixpanel UUID doesn't exist at '${guidPath}'.`
+      );
+      fs.writeFileSync(guidPath, newUUID);
+      console.log(`Created new UUID ${newUUID} and stored.`);
+      return newUUID;
+    } else {
+      return fs.readFileSync(guidPath, {
+        encoding: "utf-8",
+      });
+    }
+  } else {
+    throw new NotSupportedPlatformError(process.platform);
   }
 }
 
