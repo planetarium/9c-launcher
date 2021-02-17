@@ -690,11 +690,18 @@ function cleanUpLockfile() {
 
 function loadInstallerMixpanelUUID(): string {
   if (process.platform === "win32") {
-    let guidPath = path.join(
+    const planetariumPath = path.join(
       process.env.LOCALAPPDATA as string,
-      "planetarium",
-      ".installer_mixpanel_uuid"
+      "planetarium"
     );
+    if (!fs.existsSync(planetariumPath)) {
+      fs.mkdirSync(planetariumPath, {
+        recursive: true,
+      });
+    }
+
+    let guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
+
     if (!fs.existsSync(guidPath)) {
       const newUUID = uuidv4();
       console.log(
