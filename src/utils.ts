@@ -114,7 +114,8 @@ export function cancellableDownload(
       console.log(`Download of ${url} is cancelled.`);
       reject(new CancellationToken.CancellationError(token.reason));
     };
-    download(win, url, options.properties);
+
+    return download(win, url, options.properties).catch((e) => reject(e));
   });
 }
 
