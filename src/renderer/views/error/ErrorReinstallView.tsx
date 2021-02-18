@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from "react";
 import { shell, remote, ipcRenderer } from "electron";
-import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
@@ -24,7 +23,7 @@ const ErrorReinstallView = () => {
   }, []);
 
   useEffect(() => {
-    mixpanel.track("Launcher/ErrorReinstall");
+    ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorReinstall");
     Sentry.captureException(new Error("Reinstall required."));
   }, []);
   return (
