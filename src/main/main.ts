@@ -126,8 +126,15 @@ if (!app.requestSingleInstanceLock()) {
     win?.show();
   });
 
-  app.on("quit", (event, exitCode) => {
-    mixpanel?.track("Launcher/Quit", { event, exitCode });
+  let quitTracked = false;
+  app.on("before-quit", (event) => {
+    if (mixpanel !== undefined && !quitTracked) {
+      event.preventDefault();
+      mixpanel?.track("Launcher/Quit", { distinct_id: mixpanelUUID }, () => {
+        quitTracked = true;
+        app.quit();
+      });
+    }
   });
 
   cleanUp();
