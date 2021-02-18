@@ -83,6 +83,7 @@ const standaloneExecutableArgs = [
   `--workers=${electronStore.get("Workers")}`,
   `--confirmations=${electronStore.get("Confirmations")}`,
   ...electronStore.get("HeadlessArgs", []),
+  ...(isDev ? ["--no-cors"] : []),
 ];
 
 {
