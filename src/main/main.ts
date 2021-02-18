@@ -44,6 +44,7 @@ import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 import { v4 as uuidv4 } from "uuid";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
 import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
+import { v4 as ipv4 } from "public-ip";
 
 initializeSentry();
 
@@ -109,6 +110,7 @@ let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Standalone = new Standalone(standaloneExecutablePath);
+let ip: string | null = null;
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: Mixpanel | null =
   electronStore.get("Mixpanel") && !isDev
@@ -118,6 +120,8 @@ let initializeStandaloneCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
 } | null = null;
+
+ipv4().then((value) => (ip = value));
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -130,10 +134,17 @@ if (!app.requestSingleInstanceLock()) {
   app.on("before-quit", (event) => {
     if (mixpanel !== undefined && !quitTracked) {
       event.preventDefault();
-      mixpanel?.track("Launcher/Quit", { distinct_id: mixpanelUUID }, () => {
-        quitTracked = true;
-        app.quit();
-      });
+      mixpanel?.track(
+        "Launcher/Quit",
+        {
+          distinct_id: mixpanelUUID,
+          ip,
+        },
+        () => {
+          quitTracked = true;
+          app.quit();
+        }
+      );
     }
   });
 
@@ -492,7 +503,10 @@ function initializeIpc() {
   });
 
   ipcMain.on("mixpanel-track-event", async (_, eventName: string) => {
-    mixpanel?.track(eventName, { distinct_id: mixpanelUUID });
+    mixpanel?.track(eventName, {
+      distinct_id: mixpanelUUID,
+      ip,
+    });
   });
 
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
@@ -783,7 +797,7 @@ function relaunch() {
   if (mixpanel !== null) {
     mixpanel.track(
       "Launcher/Relaunch",
-      { distinct_id: mixpanelUUID },
+      { distinct_id: mixpanelUUID, ip },
       () => {
         app.relaunch();
         app.exit();
