@@ -132,7 +132,7 @@ if (!app.requestSingleInstanceLock()) {
 
   let quitTracked = false;
   app.on("before-quit", (event) => {
-    if (mixpanel !== undefined && !quitTracked) {
+    if (mixpanel !== null && !quitTracked) {
       event.preventDefault();
       mixpanel?.track(
         "Launcher/Quit",
