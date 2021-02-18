@@ -42,7 +42,7 @@ import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 import { v4 as uuidv4 } from "uuid";
-import { init as createMixpanel } from "mixpanel";
+import { init as createMixpanel, Mixpanel } from "mixpanel";
 import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 
 initializeSentry();
@@ -110,7 +110,10 @@ let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Standalone = new Standalone(standaloneExecutablePath);
 const mixpanelUUID = loadInstallerMixpanelUUID();
-const mixpanel = createMixpanel(MIXPANEL_TOKEN);
+const mixpanel: Mixpanel | null =
+  electronStore.get("Mixpanel") && !isDev
+    ? createMixpanel(MIXPANEL_TOKEN)
+    : null;
 let initializeStandaloneCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
@@ -124,7 +127,7 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.on("quit", (event, exitCode) => {
-    mixpanel.track("Launcher/Quit", { event, exitCode });
+    mixpanel?.track("Launcher/Quit", { event, exitCode });
   });
 
   cleanUp();
@@ -482,15 +485,11 @@ function initializeIpc() {
   });
 
   ipcMain.on("mixpanel-track-event", async (_, eventName: string) => {
-    if (electronStore.get("Mixpanel") && !isDev) {
-      mixpanel.track(eventName, { distinct_id: mixpanelUUID });
-    }
+    mixpanel?.track(eventName, { distinct_id: mixpanelUUID });
   });
 
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
-    if (electronStore.get("Mixpanel") && !isDev) {
-      mixpanel.alias(mixpanelUUID, alias);
-    }
+    mixpanel?.alias(mixpanelUUID, alias);
   });
 }
 
@@ -774,6 +773,17 @@ function createTray(iconPath: string) {
 }
 
 function relaunch() {
-  app.relaunch();
-  app.exit();
+  if (mixpanel !== null) {
+    mixpanel.track(
+      "Launcher/Relaunch",
+      { distinct_id: mixpanelUUID },
+      () => {
+        app.relaunch();
+        app.exit();
+      }
+    );
+  } else {
+    app.relaunch();
+    app.exit();
+  }
 }
