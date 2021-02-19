@@ -120,6 +120,7 @@ mutation Activate($encodedActivationKey: String!) {
 subscription Notification {
   notification {
     type
+    message
   }
 }
 
