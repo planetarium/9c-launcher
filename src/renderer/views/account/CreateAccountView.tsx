@@ -1,5 +1,5 @@
 import { Typography } from "@material-ui/core";
-import mixpanel from "mixpanel-browser";
+import { ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React from "react";
@@ -26,8 +26,8 @@ const CreateAccountView = observer(
 
     const classes = createAccountViewStyle();
 
-    const handleSubmit = async (password: string, activationKey: string) => {
-      mixpanel.track("Launcher/CreatePrivateKey");
+    const handleSubmit = async (password: string) => {
+      ipcRenderer.send("mixpanel-track-event", "Launcher/CreatePrivateKey");
       const executionResult = await createAccount({
         variables: {
           passphrase: password,

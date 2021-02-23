@@ -426,9 +426,23 @@
       "ja": "アクティベーション",
       "de": "Aktivierung"
     },
-    "invitationCode": {
+    "초대 코드": {
       "ko": "초대 코드",
-      "en": "Invitation Code"
+      "en": "Invitation Code",
+      "pl": "Kod zaproszenia",
+      "pt": "Código de Convite",
+      "lt": "pakvietimo kodas",
+      "nl": "uitnodigingscode",
+      "pt-BR": "Código de Convite",
+      "km": "លេខ​កូដ​ការ​អញ្ជើញ",
+      "th": "รหัสการเชิญ",
+      "id": "Kode undangan",
+      "ja": "招待コード",
+      "de": "Einladungscode",
+      "es": "código de invitación",
+      "fr": "code d’invitation",
+      "ru": "Код приглашения",
+      "ch": "邀请代码"
     }
   },
   "preload": {

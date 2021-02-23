@@ -91,7 +91,7 @@ export interface Lobby {
   "실행 중...": LocaleRecord;
   "게임 시작하기": LocaleRecord;
   활성화: LocaleRecord;
-  invitationCode: LocaleRecord;
+  "초대 코드": LocaleRecord;
 }
 
 export interface Preload {

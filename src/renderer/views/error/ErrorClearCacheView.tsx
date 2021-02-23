@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from "react";
 import { remote, ipcRenderer } from "electron";
-import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
@@ -20,7 +19,7 @@ const ErrorClearCacheView = () => {
   }, []);
 
   useEffect(() => {
-    mixpanel.track("Launcher/ErrorClearCache");
+    ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorClearCache");
     Sentry.captureException(new Error("Clear cache required."));
   }, []);
   return (

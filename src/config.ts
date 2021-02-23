@@ -8,20 +8,14 @@ const { app } =
 export const electronStore = new Store<IElectronStore>({
   cwd: app.getAppPath(),
   schema: {
-    SNAPSHOT_DOWNLOAD_PATH: {
-      type: "string",
-      format: "uri",
-      default:
-        "https://download.nine-chronicles.com/latest/4a321a45b07750ca7fa88a0a4a0c817fa26c5f5e54ac2ab91675256e6abed21a-snapshot",
-    },
-    UseSnapshot: {
-      type: "boolean",
-      default: false,
-    },
     AppProtocolVersion: {
       type: "string",
       default:
         "2001/019101FEec7ed4f918D396827E1277DEda1e20D4/MEQCIBlLqJk+INI.EHa2EvdUl.7LIZoOXRm3+9GF0fQPakw8AiBE2wbRGSnohWgDHm1gSU+iSpVv7sxKQFHcrfKFTD72dg==/ZHUxNjpXaW5kb3dzQmluYXJ5VXJsdTU0Omh0dHBzOi8vZG93bmxvYWQubmluZS1jaHJvbmljbGVzLmNvbS92MjAwMS9XaW5kb3dzLnppcHUxNDptYWNPU0JpbmFyeVVybHU1NTpodHRwczovL2Rvd25sb2FkLm5pbmUtY2hyb25pY2xlcy5jb20vdjIwMDEvbWFjT1MudGFyLmd6dTk6dGltZXN0YW1wdTIwOjIwMjAtMDYtMzBUMDU6NDg6MTFaZQ==",
+    },
+    SnapshotPaths: {
+      type: "array",
+      default: [],
     },
     GenesisBlockPath: {
       type: "string",
@@ -151,3 +145,4 @@ export const BLOCKCHAIN_STORE_PATH = path.join(
   blockchainStoreDirParent,
   electronStore.get("BlockchainStoreDirName")
 );
+export const MIXPANEL_TOKEN = "80a1e14b57d050536185c7459d45195a";

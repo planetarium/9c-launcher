@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import mixpanel from "mixpanel-browser";
 import errorViewStyle from "./ErrorView.style";
 import { Typography } from "@material-ui/core";
 import prettyBytes from "pretty-bytes";
@@ -7,6 +6,7 @@ import { BLOCKCHAIN_STORE_PATH, REQUIRED_DISK_SPACE } from "../../../config";
 import * as Sentry from "@sentry/electron";
 import { useLocale } from "../../i18n";
 import { ErrorDiskSpace } from "../../../interfaces/i18n";
+import { ipcRenderer } from "electron";
 
 const ErrorDiskSpaceView = () => {
   const classes = errorViewStyle();
@@ -14,7 +14,7 @@ const ErrorDiskSpaceView = () => {
   const { locale } = useLocale<ErrorDiskSpace>("errorDiskSpace");
 
   useEffect(() => {
-    mixpanel.track("Launcher/ErrorDiskSpace");
+    ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorDiskSpace");
     Sentry.captureException(new Error("Disk space is not enough."));
   }, []);
   return (

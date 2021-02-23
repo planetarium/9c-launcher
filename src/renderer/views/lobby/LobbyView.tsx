@@ -6,7 +6,6 @@ import {
   FormHelperText,
   TextField,
 } from "@material-ui/core";
-import mixpanel from "mixpanel-browser";
 import { inject, observer } from "mobx-react";
 import React, {
   useState,
@@ -22,6 +21,7 @@ import {
 import { Lobby } from "../../../interfaces/i18n";
 import { IStoreContainer } from "../../../interfaces/store";
 import { sleep } from "../../../utils";
+import { ipcRenderer } from "electron";
 
 import { useLocale } from "../../i18n";
 
@@ -61,39 +61,45 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     [event]
   );
 
-  const handleActivationKeySubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleActivationKeySubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
-    activateMutation();
+    await activateMutation();
   };
 
-  const activateMutation = () => {
+  const activateMutation = async () => {
     console.log("!! Invoke activateMutation()");
     setPollingState(true);
-    activate({
+
+    const activated = async () => {
+      const result = await activationRefetch();
+      return result.data.activationStatus.activated;
+    };
+
+    if (await activated()) {
+      setPollingState(false);
+      return;
+    }
+
+    const activateResult = await activate({
       variables: {
         encodedActivationKey: activationKey,
       },
-    })
-      .then(async (value) => {
-        console.log("!! 1");
-        if (!value.data?.activationStatus?.activateAccount) {
-          return;
-        }
+    });
 
-        while (true) {
-          console.log("!! 2");
-          await sleep(1000);
-          const result = await activationRefetch();
-          if (result.data.activationStatus.activated) {
-            console.log("!! 3"); // NOTE: Not invoked when auto activate.
-            break;
-          }
-        }
-      })
-      .finally(() => {
-        console.log("!! 4");
+    if (!activateResult.data?.activationStatus?.activateAccount) {
+      setPollingState(false);
+      return;
+    }
+
+    while (true) {
+      await sleep(1000);
+      if (await activated()) {
         setPollingState(false);
-      });
+        return;
+      }
+    }
   };
 
   useEffect(() => {
@@ -103,11 +109,13 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     }
   }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
 
-  if (!loading &&
+  if (
+    !loading &&
     !polling &&
     !status?.activationStatus.activated &&
     activationKey !== "" &&
-    !hasAutoActivateBegin) {
+    !hasAutoActivateBegin
+  ) {
     console.log("!! activateMutation");
     setHasAutoActivateBegin(true);
     activateMutation();
@@ -130,7 +138,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       <form onSubmit={handleActivationKeySubmit}>
         <TextField
           error={activatedError?.message !== undefined}
-          label={locale("invitationCode")}
+          label={locale("초대 코드")}
           onChange={handleActivationKeyChange}
           fullWidth
         />
@@ -172,7 +180,7 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
   const { accountStore, gameStore, standaloneStore } = props;
   const classes = lobbyViewStyle();
   const handleStartGame = () => {
-    mixpanel.track("Launcher/Unity Player Start");
+    ipcRenderer.send("mixpanel-track-event", "Launcher/Unity Player Start");
     gameStore.startGame(accountStore.privateKey);
     props.onLaunch();
   };
