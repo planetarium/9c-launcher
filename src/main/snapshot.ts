@@ -1,8 +1,4 @@
-import {
-  electronStore,
-  BLOCKCHAIN_STORE_PATH,
-  LOCAL_SERVER_PORT,
-} from "../config";
+import { BLOCKCHAIN_STORE_PATH, LOCAL_SERVER_PORT } from "../config";
 import { app, BrowserWindow } from "electron";
 import fs from "fs";
 import { retry } from "@lifeomic/attempt";
@@ -12,6 +8,7 @@ import { IDownloadOptions, IDownloadProgress } from "../interfaces/ipc";
 import { cancellableDownload, cancellableExtract } from "../utils";
 
 export async function downloadMetadata(
+  basePath: string,
   win: BrowserWindow,
   token: CancellationToken
 ): Promise<string> {
@@ -22,12 +19,7 @@ export async function downloadMetadata(
   };
   options.properties.directory = app.getPath("userData");
   options.properties.filename = "meta.json";
-  let dl = await cancellableDownload(
-    win,
-    (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".json",
-    options,
-    token
-  );
+  let dl = await cancellableDownload(win, basePath + ".json", options, token);
   token.throwIfCancelled();
 
   let meta = await fs.promises.readFile(dl.getSavePath(), "utf-8");
@@ -103,6 +95,7 @@ export async function validateMetadata(
 }
 
 export async function downloadSnapshot(
+  basePath: string,
   win: BrowserWindow,
   onProgress: (status: IDownloadProgress) => void,
   token: CancellationToken
@@ -116,12 +109,7 @@ export async function downloadSnapshot(
     onProgress(status);
   options.properties.directory = app.getPath("userData");
   options.properties.filename = "snapshot.zip";
-  const dl = await cancellableDownload(
-    win,
-    (electronStore.get("SNAPSHOT_DOWNLOAD_PATH") as string) + ".zip",
-    options,
-    token
-  );
+  const dl = await cancellableDownload(win, basePath + ".zip", options, token);
   token.throwIfCancelled();
   let dir = dl.getSavePath();
   console.log("Snapshot download complete. Directory: ", dir);

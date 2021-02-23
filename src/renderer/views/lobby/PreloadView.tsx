@@ -1,7 +1,7 @@
 import { shell } from "electron";
 import React, { useState, useRef, useCallback } from "react";
 import YouTube, { Options as IYoutubeOption } from "react-youtube";
-import mixpanel from "mixpanel-browser";
+
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import {

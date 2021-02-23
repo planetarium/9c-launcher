@@ -1,5 +1,4 @@
 import React, { useState, ChangeEvent, MouseEvent } from "react";
-import mixpanel from "mixpanel-browser";
 import { observer, inject } from "mobx-react";
 import {
   Typography,
@@ -24,6 +23,7 @@ import { RouterStore } from "mobx-react-router";
 
 import { useLocale } from "../../i18n";
 import { CreateAccount } from "../../../interfaces/i18n";
+import { ipcRenderer } from "electron";
 
 interface ICreateAccountProps {
   accountStore: AccountStore;
@@ -39,7 +39,7 @@ const CreateAccountView = observer(
     const classes = createAccountViewStyle();
 
     const handleSubmit = async (password: string) => {
-      mixpanel.track("Launcher/CreatePrivateKey");
+      ipcRenderer.send("mixpanel-track-event", "Launcher/CreatePrivateKey");
       const executionResult = await createAccount({
         variables: {
           passphrase: password,

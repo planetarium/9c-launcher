@@ -7,6 +7,7 @@ import {
   RPC_LOOPBACK_HOST,
   RPC_SERVER_PORT,
   REQUIRED_DISK_SPACE,
+  MIXPANEL_TOKEN,
 } from "../config";
 import isDev from "electron-is-dev";
 import {
@@ -34,13 +35,16 @@ import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/g
 import { BencodexDict, decode } from "bencodex";
 import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
-import mixpanel from "mixpanel-browser";
 import * as utils from "../utils";
 import * as snapshot from "./snapshot";
 import Standalone from "./standalone";
 import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
+import { v4 as uuidv4 } from "uuid";
+import { init as createMixpanel, Mixpanel } from "mixpanel";
+import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
+import { v4 as ipv4 } from "public-ip";
 
 initializeSentry();
 
@@ -80,6 +84,7 @@ const standaloneExecutableArgs = [
   `--workers=${electronStore.get("Workers")}`,
   `--confirmations=${electronStore.get("Confirmations")}`,
   ...electronStore.get("HeadlessArgs", []),
+  ...(isDev ? ["--no-cors"] : []),
 ];
 
 {
@@ -105,10 +110,18 @@ let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Standalone = new Standalone(standaloneExecutablePath);
+let ip: string | null = null;
+const mixpanelUUID = loadInstallerMixpanelUUID();
+const mixpanel: Mixpanel | null =
+  electronStore.get("Mixpanel") && !isDev
+    ? createMixpanel(MIXPANEL_TOKEN)
+    : null;
 let initializeStandaloneCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
 } | null = null;
+
+ipv4().then((value) => (ip = value));
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -117,8 +130,22 @@ if (!app.requestSingleInstanceLock()) {
     win?.show();
   });
 
-  app.on("quit", (event, exitCode) => {
-    mixpanel.track("Launcher/Quit", { event, exitCode });
+  let quitTracked = false;
+  app.on("before-quit", (event) => {
+    if (mixpanel !== null && !quitTracked) {
+      event.preventDefault();
+      mixpanel?.track(
+        "Launcher/Quit",
+        {
+          distinct_id: mixpanelUUID,
+          ip,
+        },
+        () => {
+          quitTracked = true;
+          app.quit();
+        }
+      );
+    }
   });
 
   cleanUp();
@@ -475,23 +502,15 @@ function initializeIpc() {
     event.returnValue = "Not supported platform.";
   });
 
-  ipcMain.on("get-installer-mixpanel-uuid", async (event) => {
-    if (process.platform === "win32") {
-      let guidPath = path.join(
-        process.env.LOCALAPPDATA as string,
-        "planetarium",
-        ".installer_mixpanel_uuid"
-      );
-      if (!fs.existsSync(guidPath)) {
-        event.returnValue = null;
-      }
+  ipcMain.on("mixpanel-track-event", async (_, eventName: string) => {
+    mixpanel?.track(eventName, {
+      distinct_id: mixpanelUUID,
+      ip,
+    });
+  });
 
-      event.returnValue = await fs.promises.readFile(guidPath, {
-        encoding: "utf-8",
-      });
-    } else {
-      event.returnValue = null;
-    }
+  ipcMain.on("mixpanel-alias", async (_, alias: string) => {
+    mixpanel?.alias(mixpanelUUID, alias);
   });
 }
 
@@ -533,47 +552,53 @@ async function initializeStandalone(): Promise<void> {
     await standalone.execute(standaloneExecutableArgs);
     win?.webContents.send("start bootstrap");
 
-    if (electronStore.get("UseSnapshot") && win != null) {
-      try {
-        let metadata = await snapshot.downloadMetadata(
-          win,
-          initializeStandaloneCts.token
-        );
-        let needSnapshot = await snapshot.validateMetadata(
-          metadata,
-          initializeStandaloneCts.token
-        );
-        if (needSnapshot) {
-          let snapshotDir = await snapshot.downloadSnapshot(
-            win,
-            (status) => {
-              win?.webContents.send("download progress", status);
-            },
-            initializeStandaloneCts.token
-          );
-          await standalone.kill();
-          utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
-          await snapshot.extractSnapshot(
-            snapshotDir,
-            (progress: number) => {
-              win?.webContents.send("extract progress", progress);
-            },
-            initializeStandaloneCts.token
-          );
-        } else {
-          console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
-        }
-      } catch (error) {
-        console.error(
-          `Unexpected error occurred during download / extract snapshot. ${error}`
-        );
+    const snapshotPaths: string[] = electronStore.get("SnapshotPaths");
+    if (snapshotPaths.length > 0 && win != null) {
+      for (const path of snapshotPaths) {
+        console.log(`Trying snapshot path: ${path}`);
 
-        if (error instanceof CancellationToken.CancellationError) {
-          throw error;
-        }
-      } finally {
-        if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
-          await standalone.execute(standaloneExecutableArgs);
+        try {
+          let metadata = await snapshot.downloadMetadata(
+            path,
+            win,
+            initializeStandaloneCts.token
+          );
+          let needSnapshot = await snapshot.validateMetadata(
+            metadata,
+            initializeStandaloneCts.token
+          );
+          if (needSnapshot) {
+            let snapshotDir = await snapshot.downloadSnapshot(
+              path,
+              win,
+              (status) => {
+                win?.webContents.send("download progress", status);
+              },
+              initializeStandaloneCts.token
+            );
+            await standalone.kill();
+            utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
+            await snapshot.extractSnapshot(
+              snapshotDir,
+              (progress: number) => {
+                win?.webContents.send("extract progress", progress);
+              },
+              initializeStandaloneCts.token
+            );
+          } else {
+            console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
+          }
+
+          break;
+        } catch (error) {
+          console.error(
+            `Unexpected error occurred during download / extract snapshot. ${error}` +
+              `path: ${path}`
+          );
+        } finally {
+          if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
+            await standalone.execute(standaloneExecutableArgs);
+          }
         }
       }
     }
@@ -684,6 +709,38 @@ function cleanUpLockfile() {
   }
 }
 
+function loadInstallerMixpanelUUID(): string {
+  if (process.platform === "win32") {
+    const planetariumPath = path.join(
+      process.env.LOCALAPPDATA as string,
+      "planetarium"
+    );
+    if (!fs.existsSync(planetariumPath)) {
+      fs.mkdirSync(planetariumPath, {
+        recursive: true,
+      });
+    }
+
+    let guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
+
+    if (!fs.existsSync(guidPath)) {
+      const newUUID = uuidv4();
+      console.log(
+        `The installer mixpanel UUID doesn't exist at '${guidPath}'.`
+      );
+      fs.writeFileSync(guidPath, newUUID);
+      console.log(`Created new UUID ${newUUID} and stored.`);
+      return newUUID;
+    } else {
+      return fs.readFileSync(guidPath, {
+        encoding: "utf-8",
+      });
+    }
+  } else {
+    throw new NotSupportedPlatformError(process.platform);
+  }
+}
+
 async function quitAllProcesses() {
   await stopStandaloneProcess();
   if (gameNode === null) return;
@@ -737,6 +794,17 @@ function createTray(iconPath: string) {
 }
 
 function relaunch() {
-  app.relaunch();
-  app.exit();
+  if (mixpanel !== null) {
+    mixpanel.track(
+      "Launcher/Relaunch",
+      { distinct_id: mixpanelUUID, ip },
+      () => {
+        app.relaunch();
+        app.exit();
+      }
+    );
+  } else {
+    app.relaunch();
+    app.exit();
+  }
 }

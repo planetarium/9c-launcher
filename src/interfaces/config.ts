@@ -1,7 +1,6 @@
 export interface IElectronStore {
-  SNAPSHOT_DOWNLOAD_PATH: string;
-  UseSnapshot: boolean;
   AppProtocolVersion: string;
+  SnapshotPaths: string[];
   GenesisBlockPath: string;
   MinimumDifficulty: number;
   StoreType: string;

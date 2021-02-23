@@ -10,7 +10,7 @@ import { ApolloProvider } from "react-apollo";
 import { getMainDefinition } from "apollo-utilities";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import mixpanel from "mixpanel-browser";
+
 import { Provider } from "mobx-react";
 import AccountStore from "./stores/account";
 import { IStoreContainer } from "../interfaces/store";
@@ -26,6 +26,7 @@ import montserrat from "./styles/font";
 
 import LocaleProvider from "./i18n";
 import { Locale } from "../interfaces/i18n";
+import { ipcRenderer } from "electron";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -92,7 +93,7 @@ function App() {
   );
 
   useEffect(() => {
-    mixpanel.track("Launcher/Start");
+    ipcRenderer.send("mixpanel-track-event", "Launcher/Start");
   }, []);
 
   return (
