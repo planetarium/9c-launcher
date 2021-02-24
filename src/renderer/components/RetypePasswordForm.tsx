@@ -23,9 +23,13 @@ interface RetypePasswordFormProps {
 const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [passwordConfirmAllowsEmpty, setPasswordConfirmAllowsEmpty] = useState(true);
+  const [passwordConfirmAllowsEmpty, setPasswordConfirmAllowsEmpty] = useState(
+    true
+  );
   const [activationKey, setActivationKey] = useState("");
-  const [activationKeyAllowsEmpty, setActivationKeyAllowsEmpty] = useState(true);
+  const [activationKeyAllowsEmpty, setActivationKeyAllowsEmpty] = useState(
+    true
+  );
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
@@ -70,14 +74,14 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
 
     code = code.trim();
     console.log(code.indexOf("/"));
-    if (code.length === 0 ||code.indexOf("/") < 0){
+    if (code.length === 0 || code.indexOf("/") < 0) {
       return false;
     }
 
     const splits = code.split("/");
     const privateKey = splits[0];
     const address = splits[1];
-    if (privateKey.length !== 64 || address.length !== 40){
+    if (privateKey.length !== 64 || address.length !== 40) {
       return false;
     }
 
@@ -93,7 +97,12 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
   const isActivationKeyError = isActivationKeyEmpty
     ? !activationKeyAllowsEmpty
     : !validateActivationKey(activationKey);
-  const disabled = isPasswordConfirmError || isActivationKeyError;
+  const disabled =
+    isPasswordEmpty ||
+    isPasswordConfirmEmpty ||
+    isActivationKeyEmpty ||
+    isPasswordConfirmError ||
+    isActivationKeyError;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -158,12 +167,10 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
         error={isActivationKeyError}
         className={classes.formControl}
       >
-        <InputLabel className={classes.label}>{locale("invitationCode")}</InputLabel>
-        <OutlinedInput
-          type="text"
-          
-          onChange={handleActivationKeyChange}
-        />
+        <InputLabel className={classes.label}>
+          {locale("invitationCode")}
+        </InputLabel>
+        <OutlinedInput type="text" onChange={handleActivationKeyChange} />
         <FormHelperText className={classes.helperText}>
           form helper text
         </FormHelperText>

@@ -26,7 +26,7 @@ const CreateAccountView = observer(
 
     const classes = createAccountViewStyle();
 
-    const handleSubmit = async (password: string) => {
+    const handleSubmit = async (password: string, activationKey: string) => {
       ipcRenderer.send("mixpanel-track-event", "Launcher/CreatePrivateKey");
       const executionResult = await createAccount({
         variables: {

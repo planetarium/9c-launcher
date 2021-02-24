@@ -69,7 +69,6 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   };
 
   const activateMutation = async () => {
-    console.log("!! Invoke activateMutation()");
     setPollingState(true);
 
     const activated = async () => {
@@ -104,7 +103,6 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   useEffect(() => {
     if (standaloneStore.Ready && standaloneStore.IsSetPrivateKeyEnded) {
-      console.log("!! useEffect");
       activation();
     }
   }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
@@ -114,15 +112,17 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     !polling &&
     !status?.activationStatus.activated &&
     activationKey !== "" &&
-    !hasAutoActivateBegin
+    !hasAutoActivateBegin &&
+    activationRefetch !== undefined
   ) {
-    console.log("!! activateMutation");
+    // FIXME 플래그(hasAutoActivateBegin) 없이 useEffect 나 타이밍 잡아서 부르게끔 고쳐야 합니다.
     setHasAutoActivateBegin(true);
     activateMutation();
   }
 
   let child: JSX.Element;
-  if (loading || polling) {
+  // FIXME 활성화에 실패한 경우에도 polling이 풀리지 않는 문제가 있습니다.
+  if ((loading || polling) && activatedError === undefined) {
     child = (
       <>
         <p className={classes.verifing}>{locale("확인 중...")}</p>
