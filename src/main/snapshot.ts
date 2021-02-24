@@ -4,8 +4,9 @@ import fs from "fs";
 import { retry } from "@lifeomic/attempt";
 import { request, gql, ClientError } from "graphql-request";
 import CancellationToken from "cancellationtoken";
-import { IDownloadOptions, IDownloadProgress } from "../interfaces/ipc";
+import { IDownloadProgress } from "../interfaces/ipc";
 import { cancellableDownload, cancellableExtract } from "../utils";
+import path from "path";
 
 export async function downloadMetadata(
   basePath: string,
@@ -14,15 +15,12 @@ export async function downloadMetadata(
 ): Promise<string> {
   token.throwIfCancelled();
   console.log("Downloading metadata.");
-  const options: IDownloadOptions = {
-    properties: { onProgress: () => {} },
-  };
-  options.properties.directory = app.getPath("userData");
-  options.properties.filename = "meta.json";
-  let dl = await cancellableDownload(win, basePath + ".json", options, token);
+  const dir = app.getPath("userData");
+  const savingPath = path.join(dir, "meta.json");
+  await cancellableDownload(basePath + ".json", savingPath, (_) => {}, token);
   token.throwIfCancelled();
 
-  let meta = await fs.promises.readFile(dl.getSavePath(), "utf-8");
+  let meta = await fs.promises.readFile(savingPath, "utf-8");
   console.log("Metadata download complete: ", meta);
   return meta;
 }
@@ -96,24 +94,17 @@ export async function validateMetadata(
 
 export async function downloadSnapshot(
   basePath: string,
-  win: BrowserWindow,
   onProgress: (status: IDownloadProgress) => void,
   token: CancellationToken
 ): Promise<string> {
   token.throwIfCancelled();
   console.log("Downloading snapshot.");
-  const options: IDownloadOptions = {
-    properties: {},
-  };
-  options.properties.onProgress = (status: IDownloadProgress) =>
-    onProgress(status);
-  options.properties.directory = app.getPath("userData");
-  options.properties.filename = "snapshot.zip";
-  const dl = await cancellableDownload(win, basePath + ".zip", options, token);
+  const dir = app.getPath("userData");
+  const savingPath = path.join(dir, "snapshot.zip");
+  await cancellableDownload(basePath + ".zip", savingPath, onProgress, token);
   token.throwIfCancelled();
-  let dir = dl.getSavePath();
   console.log("Snapshot download complete. Directory: ", dir);
-  return dir;
+  return savingPath;
 }
 
 export async function extractSnapshot(
