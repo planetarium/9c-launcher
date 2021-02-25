@@ -767,9 +767,9 @@
       "ja": "パスワード（確認）",
       "de": "Bestätige"
     },
-    "invitationCode": {
-      "en": "Invitation Code",
-      "ko": "초대 코드"
+    "초대 코드": {
+      "ko": "초대 코드",
+      "en": "Invitation Code"
     },
     "확인": {
       "ko": "확인",

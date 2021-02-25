@@ -73,7 +73,6 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
     }
 
     code = code.trim();
-    console.log(code.indexOf("/"));
     if (code.length === 0 || code.indexOf("/") < 0) {
       return false;
     }
@@ -168,7 +167,7 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
         className={classes.formControl}
       >
         <InputLabel className={classes.label}>
-          {locale("invitationCode")}
+          {locale("초대 코드")}
         </InputLabel>
         <OutlinedInput type="text" onChange={handleActivationKeyChange} />
         <FormHelperText className={classes.helperText}>
