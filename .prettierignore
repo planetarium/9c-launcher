@@ -1,5 +1,6 @@
 /dist/
-/nekoyume-unity/
+/NineChronicles/
+/NineChronicles.Headless/
 /node_modules/
 package-lock.json
 tsconfig.json
