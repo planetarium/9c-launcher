@@ -17,12 +17,19 @@ import { makeStyles } from "@material-ui/styles";
 import { RetypePassword } from "../../interfaces/i18n";
 
 interface RetypePasswordFormProps {
-  onSubmit: (password: string) => void;
+  onSubmit: (password: string, activationKey: string) => void;
 }
 
 const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [passwordConfirmAllowsEmpty, setPasswordConfirmAllowsEmpty] = useState(
+    true
+  );
+  const [activationKey, setActivationKey] = useState("");
+  const [activationKeyAllowsEmpty, setActivationKeyAllowsEmpty] = useState(
+    true
+  );
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
@@ -33,10 +40,18 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+
+    if (e.target.value.trim().length === 0) {
+      setPasswordConfirmAllowsEmpty(true);
+    }
   };
 
   const handlePasswordConfirmChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPasswordConfirm(e.target.value);
+
+    if (password.trim().length > 0) {
+      setPasswordConfirmAllowsEmpty(false);
+    }
   };
 
   const handleShowPassword = (e: MouseEvent<HTMLButtonElement>) => {
@@ -47,18 +62,51 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
     setShowPasswordConfirm(!showPasswordConfirm);
   };
 
-  const isPasswordBlank = password.trim().length === 0;
+  const handleActivationKeyChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setActivationKey(e.target.value);
+    setActivationKeyAllowsEmpty(false);
+  };
 
-  const isPasswordConfirmInitialValue = passwordConfirm.length === 0;
-  const isPasswordConfirmBlank = passwordConfirm.trim().length === 0;
-  const isNotEqual = password !== passwordConfirm;
+  const validateActivationKey = (code: string) => {
+    if (code === null) {
+      return false;
+    }
 
-  const disabled = isPasswordConfirmBlank || isNotEqual;
+    code = code.trim();
+    if (code.length === 0 || code.indexOf("/") < 0) {
+      return false;
+    }
+
+    const splits = code.split("/");
+    const privateKey = splits[0];
+    const address = splits[1];
+    if (privateKey.length !== 64 || address.length !== 40) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const isPasswordEmpty = password.trim().length === 0;
+  const isPasswordConfirmEmpty = passwordConfirm.trim().length === 0;
+  const isPasswordConfirmError = isPasswordConfirmEmpty
+    ? !passwordConfirmAllowsEmpty
+    : password !== passwordConfirm;
+  const isActivationKeyEmpty = activationKey.trim().length === 0;
+  const isActivationKeyError = isActivationKeyEmpty
+    ? !activationKeyAllowsEmpty
+    : !validateActivationKey(activationKey);
+  const disabled =
+    isPasswordEmpty ||
+    isPasswordConfirmEmpty ||
+    isActivationKeyEmpty ||
+    isPasswordConfirmError ||
+    isActivationKeyError;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (disabled) return;
-    onSubmit(password);
+    onSubmit(password, activationKey);
   };
 
   function strengthHint(password: string) {
@@ -71,7 +119,7 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
     <form noValidate autoComplete="off" onSubmit={handleSubmit}>
       <FormControl
         fullWidth
-        error={password.length > 0 && isPasswordBlank}
+        error={password.length > 0 && isPasswordEmpty}
         className={classes.formControl}
       >
         <InputLabel className={classes.label}>{locale("비밀번호")}</InputLabel>
@@ -92,7 +140,7 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
       </FormControl>
       <FormControl
         fullWidth
-        error={!isPasswordConfirmInitialValue && disabled}
+        error={isPasswordConfirmError}
         className={classes.formControl}
       >
         <InputLabel className={classes.label}>
@@ -111,6 +159,19 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
         />
         <FormHelperText className={classes.helperText}>
           {passwordConfirm.length > 0 && strengthHint(passwordConfirm)}
+        </FormHelperText>
+      </FormControl>
+      <FormControl
+        fullWidth
+        error={isActivationKeyError}
+        className={classes.formControl}
+      >
+        <InputLabel className={classes.label}>
+          {locale("초대 코드")}
+        </InputLabel>
+        <OutlinedInput type="text" onChange={handleActivationKeyChange} />
+        <FormHelperText className={classes.helperText}>
+          form helper text
         </FormHelperText>
       </FormControl>
       <Button

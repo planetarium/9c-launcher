@@ -2,11 +2,14 @@ import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import checkDiskSpace from "check-disk-space";
 import path from "path";
 import fs from "fs";
-import { BrowserWindow, DownloadItem } from "electron";
-import { IDownloadOptions } from "./interfaces/ipc";
+import axios from "axios";
+import stream from "stream";
+import { promisify } from "util";
+import { IDownloadProgress } from "./interfaces/ipc";
 import CancellationToken from "cancellationtoken";
-import { download } from "electron-dl";
 import extractZip from "extract-zip";
+
+const pipeline = promisify(stream.pipeline);
 
 export async function getDiskSpace(diskpath: string): Promise<number> {
   let diskSpace = await checkDiskSpace(diskpath);
@@ -91,32 +94,31 @@ export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function cancellableDownload(
-  win: BrowserWindow,
+export async function cancellableDownload(
   url: string,
-  options: IDownloadOptions,
+  downloadPath: string,
+  onProgress: (arg0: IDownloadProgress) => void,
   token: CancellationToken
-): Promise<DownloadItem> {
-  return new Promise((resolve, reject) => {
-    options.properties.onStarted = async (item: DownloadItem) => {
-      let unregister: () => void = () => {};
-      item.once("done", (event, state) => {
-        unregister();
-        if (state === "completed") {
-          resolve(item);
-        } else {
-          console.log(`Download failed: ${state}`);
-        }
-      });
-      unregister = token.onCancelled((_) => item.cancel());
-    };
-    options.properties.onCancel = async (item: DownloadItem) => {
-      console.log(`Download of ${url} is cancelled.`);
-      reject(new CancellationToken.CancellationError(token.reason));
-    };
+): Promise<void> {
+  const axiosCts = axios.CancelToken.source();
+  token.onCancelled((_) => axiosCts.cancel());
 
-    return download(win, url, options.properties).catch((e) => reject(e));
+  const res = await axios(url, {
+    cancelToken: axiosCts.token,
+    method: "get",
+    responseType: "stream",
   });
+  const totalBytes = parseInt(res.headers["content-length"]);
+  let transferredBytes: number = 0;
+  res.data.on("data", (chunk: string | any[]) => {
+    transferredBytes += chunk.length;
+    onProgress({
+      totalBytes,
+      percent: transferredBytes / totalBytes,
+      transferredBytes,
+    });
+  });
+  await pipeline(res.data, fs.createWriteStream(downloadPath));
 }
 
 export async function cancellableExtract(

@@ -170,9 +170,7 @@ class Standalone {
       if (!this.alive) {
         console.log("Standalone is not alive. Abort...");
         context.abort();
-        throw new HeadlessExitedError(
-          "Headless is exited during fetching."
-        );
+        throw new HeadlessExitedError("Headless is exited during fetching.");
       }
 
       try {

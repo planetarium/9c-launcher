@@ -1,3 +1,12 @@
+import {
+  Button as ButtonOrigin,
+  ButtonProps,
+  CircularProgress,
+  Container,
+  FormHelperText,
+  TextField,
+} from "@material-ui/core";
+import { inject, observer } from "mobx-react";
 import React, {
   useState,
   useEffect,
@@ -6,27 +15,17 @@ import React, {
   FormEvent,
 } from "react";
 import {
-  Button as ButtonOrigin,
-  ButtonProps,
-  CircularProgress,
-  Container,
-  FormHelperText,
-  LinearProgress,
-  TextField,
-} from "@material-ui/core";
-
-import { IStoreContainer } from "../../../interfaces/store";
-import { inject, observer } from "mobx-react";
-import {
   useActivateMutation,
   useActivationLazyQuery,
 } from "../../../generated/graphql";
-import lobbyViewStyle from "./LobbyView.style";
-
-import { useLocale } from "../../i18n";
 import { Lobby } from "../../../interfaces/i18n";
+import { IStoreContainer } from "../../../interfaces/store";
 import { sleep } from "../../../utils";
 import { ipcRenderer } from "electron";
+
+import { useLocale } from "../../i18n";
+
+import lobbyViewStyle from "./LobbyView.style";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
@@ -38,7 +37,7 @@ const Button = (
 
 const LobbyView = observer((props: ILobbyViewProps) => {
   const classes = lobbyViewStyle();
-  const { accountStore, gameStore, standaloneStore } = props;
+  const { accountStore, standaloneStore } = props;
   const [
     activation,
     { loading, error: statusError, data: status, refetch: activationRefetch },
@@ -47,13 +46,29 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     activate,
     { data: isActivated, error: activatedError },
   ] = useActivateMutation();
-  const [activationKey, setActivationKey] = useState("");
+  const [activationKey, setActivationKey] = useState(
+    accountStore.activationKey
+  );
   const [polling, setPollingState] = useState(false);
+  const [hasAutoActivateBegin, setHasAutoActivateBegin] = useState(false);
 
   const { locale } = useLocale<Lobby>("lobby");
 
-  const handleActivateSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleActivationKeyChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setActivationKey(event.target.value);
+    },
+    [event]
+  );
+
+  const handleActivationKeySubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
+    await activateMutation();
+  };
+
+  const activateMutation = async () => {
     setPollingState(true);
 
     const activated = async () => {
@@ -86,21 +101,28 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     }
   };
 
-  const privateKeyChangeHandle = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setActivationKey(event.target.value);
-    },
-    [event]
-  );
-
   useEffect(() => {
     if (standaloneStore.Ready && standaloneStore.IsSetPrivateKeyEnded) {
       activation();
     }
   }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
 
+  if (
+    !loading &&
+    !polling &&
+    !status?.activationStatus.activated &&
+    activationKey !== "" &&
+    !hasAutoActivateBegin &&
+    activationRefetch !== undefined
+  ) {
+    // FIXME 플래그(hasAutoActivateBegin) 없이 useEffect 나 타이밍 잡아서 부르게끔 고쳐야 합니다.
+    setHasAutoActivateBegin(true);
+    activateMutation();
+  }
+
   let child: JSX.Element;
-  if (loading || polling) {
+  // FIXME 활성화에 실패한 경우에도 polling이 풀리지 않는 문제가 있습니다.
+  if ((loading || polling) && activatedError === undefined) {
     child = (
       <>
         <p className={classes.verifing}>{locale("확인 중...")}</p>
@@ -113,11 +135,11 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     child = <GameStartButton {...props} />;
   } else {
     child = (
-      <form onSubmit={handleActivateSubmit}>
+      <form onSubmit={handleActivationKeySubmit}>
         <TextField
           error={activatedError?.message !== undefined}
           label={locale("초대 코드")}
-          onChange={privateKeyChangeHandle}
+          onChange={handleActivationKeyChange}
           fullWidth
         />
         {activatedError?.message !== undefined && (

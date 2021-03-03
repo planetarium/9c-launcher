@@ -5,6 +5,7 @@ export interface IAccountStore {
   privateKey: string;
   selectedAddress: string;
   isLogin: boolean;
+  activationKey: string;
 }
 
 export default class AccountStore implements IAccountStore {
@@ -20,6 +21,9 @@ export default class AccountStore implements IAccountStore {
 
   @observable
   public isLogin: boolean = false;
+
+  @observable
+  public activationKey: string = "";
 
   @action
   setPrivateKey = (privateKey: string) => {
@@ -62,4 +66,9 @@ export default class AccountStore implements IAccountStore {
       this.selectedAddress = this.addresses[index];
     }
   };
+
+  @action
+  setActivationKey = (activationKey: string) => {
+    this.activationKey = activationKey;
+  }
 }

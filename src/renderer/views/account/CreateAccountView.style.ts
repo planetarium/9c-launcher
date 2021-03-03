@@ -6,7 +6,7 @@ const createAccountViewStyle = makeStyles({
   },
   info: {
     color: "white",
-    marginTop: "140px",
+    marginTop: "70px",
     marginBottom: "30px",
     fontWeight: "bold",
     lineHeight: 1.25,
