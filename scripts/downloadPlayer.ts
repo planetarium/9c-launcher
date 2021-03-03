@@ -1,4 +1,4 @@
-// 9C Unity Player 빌드를 nekoyume-unity 저장소에서 아티팩트로 남은 거 받아서 풀기
+// 9C Unity Player 빌드를 NineChronicles 저장소에서 아티팩트로 남은 거 받아서 풀기
 import { exec, execFile } from "child_process";
 import fs from "fs";
 import https from "https";
@@ -12,7 +12,7 @@ type Platform = "macOS" | "Windows";
 
 const execWithPromise = promisify(exec);
 
-// S3 "9c-artifacts.s3.amazonaws.com" 버킷에 nekoyume-unity 저장소의
+// S3 "9c-artifacts.s3.amazonaws.com" 버킷에 NineChronicles 저장소의
 // 마스터 푸시마다 빌드한 아티팩트가 올라간다.
 // 참고: https://github.com/planetarium/nekoyume-unity/pull/2446
 const DOWNLOAD_URL_BASE: string = "https://d3rgdei88xmq6p.cloudfront.net";
@@ -34,7 +34,7 @@ function getCurrentPlatform(): Platform {
 
 async function getPlayerCommit(): Promise<Sha> {
   const { stdout, stderr } = await execWithPromise("git rev-parse HEAD", {
-    cwd: path.join(__dirname, "..", "nekoyume-unity"),
+    cwd: path.join(__dirname, "..", "NineChronicles"),
   });
   return stdout.trim();
 }

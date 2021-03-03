@@ -148,6 +148,7 @@ export interface CreateAccount {
 export interface RetypePassword extends ZXCVBNFeedbackWarningLocale {
   비밀번호: LocaleRecord;
   "비밀번호 (확인)": LocaleRecord;
+  "초대 코드": LocaleRecord;
   확인: LocaleRecord;
 }
 

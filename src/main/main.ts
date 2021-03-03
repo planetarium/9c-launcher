@@ -568,9 +568,8 @@ async function initializeStandalone(): Promise<void> {
             initializeStandaloneCts.token
           );
           if (needSnapshot) {
-            let snapshotDir = await snapshot.downloadSnapshot(
+            let snapshotPath = await snapshot.downloadSnapshot(
               path,
-              win,
               (status) => {
                 win?.webContents.send("download progress", status);
               },
@@ -579,7 +578,7 @@ async function initializeStandalone(): Promise<void> {
             await standalone.kill();
             utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
             await snapshot.extractSnapshot(
-              snapshotDir,
+              snapshotPath,
               (progress: number) => {
                 win?.webContents.send("extract progress", progress);
               },

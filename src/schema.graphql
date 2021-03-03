@@ -141,11 +141,17 @@ type NodeStatusType {
 
 enum NotificationEnum {
   REFILL
+  HAS
+  CombinationEquipment
+  CombinationConsumable
+  Buyer
+  Seller
 }
 
 type NotificationType {
   # The type of Notification.
   type: NotificationEnum!
+  message: String
 }
 
 type PeerChainStateQuery {
