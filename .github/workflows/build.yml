@@ -12,14 +12,14 @@ jobs:
     steps:
       # 클론
       - uses: actions/checkout@v2
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request_target'
         with:
           submodules: false
           lfs: false
       - uses: actions/checkout@v2
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request_target'
         with:
-          ref: ${{ github.pull_request.head.sha }}
+          ref: ${{ github.pull_request_target.head.sha }}
           submodules: false
           lfs: false
       # Node.js 설치
@@ -50,15 +50,15 @@ jobs:
     steps:
       # 클론
       - uses: actions/checkout@v2
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request_target'
         with:
           submodules: recursive
           ssh-key: ${{ secrets.SUBMODULE_PULL_KEY }}
           lfs: false
       - uses: actions/checkout@v2
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request_target'
         with:
-          ref: ${{ github.pull_request.head.sha }}
+          ref: ${{ github.pull_request_target.head.sha }}
           submodules: recursive
           ssh-key: ${{ secrets.SUBMODULE_PULL_KEY }}
           lfs: false
@@ -74,8 +74,8 @@ jobs:
               chmod +x github-commenter
             fi
             export GITHUB_REPO="${GITHUB_REPOSITORY#*/}"
-            if [[ "${{ github.event_name }}" = "pull_request" ]]; then
-              pr_no=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+            if [[ "${{ github.event_name }}" = "pull_request_target" ]]; then
+              pr_no=$(jq --raw-output .pull_request_target.number "$GITHUB_EVENT_PATH")
               ./github-commenter \
                 --type pr \
                 --number "$pr_no"
@@ -128,7 +128,7 @@ jobs:
         run: npm run codegen
       - name: Type Check
         run: npx tsc --noEmit
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request_target'
       # 빌드
       - run: npm run build-prod
       # 이전 릴리스 버전으로부터 config.json 복사
@@ -173,7 +173,7 @@ jobs:
       - if: runner.os != 'Windows'
         run: tar cvfz ../../pack-dist/macOS.tar.gz *
         working-directory: pack/Nine Chronicles-darwin-x64/
-      - if: github.event_name != 'pull_request'
+      - if: github.event_name != 'pull_request_target'
         uses: actions/upload-artifact@v2
         with:
           path: pack-dist/*
