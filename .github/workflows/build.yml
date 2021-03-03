@@ -3,7 +3,7 @@ on:
   push:
     branches: ["*"]
     tags: ["*"]
-  pull_request: []
+  pull_request_target: []
 
 jobs:
   # APV 서명

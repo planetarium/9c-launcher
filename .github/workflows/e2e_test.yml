@@ -1,5 +1,5 @@
 name: E2E Test
-on: [push, pull_request]
+on: [push, pull_request_target]
 
 jobs:
   run-test:
