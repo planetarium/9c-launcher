@@ -1,9 +1,9 @@
 # Nine Chronicles Launcher
 
-## 개요
+## Overview
 
-Nine Chronicles를 구동하기 위한 일렉트론 기반의 멀티플랫폼 런처입니다.
-기본적인 골격은 다음과 같습니다:
+This is an electron based multi-platform launcher to run Nine Chronicles.
+The basic structure is as follows:
 
 ```
 ./src
@@ -17,23 +17,23 @@ Nine Chronicles를 구동하기 위한 일렉트론 기반의 멀티플랫폼 �
 |   +-- App.tsx
 ```
 
-## 실행 방법
+## Installation
 
-먼저, 개발에 필요한 의존성부터 모두 설치합니다.
+First, install all dependencies required for development.
 
 ```bash
 npm install
 ```
 
-추가로, 두 개의 별도 바이너리가 필요합니다.
+In addition, there are two binaries required:
 
-- 9C Headless (Standalone): `npm run build-headless`로 빌드 가능
-  (.NET Core SDK 필요)
-- 9C Unity Player (_9c.exe_/_9c.app_): `npm run bundle-player`로 다운로드 가능
-  - `npm run bundle-player` 는 `NineChronicles` git 서브 모듈의 커밋 해시를 기준으로 NineChronicles 저장소 CI에서 미리 빌드된 바이너리를 다운로드 받습니다.
-  - 빌드가 끝나지 않은 경우 다운로드에 실패하는데, 이 경우엔 Unity 에디터에서 `dist` 디렉토리를 출력 디렉토리로 하여 직접 빌드하시면 됩니다.
+- 9C Headless (Standalone): can be built with `npm run build-headless`
+  (.NET Core SDK required)
+- 9C Unity Player (_9c.exe_/_9c.app_): can be downloaded with `npm run bundle-player`
+  - `npm run bundle-player` downloads the CI-built binary from the NineChronicles repository based on the `NineChronicles` git submodule commit hash.
+  - Download may fail if the CI-build hasn't been completed. In this case, you can directly build to `dist` as the output directory with Unity Editor.
 
-두 개의 바이너리를 해당 디렉터리와 같게 배치해 주십시오.
+Place the two binaries in the exact path as visualized below: 
 
 ```
 ./src
@@ -46,87 +46,83 @@ npm install
 |   |   +-- NineChronicles.Standalone.Executable(.exe)
 ```
 
-그 뒤 하기의 명령어를 입력합니다.
+After, run the following command.
 
 ```javascript
 npm run dev
 ```
 
-## 개발 방법
+## Development
 
-기본적으로 프론트엔드는 `webpack-hot-reload` 가 있어, 변경하는 즉시 반영됩니다.
-렌더러 프로세스에서 작업할 때는 일렉트론 재시작이 필요가 없으며, 메인 프로세스에 변경점이 생기면 그때 일렉트론 종료 후 재실행 해 주십시오.
+The basic frontend has `webpack-hot-reload`, which automatically reflects code changes.
+Developing the renderer process does not require electron relaunch. However, when there's a change in the main process, electron relaunch is required.
 
 ### mobx-devtools
 
-mobx-devtools를 사용할 수 있습니다. 먼저, 스탠드얼론 mobx-devtools를 설치해 주십시오
+mobx-devtools can be used in this project. First, install a standalone mobx-devtools.
 
 ```sh
 npm install -g mobx-devtools
 ```
 
-그 다음, mobx-devtools를 실행해 주십시오
+After, run mobx-devtools.
 
 ```sh
 mobx-devtools
 ```
 
-이제 `npm run server` 와 `npm run start`를 하시면 mobx-devtools에 전역 상태가 나타나는 것을 볼 수 있습니다.
+Run `npm run server` & `npm run start`. The global state will appear on mobx-devtools.
 
-## 빌드 방법
+## Build
 
 ```bash
 npm install
-npm run build  # 개발 빌드
-npm run build-headless  # 9C Headless (Standalone) 빌드 (.NET Core SDK 필요)
-npm run bundle-player  # 9C Unity Player 받기
-APV_SIGN_KEY=... APV_NO=... npm run sign-apv  # APV 서명 (planet 명령 필요)
-npm run build-prod  # 프로덕션 빌드
+npm run build  # development build
+npm run build-headless  # 9C Headless (Standalone) build (.NET Core SDK required)
+npm run bundle-player  # 9C Unity Player download
+APV_SIGN_KEY=... APV_NO=... npm run sign-apv  # APV sign (planet command required)
+npm run build-prod  # production build
 ```
 
-## 패키징 방법
+## Packaging
 
 ```bash
-# 주어진 비밀키로 새 버전 APV를 생성/서명 후 적용
+# generate/sign a new APV with the given private key and pack
 APV_SIGN_KEY=... npm run pack-all
-# 주어진 비밀키로 지정된 버전의 APV를 생성/서명 후 적용
+# generate/sign a specific APV with the given private key and pack
 APV_SIGN_KEY=... APV_NO=1234 npm run pack-all
-# 주어진 APV를 그대로 적용
+# pack with the given APV
 APV=... npm run pack-all
-# APV 미적용 (가장 마지막에 릴리스된 패키지에 적용된 APV 재사용)
+# pack without APV (for reusing the APV of the latest release)
 npm run pack-all
 ```
 
-다음 환경 변수를 요구합니다. `APV`와 `APV_SIGN_KEY` 양 쪽 모두 누락됐을 경우
-APV(앱 프로토콜 버전) 서명을 안 합니다.
+Packaging requires the following environment variables. If both the `APV` and `APV_SIGN_KEY` are ommited,
+APV(App Protocol Version) signing will not take place.
 
-- `APV`: APV 토큰
+- `APV`: APV token
   ([`Libplanet.Net.AppProtocolVersion.Token`][appprotocolversion.token]).
-  이게 주어지면 아래 세 환경 변수는 무시되고, 이 빌드 및 패키징된 앱은 이 `APV`를
-  쓰도록 설정됩니다.
-- `APV_SIGN_KEY`: APV 서명에 쓸 비밀키의 16진수 문자열.
-  프로덕션 빌드를 위한 서명용 비밀키는 1Password에 있으니 동료에게 문의하세요.
-- `APV_NO`: APV 숫자
+  If an APV is provided, the other environment variables will be ignored and the build and packaged app will be configured to use that `APV`.
+- `APV_SIGN_KEY`: Hexadecimal string of the private key used for APV signing
+- `APV_NO`: APV number
   ([`Libplanet.Net.AppProtocolVersion.Version`][appprotocolversion.version]).
-  생략시 [download.nine-chronicles.com](https://download.nine-chronicles.com/)의
-  최신 버전에 1을 더한 값을 자동으로 사용합니다.
+  When ommited, packaging will automatically use [download.nine-chronicles.com](https://download.nine-chronicles.com/)'s latest version number plus 1.
 
 [appprotocolversion.token]: https://docs.libplanet.io/master/api/Libplanet.Net.AppProtocolVersion.html#Libplanet_Net_AppProtocolVersion_Token
 [appprotocolversion.version]: https://docs.libplanet.io/master/api/Libplanet.Net.AppProtocolVersion.html#Libplanet_Net_AppProtocolVersion_Version
 
-### 패키지에서 config.json 내용만 갈아끼우기
+### Replacing config.json content after packaging
 
-패키징된 _Windows.zip_ 또는 _macOS.tar.gz_ 파일에서 _config.json_ 설정 내용만 갈아끼울 때
-_scripts/extract-config.sh_ 및 _scripts/replace-config.sh_ 스크립트를 활용하면 편합니다.
+For replacing the configuration content of _config.json_ in the already packed _Windows.zip_ or _macOS.tar.gz_, it's convenient to use the _scripts/extract-config.sh_ and _scripts/replace-config.sh_ scripts.
 
 ```bash
-# 패키지에서 config.json 내용만 추출 (Windows.zip 대신 macOS.tar.gz도 가능)
+# extract config.json content from package (supports Windows.zip and macOS.tar.gz)
 scripts/extract-config.sh path/Windows.zip > config.json
-# 패키지 내 config.json 내용을 교체 (Windows.zip 대신 macOS.tar.gz도 가능)
+# replace config.json content in package (supports Windows.zip and macOS.tar.gz)
 scripts/replace-config.sh path/Windows.zip < config.json
 ```
 
-### electron-builder로 패키징하기
+### Packaging with electron-builder
 
 ```bash
 # Windows (nsis)
@@ -134,24 +130,24 @@ scripts/replace-config.sh path/Windows.zip < config.json
 npm run pack-all:electron-builder
 ```
 
-## 로깅 위치
+## Log Path
 
-로그는 다음 위치에 쌓입니다.
+Logs are saved in the following paths:
 
 ```
 - on macOS: ~/Library/Logs/{app name}/{process type}.log
 - on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs{process type}.log
 ```
 
-## 코드 스타일 맞추기
+## Code Style Formatting
 
 ```bash
 npx pretty-quick --staged
 ```
 
-### Visual Studio Code 확장
+### Visual Studio Code Extensions
 
-확장 화면(Windows: <kbd>⇧⌃X</kbd>, macOS: <kbd>⇧⌘X</kbd>)에서 다음 확장들을 설치합니다.
+Install the following extensions in the Visual Studio Code extensions page(Windows: <kbd>⇧⌃X</kbd>, macOS: <kbd>⇧⌘X</kbd>):
 
 - [EditorConfig]
 - [ESlint]
