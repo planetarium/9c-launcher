@@ -1,8 +1,4 @@
-if command -v node > /dev/null; then
-  passphrase="$(node -e 'console.log(Math.random())')"
-else
-  passphrase="$(tr -dc 'a-zA-Z0-9' < /dev/random | fold -w 32 | head -n 1)"
-fi
-key_id="$(npx planet key import --passphrase="$passphrase" \
-          | awk '{print $1}')"
+passphrase="$(tr -dc 'a-zA-Z0-9' < /dev/random | fold -w 32 | head -n 1)"
+private_key="$(npx planet key generate -A)"
+npx planet key import --passphrase="$passphrase" "$private_key" &>/dev/null
 echo "PASSWORD=$passphrase" > .env

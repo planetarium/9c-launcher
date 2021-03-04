@@ -28,7 +28,7 @@ jobs:
       - run: npm install @planetarium/cli
       - name: Generate key
         id: gen-key
-        run: 'echo "::set-output name=passphrase::$(scripts\\create-key.ps1)"'
+        run: scripts\\create-key.ps1
       - name: Build Standalone
         run: |
           pushd NineChronicles.Headless
