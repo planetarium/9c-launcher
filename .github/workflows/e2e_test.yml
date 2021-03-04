@@ -29,8 +29,6 @@ jobs:
       - name: Generate key
         id: gen-key
         run: 'echo "::set-output name=passphrase::$(scripts\\create-key.ps1)"'
-        env:
-          APV_SIGN_KEY: ${{ secrets.APV_SIGN_KEY }}
       - name: Build Standalone
         run: |
           pushd NineChronicles.Headless
