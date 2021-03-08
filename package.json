@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Game Launcher for Nine Chronicles",
   "author": "Planetarium",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "keywords": [
     "electron",
     "react",
