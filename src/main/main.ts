@@ -470,7 +470,11 @@ function initializeIpc() {
     const directory = await dialog.showOpenDialog(win, {
       properties: ["openDirectory"],
     });
-    event.returnValue = directory.filePaths;
+    if (directory.canceled) {
+      event.returnValue = null;
+    } else {
+      event.returnValue = directory.filePaths;
+    }
   });
 
   ipcMain.on("relaunch standalone", async (event) => {
