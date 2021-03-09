@@ -40,7 +40,7 @@ export type OptionalLocale =
   | "zh-Hans";
 
 export type RequireLocale =
-  //  | "ko"
+  | "ko"
   "en";
 
 export type Phrases = LocaleRecord | Description;
