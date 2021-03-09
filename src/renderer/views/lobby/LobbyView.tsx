@@ -124,10 +124,10 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   // FIXME 활성화에 실패한 경우에도 polling이 풀리지 않는 문제가 있습니다.
   if ((loading || polling) && activatedError === undefined) {
     child = (
-      <>
+      <div>
         <p className={classes.verifing}>{locale("확인 중...")}</p>
         <CircularProgress />
-      </>
+      </div>
     );
   } else if (!standaloneStore.Ready) {
     child = <PreloadWaitingButton />;
