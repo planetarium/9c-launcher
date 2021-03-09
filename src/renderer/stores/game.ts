@@ -44,6 +44,10 @@ export default class GameStore {
 
   @action
   startGame = (privateKey: string) => {
+    const awsSinkGuid: string = ipcRenderer.sendSync(
+      "get-aws-sink-cloudwatch-guid"
+    );
+
     ipcRenderer.send("launch game", {
       args: [
         `--private-key=${privateKey}`,
@@ -53,6 +57,7 @@ export default class GameStore {
         `--genesis-block-path=${this._genesisBlockPath}`,
         `--language=${this._language}`,
         `--app-protocol-version=${this._appProtocolVersion}`,
+        `--aws-sink-guid=${awsSinkGuid}`,
       ],
     });
     this._isGameStarted = true;
