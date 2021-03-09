@@ -18,7 +18,7 @@ const context = createContext<LocaleContext>({
 });
 
 export const supportedLocales = {
-  //  ko: "한국어",
+  ko: "한국어",
   en: "English",
   es: "Español",
   id: "Bahasa Indonesia",
