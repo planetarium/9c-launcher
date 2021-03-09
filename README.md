@@ -6,6 +6,11 @@
 * Module not found (spawn-sync, utf-8-validate, bufferutil)의 경고를 뜨고 싶지 않으면 `npm i spawn-sync utf-8-validate bufferutil`, [해당 이슈](https://github.com/planetarium/9c-launcher/issues/565)
 * 만약 갑자기 프로그램이 꺼진다면 백그라운드 프로세소에서 `Nine Chronicles`를 강제 종료하고 다시 하면 된다
 
+### 스크린샷
+![image](https://user-images.githubusercontent.com/71239005/110416933-ee57fd80-80d7-11eb-965c-a473250d6ac7.png)
+
+* 어느 부분에서는 영어로 표시 되어 있는 경우가 있음
+
 ## Overview
 
 This is an electron based multi-platform launcher to run Nine Chronicles.
