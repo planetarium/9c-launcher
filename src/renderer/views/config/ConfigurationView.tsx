@@ -57,7 +57,8 @@ const ConfigurationView = observer(() => {
   };
 
   const handleChangeDir = () => {
-    const directory = ipcRenderer.sendSync("select-directory") as string[];
+    const directory = ipcRenderer.sendSync("select-directory") as string[] | null;
+    if (directory === null) return;
     setRootChainPath(path.join(...directory));
   };
 
