@@ -18,7 +18,7 @@
   },
   "menu": {
     "Forum": {
-      "ko": "Forum",
+      "ko": "포럼",
       "en": "Forum",
       "pl": "Forum",
       "pt-BR": "Fórum",
@@ -28,7 +28,7 @@
       "id": "Forum"
     },
     "Discord": {
-      "ko": "Discord",
+      "ko": "디스코드",
       "en": "Discord",
       "pl": "Discord",
       "pt-BR": "Discord",
@@ -1322,7 +1322,7 @@
       "id": "Pilih Bahasa"
     },
     "저장 후 론처가 재시작 됩니다.": {
-      "ko": "저장 후 론처가 재시작 됩니다.",
+      "ko": "저장 후 런처가 재시작됩니다.",
       "en": "After saving, the launcher will restart.",
       "pt-BR": "Após salvar, o jogo irá reiniciar",
       "pl": "Po zapisie, launcher uruchomi się ponownie",
