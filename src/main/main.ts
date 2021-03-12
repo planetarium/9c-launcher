@@ -553,24 +553,26 @@ async function initializeStandalone(): Promise<void> {
         `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
       );
     }
-    await standalone.execute(standaloneExecutableArgs);
     win?.webContents.send("start bootstrap");
 
+    const localMetadata = standalone.getTip(
+      electronStore.get("StoreType"),
+      BLOCKCHAIN_STORE_PATH
+    );
     const snapshotPaths: string[] = electronStore.get("SnapshotPaths");
     if (snapshotPaths.length > 0 && win != null) {
       for (const path of snapshotPaths) {
         console.log(`Trying snapshot path: ${path}`);
 
         try {
-          let metadata = await snapshot.downloadMetadata(
+          let snapshotMetadata = await snapshot.downloadMetadata(
             path,
             win,
             initializeStandaloneCts.token
           );
-          let needSnapshot = await snapshot.validateMetadata(
-            metadata,
-            initializeStandaloneCts.token
-          );
+          let needSnapshot =
+            localMetadata === null ||
+            snapshot.validateMetadata(localMetadata, snapshotMetadata);
           if (needSnapshot) {
             let snapshotPath = await snapshot.downloadSnapshot(
               path,
@@ -579,7 +581,6 @@ async function initializeStandalone(): Promise<void> {
               },
               initializeStandaloneCts.token
             );
-            await standalone.kill();
             utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
             await snapshot.extractSnapshot(
               snapshotPath,
@@ -589,7 +590,9 @@ async function initializeStandalone(): Promise<void> {
               initializeStandaloneCts.token
             );
           } else {
-            console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
+            console.log(
+              `Metadata ${snapshotMetadata} is redundant. Skip snapshot.`
+            );
           }
 
           break;
@@ -598,15 +601,12 @@ async function initializeStandalone(): Promise<void> {
             `Unexpected error occurred during download / extract snapshot. ${error}` +
               `path: ${path}`
           );
-        } finally {
-          if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
-            await standalone.execute(standaloneExecutableArgs);
-          }
         }
       }
     }
 
     initializeStandaloneCts.token.throwIfCancelled();
+    await standalone.execute(standaloneExecutableArgs);
     if (!(await standalone.run())) {
       // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
       win?.webContents.send("go to error page", "clear-cache");
