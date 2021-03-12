@@ -45,6 +45,7 @@ import { v4 as uuidv4 } from "uuid";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
 import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 import { v4 as ipv4 } from "public-ip";
+import { Address, KeyId } from "./key-store";
 
 initializeSentry();
 
@@ -516,6 +517,56 @@ function initializeIpc() {
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
     mixpanel?.alias(mixpanelUUID, alias);
   });
+
+  ipcMain.on("get-protected-private-keys", async (event) => {
+    event.returnValue = standalone.keyStore.list();
+  });
+
+  ipcMain.on(
+    "unprotect-private-key",
+    async (event, address: Address, passphrase: string) => {
+      try {
+        const protectedPrivateKey = standalone.keyStore
+          .list()
+          .find((x) => x.address === address);
+        if (protectedPrivateKey === undefined) {
+          event.returnValue = [undefined, {}];
+          return;
+        }
+
+        event.returnValue = [
+          standalone.keyStore.unprotectPrivateKey(
+            protectedPrivateKey.keyId,
+            passphrase
+          ),
+          undefined,
+        ];
+      } catch (error) {
+        event.returnValue = [undefined, error];
+      }
+    }
+  );
+
+  ipcMain.on("create-private-key", async (event, passphrase: string) => {
+    event.returnValue = standalone.keyStore.createProtectedPrivateKey(
+      passphrase
+    );
+  });
+
+  ipcMain.on(
+    "revoke-protected-private-key",
+    async (event, address: Address) => {
+      const protectedPrivateKey = standalone.keyStore
+        .list()
+        .find((x) => x.address === address);
+      if (protectedPrivateKey === undefined) {
+        event.returnValue = [undefined, {}];
+        return;
+      }
+
+      standalone.keyStore.revokeProtectedPrivateKey(protectedPrivateKey.keyId);
+    }
+  );
 }
 
 async function initializeStandalone(): Promise<void> {

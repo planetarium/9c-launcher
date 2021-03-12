@@ -7,6 +7,7 @@ import { execute, sleep } from "../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
 import { BlockHeader } from "src/interfaces/block-header";
+import { KeyStore } from "./key-store";
 
 const retryOptions = {
   delay: 100,
@@ -148,6 +149,10 @@ class Standalone {
     this._mining = mining;
     if (this.alive) return await this.setMining(mining);
     return true;
+  }
+
+  public get keyStore(): KeyStore {
+    return new KeyStore(this._path);
   }
 
   public getTip(storeType: string, storePath: string): BlockHeader | null {
