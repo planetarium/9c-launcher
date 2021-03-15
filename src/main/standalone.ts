@@ -8,6 +8,7 @@ import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
 import { BlockHeader } from "src/interfaces/block-header";
 import { KeyStore } from "./key-store";
+import { Validation } from "./standalone/validation";
 
 const retryOptions = {
   delay: 100,
@@ -153,6 +154,10 @@ class Standalone {
 
   public get keyStore(): KeyStore {
     return new KeyStore(this._path);
+  }
+
+  public get validation(): Validation {
+    return new Validation(this._path);
   }
 
   public getTip(storeType: string, storePath: string): BlockHeader | null {

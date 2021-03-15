@@ -16,6 +16,7 @@ import { useLocale } from "../../../i18n";
 import { InputPrivateKey } from "../../../../interfaces/i18n";
 import reviewPrivateKeyViewStyle from "./ReviewPrivateKeyView.style";
 import TextButton from "../../../components/TextButton";
+import { ipcRenderer } from "electron";
 
 interface IReviewPrivateKeyViewProps {
   accountStore: AccountStore;
@@ -29,23 +30,16 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
 
     const classes = reviewPrivateKeyViewStyle();
 
-    const { loading, data, error } = useValidatePrivateKeyQuery({
-      variables: {
-        privateKey,
-      },
-    });
-
     const { locale } = useLocale<InputPrivateKey>("inputPrivateKey");
-
-    // 스탠드얼론에서 미처 감싸지 못한 예외들이 GraphQL ExecutionError로 나옵니다.
-    if (error) console.error(error);
 
     const privateKeyChangeHandle = (event: ChangeEvent<HTMLInputElement>) => {
       setPrivateKey(event.target.value);
     };
 
-    const isPrivateKeyValid =
-      error === undefined && !loading && (data?.validation.privateKey ?? false);
+    const isPrivateKeyValid = ipcRenderer.sendSync(
+      "validate-private-key",
+      privateKey
+    );
 
     const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
       if (!isPrivateKeyValid) {

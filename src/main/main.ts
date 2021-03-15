@@ -567,6 +567,10 @@ function initializeIpc() {
       standalone.keyStore.revokeProtectedPrivateKey(protectedPrivateKey.keyId);
     }
   );
+
+  ipcMain.on("validate-private-key", async (event, privateKeyHex: string) => {
+    event.returnValue = standalone.validation.isValidPrivateKey(privateKeyHex);
+  });
 }
 
 async function initializeStandalone(): Promise<void> {
