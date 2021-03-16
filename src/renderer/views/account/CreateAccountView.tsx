@@ -12,7 +12,7 @@ import RetypePasswordForm from "../../components/RetypePasswordForm";
 import AccountStore from "../../stores/account";
 
 import createAccountViewStyle from "./CreateAccountView.style";
-import { PrivateKey, ProtectedPrivateKey } from "src/main/key-store";
+import { PrivateKey, ProtectedPrivateKey } from "src/main/standalone/key-store";
 
 interface ICreateAccountProps {
   accountStore: AccountStore;

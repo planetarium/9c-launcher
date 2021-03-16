@@ -45,7 +45,7 @@ import { v4 as uuidv4 } from "uuid";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
 import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 import { v4 as ipv4 } from "public-ip";
-import { Address, KeyId } from "./key-store";
+import { Address, KeyId } from "./standalone/key-store";
 
 initializeSentry();
 

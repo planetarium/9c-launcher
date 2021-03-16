@@ -7,7 +7,7 @@ import { execute, sleep } from "../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
 import { BlockHeader } from "src/interfaces/block-header";
-import { KeyStore } from "./key-store";
+import { KeyStore } from "./standalone/key-store";
 import { Validation } from "./standalone/validation";
 
 const retryOptions = {
