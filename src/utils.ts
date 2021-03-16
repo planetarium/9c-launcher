@@ -8,6 +8,7 @@ import { promisify } from "util";
 import { IDownloadProgress } from "./interfaces/ipc";
 import CancellationToken from "cancellationtoken";
 import extractZip from "extract-zip";
+import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
 
 const pipeline = promisify(stream.pipeline);
 
@@ -100,25 +101,30 @@ export async function cancellableDownload(
   onProgress: (arg0: IDownloadProgress) => void,
   token: CancellationToken
 ): Promise<void> {
-  const axiosCts = axios.CancelToken.source();
-  token.onCancelled((_) => axiosCts.cancel());
+  try {
+    const axiosCts = axios.CancelToken.source();
+    token.onCancelled((_) => axiosCts.cancel());
 
-  const res = await axios(url, {
-    cancelToken: axiosCts.token,
-    method: "get",
-    responseType: "stream",
-  });
-  const totalBytes = parseInt(res.headers["content-length"]);
-  let transferredBytes: number = 0;
-  res.data.on("data", (chunk: string | any[]) => {
-    transferredBytes += chunk.length;
-    onProgress({
-      totalBytes,
-      percent: transferredBytes / totalBytes,
-      transferredBytes,
+    const res = await axios(url, {
+      cancelToken: axiosCts.token,
+      method: "get",
+      responseType: "stream"
     });
-  });
-  await pipeline(res.data, fs.createWriteStream(downloadPath));
+    const totalBytes = parseInt(res.headers["content-length"]);
+    let transferredBytes: number = 0;
+    res.data.on("data", (chunk: string | any[]) => {
+      transferredBytes += chunk.length;
+      onProgress({
+        totalBytes,
+        percent: transferredBytes / totalBytes,
+        transferredBytes,
+      });
+    });
+    await pipeline(res.data, fs.createWriteStream(downloadPath));
+  }
+  catch(error) {
+    throw new CancellableDownloadFailedError(url, downloadPath);
+  }
 }
 
 export async function cancellableExtract(
@@ -146,4 +152,8 @@ export async function cancellableExtract(
     );
     throw error;
   }
+}
+
+export function getType(target: any) {
+  return Object.prototype.toString.call(target).slice(8, -1);
 }

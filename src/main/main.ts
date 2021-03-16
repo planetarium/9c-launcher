@@ -249,10 +249,13 @@ function initializeIpc() {
         directory: app.getPath("temp"),
       };
       console.log("Starts to download:", downloadUrl);
-      const dl = await download(win, downloadUrl, options);
+      let dl: DownloadItem | null;
+      // TODO: try-catch
+      dl = await download(win, downloadUrl, options);
+      
       win?.webContents.send("update download complete");
-      const dlFname = dl.getFilename();
-      const dlPath = dl.getSavePath();
+      const dlFname = dl?.getFilename();
+      const dlPath = dl?.getSavePath();
       console.log("Finished to download:", dlPath);
 
       const extractPath =
@@ -594,10 +597,22 @@ async function initializeStandalone(): Promise<void> {
 
           break;
         } catch (error) {
-          console.error(
-            `Unexpected error occurred during download / extract snapshot. ${error}` +
-              `path: ${path}`
-          );
+          const errorMessage = "Unexpected error occurred during download / extract snapshot." +
+          `\n${error}\npath: ${path}`
+          console.error(errorMessage);
+
+          const errorType = utils.getType(error);
+          switch (errorType) {
+            case "CancellableDownloadFailedError":
+              win?.webContents.send("go to error page", "cancellable-download-failed-error");
+              break;
+            case "DownloadMetadataFailedError":
+              win?.webContents.send("go to error page", "download-metadata-failed-error");
+              break;
+            case "ValidateMetadataFailedError":
+              win?.webContents.send("go to error page", "validate-metadata-failed-error");
+              break;
+          }
         } finally {
           if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
             await standalone.execute(standaloneExecutableArgs);
