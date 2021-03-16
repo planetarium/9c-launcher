@@ -45,7 +45,7 @@ import { v4 as uuidv4 } from "uuid";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
 import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 import { v4 as ipv4 } from "public-ip";
-import { Address, KeyId } from "./standalone/key-store";
+import { Address, KeyId, PrivateKey } from "./standalone/key-store";
 
 initializeSentry();
 
@@ -554,6 +554,16 @@ function initializeIpc() {
   });
 
   ipcMain.on(
+    "import-private-key",
+    async (event, privateKey: PrivateKey, passphrase: string) => {
+      event.returnValue = standalone.keyStore.importPrivateKey(
+        privateKey,
+        passphrase
+      );
+    }
+  );
+
+  ipcMain.on(
     "revoke-protected-private-key",
     async (event, address: Address) => {
       const protectedPrivateKey = standalone.keyStore
@@ -565,12 +575,23 @@ function initializeIpc() {
       }
 
       standalone.keyStore.revokeProtectedPrivateKey(protectedPrivateKey.keyId);
+      event.returnValue = ["", undefined];
     }
   );
 
   ipcMain.on("validate-private-key", async (event, privateKeyHex: string) => {
     event.returnValue = standalone.validation.isValidPrivateKey(privateKeyHex);
   });
+
+  ipcMain.on(
+    "convert-private-key-to-address",
+    async (event, privateKeyHex: string) => {
+      event.returnValue = standalone.keyStore.convertPrivateKey(
+        privateKeyHex,
+        "address"
+      );
+    }
+  );
 }
 
 async function initializeStandalone(): Promise<void> {

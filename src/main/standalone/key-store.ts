@@ -1,4 +1,3 @@
-import { execSync } from "child_process";
 import { StandaloneSubcommand } from "./subcommand";
 
 const parseProtectedPrivateKeyLine = (line: string): ProtectedPrivateKey => {
@@ -47,7 +46,24 @@ export class KeyStore extends StandaloneSubcommand {
     );
   }
 
+  importPrivateKey(privateKey: PrivateKey, passphrase: string): void {
+    this.execSync(
+      "key",
+      "import",
+      "--passphrase",
+      `${passphrase}`,
+      `"${privateKey}"`
+    );
+  }
+
   revokeProtectedPrivateKey(keyId: KeyId): void {
     this.execSync(`key remove ${keyId} --no-passphrase`);
+  }
+
+  convertPrivateKey(
+    privateKey: PrivateKey,
+    targetType: "address" | "public-key"
+  ) {
+    this.execSync("key", "convert", `--${targetType}`, `"${privateKey}"`);
   }
 }
