@@ -1,4 +1,5 @@
 import { execSync } from "child_process";
+import { StandaloneSubcommand } from "./subcommand";
 
 const parseProtectedPrivateKeyLine = (line: string): ProtectedPrivateKey => {
   const splited = line.trimRight().split(" ");
@@ -18,14 +19,7 @@ export type PrivateKey = string;
 
 export type ProtectedPrivateKey = { keyId: KeyId; address: Address };
 
-export class KeyStore {
-  private readonly _executablePath: string;
-
-  constructor(executablePath: string) {
-    console.log("executablePath", executablePath);
-    this._executablePath = executablePath;
-  }
-
+export class KeyStore extends StandaloneSubcommand {
   list(): ProtectedPrivateKey[] {
     try {
       return this.execSync("key")
@@ -55,11 +49,5 @@ export class KeyStore {
 
   revokeProtectedPrivateKey(keyId: KeyId): void {
     this.execSync(`key remove ${keyId} --no-passphrase`);
-  }
-
-  private execSync(...args: string[]): string {
-    return execSync([`"${this._executablePath}"`, ...args].join(" "), {
-      encoding: "utf-8",
-    });
   }
 }
