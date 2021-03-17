@@ -10,6 +10,8 @@ import path from "path";
 import { CancellableDownloadFailedError } from "./exceptions/cancellable-download-failed";
 import { DownloadMetadataFailedError } from "./exceptions/download-metadata-failed";
 import { ValidateMetadataFailedError } from "./exceptions/validate-metadata-failed";
+import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
+import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 
 export async function downloadMetadata(
   basePath: string,
@@ -110,14 +112,19 @@ export async function downloadSnapshot(
   onProgress: (status: IDownloadProgress) => void,
   token: CancellationToken
 ): Promise<string> {
-  token.throwIfCancelled();
-  console.log("Downloading snapshot.");
-  const dir = app.getPath("userData");
-  const savingPath = path.join(dir, "snapshot.zip");
-  await cancellableDownload(basePath + ".zip", savingPath, onProgress, token);
-  token.throwIfCancelled();
-  console.log("Snapshot download complete. Directory: ", dir);
-  return savingPath;
+  try {
+    token.throwIfCancelled();
+    console.log("Downloading snapshot.");
+    const dir = app.getPath("userData");
+    const savingPath = path.join(dir, "snapshot.zip");
+    await cancellableDownload(basePath + ".zip", savingPath, onProgress, token);
+    token.throwIfCancelled();
+    console.log("Snapshot download complete. Directory: ", dir);
+    return savingPath;
+  }
+  catch (error) {
+    throw new DownloadSnapshotFailedError(basePath);
+  }
 }
 
 export async function extractSnapshot(
@@ -125,15 +132,20 @@ export async function extractSnapshot(
   onProgress: (progress: number) => void,
   token: CancellationToken
 ): Promise<void> {
-  token.throwIfCancelled();
-  console.log(`Extracting snapshot.
+  try {
+    token.throwIfCancelled();
+    console.log(`Extracting snapshot.
 extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
 extractTarget: [ ${snapshotPath} ]`);
-  await cancellableExtract(
-    snapshotPath,
-    BLOCKCHAIN_STORE_PATH,
-    onProgress,
-    token
-  );
-  console.log("Snapshot extract complete.");
+    await cancellableExtract(
+      snapshotPath,
+      BLOCKCHAIN_STORE_PATH,
+      onProgress,
+      token
+    );
+    console.log("Snapshot extract complete.");
+  }
+  catch (error) {
+    throw new ExtractSnapshotFailedError(snapshotPath);
+  }
 }

@@ -9,6 +9,7 @@ import { IDownloadProgress } from "./interfaces/ipc";
 import CancellationToken from "cancellationtoken";
 import extractZip from "extract-zip";
 import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
+import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
 
 const pipeline = promisify(stream.pipeline);
 
@@ -150,7 +151,7 @@ export async function cancellableExtract(
     console.error(
       `Unexpected error occurred during extracting ${targetDir} to ${outputDir}. ${error}`
     );
-    throw error;
+    throw new CancellableExtractFailedError(targetDir, outputDir);
   }
 }
 

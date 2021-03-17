@@ -603,19 +603,18 @@ async function initializeStandalone(): Promise<void> {
 
           const errorType = utils.getType(error);
           switch (errorType) {
-            case "CancellableDownloadFailedError":
-              win?.webContents.send("go to error page", "cancellable-download-failed-error");
-              break;
             case "DownloadMetadataFailedError":
               win?.webContents.send("go to error page", "download-metadata-failed-error");
               break;
-            case "ValidateMetadataFailedError":
-              win?.webContents.send("go to error page", "validate-metadata-failed-error");
+            case "DownloadSnapshotFailedError":
+              win?.webContents.send("go to error page", "download-snapshot-failed-error");
               break;
           }
         } finally {
           if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
             await standalone.execute(standaloneExecutableArgs);
+          } else {
+            // TODO: handle exception
           }
         }
       }
