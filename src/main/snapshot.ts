@@ -28,7 +28,7 @@ export async function downloadMetadata(
     console.log("Metadata download complete: ", meta);
     return meta;
   }
-  catch (error: CancellableDownloadFailedError | any) {
+  catch (error) {
     throw new DownloadMetadataFailedError(basePath);
   }
 }
