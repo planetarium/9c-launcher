@@ -41,12 +41,13 @@ import Standalone from "./standalone";
 import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
-import { v4 as uuidv4 } from "uuid";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
-import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 import { v4 as ipv4 } from "public-ip";
+import { v4 as uuidv4 } from "uuid";
+import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
+import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 
 initializeSentry();
 
@@ -251,10 +252,15 @@ function initializeIpc() {
         directory: app.getPath("temp"),
       };
       console.log("Starts to download:", downloadUrl);
-      let dl: DownloadItem | null;
-      // TODO: try-catch
-      dl = await download(win, downloadUrl, options);
-      
+      let dl: DownloadItem | null | undefined;
+      try {
+        dl = await download(win, downloadUrl, options);
+      }
+      catch (error) {
+        win?.webContents.send("go to error page", "download-binary-failed");
+        throw new DownloadBinaryFailedError(downloadUrl);
+      }
+
       win?.webContents.send("update download complete");
       const dlFname = dl?.getFilename();
       const dlPath = dl?.getSavePath();
