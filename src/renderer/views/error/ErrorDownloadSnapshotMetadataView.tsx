@@ -10,7 +10,7 @@ const ErrorDownloadSnapshotMetadataView = () => {
   const classes = errorViewStyle();
   const { locale } = useLocale<ErrorDownloadSnapshotMetadata>("errorDownloadSnapshotMetadata");
 
-  const handleClearCache = useCallback(() => {
+  const handleRestart = useCallback(() => {
     remote.app.relaunch();
     remote.app.exit();
   }, []);
@@ -33,7 +33,7 @@ const ErrorDownloadSnapshotMetadataView = () => {
         color="primary"
         variant="contained"
         fullWidth
-        onClick={handleClearCache}
+        onClick={handleRestart}
       >
         {locale("재시작")}
       </Button>
