@@ -16,7 +16,7 @@ const MiningView = observer(
     const setMining = (isMining: boolean) => {
       routerStore.push("/lobby/preload");
       const setSucceed: boolean = ipcRenderer.sendSync(
-        "standAlone/set-private-key",
+        "standalone/set-private-key",
         accountStore.privateKey
       );
       if (setSucceed) {
