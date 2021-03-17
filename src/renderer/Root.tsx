@@ -12,18 +12,19 @@ import LobbyView from "./views/lobby/LobbyView";
 import IntroView from "./IntroView";
 import LoginView from "./views/login/LoginView";
 import MiningView from "./views/login/MiningView";
-import ErrorClearCacheView from "./views/error/ErrorClearCacheView";
-import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
-import ErrorReinstallView from "./views/error/ErrorReinstallView";
-import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
-import ErrorNoPermissionView from "./views/error/ErrorNoPermissionView";
 import ReviewPrivateKeyView from "./views/account/reset/ReviewPrivateKeyView";
 import ResetPasswordView from "./views/account/reset/ResetPasswordView";
 import PreloadView from "./views/lobby/PreloadView";
 import CopyCreatedPrivateKeyView from "./views/account/CopyCreatedPrivateKeyView";
 import PreloadProgressView from "./views/preload/PreloadProgressView";
-import ErrorDownloadSnapshotView from "./views/error/ErrorDownloadSnapshotView";
-import ErrorDownloadSnapshotMetadataView from "./views/error/ErrorDownloadSnapshotMetadataView";
+import ErrorClearCacheView from "./views/error/ErrorClearCacheView";
+import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
+import ErrorDownloadBinaryFailedView from "./views/error/ErrorDownloadBinaryFailedView";
+import ErrorDownloadSnapshotFailedView from "./views/error/ErrorDownloadSnapshotFailedView";
+import ErrorDownloadSnapshotMetadataFailedView from "./views/error/ErrorDownloadSnapshotMetadataFailedView";
+import ErrorNoPermissionView from "./views/error/ErrorNoPermissionView";
+import ErrorReinstallView from "./views/error/ErrorReinstallView";
+import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
 
 class Root extends React.Component {
   render() {
@@ -40,8 +41,9 @@ class Root extends React.Component {
           <Route exact path="/config" component={ConfigurationView} />
           <Route exact path="/error/clear-cache" component={ErrorClearCacheView} />
           <Route exact path="/error/disk-space" component={ErrorDiskSpaceView} />
-          <Route exact path="/error/download-snapshot-failed-error" component={ErrorDownloadSnapshotView} />
-          <Route exact path="/error/download-snapshot-metadata-failed-error" component={ErrorDownloadSnapshotMetadataView} />
+          <Route exact path="/error/download-binary-failed-error" component={ErrorDownloadBinaryFailedView} />
+          <Route exact path="/error/download-snapshot-failed-error" component={ErrorDownloadSnapshotFailedView} />
+          <Route exact path="/error/download-snapshot-metadata-failed-error" component={ErrorDownloadSnapshotMetadataFailedView} />
           <Route exact path="/error/no-permission" component={ErrorNoPermissionView} />
           <Route exact path="/error/reinstall" component={ErrorReinstallView} />
           <Route exact path="/error/relaunch" component={ErrorRelaunchView} />

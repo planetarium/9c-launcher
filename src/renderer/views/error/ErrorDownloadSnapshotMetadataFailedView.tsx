@@ -2,13 +2,13 @@ import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
 import { ipcRenderer, remote } from "electron";
 import React, { useCallback, useEffect } from "react";
-import { ErrorDownloadSnapshotMetadata } from "../../../interfaces/i18n";
+import { ErrorDownloadSnapshotMetadataFailed } from "../../../interfaces/i18n";
 import { useLocale } from "../../i18n";
 import errorViewStyle from "./ErrorView.style";
 
-const ErrorDownloadSnapshotMetadataView = () => {
+const ErrorDownloadSnapshotMetadataFailedView = () => {
   const classes = errorViewStyle();
-  const { locale } = useLocale<ErrorDownloadSnapshotMetadata>("errorDownloadSnapshotMetadata");
+  const { locale } = useLocale<ErrorDownloadSnapshotMetadataFailed>("errorDownloadSnapshotMetadataFailed");
 
   const handleRestart = useCallback(() => {
     remote.app.relaunch();
@@ -41,4 +41,4 @@ const ErrorDownloadSnapshotMetadataView = () => {
   );
 };
 
-export default ErrorDownloadSnapshotMetadataView;
+export default ErrorDownloadSnapshotMetadataFailedView;
