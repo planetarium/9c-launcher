@@ -10,6 +10,7 @@ import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 import { useLocale } from "../../i18n";
 import { RevokeAccount } from "../../../interfaces/i18n";
+import { ipcRenderer } from "electron";
 
 interface IRevokeAccountProps {
   accountStore: AccountStore;
@@ -61,22 +62,11 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
           fullWidth
           onClick={(event) => {
             event.preventDefault();
-            Promise.all(
-              accountStore.addresses.map((address) =>
-                revokePrivateKey({
-                  variables: {
-                    address,
-                  },
-                })
-              )
-            ).then((executionResult) => {
-              executionResult.forEach((r) => {
-                const revokedAddress =
-                  r.data?.keyStore?.revokePrivateKey?.address;
-                if (revokedAddress) accountStore.removeAddress(revokedAddress);
-              });
-              routerStore.push("/main");
-            });
+            for (const address of accountStore.addresses) {
+              ipcRenderer.sendSync("revoke-protected-private-key", address);
+              accountStore.removeAddress(address);
+            }
+            routerStore.push("/main");
           }}
         >
           {locale("키 지우기")}

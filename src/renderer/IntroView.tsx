@@ -5,32 +5,29 @@ import { useProtectedPrivateKeysQuery } from "../generated/graphql";
 
 import { useLocale } from "./i18n";
 import { Intro } from "../interfaces/i18n";
+import { ipcRenderer } from "electron";
+import { ProtectedPrivateKey } from "src/main/standalone/key-store";
 
 const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
-  const { loading, error, data } = useProtectedPrivateKeysQuery({
-    fetchPolicy: "no-cache",
-  });
-
+  const protectedPrivateKeys: ProtectedPrivateKey[] = ipcRenderer.sendSync(
+    "get-protected-private-keys"
+  );
   const { locale } = useLocale<Intro>("intro");
 
   useEffect(() => {
-    if (!loading && data?.keyStore?.protectedPrivateKeys !== undefined) {
-      if (data?.keyStore?.protectedPrivateKeys.length < 1) {
-        routerStore.push("/main");
-      } else {
-        const addresses = data.keyStore.protectedPrivateKeys.map(
-          (value) => value?.address
-        );
-        addresses.map((value) => {
-          accountStore.addresses.includes(value)
-            ? null
-            : accountStore.addAddress(value);
-        });
+    if (protectedPrivateKeys.length < 1) {
+      routerStore.push("/main");
+    } else {
+      const addresses = protectedPrivateKeys.map((value) => value?.address);
+      addresses.map((value) => {
+        accountStore.addresses.includes(value)
+          ? null
+          : accountStore.addAddress(value);
+      });
 
-        routerStore.push("/login");
-      }
+      routerStore.push("/login");
     }
-  }, [loading, data]);
+  }, [protectedPrivateKeys]);
 
   return <div>{locale("불러오는 중...")}</div>;
 });
