@@ -554,6 +554,34 @@
       "en": "Root chain store path:"
     }
   },
+  "errorDownloadSnapshot": {
+    "스냅샷 다운로드에 실패했습니다.": {
+      "ko": "스냅샷 다운로드에 실패했습니다.",
+      "en": "스냅샷 다운로드에 실패했습니다."
+    },
+    "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
+      "ko": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
+      "en": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."
+    },
+    "재시작": {
+      "ko": "재시작",
+      "en": "Restart"
+    }
+  },
+  "errorDownloadSnapshotMetadata": {
+    "스냅샷 메타 데이타 다운로드에 실패했습니다.": {
+      "ko": "스냅샷 메타 데이타 다운로드에 실패했습니다.",
+      "en": "스냅샷 메타 데이타 다운로드에 실패했습니다."
+    },
+    "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
+      "ko": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
+      "en": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."
+    },
+    "재시작": {
+      "ko": "재시작",
+      "en": "Restart"
+    }
+  },
   "errorNoPermission": {
     "권한이 없습니다.": {
       "ko": "권한이 없습니다.",
@@ -574,6 +602,24 @@
     "\"경로 선택하기\" 버튼을 클릭해서 체인이 저장되는 경로를 바꿔주세요.": {
       "ko": "\"경로 선택하기\" 버튼을 클릭해서 체인이 저장되는 경로를 바꿔주세요.",
       "en": "Change \"Root chain store path\" by click \"SELECT PATH\" Button"
+    }
+  },
+  "errorReinstall": {
+    "클리어 캐시 버튼을 눌러 주십시오.": {
+      "ko": "클리어 캐시 버튼을 눌러 주십시오.",
+      "en": "Press the button below to clear the cache."
+    },
+    "혹시 이 페이지를 클리어 캐시 후에 여전히 보셨다면, 아래 링크로 앱을 재설치 하거나 디스코드에서 지원 요청해주시길 바랍니다.": {
+      "ko": "혹시 이 페이지를 클리어 캐시 후에 여전히 보셨다면, 아래 링크로 앱을 재설치 하거나 디스코드에서 지원 요청해주시길 바랍니다.",
+      "en": "If you are still seeing this page after clearing cache, please try to reinstall the app through the link below or get support via Discord."
+    },
+    "Install Link": {
+      "ko": "Install Link",
+      "en": "Install Link"
+    },
+    "캐시 클리어 & 재시작": {
+      "ko": "캐시 클리어 & 재시작",
+      "en": "Clear Cache & Restart"
     }
   },
   "errorRelaunch": {
@@ -635,24 +681,6 @@
       "id": "Luncurkan ulang",
       "ja": "再起動",
       "de": "Starte neu"
-    }
-  },
-  "errorReinstall": {
-    "클리어 캐시 버튼을 눌러 주십시오.": {
-      "ko": "클리어 캐시 버튼을 눌러 주십시오.",
-      "en": "Press the button below to clear the cache."
-    },
-    "혹시 이 페이지를 클리어 캐시 후에 여전히 보셨다면, 아래 링크로 앱을 재설치 하거나 디스코드에서 지원 요청해주시길 바랍니다.": {
-      "ko": "혹시 이 페이지를 클리어 캐시 후에 여전히 보셨다면, 아래 링크로 앱을 재설치 하거나 디스코드에서 지원 요청해주시길 바랍니다.",
-      "en": "If you are still seeing this page after clearing cache, please try to reinstall the app through the link below or get support via Discord."
-    },
-    "Install Link": {
-      "ko": "Install Link",
-      "en": "Install Link"
-    },
-    "캐시 클리어 & 재시작": {
-      "ko": "캐시 클리어 & 재시작",
-      "en": "Clear Cache & Restart"
     }
   },
   "account": {
