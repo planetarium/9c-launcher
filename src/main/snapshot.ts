@@ -7,8 +7,7 @@ import CancellationToken from "cancellationtoken";
 import { IDownloadProgress } from "../interfaces/ipc";
 import { cancellableDownload, cancellableExtract } from "../utils";
 import path from "path";
-import { CancellableDownloadFailedError } from "./exceptions/cancellable-download-failed";
-import { DownloadMetadataFailedError } from "./exceptions/download-metadata-failed";
+import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ValidateMetadataFailedError } from "./exceptions/validate-metadata-failed";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
@@ -31,7 +30,7 @@ export async function downloadMetadata(
     return meta;
   }
   catch (error) {
-    throw new DownloadMetadataFailedError(basePath);
+    throw new DownloadSnapshotMetadataFailedError(basePath);
   }
 }
 

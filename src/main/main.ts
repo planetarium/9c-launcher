@@ -603,11 +603,11 @@ async function initializeStandalone(): Promise<void> {
 
           const errorType = utils.getType(error);
           switch (errorType) {
-            case "DownloadMetadataFailedError":
-              win?.webContents.send("go to error page", "download-metadata-failed-error");
-              break;
             case "DownloadSnapshotFailedError":
               win?.webContents.send("go to error page", "download-snapshot-failed-error");
+              break;
+            case "DownloadSnapshotMetadataFailedError":
+              win?.webContents.send("go to error page", "download-snapshot-metadata-failed-error");
               break;
           }
         } finally {
