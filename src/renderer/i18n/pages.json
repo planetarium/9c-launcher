@@ -557,11 +557,11 @@
   "errorDownloadBinaryFailed": {
     "바이너리 다운로드에 실패했습니다.": {
       "ko": "바이너리 다운로드에 실패했습니다.",
-      "en": "바이너리 다운로드에 실패했습니다."
+      "en": "Failed to download binary."
     },
     "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
       "ko": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
-      "en": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."
+      "en": "Unable to connect. Please check your network connection."
     },
     "재시작": {
       "ko": "재시작",
@@ -571,11 +571,11 @@
   "errorDownloadSnapshotFailed": {
     "스냅샷 다운로드에 실패했습니다.": {
       "ko": "스냅샷 다운로드에 실패했습니다.",
-      "en": "스냅샷 다운로드에 실패했습니다."
+      "en": "Failed to download Snapshot."
     },
     "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
       "ko": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
-      "en": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."
+      "en": "Unable to connect. Please check your network connection."
     },
     "재시작": {
       "ko": "재시작",
@@ -585,11 +585,11 @@
   "errorDownloadSnapshotMetadataFailed": {
     "스냅샷 메타 데이타 다운로드에 실패했습니다.": {
       "ko": "스냅샷 메타 데이타 다운로드에 실패했습니다.",
-      "en": "스냅샷 메타 데이타 다운로드에 실패했습니다."
+      "en": "Failed to download Snapshot metadata."
     },
     "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
       "ko": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
-      "en": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."
+      "en": "Unable to connect. Please check your network connection."
     },
     "재시작": {
       "ko": "재시작",
