@@ -49,47 +49,39 @@ const LoginView = observer(
     const [isInvalid, setInvalid] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
+    const [unprotectedPrivateKey, setUnprotectedPrivateKey] = useState<
+      string | undefined
+    >(undefined);
     const addressCopiedPopupState = usePopupState({
       variant: "popover",
       popupId: "addressCopiedPopup",
     });
 
-    const [
-      getDecryptedKey,
-      { loading, error, data },
-    ] = useDecryptedPrivateKeyLazyQuery();
-
     useEffect(() => {
-      if (data?.keyStore?.decryptedPrivateKey !== undefined) {
-        const privateKey = data.keyStore.decryptedPrivateKey;
-        accountStore.setPrivateKey(privateKey);
+      if (unprotectedPrivateKey !== undefined) {
+        accountStore.setPrivateKey(unprotectedPrivateKey);
         accountStore.toggleLogin();
         ipcRenderer.send("mixpanel-alias", accountStore.selectedAddress);
         ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
         routerStore.push("/login/mining");
       }
-    }, [data]);
-
-    useEffect(() => {
-      /**
-       * 에러가 아니어도 error에 값이 들어옴. 해당 값이 실제 error인지 검사하기 위해서는 error 안에 메세지가 있는지 검사해야 함.
-       * error가 undefined인 경우: Query를 수행하지 않은 경우
-       * error.message가 undefined인 경우: 에러가 아님
-       **/
-      if (error?.message !== undefined) {
-        setInvalid(true);
-        ipcRenderer.send("mixpanel-track-event", "Launcher/LoginFailed");
-      }
-    }, [error]);
+    }, [unprotectedPrivateKey]);
 
     const handleSubmit = (event: LoginFormEvent) => {
       event.preventDefault();
-      getDecryptedKey({
-        variables: {
-          address: accountStore.selectedAddress,
-          passphrase: event.target.password.value,
-        },
-      });
+      const [unprotectedPrivateKey, error] = ipcRenderer.sendSync(
+        "unprotect-private-key",
+        accountStore.selectedAddress,
+        event.target.password.value
+      );
+      if (error !== undefined) {
+        setInvalid(true);
+        ipcRenderer.send("mixpanel-track-event", "Launcher/LoginFailed");
+      }
+
+      if (unprotectedPrivateKey !== undefined) {
+        setUnprotectedPrivateKey(unprotectedPrivateKey);
+      }
     };
 
     const handleResetPassword = (e: MouseEvent<HTMLButtonElement>) => {
