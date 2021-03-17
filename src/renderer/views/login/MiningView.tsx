@@ -15,15 +15,15 @@ const MiningView = observer(
     const classes = miningViewStyle();
     const setMining = (isMining: boolean) => {
       routerStore.push("/lobby/preload");
-      if (
-        !ipcRenderer.sendSync(
-          "standalone/set-private-key",
-          accountStore.privateKey
-        )
-      ) {
+      const setSucceed: boolean = ipcRenderer.sendSync(
+        "standAlone/set-private-key",
+        accountStore.privateKey
+      );
+      if (setSucceed) {
+        standaloneStore.setPrivateKeyEnded(true);
+      } else {
         routerStore.push("/error/relaunch");
       }
-      standaloneStore.setPrivateKeyEnded(true);
       if (!ipcRenderer.sendSync("standalone/set-mining", isMining)) {
         routerStore.push("/error/relaunch");
       }
