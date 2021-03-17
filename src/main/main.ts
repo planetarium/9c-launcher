@@ -45,6 +45,8 @@ import { v4 as uuidv4 } from "uuid";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
 import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 import { v4 as ipv4 } from "public-ip";
+import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
+import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 
 initializeSentry();
 
@@ -602,14 +604,14 @@ async function initializeStandalone(): Promise<void> {
           const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
           console.error(errorMessage);
 
-          const errorType = utils.getType(error);
-          switch (errorType) {
-            case "DownloadSnapshotFailedError":
-              win?.webContents.send("go to error page", "download-snapshot-failed-error");
-              break;
-            case "DownloadSnapshotMetadataFailedError":
-              win?.webContents.send("go to error page", "download-snapshot-metadata-failed-error");
-              break;
+          if (!(error instanceof Error)) {
+            win?.webContents.send("go to error page", "download-snapshot-failed-error");
+          }
+          else if (error instanceof DownloadSnapshotFailedError) {
+            win?.webContents.send("go to error page", "download-snapshot-failed-error");
+          }
+          else if (error instanceof DownloadSnapshotMetadataFailedError) {
+            win?.webContents.send("go to error page", "download-snapshot-metadata-failed-error");
           }
         } finally {
           if (!standalone.alive && !initializeStandaloneCts.token.isCancelled && !errorOccurred) {
