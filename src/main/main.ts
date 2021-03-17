@@ -605,6 +605,7 @@ async function initializeStandalone(): Promise<void> {
           console.error(errorMessage);
 
           if (!(error instanceof Error)) {
+            // FIXME: use correct page
             win?.webContents.send("go to error page", "download-snapshot-failed-error");
           }
           else if (error instanceof DownloadSnapshotFailedError) {
@@ -612,6 +613,10 @@ async function initializeStandalone(): Promise<void> {
           }
           else if (error instanceof DownloadSnapshotMetadataFailedError) {
             win?.webContents.send("go to error page", "download-snapshot-metadata-failed-error");
+          }
+          else {
+            // FIXME: use correct page
+            win?.webContents.send("go to error page", "download-snapshot-failed-error");
           }
         } finally {
           if (!standalone.alive && !initializeStandaloneCts.token.isCancelled && !errorOccurred) {
