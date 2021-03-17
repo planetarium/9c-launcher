@@ -1,10 +1,12 @@
 import {
+  CUSTOM_SERVER,
+  LOCAL_SERVER_HOST,
   LOCAL_SERVER_PORT,
   electronStore,
   BLOCKCHAIN_STORE_PATH,
   MAC_GAME_PATH,
   WIN_GAME_PATH,
-  RPC_LOOPBACK_HOST,
+  RPC_SERVER_HOST,
   RPC_SERVER_PORT,
   REQUIRED_DISK_SPACE,
   MIXPANEL_TOKEN,
@@ -76,10 +78,10 @@ const standaloneExecutableArgs = [
         `-T=${trustedAppProtocolVersionSigner}`
     ),
   "--rpc-server",
-  `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
+  `--rpc-listen-host=${RPC_SERVER_HOST}`,
   `--rpc-listen-port=${RPC_SERVER_PORT}`,
   "--graphql-server",
-  "--graphql-host=localhost",
+  `--graphql-host=${LOCAL_SERVER_HOST}`,
   `--graphql-port=${LOCAL_SERVER_PORT}`,
   `--workers=${electronStore.get("Workers")}`,
   `--confirmations=${electronStore.get("Confirmations")}`,
@@ -430,7 +432,10 @@ function initializeIpc() {
     }
 
     if (lockfile.checkSync(lockfilePath)) {
-      console.error("Cannot launch game while updater is running.");
+      console.error(
+        "Cannot launch game while updater is running.\n",
+        lockfilePath
+      );
       return;
     }
 
@@ -532,7 +537,10 @@ async function initializeStandalone(): Promise<void> {
   console.log(`Initialize standalone. (win: ${win})`);
 
   if (lockfile.checkSync(lockfilePath)) {
-    console.error("Cannot initialize standalone while updater is running.");
+    console.error(
+      "Cannot initialize standalone while updater is running.\n",
+      lockfilePath
+    );
     return;
   }
 
@@ -557,7 +565,11 @@ async function initializeStandalone(): Promise<void> {
     win?.webContents.send("start bootstrap");
 
     const snapshotPaths: string[] = electronStore.get("SnapshotPaths");
-    if (snapshotPaths.length > 0 && win != null) {
+    if (CUSTOM_SERVER) {
+      console.log(
+        "As a custom headless server is used, snapshot won't be used."
+      );
+    } else if (snapshotPaths.length > 0 && win != null) {
       for (const path of snapshotPaths) {
         console.log(`Trying snapshot path: ${path}`);
 
@@ -607,7 +619,7 @@ async function initializeStandalone(): Promise<void> {
     }
 
     initializeStandaloneCts.token.throwIfCancelled();
-    if (!(await standalone.run())) {
+    if (!((await standalone.run()) || CUSTOM_SERVER)) {
       // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
       win?.webContents.send("go to error page", "clear-cache");
       throw new StandaloneInitializeError(
@@ -628,7 +640,7 @@ async function initializeStandalone(): Promise<void> {
     ) {
       console.error(`InitializeStandalone() halted: ${error}`);
     } else if (error instanceof HeadlessExitedError) {
-      console.error("Headless exited during initialization.");
+      console.error("Headless exited during initialization:", error);
       win?.webContents.send("go to error page", "clear-cache");
     } else {
       win?.webContents.send("go to error page", "reinstall");

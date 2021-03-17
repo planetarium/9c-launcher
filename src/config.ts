@@ -103,21 +103,45 @@ export const electronStore = new Store<IElectronStore>({
 });
 
 const LocalServerUrl = (): string => {
-  return `localhost:${LocalServerPort()}`;
+  return `${LocalServerHost().host}:${LocalServerPort().port}`;
 };
 
 const GraphQLServer = (): string => {
   return `${LocalServerUrl}/graphql`;
 };
 
-const RpcServerPort = (): number => {
-  // FIXME: 열려 있지 않는 랜덤한 포트를 반환하게 해야 합니다.
-  return 23142;
+const RpcServerHost = (): { host: string; notDefault: boolean } => {
+  const host = process.env.NC_RPC_SERVER_HOST;
+  return host == null
+    ? { host: "127.0.0.1", notDefault: false }
+    : { host, notDefault: true };
 };
 
-const LocalServerPort = (): number => {
+const RpcServerPort = (): { port: number; notDefault: boolean } => {
+  const port = process.env.NC_RPC_SERVER_PORT;
+  if (port != null && port.match(/^\d+$/)) {
+    return { port: +port, notDefault: true };
+  }
+
   // FIXME: 열려 있지 않는 랜덤한 포트를 반환하게 해야 합니다.
-  return 23061;
+  return { port: 23142, notDefault: false };
+};
+
+const LocalServerHost = (): { host: string; notDefault: boolean } => {
+  const host = process.env.NC_GRAPHQL_SERVER_HOST;
+  return host == null
+    ? { host: "localhost", notDefault: false }
+    : { host, notDefault: true };
+};
+
+const LocalServerPort = (): { port: number; notDefault: boolean } => {
+  const port = process.env.NC_GRAPHQL_SERVER_PORT;
+  if (port != null && port.match(/^\d+$/)) {
+    return { port: +port, notDefault: true };
+  }
+
+  // FIXME: 열려 있지 않는 랜덤한 포트를 반환하게 해야 합니다.
+  return { port: 23061, notDefault: false };
 };
 
 const getLocalApplicationDataPath = (): string => {
@@ -136,11 +160,17 @@ export const REQUIRED_DISK_SPACE = 2 * 1000 * 1000 * 1000;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
 export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";
-export const RPC_LOOPBACK_HOST = "127.0.0.1";
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
-export const LOCAL_SERVER_PORT = LocalServerPort();
-export const RPC_SERVER_PORT = RpcServerPort();
+export const LOCAL_SERVER_HOST: string = LocalServerHost().host;
+export const LOCAL_SERVER_PORT: number = LocalServerPort().port;
+export const RPC_SERVER_HOST: string = RpcServerHost().host;
+export const RPC_SERVER_PORT: number = RpcServerPort().port;
+export const CUSTOM_SERVER: boolean =
+  LocalServerHost().notDefault ||
+  LocalServerPort().notDefault ||
+  RpcServerHost().notDefault ||
+  RpcServerPort().notDefault;
 export const BLOCKCHAIN_STORE_PATH = path.join(
   blockchainStoreDirParent,
   electronStore.get("BlockchainStoreDirName")
