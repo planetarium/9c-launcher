@@ -713,34 +713,28 @@ function cleanUpLockfile() {
 }
 
 function loadInstallerMixpanelUUID(): string {
-  if (process.platform === "win32") {
-    const planetariumPath = path.join(
-      process.env.LOCALAPPDATA as string,
-      "planetarium"
-    );
-    if (!fs.existsSync(planetariumPath)) {
-      fs.mkdirSync(planetariumPath, {
-        recursive: true,
-      });
-    }
+  const planetariumPath =
+    process.platform === "win32"
+      ? path.join(process.env.LOCALAPPDATA as string, "planetarium")
+      : app.getPath("userData");
+  if (!fs.existsSync(planetariumPath)) {
+    fs.mkdirSync(planetariumPath, {
+      recursive: true,
+    });
+  }
 
-    let guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
+  let guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
 
-    if (!fs.existsSync(guidPath)) {
-      const newUUID = uuidv4();
-      console.log(
-        `The installer mixpanel UUID doesn't exist at '${guidPath}'.`
-      );
-      fs.writeFileSync(guidPath, newUUID);
-      console.log(`Created new UUID ${newUUID} and stored.`);
-      return newUUID;
-    } else {
-      return fs.readFileSync(guidPath, {
-        encoding: "utf-8",
-      });
-    }
+  if (!fs.existsSync(guidPath)) {
+    const newUUID = uuidv4();
+    console.log(`The installer mixpanel UUID doesn't exist at '${guidPath}'.`);
+    fs.writeFileSync(guidPath, newUUID);
+    console.log(`Created new UUID ${newUUID} and stored.`);
+    return newUUID;
   } else {
-    throw new NotSupportedPlatformError(process.platform);
+    return fs.readFileSync(guidPath, {
+      encoding: "utf-8",
+    });
   }
 }
 
