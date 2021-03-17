@@ -17,12 +17,14 @@ export async function downloadMetadata(
   win: BrowserWindow,
   token: CancellationToken
 ): Promise<string> {
+  token.throwIfCancelled();
+  console.log("Downloading metadata.");
+  const downloadPath = basePath + ".json";
+  const dir = app.getPath("userData");
+  const savingPath = path.join(dir, "meta.json");
+
   try {
-    token.throwIfCancelled();
-    console.log("Downloading metadata.");
-    const dir = app.getPath("userData");
-    const savingPath = path.join(dir, "meta.json");
-    await cancellableDownload(basePath + ".json", savingPath, (_) => {}, token);
+    await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
     token.throwIfCancelled();
 
     let meta = await fs.promises.readFile(savingPath, "utf-8");
@@ -30,7 +32,7 @@ export async function downloadMetadata(
     return meta;
   }
   catch (error) {
-    throw new DownloadSnapshotMetadataFailedError(basePath);
+    throw new DownloadSnapshotMetadataFailedError(downloadPath, savingPath);
   }
 }
 
@@ -111,18 +113,19 @@ export async function downloadSnapshot(
   onProgress: (status: IDownloadProgress) => void,
   token: CancellationToken
 ): Promise<string> {
+  token.throwIfCancelled();
+  console.log("Downloading snapshot.");
+  const downloadPath = basePath + ".zip";
+  const dir = app.getPath("userData");
+  const savingPath = path.join(dir, "snapshot.zip");
   try {
-    token.throwIfCancelled();
-    console.log("Downloading snapshot.");
-    const dir = app.getPath("userData");
-    const savingPath = path.join(dir, "snapshot.zip");
-    await cancellableDownload(basePath + ".zip", savingPath, onProgress, token);
+    await cancellableDownload(downloadPath, savingPath, onProgress, token);
     token.throwIfCancelled();
     console.log("Snapshot download complete. Directory: ", dir);
     return savingPath;
   }
   catch (error) {
-    throw new DownloadSnapshotFailedError(basePath);
+    throw new DownloadSnapshotFailedError(downloadPath, savingPath);
   }
 }
 

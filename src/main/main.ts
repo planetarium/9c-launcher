@@ -597,8 +597,7 @@ async function initializeStandalone(): Promise<void> {
 
           break;
         } catch (error) {
-          const errorMessage = "Unexpected error occurred during download / extract snapshot." +
-          `\n${error}\npath: ${path}`
+          const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
           console.error(errorMessage);
 
           const errorType = utils.getType(error);

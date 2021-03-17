@@ -1,5 +1,5 @@
 export class DownloadSnapshotMetadataFailedError extends Error {
-  constructor(basePath: string) {
-    super(`Download snapshot metadata failed.\nbasePath: ${basePath}`);
+  constructor(downloadPath: string, savingPath: string) {
+    super(`Download snapshot metadata failed.\ndownloadPath: ${downloadPath}\nsavingPath: ${savingPath}`);
   }
 }

@@ -1,5 +1,5 @@
 export class DownloadSnapshotFailedError extends Error {
-  constructor(basePath: string) {
-    super(`Download snapshot failed.\nbasePath: ${basePath}`);
+  constructor(downloadPath: string, savingPath: string) {
+    super(`Download snapshot failed.\ndownloadPath: ${downloadPath}\nsavingPath: ${savingPath}`);
   }
 }
