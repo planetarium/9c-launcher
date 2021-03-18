@@ -12,6 +12,7 @@ import RetypePasswordForm from "../../components/RetypePasswordForm";
 import AccountStore from "../../stores/account";
 
 import createAccountViewStyle from "./CreateAccountView.style";
+import { PrivateKey, ProtectedPrivateKey } from "src/main/standalone/key-store";
 
 interface ICreateAccountProps {
   accountStore: AccountStore;
@@ -28,18 +29,16 @@ const CreateAccountView = observer(
 
     const handleSubmit = async (password: string, activationKey: string) => {
       ipcRenderer.send("mixpanel-track-event", "Launcher/CreatePrivateKey");
-      const executionResult = await createAccount({
-        variables: {
-          passphrase: password,
-        },
-      });
+      const { address }: ProtectedPrivateKey = ipcRenderer.sendSync(
+        "create-private-key",
+        password
+      );
 
-      const keyStore = executionResult.data?.keyStore;
-      if (null == keyStore) {
-        return;
-      }
-      const address = keyStore.createPrivateKey.publicKey.address;
-      const privateKey = keyStore.createPrivateKey.hex;
+      const privateKey: PrivateKey = ipcRenderer.sendSync(
+        "unprotect-private-key",
+        address,
+        password
+      );
 
       accountStore.setPrivateKey(privateKey);
       accountStore.addAddress(address);
