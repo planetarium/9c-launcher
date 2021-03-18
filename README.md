@@ -48,7 +48,21 @@ Place the two binaries in the exact path as visualized below:
 
 After, run the following command.
 
-```javascript
+```sh
+npm run dev
+```
+
+위 명령은 내부적으로 알아서 _NineChronicles.Headless_ 서버도 함께 실행합니다.
+
+별도로 띄워둔 _NineChronicles.Headless_ 서버에 붙이고 싶을 경우, `NC_RPC_SERVER_HOST`,
+`NC_RPC_SERVER_PORT`, `NC_GRAPHQL_SERVER_HOST`, `NC_GRAPHQL_SERVER_PORT`
+환경 변수를 활용할 수 있습니다. (넷 중 하나만 설정되어도 커스텀 RPC 서버 모드로 동작합니다.)
+
+```sh
+NC_RPC_SERVER_HOST=127.0.0.1 \
+NC_RPC_SERVER_PORT=23142 \
+NC_GRAPHQL_SERVER_HOST=127.0.0.1 \
+NC_GRAPHQL_SERVER_PORT=23061 \
 npm run dev
 ```
 
