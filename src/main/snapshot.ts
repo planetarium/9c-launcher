@@ -1,13 +1,14 @@
-import { BLOCKCHAIN_STORE_PATH, LOCAL_SERVER_PORT } from "../config";
+import { BLOCKCHAIN_STORE_PATH } from "../config";
 import { app, BrowserWindow } from "electron";
 import fs from "fs";
-import { retry } from "@lifeomic/attempt";
-import { request, gql, ClientError } from "graphql-request";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress } from "../interfaces/ipc";
-import { cancellableDownload, cancellableExtract, execute } from "../utils";
+import { cancellableDownload, cancellableExtract } from "../utils";
 import path from "path";
 import { BlockHeader } from "src/interfaces/block-header";
+import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
+import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
+import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 
 export async function downloadMetadata(
   basePath: string,
@@ -16,14 +17,18 @@ export async function downloadMetadata(
 ): Promise<BlockHeader> {
   token.throwIfCancelled();
   console.log("Downloading metadata.");
+  const downloadPath = basePath + ".json";
   const dir = app.getPath("userData");
   const savingPath = path.join(dir, "meta.json");
-  await cancellableDownload(basePath + ".json", savingPath, (_) => {}, token);
-  token.throwIfCancelled();
 
-  let meta = await fs.promises.readFile(savingPath, "utf-8");
-  console.log("Metadata download complete: ", meta);
-  return JSON.parse(meta) as BlockHeader;
+  try {
+    let meta = await fs.promises.readFile(savingPath, "utf-8");
+    console.log("Metadata download complete: ", meta);
+    return JSON.parse(meta) as BlockHeader;
+  }
+  catch (error) {
+    throw new DownloadSnapshotMetadataFailedError(downloadPath, savingPath);
+  }
 }
 
 export function validateMetadata(
@@ -40,12 +45,19 @@ export async function downloadSnapshot(
 ): Promise<string> {
   token.throwIfCancelled();
   console.log("Downloading snapshot.");
+  const downloadPath = basePath + ".zip";
   const dir = app.getPath("userData");
   const savingPath = path.join(dir, "snapshot.zip");
-  await cancellableDownload(basePath + ".zip", savingPath, onProgress, token);
-  token.throwIfCancelled();
-  console.log("Snapshot download complete. Directory: ", dir);
-  return savingPath;
+
+  try {
+    await cancellableDownload(downloadPath, savingPath, onProgress, token);
+    token.throwIfCancelled();
+    console.log("Snapshot download complete. Directory: ", dir);
+    return savingPath;
+  }
+  catch (error) {
+    throw new DownloadSnapshotFailedError(downloadPath, savingPath);
+  }
 }
 
 export async function extractSnapshot(
@@ -53,15 +65,20 @@ export async function extractSnapshot(
   onProgress: (progress: number) => void,
   token: CancellationToken
 ): Promise<void> {
-  token.throwIfCancelled();
-  console.log(`Extracting snapshot.
+  try {
+    token.throwIfCancelled();
+    console.log(`Extracting snapshot.
 extractPath: [ ${BLOCKCHAIN_STORE_PATH} ],
 extractTarget: [ ${snapshotPath} ]`);
-  await cancellableExtract(
-    snapshotPath,
-    BLOCKCHAIN_STORE_PATH,
-    onProgress,
-    token
-  );
-  console.log("Snapshot extract complete.");
+    await cancellableExtract(
+      snapshotPath,
+      BLOCKCHAIN_STORE_PATH,
+      onProgress,
+      token
+    );
+    console.log("Snapshot extract complete.");
+  }
+  catch (error) {
+    throw new ExtractSnapshotFailedError(snapshotPath);
+  }
 }
