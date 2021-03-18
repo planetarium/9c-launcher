@@ -1,5 +1,6 @@
 import isDev from "electron-is-dev";
 import { electronStore } from "../config";
+import { version } from "../../package.json";
 
 const { init } =
   process.type === "browser"
@@ -16,7 +17,10 @@ export function initializeSentry() {
   }
   if (electronStore.get("Sentry") === true) {
     console.debug("Sentry is enabled in production mode.");
-    init({ dsn });
+    init({
+      dsn: dsn,
+      release: version,
+    });
     return;
   }
   console.debug("Sentry is disabled by config");
