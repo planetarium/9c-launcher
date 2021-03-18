@@ -1,4 +1,4 @@
-import { ChildProcess } from "child_process";
+import { ChildProcess, execSync } from "child_process";
 import { ipcMain } from "electron";
 import { electronStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../config";
 import { retry } from "@lifeomic/attempt";
@@ -6,6 +6,9 @@ import { FetchError, HeadlessExitedError } from "../errors";
 import { execute, sleep } from "../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
+import { BlockHeader } from "src/interfaces/block-header";
+import { KeyStore } from "./standalone/key-store";
+import { Validation } from "./standalone/validation";
 
 const retryOptions = {
   delay: 100,
@@ -161,6 +164,35 @@ class Standalone {
     this._mining = mining;
     if (this.alive) return await this.setMining(mining);
     return true;
+  }
+
+  public get keyStore(): KeyStore {
+    return new KeyStore(this._path);
+  }
+
+  public get validation(): Validation {
+    return new Validation(this._path);
+  }
+
+  public getTip(storeType: string, storePath: string): BlockHeader | null {
+    try {
+      return JSON.parse(
+        execSync(`${this._path} chain tip ${storeType} ${storePath}`, {
+          encoding: "utf-8",
+        })
+      ) as BlockHeader;
+    } catch (error) {
+      // FIXME: define a new interface or research the type exists.
+      if (
+        error instanceof Object &&
+        (error as Object).hasOwnProperty("status") &&
+        error.status !== 0
+      ) {
+        return null;
+      }
+
+      throw error;
+    }
   }
 
   public once(event: string | symbol, listener: (...args: any[]) => void) {

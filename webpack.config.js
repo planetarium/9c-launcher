@@ -5,6 +5,8 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { DefinePlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const SentryWebpackPlugin = require("@sentry/webpack-plugin");
+const { version } = require("./package.json");
 
 // const to avoid typos
 const DEVELOPMENT = "development";
@@ -156,6 +158,8 @@ function createMainConfig(isDev) {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
     },
 
+    devtool: "source-map",
+
     output: {
       filename: "[name].js",
       path: path.join(__dirname, "dist"),
@@ -208,16 +212,33 @@ function createMainConfig(isDev) {
 module.exports = (env) => {
   // env variable is passed by webpack through the cli. see package.json scripts.
   const isDev = env.NODE_ENV === DEVELOPMENT;
-  const { target } = env;
+  const { target, release } = env;
 
   const configFactory =
     target === "main" ? createMainConfig : createRenderConfig;
   const config = configFactory(isDev);
+  if (release) {
+    config.plugins.push(
+      new SentryWebpackPlugin({
+        // sentry-cli configuration
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: "planetariumhq",
+        project: "9c-launcher",
+        // webpack specific configuration
+        include: ".",
+        ignore: ["node_modules", "webpack.config.js"],
+        release: version,
+        debug: true,
+      })
+    );
+  }
 
   console.log(
     `\n##\n## BUILDING BUNDLE FOR: ${
       target === "main" ? "main process" : "render process"
-    }\n## CONFIGURATION: ${isDev ? DEVELOPMENT : PRODUCTION}\n##\n`
+    }\n## CONFIGURATION: ${
+      isDev ? DEVELOPMENT : PRODUCTION
+    }\n## VERSION: ${version}\n##\n`
   );
 
   return config;

@@ -43,10 +43,14 @@ import Standalone from "./standalone";
 import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
-import { v4 as uuidv4 } from "uuid";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
-import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 import { v4 as ipv4 } from "public-ip";
+import { v4 as uuidv4 } from "uuid";
+import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
+import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
+import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
+import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
+import { Address, KeyId, PrivateKey } from "./standalone/key-store";
 
 initializeSentry();
 
@@ -251,10 +255,18 @@ function initializeIpc() {
         directory: app.getPath("temp"),
       };
       console.log("Starts to download:", downloadUrl);
-      const dl = await download(win, downloadUrl, options);
+      let dl: DownloadItem | null | undefined;
+      try {
+        dl = await download(win, downloadUrl, options);
+      }
+      catch (error) {
+        win?.webContents.send("go to error page", "download-binary-failed");
+        throw new DownloadBinaryFailedError(downloadUrl);
+      }
+
       win?.webContents.send("update download complete");
-      const dlFname = dl.getFilename();
-      const dlPath = dl.getSavePath();
+      const dlFname = dl?.getFilename();
+      const dlPath = dl?.getSavePath();
       console.log("Finished to download:", dlPath);
 
       const extractPath =
@@ -521,6 +533,81 @@ function initializeIpc() {
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
     mixpanel?.alias(mixpanelUUID, alias);
   });
+
+  ipcMain.on("get-protected-private-keys", async (event) => {
+    event.returnValue = standalone.keyStore.list();
+  });
+
+  ipcMain.on(
+    "unprotect-private-key",
+    async (event, address: Address, passphrase: string) => {
+      try {
+        const protectedPrivateKey = standalone.keyStore
+          .list()
+          .find((x) => x.address === address);
+        if (protectedPrivateKey === undefined) {
+          event.returnValue = [undefined, {}];
+          return;
+        }
+
+        event.returnValue = [
+          standalone.keyStore.unprotectPrivateKey(
+            protectedPrivateKey.keyId,
+            passphrase
+          ),
+          undefined,
+        ];
+      } catch (error) {
+        event.returnValue = [undefined, error];
+      }
+    }
+  );
+
+  ipcMain.on("create-private-key", async (event, passphrase: string) => {
+    event.returnValue = standalone.keyStore.createProtectedPrivateKey(
+      passphrase
+    );
+  });
+
+  ipcMain.on(
+    "import-private-key",
+    async (event, privateKey: PrivateKey, passphrase: string) => {
+      event.returnValue = standalone.keyStore.importPrivateKey(
+        privateKey,
+        passphrase
+      );
+    }
+  );
+
+  ipcMain.on(
+    "revoke-protected-private-key",
+    async (event, address: Address) => {
+      const protectedPrivateKey = standalone.keyStore
+        .list()
+        .find((x) => x.address === address);
+      if (protectedPrivateKey === undefined) {
+        event.returnValue = [undefined, {}];
+        return;
+      }
+
+      standalone.keyStore.revokeProtectedPrivateKey(protectedPrivateKey.keyId);
+      event.returnValue = ["", undefined];
+    }
+  );
+
+  ipcMain.on("validate-private-key", async (event, privateKeyHex: string) => {
+    event.returnValue = standalone.validation.isValidPrivateKey(privateKeyHex);
+  });
+
+  ipcMain.on(
+    "convert-private-key-to-address",
+    async (event, privateKeyHex: string) => {
+      event.returnValue = standalone.keyStore.convertPrivateKey(
+        privateKeyHex,
+        "address"
+      );
+    }
+  );
 }
 
 async function initializeStandalone(): Promise<void> {
@@ -561,9 +648,12 @@ async function initializeStandalone(): Promise<void> {
         `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
       );
     }
-    await standalone.execute(standaloneExecutableArgs);
     win?.webContents.send("start bootstrap");
 
+    const localMetadata = standalone.getTip(
+      electronStore.get("StoreType"),
+      BLOCKCHAIN_STORE_PATH
+    );
     const snapshotPaths: string[] = electronStore.get("SnapshotPaths");
     if (CUSTOM_SERVER) {
       console.log(
@@ -574,15 +664,14 @@ async function initializeStandalone(): Promise<void> {
         console.log(`Trying snapshot path: ${path}`);
 
         try {
-          let metadata = await snapshot.downloadMetadata(
+          let snapshotMetadata = await snapshot.downloadMetadata(
             path,
             win,
             initializeStandaloneCts.token
           );
-          let needSnapshot = await snapshot.validateMetadata(
-            metadata,
-            initializeStandaloneCts.token
-          );
+          let needSnapshot =
+            localMetadata === null ||
+            snapshot.validateMetadata(localMetadata, snapshotMetadata);
           if (needSnapshot) {
             let snapshotPath = await snapshot.downloadSnapshot(
               path,
@@ -591,7 +680,6 @@ async function initializeStandalone(): Promise<void> {
               },
               initializeStandaloneCts.token
             );
-            await standalone.kill();
             utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
             await snapshot.extractSnapshot(
               snapshotPath,
@@ -601,24 +689,36 @@ async function initializeStandalone(): Promise<void> {
               initializeStandaloneCts.token
             );
           } else {
-            console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
+            console.log(
+              `Metadata ${snapshotMetadata} is redundant. Skip snapshot.`
+            );
           }
 
           break;
         } catch (error) {
-          console.error(
-            `Unexpected error occurred during download / extract snapshot. ${error}` +
-              `path: ${path}`
-          );
-        } finally {
-          if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
-            await standalone.execute(standaloneExecutableArgs);
+          const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
+          console.error(errorMessage);
+
+          if (!(error instanceof Error)) {
+            // FIXME: use correct page
+            win?.webContents.send("go to error page", "download-snapshot-failed-error");
+          }
+          else if (error instanceof DownloadSnapshotFailedError) {
+            win?.webContents.send("go to error page", "download-snapshot-failed-error");
+          }
+          else if (error instanceof DownloadSnapshotMetadataFailedError) {
+            win?.webContents.send("go to error page", "download-snapshot-metadata-failed-error");
+          }
+          else {
+            // FIXME: use correct page
+            win?.webContents.send("go to error page", "download-snapshot-failed-error");
           }
         }
       }
     }
 
     initializeStandaloneCts.token.throwIfCancelled();
+    await standalone.execute(standaloneExecutableArgs);
     if (!((await standalone.run()) || CUSTOM_SERVER)) {
       // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
       win?.webContents.send("go to error page", "clear-cache");

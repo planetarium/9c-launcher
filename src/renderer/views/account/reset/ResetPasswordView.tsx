@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
 import { RouterStore } from "mobx-react-router";
-import {
-  useConvertPrivateKeyToAddressQuery,
-  useRevokePrivateKeyMutation,
-  useCreatePrivateKeyMutation,
-} from "../../../../generated/graphql";
 import AccountStore from "../../../stores/account";
 import { inject, observer } from "mobx-react";
 
@@ -14,6 +9,7 @@ import registerPrivateKeyViewStyle from "./ResetPasswordView.style";
 import { useLocale } from "../../../i18n";
 import { RegisterPrivateKey } from "../../../../interfaces/i18n";
 import RetypePasswordForm from "../../../components/RetypePasswordForm";
+import { ipcRenderer } from "electron";
 
 interface IResetPasswordViewProps {
   accountStore: AccountStore;
@@ -29,32 +25,20 @@ const ResetPasswordView: React.FC<IResetPasswordViewProps> = observer(
 
     const { locale } = useLocale<RegisterPrivateKey>("registerPrivateKey");
 
-    const {
-      loading: loadingAddress,
-      data,
-    } = useConvertPrivateKeyToAddressQuery({
-      variables: {
-        privateKey: accountStore.privateKey,
-      },
-    });
-    const [revokePrivateKey] = useRevokePrivateKeyMutation();
-    const [createPrivateKey] = useCreatePrivateKeyMutation();
+    const address = ipcRenderer.sendSync(
+      "convert-private-key-to-address",
+      accountStore.privateKey
+    );
 
     const handleSubmit = async (password: string) => {
-      const address = data?.keyStore?.privateKey.publicKey.address;
-      if (address === undefined) throw Error("Address not found");
-      if (loadingAddress) return;
       try {
-        await revokePrivateKey({
-          variables: { address },
-        });
+        ipcRenderer.sendSync("revoke-protected-private-key", address);
       } finally {
-        await createPrivateKey({
-          variables: {
-            privateKey: accountStore.privateKey,
-            passphrase: password,
-          },
-        });
+        ipcRenderer.sendSync(
+          "import-private-key",
+          accountStore.privateKey,
+          password
+        );
         routerStore.push("/");
       }
     };
