@@ -23,6 +23,7 @@
   "scripts": {
     "build": "npm run codegen && npx webpack --env.NODE_ENV=development --env.target=render && npx webpack --env.NODE_ENV=development --env.target=main",
     "build-prod": "npm run codegen && npx webpack --env.NODE_ENV=production --env.target=render && npx webpack --env.NODE_ENV=production --env.target=main",
+    "build-release": "npm run codegen && npx webpack --env.NODE_ENV=production --env.target=render --env.release && npx webpack --env.NODE_ENV=production --env.target=main",
     "server": "npm run codegen && npx webpack-dev-server --env.NODE_ENV=development --env.target=render --hot",
     "start": "npm run codegen && npx webpack --env.NODE_ENV=development --env.target=main && npx electron ./dist/.",
     "pack": "run-script-os",
@@ -44,6 +45,10 @@
     "pack-all:electron-builder": "run-script-os",
     "pack-all:electron-builder:windows": "npm run before-pack && npm run build-prod && npx electron-builder --windows",
     "pack-all:electron-builder:darwin": "npm run before-pack && npm run build-prod && npx electron-builder --mac",
+    "pack-release": "npm run before-pack && npm run release",
+    "release": "run-script-os",
+    "release:windows": "npm run build-release && pwsh -nop -ex bypass -noni -f scripts\\electron-pack.ps1",
+    "release:darwin": "npm run build-release && scripts/electron-pack.sh",
     "test": "mocha --require ts-node/register __tests__/**/*.spec.ts --exit"
   },
   "dependencies": {
