@@ -624,7 +624,6 @@ async function initializeStandalone(): Promise<void> {
   }
 
   initializeStandaloneCts = CancellationToken.create();
-  let errorOccurred = false;
 
   try {
     if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
@@ -685,7 +684,6 @@ async function initializeStandalone(): Promise<void> {
 
           break;
         } catch (error) {
-          errorOccurred = true;
           const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
           console.error(errorMessage);
 
@@ -723,7 +721,6 @@ async function initializeStandalone(): Promise<void> {
       win?.webContents.send("go to error page", "relaunch");
     });
   } catch (error) {
-    errorOccurred = true;
     console.error(`Error occurred during initializeStandalone(). ${error}`);
     if (
       error instanceof StandaloneInitializeError ||
