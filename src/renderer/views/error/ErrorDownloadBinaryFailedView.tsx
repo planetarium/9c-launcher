@@ -1,5 +1,4 @@
 import { Button, Typography } from "@material-ui/core";
-import * as Sentry from "@sentry/electron";
 import { ipcRenderer, remote } from "electron";
 import React, { useCallback, useEffect } from "react";
 import { ErrorDownloadBinaryFailed } from "../../../interfaces/i18n";
@@ -16,8 +15,7 @@ const ErrorDownloadBinaryFailedView = () => {
   }, []);
 
   useEffect(() => {
-    ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorDownloadMetadata");
-    Sentry.captureException(new Error("Clear cache required."));
+    ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorDownloadBinary");
   }, []);
 
   return (
