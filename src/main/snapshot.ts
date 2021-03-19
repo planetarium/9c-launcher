@@ -22,6 +22,9 @@ export async function downloadMetadata(
   const savingPath = path.join(dir, "meta.json");
 
   try {
+    await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
+    token.throwIfCancelled();
+
     let meta = await fs.promises.readFile(savingPath, "utf-8");
     console.log("Metadata download complete: ", meta);
     return JSON.parse(meta) as BlockHeader;
