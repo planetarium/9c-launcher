@@ -16,6 +16,7 @@ export default interface I18n {
   errorNoPermission: ErrorNoPermission;
   errorRelaunch: ErrorRelaunch;
   errorReinstall: ErrorReinstall;
+  internetConnectionState: InternetConnectionState;
   account: Account;
   createAccount: CreateAccount;
   retypePassword: RetypePassword;
@@ -153,6 +154,12 @@ export interface ErrorReinstall {
   "혹시 이 페이지를 클리어 캐시 후에 여전히 보셨다면, 아래 링크로 앱을 재설치 하거나 디스코드에서 지원 요청해주시길 바랍니다.": LocaleRecord;
   "Install Link": LocaleRecord;
   "캐시 클리어 & 재시작": LocaleRecord;
+}
+
+export interface InternetConnectionState {
+  "인터넷 연결이 끊겼습니다.": LocaleRecord;
+  "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
+  "재시작": LocaleRecord;
 }
 
 export interface Account {

@@ -697,6 +697,20 @@
       "de": "Starte neu"
     }
   },
+  "internetConnectionState": {
+    "인터넷 연결이 끊겼습니다.": {
+      "ko": "인터넷 연결이 끊겼습니다.",
+      "en": "Internet connection has been lost."
+    },
+    "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
+      "ko": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
+      "en": "Unable to connect. Please check your network connection."
+    },
+    "재시작": {
+      "ko": "재시작",
+      "en": "Restart"
+    }
+  },
   "account": {
     "키 생성하기": {
       "ko": "키 생성하기",
