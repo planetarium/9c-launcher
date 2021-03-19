@@ -36,34 +36,32 @@ export class KeyStore extends StandaloneSubcommand {
 
   unprotectPrivateKey(keyId: KeyId, passphrase: string): PrivateKey {
     return this.execSync(
-      `key export ${keyId} --passphrase "${passphrase}"`
+      "key",
+      "export",
+      keyId,
+      "--passphrase",
+      passphrase
     ).trimRight();
   }
 
   createProtectedPrivateKey(passphrase: string): ProtectedPrivateKey {
     return parseProtectedPrivateKeyLine(
-      this.execSync(`key create --passphrase "${passphrase}"`).trimRight()
+      this.execSync("key", "create", "--passphrase", passphrase).trimRight()
     );
   }
 
   importPrivateKey(privateKey: PrivateKey, passphrase: string): void {
-    this.execSync(
-      "key",
-      "import",
-      "--passphrase",
-      `${passphrase}`,
-      `"${privateKey}"`
-    );
+    this.execSync("key", "import", "--passphrase", passphrase, privateKey);
   }
 
   revokeProtectedPrivateKey(keyId: KeyId): void {
-    this.execSync(`key remove ${keyId} --no-passphrase`);
+    this.execSync("key", "remove", keyId, "--no-passphrase");
   }
 
   convertPrivateKey(
     privateKey: PrivateKey,
     targetType: "address" | "public-key"
   ) {
-    this.execSync("key", "convert", `--${targetType}`, `"${privateKey}"`);
+    this.execSync("key", "convert", `--${targetType}`, privateKey);
   }
 }
