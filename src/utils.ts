@@ -109,7 +109,7 @@ export async function cancellableDownload(
     const res = await axios(url, {
       cancelToken: axiosCts.token,
       method: "get",
-      responseType: "stream"
+      responseType: "stream",
     });
     const totalBytes = parseInt(res.headers["content-length"]);
     let transferredBytes: number = 0;
@@ -122,8 +122,7 @@ export async function cancellableDownload(
       });
     });
     await pipeline(res.data, fs.createWriteStream(downloadPath));
-  }
-  catch(error) {
+  } catch (error) {
     throw new CancellableDownloadFailedError(url, downloadPath);
   }
 }
@@ -153,6 +152,13 @@ export async function cancellableExtract(
     );
     throw new CancellableExtractFailedError(targetDir, outputDir);
   }
+}
+export function range(start: number, end: number) {
+  let array = [];
+  for (let i = start; i < end; ++i) {
+    array.push(i);
+  }
+  return array;
 }
 
 export function getType(target: any) {
