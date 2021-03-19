@@ -608,6 +608,10 @@ function initializeIpc() {
       );
     }
   );
+
+  ipcMain.on("online-status-changed", (event, status) => {
+    win?.webContents.send("online-status-changed", status);
+  });
 }
 
 async function initializeStandalone(): Promise<void> {

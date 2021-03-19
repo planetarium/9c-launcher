@@ -1,7 +1,6 @@
 import { Button, Typography } from "@material-ui/core";
-import * as Sentry from "@sentry/electron";
 import { ipcRenderer, remote } from "electron";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { InternetConnectionState } from "../../interfaces/i18n";
 import { useLocale } from "../i18n";
 import errorViewStyle from "./error/ErrorView.style";
@@ -9,6 +8,7 @@ import errorViewStyle from "./error/ErrorView.style";
 const InternetConnectionStateView: React.FC = (children) => {
   const classes = errorViewStyle();
   const { locale } = useLocale<InternetConnectionState>("internetConnectionState");
+  const [isConnected, setIsConnected] = useState(true);
 
   const handleRestart = useCallback(() => {
     remote.app.relaunch();
@@ -16,11 +16,12 @@ const InternetConnectionStateView: React.FC = (children) => {
   }, []);
 
   useEffect(() => {
-    ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorDownloadMetadata");
-    Sentry.captureException(new Error("Clear cache required."));
+    ipcRenderer.on("online-status-changed", (event, status) => {
+      setIsConnected(status === "online");
+    });
   }, []);
 
-  return true
+  return isConnected
     ? (<>{children}</>)
     : (
       <div className={classes.root}>
