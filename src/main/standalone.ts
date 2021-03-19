@@ -1,5 +1,6 @@
-import { ChildProcess, execSync } from "child_process";
+import { ChildProcess, execFileSync } from "child_process";
 import { ipcMain } from "electron";
+import { dirname, basename } from "path";
 import { electronStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../config";
 import { retry } from "@lifeomic/attempt";
 import { FetchError, HeadlessExitedError } from "../errors";
@@ -176,11 +177,23 @@ class Standalone {
 
   public getTip(storeType: string, storePath: string): BlockHeader | null {
     try {
-      return JSON.parse(
-        execSync(`${this._path} chain tip ${storeType} ${storePath}`, {
+      console.log(
+        `cmd: [${basename(this._path)} chain tip ${storeType} ${storePath}]`
+      );
+      console.log(`cwd: [${dirname(this._path)}]`);
+
+      const output = execFileSync(
+        basename(this._path),
+        ["chain", "tip", storeType, storePath],
+        {
           encoding: "utf-8",
-        })
-      ) as BlockHeader;
+          cwd: dirname(this._path),
+        }
+      );
+
+      console.log(`output: [${output}]`);
+
+      return JSON.parse(output) as BlockHeader;
     } catch (error) {
       // FIXME: define a new interface or research the type exists.
       if (
