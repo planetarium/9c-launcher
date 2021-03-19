@@ -38,7 +38,8 @@ import { BencodexDict, decode } from "bencodex";
 import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
 import * as utils from "../utils";
-import * as snapshot from "./snapshot";
+import * as partitionSnapshot from "./snapshot";
+import * as monoSnapshot from "./monosnapshot";
 import Standalone from "./standalone";
 import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
@@ -258,8 +259,7 @@ function initializeIpc() {
       let dl: DownloadItem | null | undefined;
       try {
         dl = await download(win, downloadUrl, options);
-      }
-      catch (error) {
+      } catch (error) {
         win?.webContents.send("go to error page", "download-binary-failed");
         throw new DownloadBinaryFailedError(downloadUrl);
       }
@@ -496,7 +496,7 @@ function initializeIpc() {
 
   ipcMain.on("relaunch standalone", async (event) => {
     await stopStandaloneProcess();
-    initializeStandalone();
+    initializeStandalone(true);
     event.returnValue = true;
   });
 
@@ -610,16 +610,15 @@ function initializeIpc() {
   );
 }
 
-async function initializeStandalone(): Promise<void> {
+async function initializeStandalone(isRestart: boolean = false): Promise<void> {
   /*
   1. Check disk (permission, storage).
-  2. Execute standalone.
-  3. If use snapshot, download metadata.
-  4. Validate metadata via graphql.
-  5. If metadata is valid, download snapshot.
-  6. Kill standalone and extract downloaded snapshot.
-  7. Execute standalone.
-  8. Run standalone.
+  2. If use snapshot, download metadata.
+  3. Validate metadata via filesystem.
+  4. If metadata is valid, download snapshot with parallel.
+  5. Extract downloaded snapshot.
+  6. Execute standalone.
+  7. Run standalone.
   */
   console.log(`Initialize standalone. (win: ${win})`);
 
@@ -649,70 +648,29 @@ async function initializeStandalone(): Promise<void> {
       );
     }
     win?.webContents.send("start bootstrap");
+    const snapshot =
+      electronStore.get("StoreType") === "rocksdb"
+        ? partitionSnapshot
+        : monoSnapshot;
 
-    const localMetadata = standalone.getTip(
-      electronStore.get("StoreType"),
-      BLOCKCHAIN_STORE_PATH
-    );
     const snapshotPaths: string[] = electronStore.get("SnapshotPaths");
     if (CUSTOM_SERVER) {
       console.log(
         "As a custom headless server is used, snapshot won't be used."
       );
     } else if (snapshotPaths.length > 0 && win != null) {
-      for (const path of snapshotPaths) {
-        console.log(`Trying snapshot path: ${path}`);
-
-        try {
-          let snapshotMetadata = await snapshot.downloadMetadata(
-            path,
+      const snapshotDownloadUrls: string[] = electronStore.get("SnapshotPaths");
+      if (snapshotDownloadUrls.length > 0 && win != null && !isRestart) {
+        for (const snapshotDownloadUrl of snapshotDownloadUrls) {
+          const isProcessSuccess = await snapshot.snapshotProcess(
+            snapshotDownloadUrl,
+            BLOCKCHAIN_STORE_PATH,
+            app.getPath("userData"),
+            standalone,
             win,
             initializeStandaloneCts.token
           );
-          let needSnapshot =
-            localMetadata === null ||
-            snapshot.validateMetadata(localMetadata, snapshotMetadata);
-          if (needSnapshot) {
-            let snapshotPath = await snapshot.downloadSnapshot(
-              path,
-              (status) => {
-                win?.webContents.send("download progress", status);
-              },
-              initializeStandaloneCts.token
-            );
-            utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
-            await snapshot.extractSnapshot(
-              snapshotPath,
-              (progress: number) => {
-                win?.webContents.send("extract progress", progress);
-              },
-              initializeStandaloneCts.token
-            );
-          } else {
-            console.log(
-              `Metadata ${snapshotMetadata} is redundant. Skip snapshot.`
-            );
-          }
-
-          break;
-        } catch (error) {
-          const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
-          console.error(errorMessage);
-
-          if (!(error instanceof Error)) {
-            // FIXME: use correct page
-            win?.webContents.send("go to error page", "download-snapshot-failed-error");
-          }
-          else if (error instanceof DownloadSnapshotFailedError) {
-            win?.webContents.send("go to error page", "download-snapshot-failed-error");
-          }
-          else if (error instanceof DownloadSnapshotMetadataFailedError) {
-            win?.webContents.send("go to error page", "download-snapshot-metadata-failed-error");
-          }
-          else {
-            // FIXME: use correct page
-            win?.webContents.send("go to error page", "download-snapshot-failed-error");
-          }
+          if (isProcessSuccess) break;
         }
       }
     }
