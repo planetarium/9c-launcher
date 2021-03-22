@@ -620,7 +620,7 @@ async function initializeStandalone(isRestart: boolean = false): Promise<void> {
   6. Execute standalone.
   7. Run standalone.
   */
-  console.log(`Initialize standalone. (win: ${win})`);
+  console.log(`Initialize standalone. (win: ${win?.getTitle})`);
 
   if (lockfile.checkSync(lockfilePath)) {
     console.error(

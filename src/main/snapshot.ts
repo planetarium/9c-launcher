@@ -233,7 +233,7 @@ export async function processSnapshot(
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);
 
-  const localMetadata = standalone.getTip("monorocksdb", storePath);
+  const localMetadata = standalone.getTip("rocksdb", storePath);
 
   try {
     const snapshotMetadata = await downloadMetadata(
@@ -281,7 +281,11 @@ export async function processSnapshot(
         token
       );
     } else {
-      console.log(`Metadata ${snapshotMetadata} is redundant. Skip snapshot.`);
+      console.log(
+        `Metadata ${JSON.stringify(
+          snapshotMetadata
+        )} is redundant. Skip snapshot.`
+      );
     }
     return true;
   } catch (error) {
