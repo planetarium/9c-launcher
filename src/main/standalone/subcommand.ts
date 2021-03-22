@@ -1,4 +1,5 @@
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
+import { dirname, basename } from "path";
 
 export class StandaloneSubcommand {
   private readonly _executablePath: string;
@@ -8,8 +9,9 @@ export class StandaloneSubcommand {
   }
 
   protected execSync(...args: string[]): string {
-    return execSync([`"${this._executablePath}"`, ...args].join(" "), {
+    return execFileSync(basename(this._executablePath), args, {
       encoding: "utf-8",
+      cwd: dirname(this._executablePath),
     });
   }
 }
