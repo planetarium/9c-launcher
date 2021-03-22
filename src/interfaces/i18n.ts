@@ -16,7 +16,6 @@ export default interface I18n {
   errorNoPermission: ErrorNoPermission;
   errorRelaunch: ErrorRelaunch;
   errorReinstall: ErrorReinstall;
-  internetConnectionState: InternetConnectionState;
   account: Account;
   createAccount: CreateAccount;
   retypePassword: RetypePassword;
@@ -26,6 +25,7 @@ export default interface I18n {
   registerPrivateKey: RegisterPrivateKey;
   configuration: Configuration;
   preloadProgress: PreloadProgress;
+  renderer: Renderer;
 }
 
 export type Locale = RequireLocale | OptionalLocale;
@@ -156,12 +156,6 @@ export interface ErrorReinstall {
   "캐시 클리어 & 재시작": LocaleRecord;
 }
 
-export interface InternetConnectionState {
-  "인터넷 연결이 끊겼습니다.": LocaleRecord;
-  "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
-  "재시작": LocaleRecord;
-}
-
 export interface Account {
   "키 생성하기": LocaleRecord;
   "키 지우기": LocaleRecord;
@@ -241,4 +235,8 @@ export interface PreloadProgress {
   "Downloading blocks": LocaleRecord;
   "Downloading states": LocaleRecord;
   "Executing actions": LocaleRecord;
+}
+
+export interface Renderer {
+  "인터넷 연결이 끊겼습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
 }
