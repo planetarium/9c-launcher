@@ -24,8 +24,8 @@ import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppP
 import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
 import montserrat from "./styles/font";
 
-import LocaleProvider from "./i18n";
-import { Locale } from "../interfaces/i18n";
+import LocaleProvider, { useLocale } from "./i18n";
+import { Locale, AppLocale } from "../interfaces/i18n";
 import { ipcRenderer } from "electron";
 
 const wsLink = new WebSocketLink({
@@ -92,8 +92,31 @@ function App() {
     []
   );
 
+  const { locale } = useLocale<AppLocale>("appLocale");
+
+  function listenOnlineStatus() {
+    const updateOnlineStatus = () => {
+      if (!navigator.onLine) {
+        window.alert(
+          locale(
+            "인터넷 연결이 끊겼습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."
+          )
+        );
+      }
+
+      ipcRenderer.send(
+        "online-status-changed",
+        navigator.onLine ? "online" : "offline"
+      );
+    };
+
+    window.addEventListener("online", updateOnlineStatus);
+    window.addEventListener("offline", updateOnlineStatus);
+  }
+
   useEffect(() => {
     ipcRenderer.send("mixpanel-track-event", "Launcher/Start");
+    listenOnlineStatus();
   }, []);
 
   return (

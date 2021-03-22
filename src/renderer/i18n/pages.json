@@ -1,4 +1,10 @@
 {
+  "appLocale": {
+    "인터넷 연결이 끊겼습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
+      "ko": "인터넷 연결이 끊겼습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
+      "en": "Internet connection has been lost. Unable to connect. Please check your network connection."
+    }
+  },
   "intro": {
     "불러오는 중...": {
       "ko": "불러오는 중...",
@@ -1561,12 +1567,6 @@
       "id": "Menjalankan aksi",
       "ja": "処理を実行しています",
       "de": "Aktionen werden ausgeführt"
-    }
-  },
-  "renderer": {
-    "인터넷 연결이 끊겼습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
-      "ko": "인터넷 연결이 끊겼습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
-      "en": "Internet connection has been lost. Unable to connect. Please check your network connection."
     }
   }
 }

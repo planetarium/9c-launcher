@@ -258,8 +258,7 @@ function initializeIpc() {
       let dl: DownloadItem | null | undefined;
       try {
         dl = await download(win, downloadUrl, options);
-      }
-      catch (error) {
+      } catch (error) {
         win?.webContents.send("go to error page", "download-binary-failed");
         throw new DownloadBinaryFailedError(downloadUrl);
       }
@@ -609,8 +608,11 @@ function initializeIpc() {
     }
   );
 
-  ipcMain.on("online-status-changed", (event, status) => {
+  ipcMain.on("online-status-changed", (event, status: "online" | "offline") => {
     console.log(`online-status-changed: ${status}`);
+    if (status === "offline") {
+      relaunch();
+    }
   });
 }
 
@@ -705,17 +707,26 @@ async function initializeStandalone(): Promise<void> {
 
           if (!(error instanceof Error)) {
             // FIXME: use correct page
-            win?.webContents.send("go to error page", "download-snapshot-failed-error");
-          }
-          else if (error instanceof DownloadSnapshotFailedError) {
-            win?.webContents.send("go to error page", "download-snapshot-failed-error");
-          }
-          else if (error instanceof DownloadSnapshotMetadataFailedError) {
-            win?.webContents.send("go to error page", "download-snapshot-metadata-failed-error");
-          }
-          else {
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-failed-error"
+            );
+          } else if (error instanceof DownloadSnapshotFailedError) {
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-failed-error"
+            );
+          } else if (error instanceof DownloadSnapshotMetadataFailedError) {
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-metadata-failed-error"
+            );
+          } else {
             // FIXME: use correct page
-            win?.webContents.send("go to error page", "download-snapshot-failed-error");
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-failed-error"
+            );
           }
         }
       }
