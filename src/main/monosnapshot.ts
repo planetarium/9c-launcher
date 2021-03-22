@@ -80,7 +80,7 @@ extractTarget: [ ${snapshotPath} ]`);
   }
 }
 
-export async function snapshotProcess(
+export async function processSnapshot(
   snapshotDownloadUrl: string,
   storePath: string,
   userDataPath: string,

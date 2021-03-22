@@ -662,7 +662,7 @@ async function initializeStandalone(isRestart: boolean = false): Promise<void> {
       const snapshotDownloadUrls: string[] = electronStore.get("SnapshotPaths");
       if (snapshotDownloadUrls.length > 0 && win != null && !isRestart) {
         for (const snapshotDownloadUrl of snapshotDownloadUrls) {
-          const isProcessSuccess = await snapshot.snapshotProcess(
+          const isProcessSuccess = await snapshot.processSnapshot(
             snapshotDownloadUrl,
             BLOCKCHAIN_STORE_PATH,
             app.getPath("userData"),
