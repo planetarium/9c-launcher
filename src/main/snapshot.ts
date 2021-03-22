@@ -1,7 +1,7 @@
 import fs, { readdirSync } from "fs";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress } from "../interfaces/ipc";
-import { cancellableDownload, cancellableExtract, range } from "../utils";
+import { cancellableDownload, cancellableExtract } from "../utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
@@ -28,7 +28,6 @@ export const getCurrentEpoch = (storePath: string): Epoch => {
       .filter((epoch) => !isNaN(epoch));
 
   try {
-    console.log(getEpochList(path.join(storePath, "block")));
     let currentBlockEpoch = Math.max.apply(
       null,
       getEpochList(path.join(storePath, "block"))

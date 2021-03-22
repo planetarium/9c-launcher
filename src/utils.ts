@@ -153,13 +153,6 @@ export async function cancellableExtract(
     throw new CancellableExtractFailedError(targetDir, outputDir);
   }
 }
-export function range(start: number, end: number) {
-  let array = [];
-  for (let i = start; i < end; ++i) {
-    array.push(i);
-  }
-  return array;
-}
 
 export function getType(target: any) {
   return Object.prototype.toString.call(target).slice(8, -1);

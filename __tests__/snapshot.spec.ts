@@ -2,7 +2,6 @@ import fs, { readdirSync } from "fs";
 import CancellationToken from "cancellationtoken";
 import { assert } from "chai";
 import path from "path";
-import { range } from "src/utils";
 import {
   downloadMetadata,
   downloadSnapshot,
@@ -64,7 +63,7 @@ describe("snapshot", function () {
 
       assert.equal(target.length, 16);
 
-      range(0, 16).forEach((x: number) => {
+      Array.from({ length: 16 }, (v, i) => i).forEach((x: number) => {
         let epoch = target[x];
         assert.equal(epoch.BlockEpoch, 18698 - x);
         assert.equal(epoch.TxEpoch, 18689 - x);
@@ -87,7 +86,7 @@ describe("snapshot", function () {
 
       assert.equal(target.length, 11);
 
-      range(0, 11).forEach((x: number) => {
+      Array.from({ length: 11 }, (v, i) => i).forEach((x: number) => {
         let epoch = target[x];
         assert.equal(epoch.BlockEpoch, 18698 - x);
         assert.equal(epoch.TxEpoch, 18689 - x);
