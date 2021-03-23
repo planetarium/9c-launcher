@@ -1,11 +1,15 @@
-import { ChildProcess } from "child_process";
+import { ChildProcess, execFileSync } from "child_process";
 import { ipcMain } from "electron";
-import { electronStore, LOCAL_SERVER_URL } from "../config";
+import { dirname, basename } from "path";
+import { electronStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../config";
 import { retry } from "@lifeomic/attempt";
 import { FetchError, HeadlessExitedError } from "../errors";
 import { execute, sleep } from "../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
+import { BlockHeader } from "src/interfaces/block-header";
+import { KeyStore } from "./standalone/key-store";
+import { Validation } from "./standalone/validation";
 
 const retryOptions = {
   delay: 100,
@@ -58,7 +62,7 @@ class Standalone {
 
   // execute-kill
   public get alive(): boolean {
-    return NODESTATUS.Node !== null;
+    return NODESTATUS.Node !== null || CUSTOM_SERVER;
   }
 
   // run-stop
@@ -75,14 +79,28 @@ class Standalone {
   }
 
   public async execute(args: string[]): Promise<void> {
-    console.log(`Executing standalone. ${this._path} ${args}`);
-    if (NODESTATUS.Node !== null) {
-      throw new Error("Cannot execute standalone while standalone is alive.");
+    const argsString: string = "\n  " + args.join("\n  ");
+    if (CUSTOM_SERVER) {
+      console.log("Connecting to the custom headless server...");
+      console.log(
+        "If the connection is not successful, check if the headless server " +
+          `is executed with the following options:${argsString}`
+      );
+    } else {
+      console.log(
+        "Executing the headless server:" + `\n  ${this._path}${argsString}`
+      );
+      if (NODESTATUS.Node !== null) {
+        throw new Error(
+          "Cannot spawn a new headless process when there's already alive one."
+        );
+      }
+
+      let node = execute(this._path, args);
+      node.addListener("exit", this.exitedHandler);
+      NODESTATUS.Node = node;
     }
 
-    let node = execute(this._path, args);
-    node.addListener("exit", this.exitedHandler);
-    NODESTATUS.Node = node;
     if (this._privateKey !== undefined) {
       await this.setPrivateKey(this._privateKey);
     }
@@ -147,6 +165,47 @@ class Standalone {
     this._mining = mining;
     if (this.alive) return await this.setMining(mining);
     return true;
+  }
+
+  public get keyStore(): KeyStore {
+    return new KeyStore(this._path);
+  }
+
+  public get validation(): Validation {
+    return new Validation(this._path);
+  }
+
+  public getTip(storeType: string, storePath: string): BlockHeader | null {
+    try {
+      console.log(
+        `cmd: [${basename(this._path)} chain tip ${storeType} ${storePath}]`
+      );
+      console.log(`cwd: [${dirname(this._path)}]`);
+
+      const output = execFileSync(
+        basename(this._path),
+        ["chain", "tip", storeType, storePath],
+        {
+          encoding: "utf-8",
+          cwd: dirname(this._path),
+        }
+      );
+
+      console.log(`output: [${output}]`);
+
+      return JSON.parse(output) as BlockHeader;
+    } catch (error) {
+      // FIXME: define a new interface or research the type exists.
+      if (
+        error instanceof Object &&
+        (error as Object).hasOwnProperty("status") &&
+        error.status !== 0
+      ) {
+        return null;
+      }
+
+      throw error;
+    }
   }
 
   public once(event: string | symbol, listener: (...args: any[]) => void) {

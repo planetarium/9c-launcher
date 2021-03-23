@@ -5,23 +5,15 @@ import YouTube, { Options as IYoutubeOption } from "react-youtube";
 import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../../../interfaces/store";
 import {
-  Box,
   Container,
   Typography,
-  LinearProgress,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
 } from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 import GrainIcon from "@material-ui/icons/Grain";
-import { LinearProgressWithLabel } from "../../components/LinerProgressWithLabel";
-import {
-  useNodeStatusSubscriptionSubscription,
-  usePreloadProgressSubscriptionSubscription,
-} from "../../../generated/graphql";
 import preloadViewStyle from "./PreloadView.style";
 import LobbyView from "./LobbyView";
 import { electronStore } from "../../../config";
@@ -31,10 +23,7 @@ import { useLocale } from "../../i18n";
 import { Preload } from "../../../interfaces/i18n";
 
 const PreloadView = observer((props: IStoreContainer) => {
-  const { routerStore, standaloneStore } = props;
   const classes = preloadViewStyle();
-  const [progress, setProgress] = useState(0);
-
   const { locale } = useLocale<Preload>("preload");
 
   const videoOpts: IYoutubeOption = {
@@ -98,14 +87,5 @@ const PreloadView = observer((props: IStoreContainer) => {
     </Container>
   );
 });
-
-const getProgress = (
-  current: number | undefined,
-  total: number | undefined
-) => {
-  if (current === undefined) return 0;
-  if (total === undefined) return 0;
-  return total === 0 ? 0 : Math.round((current / total) * 100);
-};
 
 export default inject("routerStore", "standaloneStore")(PreloadView);

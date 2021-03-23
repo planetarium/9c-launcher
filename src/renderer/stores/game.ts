@@ -1,11 +1,7 @@
 import { observable, action, computed } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import { supportedLocales } from "../i18n";
-import {
-  RPC_LOOPBACK_HOST,
-  RPC_SERVER_PORT,
-  electronStore,
-} from "../../config";
+import { RPC_SERVER_HOST, RPC_SERVER_PORT, electronStore } from "../../config";
 
 export default class GameStore {
   @observable
@@ -44,15 +40,20 @@ export default class GameStore {
 
   @action
   startGame = (privateKey: string) => {
+    const awsSinkGuid: string = ipcRenderer.sendSync(
+      "get-aws-sink-cloudwatch-guid"
+    );
+
     ipcRenderer.send("launch game", {
       args: [
         `--private-key=${privateKey}`,
         `--rpc-client=true`,
-        `--rpc-server-host=${RPC_LOOPBACK_HOST}`,
+        `--rpc-server-host=${RPC_SERVER_HOST}`,
         `--rpc-server-port=${RPC_SERVER_PORT}`,
         `--genesis-block-path=${this._genesisBlockPath}`,
         `--language=${this._language}`,
         `--app-protocol-version=${this._appProtocolVersion}`,
+        `--aws-sink-guid=${awsSinkGuid}`,
       ],
     });
     this._isGameStarted = true;

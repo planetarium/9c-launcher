@@ -1,10 +1,12 @@
 import {
+  CUSTOM_SERVER,
+  LOCAL_SERVER_HOST,
   LOCAL_SERVER_PORT,
   electronStore,
   BLOCKCHAIN_STORE_PATH,
   MAC_GAME_PATH,
   WIN_GAME_PATH,
-  RPC_LOOPBACK_HOST,
+  RPC_SERVER_HOST,
   RPC_SERVER_PORT,
   REQUIRED_DISK_SPACE,
   MIXPANEL_TOKEN,
@@ -41,10 +43,14 @@ import Standalone from "./standalone";
 import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
-import { v4 as uuidv4 } from "uuid";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
-import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
 import { v4 as ipv4 } from "public-ip";
+import { v4 as uuidv4 } from "uuid";
+import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
+import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
+import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
+import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
+import { Address, KeyId, PrivateKey } from "./standalone/key-store";
 
 initializeSentry();
 
@@ -76,10 +82,10 @@ const standaloneExecutableArgs = [
         `-T=${trustedAppProtocolVersionSigner}`
     ),
   "--rpc-server",
-  `--rpc-listen-host=${RPC_LOOPBACK_HOST}`,
+  `--rpc-listen-host=${RPC_SERVER_HOST}`,
   `--rpc-listen-port=${RPC_SERVER_PORT}`,
   "--graphql-server",
-  "--graphql-host=localhost",
+  `--graphql-host=${LOCAL_SERVER_HOST}`,
   `--graphql-port=${LOCAL_SERVER_PORT}`,
   `--workers=${electronStore.get("Workers")}`,
   `--confirmations=${electronStore.get("Confirmations")}`,
@@ -249,10 +255,18 @@ function initializeIpc() {
         directory: app.getPath("temp"),
       };
       console.log("Starts to download:", downloadUrl);
-      const dl = await download(win, downloadUrl, options);
+      let dl: DownloadItem | null | undefined;
+      try {
+        dl = await download(win, downloadUrl, options);
+      }
+      catch (error) {
+        win?.webContents.send("go to error page", "download-binary-failed");
+        throw new DownloadBinaryFailedError(downloadUrl);
+      }
+
       win?.webContents.send("update download complete");
-      const dlFname = dl.getFilename();
-      const dlPath = dl.getSavePath();
+      const dlFname = dl?.getFilename();
+      const dlPath = dl?.getSavePath();
       console.log("Finished to download:", dlPath);
 
       const extractPath =
@@ -430,7 +444,10 @@ function initializeIpc() {
     }
 
     if (lockfile.checkSync(lockfilePath)) {
-      console.error("Cannot launch game while updater is running.");
+      console.error(
+        "Cannot launch game while updater is running.\n",
+        lockfilePath
+      );
       return;
     }
 
@@ -516,6 +533,81 @@ function initializeIpc() {
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
     mixpanel?.alias(mixpanelUUID, alias);
   });
+
+  ipcMain.on("get-protected-private-keys", async (event) => {
+    event.returnValue = standalone.keyStore.list();
+  });
+
+  ipcMain.on(
+    "unprotect-private-key",
+    async (event, address: Address, passphrase: string) => {
+      try {
+        const protectedPrivateKey = standalone.keyStore
+          .list()
+          .find((x) => x.address === address);
+        if (protectedPrivateKey === undefined) {
+          event.returnValue = [undefined, {}];
+          return;
+        }
+
+        event.returnValue = [
+          standalone.keyStore.unprotectPrivateKey(
+            protectedPrivateKey.keyId,
+            passphrase
+          ),
+          undefined,
+        ];
+      } catch (error) {
+        event.returnValue = [undefined, error];
+      }
+    }
+  );
+
+  ipcMain.on("create-private-key", async (event, passphrase: string) => {
+    event.returnValue = standalone.keyStore.createProtectedPrivateKey(
+      passphrase
+    );
+  });
+
+  ipcMain.on(
+    "import-private-key",
+    async (event, privateKey: PrivateKey, passphrase: string) => {
+      event.returnValue = standalone.keyStore.importPrivateKey(
+        privateKey,
+        passphrase
+      );
+    }
+  );
+
+  ipcMain.on(
+    "revoke-protected-private-key",
+    async (event, address: Address) => {
+      const protectedPrivateKey = standalone.keyStore
+        .list()
+        .find((x) => x.address === address);
+      if (protectedPrivateKey === undefined) {
+        event.returnValue = [undefined, {}];
+        return;
+      }
+
+      standalone.keyStore.revokeProtectedPrivateKey(protectedPrivateKey.keyId);
+      event.returnValue = ["", undefined];
+    }
+  );
+
+  ipcMain.on("validate-private-key", async (event, privateKeyHex: string) => {
+    event.returnValue = standalone.validation.isValidPrivateKey(privateKeyHex);
+  });
+
+  ipcMain.on(
+    "convert-private-key-to-address",
+    async (event, privateKeyHex: string) => {
+      event.returnValue = standalone.keyStore.convertPrivateKey(
+        privateKeyHex,
+        "address"
+      );
+    }
+  );
 }
 
 async function initializeStandalone(): Promise<void> {
@@ -532,7 +624,10 @@ async function initializeStandalone(): Promise<void> {
   console.log(`Initialize standalone. (win: ${win})`);
 
   if (lockfile.checkSync(lockfilePath)) {
-    console.error("Cannot initialize standalone while updater is running.");
+    console.error(
+      "Cannot initialize standalone while updater is running.\n",
+      lockfilePath
+    );
     return;
   }
 
@@ -553,24 +648,30 @@ async function initializeStandalone(): Promise<void> {
         `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
       );
     }
-    await standalone.execute(standaloneExecutableArgs);
     win?.webContents.send("start bootstrap");
 
+    const localMetadata = standalone.getTip(
+      electronStore.get("StoreType"),
+      BLOCKCHAIN_STORE_PATH
+    );
     const snapshotPaths: string[] = electronStore.get("SnapshotPaths");
-    if (snapshotPaths.length > 0 && win != null) {
+    if (CUSTOM_SERVER) {
+      console.log(
+        "As a custom headless server is used, snapshot won't be used."
+      );
+    } else if (snapshotPaths.length > 0 && win != null) {
       for (const path of snapshotPaths) {
         console.log(`Trying snapshot path: ${path}`);
 
         try {
-          let metadata = await snapshot.downloadMetadata(
+          let snapshotMetadata = await snapshot.downloadMetadata(
             path,
             win,
             initializeStandaloneCts.token
           );
-          let needSnapshot = await snapshot.validateMetadata(
-            metadata,
-            initializeStandaloneCts.token
-          );
+          let needSnapshot =
+            localMetadata === null ||
+            snapshot.validateMetadata(localMetadata, snapshotMetadata);
           if (needSnapshot) {
             let snapshotPath = await snapshot.downloadSnapshot(
               path,
@@ -579,7 +680,6 @@ async function initializeStandalone(): Promise<void> {
               },
               initializeStandaloneCts.token
             );
-            await standalone.kill();
             utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
             await snapshot.extractSnapshot(
               snapshotPath,
@@ -589,25 +689,37 @@ async function initializeStandalone(): Promise<void> {
               initializeStandaloneCts.token
             );
           } else {
-            console.log(`Metadata ${metadata} is redundant. Skip snapshot.`);
+            console.log(
+              `Metadata ${snapshotMetadata} is redundant. Skip snapshot.`
+            );
           }
 
           break;
         } catch (error) {
-          console.error(
-            `Unexpected error occurred during download / extract snapshot. ${error}` +
-              `path: ${path}`
-          );
-        } finally {
-          if (!standalone.alive && !initializeStandaloneCts.token.isCancelled) {
-            await standalone.execute(standaloneExecutableArgs);
+          const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
+          console.error(errorMessage);
+
+          if (!(error instanceof Error)) {
+            // FIXME: use correct page
+            win?.webContents.send("go to error page", "download-snapshot-failed-error");
+          }
+          else if (error instanceof DownloadSnapshotFailedError) {
+            win?.webContents.send("go to error page", "download-snapshot-failed-error");
+          }
+          else if (error instanceof DownloadSnapshotMetadataFailedError) {
+            win?.webContents.send("go to error page", "download-snapshot-metadata-failed-error");
+          }
+          else {
+            // FIXME: use correct page
+            win?.webContents.send("go to error page", "download-snapshot-failed-error");
           }
         }
       }
     }
 
     initializeStandaloneCts.token.throwIfCancelled();
-    if (!(await standalone.run())) {
+    await standalone.execute(standaloneExecutableArgs);
+    if (!((await standalone.run()) || CUSTOM_SERVER)) {
       // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
       win?.webContents.send("go to error page", "clear-cache");
       throw new StandaloneInitializeError(
@@ -628,7 +740,7 @@ async function initializeStandalone(): Promise<void> {
     ) {
       console.error(`InitializeStandalone() halted: ${error}`);
     } else if (error instanceof HeadlessExitedError) {
-      console.error("Headless exited during initialization.");
+      console.error("Headless exited during initialization:", error);
       win?.webContents.send("go to error page", "clear-cache");
     } else {
       win?.webContents.send("go to error page", "reinstall");
@@ -713,34 +825,28 @@ function cleanUpLockfile() {
 }
 
 function loadInstallerMixpanelUUID(): string {
-  if (process.platform === "win32") {
-    const planetariumPath = path.join(
-      process.env.LOCALAPPDATA as string,
-      "planetarium"
-    );
-    if (!fs.existsSync(planetariumPath)) {
-      fs.mkdirSync(planetariumPath, {
-        recursive: true,
-      });
-    }
+  const planetariumPath =
+    process.platform === "win32"
+      ? path.join(process.env.LOCALAPPDATA as string, "planetarium")
+      : app.getPath("userData");
+  if (!fs.existsSync(planetariumPath)) {
+    fs.mkdirSync(planetariumPath, {
+      recursive: true,
+    });
+  }
 
-    let guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
+  let guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
 
-    if (!fs.existsSync(guidPath)) {
-      const newUUID = uuidv4();
-      console.log(
-        `The installer mixpanel UUID doesn't exist at '${guidPath}'.`
-      );
-      fs.writeFileSync(guidPath, newUUID);
-      console.log(`Created new UUID ${newUUID} and stored.`);
-      return newUUID;
-    } else {
-      return fs.readFileSync(guidPath, {
-        encoding: "utf-8",
-      });
-    }
+  if (!fs.existsSync(guidPath)) {
+    const newUUID = uuidv4();
+    console.log(`The installer mixpanel UUID doesn't exist at '${guidPath}'.`);
+    fs.writeFileSync(guidPath, newUUID);
+    console.log(`Created new UUID ${newUUID} and stored.`);
+    return newUUID;
   } else {
-    throw new NotSupportedPlatformError(process.platform);
+    return fs.readFileSync(guidPath, {
+      encoding: "utf-8",
+    });
   }
 }
 
