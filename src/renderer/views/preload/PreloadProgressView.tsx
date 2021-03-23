@@ -141,7 +141,13 @@ const PreloadProgressView = observer(() => {
       setStep(preloadProgress?.currentPhase + 2);
     }
   }, [preloadProgress]);
-
+      
+  useEffect(() => {
+    if (isPreloadEnded) {
+      ipcRenderer.send("mixpanel-track-event", `Launcher/Preload Completed`);
+    }
+  }, [isPreloadEnded]);
+      
   return (
     <Container className="footer">
       {isPreloadEnded ? (

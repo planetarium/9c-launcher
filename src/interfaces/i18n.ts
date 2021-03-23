@@ -10,6 +10,9 @@ export default interface I18n {
   preload: Preload;
   errorClearCache: ErrorClearCache;
   errorDiskSpace: ErrorDiskSpace;
+  errorDownloadBinaryFailed: ErrorDownloadBinaryFailed;
+  errorDownloadSnapshotFailed: ErrorDownloadSnapshotFailed;
+  errorDownloadSnapshotMetadataFailed: ErrorDownloadSnapshotMetadataFailed;
   errorNoPermission: ErrorNoPermission;
   errorRelaunch: ErrorRelaunch;
   errorReinstall: ErrorReinstall;
@@ -104,6 +107,24 @@ export interface ErrorDiskSpace {
   "디스크 공간이 충분하지 않습니다": LocaleRecord;
   "필요한 여유 공간:": LocaleRecord;
   "체인 경로:": LocaleRecord;
+}
+
+export interface ErrorDownloadBinaryFailed {
+  "바이너리 다운로드에 실패했습니다.": LocaleRecord;
+  "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
+  "재시작": LocaleRecord;
+}
+
+export interface ErrorDownloadSnapshotFailed {
+  "스냅샷 다운로드에 실패했습니다.": LocaleRecord;
+  "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
+  "재시작": LocaleRecord;
+}
+
+export interface ErrorDownloadSnapshotMetadataFailed {
+  "스냅샷 메타 데이타 다운로드에 실패했습니다.": LocaleRecord;
+  "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
+  "재시작": LocaleRecord;
 }
 
 export interface ErrorNoPermission {
