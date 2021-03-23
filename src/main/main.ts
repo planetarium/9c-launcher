@@ -48,10 +48,7 @@ import { init as createMixpanel, Mixpanel } from "mixpanel";
 import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
 import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
-import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
-import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
-import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
-import { Address, KeyId, PrivateKey } from "./standalone/key-store";
+import { Address, PrivateKey } from "./standalone/key-store";
 
 initializeSentry();
 
