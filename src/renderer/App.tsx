@@ -93,6 +93,10 @@ function App() {
   );
 
   useEffect(() => {
+    ipcRenderer.on("failed to download binary", (event) => {
+      window.alert("failed to download binary.");
+    });
+
     ipcRenderer.send("mixpanel-track-event", "Launcher/Start");
   }, []);
 

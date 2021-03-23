@@ -257,7 +257,7 @@ function initializeIpc() {
       try {
         dl = await download(win, downloadUrl, options);
       } catch (error) {
-        win?.webContents.send("go to error page", "download-binary-failed");
+        win?.webContents.send("failed to download binary");
         throw new DownloadBinaryFailedError(downloadUrl);
       }
 
