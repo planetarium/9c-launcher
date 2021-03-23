@@ -10,3 +10,5 @@ src/generated
 
 __tests__/snapshots
 __tests__/logs
+__tests__/userData
+__tests__/fixture/store/integration

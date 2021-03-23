@@ -1,4 +1,4 @@
-export interface BlockHeader {
+export interface BlockMetadata {
   ProtocolVersion: number;
   Index: number;
   Timestamp: string;
@@ -9,4 +9,8 @@ export interface BlockHeader {
   Hash: number[];
   StateRootHash: number[];
   PreEvaluationHash: number[];
+  BlockEpoch: number;
+  TxEpoch: number;
+  PreviousBlockEpoch: number;
+  PreviousTxEpoch: number;
 }
