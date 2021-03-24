@@ -1,32 +1,32 @@
-import React, { useMemo, useEffect } from "react";
-import { Router } from "react-router";
-import { createBrowserHistory } from "history";
-import "./styles/common.scss";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
+import { InMemoryCache } from "apollo-cache-inmemory";
 import ApolloClient from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
+import { createHttpLink } from "apollo-link-http";
 import { RetryLink } from "apollo-link-retry";
 import { WebSocketLink } from "apollo-link-ws";
-import { ApolloProvider } from "react-apollo";
 import { getMainDefinition } from "apollo-utilities";
-import { createHttpLink } from "apollo-link-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
-
-import { Provider } from "mobx-react";
-import AccountStore from "./stores/account";
-import { IStoreContainer } from "../interfaces/store";
-import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
-import { LOCAL_SERVER_URL, electronStore } from "../config";
-import GameStore from "./stores/game";
-import Root from "./Root";
-import StandaloneStore from "./stores/standaloneStore";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core";
-import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
-import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
-import montserrat from "./styles/font";
-
-import LocaleProvider from "./i18n";
-import { Locale } from "../interfaces/i18n";
 import { ipcRenderer } from "electron";
+import { createBrowserHistory } from "history";
+import { Provider } from "mobx-react";
+import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
+import React, { useMemo, useEffect } from "react";
+import { ApolloProvider } from "react-apollo";
+import { Router } from "react-router";
+
+import { LOCAL_SERVER_URL, electronStore } from "../config";
+import { AppLocale, Locale } from "../interfaces/i18n";
+import { IStoreContainer } from "../interfaces/store";
+
+import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
+import LocaleProvider, { useLocale } from "./i18n";
+import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
+import Root from "./Root";
+import AccountStore from "./stores/account";
+import GameStore from "./stores/game";
+import StandaloneStore from "./stores/standaloneStore";
+import "./styles/common.scss";
+import montserrat from "./styles/font";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -92,9 +92,11 @@ function App() {
     []
   );
 
+  const { locale } = useLocale<AppLocale>("appLocale");
+
   useEffect(() => {
     ipcRenderer.on("failed to download binary", (event) => {
-      window.alert("failed to download binary.");
+      window.alert(locale("바이너리 다운로드에 실패했습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."));
     });
 
     ipcRenderer.send("mixpanel-track-event", "Launcher/Start");
