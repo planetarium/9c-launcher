@@ -1,8 +1,8 @@
-class StandaloneInitializeError extends Error {
+class HeadlessInitializeError extends Error {
   constructor(msg: string) {
     super(msg);
-    Object.setPrototypeOf(this, StandaloneInitializeError.prototype);
+    Object.setPrototypeOf(this, HeadlessInitializeError.prototype);
   }
 }
 
-export default StandaloneInitializeError;
+export default HeadlessInitializeError;

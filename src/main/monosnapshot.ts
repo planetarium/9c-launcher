@@ -5,7 +5,7 @@ import { IDownloadProgress } from "../interfaces/ipc";
 import { cancellableDownload, cancellableExtract, execute } from "../utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
-import Standalone from "./standalone";
+import Headless from "./headless";
 import * as utils from "../utils";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
@@ -84,7 +84,7 @@ export async function processSnapshot(
   snapshotDownloadUrl: string,
   storePath: string,
   userDataPath: string,
-  standalone: Standalone,
+  standalone: Headless,
   win: Electron.BrowserWindow,
   token: CancellationToken
 ): Promise<boolean> {

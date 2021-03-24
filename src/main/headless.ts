@@ -8,8 +8,8 @@ import { execute, sleep } from "../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
 import { BlockMetadata } from "src/interfaces/block-header";
-import { KeyStore } from "./standalone/key-store";
-import { Validation } from "./standalone/validation";
+import { KeyStore } from "./headless/key-store";
+import { Validation } from "./headless/validation";
 
 const retryOptions = {
   delay: 100,
@@ -34,7 +34,7 @@ const NODESTATUS: NodeStatus = {
 
 const eventEmitter = new EventEmitter();
 
-class Standalone {
+class Headless {
   constructor(path: string) {
     this._path = path;
     this._running = false;
@@ -281,4 +281,4 @@ class Standalone {
   }
 }
 
-export default Standalone;
+export default Headless;
