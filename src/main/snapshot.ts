@@ -5,7 +5,7 @@ import { cancellableDownload, cancellableExtract } from "../utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
-import Standalone from "./standalone";
+import Headless from "./headless";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 
 export type Epoch = {
@@ -102,8 +102,6 @@ export async function downloadMetadata(
   token.throwIfCancelled();
   const savingPath = path.join(userDataPath, downloadFileName);
   const downloadPath = basePath + "/" + downloadFileName;
-  await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
-  token.throwIfCancelled();
 
   try {
     await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
@@ -139,29 +137,36 @@ export async function downloadSnapshot(
   token.throwIfCancelled();
   console.log("Downloading snapshot.");
   console.log(target);
+  let savingPaths: string[] = [];
   let progressDict: DownloadStatus = {};
-  let downloadPromise = target.map(async (x) => {
-    let downloadTargetName = `snapshot-${x.BlockEpoch}-${x.TxEpoch}.zip`;
-    let savingPath = path.join(userDataPath, `${downloadTargetName}`);
-    console.log(`download snapshot path: ${basePath}/${downloadTargetName}`);
-    await cancellableDownload(
-      basePath + `/${downloadTargetName}`,
-      savingPath,
-      (status) => {
-        progressDict[downloadTargetName] = {
-          percent: status.percent,
-        };
-        const value = Object.values(progressDict);
-        const sum = value.reduce((a, b) => a + b.percent, 0);
-        status.percent = sum / target.length;
-        onProgress(status);
-      },
-      token
-    );
-    return savingPath;
-  });
-  let savingPaths = await Promise.all(downloadPromise);
+  try {
+    let downloadPromise = target.map(async (x) => {
+      let downloadTargetName = `snapshot-${x.BlockEpoch}-${x.TxEpoch}.zip`;
+      let savingPath = path.join(userDataPath, `${downloadTargetName}`);
+      console.log(`download snapshot path: ${basePath}/${downloadTargetName}`);
+      await cancellableDownload(
+        basePath + `/${downloadTargetName}`,
+        savingPath,
+        (status) => {
+          progressDict[downloadTargetName] = {
+            percent: status.percent,
+          };
+          const value = Object.values(progressDict);
+          const sum = value.reduce((a, b) => a + b.percent, 0);
+          status.percent = sum / target.length;
+          onProgress(status);
+        },
+        token
+      );
+      return savingPath;
+    });
+    savingPaths = await Promise.all(downloadPromise);
+  } catch (error) {
+    throw new DownloadSnapshotFailedError(basePath, savingPaths.join(", "));
+  }
+
   token.throwIfCancelled();
+
   console.log("Snapshot download complete. Directory: ", userDataPath);
   return savingPaths;
 }
@@ -227,7 +232,7 @@ export async function processSnapshot(
   snapshotDownloadUrl: string,
   storePath: string,
   userDataPath: string,
-  standalone: Standalone,
+  standalone: Headless,
   win: Electron.BrowserWindow,
   token: CancellationToken
 ): Promise<boolean> {
@@ -235,86 +240,56 @@ export async function processSnapshot(
 
   const localMetadata = standalone.getTip("rocksdb", storePath);
 
-  try {
-    const snapshotMetadata = await downloadMetadata(
+  const snapshotMetadata = await downloadMetadata(
+    snapshotDownloadUrl,
+    userDataPath,
+    "latest.json",
+    token
+  );
+  const needSnapshot =
+    localMetadata === null ||
+    validateMetadata(snapshotMetadata, localMetadata, storePath, token);
+  if (needSnapshot) {
+    const target = await getSnapshotDownloadTarget(
+      snapshotMetadata,
+      storePath,
       snapshotDownloadUrl,
       userDataPath,
-      "latest.json",
       token
     );
-    const needSnapshot =
-      localMetadata === null ||
-      validateMetadata(snapshotMetadata, localMetadata, storePath, token);
-    if (needSnapshot) {
-      const target = await getSnapshotDownloadTarget(
-        snapshotMetadata,
-        storePath,
-        snapshotDownloadUrl,
-        userDataPath,
-        token
-      );
-      const snapshotPaths = await downloadSnapshot(
-        snapshotDownloadUrl,
-        target,
-        userDataPath,
-        (status) => {
-          win?.webContents.send("download progress", status);
-        },
-        token
-      );
-      const stateSnapshotPath = await downloadStateSnapshot(
-        snapshotDownloadUrl,
-        userDataPath,
-        (status) => {
-          win?.webContents.send("download progress", status);
-        },
-        token
-      );
-      snapshotPaths.push(stateSnapshotPath);
-      removeUselessStore(storePath);
-      await extractSnapshot(
-        snapshotPaths,
-        storePath,
-        (progress: number) => {
-          win?.webContents.send("extract progress", progress);
-        },
-        token
-      );
-    } else {
-      console.log(
-        `Metadata ${JSON.stringify(
-          snapshotMetadata
-        )} is redundant. Skip snapshot.`
-      );
-    }
-    return true;
-  } catch (error) {
-    const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
-    console.error(errorMessage);
-
-    if (!(error instanceof Error)) {
-      // FIXME: use correct page
-      win?.webContents.send(
-        "go to error page",
-        "download-snapshot-failed-error"
-      );
-    } else if (error instanceof DownloadSnapshotFailedError) {
-      win?.webContents.send(
-        "go to error page",
-        "download-snapshot-failed-error"
-      );
-    } else if (error instanceof DownloadSnapshotMetadataFailedError) {
-      win?.webContents.send(
-        "go to error page",
-        "download-snapshot-metadata-failed-error"
-      );
-    } else {
-      // FIXME: use correct page
-      win?.webContents.send(
-        "go to error page",
-        "download-snapshot-failed-error"
-      );
-    }
-    return false;
+    const snapshotPaths = await downloadSnapshot(
+      snapshotDownloadUrl,
+      target,
+      userDataPath,
+      (status) => {
+        win?.webContents.send("download progress", status);
+      },
+      token
+    );
+    const stateSnapshotPath = await downloadStateSnapshot(
+      snapshotDownloadUrl,
+      userDataPath,
+      (status) => {
+        win?.webContents.send("download progress", status);
+      },
+      token
+    );
+    snapshotPaths.push(stateSnapshotPath);
+    removeUselessStore(storePath);
+    await extractSnapshot(
+      snapshotPaths,
+      storePath,
+      (progress: number) => {
+        win?.webContents.send("extract progress", progress);
+      },
+      token
+    );
+  } else {
+    console.log(
+      `Metadata ${JSON.stringify(
+        snapshotMetadata
+      )} is redundant. Skip snapshot.`
+    );
   }
+  return true;
 }
