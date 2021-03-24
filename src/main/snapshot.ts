@@ -235,63 +235,56 @@ export async function processSnapshot(
 
   const localMetadata = standalone.getTip("rocksdb", storePath);
 
-  try {
-    const snapshotMetadata = await downloadMetadata(
+  const snapshotMetadata = await downloadMetadata(
+    snapshotDownloadUrl,
+    userDataPath,
+    "latest.json",
+    token
+  );
+  const needSnapshot =
+    localMetadata === null ||
+    validateMetadata(snapshotMetadata, localMetadata, storePath, token);
+  if (needSnapshot) {
+    const target = await getSnapshotDownloadTarget(
+      snapshotMetadata,
+      storePath,
       snapshotDownloadUrl,
       userDataPath,
-      "latest.json",
       token
     );
-    const needSnapshot =
-      localMetadata === null ||
-      validateMetadata(snapshotMetadata, localMetadata, storePath, token);
-    if (needSnapshot) {
-      const target = await getSnapshotDownloadTarget(
-        snapshotMetadata,
-        storePath,
-        snapshotDownloadUrl,
-        userDataPath,
-        token
-      );
-      const snapshotPaths = await downloadSnapshot(
-        snapshotDownloadUrl,
-        target,
-        userDataPath,
-        (status) => {
-          win?.webContents.send("download progress", status);
-        },
-        token
-      );
-      const stateSnapshotPath = await downloadStateSnapshot(
-        snapshotDownloadUrl,
-        userDataPath,
-        (status) => {
-          win?.webContents.send("download progress", status);
-        },
-        token
-      );
-      snapshotPaths.push(stateSnapshotPath);
-      removeUselessStore(storePath);
-      await extractSnapshot(
-        snapshotPaths,
-        storePath,
-        (progress: number) => {
-          win?.webContents.send("extract progress", progress);
-        },
-        token
-      );
-    } else {
-      console.log(
-        `Metadata ${JSON.stringify(
-          snapshotMetadata
-        )} is redundant. Skip snapshot.`
-      );
-    }
-    return true;
-  } catch (error) {
-    const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
-    console.error(errorMessage);
-
-    return false;
+    const snapshotPaths = await downloadSnapshot(
+      snapshotDownloadUrl,
+      target,
+      userDataPath,
+      (status) => {
+        win?.webContents.send("download progress", status);
+      },
+      token
+    );
+    const stateSnapshotPath = await downloadStateSnapshot(
+      snapshotDownloadUrl,
+      userDataPath,
+      (status) => {
+        win?.webContents.send("download progress", status);
+      },
+      token
+    );
+    snapshotPaths.push(stateSnapshotPath);
+    removeUselessStore(storePath);
+    await extractSnapshot(
+      snapshotPaths,
+      storePath,
+      (progress: number) => {
+        win?.webContents.send("extract progress", progress);
+      },
+      token
+    );
+  } else {
+    console.log(
+      `Metadata ${JSON.stringify(
+        snapshotMetadata
+      )} is redundant. Skip snapshot.`
+    );
   }
+  return true;
 }

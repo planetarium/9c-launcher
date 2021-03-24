@@ -92,40 +92,32 @@ export async function processSnapshot(
 
   const localMetadata = standalone.getTip("monorocksdb", storePath);
 
-  try {
-    let snapshotMetadata = await downloadMetadata(
+  let snapshotMetadata = await downloadMetadata(
+    snapshotDownloadUrl,
+    win,
+    token
+  );
+  let needSnapshot =
+    localMetadata === null || validateMetadata(localMetadata, snapshotMetadata);
+  if (needSnapshot) {
+    let snapshotPath = await downloadSnapshot(
       snapshotDownloadUrl,
-      win,
+      (status) => {
+        win?.webContents.send("download progress", status);
+      },
       token
     );
-    let needSnapshot =
-      localMetadata === null ||
-      validateMetadata(localMetadata, snapshotMetadata);
-    if (needSnapshot) {
-      let snapshotPath = await downloadSnapshot(
-        snapshotDownloadUrl,
-        (status) => {
-          win?.webContents.send("download progress", status);
-        },
-        token
-      );
-      utils.deleteBlockchainStoreSync(storePath);
-      await extractSnapshot(
-        snapshotPath,
-        storePath,
-        (progress: number) => {
-          win?.webContents.send("extract progress", progress);
-        },
-        token
-      );
-    } else {
-      console.log(`Metadata ${snapshotMetadata} is redundant. Skip snapshot.`);
-    }
-    return true;
-  } catch (error) {
-    const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
-    console.error(errorMessage);
-
-    return false;
+    utils.deleteBlockchainStoreSync(storePath);
+    await extractSnapshot(
+      snapshotPath,
+      storePath,
+      (progress: number) => {
+        win?.webContents.send("extract progress", progress);
+      },
+      token
+    );
+  } else {
+    console.log(`Metadata ${snapshotMetadata} is redundant. Skip snapshot.`);
   }
+  return true;
 }

@@ -49,6 +49,8 @@ import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
 import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
 import { Address, PrivateKey } from "./headless/key-store";
+import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
+import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 
 initializeSentry();
 
@@ -664,24 +666,49 @@ async function initializeHeadless(): Promise<void> {
     } else if (snapshotPaths.length > 0 && win != null) {
       const snapshotDownloadUrls: string[] = electronStore.get("SnapshotPaths");
       let isProcessSuccess = false;
+      let recentError: Error = Error();
       for (const snapshotDownloadUrl of snapshotDownloadUrls) {
-        isProcessSuccess = await snapshot.processSnapshot(
-          snapshotDownloadUrl,
-          BLOCKCHAIN_STORE_PATH,
-          app.getPath("userData"),
-          standalone,
-          win,
-          initializeHeadlessCts.token
-        );
-        if (isProcessSuccess) break;
+        try {
+          isProcessSuccess = await snapshot.processSnapshot(
+            snapshotDownloadUrl,
+            BLOCKCHAIN_STORE_PATH,
+            app.getPath("userData"),
+            standalone,
+            win,
+            initializeHeadlessCts.token
+          );
+
+          if (isProcessSuccess) break;
+        } catch (error) {
+          recentError = error;
+        }
       }
 
       if (!isProcessSuccess) {
-        win?.webContents.send(
-          "go to error page",
-          "download-snapshot-failed-error"
-        );
-        throw new HeadlessInitializeError(`Snapshot download failed.`);
+        switch (recentError.constructor) {
+          case DownloadSnapshotFailedError:
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-failed-error"
+            );
+            throw new HeadlessInitializeError(`Snapshot download failed.`);
+          case DownloadSnapshotMetadataFailedError:
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-metadata-failed-error"
+            );
+            throw new HeadlessInitializeError(
+              `Snapshot metadata download failed.`
+            );
+          default:
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-failed-error"
+            );
+            throw new HeadlessInitializeError(
+              `Unexpected Error occupied when download snapshot.`
+            );
+        }
       }
     }
 
