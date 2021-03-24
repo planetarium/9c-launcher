@@ -95,6 +95,7 @@ describe("snapshot", function () {
   });
 
   describe("download snapshot", function () {
+    this.timeout(30 * 1000);
     it("should be download all snapshot", async function () {
       let cancellation = CancellationToken.create();
       let metadata = await downloadMetadata(
