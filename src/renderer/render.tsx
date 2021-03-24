@@ -1,11 +1,11 @@
-import * as DOM from "react-dom";
-import React from "react";
-import App from "./App";
-import { initializeSentry } from "../preload/sentry";
-import electronLog from "electron-log";
-
-import * as Sentry from "@sentry/electron";
 import isDev from "electron-is-dev";
+import electronLog from "electron-log";
+import React from "react";
+import * as DOM from "react-dom";
+
+import { initializeSentry } from "../preload/sentry";
+
+import App from "./App";
 
 initializeSentry();
 
