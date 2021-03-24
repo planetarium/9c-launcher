@@ -1,12 +1,14 @@
-import fs, { readdirSync } from "fs";
 import CancellationToken from "cancellationtoken";
+import fs, { readdirSync } from "fs";
+import path from "path";
+
+import { BlockMetadata } from "../interfaces/block-header";
 import { IDownloadProgress } from "../interfaces/ipc";
 import { cancellableDownload, cancellableExtract } from "../utils";
-import path from "path";
-import { BlockMetadata } from "src/interfaces/block-header";
+
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
-import Standalone from "./standalone";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
+import Standalone from "./standalone";
 
 export type Epoch = {
   BlockEpoch: number;
