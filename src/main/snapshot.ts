@@ -102,8 +102,6 @@ export async function downloadMetadata(
   token.throwIfCancelled();
   const savingPath = path.join(userDataPath, downloadFileName);
   const downloadPath = basePath + "/" + downloadFileName;
-  await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
-  token.throwIfCancelled();
 
   try {
     await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
@@ -139,29 +137,36 @@ export async function downloadSnapshot(
   token.throwIfCancelled();
   console.log("Downloading snapshot.");
   console.log(target);
+  let savingPaths: string[] = [];
   let progressDict: DownloadStatus = {};
-  let downloadPromise = target.map(async (x) => {
-    let downloadTargetName = `snapshot-${x.BlockEpoch}-${x.TxEpoch}.zip`;
-    let savingPath = path.join(userDataPath, `${downloadTargetName}`);
-    console.log(`download snapshot path: ${basePath}/${downloadTargetName}`);
-    await cancellableDownload(
-      basePath + `/${downloadTargetName}`,
-      savingPath,
-      (status) => {
-        progressDict[downloadTargetName] = {
-          percent: status.percent,
-        };
-        const value = Object.values(progressDict);
-        const sum = value.reduce((a, b) => a + b.percent, 0);
-        status.percent = sum / target.length;
-        onProgress(status);
-      },
-      token
-    );
-    return savingPath;
-  });
-  let savingPaths = await Promise.all(downloadPromise);
+  try {
+    let downloadPromise = target.map(async (x) => {
+      let downloadTargetName = `snapshot-${x.BlockEpoch}-${x.TxEpoch}.zip`;
+      let savingPath = path.join(userDataPath, `${downloadTargetName}`);
+      console.log(`download snapshot path: ${basePath}/${downloadTargetName}`);
+      await cancellableDownload(
+        basePath + `/${downloadTargetName}`,
+        savingPath,
+        (status) => {
+          progressDict[downloadTargetName] = {
+            percent: status.percent,
+          };
+          const value = Object.values(progressDict);
+          const sum = value.reduce((a, b) => a + b.percent, 0);
+          status.percent = sum / target.length;
+          onProgress(status);
+        },
+        token
+      );
+      return savingPath;
+    });
+    savingPaths = await Promise.all(downloadPromise);
+  } catch (error) {
+    throw new DownloadSnapshotFailedError(basePath, savingPaths.join(", "));
+  }
+
   token.throwIfCancelled();
+
   console.log("Snapshot download complete. Directory: ", userDataPath);
   return savingPaths;
 }
