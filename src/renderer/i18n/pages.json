@@ -1,4 +1,10 @@
 {
+  "AppLocale": {
+    "바이너리 다운로드에 실패했습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
+      "ko": "바이너리 다운로드에 실패했습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
+      "en": "Failed to download binary. Unable to connect. Please check your network connection."
+    }
+  },
   "intro": {
     "불러오는 중...": {
       "ko": "불러오는 중...",
@@ -552,20 +558,6 @@
     "체인 경로:": {
       "ko": "체인 경로:",
       "en": "Root chain store path:"
-    }
-  },
-  "errorDownloadBinaryFailed": {
-    "바이너리 다운로드에 실패했습니다.": {
-      "ko": "바이너리 다운로드에 실패했습니다.",
-      "en": "Failed to download binary."
-    },
-    "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": {
-      "ko": "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.",
-      "en": "Unable to connect. Please check your network connection."
-    },
-    "재시작": {
-      "ko": "재시작",
-      "en": "Restart"
     }
   },
   "errorNoPermission": {
