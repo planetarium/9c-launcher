@@ -45,15 +45,33 @@ const PreloadProgressView = observer(() => {
   };
 
   const updateProgressMessage = () => {
+    debugger;
     if (isPreloadEnded) {
-      setProgressMessage(electronStore.get("PeerStrings").length > 0
+      setProgressMessage(
+        electronStore.get("PeerStrings").length > 0
+          ? locale("Preload Completed.")
+          : locale("No Peers Were Given.")
+      );
+    } else {
+      setProgressMessage(
+        locale(statusMessage[step]).concat(
+          ` ... (${step + 1}/8) ${Math.floor(progress)}%`
+        )
+      );
+    }
+  };
+
+  const getProgressMessage = () => {
+    if (isPreloadEnded) {
+      return electronStore.get("PeerStrings").length > 0
         ? locale("Preload Completed.")
-        : locale("No Peers Were Given."));
+        : locale("No Peers Were Given.");
+    } else {
+      return locale(statusMessage[step]).concat(
+        ` ... (${step + 1}/8) ${Math.floor(progress)}%`
+      );
     }
-    else {
-      setProgressMessage(locale(statusMessage[step]) + `${step + 1}/8) ${Math.floor(progress)}%`);
-    }
-  }
+  };
 
   useEffect(() => {
     ipcRenderer.on(
@@ -68,7 +86,8 @@ const PreloadProgressView = observer(() => {
       setPreloadStats(false);
       setProgress(0);
       setStep(0);
-      updateProgressMessage();
+      setProgressMessage(getProgressMessage());
+      debugger;
     });
 
     ipcRenderer.on("metadata downloaded", () => {
@@ -80,7 +99,8 @@ const PreloadProgressView = observer(() => {
       (event: IpcRendererEvent, progress: IDownloadProgress) => {
         setStep(1);
         setProgress(progress.percent * 100);
-        updateProgressMessage();
+        setProgressMessage(getProgressMessage());
+        debugger;
       }
     );
 
@@ -93,7 +113,8 @@ const PreloadProgressView = observer(() => {
       (event: IpcRendererEvent, progress: number) => {
         setStep(2);
         setProgress(progress * 100);
-        updateProgressMessage();
+        setProgressMessage(getProgressMessage());
+        debugger;
       }
     );
 
@@ -101,9 +122,12 @@ const PreloadProgressView = observer(() => {
       // snapshot extraction completed, but node service did not launched yet.
     });
 
-    ipcRenderer.on("set exception message of PreloadProgressView", (event, exceptionMessage: string | null) => {
-      setExceptionMessage(exceptionMessage);
-    })
+    ipcRenderer.on(
+      "set exception message of PreloadProgressView",
+      (event, exceptionMessage: string | null) => {
+        setExceptionMessage(exceptionMessage);
+      }
+    );
 
     //@ts-ignore
     window.relaunchStandalone = () => ipcRenderer.send("relaunch standalone");
@@ -116,7 +140,8 @@ const PreloadProgressView = observer(() => {
   useEffect(() => {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
     setPreloadStats(isEnded === undefined ? false : isEnded);
-    updateProgressMessage();
+    setProgressMessage(getProgressMessage());
+    debugger;
     if (isEnded) {
       standaloneStore.setReady(true);
     }
@@ -156,13 +181,15 @@ const PreloadProgressView = observer(() => {
       preloadProgressSubscriptionResult?.preloadProgress?.extra.totalCount
     );
     setProgress(prog);
-    updateProgressMessage();
+    setProgressMessage(getProgressMessage());
+    debugger;
   }, [preloadProgress?.extra]);
 
   useEffect(() => {
     if (preloadProgress !== undefined) {
       setStep(preloadProgress?.currentPhase + 2);
-      updateProgressMessage();
+      setProgressMessage(getProgressMessage());
+      debugger;
     }
   }, [preloadProgress]);
 
@@ -172,15 +199,13 @@ const PreloadProgressView = observer(() => {
     }
   }, [isPreloadEnded]);
 
-  const message = exceptionMessage === null
-    ? progressMessage
-    : exceptionMessage;
+  // setProgressMessage(getProgressMessage());
+  const message =
+    exceptionMessage === null ? progressMessage : exceptionMessage;
   return (
     <Container className="footer">
       {isPreloadEnded ? (
-        <Typography className={classes.text}>
-          {message}
-        </Typography>
+        <Typography className={classes.text}>{message}</Typography>
       ) : (
         <>
           <CircularProgress className={classes.circularProgress} size={12} />
