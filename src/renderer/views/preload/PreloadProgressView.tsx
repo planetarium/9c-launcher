@@ -101,7 +101,7 @@ const PreloadProgressView = observer(() => {
       // snapshot extraction completed, but node service did not launched yet.
     });
 
-    ipcRenderer.on("set message of PreloadProgressView", (event, exceptionMessage: string | null) => {
+    ipcRenderer.on("set exception message of PreloadProgressView", (event, exceptionMessage: string | null) => {
       setExceptionMessage(exceptionMessage);
     })
 
