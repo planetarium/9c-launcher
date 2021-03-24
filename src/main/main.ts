@@ -496,7 +496,7 @@ function initializeIpc() {
 
   ipcMain.on("relaunch standalone", async (event) => {
     await stopStandaloneProcess();
-    initializeStandalone(true);
+    initializeStandalone();
     event.returnValue = true;
   });
 
@@ -617,7 +617,7 @@ function initializeIpc() {
   });
 }
 
-async function initializeStandalone(isRestart: boolean = false): Promise<void> {
+async function initializeStandalone(): Promise<void> {
   /*
   1. Check disk (permission, storage).
   2. If use snapshot, download metadata.
@@ -667,18 +667,25 @@ async function initializeStandalone(isRestart: boolean = false): Promise<void> {
       );
     } else if (snapshotPaths.length > 0 && win != null) {
       const snapshotDownloadUrls: string[] = electronStore.get("SnapshotPaths");
-      if (snapshotDownloadUrls.length > 0 && win != null && !isRestart) {
-        for (const snapshotDownloadUrl of snapshotDownloadUrls) {
-          const isProcessSuccess = await snapshot.processSnapshot(
-            snapshotDownloadUrl,
-            BLOCKCHAIN_STORE_PATH,
-            app.getPath("userData"),
-            standalone,
-            win,
-            initializeStandaloneCts.token
-          );
-          if (isProcessSuccess) break;
-        }
+      let isProcessSuccess = false;
+      for (const snapshotDownloadUrl of snapshotDownloadUrls) {
+        isProcessSuccess = await snapshot.processSnapshot(
+          snapshotDownloadUrl,
+          BLOCKCHAIN_STORE_PATH,
+          app.getPath("userData"),
+          standalone,
+          win,
+          initializeStandaloneCts.token
+        );
+        if (isProcessSuccess) break;
+      }
+
+      if (!isProcessSuccess) {
+        win?.webContents.send(
+          "go to error page",
+          "download-snapshot-failed-error"
+        );
+        return;
       }
     }
 

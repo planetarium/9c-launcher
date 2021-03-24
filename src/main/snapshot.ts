@@ -292,29 +292,6 @@ export async function processSnapshot(
     const errorMessage = `Unexpected error occurred during download / extract snapshot.\n${error}`;
     console.error(errorMessage);
 
-    if (!(error instanceof Error)) {
-      // FIXME: use correct page
-      win?.webContents.send(
-        "go to error page",
-        "download-snapshot-failed-error"
-      );
-    } else if (error instanceof DownloadSnapshotFailedError) {
-      win?.webContents.send(
-        "go to error page",
-        "download-snapshot-failed-error"
-      );
-    } else if (error instanceof DownloadSnapshotMetadataFailedError) {
-      win?.webContents.send(
-        "go to error page",
-        "download-snapshot-metadata-failed-error"
-      );
-    } else {
-      // FIXME: use correct page
-      win?.webContents.send(
-        "go to error page",
-        "download-snapshot-failed-error"
-      );
-    }
     return false;
   }
 }
