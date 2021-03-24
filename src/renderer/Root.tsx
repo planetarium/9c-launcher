@@ -19,9 +19,6 @@ import CopyCreatedPrivateKeyView from "./views/account/CopyCreatedPrivateKeyView
 import PreloadProgressView from "./views/preload/PreloadProgressView";
 import ErrorClearCacheView from "./views/error/ErrorClearCacheView";
 import ErrorDiskSpaceView from "./views/error/ErrorDiskSpaceView";
-import ErrorDownloadBinaryFailedView from "./views/error/ErrorDownloadBinaryFailedView";
-import ErrorDownloadSnapshotFailedView from "./views/error/ErrorDownloadSnapshotFailedView";
-import ErrorDownloadSnapshotMetadataFailedView from "./views/error/ErrorDownloadSnapshotMetadataFailedView";
 import ErrorNoPermissionView from "./views/error/ErrorNoPermissionView";
 import ErrorReinstallView from "./views/error/ErrorReinstallView";
 import ErrorRelaunchView from "./views/error/ErrorRelaunchView";
@@ -41,9 +38,6 @@ class Root extends React.Component {
           <Route exact path="/config" component={ConfigurationView} />
           <Route exact path="/error/clear-cache" component={ErrorClearCacheView} />
           <Route exact path="/error/disk-space" component={ErrorDiskSpaceView} />
-          <Route exact path="/error/download-binary-failed-error" component={ErrorDownloadBinaryFailedView} />
-          <Route exact path="/error/download-snapshot-failed-error" component={ErrorDownloadSnapshotFailedView} />
-          <Route exact path="/error/download-snapshot-metadata-failed-error" component={ErrorDownloadSnapshotMetadataFailedView} />
           <Route exact path="/error/no-permission" component={ErrorNoPermissionView} />
           <Route exact path="/error/reinstall" component={ErrorReinstallView} />
           <Route exact path="/error/relaunch" component={ErrorRelaunchView} />
