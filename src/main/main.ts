@@ -605,6 +605,13 @@ function initializeIpc() {
       );
     }
   );
+
+  ipcMain.on("online-status-changed", (event, status: "online" | "offline") => {
+    console.log(`online-status-changed: ${status}`);
+    if (status === "offline") {
+      relaunch();
+    }
+  });
 }
 
 async function initializeStandalone(isRestart: boolean = false): Promise<void> {

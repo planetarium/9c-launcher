@@ -94,12 +94,33 @@ function App() {
 
   const { locale } = useLocale<AppLocale>("appLocale");
 
+  function listenOnlineStatus() {
+    const updateOnlineStatus = () => {
+      if (!navigator.onLine) {
+        window.alert(
+          locale(
+            "인터넷 연결이 끊겼습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."
+          )
+        );
+      }
+
+      ipcRenderer.send(
+        "online-status-changed",
+        navigator.onLine ? "online" : "offline"
+      );
+    };
+
+    window.addEventListener("online", updateOnlineStatus);
+    window.addEventListener("offline", updateOnlineStatus);
+  }
+
   useEffect(() => {
     ipcRenderer.on("failed to download binary", (event) => {
       window.alert(locale("바이너리 다운로드에 실패했습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."));
     });
 
     ipcRenderer.send("mixpanel-track-event", "Launcher/Start");
+    listenOnlineStatus();
   }, []);
 
   return (
