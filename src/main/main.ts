@@ -626,6 +626,20 @@ async function initializeHeadless(): Promise<void> {
   */
   console.log(`Initialize headless. (win: ${win?.getTitle})`);
 
+  if (initializeHeadlessCts !== null) {
+    console.error(
+      "Cannot initialize headless while initializing headless.",
+    );
+    return;
+  }
+
+  if (standalone.alive) {
+    console.error(
+      "Cannot initialize headless while headless is running.",
+    );
+    return;
+  }
+
   if (lockfile.checkSync(lockfilePath)) {
     console.error(
       "Cannot initialize headless while updater is running.\n",
