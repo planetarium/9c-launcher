@@ -214,13 +214,14 @@ class Headless {
 
   private exitedHandler(code: number | null): void {
     console.error(`Standalone exited with exit code: ${code}`);
+
+    NODESTATUS.Node = null;
+    NODESTATUS.ExitCode = code;
+    
     if (!NODESTATUS.QuitRequested) {
       console.error("Headless exited unexpectedly.");
       eventEmitter.emit("exit");
     }
-
-    NODESTATUS.Node = null;
-    NODESTATUS.ExitCode = code;
   }
 
   private retriableFetch(addr: string, body: string): Promise<boolean> {
