@@ -494,8 +494,7 @@ function initializeIpc() {
   });
 
   ipcMain.on("relaunch standalone", async (event) => {
-    await stopStandaloneProcess();
-    initializeHeadless();
+    await relaunchHeadless();
     event.returnValue = true;
   });
 
@@ -728,7 +727,7 @@ async function initializeHeadless(): Promise<void> {
       win?.webContents.send("go to error page", "relaunch");
     });
   } catch (error) {
-    console.error(`Error occurred during initializeStandalone(). ${error}`);
+    console.error(`Error occurred during initializeHeadless(). ${error}`);
     if (
       error instanceof HeadlessInitializeError ||
       error instanceof CancellationToken.CancellationError
@@ -845,19 +844,24 @@ function loadInstallerMixpanelUUID(): string {
   }
 }
 
+async function relaunchHeadless() {
+  await stopHeadlessProcess();
+  initializeHeadless();
+}
+
 async function quitAllProcesses() {
-  await stopStandaloneProcess();
+  await stopHeadlessProcess();
   if (gameNode === null) return;
   let pid = gameNode.pid;
   process.kill(pid, "SIGINT");
   gameNode = null;
 }
 
-async function stopStandaloneProcess(): Promise<void> {
-  console.log("Cancelling initializeStandalone()");
+async function stopHeadlessProcess(): Promise<void> {
+  console.log("Cancelling initializeHeadless()");
   initializeHeadlessCts?.cancel();
   while (initializeHeadlessCts !== null) await utils.sleep(100);
-  console.log("initializeStandalone() cancelled.");
+  console.log("initializeHeadless() cancelled.");
   await standalone.kill();
 }
 
