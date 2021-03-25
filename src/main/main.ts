@@ -722,9 +722,9 @@ async function initializeHeadless(): Promise<void> {
     }
 
     console.log("Register exit handler.");
-    standalone.once("exit", () => {
+    standalone.once("exit", async () => {
       console.error("Headless exited by self.");
-      win?.webContents.send("go to error page", "relaunch");
+      await relaunchHeadless();
     });
   } catch (error) {
     console.error(`Error occurred during initializeHeadless(). ${error}`);
