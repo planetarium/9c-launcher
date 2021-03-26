@@ -1,6 +1,7 @@
 import { ZXCVBNFeedbackWarning } from "zxcvbn";
 
 export default interface I18n {
+  appLocale: AppLocale;
   intro: Intro;
   menu: Menu;
   main: Main;
@@ -53,6 +54,10 @@ type LocaleRecord = Record<RequireLocale, string> &
 
 type Description = Record<RequireLocale, string[]> &
   Partial<Record<OptionalLocale, string[]>>;
+
+export interface AppLocale {
+  "인터넷 연결이 끊겼습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
+}
 
 export interface Intro {
   "불러오는 중...": LocaleRecord;
@@ -112,19 +117,19 @@ export interface ErrorDiskSpace {
 export interface ErrorDownloadBinaryFailed {
   "바이너리 다운로드에 실패했습니다.": LocaleRecord;
   "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
-  "재시작": LocaleRecord;
+  재시작: LocaleRecord;
 }
 
 export interface ErrorDownloadSnapshotFailed {
   "스냅샷 다운로드에 실패했습니다.": LocaleRecord;
   "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
-  "재시작": LocaleRecord;
+  재시작: LocaleRecord;
 }
 
 export interface ErrorDownloadSnapshotMetadataFailed {
   "스냅샷 메타 데이타 다운로드에 실패했습니다.": LocaleRecord;
   "인터넷 연결 상태를 확인한 후에 다시 시도해주십시오.": LocaleRecord;
-  "재시작": LocaleRecord;
+  재시작: LocaleRecord;
 }
 
 export interface ErrorNoPermission {

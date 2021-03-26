@@ -7,9 +7,9 @@ import { FetchError, HeadlessExitedError } from "../errors";
 import { execute, sleep } from "../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
-import { BlockHeader } from "src/interfaces/block-header";
-import { KeyStore } from "./standalone/key-store";
-import { Validation } from "./standalone/validation";
+import { BlockMetadata } from "src/interfaces/block-header";
+import { KeyStore } from "./headless/key-store";
+import { Validation } from "./headless/validation";
 
 const retryOptions = {
   delay: 100,
@@ -34,7 +34,7 @@ const NODESTATUS: NodeStatus = {
 
 const eventEmitter = new EventEmitter();
 
-class Standalone {
+class Headless {
   constructor(path: string) {
     this._path = path;
     this._running = false;
@@ -175,7 +175,7 @@ class Standalone {
     return new Validation(this._path);
   }
 
-  public getTip(storeType: string, storePath: string): BlockHeader | null {
+  public getTip(storeType: string, storePath: string): BlockMetadata | null {
     try {
       console.log(
         `cmd: [${basename(this._path)} chain tip ${storeType} ${storePath}]`
@@ -193,7 +193,7 @@ class Standalone {
 
       console.log(`output: [${output}]`);
 
-      return JSON.parse(output) as BlockHeader;
+      return JSON.parse(output) as BlockMetadata;
     } catch (error) {
       // FIXME: define a new interface or research the type exists.
       if (
@@ -214,13 +214,14 @@ class Standalone {
 
   private exitedHandler(code: number | null): void {
     console.error(`Standalone exited with exit code: ${code}`);
+
+    NODESTATUS.Node = null;
+    NODESTATUS.ExitCode = code;
+    
     if (!NODESTATUS.QuitRequested) {
       console.error("Headless exited unexpectedly.");
       eventEmitter.emit("exit");
     }
-
-    NODESTATUS.Node = null;
-    NODESTATUS.ExitCode = code;
   }
 
   private retriableFetch(addr: string, body: string): Promise<boolean> {
@@ -281,4 +282,4 @@ class Standalone {
   }
 }
 
-export default Standalone;
+export default Headless;
