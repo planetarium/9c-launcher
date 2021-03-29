@@ -40,18 +40,17 @@ import lockfile from "lockfile";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
-import Standalone from "./standalone";
-import { HeadlessExitedError, StandaloneInitializeError } from "../errors";
+import Headless from "./headless";
+import { HeadlessExitedError, HeadlessInitializeError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
 import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
 import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
+import { Address, PrivateKey } from "./headless/key-store";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
-import { NotSupportedPlatformError } from "./exceptions/not-supported-platform";
-import { Address, KeyId, PrivateKey } from "./standalone/key-store";
 
 initializeSentry();
 
@@ -116,14 +115,14 @@ let win: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
-let standalone: Standalone = new Standalone(standaloneExecutablePath);
+let standalone: Headless = new Headless(standaloneExecutablePath);
 let ip: string | null = null;
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: Mixpanel | null =
   electronStore.get("Mixpanel") && !isDev
     ? createMixpanel(MIXPANEL_TOKEN)
     : null;
-let initializeStandaloneCts: {
+let initializeHeadlessCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
 } | null = null;
@@ -165,7 +164,7 @@ function initializeApp() {
   app.on("ready", () => {
     win = createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
-    win.webContents.on("dom-ready", (event) => initializeStandalone());
+    win.webContents.on("dom-ready", (event) => initializeHeadless());
   });
 
   app.on("quit", (event) => {
@@ -478,7 +477,7 @@ function initializeIpc() {
     console.log(`Clear cache is requested. (rerun: ${rerun})`);
     await quitAllProcesses();
     utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
-    if (rerun) initializeStandalone();
+    if (rerun) initializeHeadless();
     event.returnValue = true;
   });
 
@@ -495,8 +494,7 @@ function initializeIpc() {
   });
 
   ipcMain.on("relaunch standalone", async (event) => {
-    await stopStandaloneProcess();
-    initializeStandalone(true);
+    await relaunchHeadless();
     event.returnValue = true;
   });
 
@@ -617,32 +615,45 @@ function initializeIpc() {
   });
 }
 
-async function initializeStandalone(isRestart: boolean = false): Promise<void> {
+async function initializeHeadless(): Promise<void> {
   /*
   1. Check disk (permission, storage).
   2. If use snapshot, download metadata.
-  3. Validate metadata via filesystem.
+  3. Validate metadata via headless-command.
   4. If metadata is valid, download snapshot with parallel.
   5. Extract downloaded snapshot.
-  6. Execute standalone.
-  7. Run standalone.
+  6. Execute headless.
   */
-  console.log(`Initialize standalone. (win: ${win?.getTitle})`);
+  console.log(`Initialize headless. (win: ${win?.getTitle})`);
+
+  if (initializeHeadlessCts !== null) {
+    console.error(
+      "Cannot initialize headless while initializing headless.",
+    );
+    return;
+  }
+
+  if (standalone.alive) {
+    console.error(
+      "Cannot initialize headless while headless is running.",
+    );
+    return;
+  }
 
   if (lockfile.checkSync(lockfilePath)) {
     console.error(
-      "Cannot initialize standalone while updater is running.\n",
+      "Cannot initialize headless while updater is running.\n",
       lockfilePath
     );
     return;
   }
 
-  initializeStandaloneCts = CancellationToken.create();
+  initializeHeadlessCts = CancellationToken.create();
 
   try {
     if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
       win?.webContents.send("go to error page", "no-permission");
-      throw new StandaloneInitializeError(
+      throw new HeadlessInitializeError(
         `Not enough permission. ${BLOCKCHAIN_STORE_PATH}`
       );
     }
@@ -650,7 +661,7 @@ async function initializeStandalone(isRestart: boolean = false): Promise<void> {
     let freeSpace = await utils.getDiskSpace(BLOCKCHAIN_STORE_PATH);
     if (freeSpace < REQUIRED_DISK_SPACE) {
       win?.webContents.send("go to error page", "disk-space");
-      throw new StandaloneInitializeError(
+      throw new HeadlessInitializeError(
         `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
       );
     }
@@ -667,43 +678,75 @@ async function initializeStandalone(isRestart: boolean = false): Promise<void> {
       );
     } else if (snapshotPaths.length > 0 && win != null) {
       const snapshotDownloadUrls: string[] = electronStore.get("SnapshotPaths");
-      if (snapshotDownloadUrls.length > 0 && win != null && !isRestart) {
-        for (const snapshotDownloadUrl of snapshotDownloadUrls) {
-          const isProcessSuccess = await snapshot.processSnapshot(
+      let isProcessSuccess = false;
+      let recentError: Error = Error();
+      for (const snapshotDownloadUrl of snapshotDownloadUrls) {
+        try {
+          isProcessSuccess = await snapshot.processSnapshot(
             snapshotDownloadUrl,
             BLOCKCHAIN_STORE_PATH,
             app.getPath("userData"),
             standalone,
             win,
-            initializeStandaloneCts.token
+            initializeHeadlessCts.token
           );
+
           if (isProcessSuccess) break;
+        } catch (error) {
+          recentError = error;
+        }
+      }
+
+      if (!isProcessSuccess) {
+        switch (recentError.constructor) {
+          case DownloadSnapshotFailedError:
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-failed-error"
+            );
+            throw new HeadlessInitializeError(`Snapshot download failed.`);
+          case DownloadSnapshotMetadataFailedError:
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-metadata-failed-error"
+            );
+            throw new HeadlessInitializeError(
+              `Snapshot metadata download failed.`
+            );
+          default:
+            win?.webContents.send(
+              "go to error page",
+              "download-snapshot-failed-error"
+            );
+            throw new HeadlessInitializeError(
+              `Unexpected Error occupied when download snapshot.`
+            );
         }
       }
     }
 
-    initializeStandaloneCts.token.throwIfCancelled();
+    initializeHeadlessCts.token.throwIfCancelled();
     await standalone.execute(standaloneExecutableArgs);
     if (!((await standalone.run()) || CUSTOM_SERVER)) {
-      // FIXME: GOTO CLEARCACHE PAGE by standalone.exitCode()
+      // FIXME: GOTO CLEARCACHE PAGE by headless.exitCode()
       win?.webContents.send("go to error page", "clear-cache");
-      throw new StandaloneInitializeError(
+      throw new HeadlessInitializeError(
         "Error in run. Redirect to clear cache page."
       );
     }
 
     console.log("Register exit handler.");
-    standalone.once("exit", () => {
+    standalone.once("exit", async () => {
       console.error("Headless exited by self.");
-      win?.webContents.send("go to error page", "relaunch");
+      await relaunchHeadless();
     });
   } catch (error) {
-    console.error(`Error occurred during initializeStandalone(). ${error}`);
+    console.error(`Error occurred during initializeHeadless(). ${error}`);
     if (
-      error instanceof StandaloneInitializeError ||
+      error instanceof HeadlessInitializeError ||
       error instanceof CancellationToken.CancellationError
     ) {
-      console.error(`InitializeStandalone() halted: ${error}`);
+      console.error(`InitializeHeadless() halted: ${error}`);
     } else if (error instanceof HeadlessExitedError) {
       console.error("Headless exited during initialization:", error);
       win?.webContents.send("go to error page", "clear-cache");
@@ -712,8 +755,8 @@ async function initializeStandalone(isRestart: boolean = false): Promise<void> {
       throw error;
     }
   } finally {
-    console.log("initializeStandalone() finished.");
-    initializeStandaloneCts = null;
+    console.log("initializeHeadless() finished.");
+    initializeHeadlessCts = null;
   }
 }
 
@@ -815,19 +858,24 @@ function loadInstallerMixpanelUUID(): string {
   }
 }
 
+async function relaunchHeadless() {
+  await stopHeadlessProcess();
+  initializeHeadless();
+}
+
 async function quitAllProcesses() {
-  await stopStandaloneProcess();
+  await stopHeadlessProcess();
   if (gameNode === null) return;
   let pid = gameNode.pid;
   process.kill(pid, "SIGINT");
   gameNode = null;
 }
 
-async function stopStandaloneProcess(): Promise<void> {
-  console.log("Cancelling initializeStandalone()");
-  initializeStandaloneCts?.cancel();
-  while (initializeStandaloneCts !== null) await utils.sleep(100);
-  console.log("initializeStandalone() cancelled.");
+async function stopHeadlessProcess(): Promise<void> {
+  console.log("Cancelling initializeHeadless()");
+  initializeHeadlessCts?.cancel();
+  while (initializeHeadlessCts !== null) await utils.sleep(100);
+  console.log("initializeHeadless() cancelled.");
   await standalone.kill();
 }
 

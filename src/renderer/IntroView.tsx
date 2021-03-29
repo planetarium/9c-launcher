@@ -6,7 +6,7 @@ import { useProtectedPrivateKeysQuery } from "../generated/graphql";
 import { useLocale } from "./i18n";
 import { Intro } from "../interfaces/i18n";
 import { ipcRenderer } from "electron";
-import { ProtectedPrivateKey } from "src/main/standalone/key-store";
+import { ProtectedPrivateKey } from "src/main/headless/key-store";
 
 const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
   const protectedPrivateKeys: ProtectedPrivateKey[] = ipcRenderer.sendSync(
