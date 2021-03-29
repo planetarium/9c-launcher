@@ -157,7 +157,7 @@ jobs:
         with:
           path: 9c-launcher-dist-${{ matrix.os }}.*
       # 패키지
-      - if: github.ref == 'refs/heads/main'
+      - if: github.ref != 'refs/heads/main'
         run: |
           pushd NineChronicles.Headless
             dotnet clean -c Release
@@ -169,7 +169,7 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
           SKIP_APV_SIGN: "1" # 위에서 npm run sign-apv 따로 돌림
-      - if: github.ref != 'refs/heads/main'
+      - if: github.ref == 'refs/heads/main'
         run: |
           pushd NineChronicles.Headless
             dotnet clean -c Release
