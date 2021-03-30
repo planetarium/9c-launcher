@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { observer } from "mobx-react";
-
-import { ipcRenderer, IpcRendererEvent } from "electron";
-import useStores from "../../../hooks/useStores";
 import { Container, Typography, CircularProgress } from "@material-ui/core";
+import { observer } from "mobx-react";
+import { ipcRenderer, IpcRendererEvent } from "electron";
+import React, { useState, useEffect } from "react";
+
+import { electronStore } from "../../../config";
 import {
   useNodeExceptionSubscription,
   useNodeStatusSubscriptionSubscription,
   usePreloadProgressSubscriptionSubscription,
 } from "../../../generated/graphql";
-import preloadProgressViewStyle from "./PreloadProgressView.style";
-import { electronStore } from "../../../config";
-
-import { useLocale } from "../../i18n";
+import useStores from "../../../hooks/useStores";
 import { PreloadProgress } from "../../../interfaces/i18n";
 import { IDownloadProgress } from "../../../interfaces/ipc";
+import { useLocale } from "../../i18n";
+import preloadProgressViewStyle from "./PreloadProgressView.style";
 
 const PreloadProgressView = observer(() => {
   const { routerStore, standaloneStore } = useStores();
@@ -33,7 +32,27 @@ const PreloadProgressView = observer(() => {
   const [isPreloadEnded, setPreloadStats] = useState(false);
   const [progress, setProgress] = useState(0);
   const [step, setStep] = useState(0);
+  const [progressMessage, setProgressMessage] = useState<string | string[]>("");
+  const [exceptionMessage, setExceptionMessage] = useState<string | null>(null);
   const { locale } = useLocale<PreloadProgress>("preloadProgress");
+
+  const gotoErrorPage = (page: string) => {
+    console.log(`Direct to error page: ${page}`);
+    standaloneStore.setReady(false);
+    routerStore.push(`/error/${page}`);
+  };
+
+  const makeProgressMessage = () => {
+    if (isPreloadEnded) {
+      return electronStore.get("PeerStrings").length > 0
+        ? locale("Preload Completed.")
+        : locale("No Peers Were Given.");
+    } else {
+      return locale(statusMessage[step]).concat(
+        ` ... (${step + 1}/8) ${Math.floor(progress)}%`
+      );
+    }
+  };
 
   useEffect(() => {
     ipcRenderer.on(
@@ -48,6 +67,7 @@ const PreloadProgressView = observer(() => {
       setPreloadStats(false);
       setProgress(0);
       setStep(0);
+      setProgressMessage(makeProgressMessage());
     });
 
     ipcRenderer.on("metadata downloaded", () => {
@@ -59,6 +79,7 @@ const PreloadProgressView = observer(() => {
       (event: IpcRendererEvent, progress: IDownloadProgress) => {
         setStep(1);
         setProgress(progress.percent * 100);
+        setProgressMessage(makeProgressMessage());
       }
     );
 
@@ -71,12 +92,20 @@ const PreloadProgressView = observer(() => {
       (event: IpcRendererEvent, progress: number) => {
         setStep(2);
         setProgress(progress * 100);
+        setProgressMessage(makeProgressMessage());
       }
     );
 
     ipcRenderer.on("extract complete", (event: IpcRendererEvent) => {
       // snapshot extraction completed, but node service did not launched yet.
     });
+
+    ipcRenderer.on(
+      "set exception message of PreloadProgressView",
+      (event, exceptionMessage: string | null) => {
+        setExceptionMessage(exceptionMessage);
+      }
+    );
 
     //@ts-ignore
     window.relaunchStandalone = () => ipcRenderer.send("relaunch standalone");
@@ -86,15 +115,11 @@ const PreloadProgressView = observer(() => {
     ipcRenderer.send("mixpanel-track-event", `Launcher/${statusMessage[step]}`);
   }, [step]);
 
-  const gotoErrorPage = (page: string) => {
-    console.log(`Direct to error page: ${page}`);
-    standaloneStore.setReady(false);
-    routerStore.push(`/error/${page}`);
-  };
-
   useEffect(() => {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
     setPreloadStats(isEnded === undefined ? false : isEnded);
+    setProgressMessage(makeProgressMessage());
+
     if (isEnded) {
       standaloneStore.setReady(true);
     }
@@ -134,35 +159,34 @@ const PreloadProgressView = observer(() => {
       preloadProgressSubscriptionResult?.preloadProgress?.extra.totalCount
     );
     setProgress(prog);
+    setProgressMessage(makeProgressMessage());
   }, [preloadProgress?.extra]);
 
   useEffect(() => {
     if (preloadProgress !== undefined) {
       setStep(preloadProgress?.currentPhase + 2);
+      setProgressMessage(makeProgressMessage());
     }
   }, [preloadProgress]);
-      
+
   useEffect(() => {
     if (isPreloadEnded) {
       ipcRenderer.send("mixpanel-track-event", `Launcher/Preload Completed`);
     }
   }, [isPreloadEnded]);
-      
+
+  const message =
+    exceptionMessage === null ? progressMessage : exceptionMessage;
   return (
     <Container className="footer">
       {isPreloadEnded ? (
-        <Typography className={classes.text}>
-          {electronStore.get("PeerStrings").length > 0
-            ? locale("Preload Completed.")
-            : locale("No Peers Were Given.")}
-        </Typography>
+        <Typography className={classes.text}>{message}</Typography>
       ) : (
         <>
           <CircularProgress className={classes.circularProgress} size={12} />
           <Typography className={classes.text}>
-            {locale(statusMessage[step])} ... ({step + 1}/8){" "}
-            {Math.floor(progress)}%
-            {step > 2 ? (
+            {message}
+            {exceptionMessage === null && step > 2 ? (
               <small className={classes.blockCount}>
                 [
                 {
