@@ -30,6 +30,10 @@ const reviewPrivateKeyViewStyle = makeStyles({
   revoke: {
     marginTop: "10px",
   },
+  back: {
+    position: "absolute",
+    margin: "20px",
+  },
 });
 
 export default reviewPrivateKeyViewStyle;

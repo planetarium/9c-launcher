@@ -33,10 +33,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
       <div className={classes.root}>
         <Button
           startIcon={<ArrowBackIosIcon />}
-          onClick={() => {
-            routerStore.push("/");
-          }}
-        >
+          onClick={() => routerStore.push("/")}>
           {locale("뒤로")}
         </Button>
         <Typography className={classes.title}>

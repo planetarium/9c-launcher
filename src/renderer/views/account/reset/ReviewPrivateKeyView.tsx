@@ -55,11 +55,9 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
     return (
       <div className={classes.root}>
         <Button
+          className={classes.back}
           startIcon={<ArrowBackIosIcon />}
-          onClick={() => {
-            routerStore.push("/");
-          }}
-        >
+          onClick={() => routerStore.push("/")}>
           {locale("뒤로")}
         </Button>
         <Typography variant="h1" className={classes.title}>
