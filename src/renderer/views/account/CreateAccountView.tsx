@@ -56,7 +56,7 @@ const CreateAccountView = observer(
             <span key={paragraph}>{paragraph}</span>
           ))}
         </Typography>
-        <RetypePasswordForm onSubmit={handleSubmit} />
+        <RetypePasswordForm onSubmit={handleSubmit} useActivationKey={true} />
       </div>
     );
   }

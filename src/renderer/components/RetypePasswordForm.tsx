@@ -1,9 +1,3 @@
-import React, { useState, ChangeEvent, MouseEvent } from "react";
-
-import zxcvbn from "zxcvbn";
-
-import { useLocale } from "../i18n";
-
 import {
   Button,
   FormControl,
@@ -11,16 +5,22 @@ import {
   InputLabel,
   OutlinedInput,
 } from "@material-ui/core";
-import VisibilityAdornment from "./VisibilityAdornment";
 import { makeStyles } from "@material-ui/styles";
-
+import React, { useState, ChangeEvent, MouseEvent } from "react";
+import zxcvbn from "zxcvbn";
 import { RetypePassword } from "../../interfaces/i18n";
+import { useLocale } from "../i18n";
+import VisibilityAdornment from "./VisibilityAdornment";
 
 interface RetypePasswordFormProps {
   onSubmit: (password: string, activationKey: string) => void;
+  useActivationKey: boolean;
 }
 
-const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
+const RetypePasswordForm = ({
+  onSubmit,
+  useActivationKey,
+}: RetypePasswordFormProps) => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [passwordConfirmAllowsEmpty, setPasswordConfirmAllowsEmpty] = useState(
@@ -166,9 +166,7 @@ const RetypePasswordForm = ({ onSubmit }: RetypePasswordFormProps) => {
         error={isActivationKeyError}
         className={classes.formControl}
       >
-        <InputLabel className={classes.label}>
-          {locale("초대 코드")}
-        </InputLabel>
+        <InputLabel className={classes.label}>{locale("초대 코드")}</InputLabel>
         <OutlinedInput type="text" onChange={handleActivationKeyChange} />
         <FormHelperText className={classes.helperText}>
           form helper text
