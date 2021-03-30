@@ -177,7 +177,6 @@ const PreloadProgressView = observer(() => {
     }
   }, [isPreloadEnded]);
 
-  // setProgressMessage(getProgressMessage());
   const message =
     exceptionMessage === null ? progressMessage : exceptionMessage;
   return (
