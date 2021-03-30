@@ -12,9 +12,7 @@ import {
 import useStores from "../../../hooks/useStores";
 import { PreloadProgress } from "../../../interfaces/i18n";
 import { IDownloadProgress } from "../../../interfaces/ipc";
-
 import { useLocale } from "../../i18n";
-
 import preloadProgressViewStyle from "./PreloadProgressView.style";
 
 const PreloadProgressView = observer(() => {
