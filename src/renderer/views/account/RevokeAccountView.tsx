@@ -1,16 +1,14 @@
-import React from "react";
-import { observer, inject } from "mobx-react";
-import { IStoreContainer } from "../../../interfaces/store";
 import { Button, Typography } from "@material-ui/core";
-import AccountStore from "../../stores/account";
-import { RouterStore } from "mobx-react-router";
-import { useRevokePrivateKeyMutation } from "../../../generated/graphql";
-import revokeAccountViewStyle from "./RevokeAccountView.style";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-
-import { useLocale } from "../../i18n";
-import { RevokeAccount } from "../../../interfaces/i18n";
 import { ipcRenderer } from "electron";
+import { observer, inject } from "mobx-react";
+import { RouterStore } from "mobx-react-router";
+import React from "react";
+import { useRevokePrivateKeyMutation } from "../../../generated/graphql";
+import { RevokeAccount } from "../../../interfaces/i18n";
+import { useLocale } from "../../i18n";
+import AccountStore from "../../stores/account";
+import revokeAccountViewStyle from "./RevokeAccountView.style";
 
 interface IRevokeAccountProps {
   accountStore: AccountStore;
