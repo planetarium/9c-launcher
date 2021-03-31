@@ -34,15 +34,11 @@ const CreateAccountView = observer(
         password
       );
 
-      const [privateKey, error]: [
+      const [privateKey, passphraseOrError]: [
         string | undefined,
-        Error | undefined
+        any
       ] = ipcRenderer.sendSync("unprotect-private-key", address, password);
-      if (
-        error !== undefinded ||
-        typeof unprotectedPrivateKey[0] !== "string" ||
-        unprotectedPrivateKey[0] === ""
-      ) {
+      if (privateKey === undefined || privateKey === "") {
         // FIXME: Show a new error page or retry page to complete the account creation.
         console.error("Failed to unprotect private key");
         return;
