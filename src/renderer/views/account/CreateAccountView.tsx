@@ -3,16 +3,16 @@ import { ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React from "react";
-
-import { CreateAccount } from "../../../interfaces/i18n";
 import { useCreatePrivateKeyMutation } from "../../../generated/graphql";
-
-import { useLocale } from "../../i18n";
+import { CreateAccount } from "../../../interfaces/i18n";
+import {
+  PrivateKey,
+  ProtectedPrivateKey,
+} from "../../../main/headless/key-store";
 import RetypePasswordForm from "../../components/RetypePasswordForm";
+import { useLocale } from "../../i18n";
 import AccountStore from "../../stores/account";
-
 import createAccountViewStyle from "./CreateAccountView.style";
-import { PrivateKey, ProtectedPrivateKey } from "src/main/headless/key-store";
 
 interface ICreateAccountProps {
   accountStore: AccountStore;
@@ -56,7 +56,7 @@ const CreateAccountView = observer(
             <span key={paragraph}>{paragraph}</span>
           ))}
         </Typography>
-        <RetypePasswordForm onSubmit={handleSubmit} />
+        <RetypePasswordForm onSubmit={handleSubmit} useActivationKey={true} />
       </div>
     );
   }

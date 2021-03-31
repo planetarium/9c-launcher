@@ -43,7 +43,7 @@ const ResetPasswordView: React.FC<IResetPasswordViewProps> = observer(
         <Typography variant="h1" className={classes.title}>
           {locale("비밀번호를 재설정해주세요.")}
         </Typography>
-        <RetypePasswordForm onSubmit={handleSubmit} />
+        <RetypePasswordForm onSubmit={handleSubmit} useActivationKey={false} />
       </div>
     );
   }
