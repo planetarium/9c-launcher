@@ -26,7 +26,7 @@ describe("Validation", function () {
         "11",
       ];
       validPrivateKeys.forEach((validPrivateKey) => {
-        it(`It returns false with "${validPrivateKey}"`, function () {
+        it(`It returns true with "${validPrivateKey}"`, function () {
           assert.isTrue(validation.isValidPrivateKey(validPrivateKey));
         });
       });
