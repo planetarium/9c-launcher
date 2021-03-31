@@ -2,7 +2,7 @@ import { Typography } from "@material-ui/core";
 import { ipcRenderer } from "electron";
 import { inject, observer } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
-import React, { useState } from "react";
+import React from "react";
 import { RegisterPrivateKey } from "../../../../interfaces/i18n";
 import RetypePasswordForm from "../../../components/RetypePasswordForm";
 import { useLocale } from "../../../i18n";
@@ -16,9 +16,6 @@ interface IResetPasswordViewProps {
 
 const ResetPasswordView: React.FC<IResetPasswordViewProps> = observer(
   ({ accountStore, routerStore }) => {
-    const [firstPassword, setFirstPassword] = useState("");
-    const [secondPassword, setSecondPassword] = useState("");
-
     const classes = registerPrivateKeyViewStyle();
 
     const { locale } = useLocale<RegisterPrivateKey>("registerPrivateKey");

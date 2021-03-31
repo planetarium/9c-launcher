@@ -1237,6 +1237,20 @@
     }
   },
   "inputPrivateKey": {
+    "뒤로": {
+      "ko": "뒤로",
+      "en": "Back",
+      "pl": "Cofnij",
+      "pt": "voltar",
+      "lt": "Atgal",
+      "nl": "Terug",
+      "pt-BR": "Voltar",
+      "km": "ថយក្រោយ",
+      "th": "กลับ",
+      "id": "Kembali",
+      "ja": "戻る",
+      "de": "Zurück"
+    },
     "비밀번호를 재설정하기 위해 개인키를 입력해주세요.": {
       "ko": "비밀번호를 재설정하기 위해 개인키를 입력해주세요.",
       "en": "Enter your private key to reset your password",
