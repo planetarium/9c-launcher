@@ -200,6 +200,7 @@ export interface RevokeAccount {
 }
 
 export interface InputPrivateKey {
+  뒤로: LocaleRecord;
   "비밀번호를 재설정하기 위해 개인키를 입력해주세요.": LocaleRecord;
   개인키: LocaleRecord;
   Enter: LocaleRecord;

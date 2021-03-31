@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { TextField, Button, Typography } from "@material-ui/core";
-import { RouterStore } from "mobx-react-router";
-import AccountStore from "../../../stores/account";
+import { Typography } from "@material-ui/core";
+import { ipcRenderer } from "electron";
 import { inject, observer } from "mobx-react";
-
-import registerPrivateKeyViewStyle from "./ResetPasswordView.style";
-
-import { useLocale } from "../../../i18n";
+import { RouterStore } from "mobx-react-router";
+import React from "react";
 import { RegisterPrivateKey } from "../../../../interfaces/i18n";
 import RetypePasswordForm from "../../../components/RetypePasswordForm";
-import { ipcRenderer } from "electron";
+import { useLocale } from "../../../i18n";
+import AccountStore from "../../../stores/account";
+import registerPrivateKeyViewStyle from "./ResetPasswordView.style";
 
 interface IResetPasswordViewProps {
   accountStore: AccountStore;
@@ -18,9 +16,6 @@ interface IResetPasswordViewProps {
 
 const ResetPasswordView: React.FC<IResetPasswordViewProps> = observer(
   ({ accountStore, routerStore }) => {
-    const [firstPassword, setFirstPassword] = useState("");
-    const [secondPassword, setSecondPassword] = useState("");
-
     const classes = registerPrivateKeyViewStyle();
 
     const { locale } = useLocale<RegisterPrivateKey>("registerPrivateKey");
@@ -48,7 +43,7 @@ const ResetPasswordView: React.FC<IResetPasswordViewProps> = observer(
         <Typography variant="h1" className={classes.title}>
           {locale("비밀번호를 재설정해주세요.")}
         </Typography>
-        <RetypePasswordForm onSubmit={handleSubmit} />
+        <RetypePasswordForm onSubmit={handleSubmit} useActivationKey={false} />
       </div>
     );
   }
