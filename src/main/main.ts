@@ -41,7 +41,7 @@ import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
 import Headless from "./headless";
-import { HeadlessExitedError, HeadlessInitializeError } from "../errors";
+import { HeadlessExitedError, HeadlessInitializeError, UndefinedProtectedPrivateKeyError } from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
@@ -544,7 +544,10 @@ function initializeIpc() {
           .list()
           .find((x) => x.address === address);
         if (protectedPrivateKey === undefined) {
-          event.returnValue = [undefined, "The protectedPrivateKey is undefined."];
+          event.returnValue = [
+            undefined,
+            new UndefinedProtectedPrivateKeyError("ProtectedPrivateKey is undefined during unprotect private key.")
+          ];
           return;
         }
 
