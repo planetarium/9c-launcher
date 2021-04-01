@@ -34,7 +34,7 @@ const CreateAccountView = observer(
         password
       );
 
-      const [privateKey, passphraseOrError]: [
+      const [privateKey, ]: [
         string | undefined,
         any
       ] = ipcRenderer.sendSync("unprotect-private-key", address, password);
