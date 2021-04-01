@@ -1,15 +1,12 @@
-import React from "react";
-import { observer, inject } from "mobx-react";
-
 import { Button, TextField, Typography } from "@material-ui/core";
-
+import { clipboard, ipcRenderer } from "electron";
+import { observer, inject } from "mobx-react";
+import { RouterStore } from "mobx-react-router";
+import React from "react";
+import { CopyPrivateKey } from "../../../interfaces/i18n";
+import { useLocale } from "../../i18n";
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CopyCreatedPrivateKeyView.style";
-import { RouterStore } from "mobx-react-router";
-import { clipboard, ipcRenderer } from "electron";
-
-import { useLocale } from "../../i18n";
-import { CopyPrivateKey } from "../../../interfaces/i18n";
 
 interface ICopyCreatedPrivateKeyProps {
   accountStore: AccountStore;
