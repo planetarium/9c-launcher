@@ -544,7 +544,7 @@ function initializeIpc() {
           .list()
           .find((x) => x.address === address);
         if (protectedPrivateKey === undefined) {
-          event.returnValue = [undefined, {}];
+          event.returnValue = [undefined, "The protectedPrivateKey is undefined."];
           return;
         }
 
