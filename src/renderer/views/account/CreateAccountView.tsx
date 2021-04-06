@@ -5,10 +5,7 @@ import { RouterStore } from "mobx-react-router";
 import React from "react";
 import { useCreatePrivateKeyMutation } from "../../../generated/graphql";
 import { CreateAccount } from "../../../interfaces/i18n";
-import {
-  PrivateKey,
-  ProtectedPrivateKey,
-} from "../../../main/headless/key-store";
+import { ProtectedPrivateKey } from "../../../main/headless/key-store";
 import RetypePasswordForm from "../../components/RetypePasswordForm";
 import { useLocale } from "../../i18n";
 import AccountStore from "../../stores/account";
@@ -34,17 +31,24 @@ const CreateAccountView = observer(
         password
       );
 
-      const privateKey: PrivateKey = ipcRenderer.sendSync(
-        "unprotect-private-key",
-        address,
-        password
-      );
+      const [privateKey, error]: [
+        string | undefined,
+        Error | undefined
+      ] = ipcRenderer.sendSync("unprotect-private-key", address, password);
+      if (
+        error !== undefined ||
+        privateKey === undefined ||
+        privateKey === "") {
+        // FIXME: Show a new error page or retry page to complete the account creation.
+        console.error(`Failed to unprotect private key. ${error?.name}: ${error?.message}`);
+        return;
+      }
 
       accountStore.setPrivateKey(privateKey);
       accountStore.addAddress(address);
       accountStore.setSelectedAddress(address);
       accountStore.setActivationKey(activationKey);
-      routerStore.push("/account/create/copy");
+      routerStore.push("/");
     };
 
     return (
