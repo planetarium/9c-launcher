@@ -28,7 +28,7 @@ const PreloadProgressView = observer(() => {
   } = useNodeExceptionSubscription();
   const preloadProgress = preloadProgressSubscriptionResult?.preloadProgress;
 
-  const [isPreloadEnded, setIsPreloadEnded] = useState(false);
+  const [preloadEnded, setPreloadEnded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [step, setStep] = useState(0);
   const [progressMessage, setProgressMessage] = useState<string | string[]>("");
@@ -42,7 +42,7 @@ const PreloadProgressView = observer(() => {
   };
 
   const makeProgressMessage = () => {
-    if (isPreloadEnded) {
+    if (preloadEnded) {
       return electronStore.get("PeerStrings").length > 0
         ? locale("Preload Completed.")
         : locale("No Peers Were Given.");
@@ -63,7 +63,7 @@ const PreloadProgressView = observer(() => {
 
     ipcRenderer.on("start bootstrap", () => {
       standaloneStore.setReady(false);
-      setIsPreloadEnded(false);
+      setPreloadEnded(false);
       setProgress(0);
       setStep(0);
     });
@@ -113,7 +113,7 @@ const PreloadProgressView = observer(() => {
 
   useEffect(() => {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
-    setIsPreloadEnded(isEnded === undefined ? false : isEnded);
+    setPreloadEnded(isEnded === undefined ? false : isEnded);
 
     if (isEnded) {
       standaloneStore.setReady(true);
@@ -163,20 +163,20 @@ const PreloadProgressView = observer(() => {
   }, [preloadProgress]);
 
   useEffect(() => {
-    if (isPreloadEnded) {
+    if (preloadEnded) {
       ipcRenderer.send("mixpanel-track-event", `Launcher/Preload Completed`);
     }
-  }, [isPreloadEnded]);
+  }, [preloadEnded]);
 
   useEffect(
     () => setProgressMessage(makeProgressMessage()),
-    [isPreloadEnded, step, progress]);
+    [preloadEnded, step, progress]);
 
   const message =
     exceptionMessage === null ? progressMessage : exceptionMessage;
   return (
     <Container className="footer">
-      {isPreloadEnded ? (
+      {preloadEnded ? (
         <Typography className={classes.text}>{message}</Typography>
       ) : (
         <>
