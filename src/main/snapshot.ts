@@ -7,6 +7,7 @@ import { BlockMetadata } from "src/interfaces/block-header";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import Headless from "./headless";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
+import { Mixpanel } from "mixpanel";
 
 export type Epoch = {
   BlockEpoch: number;
@@ -57,7 +58,9 @@ export const getSnapshotDownloadTarget = async (
   storePath: string,
   basePath: string,
   userDataPath: string,
-  token: CancellationToken
+  token: CancellationToken,
+  mixpanel: Mixpanel | null,
+  mixpanelUUID: string
 ): Promise<Epoch[]> => {
   let localEpoch = getCurrentEpoch(storePath);
   let target: Epoch[] = [];
@@ -86,7 +89,9 @@ export const getSnapshotDownloadTarget = async (
       basePath,
       userDataPath,
       downloadTargetName,
-      token
+      token,
+      mixpanel,
+      mixpanelUUID
     );
   }
 
@@ -97,14 +102,24 @@ export async function downloadMetadata(
   basePath: string,
   userDataPath: string,
   downloadFileName: string,
-  token: CancellationToken
+  token: CancellationToken,
+  mixpanel: Mixpanel | null,
+  mixpanelUUID: string
 ): Promise<BlockMetadata> {
   token.throwIfCancelled();
   const savingPath = path.join(userDataPath, downloadFileName);
   const downloadPath = basePath + "/" + downloadFileName;
 
   try {
-    await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
+    await cancellableDownload(
+      downloadPath,
+      savingPath,
+      (_) => {},
+      token,
+      downloadFileName,
+      mixpanel,
+      mixpanelUUID
+    );
     token.throwIfCancelled();
 
     let meta = await fs.promises.readFile(savingPath, "utf-8");
@@ -132,13 +147,16 @@ export async function downloadSnapshot(
   target: Epoch[],
   userDataPath: string,
   onProgress: (status: IDownloadProgress) => void,
-  token: CancellationToken
+  token: CancellationToken,
+  mixpanel: Mixpanel | null,
+  mixpanelUUID: string
 ): Promise<string[]> {
   token.throwIfCancelled();
   console.log("Downloading snapshot.");
   console.log(target);
   let savingPaths: string[] = [];
   let progressDict: DownloadStatus = {};
+
   try {
     let downloadPromise = target.map(async (x) => {
       let downloadTargetName = `snapshot-${x.BlockEpoch}-${x.TxEpoch}.zip`;
@@ -156,7 +174,10 @@ export async function downloadSnapshot(
           status.percent = sum / target.length;
           onProgress(status);
         },
-        token
+        token,
+        downloadTargetName,
+        mixpanel,
+        mixpanelUUID
       );
       return savingPath;
     });
@@ -175,14 +196,24 @@ export async function downloadStateSnapshot(
   basePath: string,
   userDataPath: string,
   onProgress: (status: IDownloadProgress) => void,
-  token: CancellationToken
+  token: CancellationToken,
+  mixpanel: Mixpanel | null,
+  mixpanelUUID: string
 ): Promise<string> {
   token.throwIfCancelled();
   const downloadTargetName = `state_latest.zip`;
   const savingPath = path.join(userDataPath, `${downloadTargetName}`);
   const downloadUrl = basePath + `/${downloadTargetName}`;
   console.log(`download snapshot path: ${downloadUrl}`);
-  await cancellableDownload(downloadUrl, savingPath, onProgress, token);
+  await cancellableDownload(
+    downloadUrl,
+    savingPath,
+    onProgress,
+    token,
+    downloadTargetName,
+    mixpanel,
+    mixpanelUUID
+  );
   return savingPath;
 }
 
@@ -195,8 +226,8 @@ export async function extractSnapshot(
   snapshotPaths.reverse();
 
   console.log(`Extracting snapshot.
-extractPath: [ ${blockchainStorePath} ],
-extractTarget: [ ${snapshotPaths} ]`);
+    extractPath: [ ${blockchainStorePath} ],
+    extractTarget: [ ${snapshotPaths} ]`);
   for (const snapshotPath of snapshotPaths) {
     token.throwIfCancelled();
     console.log(`extract: ${snapshotPath}`);
@@ -234,7 +265,9 @@ export async function processSnapshot(
   userDataPath: string,
   standalone: Headless,
   win: Electron.BrowserWindow,
-  token: CancellationToken
+  token: CancellationToken,
+  mixpanel: Mixpanel | null,
+  mixpanelUUID: string
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);
 
@@ -244,7 +277,9 @@ export async function processSnapshot(
     snapshotDownloadUrl,
     userDataPath,
     "latest.json",
-    token
+    token,
+    mixpanel,
+    mixpanelUUID
   );
   const needSnapshot =
     localMetadata === null ||
@@ -255,7 +290,9 @@ export async function processSnapshot(
       storePath,
       snapshotDownloadUrl,
       userDataPath,
-      token
+      token,
+      mixpanel,
+      mixpanelUUID
     );
     const snapshotPaths = await downloadSnapshot(
       snapshotDownloadUrl,
@@ -264,7 +301,9 @@ export async function processSnapshot(
       (status) => {
         win?.webContents.send("download progress", status);
       },
-      token
+      token,
+      mixpanel,
+      mixpanelUUID
     );
     const stateSnapshotPath = await downloadStateSnapshot(
       snapshotDownloadUrl,
@@ -272,7 +311,9 @@ export async function processSnapshot(
       (status) => {
         win?.webContents.send("download progress", status);
       },
-      token
+      token,
+      mixpanel,
+      mixpanelUUID
     );
     snapshotPaths.push(stateSnapshotPath);
     removeUselessStore(storePath);

@@ -10,6 +10,8 @@ import CancellationToken from "cancellationtoken";
 import extractZip from "extract-zip";
 import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
 import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
+import { Mixpanel } from "mixpanel";
+import { v4 as ipv4 } from "public-ip";
 
 const pipeline = promisify(stream.pipeline);
 
@@ -100,9 +102,18 @@ export async function cancellableDownload(
   url: string,
   downloadPath: string,
   onProgress: (arg0: IDownloadProgress) => void,
-  token: CancellationToken
+  token: CancellationToken,
+  downloadFileName: string,
+  mixpanel: Mixpanel | null,
+  mixpanelUUID: string
 ): Promise<void> {
   try {
+    let ip: string | null = null;
+    await ipv4().then((value) => (ip = value));
+    mixpanel?.track(`Launcher/Downloading Snapshot/${downloadFileName}-start`, {
+      distinct_id: mixpanelUUID,
+      ip,
+    });
     const axiosCts = axios.CancelToken.source();
     token.onCancelled((_) => axiosCts.cancel());
 
@@ -122,6 +133,13 @@ export async function cancellableDownload(
       });
     });
     await pipeline(res.data, fs.createWriteStream(downloadPath));
+    mixpanel?.track(
+      `Launcher/Downloading Snapshot/${downloadFileName}-complete`,
+      {
+        distinct_id: mixpanelUUID,
+        ip,
+      }
+    );
   } catch (error) {
     throw new CancellableDownloadFailedError(url, downloadPath);
   }
