@@ -61,7 +61,8 @@ describe("snapshot", function () {
         userDataPath,
         cancellation.token,
         null,
-        emptyMixpanelUUID
+        emptyMixpanelUUID,
+        null
       );
 
       assert.equal(target.length, 16);
@@ -86,7 +87,8 @@ describe("snapshot", function () {
         userDataPath,
         cancellation.token,
         null,
-        emptyMixpanelUUID
+        emptyMixpanelUUID,
+        null
       );
 
       assert.equal(target.length, 11);
@@ -109,7 +111,8 @@ describe("snapshot", function () {
         "latest.json",
         cancellation.token,
         null,
-        emptyMixpanelUUID
+        emptyMixpanelUUID,
+        ""
       );
 
       let target = await getSnapshotDownloadTarget(
@@ -119,7 +122,8 @@ describe("snapshot", function () {
         userDataPath,
         cancellation.token,
         null,
-        emptyMixpanelUUID
+        emptyMixpanelUUID,
+        null
       );
 
       let result = await downloadSnapshot(
@@ -129,7 +133,8 @@ describe("snapshot", function () {
         (status) => {},
         cancellation.token,
         null,
-        emptyMixpanelUUID
+        emptyMixpanelUUID,
+        null
       );
 
       let snapshotZipList = readdirSync(userDataPath).filter(
@@ -153,7 +158,8 @@ describe("snapshot", function () {
       "latest.json",
       cancellation.token,
       null,
-      emptyMixpanelUUID
+      emptyMixpanelUUID,
+      null
     );
     let needSnapshot = validateMetadata(
       metadata,
@@ -171,7 +177,8 @@ describe("snapshot", function () {
       userDataPath,
       cancellation.token,
       null,
-      emptyMixpanelUUID
+      emptyMixpanelUUID,
+      null
     );
 
     let snapshotPaths = await downloadSnapshot(
@@ -181,7 +188,8 @@ describe("snapshot", function () {
       (status) => {},
       cancellation.token,
       null,
-      emptyMixpanelUUID
+      emptyMixpanelUUID,
+      null
     );
 
     await extractSnapshot(

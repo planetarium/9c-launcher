@@ -695,7 +695,8 @@ async function initializeHeadless(): Promise<void> {
             win,
             initializeHeadlessCts.token,
             mixpanel,
-            mixpanelUUID
+            mixpanelUUID,
+            ip
           );
 
           if (isProcessSuccess) break;

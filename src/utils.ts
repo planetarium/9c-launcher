@@ -11,7 +11,6 @@ import extractZip from "extract-zip";
 import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
 import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
 import { Mixpanel } from "mixpanel";
-import { v4 as ipv4 } from "public-ip";
 
 const pipeline = promisify(stream.pipeline);
 
@@ -105,11 +104,10 @@ export async function cancellableDownload(
   token: CancellationToken,
   downloadFileName: string,
   mixpanel: Mixpanel | null,
-  mixpanelUUID: string
+  mixpanelUUID: string,
+  ip: string | null
 ): Promise<void> {
   try {
-    let ip: string | null = null;
-    await ipv4().then((value) => (ip = value));
     mixpanel?.track(`Launcher/Downloading Snapshot/${downloadFileName}-start`, {
       distinct_id: mixpanelUUID,
       ip,
