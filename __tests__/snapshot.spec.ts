@@ -18,7 +18,6 @@ const userDataPath = path.join(__dirname, "userData");
 const emptyStore = path.join(storePath, "empty");
 const nonEmptyStore = path.join(storePath, "non-empty");
 const integrationStore = path.join(storePath, "integration");
-const emptyMixpanelUUID = "";
 
 async function getMetadataFromFilename(filename: string) {
   const metadataPath = path.join(storePath, filename);
@@ -61,7 +60,7 @@ describe("snapshot", function () {
         userDataPath,
         cancellation.token,
         null,
-        emptyMixpanelUUID,
+        null,
         null
       );
 
@@ -87,7 +86,7 @@ describe("snapshot", function () {
         userDataPath,
         cancellation.token,
         null,
-        emptyMixpanelUUID,
+        null,
         null
       );
 
@@ -111,8 +110,8 @@ describe("snapshot", function () {
         "latest.json",
         cancellation.token,
         null,
-        emptyMixpanelUUID,
-        ""
+        null,
+        null
       );
 
       let target = await getSnapshotDownloadTarget(
@@ -122,7 +121,7 @@ describe("snapshot", function () {
         userDataPath,
         cancellation.token,
         null,
-        emptyMixpanelUUID,
+        null,
         null
       );
 
@@ -133,7 +132,7 @@ describe("snapshot", function () {
         (status) => {},
         cancellation.token,
         null,
-        emptyMixpanelUUID,
+        null,
         null
       );
 
@@ -158,7 +157,7 @@ describe("snapshot", function () {
       "latest.json",
       cancellation.token,
       null,
-      emptyMixpanelUUID,
+      null,
       null
     );
     let needSnapshot = validateMetadata(
@@ -177,7 +176,7 @@ describe("snapshot", function () {
       userDataPath,
       cancellation.token,
       null,
-      emptyMixpanelUUID,
+      null,
       null
     );
 
@@ -188,7 +187,7 @@ describe("snapshot", function () {
       (status) => {},
       cancellation.token,
       null,
-      emptyMixpanelUUID,
+      null,
       null
     );
 

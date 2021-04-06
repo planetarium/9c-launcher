@@ -23,7 +23,16 @@ export async function downloadMetadata(
   const savingPath = path.join(dir, "meta.json");
 
   try {
-    await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
+    await cancellableDownload(
+      downloadPath,
+      savingPath,
+      (_) => {},
+      token,
+      downloadPath,
+      null,
+      null,
+      null
+    );
     token.throwIfCancelled();
 
     let meta = await fs.promises.readFile(savingPath, "utf-8");
@@ -53,7 +62,16 @@ export async function downloadSnapshot(
   const savingPath = path.join(dir, "snapshot.zip");
 
   try {
-    await cancellableDownload(downloadPath, savingPath, onProgress, token);
+    await cancellableDownload(
+      downloadPath,
+      savingPath,
+      onProgress,
+      token,
+      downloadPath,
+      null,
+      null,
+      null
+    );
     token.throwIfCancelled();
     console.log("Snapshot download complete. Directory: ", dir);
     return savingPath;

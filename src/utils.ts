@@ -104,7 +104,7 @@ export async function cancellableDownload(
   token: CancellationToken,
   downloadFileName: string,
   mixpanel: Mixpanel | null,
-  mixpanelUUID: string,
+  mixpanelUUID: string | null,
   ip: string | null
 ): Promise<void> {
   try {
