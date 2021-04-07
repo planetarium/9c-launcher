@@ -630,16 +630,12 @@ async function initializeHeadless(): Promise<void> {
   console.log(`Initialize headless. (win: ${win?.getTitle})`);
 
   if (initializeHeadlessCts !== null) {
-    console.error(
-      "Cannot initialize headless while initializing headless.",
-    );
+    console.error("Cannot initialize headless while initializing headless.");
     return;
   }
 
   if (standalone.alive) {
-    console.error(
-      "Cannot initialize headless while headless is running.",
-    );
+    console.error("Cannot initialize headless while headless is running.");
     return;
   }
 
@@ -652,6 +648,10 @@ async function initializeHeadless(): Promise<void> {
   }
 
   initializeHeadlessCts = CancellationToken.create();
+
+  if (win !== null) {
+    standalone.session = win.webContents.session;
+  }
 
   try {
     if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
@@ -770,6 +770,7 @@ function createWindow(): BrowserWindow {
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(app.getAppPath(), "preload.js"),
+      ...(isDev ? { webSecurity: false } : {}),
     },
     frame: true,
     resizable: false,

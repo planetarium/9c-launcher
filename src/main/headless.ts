@@ -1,5 +1,5 @@
 import { ChildProcess, execFileSync } from "child_process";
-import { ipcMain } from "electron";
+import { ipcMain, net, Session, session, webContents } from "electron";
 import { dirname, basename } from "path";
 import { electronStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../config";
 import { retry } from "@lifeomic/attempt";
@@ -38,6 +38,7 @@ class Headless {
   constructor(path: string) {
     this._path = path;
     this._running = false;
+    this._session = null;
 
     ipcMain.on(
       "standalone/set-private-key",
@@ -59,6 +60,7 @@ class Headless {
   private _running: boolean;
   private _privateKey: string | undefined;
   private _mining: boolean | undefined;
+  private _session: Session | null;
 
   // execute-kill
   public get alive(): boolean {
@@ -68,6 +70,10 @@ class Headless {
   // run-stop
   public get running(): boolean {
     return this._running;
+  }
+
+  public set session(session: Session) {
+    this._session = session;
   }
 
   public get exitCode(): number | null {
@@ -120,7 +126,19 @@ class Headless {
     const body = JSON.stringify({
       PrivateKeyString: privateKey,
     });
-    return this.retriableFetch("set-private-key", body);
+    const httpResult = await this.retriableFetch("set-private-key", body);
+    if (!httpResult) {
+      return httpResult;
+    }
+
+    return this.retriableFetch(
+      "graphql",
+      JSON.stringify({
+        operationName: null,
+        query: `mutation { auth { login(privateKey: "${privateKey}") } }`,
+        variables: {},
+      })
+    );
   }
 
   public async setMining(mine: boolean): Promise<boolean> {
@@ -217,7 +235,7 @@ class Headless {
 
     NODESTATUS.Node = null;
     NODESTATUS.ExitCode = code;
-    
+
     if (!NODESTATUS.QuitRequested) {
       console.error("Headless exited unexpectedly.");
       eventEmitter.emit("exit");
@@ -240,6 +258,8 @@ class Headless {
             "Content-Type": "application/json",
           },
           body: body,
+          useSessionCookies: true,
+          session: this._session ?? undefined,
         });
 
         if (await this.needRetry(response)) {

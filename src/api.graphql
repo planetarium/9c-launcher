@@ -121,6 +121,7 @@ subscription Notification {
   notification {
     type
     message
+    receiver
   }
 }
 
