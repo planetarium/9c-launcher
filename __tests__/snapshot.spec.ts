@@ -11,6 +11,7 @@ import {
   validateMetadata,
 } from "../src/main/snapshot";
 import { BlockMetadata } from "src/interfaces/block-header";
+import { MixpanelInfo } from "../src/main/main";
 
 const storePath = path.join(__dirname, "fixture", "store");
 const baseUrl = "https://download.nine-chronicles.com/partition-test";
@@ -18,6 +19,12 @@ const userDataPath = path.join(__dirname, "userData");
 const emptyStore = path.join(storePath, "empty");
 const nonEmptyStore = path.join(storePath, "non-empty");
 const integrationStore = path.join(storePath, "integration");
+
+const dummyMixpanelInfo: MixpanelInfo = {
+  mixpanel: null,
+  mixpanelUUID: "",
+  ip: null,
+};
 
 async function getMetadataFromFilename(filename: string) {
   const metadataPath = path.join(storePath, filename);
@@ -58,10 +65,8 @@ describe("snapshot", function () {
         emptyStore,
         baseUrl,
         userDataPath,
-        cancellation.token,
-        null,
-        null,
-        null
+        dummyMixpanelInfo,
+        cancellation.token
       );
 
       assert.equal(target.length, 16);
@@ -84,10 +89,8 @@ describe("snapshot", function () {
         nonEmptyStore,
         baseUrl,
         userDataPath,
-        cancellation.token,
-        null,
-        null,
-        null
+        dummyMixpanelInfo,
+        cancellation.token
       );
 
       assert.equal(target.length, 11);
@@ -108,10 +111,7 @@ describe("snapshot", function () {
         baseUrl,
         userDataPath,
         "latest.json",
-        cancellation.token,
-        null,
-        null,
-        null
+        cancellation.token
       );
 
       let target = await getSnapshotDownloadTarget(
@@ -119,10 +119,8 @@ describe("snapshot", function () {
         emptyStore,
         baseUrl,
         userDataPath,
-        cancellation.token,
-        null,
-        null,
-        null
+        dummyMixpanelInfo,
+        cancellation.token
       );
 
       let result = await downloadSnapshot(
@@ -130,10 +128,8 @@ describe("snapshot", function () {
         target,
         userDataPath,
         (status) => {},
-        cancellation.token,
-        null,
-        null,
-        null
+        dummyMixpanelInfo,
+        cancellation.token
       );
 
       let snapshotZipList = readdirSync(userDataPath).filter(
@@ -155,10 +151,7 @@ describe("snapshot", function () {
       baseUrl,
       userDataPath,
       "latest.json",
-      cancellation.token,
-      null,
-      null,
-      null
+      cancellation.token
     );
     let needSnapshot = validateMetadata(
       metadata,
@@ -174,10 +167,8 @@ describe("snapshot", function () {
       integrationStore,
       baseUrl,
       userDataPath,
-      cancellation.token,
-      null,
-      null,
-      null
+      dummyMixpanelInfo,
+      cancellation.token
     );
 
     let snapshotPaths = await downloadSnapshot(
@@ -185,10 +176,8 @@ describe("snapshot", function () {
       target,
       userDataPath,
       (status) => {},
-      cancellation.token,
-      null,
-      null,
-      null
+      dummyMixpanelInfo,
+      cancellation.token
     );
 
     await extractSnapshot(
@@ -199,6 +188,7 @@ describe("snapshot", function () {
           console.log(progress * 100);
         }
       },
+      dummyMixpanelInfo,
       cancellation.token
     );
     console.log("finish");

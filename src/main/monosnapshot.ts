@@ -10,6 +10,7 @@ import * as utils from "../utils";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
+import { MixpanelInfo } from "./main";
 
 export async function downloadMetadata(
   basePath: string,
@@ -23,16 +24,7 @@ export async function downloadMetadata(
   const savingPath = path.join(dir, "meta.json");
 
   try {
-    await cancellableDownload(
-      downloadPath,
-      savingPath,
-      (_) => {},
-      token,
-      downloadPath,
-      null,
-      null,
-      null
-    );
+    await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
     token.throwIfCancelled();
 
     let meta = await fs.promises.readFile(savingPath, "utf-8");
@@ -62,16 +54,7 @@ export async function downloadSnapshot(
   const savingPath = path.join(dir, "snapshot.zip");
 
   try {
-    await cancellableDownload(
-      downloadPath,
-      savingPath,
-      onProgress,
-      token,
-      downloadPath,
-      null,
-      null,
-      null
-    );
+    await cancellableDownload(downloadPath, savingPath, onProgress, token);
     token.throwIfCancelled();
     console.log("Snapshot download complete. Directory: ", dir);
     return savingPath;
@@ -104,6 +87,7 @@ export async function processSnapshot(
   userDataPath: string,
   standalone: Headless,
   win: Electron.BrowserWindow,
+  mixpanelInfo: MixpanelInfo,
   token: CancellationToken
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);

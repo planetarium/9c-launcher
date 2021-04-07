@@ -131,6 +131,12 @@ let initializeHeadlessCts: {
   token: CancellationToken;
 } | null = null;
 
+export type MixpanelInfo = {
+  mixpanel: Mixpanel | null;
+  mixpanelUUID: string;
+  ip: string | null;
+};
+
 ipv4().then((value) => (ip = value));
 
 if (!app.requestSingleInstanceLock()) {
@@ -655,6 +661,12 @@ async function initializeHeadless(): Promise<void> {
 
   initializeHeadlessCts = CancellationToken.create();
 
+  const mixpanelInfo: MixpanelInfo = {
+    mixpanel: mixpanel,
+    mixpanelUUID: mixpanelUUID,
+    ip: ip,
+  };
+
   try {
     if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
       win?.webContents.send("go to error page", "no-permission");
@@ -693,10 +705,8 @@ async function initializeHeadless(): Promise<void> {
             app.getPath("userData"),
             standalone,
             win,
-            initializeHeadlessCts.token,
-            mixpanel,
-            mixpanelUUID,
-            ip
+            mixpanelInfo,
+            initializeHeadlessCts.token
           );
 
           if (isProcessSuccess) break;
