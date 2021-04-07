@@ -41,7 +41,11 @@ import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
 import Headless from "./headless";
-import { HeadlessExitedError, HeadlessInitializeError, UndefinedProtectedPrivateKeyError } from "../errors";
+import {
+  HeadlessExitedError,
+  HeadlessInitializeError,
+  UndefinedProtectedPrivateKeyError,
+} from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
@@ -126,6 +130,12 @@ let initializeHeadlessCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
 } | null = null;
+
+export type MixpanelInfo = {
+  mixpanel: Mixpanel | null;
+  mixpanelUUID: string;
+  ip: string | null;
+};
 
 ipv4().then((value) => (ip = value));
 
@@ -546,7 +556,9 @@ function initializeIpc() {
         if (protectedPrivateKey === undefined) {
           event.returnValue = [
             undefined,
-            new UndefinedProtectedPrivateKeyError("ProtectedPrivateKey is undefined during unprotect private key.")
+            new UndefinedProtectedPrivateKeyError(
+              "ProtectedPrivateKey is undefined during unprotect private key."
+            ),
           ];
           return;
         }
@@ -630,16 +642,12 @@ async function initializeHeadless(): Promise<void> {
   console.log(`Initialize headless. (win: ${win?.getTitle})`);
 
   if (initializeHeadlessCts !== null) {
-    console.error(
-      "Cannot initialize headless while initializing headless.",
-    );
+    console.error("Cannot initialize headless while initializing headless.");
     return;
   }
 
   if (standalone.alive) {
-    console.error(
-      "Cannot initialize headless while headless is running.",
-    );
+    console.error("Cannot initialize headless while headless is running.");
     return;
   }
 
@@ -652,6 +660,12 @@ async function initializeHeadless(): Promise<void> {
   }
 
   initializeHeadlessCts = CancellationToken.create();
+
+  const mixpanelInfo: MixpanelInfo = {
+    mixpanel: mixpanel,
+    mixpanelUUID: mixpanelUUID,
+    ip: ip,
+  };
 
   try {
     if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
@@ -691,6 +705,7 @@ async function initializeHeadless(): Promise<void> {
             app.getPath("userData"),
             standalone,
             win,
+            mixpanelInfo,
             initializeHeadlessCts.token
           );
 
