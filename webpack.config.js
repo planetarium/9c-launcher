@@ -3,7 +3,7 @@ const HtmlPlugin = require("html-webpack-plugin");
 const HtmlExternalsPlugin = require("html-webpack-externals-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { DefinePlugin } = require("webpack");
+const { DefinePlugin, SourceMapDevToolPlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
@@ -127,6 +127,10 @@ function createRenderConfig(isDev) {
               : "umd/react-router-dom.min.js",
           },
         ],
+      }),
+
+      new SourceMapDevToolPlugin({
+        filename: "[file].map",
       }),
     ],
 
