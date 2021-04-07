@@ -41,7 +41,11 @@ import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
 import Headless from "./headless";
-import { HeadlessExitedError, HeadlessInitializeError, UndefinedProtectedPrivateKeyError } from "../errors";
+import {
+  HeadlessExitedError,
+  HeadlessInitializeError,
+  UndefinedProtectedPrivateKeyError,
+} from "../errors";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
@@ -81,6 +85,7 @@ const standaloneExecutableArgs = [
       (trustedAppProtocolVersionSigner) =>
         `-T=${trustedAppProtocolVersionSigner}`
     ),
+  "--no-miner",
   "--rpc-server",
   `--rpc-listen-host=${RPC_SERVER_HOST}`,
   `--rpc-listen-port=${RPC_SERVER_PORT}`,
@@ -546,7 +551,9 @@ function initializeIpc() {
         if (protectedPrivateKey === undefined) {
           event.returnValue = [
             undefined,
-            new UndefinedProtectedPrivateKeyError("ProtectedPrivateKey is undefined during unprotect private key.")
+            new UndefinedProtectedPrivateKeyError(
+              "ProtectedPrivateKey is undefined during unprotect private key."
+            ),
           ];
           return;
         }
@@ -731,13 +738,6 @@ async function initializeHeadless(): Promise<void> {
     initializeHeadlessCts.token.throwIfCancelled();
     win?.webContents.send("start headless");
     await standalone.execute(standaloneExecutableArgs);
-    if (!((await standalone.run()) || CUSTOM_SERVER)) {
-      // FIXME: GOTO CLEARCACHE PAGE by headless.exitCode()
-      win?.webContents.send("go to error page", "clear-cache");
-      throw new HeadlessInitializeError(
-        "Error in run. Redirect to clear cache page."
-      );
-    }
 
     console.log("Register exit handler.");
     standalone.once("exit", async () => {

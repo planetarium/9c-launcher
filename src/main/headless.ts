@@ -115,12 +115,6 @@ class Headless {
     }
   }
 
-  public async run(): Promise<boolean> {
-    console.log("Running standalone.");
-    this._running = await this.retriableFetch("run-standalone", "");
-    return this._running;
-  }
-
   public async setPrivateKey(privateKey: string): Promise<boolean> {
     console.log("Setting private key.");
     const body = JSON.stringify({
