@@ -667,6 +667,10 @@ async function initializeHeadless(): Promise<void> {
     ip: ip,
   };
 
+  if (win !== null) {
+    standalone.session = win.webContents.session;
+  }
+
   try {
     if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
       win?.webContents.send("go to error page", "no-permission");
@@ -785,6 +789,7 @@ function createWindow(): BrowserWindow {
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(app.getAppPath(), "preload.js"),
+      ...(isDev ? { webSecurity: false } : {}),
     },
     frame: true,
     resizable: false,

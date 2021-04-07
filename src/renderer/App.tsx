@@ -8,8 +8,7 @@ import { RetryLink } from "apollo-link-retry";
 import { WebSocketLink } from "apollo-link-ws";
 import { ApolloProvider } from "react-apollo";
 import { getMainDefinition } from "apollo-utilities";
-import { createHttpLink } from "apollo-link-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
 
 import { Provider } from "mobx-react";
 import AccountStore from "./stores/account";
@@ -21,12 +20,13 @@ import Root from "./Root";
 import StandaloneStore from "./stores/standaloneStore";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
-import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
+import NotificationSubscriptionProvider from "./NotificationSubscriptionProvider";
 import montserrat from "./styles/font";
 
 import LocaleProvider, { useLocale } from "./i18n";
 import { Locale, AppLocale } from "../interfaces/i18n";
 import { ipcRenderer } from "electron";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -35,7 +35,7 @@ const wsLink = new WebSocketLink({
   },
 });
 
-const httpLink = createHttpLink({ uri: `http://${LOCAL_SERVER_URL}/graphql` });
+const httpLink = new HttpLink({ uri: `http://${LOCAL_SERVER_URL}/graphql` });
 
 const apiLink = split(
   // split based on operation type
@@ -122,9 +122,9 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <DifferentAppProtocolVersionSubscriptionProvider>
-        <NotificationSubscriptionProvider />
         <Router history={history}>
           <Provider {...Store}>
+            <NotificationSubscriptionProvider {...Store} />
             <ThemeProvider theme={theme}>
               <LocaleProvider
                 value={{ locale: electronStore.get("Locale") as Locale }}
