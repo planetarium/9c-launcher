@@ -10,6 +10,7 @@ import {
   RPC_SERVER_PORT,
   REQUIRED_DISK_SPACE,
   MIXPANEL_TOKEN,
+  LOCAL_SERVER_URL,
 } from "../config";
 import isDev from "electron-is-dev";
 import {
@@ -58,6 +59,8 @@ import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snaps
 
 initializeSentry();
 
+app.commandLine.appendSwitch("disable-features", "OutOfBlinkCors");
+
 log.transports.file.maxSize = 1024 * 1024 * 15;
 Object.assign(console, log.functions);
 
@@ -94,7 +97,6 @@ const standaloneExecutableArgs = [
   `--workers=${electronStore.get("Workers")}`,
   `--confirmations=${electronStore.get("Confirmations")}`,
   ...electronStore.get("HeadlessArgs", []),
-  ...(isDev ? ["--no-cors"] : []),
 ];
 
 {
@@ -669,13 +671,6 @@ async function initializeHeadless(): Promise<void> {
 
   if (win !== null) {
     standalone.session = win.webContents.session;
-    // const filter = {
-    //   urls: []
-    // };
-    // win.webContents.session.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
-    //   delete details.requestHeaders['Origin'];
-    //   callback({ requestHeaders: details.requestHeaders })
-    // });
   }
 
   try {
