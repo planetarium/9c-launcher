@@ -35,7 +35,7 @@ const wsLink = new WebSocketLink({
   },
 });
 
-const httpLink = new HttpLink({ uri: `http://${LOCAL_SERVER_URL}/graphql` });
+const httpLink = new HttpLink({ uri: `http://${LOCAL_SERVER_URL}/graphql`, credentials: "include" });
 
 const apiLink = split(
   // split based on operation type
