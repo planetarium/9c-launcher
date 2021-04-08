@@ -136,6 +136,7 @@ function createRenderConfig(isDev) {
           compress: true,
           port: 9000,
           historyApiFallback: true,
+          disableHostCheck: true,
         }
       : undefined,
   };

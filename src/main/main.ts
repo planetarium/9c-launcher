@@ -669,13 +669,13 @@ async function initializeHeadless(): Promise<void> {
 
   if (win !== null) {
     standalone.session = win.webContents.session;
-    const filter = {
-      urls: []
-    };
-    win.webContents.session.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
-      details.requestHeaders['Origin'] = "";
-      callback({ requestHeaders: details.requestHeaders })
-    });
+    // const filter = {
+    //   urls: []
+    // };
+    // win.webContents.session.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+    //   delete details.requestHeaders['Origin'];
+    //   callback({ requestHeaders: details.requestHeaders })
+    // });
   }
 
   try {
