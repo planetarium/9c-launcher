@@ -43,13 +43,21 @@ const PreloadProgressView = observer(() => {
     routerStore.push(`/error/${page}`);
   };
 
+  const getCurrentStepMessage = () => {
+    if (currentStep < 1 || currentStep >= statusMessage.length) {
+      return "Failed to get message for current step.";
+    }
+
+    return locale(statusMessage[currentStep - 1]);
+  }
+
   const makeProgressMessage = () => {
     if (preloadEnded) {
       return electronStore.get("PeerStrings").length > 0
         ? locale("Preload Completed.")
         : locale("No Peers Were Given.");
     } else {
-      return locale(statusMessage[currentStep - 1]).concat(
+      return getCurrentStepMessage().concat(
         ` ... (${currentStep}/${totalStep}) ${Math.floor(progress)}%`
       );
     }
@@ -122,7 +130,7 @@ const PreloadProgressView = observer(() => {
   }, []);
 
   useEffect(() => {
-    ipcRenderer.send("mixpanel-track-event", `Launcher/${statusMessage[currentStep]}`);
+    ipcRenderer.send("mixpanel-track-event", `Launcher/${getCurrentStepMessage()}`);
   }, [currentStep]);
 
   useEffect(() => {
