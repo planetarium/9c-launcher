@@ -197,16 +197,23 @@ export async function extractSnapshot(
   console.log(`Extracting snapshot.
 extractPath: [ ${blockchainStorePath} ],
 extractTarget: [ ${snapshotPaths} ]`);
+
+  const snapshotPathsLength = snapshotPaths.length;
+  const eachProgress = 1 / snapshotPathsLength;
+  let index = 0;
   for (const snapshotPath of snapshotPaths) {
+    const accumulateProgress = index * eachProgress;
     token.throwIfCancelled();
     console.log(`extract: ${snapshotPath}`);
     await cancellableExtract(
       snapshotPath,
       blockchainStorePath,
-      onProgress,
+      (progress) => onProgress(accumulateProgress + progress / snapshotPathsLength),
       token
     );
+    index++;
   }
+  onProgress(1);
   console.log("Snapshot extract complete.");
 }
 
@@ -262,7 +269,7 @@ export async function processSnapshot(
       target,
       userDataPath,
       (status) => {
-        win?.webContents.send("download progress", status);
+        win?.webContents.send("download snapshot progress", status);
       },
       token
     );
@@ -270,7 +277,7 @@ export async function processSnapshot(
       snapshotDownloadUrl,
       userDataPath,
       (status) => {
-        win?.webContents.send("download progress", status);
+        win?.webContents.send("download state snapshot progress", status);
       },
       token
     );

@@ -234,7 +234,9 @@ export interface PreloadProgress {
   "No Peers Were Given.": LocaleRecord;
   "Validating Snapshot": LocaleRecord;
   "Downloading Snapshot": LocaleRecord;
+  "Downloading State Snapshot": LocaleRecord;
   "Extracting Snapshot": LocaleRecord;
+  "Starting Headless": LocaleRecord;
   "Verifying block headers": LocaleRecord;
   "Downloading block hashes": LocaleRecord;
   "Downloading blocks": LocaleRecord;
