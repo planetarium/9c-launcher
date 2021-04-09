@@ -4,7 +4,7 @@ import { StandaloneSubcommand } from "./subcommand";
 export class Apv extends StandaloneSubcommand {
   public query(peerInfo: string): string | null {
     try {
-      return this.execSync("apv", "query", peerInfo);
+      return this.execSync(["apv", "query", peerInfo]);
     } catch (error) {
       console.error(error);
       return null;
@@ -12,7 +12,7 @@ export class Apv extends StandaloneSubcommand {
   }
 
   public analyze(apvToken: string): IApv {
-    const raw = JSON.parse(this.execSync("apv", "analyze", "--json", apvToken));
+    const raw = JSON.parse(this.execSync(["apv", "analyze", "--json", apvToken]));
     return {
       version: parseInt(raw["version"]),
       signature: raw["signature"],
@@ -29,7 +29,7 @@ export class Apv extends StandaloneSubcommand {
   public verify(publicKeys: string[], apvToken: string): boolean {
     try {
       this.execSync(
-        ...[
+        [
           "apv",
           "verify",
           publicKeys.map((k) => ["-p", k]).flat(),

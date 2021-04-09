@@ -8,7 +8,10 @@ export class StandaloneSubcommand {
     this._executablePath = executablePath;
   }
 
-  protected execSync(...args: string[]): string {
+  protected execSync(
+    args: string[],
+    input: string | undefined = undefined
+  ): string {
     // Note that invoking "foo" searches executables named "foo" only in PATH,
     // not also in CWD on POSIX. (On Windows "foo" search both in PATH and CWD.)
     // In order to make it searches executables in CWD, it should be prefixed
@@ -18,7 +21,11 @@ export class StandaloneSubcommand {
     const cmd = `.${sep}${basename(this._executablePath)}`;
     const cwd = dirname(this._executablePath);
     try {
-      return execFileSync(cmd, args, { encoding: "utf-8", cwd: cwd });
+      return execFileSync(cmd, args, {
+        encoding: "utf-8",
+        cwd: cwd,
+        input: input,
+      });
     } catch (e) {
       console.error(
         "The subprocess call failed (from ",
