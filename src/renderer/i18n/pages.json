@@ -1498,6 +1498,10 @@
       "ja": "スナップショットをダウンロードしています",
       "de": "Snapshot wird heruntergeladen"
     },
+    "Downloading State Snapshot": {
+      "ko": "상태 스냅샷 내려받는 중",
+      "en": "Downloading State Snapshot"
+    },
     "Extracting Snapshot": {
       "ko": "스냅샷을 추출하는 중",
       "en": "Extracting Snapshot",
@@ -1511,6 +1515,10 @@
       "id": "mengekstrak Snapshot",
       "ja": "スナップショットを抽出しています",
       "de": "Snapshot wird extrahiert"
+    },
+    "Starting Headless": {
+      "ko": "헤들리스 시작하는 중",
+      "en": "Starting Headless"
     },
     "Verifying block headers": {
       "ko": "블록 헤더를 확인하는 중",
