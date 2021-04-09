@@ -729,6 +729,7 @@ async function initializeHeadless(): Promise<void> {
     }
 
     initializeHeadlessCts.token.throwIfCancelled();
+    win?.webContents.send("start headless");
     await standalone.execute(standaloneExecutableArgs);
     if (!((await standalone.run()) || CUSTOM_SERVER)) {
       // FIXME: GOTO CLEARCACHE PAGE by headless.exitCode()

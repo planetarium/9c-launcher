@@ -103,7 +103,7 @@ export async function processSnapshot(
     let snapshotPath = await downloadSnapshot(
       snapshotDownloadUrl,
       (status) => {
-        win?.webContents.send("download progress", status);
+        win?.webContents.send("download snapshot progress", status);
       },
       token
     );
