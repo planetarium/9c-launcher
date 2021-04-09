@@ -199,16 +199,16 @@ extractPath: [ ${blockchainStorePath} ],
 extractTarget: [ ${snapshotPaths} ]`);
 
   const snapshotPathsLength = snapshotPaths.length;
-  const eachProgress = 1 / snapshotPaths.length
+  const eachProgress = 1 / snapshotPathsLength;
   let index = 0;
   for (const snapshotPath of snapshotPaths) {
-    const totalProgress = index * eachProgress;
+    const accumulateProgress = index * eachProgress;
     token.throwIfCancelled();
     console.log(`extract: ${snapshotPath}`);
     await cancellableExtract(
       snapshotPath,
       blockchainStorePath,
-      (progress) => onProgress(totalProgress + progress / snapshotPathsLength),
+      (progress) => onProgress(accumulateProgress + progress / snapshotPathsLength),
       token
     );
     index++;
