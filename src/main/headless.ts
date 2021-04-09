@@ -10,6 +10,7 @@ import { EventEmitter } from "ws";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { KeyStore } from "./headless/key-store";
 import { Validation } from "./headless/validation";
+import { Apv } from "./headless/apv";
 
 const retryOptions = {
   delay: 100,
@@ -167,6 +168,10 @@ class Headless {
 
   public get validation(): Validation {
     return new Validation(this._path);
+  }
+
+  public get apv(): Apv {
+    return new Apv(this._path);
   }
 
   public getTip(storeType: string, storePath: string): BlockMetadata | null {

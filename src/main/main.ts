@@ -34,7 +34,7 @@ import "@babel/polyfill";
 import extractZip from "extract-zip";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
-import { BencodexDict, decode } from "bencodex";
+import { BencodexDict, encode, decode } from "bencodex";
 import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
 import * as utils from "../utils";
@@ -55,6 +55,7 @@ import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
 import { Address, PrivateKey } from "./headless/key-store";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
+import { PermDeviceInformationSharp } from "@material-ui/icons";
 
 initializeSentry();
 
@@ -628,11 +629,12 @@ function initializeIpc() {
 async function initializeHeadless(): Promise<void> {
   /*
   1. Check disk (permission, storage).
-  2. If use snapshot, download metadata.
-  3. Validate metadata via headless-command.
-  4. If metadata is valid, download snapshot with parallel.
-  5. Extract downloaded snapshot.
-  6. Execute headless.
+  2. Check APV and update if needed.
+  3. If use snapshot, download metadata.
+  4. Validate metadata via headless-command.
+  5. If metadata is valid, download snapshot with parallel.
+  6. Extract downloaded snapshot.
+  7. Execute headless.
   */
   console.log(`Initialize headless. (win: ${win?.getTitle})`);
 
@@ -652,6 +654,33 @@ async function initializeHeadless(): Promise<void> {
       lockfilePath
     );
     return;
+  }
+
+  const peerInfos = electronStore.get("PeerStrings");
+  if (peerInfos.length > 0) {
+    const peerApvToken = standalone.apv.query(peerInfos[0]);
+    if (peerApvToken !== null) {
+      if (
+        standalone.apv.verify(
+          electronStore.get("TrustedAppProtocolVersionSigners"),
+          peerApvToken
+        )
+      ) {
+        const peerApv = standalone.apv.analyze(peerApvToken);
+        const localApvToken = electronStore.get("AppProtocolVersion");
+        const localApv = standalone.apv.analyze(localApvToken);
+
+        await update(
+          localApv.version,
+          peerApv.version,
+          encode(peerApv.extra).toString("hex")
+        );
+      } else {
+        console.log(
+          `Ignore APV[${peerApvToken}] due to failure to validating.`
+        );
+      }
+    }
   }
 
   initializeHeadlessCts = CancellationToken.create();
