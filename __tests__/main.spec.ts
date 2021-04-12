@@ -6,6 +6,8 @@ import electron from "electron";
 
 import "dotenv/config";
 import { expect } from "chai";
+import { KeyStore } from "src/main/headless/key-store";
+import { HEADLESS_PATH } from "./constant";
 
 const isWindows = process.platform === "win32";
 const lastPath = "/lobby";
@@ -33,6 +35,13 @@ describe("test", function () {
       path: (electron as unknown) as string,
       args: [path.join(__dirname, "..", "dist")],
     });
+
+    const keyStore = new KeyStore(HEADLESS_PATH);
+    keyStore.list().forEach((protectedPrivateKey) => {
+      keyStore.revokeProtectedPrivateKey(protectedPrivateKey.keyId);
+    });
+    keyStore.createProtectedPrivateKey(PASSWORD);
+
     return app.start();
   });
 
