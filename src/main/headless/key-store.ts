@@ -14,6 +14,7 @@ const parseProtectedPrivateKeyLine = (line: string): ProtectedPrivateKey => {
 
 export type KeyId = string;
 export type Address = string;
+export type PublicKey = string;
 export type PrivateKey = string;
 
 export type ProtectedPrivateKey = { keyId: KeyId; address: Address };
@@ -58,10 +59,20 @@ export class KeyStore extends StandaloneSubcommand {
     this.execSync(["key", "remove", keyId, "--no-passphrase"]);
   }
 
+  convertPrivateKey(privateKey: PrivateKey, targetType: "address"): Address;
+  convertPrivateKey(
+    privateKey: PrivateKey,
+    targetType: "public-key"
+  ): PublicKey;
   convertPrivateKey(
     privateKey: PrivateKey,
     targetType: "address" | "public-key"
-  ) {
-    this.execSync(["key", "convert", `--${targetType}`, privateKey]);
+  ): Address | PublicKey {
+    return this.execSync([
+      "key",
+      "convert",
+      `--${targetType}`,
+      privateKey,
+    ]).trimRight();
   }
 }
