@@ -29,6 +29,7 @@ function createRenderConfig(isDev) {
     entry: {
       polyfill: "@babel/polyfill",
       render: "./renderer/render.tsx",
+      staking: "./staking/staking.tsx",
     },
 
     output: {
@@ -100,6 +101,12 @@ function createRenderConfig(isDev) {
         filename: "index.html",
         template: "index.html",
         cache: true,
+      }),
+
+      new HtmlPlugin({
+        template: `staking.html`, // relative path to the HTML files
+        filename: `staking.html`, // output HTML files
+        chunks: ["staking"], // respective JS files
       }),
 
       new HtmlExternalsPlugin({
