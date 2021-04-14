@@ -11,6 +11,7 @@ import {
   validateMetadata,
 } from "../src/main/snapshot";
 import { BlockMetadata } from "src/interfaces/block-header";
+import { MixpanelInfo } from "../src/main/main";
 
 const storePath = path.join(__dirname, "fixture", "store");
 const baseUrl = "https://download.nine-chronicles.com/partition-test";
@@ -18,6 +19,12 @@ const userDataPath = path.join(__dirname, "userData");
 const emptyStore = path.join(storePath, "empty");
 const nonEmptyStore = path.join(storePath, "non-empty");
 const integrationStore = path.join(storePath, "integration");
+
+const dummyMixpanelInfo: MixpanelInfo = {
+  mixpanel: null,
+  mixpanelUUID: "",
+  ip: null,
+};
 
 async function getMetadataFromFilename(filename: string) {
   const metadataPath = path.join(storePath, filename);
@@ -58,6 +65,7 @@ describe("snapshot", function () {
         emptyStore,
         baseUrl,
         userDataPath,
+        dummyMixpanelInfo,
         cancellation.token
       );
 
@@ -81,6 +89,7 @@ describe("snapshot", function () {
         nonEmptyStore,
         baseUrl,
         userDataPath,
+        dummyMixpanelInfo,
         cancellation.token
       );
 
@@ -110,6 +119,7 @@ describe("snapshot", function () {
         emptyStore,
         baseUrl,
         userDataPath,
+        dummyMixpanelInfo,
         cancellation.token
       );
 
@@ -118,6 +128,7 @@ describe("snapshot", function () {
         target,
         userDataPath,
         (status) => {},
+        dummyMixpanelInfo,
         cancellation.token
       );
 
@@ -156,6 +167,7 @@ describe("snapshot", function () {
       integrationStore,
       baseUrl,
       userDataPath,
+      dummyMixpanelInfo,
       cancellation.token
     );
 
@@ -164,6 +176,7 @@ describe("snapshot", function () {
       target,
       userDataPath,
       (status) => {},
+      dummyMixpanelInfo,
       cancellation.token
     );
 
@@ -175,6 +188,7 @@ describe("snapshot", function () {
           console.log(progress * 100);
         }
       },
+      dummyMixpanelInfo,
       cancellation.token
     );
     console.log("finish");
