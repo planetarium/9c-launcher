@@ -100,7 +100,7 @@ function createRenderConfig(isDev) {
       new HtmlPlugin({
         filename: "index.html",
         template: "index.html",
-        cache: true,
+        chunks: ["render"], // respective JS files
       }),
 
       new HtmlPlugin({
