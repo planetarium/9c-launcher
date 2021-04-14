@@ -55,6 +55,7 @@ import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
 import { Address, PrivateKey } from "./headless/key-store";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
+import createStakingWindow from "../staking/window";
 
 initializeSentry();
 
@@ -901,6 +902,12 @@ function createTray(iconPath: string) {
   tray = new Tray(trayIcon);
   tray.setContextMenu(
     Menu.buildFromTemplate([
+      {
+        label: "Open Staking",
+        click: function () {
+          createStakingWindow();
+        },
+      },
       {
         label: "Open Window",
         click: function () {
