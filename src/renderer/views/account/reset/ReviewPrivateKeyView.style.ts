@@ -31,11 +31,11 @@ const reviewPrivateKeyViewStyle = makeStyles({
     marginTop: "10px",
   },
   floatingHeader: {
-    display: "block",
-    width: "100%",
-    height: "100%",
-    position: "absolute",
     margin: "20px",
+    display: "block",
+    position: "absolute",
+    left: "0px",
+    top: "0px",
   },
 });
 

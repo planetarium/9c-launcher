@@ -7,6 +7,7 @@ import { BlockMetadata } from "src/interfaces/block-header";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import Headless from "./headless";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
+import { MixpanelInfo } from "./main";
 
 export type Epoch = {
   BlockEpoch: number;
@@ -57,10 +58,21 @@ export const getSnapshotDownloadTarget = async (
   storePath: string,
   basePath: string,
   userDataPath: string,
+  mixpanelInfo: MixpanelInfo,
   token: CancellationToken
 ): Promise<Epoch[]> => {
   let localEpoch = getCurrentEpoch(storePath);
   let target: Epoch[] = [];
+  let mixpanel = mixpanelInfo.mixpanel;
+  let mixpanelUUID = mixpanelInfo.mixpanelUUID;
+  let ip = mixpanelInfo.ip;
+
+  if (mixpanel !== null) {
+    mixpanel?.track(`Launcher/Downloading Snapshot/metadata`, {
+      distinct_id: mixpanelUUID,
+      ip,
+    });
+  }
 
   while (true) {
     token.throwIfCancelled();
@@ -132,6 +144,7 @@ export async function downloadSnapshot(
   target: Epoch[],
   userDataPath: string,
   onProgress: (status: IDownloadProgress) => void,
+  mixpanelInfo: MixpanelInfo,
   token: CancellationToken
 ): Promise<string[]> {
   token.throwIfCancelled();
@@ -139,7 +152,18 @@ export async function downloadSnapshot(
   console.log(target);
   let savingPaths: string[] = [];
   let progressDict: DownloadStatus = {};
+  let mixpanel = mixpanelInfo.mixpanel;
+  let mixpanelUUID = mixpanelInfo.mixpanelUUID;
+  let ip = mixpanelInfo.ip;
+
   try {
+    if (mixpanel !== null) {
+      mixpanel?.track(`Launcher/Downloading Snapshot/snapshot`, {
+        distinct_id: mixpanelUUID,
+        ip,
+      });
+    }
+
     let downloadPromise = target.map(async (x) => {
       let downloadTargetName = `snapshot-${x.BlockEpoch}-${x.TxEpoch}.zip`;
       let savingPath = path.join(userDataPath, `${downloadTargetName}`);
@@ -175,13 +199,25 @@ export async function downloadStateSnapshot(
   basePath: string,
   userDataPath: string,
   onProgress: (status: IDownloadProgress) => void,
+  mixpanelInfo: MixpanelInfo,
   token: CancellationToken
 ): Promise<string> {
   token.throwIfCancelled();
   const downloadTargetName = `state_latest.zip`;
   const savingPath = path.join(userDataPath, `${downloadTargetName}`);
   const downloadUrl = basePath + `/${downloadTargetName}`;
+  let mixpanel = mixpanelInfo.mixpanel;
+  let mixpanelUUID = mixpanelInfo.mixpanelUUID;
+  let ip = mixpanelInfo.ip;
   console.log(`download snapshot path: ${downloadUrl}`);
+
+  if (mixpanel !== null) {
+    mixpanel?.track(`Launcher/Downloading Snapshot/state-snapshot`, {
+      distinct_id: mixpanelUUID,
+      ip,
+    });
+  }
+
   await cancellableDownload(downloadUrl, savingPath, onProgress, token);
   return savingPath;
 }
@@ -190,9 +226,20 @@ export async function extractSnapshot(
   snapshotPaths: string[],
   blockchainStorePath: string,
   onProgress: (progress: number) => void,
+  mixpanelInfo: MixpanelInfo,
   token: CancellationToken
 ): Promise<void> {
+  let mixpanel = mixpanelInfo.mixpanel;
+  let mixpanelUUID = mixpanelInfo.mixpanelUUID;
+  let ip = mixpanelInfo.ip;
   snapshotPaths.reverse();
+
+  if (mixpanel !== null) {
+    mixpanel?.track(`Launcher/Downloading Snapshot/extract-snapshot`, {
+      distinct_id: mixpanelUUID,
+      ip,
+    });
+  }
 
   console.log(`Extracting snapshot.
 extractPath: [ ${blockchainStorePath} ],
@@ -208,13 +255,21 @@ extractTarget: [ ${snapshotPaths} ]`);
     await cancellableExtract(
       snapshotPath,
       blockchainStorePath,
-      (progress) => onProgress(accumulateProgress + progress / snapshotPathsLength),
+      (progress) =>
+        onProgress(accumulateProgress + progress / snapshotPathsLength),
       token
     );
     index++;
   }
   onProgress(1);
   console.log("Snapshot extract complete.");
+
+  if (mixpanel !== null) {
+    mixpanel?.track(`Launcher/Downloading Snapshot/complete`, {
+      distinct_id: mixpanelUUID,
+      ip,
+    });
+  }
 }
 
 export function removeUselessStore(blockchainStorePath: string): void {
@@ -241,6 +296,7 @@ export async function processSnapshot(
   userDataPath: string,
   standalone: Headless,
   win: Electron.BrowserWindow,
+  mixpanelInfo: MixpanelInfo,
   token: CancellationToken
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);
@@ -262,6 +318,7 @@ export async function processSnapshot(
       storePath,
       snapshotDownloadUrl,
       userDataPath,
+      mixpanelInfo,
       token
     );
     const snapshotPaths = await downloadSnapshot(
@@ -271,6 +328,7 @@ export async function processSnapshot(
       (status) => {
         win?.webContents.send("download snapshot progress", status);
       },
+      mixpanelInfo,
       token
     );
     const stateSnapshotPath = await downloadStateSnapshot(
@@ -279,6 +337,7 @@ export async function processSnapshot(
       (status) => {
         win?.webContents.send("download state snapshot progress", status);
       },
+      mixpanelInfo,
       token
     );
     snapshotPaths.push(stateSnapshotPath);
@@ -289,6 +348,7 @@ export async function processSnapshot(
       (progress: number) => {
         win?.webContents.send("extract progress", progress);
       },
+      mixpanelInfo,
       token
     );
   } else {
