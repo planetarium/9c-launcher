@@ -1,5 +1,6 @@
 import React from "react"
 import './BannerComponent.scss'
+import bannerImage from '../../common/resources/banner.png'
 
 
 export type Props = {
@@ -11,21 +12,14 @@ const BannerComponent: React.FC<Props> = (props: Props) => {
   const {remaining, progress} = props;
 
   return <div className={'ComponentContainer'}>
-    <h2>total staking</h2>
-    <input className={'InfoBox'}></input>
-    <h2>Reward</h2>
-    <input className={'InfoBox'}></input>
-    <input className={'InfoBox'}></input>
-    <p>
-      Remaining time <br />
-      About {remaining}
-    </p>
-    <h2>
-      progress
-    </h2>
-    <p>
+    <img src={bannerImage}>
+      
+    </img>
+    <div  className={'TotalStakingDisplay'}>50</div>
+    <div  className={'RewardDisplay'}>50</div>
+    <div className={'ProgressDisplay'}>
       {progress}%
-    </p>
+    </div>
   </div>
 }
 
