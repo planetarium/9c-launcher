@@ -2,11 +2,14 @@ import React from "react"
 import './BannerComponent.scss'
 
 
-type Props = {
-
+export type Props = {
+  remaining: string;
+  progress: number;
 }
 
 const BannerComponent: React.FC<Props> = (props: Props) => {
+  const {remaining, progress} = props;
+
   return <div className={'ComponentContainer'}>
     <h2>total staking</h2>
     <input className={'InfoBox'}></input>
@@ -15,13 +18,13 @@ const BannerComponent: React.FC<Props> = (props: Props) => {
     <input className={'InfoBox'}></input>
     <p>
       Remaining time <br />
-      About 6d
+      About {remaining}
     </p>
     <h2>
       progress
     </h2>
     <p>
-      20%
+      {progress}%
     </p>
   </div>
 }
