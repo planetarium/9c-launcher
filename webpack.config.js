@@ -19,7 +19,7 @@ function createRenderConfig(isDev) {
     target: "electron-renderer", // any other target value makes react-hot-loader stop working
 
     resolve: {
-      extensions: [".js", ".ts", ".tsx", ".json"],
+      extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
@@ -50,14 +50,9 @@ function createRenderConfig(isDev) {
         {
           test: /\.scss$/,
           use: [
-            {
-              loader: MiniCssExtractPlugin.loader,
-              options: {
-                hmr: isDev,
-              },
-            },
-            "css-loader",
-            "sass-loader",
+            { loader: 'style-loader' },
+            { loader: 'css-loader' },
+            { loader: 'sass-loader' },
           ],
         },
 

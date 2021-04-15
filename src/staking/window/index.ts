@@ -5,8 +5,8 @@ import isDev from "electron-is-dev";
 
 const createStakingWindow = (): BrowserWindow => {
   let _win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 984,
+    height: 552.6,
     webPreferences: {
       nodeIntegration: true,
     },

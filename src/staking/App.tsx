@@ -1,7 +1,8 @@
 import React from "react";
+import BannerContainer from "./components/Banner/BannerContainer";
 
 const App: React.FC = () => {
-  return <div>Hello staking</div>;
+  return <BannerContainer />;
 };
 
 export default App;
