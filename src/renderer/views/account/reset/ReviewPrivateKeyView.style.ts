@@ -30,6 +30,13 @@ const reviewPrivateKeyViewStyle = makeStyles({
   revoke: {
     marginTop: "10px",
   },
+  floatingHeader: {
+    margin: "20px",
+    display: "block",
+    position: "absolute",
+    left: "0px",
+    top: "0px",
+  },
 });
 
 export default reviewPrivateKeyViewStyle;

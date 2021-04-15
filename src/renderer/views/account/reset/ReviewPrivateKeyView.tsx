@@ -1,22 +1,20 @@
-import React, { useState, MouseEvent, ChangeEvent } from "react";
 import {
-  TextField,
   InputLabel,
   Button,
   Typography,
   FormControl,
   OutlinedInput,
 } from "@material-ui/core";
-import { useValidatePrivateKeyQuery } from "../../../../generated/graphql";
-import { RouterStore } from "mobx-react-router";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import { ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
-import AccountStore from "../../../stores/account";
-
+import { RouterStore } from "mobx-react-router";
+import React, { useState, MouseEvent, ChangeEvent } from "react";
 import { useLocale } from "../../../i18n";
 import { InputPrivateKey } from "../../../../interfaces/i18n";
+import AccountStore from "../../../stores/account";
 import reviewPrivateKeyViewStyle from "./ReviewPrivateKeyView.style";
 import TextButton from "../../../components/TextButton";
-import { ipcRenderer } from "electron";
 
 interface IReviewPrivateKeyViewProps {
   accountStore: AccountStore;
@@ -56,6 +54,14 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
 
     return (
       <div className={classes.root}>
+        <div className={classes.floatingHeader}>
+          <Button
+            startIcon={<ArrowBackIosIcon />}
+            onClick={() => routerStore.push("/")}
+          >
+            {locale("뒤로")}
+          </Button>
+        </div>
         <Typography variant="h1" className={classes.title}>
           {locale("비밀번호를 재설정하기 위해 개인키를 입력해주세요.")}
         </Typography>
