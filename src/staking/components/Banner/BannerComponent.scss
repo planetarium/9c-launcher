@@ -1,9 +1,48 @@
 @import '../../common//styles/Typography.scss';
 
 .ComponentContainer {
-  background-color: aquamarine;
   width: 205px;
   height: 533px;
-  margin: 0 4px 0 0;
-  padding: 122px 46px 224px 29px;
+}
+
+.TotalStakingDisplay {
+  top: 122px;
+  left: 82px;
+  position: absolute;
+  width: 78px;
+  height: 17px;
+  text-align: center;
+  color: white;
+  transform: translate( -20%, 0 );
+  font-weight: bold;
+}
+
+.RewardDisplay {
+  top: 277px;
+  left: 79px;
+  position: absolute;
+  width: 78px;
+  height: 17px;
+  text-align: center;
+  color: white;
+  transform: translate( -20%, 0 );
+  font-weight: bold;
+}
+
+.ProgressDisplay {
+  top: 400px;
+  left: 75px;
+  position: absolute;
+  width: 78px;
+  height: 17px;
+  text-align: center;
+  color: white;
+  transform: translate( -20%, 0 );
+  font-weight: bold;
+  font-family: 'Jua';
+  text-shadow:3px 3px 0 #000,-1px -1px 0 #000, 1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;
+}
+
+.Title {
+  margin: 0px;
 }
