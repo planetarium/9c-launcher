@@ -662,10 +662,6 @@ async function initializeHeadless(): Promise<void> {
 
   initializeHeadlessCts = CancellationToken.create();
 
-  if (win !== null) {
-    standalone.session = win.webContents.session;
-  }
-
   const mixpanelInfo: MixpanelInfo = {
     mixpanel: mixpanel,
     mixpanelUUID: mixpanelUUID,
@@ -784,7 +780,6 @@ function createWindow(): BrowserWindow {
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(app.getAppPath(), "preload.js"),
-      ...(isDev ? { webSecurity: false } : {}),
     },
     frame: true,
     resizable: false,
