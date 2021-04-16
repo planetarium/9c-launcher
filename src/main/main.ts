@@ -221,7 +221,7 @@ async function update(
 
   await quitAllProcesses();
 
-  if (win == null) {
+  if (win === null) {
     console.log("Stop update process because win is null.");
     return;
   }
@@ -266,11 +266,11 @@ async function update(
   try {
     dl = await download(win, downloadUrl, options);
   } catch (error) {
-    win?.webContents.send("go to error page", "download-binary-failed");
+    win.webContents.send("go to error page", "download-binary-failed");
     throw new DownloadBinaryFailedError(downloadUrl);
   }
 
-  win?.webContents.send("update download complete");
+  win.webContents.send("update download complete");
   const dlFname = dl?.getFilename();
   const dlPath = dl?.getSavePath();
   console.log("Finished to download:", dlPath);
@@ -314,9 +314,9 @@ async function update(
         win?.webContents.send("update extract progress", progress);
       },
     });
-    win?.webContents.send("update extract complete");
+    win.webContents.send("update extract complete");
     console.log("The zip archive", dlPath, "has extracted to", tempDir);
-    win?.webContents.send("update copying progress");
+    win.webContents.send("update copying progress");
     await utils.copyDir(tempDir, extractPath);
     console.log("Copied extracted files from", tempDir, "to", extractPath);
     try {
@@ -325,7 +325,7 @@ async function update(
     } catch (e) {
       console.warn("Failed to remove temporary files from", tempDir, "\n", e);
     }
-    win?.webContents.send("update copying complete");
+    win.webContents.send("update copying complete");
   } else if (process.platform == "darwin") {
     // .tar.{gz,bz2} 해제
     const lowerFname = dlFname.toLowerCase();
