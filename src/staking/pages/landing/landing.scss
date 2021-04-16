@@ -1,0 +1,25 @@
+.IntroContainer {
+  font-family: 'Montserrat', sans-serif;
+  width: 984px;
+  height: 552px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+.Title {
+  position: relative;
+  top:32px;
+  flex: 1.4;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+.Button {
+  flex: 5;
+}
+
+
+}
+
