@@ -1,13 +1,13 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 
-import Intro from './Intro';
+import Introduce from './introduce';
 
 export default {
-  title: 'Staking/Pages/Intro',
-  component: Intro,
+  title: 'Staking/Pages/Introduce',
+  component: Introduce,
 } as Meta;
 
-const Template: Story = () => <Intro/>;
+const Template: Story = () => <Introduce/>;
 
 export const Primary = Template.bind({});

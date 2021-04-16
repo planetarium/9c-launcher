@@ -1,8 +1,9 @@
 import React from "react";
-import BannerContainer from "./components/Banner/BannerContainer";
+import Landing from "./pages/landing/landing";
+import './App.scss';
 
 const App: React.FC = () => {
-  return <BannerContainer />;
+  return <Landing />;
 };
 
 export default App;
