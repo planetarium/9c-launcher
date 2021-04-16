@@ -206,22 +206,25 @@ async function update(
       "'encounter different version' event seems running already. Stop this flow."
     );
     return;
-  } else {
-    try {
-      lockfile.lockSync(lockfilePath);
-      console.log(
-        "Created 'encounter different version' lockfile at ",
-        lockfilePath
-      );
-    } catch (e) {
-      console.error("Error occurred during trying lock.");
-      throw e;
-    }
+  }
+
+  try {
+    lockfile.lockSync(lockfilePath);
+    console.log(
+      "Created 'encounter different version' lockfile at ",
+      lockfilePath
+    );
+  } catch (e) {
+    console.error("Error occurred during trying lock.");
+    throw e;
   }
 
   await quitAllProcesses();
 
-  if (win == null) return;
+  if (win == null) {
+    console.log("Stop update process because win is null.");
+    return;
+  }
 
   console.log("peerVersionExtra (hex):", peerVersionExtra);
   const buffer = Buffer.from(peerVersionExtra, "hex");
@@ -239,7 +242,10 @@ async function update(
       ? macOSBinaryUrl
       : null;
 
-  if (downloadUrl == null) return; // 지원 안 하는 플랫폼이니 무시.
+  if (downloadUrl == null) {
+    console.log(`Stop update process. Not support ${process.platform}.`);
+    return;
+  }
 
   // TODO: 이어받기 되면 좋을 듯
   const options: ElectronDLOptions = {
