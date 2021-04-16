@@ -40,7 +40,7 @@ import lockfile from "lockfile";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
-import Headless from "./headless";
+import Headless from "./headless/headless";
 import {
   HeadlessExitedError,
   HeadlessInitializeError,

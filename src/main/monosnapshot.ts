@@ -5,7 +5,7 @@ import { IDownloadProgress } from "../interfaces/ipc";
 import { cancellableDownload, cancellableExtract, execute } from "../utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
-import Headless from "./headless";
+import Headless from "./headless/headless";
 import * as utils from "../utils";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
