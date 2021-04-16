@@ -2,7 +2,7 @@ import React from "react"
 
 import './Title.scss'
 
-const BannerComponent: React.FC = () => {
+const TitleComponent: React.FC = () => {
 
   return <div className={'TitleContainer'}>
     <h2 className={'Title'}>The reason why you can get rewards is that you are staking NCG.</h2>
@@ -14,4 +14,4 @@ const BannerComponent: React.FC = () => {
   </div>
 }
 
-export default BannerComponent
+export default TitleComponent
