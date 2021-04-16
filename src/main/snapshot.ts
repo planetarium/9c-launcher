@@ -5,7 +5,7 @@ import { cancellableDownload, cancellableExtract } from "../utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
-import Headless from "./headless";
+import Headless from "./headless/headless";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { MixpanelInfo } from "./main";
 
