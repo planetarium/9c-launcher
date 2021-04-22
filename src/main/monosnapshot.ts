@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import fs from "fs";
 import CancellationToken from "cancellationtoken";
-import { IDownloadProgress } from "../interfaces/ipc";
+import { IDownloadProgress, IExtractProgress } from "../interfaces/ipc";
 import { cancellableDownload, cancellableExtract, execute } from "../utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
@@ -66,7 +66,7 @@ export async function downloadSnapshot(
 export async function extractSnapshot(
   snapshotPath: string,
   storePath: string,
-  onProgress: (progress: number) => void,
+  onProgress: (progress: IExtractProgress) => void,
   token: CancellationToken
 ): Promise<void> {
   try {
@@ -113,7 +113,7 @@ export async function processSnapshot(
     await extractSnapshot(
       snapshotPath,
       storePath,
-      (progress: number) => {
+      (progress: IExtractProgress) => {
         win?.webContents.send("extract progress", progress);
       },
       token
