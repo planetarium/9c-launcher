@@ -1,9 +1,16 @@
+import Button from "@material-ui/core/Button";
 import React from "react";
-import Button from "../../components/Button/Button";
 import BackgroundImage from "../../common/resources/intro.png";
 import './landing.scss';
 
-const Landing: React.FC = () => {
+export type Props = {
+  handleNextButton: () => void;
+}
+
+const Landing: React.FC<Props> = (props: Props) => {
+  const {handleNextButton} = props;
+
+  const gotoIntro = () => handleNextButton();
   return (
     <div
       className={"IntroContainer"}
@@ -15,12 +22,17 @@ const Landing: React.FC = () => {
       </div>
       <div className={"Button"} >
       <Button
-        width={164}
-        height={45}
-        fontSize={24}
-        label="Start"
-        onClick={() => {}}
-      />
+        color="primary"
+        variant="contained"
+        style={{
+          width: 164,
+          height: 45,
+          fontSize: 24
+        }}
+        onClick={(e) => {e.preventDefault(); gotoIntro();}}
+      >
+        Start
+      </Button>
       </div>
     </div>
   );

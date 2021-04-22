@@ -2,19 +2,28 @@ import React from 'react';
 import { Story, Meta } from '@storybook/react';
 
 import Button, {Props} from './Button';
+import { StakingItemTier, StakingPhase } from '../../../staking/types';
 
 export default {
   title: 'Staking/Button',
   component: Button,
+  parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;
 
 const Template: Story<Props> = (args) => <Button {...args}/>;
 
 export const Primary = Template.bind({});
 Primary.args = {
-    width: 300,
-    height: 100,
-    fontSize: 24,
-    label: "Button",
-    onClick: () => {},
+  label: 'OK',
+  width: 200,
+  height: 50,
+  primary: true,
+}
+
+export const Cancel = Template.bind({});
+Cancel.args = {
+  label: 'OK',
+  width: 200,
+  height: 50,
+  primary: false,
 }

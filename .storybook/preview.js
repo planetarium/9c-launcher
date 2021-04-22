@@ -1,3 +1,5 @@
+import { MockedProvider } from "@apollo/react-testing";
+
 const customViewports = {
   kindleFire2: {
     name: 'launcher v2',
@@ -26,5 +28,8 @@ export const parameters = {
   },
   viewport: {
     viewports: customViewports
-  }
+  },
+  apolloClient: {
+    MockedProvider,
+  },
 }

@@ -1,7 +1,8 @@
-import { BrowserWindow, app, shell } from "electron";
+import { BrowserWindow, app, shell, ipcMain } from "electron";
 import path from "path";
 import logoImage from "./resources/logo.png";
 import isDev from "electron-is-dev";
+
 
 const createStakingWindow = (): BrowserWindow => {
   let _win = new BrowserWindow({

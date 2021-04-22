@@ -65,7 +65,9 @@ function createRenderConfig(isDev) {
               presets: [
                 "@babel/preset-typescript",
                 "@babel/preset-react",
-                "@babel/preset-env",
+                ["@babel/preset-env", {
+                  "targets": {"chrome": "55"}
+                }],
               ],
               plugins: [
                 ["@babel/plugin-proposal-decorators", { legacy: true }],

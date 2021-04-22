@@ -1,3 +1,4 @@
+import { ipcRenderer } from "electron";
 import { observable, action, decorate } from "mobx";
 
 export interface IAccountStore {

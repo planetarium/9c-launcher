@@ -4,105 +4,529 @@ schema {
   subscription: StandaloneSubscription
 }
 
-type ActionMutation {
-  buy(
-    sellerAgentAddress: String!
-    sellerAvatarAddress: String!
-    productId: String!
-  ): Boolean!
-  combinationEquipment(
-    recipeId: Decimal!
-    slotIndex: Decimal!
-    subRecipeId: Decimal
-  ): Boolean!
-  createAvatar: Boolean!
-  dailyReward: Boolean!
-  hackAndSlash(
-    weeklyArenaAddress: String!
-    rankingArenaAddress: String!
-  ): Boolean!
-  itemEnhancement(itemId: String!, materialIds: String!): Boolean!
-  sell(
-    sellerAvatarAddress: String!
-    productId: String!
-    itemId: String!
-    price: String!
-  ): Boolean!
+type StandaloneQuery {
+  # Check if the provided address is activated.
+  activationStatus: ActivationStatusQuery!
+  getTx(
+    # transaction id.
+    txId: TxId!
+  ): TransactionType_1
+  goldBalance(
+    # Target address to query
+    address: Address!
+
+    # Offset block hash for query.
+    hash: ByteString
+  ): String!
+  keyStore: KeyStoreType
+
+  # Address of current node.
+  minerAddress: Address
+  nextTxNonce(
+    # Target address to query
+    address: Address!
+  ): Long!
+  nodeStatus: NodeStatusType!
+
+  # Get the peer's block chain state
+  peerChainState: PeerChainStateQuery!
+  state(
+    # The address of state to fetch from the chain.
+    address: Address!
+
+    # The hash of the block used to fetch state from chain.
+    hash: ByteString
+  ): ByteString
+  stateQuery(
+    # Offset block hash for query.
+    hash: ByteString
+  ): StateQuery!
+
+  # The validation method provider for Libplanet types.
+  validation: ValidationQuery!
 }
 
-type ActivationStatusMutation {
-  activateAccount(encodedActivationKey: String!): Boolean!
+type StateQuery {
+  # State for agent.
+  agent(
+    # Address of agent.
+    address: Address!
+  ): AgentStateType
+
+  # State for avatar.
+  avatar(
+    # Address of avatar.
+    avatarAddress: Address!
+  ): AvatarStateType
+
+  # State for avatar EXP record.
+  rankingMap(
+    # RankingMapState index. 0 ~ 99
+    index: Int!
+  ): RankingMapStateType
+
+  # State for shop.
+  shop: ShopStateType
+  stakingSheet: StakingSheetType
+
+  # State for staking.
+  stakingState(
+    # Address of agent.
+    agentAddress: Address!
+
+    # Staking round of agent.
+    stakingRound: Int
+  ): StakingStateType
+
+  # State for weekly arena.
+  weeklyArena(
+    # WeeklyArenaState index. It increases every 56,000 blocks.
+    index: Int!
+  ): WeeklyArenaStateType
 }
 
-type ActivationStatusQuery {
-  activated: Boolean!
+type AvatarStateType {
+  # Current ActionPoint.
+  actionPoint: Int!
+
+  # Address of avatar.
+  address: Address!
+
+  # Address of agent.
+  agentAddress: Address!
+
+  # Block index at the latest executed action.
+  blockIndex: Int!
+
+  # Character ID from CharacterSheet.
+  characterId: Int!
+
+  # Address list of combination slot.
+  combinationSlotAddresses: [Address!]!
+
+  # Block index at the DailyReward execution.
+  dailyRewardReceivedIndex: Long!
+
+  # Index of ear color.
+  ear: Int!
+
+  # List of quest event ID.
+  eventMap: CollectionMapType!
+
+  # Avatar total EXP.
+  exp: Int!
+
+  # Index of hair color.
+  hair: Int!
+
+  # Avatar inventory.
+  inventory: InventoryType!
+
+  # List of acquired item ID.
+  itemMap: CollectionMapType!
+
+  # Index of eye color.
+  lens: Int!
+
+  # Avatar Level.
+  level: Int!
+
+  # List of mail.
+  mailBox: MailBoxType!
+
+  # List of defeated monster ID.
+  monsterMap: CollectionMapType!
+
+  # Avatar name.
+  name: String!
+
+  # List of quest.
+  questList: QuestListType!
+
+  # Address of the RankingMapState where this avatar information is recorded.
+  rankingMapAddress: Address!
+
+  # List of cleared stage ID.
+  stageMap: CollectionMapType!
+
+  # Index of tail color.
+  tail: Int!
+
+  # Block index at the latest executed action.
+  updatedAt: Long!
+
+  # World & Stage information.
+  worldInformation: WorldInformationType!
 }
 
 scalar Address
 
-# A claim of a version.
-#             Every peer in network shows others their  information.
-#             As every peer can change its software by itself, this
-#             is theoretically arbitrary, hence a “claim.” (i.e., no authority).In
-# order to verify who claimed a version, every
-#             has its  which is made by its .
-#              method purposes to determine whether an information
-#             is claimed by its corresponding  in fact.
-type AppProtocolVersionType {
-  extra: ByteString
-  signature: ByteString!
-  signer: Address!
-  version: Int!
+scalar Long
+
+type InventoryType {
+  # List of Consumables.
+  consumables: [ConsumableType!]!
+
+  # List of Costumes.
+  costumes: [CostumeType!]!
+
+  # List of Equipments.
+  equipments: [EquipmentType!]!
+
+  # List of Materials.
+  materials: [MaterialType!]!
 }
 
-scalar BigInt
+type ConsumableType {
+  # Item elemental.
+  elementalType: ElementalType!
 
-type BlockHeader {
-  hash: String!
-  id: ID!
-  index: Int!
-  miner: Address
+  # Grade from ItemSheet.
+  grade: Int!
+
+  # ID from ItemSheet.
+  id: Int!
+  itemId: Guid!
+
+  # Item subcategory.
+  itemSubType: ItemSubType!
+
+  # Item category.
+  itemType: ItemType!
+  mainStat: StatType!
 }
 
-scalar Byte
+enum ItemType {
+  CONSUMABLE
+  COSTUME
+  EQUIPMENT
+  MATERIAL
+}
 
-scalar ByteString
+enum ItemSubType {
+  FOOD
+  FULL_COSTUME
+  HAIR_COSTUME
+  EAR_COSTUME
+  EYE_COSTUME
+  TAIL_COSTUME
+  WEAPON
+  ARMOR
+  BELT
+  NECKLACE
+  RING
+  EQUIPMENT_MATERIAL
+  FOOD_MATERIAL
+  MONSTER_PART
+  NORMAL_MATERIAL
+  HOURGLASS
+  AP_STONE
+  CHEST
+  TITLE
+}
 
-# The `Date` scalar type represents a year, month and day in accordance with the
-# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
-scalar Date
-
-# The `DateTime` scalar type represents a date and time. `DateTime` expects
-# timestamps to be formatted in accordance with the
-# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
-scalar DateTime
-
-# The `DateTimeOffset` scalar type represents a date, time and offset from UTC.
-# `DateTimeOffset` expects timestamps to be formatted in accordance with the
-# [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
-scalar DateTimeOffset
-
-scalar Decimal
-
-type DifferentAppProtocolVersionEncounterType {
-  localVersion: AppProtocolVersionType!
-  peer: String!
-  peerVersion: AppProtocolVersionType!
+enum ElementalType {
+  NORMAL
+  FIRE
+  WATER
+  LAND
+  WIND
 }
 
 scalar Guid
 
-# The interface to store s.  An appropriate implementation
-#             should be used according to a running platform.
-type KeyStoreMutation {
-  createPrivateKey(passphrase: String!, privateKey: ByteString): PrivateKeyType!
-  revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
+enum StatType {
+  NONE
+  HP
+  ATK
+  DEF
+  CRI
+  HIT
+  SPD
+}
+
+type MaterialType {
+  # Item elemental.
+  elementalType: ElementalType!
+
+  # Grade from ItemSheet.
+  grade: Int!
+
+  # ID from ItemSheet.
+  id: Int!
+  itemId: ByteString!
+
+  # Item subcategory.
+  itemSubType: ItemSubType!
+
+  # Item category.
+  itemType: ItemType!
+}
+
+scalar ByteString
+
+type EquipmentType {
+  # Item elemental.
+  elementalType: ElementalType!
+  equipped: Boolean!
+
+  # Grade from ItemSheet.
+  grade: Int!
+
+  # ID from ItemSheet.
+  id: Int!
+  itemId: Guid!
+
+  # Item subcategory.
+  itemSubType: ItemSubType!
+
+  # Item category.
+  itemType: ItemType!
+  setId: Int!
+  stat: DecimalStatType!
+}
+
+type DecimalStatType {
+  type: StatType!
+  value: Decimal!
+}
+
+scalar Decimal
+
+type CostumeType {
+  # Item elemental.
+  elementalType: ElementalType!
+
+  # Status of Avatar equipped.
+  equipped: Boolean!
+
+  # Grade from ItemSheet.
+  grade: Int!
+
+  # ID from ItemSheet.
+  id: Int!
+
+  # Guid of costume.
+  itemId: Guid!
+
+  # Item subcategory.
+  itemSubType: ItemSubType!
+
+  # Item category.
+  itemType: ItemType!
+}
+
+type CollectionMapType {
+  count: Int!
+  pairs: [[Int]!]!
+}
+
+type QuestListType {
+  completedQuestIds: [Int!]!
+}
+
+type MailBoxType {
+  count: Int!
+  mails: [MailType!]!
+}
+
+type MailType {
+  blockIndex: Long!
+  id: Guid!
+  requiredBlockIndex: Long!
+}
+
+type WorldInformationType {
+  isStageCleared(stageId: Int!): Boolean!
+  isWorldUnlocked(worldId: Int!): Boolean!
+  world(worldId: Int!): WorldType!
+}
+
+type WorldType {
+  id: Int!
+  isStageCleared: Boolean!
+  isUnlocked: Boolean!
+  name: String!
+  stageBegin: Int!
+  stageClearedBlockIndex: Long!
+  stageClearedId: Int!
+  stageEnd: Int!
+  unlockedBlockIndex: Long!
+}
+
+type RankingMapStateType {
+  # Address of RankingMapState.
+  address: Address!
+
+  # RankingMapState Capacity.
+  capacity: Int!
+
+  # List of RankingInfo.
+  rankingInfos: [RankingInfoType!]!
+}
+
+type RankingInfoType {
+  # Address of agent.
+  agentAddress: Address!
+
+  # Equipped Armor ID from EquipmentItemSheet.
+  armorId: Int!
+
+  # Address of avatar.
+  avatarAddress: Address!
+
+  # Avatar name.
+  avatarName: String!
+
+  # Avatar total EXP.
+  exp: Long!
+
+  # Avatar Level.
+  level: Int!
+
+  # Block index at Latest stage cleared.
+  stageClearedBlockIndex: Long!
+
+  # Block index at RankingInfo update.
+  updatedAt: Long!
+}
+
+type ShopStateType {
+  # Address of shop.
+  address: Address!
+
+  # List of ShopItem.
+  products(
+    # Filter for item id.
+    id: Int
+
+    # Filter for ItemSubType. see from https://github.com/planetarium/lib9c/blob/main/Lib9c/Model/Item/ItemType.cs#L13
+    itemSubType: ItemSubType
+
+    # Filter for item maximum price.
+    maximumPrice: Int
+  ): [ShopItemType]!
+}
+
+type ShopItemType {
+  # Costume information.
+  costume: CostumeType
+
+  # Equipment / Consumable information.
+  itemUsable: ItemUsableType
+
+  # Item price.
+  price: String!
+
+  # Guid of product registered.
+  productId: Guid!
+
+  # Address of seller agent.
+  sellerAgentAddress: Address!
+
+  # Address of seller avatar.
+  sellerAvatarAddress: Address!
+}
+
+type ItemUsableType {
+  # Item elemental.
+  elementalType: ElementalType!
+
+  # Grade from ItemSheet.
+  grade: Int!
+
+  # ID from ItemSheet.
+  id: Int!
+
+  # Guid of item.
+  itemId: Guid!
+
+  # Item subcategory.
+  itemSubType: ItemSubType!
+
+  # Item category.
+  itemType: ItemType!
+}
+
+type WeeklyArenaStateType {
+  address: Address!
+  ended: Boolean!
+  orderedArenaInfos: [ArenaInfoType]!
+}
+
+type ArenaInfoType {
+  active: Boolean!
+  agentAddress: Address!
+  arenaRecord: ArenaRecordType!
+  armorId: Int!
+  avatarAddress: Address!
+  avatarName: String!
+  combatPoint: Int!
+  dailyChallengeCount: Int!
+  level: Int!
+  score: Int!
+}
+
+type ArenaRecordType {
+  draw: Int
+  lose: Int
+  win: Int
+}
+
+type AgentStateType {
+  # Address of agent.
+  address: Address!
+
+  # List of avatar.
+  avatarStates: [AvatarStateType!]
+
+  # Current NCG.
+  gold: String!
+
+  # Current staking level.
+  stakingLevel: Long!
+
+  # Staking round of agent.
+  stakingRound: Long!
+}
+
+type StakingStateType {
+  address: Address!
+  end: Boolean!
+  expiredBlockIndex: Long!
+  level: Long!
+  receivedBlockIndex: Long!
+  rewardLevel: Long!
+  rewardLevelMap: [[StakingRewardInfoType]]
+  rewardMap: [StakingResultType]!
+  startedBlockIndex: Long!
+}
+
+type StakingResultType {
+  avatarAddress: Address!
+  rewards: [StakingRewardInfoType]!
+}
+
+type StakingRewardInfoType {
+  itemId: Int!
+  quantity: Int!
+}
+
+type StakingSheetType {
+  orderedList: [StakingRowType]
+}
+
+type StakingRowType {
+  level: Int!
+  requiredGold: Int!
+  rewards: [StakingRewardInfoType]!
 }
 
 # The interface to store s.  An appropriate implementation
 #             should be used according to a running platform.
 type KeyStoreType {
   decryptedPrivateKey(address: Address!, passphrase: String!): ByteString!
+
   # An API to provide conversion to public-key, address.
   privateKey(
     # A representation of public-key with hexadecimal format.
@@ -111,63 +535,9 @@ type KeyStoreType {
   protectedPrivateKeys: [ProtectedPrivateKeyType!]!
 }
 
-scalar Long
-
-# The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds.
-scalar Milliseconds
-
-type NodeExceptionType {
-  # The code of NodeException.
-  code: Int!
-  # The message of NodeException.
-  message: String!
-}
-
-type NodeStatusType {
-  bootstrapEnded: Boolean!
-  genesis: BlockHeader!
-  preloadEnded: Boolean!
-  # Staged TxIds from the current node.
-  stagedTxIds: [TxId]
-  tip: BlockHeader!
-  # The topmost blocks from the current node.
-  topmostBlocks(
-    # The number of blocks to get.
-    limit: Int!
-    # List only blocks mined by the given address.  (List everything if omitted.)
-    miner: Address
-  ): [BlockHeader]!
-}
-
-enum NotificationEnum {
-  REFILL
-  HAS
-  CombinationEquipment
-  CombinationConsumable
-  Buyer
-  Seller
-}
-
-type NotificationType {
-  # The type of Notification.
-  type: NotificationEnum!
-  message: String
-}
-
-type PeerChainStateQuery {
-  state: [String]!
-}
-
-type PreloadStateExtraType {
-  currentCount: Long!
-  totalCount: Long!
-  type: String!
-}
-
-type PreloadStateType {
-  currentPhase: Long!
-  extra: PreloadStateExtraType!
-  totalPhase: Long!
+# Protects a  with a passphrase (i.e., password).
+type ProtectedPrivateKeyType {
+  address: Address!
 }
 
 # A secret part of a key pair involved in
@@ -185,13 +555,9 @@ type PreloadStateType {
 type PrivateKeyType {
   # A representation of private-key with hexadecimal format.
   hex: ByteString!
+
   # A public-key derived from the private-key.
   publicKey: PublicKeyType!
-}
-
-# Protects a  with a passphrase (i.e., password).
-type ProtectedPrivateKeyType {
-  address: Address!
 }
 
 # A public part of a key pair involved in
@@ -209,6 +575,7 @@ type ProtectedPrivateKeyType {
 type PublicKeyType {
   # An address derived from the public-key.
   address: Address!
+
   # A representation of public-key with hexadecimal format.
   hex(
     # A flag to determine whether to compress public-key.
@@ -216,75 +583,46 @@ type PublicKeyType {
   ): ByteString!
 }
 
-scalar SByte
+type NodeStatusType {
+  # Whether the current libplanet node has ended bootstrapping.
+  bootstrapEnded: Boolean!
 
-# The `Seconds` scalar type represents a period of time represented as the total number of seconds.
-scalar Seconds
+  # Block header of the genesis block from the current chain.
+  genesis: BlockHeader!
 
-scalar Short
+  # Whether the current node is mining.
+  isMining: Boolean!
 
-type StandaloneMutation {
-  action: ActionMutation
-  activationStatus: ActivationStatusMutation
-  keyStore: KeyStoreMutation
-  # Add a new transaction to staging
-  stageTx(
-    # Hex-encoded bytes for new transaction.
-    payload: String!
-  ): Boolean!
-  transferGold(recipient: Address!, amount: String!): TxId
-}
+  # Whether the current libplanet node has ended preloading.
+  preloadEnded: Boolean!
 
-type StandaloneQuery {
-  # Check if the provided address is activated.
-  activationStatus: ActivationStatusQuery!
-  goldBalance(
+  # Ids of staged transactions from the current node.
+  stagedTxIds(
     # Target address to query
-    address: Address!
-    # Offset block hash for query.
-    hash: ByteString
-  ): String!
-  keyStore: KeyStoreType
-  nextTxNonce(
-    # Target address to query
-    address: Address!
-  ): Long!
-  nodeStatus: NodeStatusType!
-  # Get the peer's block chain state
-  peerChainState: PeerChainStateQuery!
-  state(
-    # The address of state to fetch from the chain.
-    address: Address!
-    # The hash of the block used to fetch state from chain.
-    hash: ByteString
-  ): ByteString
-  # The validation method provider for Libplanet types.
-  validation: ValidationQuery!
+    address: Address
+  ): [TxId]
+
+  # Block header of the tip block from the current canonical chain.
+  tip: BlockHeader!
+
+  # The topmost blocks from the current node.
+  topmostBlocks(
+    # The number of blocks to get.
+    limit: Int!
+
+    # List only blocks mined by the given address.  (List everything if omitted.)
+    miner: Address
+  ): [BlockHeader]!
 }
 
-type StandaloneSubscription {
-  differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
-  nodeException: NodeExceptionType!
-  nodeStatus: NodeStatusType
-  notification: NotificationType!
-  preloadProgress: PreloadStateType
-  tipChanged: TipChanged
-}
-
-type TipChanged {
-  hash: ByteString
-  index: Long!
+type BlockHeader {
+  hash: String!
+  id: ID!
+  index: Int!
+  miner: Address
 }
 
 scalar TxId
-
-scalar UInt
-
-scalar ULong
-
-scalar Uri
-
-scalar UShort
 
 type ValidationQuery {
   metadata(
@@ -299,4 +637,340 @@ type ValidationQuery {
     # The raw value of public-key, presented as hexadecimal.
     hex: ByteString!
   ): Boolean!
+}
+
+type ActivationStatusQuery {
+  activated: Boolean!
+}
+
+type PeerChainStateQuery {
+  # Summary of other peers connected to this node. It consists of address, chain height, and total difficulty.
+  state: [String]!
+}
+
+type TransactionType_1 {
+  # A list of actions in this transaction.
+  actions: [Action]!
+
+  # A unique identifier derived from this transaction content.
+  id: TxId!
+
+  # The number of previous transactions committed by the signer of this transaction.
+  nonce: Long!
+
+  # A PublicKey of the account who signed this transaction.
+  publicKey: PublicKeyType!
+
+  # A digital signature of the content of this transaction.
+  signature: ByteString!
+
+  # An address of the account who signed this transaction.
+  signer: Address!
+
+  # The time this transaction was created and signed.
+  timestamp: String!
+
+  # Addresses whose states were affected by Actions.
+  updatedAddresses: [Address]!
+}
+
+# An in-game action.  Every action should be replayable, because
+#             multiple nodes in a network should execute an action and get the same
+#             result.
+#             A “class” which implements this interface is
+#             analogous to a function, and its instance is analogous to a
+#             partial
+#             function application, in other words, a function with some bound
+#             arguments.  Those parameters that will be bound at runtime should be
+#             represented as fields or properties in an action class, and bound
+#             argument values to these parameters should be received through
+#             a constructor parameters of that class.From a perspective of security, an action class belongs to
+#             the network protocol, and property values in an action belong to
+#             a node's will (i.e., a user/player's choice).
+#             That means if you define an action class it also defines what every
+#             honest node can do in the network.  Even if a malicious node changes
+#             their own action code it won't affect other honest nodes in
+#             the network.For example, where honest nodes share the common action
+#             Heal(Target) => PreviousStates[Target] + 1, suppose a malicious
+#             node m changes their own Heal action code to
+#             Heal(Target) => PreviousStates[Target] + 2 (2 instead of 1),
+#             and then send an action Heal(m).
+#             Fortunately, this action does not work as m's intention,
+#             because the changed code in itself is not used by other honest nodes,
+#             so they still increase only 1, not 2.  The effect of that double healing
+#             is a sort of “illusion” only visible to the malicious node
+#             alone.In conclusion, action code is a part of the protocol and it works with
+#             consensus in the network, so only things each node can affect the network
+#             in general is property values of each action they sign and send,
+#             not code of an action.
+type Action {
+  inspection: String!
+  raw(encode: String = "hex"): String!
+}
+
+type StandaloneMutation {
+  action: ActionMutation
+  activationStatus: ActivationStatusMutation
+  keyStore: KeyStoreMutation
+
+  # Add a new transaction to staging
+  stageTx(
+    # Hex-encoded bytes for new transaction.
+    payload: String!
+  ): Boolean!
+  transfer(
+    # A hex-encoded value for address of recipient.
+    recipient: Address!
+
+    # A string value of the value to be transferred.
+    amount: String!
+
+    # A sender's transaction counter. You can get it through nextTxNonce().
+    txNonce: Long!
+
+    # A hex-encoded value for address of currency to be transferred. The default is the NCG's address.
+    currencyAddress: String! = "000000000000000000000000000000000000000A"
+  ): TxId
+  transferGold(recipient: Address!, amount: String!): TxId
+    @deprecated(
+      reason: "Incorrect remittance may occur when using transferGold() to the same address consecutively. Use transfer() instead."
+    )
+}
+
+# The interface to store s.  An appropriate implementation
+#             should be used according to a running platform.
+type KeyStoreMutation {
+  createPrivateKey(passphrase: String!, privateKey: ByteString): PrivateKeyType!
+  revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
+}
+
+type ActivationStatusMutation {
+  activateAccount(encodedActivationKey: String!): Boolean!
+}
+
+type ActionMutation {
+  # Buy registered shop item.
+  buy(
+    # Agent address from registered ShopItem.
+    sellerAgentAddress: Address!
+
+    # Avatar address from registered ShopItem.
+    sellerAvatarAddress: Address!
+
+    # Avatar address.
+    buyerAvatarAddress: Address!
+
+    # ShopItem product ID.
+    productId: Guid!
+  ): TxId!
+
+  # Downgrade staking level.
+  cancelStaking(
+    # The staking level.(1 ~ 6)
+    level: Int!
+  ): TxId!
+
+  # Get staking reward.
+  claimStakingReward(
+    # Address of avatar for get reward.
+    avatarAddress: Address!
+  ): TxId!
+
+  # Combine new Consumable.
+  combinationConsumable(
+    # Avatar address to combine consumable.
+    avatarAddress: Address!
+
+    # ConsumableRecipe ID from ConsumableRecipeSheet.
+    recipeId: Int!
+
+    # The empty combination slot index to combine consumable. 0 ~ 3
+    slotIndex: Int!
+  ): TxId!
+
+  # Combine new equipment.
+  combinationEquipment(
+    # Avatar address to create equipment.
+    avatarAddress: Address!
+
+    # EquipmentRecipe ID from EquipmentRecipeSheet.
+    recipeId: Int!
+
+    # The empty combination slot index to combine equipment. 0 ~ 3
+    slotIndex: Int!
+
+    # EquipmentSubRecipe ID from EquipmentSubRecipeSheet.
+    subRecipeId: Int
+  ): TxId!
+
+  # Create new avatar.
+  createAvatar(
+    # Avatar name.
+    avatarName: String!
+
+    # The index of character slot. 0 ~ 2
+    avatarIndex: Int!
+
+    # The index of character hair color. 0 ~ 8
+    hairIndex: Int!
+
+    # The index of character eye color. 0 ~ 8
+    lensIndex: Int!
+
+    # The index of character ear color. 0 ~ 8
+    earIndex: Int!
+
+    # The index of character tail color. 0 ~ 8
+    tailIndex: Int!
+  ): TxId!
+
+  # Get daily reward.
+  dailyReward(
+    # Avatar address to receive reward.
+    avatarAddress: Address!
+  ): TxId!
+
+  # Start stage to get material.
+  hackAndSlash(
+    # Avatar address.
+    avatarAddress: Address!
+
+    # World ID containing the stage ID.
+    worldId: Int!
+
+    # Stage ID.
+    stageId: Int!
+
+    # Address of this WeeklyArenaState
+    weeklyArenaAddress: Address!
+
+    # Address of RankingMapState containing the avatar address.
+    rankingArenaAddress: Address!
+
+    # List of costume id for equip.
+    costumeIds: [Guid]
+
+    # List of equipment id for equip.
+    equipmentIds: [Guid]
+
+    # List of consumable id for use.
+    consumableIds: [Guid]
+  ): TxId!
+
+  # Upgrade equipment.
+  itemEnhancement(
+    # Avatar address to upgrade equipment.
+    avatarAddress: Address!
+
+    # Equipment Guid for upgrade.
+    itemId: Guid!
+
+    # Material Guid for equipment upgrade.
+    materialId: Guid!
+
+    # The empty combination slot index to upgrade equipment. 0 ~ 3
+    slotIndex: Int!
+  ): TxId!
+
+  # Register item to the shop.
+  sell(
+    # Avatar address to register shop item.
+    sellerAvatarAddress: Address!
+
+    # Item Guid to register on shop.
+    itemId: Guid!
+
+    # Item selling price.
+    price: Int!
+  ): TxId!
+
+  # Staking NCG.
+  stake(
+    # The staking level.(1 ~ 7)
+    level: Int!
+  ): TxId!
+}
+
+type StandaloneSubscription {
+  differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
+  nodeException: NodeExceptionType!
+  nodeStatus: NodeStatusType
+  notification: NotificationType!
+  preloadProgress: PreloadStateType
+  stakingState: StakingStateType!
+  stakingStatus: StakingStatusType!
+  tipChanged: TipChanged
+}
+
+type TipChanged {
+  hash: ByteString
+  index: Long!
+}
+
+type PreloadStateType {
+  currentPhase: Long!
+  extra: PreloadStateExtraType!
+  totalPhase: Long!
+}
+
+type PreloadStateExtraType {
+  currentCount: Long!
+  totalCount: Long!
+  type: String!
+}
+
+type DifferentAppProtocolVersionEncounterType {
+  localVersion: AppProtocolVersionType!
+  peer: String!
+  peerVersion: AppProtocolVersionType!
+}
+
+# A claim of a version.
+#             Every peer in network shows others their  information.
+#             As every peer can change its software by itself, this
+#             is theoretically arbitrary, hence a “claim.” (i.e., no authority).In order to verify who claimed a version, every
+#             has its  which is made by its .
+#              method purposes to determine whether an information
+#             is claimed by its corresponding  in fact.
+type AppProtocolVersionType {
+  extra: ByteString
+  signature: ByteString!
+  signer: Address!
+  version: Int!
+}
+
+type NotificationType {
+  # The message of Notification.
+  message: String
+
+  # The type of Notification.
+  type: NotificationEnum!
+}
+
+enum NotificationEnum {
+  REFILL
+  HAS
+  COMBINATION_EQUIPMENT
+  COMBINATION_CONSUMABLE
+  BUYER
+  SELLER
+}
+
+type NodeExceptionType {
+  # The code of NodeException.
+  code: Int!
+
+  # The message of NodeException.
+  message: String!
+}
+
+type StakingStatusType {
+  canReceive: Boolean!
+  fungibleAssetValue: FungibleAssetValueType!
+}
+
+# Holds a fungible asset value which holds its  together.
+type FungibleAssetValueType {
+  currency: String!
+  quantity: Decimal!
 }

@@ -450,6 +450,10 @@ function initializeIpc() {
     }
   );
 
+  ipcMain.on("open staking page", () => {
+    createStakingWindow();
+  })
+  
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {
       console.error("Game is already running.");

@@ -129,3 +129,100 @@ query ValidateSnapshot($raw: String!) {
     metadata(raw: $raw)
   }
 }
+
+query StakingSheet {
+  stateQuery {
+    stakingSheet {
+      orderedList {
+        level
+        requiredGold
+      }
+    }
+  }
+}
+
+query StakingSheetWithStakingState($address: Address!) {
+  stateQuery {
+    stakingSheet {
+      orderedList {
+        level
+        requiredGold
+        rewards {
+          itemId
+          quantity
+        }
+      }
+    }
+    agent(address: $address) {
+      gold
+      stakingLevel
+      stakingRound
+    }
+  }
+}
+
+query GoldAndStakingLevel($address: Address!) {
+  stateQuery {
+    agent(address: $address) {
+      gold
+      stakingLevel
+    }
+  }
+}
+
+query MinerAddress {
+  minerAddress
+}
+
+mutation Staking($level: Int!) {
+  action {
+    stake(level: $level)
+  }
+}
+
+mutation CancelStaking($level: Int!) {
+  action {
+    cancelStaking(level: $level)
+  }
+}
+
+subscription StakingState {
+  stakingState {
+    address
+    end
+    expiredBlockIndex
+    level
+    rewardLevel
+    receivedBlockIndex
+    startedBlockIndex
+  }
+}
+
+query StagedTx($address: Address!) {
+  nodeStatus {
+    stagedTxIds(address: $address)
+  }
+}
+
+subscription currentGold {
+  stakingStatus {
+    fungibleAssetValue {
+      quantity
+    }
+  }
+}
+
+subscription canReceive {
+  stakingStatus {
+    canReceive
+  }
+}
+
+subscription stakingStatus {
+  stakingStatus {
+    canReceive
+    fungibleAssetValue {
+      quantity
+    }
+  }
+}
