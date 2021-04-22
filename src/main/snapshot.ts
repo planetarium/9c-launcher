@@ -1,6 +1,6 @@
 import fs, { readdirSync } from "fs";
 import CancellationToken from "cancellationtoken";
-import { IDownloadProgress } from "../interfaces/ipc";
+import { IDownloadProgress, IExtractProgress } from "../interfaces/ipc";
 import { cancellableDownload, cancellableExtract } from "../utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
@@ -225,10 +225,12 @@ export async function downloadStateSnapshot(
 export async function extractSnapshot(
   snapshotPaths: string[],
   blockchainStorePath: string,
-  onProgress: (progress: number) => void,
+  onProgress: (progress: IExtractProgress) => void,
   mixpanelInfo: MixpanelInfo,
   token: CancellationToken
 ): Promise<void> {
+  let savingPaths: string[] = [];
+  let progressDict: DownloadStatus = {};
   let mixpanel = mixpanelInfo.mixpanel;
   let mixpanelUUID = mixpanelInfo.mixpanelUUID;
   let ip = mixpanelInfo.ip;
@@ -245,23 +247,26 @@ export async function extractSnapshot(
 extractPath: [ ${blockchainStorePath} ],
 extractTarget: [ ${snapshotPaths} ]`);
 
-  const snapshotPathsLength = snapshotPaths.length;
-  const eachProgress = 1 / snapshotPathsLength;
-  let index = 0;
-  for (const snapshotPath of snapshotPaths) {
-    const accumulateProgress = index * eachProgress;
+  let downloadPromise = snapshotPaths.map(async (snapshotPath) => {
     token.throwIfCancelled();
     console.log(`extract: ${snapshotPath}`);
     await cancellableExtract(
       snapshotPath,
       blockchainStorePath,
-      (progress) =>
-        onProgress(accumulateProgress + progress / snapshotPathsLength),
+      (progress) => {
+        progressDict[snapshotPath] = {
+          percent: progress.percent,
+        };
+        const value = Object.values(progressDict);
+        const sum = value.reduce((a, b) => a + b.percent, 0);
+        progress.percent = sum / snapshotPaths.length;
+        onProgress(progress);
+      },
       token
     );
-    index++;
-  }
-  onProgress(1);
+    return blockchainStorePath;
+  });
+  savingPaths = await Promise.all(downloadPromise);
   console.log("Snapshot extract complete.");
 
   if (mixpanel !== null) {
@@ -345,7 +350,7 @@ export async function processSnapshot(
     await extractSnapshot(
       snapshotPaths,
       storePath,
-      (progress: number) => {
+      (progress) => {
         win?.webContents.send("extract progress", progress);
       },
       mixpanelInfo,

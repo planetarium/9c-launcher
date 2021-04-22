@@ -12,6 +12,7 @@ import {
 } from "../src/main/snapshot";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { MixpanelInfo } from "../src/main/main";
+import { IExtractProgress } from "src/interfaces/ipc";
 
 const storePath = path.join(__dirname, "fixture", "store");
 const baseUrl = "https://download.nine-chronicles.com/partition-test";
@@ -183,9 +184,9 @@ describe("snapshot", function () {
     await extractSnapshot(
       snapshotPaths,
       integrationStore,
-      (progress: number) => {
-        if ((progress * 100) % 10 === 0) {
-          console.log(progress * 100);
+      (progress: IExtractProgress) => {
+        if ((progress.percent * 100) % 10 === 0) {
+          console.log(progress.percent * 100);
         }
       },
       dummyMixpanelInfo,

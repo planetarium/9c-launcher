@@ -17,6 +17,10 @@ export interface IDownloadProgress {
   totalBytes: number;
 }
 
+export interface IExtractProgress {
+  percent: number;
+}
+
 export interface IGameStartOptions {
   args: string[];
 }

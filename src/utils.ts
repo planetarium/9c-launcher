@@ -5,7 +5,7 @@ import fs from "fs";
 import axios from "axios";
 import stream from "stream";
 import { promisify } from "util";
-import { IDownloadProgress } from "./interfaces/ipc";
+import { IDownloadProgress, IExtractProgress } from "./interfaces/ipc";
 import CancellationToken from "cancellationtoken";
 import extractZip from "extract-zip";
 import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
@@ -130,7 +130,7 @@ export async function cancellableDownload(
 export async function cancellableExtract(
   targetDir: string,
   outputDir: string,
-  onProgress: (progress: number) => void,
+  onProgress: (progress: IExtractProgress) => void,
   token: CancellationToken
 ): Promise<void> {
   try {
@@ -142,7 +142,9 @@ export async function cancellableExtract(
           zipfile.close();
         }
         const progress = zipfile.entriesRead / zipfile.entryCount;
-        onProgress(progress);
+        onProgress({
+          percent: progress,
+        });
       },
     });
     await fs.promises.unlink(targetDir);

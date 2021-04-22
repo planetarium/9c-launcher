@@ -10,7 +10,7 @@ import {
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import { PreloadProgress } from "../../../interfaces/i18n";
-import { IDownloadProgress } from "../../../interfaces/ipc";
+import { IDownloadProgress, IExtractProgress } from "../../../interfaces/ipc";
 import { useLocale } from "../../i18n";
 import preloadProgressViewStyle from "./PreloadProgressView.style";
 
@@ -49,7 +49,7 @@ const PreloadProgressView = observer(() => {
     }
 
     return locale(statusMessage[currentStep - 1]);
-  }
+  };
 
   const makeProgressMessage = () => {
     if (preloadEnded) {
@@ -104,9 +104,9 @@ const PreloadProgressView = observer(() => {
 
     ipcRenderer.on(
       "extract progress",
-      (event: IpcRendererEvent, progress: number) => {
+      (event: IpcRendererEvent, progress: IExtractProgress) => {
         setCurrentStep(4);
-        setProgress(progress * 100);
+        setProgress(progress.percent * 100);
       }
     );
 
@@ -130,7 +130,10 @@ const PreloadProgressView = observer(() => {
   }, []);
 
   useEffect(() => {
-    ipcRenderer.send("mixpanel-track-event", `Launcher/${getCurrentStepMessage()}`);
+    ipcRenderer.send(
+      "mixpanel-track-event",
+      `Launcher/${getCurrentStepMessage()}`
+    );
   }, [currentStep]);
 
   useEffect(() => {
@@ -190,9 +193,11 @@ const PreloadProgressView = observer(() => {
     }
   }, [preloadEnded]);
 
-  useEffect(
-    () => setProgressMessage(makeProgressMessage()),
-    [preloadEnded, currentStep, progress]);
+  useEffect(() => setProgressMessage(makeProgressMessage()), [
+    preloadEnded,
+    currentStep,
+    progress,
+  ]);
 
   const message =
     exceptionMessage === null ? progressMessage : exceptionMessage;
