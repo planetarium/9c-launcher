@@ -1,0 +1,92 @@
+[
+    {
+        "level": 1,
+        "requiredGold": 500,
+        "rewards": [
+            {
+                "itemId": 400000,
+                "quantity": 200
+            }
+        ]
+    },
+    {
+        "level": 2,
+        "requiredGold": 1800,
+        "rewards": [
+            {
+                "itemId": 400000,
+                "quantity": 880
+            }
+        ]
+    },
+    {
+        "level": 3,
+        "requiredGold": 7200,
+        "rewards": [
+            {
+                "itemId": 400000,
+                "quantity": 600
+            },
+            {
+                "itemId": 500000,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "level": 4,
+        "requiredGold": 54000,
+        "rewards": [
+            {
+                "itemId": 400000,
+                "quantity": 13000
+            },
+            {
+                "itemId": 500000,
+                "quantity": 10
+            }
+        ]
+    },
+    {
+        "level": 5,
+        "requiredGold": 270000,
+        "rewards": [
+            {
+                "itemId": 400000,
+                "quantity": 70000
+            },
+            {
+                "itemId": 500000,
+                "quantity": 50
+            }
+        ]
+    },
+    {
+        "level": 6,
+        "requiredGold": 480000,
+        "rewards": [
+            {
+                "itemId": 400000,
+                "quantity": 150000
+            },
+            {
+                "itemId": 500000,
+                "quantity": 80
+            }
+        ]
+    },
+    {
+        "level": 7,
+        "requiredGold": 3000000,
+        "rewards": [
+            {
+                "itemId": 400000,
+                "quantity": 1000000
+            },
+            {
+                "itemId": 500000,
+                "quantity": 500
+            }
+        ]
+    }
+]

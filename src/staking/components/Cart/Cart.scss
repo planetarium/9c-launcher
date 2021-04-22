@@ -1,0 +1,36 @@
+$bg-img: url('../../common/resources/bg-staking-bottom-bg.png');
+
+.CartContainer {
+    width: 100%;
+}
+
+
+.CartIcon {
+    width: 50px;
+}
+
+.OpsButtonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+
+}
+
+.CartItemListContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 170px;
+    width: 90%;
+}
+
+.CartItemListBackground {
+    background: $bg-img;
+    background-size: 100%;
+    background-repeat: no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

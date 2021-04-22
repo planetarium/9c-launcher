@@ -1,0 +1,88 @@
+$slot-img: url('../../../common/resources/ui-staking-slot-bg.png');
+$select-img: url('../../../common/resources/ui-staking-slot-select.png');
+
+.AddIcon {
+    top: 0;
+    width: 30px;
+    fill: #E97341;
+}
+
+.LockIcon {
+    top: 0;
+    width: 30px;
+    fill: #E97341;
+}
+
+.RemoveButton {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    top: 0;
+    right: 10px;
+}
+
+.CartIconContainer {
+    width: 67px;
+    height: 67px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+}
+
+.CartItemContainer {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.StakingImageBackground {
+  background-image: $slot-img;
+  background-size: 100%;
+  background-repeat: no-repeat;
+}
+
+.CartValueContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    border-radius: 10px;
+    font-weight: normal;
+    width: 104px;
+
+    height: 21px;
+}
+
+.GoldIcon {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    left: -5px;
+    bottom: -2px;
+}
+
+.RedFontColor {
+    color: red;
+}
+
+.CandidateItemBackground {
+  background-image: $select-img;
+  background-size: 100%;
+  background-repeat: no-repeat;
+}
+
+.CartIconListContainer {
+  width: 90%;
+}
+
+.AddItem {
+  width: 100%;
+  height: 100%;
+}
