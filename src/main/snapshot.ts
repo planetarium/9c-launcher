@@ -8,6 +8,8 @@ import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snaps
 import Headless from "./headless/headless";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { MixpanelInfo } from "./main";
+import { ClearCacheException } from "./exceptions/clear-cache-exception";
+import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 
 export type Epoch = {
   BlockEpoch: number;
@@ -186,7 +188,11 @@ export async function downloadSnapshot(
     });
     savingPaths = await Promise.all(downloadPromise);
   } catch (error) {
-    throw new DownloadSnapshotFailedError(basePath, savingPaths.join(", "));
+    if ((error = "Error: Clear cache requested.")) {
+      throw new ClearCacheException();
+    } else {
+      throw new DownloadSnapshotFailedError(basePath, savingPaths.join(", "));
+    }
   }
 
   token.throwIfCancelled();
@@ -233,42 +239,50 @@ export async function extractSnapshot(
   let mixpanelUUID = mixpanelInfo.mixpanelUUID;
   let ip = mixpanelInfo.ip;
   snapshotPaths.reverse();
-
-  if (mixpanel !== null) {
-    mixpanel?.track(`Launcher/Downloading Snapshot/extract-snapshot`, {
-      distinct_id: mixpanelUUID,
-      ip,
-    });
-  }
-
-  console.log(`Extracting snapshot.
-extractPath: [ ${blockchainStorePath} ],
-extractTarget: [ ${snapshotPaths} ]`);
-
-  const snapshotPathsLength = snapshotPaths.length;
-  const eachProgress = 1 / snapshotPathsLength;
   let index = 0;
-  for (const snapshotPath of snapshotPaths) {
-    const accumulateProgress = index * eachProgress;
-    token.throwIfCancelled();
-    console.log(`extract: ${snapshotPath}`);
-    await cancellableExtract(
-      snapshotPath,
-      blockchainStorePath,
-      (progress) =>
-        onProgress(accumulateProgress + progress / snapshotPathsLength),
-      token
-    );
-    index++;
-  }
-  onProgress(1);
-  console.log("Snapshot extract complete.");
 
-  if (mixpanel !== null) {
-    mixpanel?.track(`Launcher/Downloading Snapshot/complete`, {
-      distinct_id: mixpanelUUID,
-      ip,
-    });
+  try {
+    if (mixpanel !== null) {
+      mixpanel?.track(`Launcher/Downloading Snapshot/extract-snapshot`, {
+        distinct_id: mixpanelUUID,
+        ip,
+      });
+    }
+
+    console.log(`Extracting snapshot.
+  extractPath: [ ${blockchainStorePath} ],
+  extractTarget: [ ${snapshotPaths} ]`);
+
+    const snapshotPathsLength = snapshotPaths.length;
+    const eachProgress = 1 / snapshotPathsLength;
+    for (const snapshotPath of snapshotPaths) {
+      const accumulateProgress = index * eachProgress;
+      token.throwIfCancelled();
+      console.log(`extract: ${snapshotPath}`);
+      await cancellableExtract(
+        snapshotPath,
+        blockchainStorePath,
+        (progress) =>
+          onProgress(accumulateProgress + progress / snapshotPathsLength),
+        token
+      );
+      index++;
+    }
+    onProgress(1);
+    console.log("Snapshot extract complete.");
+
+    if (mixpanel !== null) {
+      mixpanel?.track(`Launcher/Downloading Snapshot/complete`, {
+        distinct_id: mixpanelUUID,
+        ip,
+      });
+    }
+  } catch (error) {
+    if ((error = "Error: Clear cache requested.")) {
+      throw new ClearCacheException();
+    } else {
+      throw new ExtractSnapshotFailedError(snapshotPaths[index]);
+    }
   }
 }
 

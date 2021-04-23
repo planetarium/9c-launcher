@@ -56,6 +56,7 @@ import { Address, PrivateKey } from "./headless/key-store";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { PermDeviceInformationSharp } from "@material-ui/icons";
+import { ClearCacheException } from "./exceptions/clear-cache-exception";
 
 initializeSentry();
 
@@ -180,7 +181,7 @@ function initializeApp() {
   });
 
   app.on("quit", (event) => {
-    quitAllProcesses();
+    quitAllProcesses(null);
   });
 
   app.on("activate", (event) => {
@@ -219,7 +220,7 @@ async function update(
     throw e;
   }
 
-  await quitAllProcesses();
+  await quitAllProcesses(null);
 
   if (win === null) {
     console.log("Stop update process because win is null.");
@@ -487,7 +488,7 @@ function initializeIpc() {
 
   ipcMain.on("clear cache", async (event, rerun: boolean) => {
     console.log(`Clear cache is requested. (rerun: ${rerun})`);
-    await quitAllProcesses();
+    await quitAllProcesses("clear-cache");
     utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
     if (rerun) initializeHeadless();
     event.returnValue = true;
@@ -506,7 +507,7 @@ function initializeIpc() {
   });
 
   ipcMain.on("relaunch standalone", async (event) => {
-    await relaunchHeadless();
+    await relaunchHeadless(null);
     event.returnValue = true;
   });
 
@@ -761,6 +762,9 @@ async function initializeHeadless(): Promise<void> {
             throw new HeadlessInitializeError(
               `Snapshot metadata download failed.`
             );
+          case ClearCacheException:
+            // do nothing when clearing cache
+            return;
           default:
             win?.webContents.send(
               "go to error page",
@@ -780,7 +784,7 @@ async function initializeHeadless(): Promise<void> {
     console.log("Register exit handler.");
     standalone.once("exit", async () => {
       console.error("Headless exited by self.");
-      await relaunchHeadless();
+      await relaunchHeadless(null);
     });
   } catch (error) {
     console.error(`Error occurred during initializeHeadless(). ${error}`);
@@ -900,22 +904,22 @@ function loadInstallerMixpanelUUID(): string {
   }
 }
 
-async function relaunchHeadless() {
-  await stopHeadlessProcess();
+async function relaunchHeadless(reason: string | null) {
+  await stopHeadlessProcess(reason);
   initializeHeadless();
 }
 
-async function quitAllProcesses() {
-  await stopHeadlessProcess();
+async function quitAllProcesses(reason: string | null) {
+  await stopHeadlessProcess(reason);
   if (gameNode === null) return;
   let pid = gameNode.pid;
   process.kill(pid, "SIGINT");
   gameNode = null;
 }
 
-async function stopHeadlessProcess(): Promise<void> {
+async function stopHeadlessProcess(reason: string | null): Promise<void> {
   console.log("Cancelling initializeHeadless()");
-  initializeHeadlessCts?.cancel();
+  initializeHeadlessCts?.cancel(reason);
   while (initializeHeadlessCts !== null) await utils.sleep(100);
   console.log("initializeHeadless() cancelled.");
   await standalone.kill();

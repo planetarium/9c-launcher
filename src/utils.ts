@@ -10,6 +10,7 @@ import CancellationToken from "cancellationtoken";
 import extractZip from "extract-zip";
 import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
 import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
+import { ClearCacheException } from "./main/exceptions/clear-cache-exception";
 
 const pipeline = promisify(stream.pipeline);
 
@@ -123,7 +124,11 @@ export async function cancellableDownload(
     });
     await pipeline(res.data, fs.createWriteStream(downloadPath));
   } catch (error) {
-    throw new CancellableDownloadFailedError(url, downloadPath);
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      throw new CancellableDownloadFailedError(url, downloadPath);
+    }
   }
 }
 
@@ -147,10 +152,14 @@ export async function cancellableExtract(
     });
     await fs.promises.unlink(targetDir);
   } catch (error) {
-    console.error(
-      `Unexpected error occurred during extracting ${targetDir} to ${outputDir}. ${error}`
-    );
-    throw new CancellableExtractFailedError(targetDir, outputDir);
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      console.error(
+        `Unexpected error occurred during extracting ${targetDir} to ${outputDir}. ${error}`
+      );
+      throw new CancellableExtractFailedError(targetDir, outputDir);
+    }
   }
 }
 
