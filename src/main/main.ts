@@ -181,7 +181,7 @@ function initializeApp() {
   });
 
   app.on("quit", (event) => {
-    quitAllProcesses(null);
+    quitAllProcesses();
   });
 
   app.on("activate", (event) => {
@@ -220,7 +220,7 @@ async function update(
     throw e;
   }
 
-  await quitAllProcesses(null);
+  await quitAllProcesses();
 
   if (win === null) {
     console.log("Stop update process because win is null.");
@@ -507,7 +507,7 @@ function initializeIpc() {
   });
 
   ipcMain.on("relaunch standalone", async (event) => {
-    await relaunchHeadless(null);
+    await relaunchHeadless();
     event.returnValue = true;
   });
 
@@ -784,7 +784,7 @@ async function initializeHeadless(): Promise<void> {
     console.log("Register exit handler.");
     standalone.once("exit", async () => {
       console.error("Headless exited by self.");
-      await relaunchHeadless(null);
+      await relaunchHeadless();
     });
   } catch (error) {
     console.error(`Error occurred during initializeHeadless(). ${error}`);
@@ -904,12 +904,12 @@ function loadInstallerMixpanelUUID(): string {
   }
 }
 
-async function relaunchHeadless(reason: string | null) {
+async function relaunchHeadless(reason: string = "default") {
   await stopHeadlessProcess(reason);
   initializeHeadless();
 }
 
-async function quitAllProcesses(reason: string | null) {
+async function quitAllProcesses(reason: string = "default") {
   await stopHeadlessProcess(reason);
   if (gameNode === null) return;
   let pid = gameNode.pid;
@@ -917,7 +917,7 @@ async function quitAllProcesses(reason: string | null) {
   gameNode = null;
 }
 
-async function stopHeadlessProcess(reason: string | null): Promise<void> {
+async function stopHeadlessProcess(reason: string = "default"): Promise<void> {
   console.log("Cancelling initializeHeadless()");
   initializeHeadlessCts?.cancel(reason);
   while (initializeHeadlessCts !== null) await utils.sleep(100);

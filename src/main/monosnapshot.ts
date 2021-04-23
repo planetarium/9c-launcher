@@ -60,7 +60,7 @@ export async function downloadSnapshot(
     console.log("Snapshot download complete. Directory: ", dir);
     return savingPath;
   } catch (error) {
-    if (String(error) === "Error: Clear cache requested.") {
+    if (token.reason === "clear-cache") {
       throw new ClearCacheException();
     } else {
       throw new DownloadSnapshotFailedError(downloadPath, savingPath);
@@ -82,7 +82,7 @@ extractTarget: [ ${snapshotPath} ]`);
     await cancellableExtract(snapshotPath, storePath, onProgress, token);
     console.log("Snapshot extract complete.");
   } catch (error) {
-    if (String(error) === "Error: Clear cache requested.") {
+    if (token.reason === "clear-cache") {
       throw new ClearCacheException();
     } else {
       throw new ExtractSnapshotFailedError(snapshotPath);

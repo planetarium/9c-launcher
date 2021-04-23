@@ -188,7 +188,7 @@ export async function downloadSnapshot(
     });
     savingPaths = await Promise.all(downloadPromise);
   } catch (error) {
-    if (String(error) === "Error: Clear cache requested.") {
+    if (token.reason === "clear-cache") {
       throw new ClearCacheException();
     } else {
       throw new DownloadSnapshotFailedError(basePath, savingPaths.join(", "));
@@ -217,14 +217,22 @@ export async function downloadStateSnapshot(
   let ip = mixpanelInfo.ip;
   console.log(`download snapshot path: ${downloadUrl}`);
 
-  if (mixpanel !== null) {
-    mixpanel?.track(`Launcher/Downloading Snapshot/state-snapshot`, {
-      distinct_id: mixpanelUUID,
-      ip,
-    });
-  }
+  try {
+    if (mixpanel !== null) {
+      mixpanel?.track(`Launcher/Downloading Snapshot/state-snapshot`, {
+        distinct_id: mixpanelUUID,
+        ip,
+      });
+    }
 
-  await cancellableDownload(downloadUrl, savingPath, onProgress, token);
+    await cancellableDownload(downloadUrl, savingPath, onProgress, token);
+  } catch (error) {
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      throw new DownloadSnapshotFailedError(basePath, savingPath);
+    }
+  }
   return savingPath;
 }
 
@@ -278,7 +286,7 @@ export async function extractSnapshot(
       });
     }
   } catch (error) {
-    if (String(error) === "Error: Clear cache requested.") {
+    if (token.reason === "clear-cache") {
       throw new ClearCacheException();
     } else {
       throw new ExtractSnapshotFailedError(snapshotPaths[index]);
