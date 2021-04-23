@@ -188,7 +188,7 @@ export async function downloadSnapshot(
     });
     savingPaths = await Promise.all(downloadPromise);
   } catch (error) {
-    if ((error = "Error: Clear cache requested.")) {
+    if (String(error) === "Error: Clear cache requested.") {
       throw new ClearCacheException();
     } else {
       throw new DownloadSnapshotFailedError(basePath, savingPaths.join(", "));
@@ -278,7 +278,7 @@ export async function extractSnapshot(
       });
     }
   } catch (error) {
-    if ((error = "Error: Clear cache requested.")) {
+    if (String(error) === "Error: Clear cache requested.") {
       throw new ClearCacheException();
     } else {
       throw new ExtractSnapshotFailedError(snapshotPaths[index]);
