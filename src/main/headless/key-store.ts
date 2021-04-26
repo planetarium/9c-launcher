@@ -62,6 +62,11 @@ export class KeyStore extends StandaloneSubcommand {
     privateKey: PrivateKey,
     targetType: "address" | "public-key"
   ) {
-    this.execSync("key", "convert", `--${targetType}`, privateKey);
+    return this.execSync(
+      "key",
+      "convert",
+      `--${targetType}`,
+      privateKey
+    ).trim();
   }
 }

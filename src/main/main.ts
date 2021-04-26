@@ -598,15 +598,13 @@ function initializeIpc() {
   ipcMain.on(
     "revoke-protected-private-key",
     async (event, address: Address) => {
-      const protectedPrivateKey = standalone.keyStore
-        .list()
-        .find((x) => x.address === address);
-      if (protectedPrivateKey === undefined) {
-        event.returnValue = [undefined, {}];
-        return;
-      }
+      const keyList = standalone.keyStore.list();
+      keyList.forEach((pv) => {
+        if (pv.address.replace("0x", "") === address.toString()) {
+          standalone.keyStore.revokeProtectedPrivateKey(pv.keyId);
+        }
+      });
 
-      standalone.keyStore.revokeProtectedPrivateKey(protectedPrivateKey.keyId);
       event.returnValue = ["", undefined];
     }
   );
