@@ -11,6 +11,7 @@ import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-fail
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 import { MixpanelInfo } from "./main";
+import { ClearCacheException } from "./exceptions/clear-cache-exception";
 
 export async function downloadMetadata(
   basePath: string,
@@ -59,7 +60,11 @@ export async function downloadSnapshot(
     console.log("Snapshot download complete. Directory: ", dir);
     return savingPath;
   } catch (error) {
-    throw new DownloadSnapshotFailedError(downloadPath, savingPath);
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      throw new DownloadSnapshotFailedError(downloadPath, savingPath);
+    }
   }
 }
 
@@ -77,7 +82,11 @@ extractTarget: [ ${snapshotPath} ]`);
     await cancellableExtract(snapshotPath, storePath, onProgress, token);
     console.log("Snapshot extract complete.");
   } catch (error) {
-    throw new ExtractSnapshotFailedError(snapshotPath);
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      throw new ExtractSnapshotFailedError(snapshotPath);
+    }
   }
 }
 

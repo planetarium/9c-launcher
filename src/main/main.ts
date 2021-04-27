@@ -56,6 +56,7 @@ import { Address, PrivateKey } from "./headless/key-store";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { PermDeviceInformationSharp } from "@material-ui/icons";
+import { ClearCacheException } from "./exceptions/clear-cache-exception";
 
 initializeSentry();
 
@@ -487,7 +488,7 @@ function initializeIpc() {
 
   ipcMain.on("clear cache", async (event, rerun: boolean) => {
     console.log(`Clear cache is requested. (rerun: ${rerun})`);
-    await quitAllProcesses();
+    await quitAllProcesses("clear-cache");
     utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
     if (rerun) initializeHeadless();
     event.returnValue = true;
@@ -597,15 +598,13 @@ function initializeIpc() {
   ipcMain.on(
     "revoke-protected-private-key",
     async (event, address: Address) => {
-      const protectedPrivateKey = standalone.keyStore
-        .list()
-        .find((x) => x.address === address);
-      if (protectedPrivateKey === undefined) {
-        event.returnValue = [undefined, {}];
-        return;
-      }
+      const keyList = standalone.keyStore.list();
+      keyList.forEach((pv) => {
+        if (pv.address.replace("0x", "") === address.toString()) {
+          standalone.keyStore.revokeProtectedPrivateKey(pv.keyId);
+        }
+      });
 
-      standalone.keyStore.revokeProtectedPrivateKey(protectedPrivateKey.keyId);
       event.returnValue = ["", undefined];
     }
   );
@@ -761,6 +760,9 @@ async function initializeHeadless(): Promise<void> {
             throw new HeadlessInitializeError(
               `Snapshot metadata download failed.`
             );
+          case ClearCacheException:
+            // do nothing when clearing cache
+            return;
           default:
             win?.webContents.send(
               "go to error page",
@@ -900,22 +902,22 @@ function loadInstallerMixpanelUUID(): string {
   }
 }
 
-async function relaunchHeadless() {
-  await stopHeadlessProcess();
+async function relaunchHeadless(reason: string = "default") {
+  await stopHeadlessProcess(reason);
   initializeHeadless();
 }
 
-async function quitAllProcesses() {
-  await stopHeadlessProcess();
+async function quitAllProcesses(reason: string = "default") {
+  await stopHeadlessProcess(reason);
   if (gameNode === null) return;
   let pid = gameNode.pid;
   process.kill(pid, "SIGINT");
   gameNode = null;
 }
 
-async function stopHeadlessProcess(): Promise<void> {
+async function stopHeadlessProcess(reason: string = "default"): Promise<void> {
   console.log("Cancelling initializeHeadless()");
-  initializeHeadlessCts?.cancel();
+  initializeHeadlessCts?.cancel(reason);
   while (initializeHeadlessCts !== null) await utils.sleep(100);
   console.log("initializeHeadless() cancelled.");
   await standalone.kill();
