@@ -5,12 +5,13 @@ import { IDownloadProgress } from "../interfaces/ipc";
 import { cancellableDownload, cancellableExtract, execute } from "../utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
-import Headless from "./headless";
+import Headless from "./headless/headless";
 import * as utils from "../utils";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 import { MixpanelInfo } from "./main";
+import { ClearCacheException } from "./exceptions/clear-cache-exception";
 
 export async function downloadMetadata(
   basePath: string,
@@ -59,7 +60,11 @@ export async function downloadSnapshot(
     console.log("Snapshot download complete. Directory: ", dir);
     return savingPath;
   } catch (error) {
-    throw new DownloadSnapshotFailedError(downloadPath, savingPath);
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      throw new DownloadSnapshotFailedError(downloadPath, savingPath);
+    }
   }
 }
 
@@ -77,7 +82,11 @@ extractTarget: [ ${snapshotPath} ]`);
     await cancellableExtract(snapshotPath, storePath, onProgress, token);
     console.log("Snapshot extract complete.");
   } catch (error) {
-    throw new ExtractSnapshotFailedError(snapshotPath);
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      throw new ExtractSnapshotFailedError(snapshotPath);
+    }
   }
 }
 
@@ -105,7 +114,7 @@ export async function processSnapshot(
     let snapshotPath = await downloadSnapshot(
       snapshotDownloadUrl,
       (status) => {
-        win?.webContents.send("download progress", status);
+        win?.webContents.send("download snapshot progress", status);
       },
       token
     );

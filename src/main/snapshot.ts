@@ -5,9 +5,11 @@ import { cancellableDownload, cancellableExtract } from "../utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
-import Headless from "./headless";
+import Headless from "./headless/headless";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { MixpanelInfo } from "./main";
+import { ClearCacheException } from "./exceptions/clear-cache-exception";
+import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 
 export type Epoch = {
   BlockEpoch: number;
@@ -186,7 +188,11 @@ export async function downloadSnapshot(
     });
     savingPaths = await Promise.all(downloadPromise);
   } catch (error) {
-    throw new DownloadSnapshotFailedError(basePath, savingPaths.join(", "));
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      throw new DownloadSnapshotFailedError(basePath, savingPaths.join(", "));
+    }
   }
 
   token.throwIfCancelled();
@@ -211,14 +217,22 @@ export async function downloadStateSnapshot(
   let ip = mixpanelInfo.ip;
   console.log(`download snapshot path: ${downloadUrl}`);
 
-  if (mixpanel !== null) {
-    mixpanel?.track(`Launcher/Downloading Snapshot/state-snapshot`, {
-      distinct_id: mixpanelUUID,
-      ip,
-    });
-  }
+  try {
+    if (mixpanel !== null) {
+      mixpanel?.track(`Launcher/Downloading Snapshot/state-snapshot`, {
+        distinct_id: mixpanelUUID,
+        ip,
+      });
+    }
 
-  await cancellableDownload(downloadUrl, savingPath, onProgress, token);
+    await cancellableDownload(downloadUrl, savingPath, onProgress, token);
+  } catch (error) {
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      throw new DownloadSnapshotFailedError(basePath, savingPath);
+    }
+  }
   return savingPath;
 }
 
@@ -233,34 +247,50 @@ export async function extractSnapshot(
   let mixpanelUUID = mixpanelInfo.mixpanelUUID;
   let ip = mixpanelInfo.ip;
   snapshotPaths.reverse();
+  let index = 0;
 
-  if (mixpanel !== null) {
-    mixpanel?.track(`Launcher/Downloading Snapshot/extract-snapshot`, {
-      distinct_id: mixpanelUUID,
-      ip,
-    });
-  }
+  try {
+    if (mixpanel !== null) {
+      mixpanel?.track(`Launcher/Downloading Snapshot/extract-snapshot`, {
+        distinct_id: mixpanelUUID,
+        ip,
+      });
+    }
 
-  console.log(`Extracting snapshot.
-    extractPath: [ ${blockchainStorePath} ],
-    extractTarget: [ ${snapshotPaths} ]`);
-  for (const snapshotPath of snapshotPaths) {
-    token.throwIfCancelled();
-    console.log(`extract: ${snapshotPath}`);
-    await cancellableExtract(
-      snapshotPath,
-      blockchainStorePath,
-      onProgress,
-      token
-    );
-  }
-  console.log("Snapshot extract complete.");
+    console.log(`Extracting snapshot.
+  extractPath: [ ${blockchainStorePath} ],
+  extractTarget: [ ${snapshotPaths} ]`);
 
-  if (mixpanel !== null) {
-    mixpanel?.track(`Launcher/Downloading Snapshot/complete`, {
-      distinct_id: mixpanelUUID,
-      ip,
-    });
+    const snapshotPathsLength = snapshotPaths.length;
+    const eachProgress = 1 / snapshotPathsLength;
+    for (const snapshotPath of snapshotPaths) {
+      const accumulateProgress = index * eachProgress;
+      token.throwIfCancelled();
+      console.log(`extract: ${snapshotPath}`);
+      await cancellableExtract(
+        snapshotPath,
+        blockchainStorePath,
+        (progress) =>
+          onProgress(accumulateProgress + progress / snapshotPathsLength),
+        token
+      );
+      index++;
+    }
+    onProgress(1);
+    console.log("Snapshot extract complete.");
+
+    if (mixpanel !== null) {
+      mixpanel?.track(`Launcher/Downloading Snapshot/complete`, {
+        distinct_id: mixpanelUUID,
+        ip,
+      });
+    }
+  } catch (error) {
+    if (token.reason === "clear-cache") {
+      throw new ClearCacheException();
+    } else {
+      throw new ExtractSnapshotFailedError(snapshotPaths[index]);
+    }
   }
 }
 
@@ -318,7 +348,7 @@ export async function processSnapshot(
       target,
       userDataPath,
       (status) => {
-        win?.webContents.send("download progress", status);
+        win?.webContents.send("download snapshot progress", status);
       },
       mixpanelInfo,
       token
@@ -327,7 +357,7 @@ export async function processSnapshot(
       snapshotDownloadUrl,
       userDataPath,
       (status) => {
-        win?.webContents.send("download progress", status);
+        win?.webContents.send("download state snapshot progress", status);
       },
       mixpanelInfo,
       token

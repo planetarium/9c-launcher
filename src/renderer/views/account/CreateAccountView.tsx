@@ -38,12 +38,9 @@ const CreateAccountView = observer(
       if (
         error !== undefined ||
         privateKey === undefined ||
-        privateKey === ""
-      ) {
+        privateKey === "") {
         // FIXME: Show a new error page or retry page to complete the account creation.
-        console.error(
-          `Failed to unprotect private key. ${error?.name}: ${error?.message}`
-        );
+        console.error(`Failed to unprotect private key. ${error?.name}: ${error?.message}`);
         return;
       }
 

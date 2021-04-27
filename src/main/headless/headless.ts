@@ -1,15 +1,16 @@
 import { ChildProcess, execFileSync } from "child_process";
 import { ipcMain } from "electron";
 import { dirname, basename } from "path";
-import { electronStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../config";
+import { electronStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../../config";
 import { retry } from "@lifeomic/attempt";
-import { FetchError, HeadlessExitedError } from "../errors";
-import { execute, sleep } from "../utils";
+import { FetchError, HeadlessExitedError } from "../../errors";
+import { execute, sleep } from "../../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
 import { BlockMetadata } from "src/interfaces/block-header";
-import { KeyStore } from "./headless/key-store";
-import { Validation } from "./headless/validation";
+import { KeyStore } from "./key-store";
+import { Validation } from "./validation";
+import { Apv } from "./apv";
 
 const retryOptions = {
   delay: 100,
@@ -109,12 +110,6 @@ class Headless {
     }
   }
 
-  public async run(): Promise<boolean> {
-    console.log("Running standalone.");
-    this._running = await this.retriableFetch("run-standalone", "");
-    return this._running;
-  }
-
   public async setPrivateKey(privateKey: string): Promise<boolean> {
     console.log("Setting private key.");
     const body = JSON.stringify({
@@ -175,6 +170,10 @@ class Headless {
     return new Validation(this._path);
   }
 
+  public get apv(): Apv {
+    return new Apv(this._path);
+  }
+
   public getTip(storeType: string, storePath: string): BlockMetadata | null {
     try {
       console.log(
@@ -217,7 +216,7 @@ class Headless {
 
     NODESTATUS.Node = null;
     NODESTATUS.ExitCode = code;
-    
+
     if (!NODESTATUS.QuitRequested) {
       console.error("Headless exited unexpectedly.");
       eventEmitter.emit("exit");

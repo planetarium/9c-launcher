@@ -34,13 +34,13 @@ import "@babel/polyfill";
 import extractZip from "extract-zip";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
-import { BencodexDict, decode } from "bencodex";
+import { BencodexDict, encode, decode } from "bencodex";
 import { tmpName } from "tmp-promise";
 import lockfile from "lockfile";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
-import Headless from "./headless";
+import Headless from "./headless/headless";
 import {
   HeadlessExitedError,
   HeadlessInitializeError,
@@ -55,6 +55,8 @@ import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
 import { Address, PrivateKey } from "./headless/key-store";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
+import { PermDeviceInformationSharp } from "@material-ui/icons";
+import { ClearCacheException } from "./exceptions/clear-cache-exception";
 
 initializeSentry();
 
@@ -85,6 +87,7 @@ const standaloneExecutableArgs = [
       (trustedAppProtocolVersionSigner) =>
         `-T=${trustedAppProtocolVersionSigner}`
     ),
+  "--no-miner",
   "--rpc-server",
   `--rpc-listen-host=${RPC_SERVER_HOST}`,
   `--rpc-listen-port=${RPC_SERVER_PORT}`,
@@ -187,214 +190,201 @@ function initializeApp() {
   });
 }
 
-function initializeIpc() {
-  ipcMain.on(
-    "encounter different version",
-    async (event, data: DifferentAppProtocolVersionEncounterSubscription) => {
-      const localVersionNumber =
-        data.differentAppProtocolVersionEncounter.localVersion.version;
-      const peerVersionNumber =
-        data.differentAppProtocolVersionEncounter.peerVersion.version;
-      if (peerVersionNumber <= localVersionNumber) {
-        console.log(
-          "Encountered version is not higher than the local version. Abort update."
-        );
-        return;
-      }
+async function update(
+  localVersionNumber: number,
+  peerVersionNumber: number,
+  peerVersionExtra: string
+) {
+  if (peerVersionNumber <= localVersionNumber) {
+    console.log(
+      "Encountered version is not higher than the local version. Abort update."
+    );
+    return;
+  }
 
-      if (lockfile.checkSync(lockfilePath)) {
-        console.log(
-          "'encounter different version' event seems running already. Stop this flow."
-        );
-        return;
-      } else {
-        try {
-          lockfile.lockSync(lockfilePath);
-          console.log(
-            "Created 'encounter different version' lockfile at ",
-            lockfilePath
-          );
-        } catch (e) {
-          console.error("Error occurred during trying lock.");
-          throw e;
-        }
-      }
+  if (lockfile.checkSync(lockfilePath)) {
+    console.log(
+      "'encounter different version' event seems running already. Stop this flow."
+    );
+    return;
+  }
 
-      await quitAllProcesses();
+  try {
+    lockfile.lockSync(lockfilePath);
+    console.log(
+      "Created 'encounter different version' lockfile at ",
+      lockfilePath
+    );
+  } catch (e) {
+    console.error("Error occurred during trying lock.");
+    throw e;
+  }
 
-      console.log("Encounter a different version:", data);
-      if (win == null) return;
+  await quitAllProcesses();
 
-      const { differentAppProtocolVersionEncounter } = data;
-      console.log(differentAppProtocolVersionEncounter);
+  if (win === null) {
+    console.log("Stop update process because win is null.");
+    return;
+  }
 
-      const { peerVersion } = differentAppProtocolVersionEncounter;
-      if (peerVersion.extra == null) return; // 형식에 안 맞는 피어이니 무시.
+  console.log("peerVersionExtra (hex):", peerVersionExtra);
+  const buffer = Buffer.from(peerVersionExtra, "hex");
+  console.log("peerVersionExtra (bytes):", buffer);
+  const extra = decode(buffer) as BencodexDict;
+  console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // 다른 프로세스라 잘 안보여서 JSON으로...
+  const macOSBinaryUrl = extra.get("macOSBinaryUrl") as string;
+  const windowsBinaryUrl = extra.get("WindowsBinaryUrl") as string;
+  console.log("macOSBinaryUrl: ", macOSBinaryUrl);
+  console.log("WindowsBinaryUrl: ", windowsBinaryUrl);
+  const downloadUrl =
+    process.platform === "win32"
+      ? windowsBinaryUrl
+      : process.platform === "darwin"
+      ? macOSBinaryUrl
+      : null;
 
-      console.log("peerVersion.extra (hex):", peerVersion.extra);
-      const buffer = Buffer.from(peerVersion.extra, "hex");
-      console.log("peerVersion.extra (bytes):", buffer);
-      const extra = decode(buffer) as BencodexDict;
-      console.log("peerVersion.extra (decoded):", JSON.stringify(extra)); // 다른 프로세스라 잘 안보여서 JSON으로...
-      const macOSBinaryUrl = extra.get("macOSBinaryUrl") as string;
-      const windowsBinaryUrl = extra.get("WindowsBinaryUrl") as string;
-      console.log("macOSBinaryUrl: ", macOSBinaryUrl);
-      console.log("WindowsBinaryUrl: ", windowsBinaryUrl);
-      const timestamp = extra.get("timestamp") as string;
-      const downloadUrl =
-        process.platform === "win32"
-          ? windowsBinaryUrl
-          : process.platform === "darwin"
-          ? macOSBinaryUrl
-          : null;
+  if (downloadUrl == null) {
+    console.log(`Stop update process. Not support ${process.platform}.`);
+    return;
+  }
 
-      if (downloadUrl == null) return; // 지원 안 하는 플랫폼이니 무시.
-
-      // TODO: 이어받기 되면 좋을 듯
-      const options: ElectronDLOptions = {
-        onStarted: (downloadItem: DownloadItem) => {
-          console.log("Starts to download:", downloadItem);
-        },
-        onProgress: (status: IDownloadProgress) => {
-          const percent = (status.percent * 100) | 0;
-          console.log(
-            `Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
-          );
-          win?.webContents.send("update download progress", status);
-        },
-        directory: app.getPath("temp"),
-      };
-      console.log("Starts to download:", downloadUrl);
-      let dl: DownloadItem | null | undefined;
-      try {
-        dl = await download(win, downloadUrl, options);
-      } catch (error) {
-        win?.webContents.send("go to error page", "download-binary-failed");
-        throw new DownloadBinaryFailedError(downloadUrl);
-      }
-
-      win?.webContents.send("update download complete");
-      const dlFname = dl?.getFilename();
-      const dlPath = dl?.getSavePath();
-      console.log("Finished to download:", dlPath);
-
-      const extractPath =
-        process.platform == "darwin" // .app으로 실행한 건지 npm run dev로 실행한 건지도 확인해야 함
-          ? path.dirname(
-              path.dirname(path.dirname(path.dirname(app.getAppPath())))
-            )
-          : path.dirname(path.dirname(app.getAppPath()));
-      console.log("The 9C app installation path:", extractPath);
-
-      const appDirName = app.getAppPath();
-      // FIXME: "config.json" 이거 하드코딩하지 말아야 함
-      const configFileName = "config.json";
-
-      // 압축 해제하기 전에 기존 설정 꿍쳐둔다. 나중에 기존 설정 내용이랑 새 디폴트 값들이랑 합쳐야 함.
-      const configPath = path.join(appDirName, configFileName);
-      const bakConfig = JSON.parse(
-        await fs.promises.readFile(configPath, { encoding: "utf-8" })
-      );
-      console.log("The existing configuration:", bakConfig);
-
-      if (process.platform == "win32") {
-        // 윈도는 프로세스 떠 있는 실행 파일을 덮어씌우거나 지우지 못하므로 이름을 바꿔둬야 함.
-        const src = app.getPath("exe");
-        const basename = path.basename(src);
-        const dirname = path.dirname(src);
-        const dst = path.join(dirname, "bak_" + basename);
-        await fs.promises.rename(src, dst);
-        console.log("The executing file has renamed from", src, "to", dst);
-
-        // TODO: temp directory 앞에 9c-updater- 접두어
-        const tempDir = await tmpName();
-
-        // ZIP 압축 해제
-        console.log("Start to extract the zip archive", dlPath, "to", tempDir);
-
-        await extractZip(dlPath, {
-          dir: tempDir,
-          onEntry: (_, zipfile) => {
-            const progress = zipfile.entriesRead / zipfile.entryCount;
-            win?.webContents.send("update extract progress", progress);
-          },
-        });
-        win?.webContents.send("update extract complete");
-        console.log("The zip archive", dlPath, "has extracted to", tempDir);
-        win?.webContents.send("update copying progress");
-        await utils.copyDir(tempDir, extractPath);
-        console.log("Copied extracted files from", tempDir, "to", extractPath);
-        try {
-          await fs.promises.rmdir(tempDir, { recursive: true });
-          console.log("Removed all temporary files from", tempDir);
-        } catch (e) {
-          console.warn(
-            "Failed to remove temporary files from",
-            tempDir,
-            "\n",
-            e
-          );
-        }
-        win?.webContents.send("update copying complete");
-      } else if (process.platform == "darwin") {
-        // .tar.{gz,bz2} 해제
-        const lowerFname = dlFname.toLowerCase();
-        const bz2 =
-          lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");
-        console.log(
-          "Start to extract the tarball archive",
-          dlPath,
-          "to",
-          extractPath
-        );
-        try {
-          await spawnPromise(
-            "tar",
-            [`xvf${bz2 ? "j" : "z"}`, dlPath, "-C", extractPath],
-            { capture: ["stdout", "stderr"] }
-          );
-        } catch (e) {
-          console.error(`${e}:\n`, e.stderr);
-          throw e;
-        }
-        console.log(
-          "The tarball archive",
-          dlPath,
-          "has extracted to ",
-          extractPath
-        );
-      } else {
-        console.warn("Not supported platform.");
-        return;
-      }
-
-      // 압축을 푼 뒤 압축 파일은 제거합니다.
-      await fs.promises.unlink(dlPath);
-
-      // 설정 합치기
-      const newConfig = JSON.parse(
-        await fs.promises.readFile(configPath, { encoding: "utf-8" })
-      );
-      const config = {
-        ...bakConfig,
-        ...newConfig,
-      };
-      await fs.promises.writeFile(configPath, JSON.stringify(config), "utf-8");
+  // TODO: 이어받기 되면 좋을 듯
+  const options: ElectronDLOptions = {
+    onStarted: (downloadItem: DownloadItem) => {
+      console.log("Starts to download:", downloadItem);
+    },
+    onProgress: (status: IDownloadProgress) => {
+      const percent = (status.percent * 100) | 0;
       console.log(
-        "The existing and new configuration files has been merged:",
-        config
+        `Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
+      win?.webContents.send("update download progress", status);
+    },
+    directory: app.getPath("temp"),
+  };
+  console.log("Starts to download:", downloadUrl);
+  let dl: DownloadItem | null | undefined;
+  try {
+    dl = await download(win, downloadUrl, options);
+  } catch (error) {
+    win.webContents.send("go to error page", "download-binary-failed");
+    throw new DownloadBinaryFailedError(downloadUrl);
+  }
 
-      lockfile.unlockSync(lockfilePath);
-      console.log(
-        "Removed 'encounter different version' lockfile at ",
-        lockfilePath
+  win.webContents.send("update download complete");
+  const dlFname = dl?.getFilename();
+  const dlPath = dl?.getSavePath();
+  console.log("Finished to download:", dlPath);
+
+  const extractPath =
+    process.platform == "darwin" // .app으로 실행한 건지 npm run dev로 실행한 건지도 확인해야 함
+      ? path.dirname(path.dirname(path.dirname(path.dirname(app.getAppPath()))))
+      : path.dirname(path.dirname(app.getAppPath()));
+  console.log("The 9C app installation path:", extractPath);
+
+  const appDirName = app.getAppPath();
+  // FIXME: "config.json" 이거 하드코딩하지 말아야 함
+  const configFileName = "config.json";
+
+  // 압축 해제하기 전에 기존 설정 꿍쳐둔다. 나중에 기존 설정 내용이랑 새 디폴트 값들이랑 합쳐야 함.
+  const configPath = path.join(appDirName, configFileName);
+  const bakConfig = JSON.parse(
+    await fs.promises.readFile(configPath, { encoding: "utf-8" })
+  );
+  console.log("The existing configuration:", bakConfig);
+
+  if (process.platform == "win32") {
+    // 윈도는 프로세스 떠 있는 실행 파일을 덮어씌우거나 지우지 못하므로 이름을 바꿔둬야 함.
+    const src = app.getPath("exe");
+    const basename = path.basename(src);
+    const dirname = path.dirname(src);
+    const dst = path.join(dirname, "bak_" + basename);
+    await fs.promises.rename(src, dst);
+    console.log("The executing file has renamed from", src, "to", dst);
+
+    // TODO: temp directory 앞에 9c-updater- 접두어
+    const tempDir = await tmpName();
+
+    // ZIP 압축 해제
+    console.log("Start to extract the zip archive", dlPath, "to", tempDir);
+
+    await extractZip(dlPath, {
+      dir: tempDir,
+      onEntry: (_, zipfile) => {
+        const progress = zipfile.entriesRead / zipfile.entryCount;
+        win?.webContents.send("update extract progress", progress);
+      },
+    });
+    win.webContents.send("update extract complete");
+    console.log("The zip archive", dlPath, "has extracted to", tempDir);
+    win.webContents.send("update copying progress");
+    await utils.copyDir(tempDir, extractPath);
+    console.log("Copied extracted files from", tempDir, "to", extractPath);
+    try {
+      await fs.promises.rmdir(tempDir, { recursive: true });
+      console.log("Removed all temporary files from", tempDir);
+    } catch (e) {
+      console.warn("Failed to remove temporary files from", tempDir, "\n", e);
+    }
+    win.webContents.send("update copying complete");
+  } else if (process.platform == "darwin") {
+    // .tar.{gz,bz2} 해제
+    const lowerFname = dlFname.toLowerCase();
+    const bz2 = lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");
+    console.log(
+      "Start to extract the tarball archive",
+      dlPath,
+      "to",
+      extractPath
+    );
+    try {
+      await spawnPromise(
+        "tar",
+        [`xvf${bz2 ? "j" : "z"}`, dlPath, "-C", extractPath],
+        { capture: ["stdout", "stderr"] }
       );
+    } catch (e) {
+      console.error(`${e}:\n`, e.stderr);
+      throw e;
+    }
+    console.log(
+      "The tarball archive",
+      dlPath,
+      "has extracted to ",
+      extractPath
+    );
+  } else {
+    console.warn("Not supported platform.");
+    return;
+  }
 
-      // 재시작
-      relaunch();
+  // 압축을 푼 뒤 압축 파일은 제거합니다.
+  await fs.promises.unlink(dlPath);
 
-      /*
+  // 설정 합치기
+  const newConfig = JSON.parse(
+    await fs.promises.readFile(configPath, { encoding: "utf-8" })
+  );
+  const config = {
+    ...bakConfig,
+    ...newConfig,
+  };
+  await fs.promises.writeFile(configPath, JSON.stringify(config), "utf-8");
+  console.log(
+    "The existing and new configuration files has been merged:",
+    config
+  );
+
+  lockfile.unlockSync(lockfilePath);
+  console.log(
+    "Removed 'encounter different version' lockfile at ",
+    lockfilePath
+  );
+
+  // 재시작
+  relaunch();
+
+  /*
       Electron이 제공하는 autoUpdater는 macOS에서는 무조건 코드사이닝 되어야 동작.
       당장은 쓰고 싶어도 여건이 안 된다.
 
@@ -443,6 +433,19 @@ function initializeIpc() {
 
       autoUpdater.checkForUpdates();
       */
+}
+
+function initializeIpc() {
+  ipcMain.on(
+    "encounter different version",
+    async (_event, data: DifferentAppProtocolVersionEncounterSubscription) => {
+      if (data.differentAppProtocolVersionEncounter.peerVersion.extra) {
+        await update(
+          data.differentAppProtocolVersionEncounter.localVersion.version,
+          data.differentAppProtocolVersionEncounter.peerVersion.version,
+          data.differentAppProtocolVersionEncounter.peerVersion.extra
+        );
+      }
     }
   );
 
@@ -485,7 +488,7 @@ function initializeIpc() {
 
   ipcMain.on("clear cache", async (event, rerun: boolean) => {
     console.log(`Clear cache is requested. (rerun: ${rerun})`);
-    await quitAllProcesses();
+    await quitAllProcesses("clear-cache");
     utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
     if (rerun) initializeHeadless();
     event.returnValue = true;
@@ -595,15 +598,13 @@ function initializeIpc() {
   ipcMain.on(
     "revoke-protected-private-key",
     async (event, address: Address) => {
-      const protectedPrivateKey = standalone.keyStore
-        .list()
-        .find((x) => x.address === address);
-      if (protectedPrivateKey === undefined) {
-        event.returnValue = [undefined, {}];
-        return;
-      }
+      const keyList = standalone.keyStore.list();
+      keyList.forEach((pv) => {
+        if (pv.address.replace("0x", "") === address.toString()) {
+          standalone.keyStore.revokeProtectedPrivateKey(pv.keyId);
+        }
+      });
 
-      standalone.keyStore.revokeProtectedPrivateKey(protectedPrivateKey.keyId);
       event.returnValue = ["", undefined];
     }
   );
@@ -633,11 +634,12 @@ function initializeIpc() {
 async function initializeHeadless(): Promise<void> {
   /*
   1. Check disk (permission, storage).
-  2. If use snapshot, download metadata.
-  3. Validate metadata via headless-command.
-  4. If metadata is valid, download snapshot with parallel.
-  5. Extract downloaded snapshot.
-  6. Execute headless.
+  2. Check APV and update if needed.
+  3. If use snapshot, download metadata.
+  4. Validate metadata via headless-command.
+  5. If metadata is valid, download snapshot with parallel.
+  6. Extract downloaded snapshot.
+  7. Execute headless.
   */
   console.log(`Initialize headless. (win: ${win?.getTitle})`);
 
@@ -657,6 +659,33 @@ async function initializeHeadless(): Promise<void> {
       lockfilePath
     );
     return;
+  }
+
+  const peerInfos = electronStore.get("PeerStrings");
+  if (peerInfos.length > 0) {
+    const peerApvToken = standalone.apv.query(peerInfos[0]);
+    if (peerApvToken !== null) {
+      if (
+        standalone.apv.verify(
+          electronStore.get("TrustedAppProtocolVersionSigners"),
+          peerApvToken
+        )
+      ) {
+        const peerApv = standalone.apv.analyze(peerApvToken);
+        const localApvToken = electronStore.get("AppProtocolVersion");
+        const localApv = standalone.apv.analyze(localApvToken);
+
+        await update(
+          localApv.version,
+          peerApv.version,
+          encode(peerApv.extra).toString("hex")
+        );
+      } else {
+        console.log(
+          `Ignore APV[${peerApvToken}] due to failure to validating.`
+        );
+      }
+    }
   }
 
   initializeHeadlessCts = CancellationToken.create();
@@ -731,6 +760,9 @@ async function initializeHeadless(): Promise<void> {
             throw new HeadlessInitializeError(
               `Snapshot metadata download failed.`
             );
+          case ClearCacheException:
+            // do nothing when clearing cache
+            return;
           default:
             win?.webContents.send(
               "go to error page",
@@ -744,14 +776,8 @@ async function initializeHeadless(): Promise<void> {
     }
 
     initializeHeadlessCts.token.throwIfCancelled();
+    win?.webContents.send("start headless");
     await standalone.execute(standaloneExecutableArgs);
-    if (!((await standalone.run()) || CUSTOM_SERVER)) {
-      // FIXME: GOTO CLEARCACHE PAGE by headless.exitCode()
-      win?.webContents.send("go to error page", "clear-cache");
-      throw new HeadlessInitializeError(
-        "Error in run. Redirect to clear cache page."
-      );
-    }
 
     console.log("Register exit handler.");
     standalone.once("exit", async () => {
@@ -876,22 +902,22 @@ function loadInstallerMixpanelUUID(): string {
   }
 }
 
-async function relaunchHeadless() {
-  await stopHeadlessProcess();
+async function relaunchHeadless(reason: string = "default") {
+  await stopHeadlessProcess(reason);
   initializeHeadless();
 }
 
-async function quitAllProcesses() {
-  await stopHeadlessProcess();
+async function quitAllProcesses(reason: string = "default") {
+  await stopHeadlessProcess(reason);
   if (gameNode === null) return;
   let pid = gameNode.pid;
   process.kill(pid, "SIGINT");
   gameNode = null;
 }
 
-async function stopHeadlessProcess(): Promise<void> {
+async function stopHeadlessProcess(reason: string = "default"): Promise<void> {
   console.log("Cancelling initializeHeadless()");
-  initializeHeadlessCts?.cancel();
+  initializeHeadlessCts?.cancel(reason);
   while (initializeHeadlessCts !== null) await utils.sleep(100);
   console.log("initializeHeadless() cancelled.");
   await standalone.kill();

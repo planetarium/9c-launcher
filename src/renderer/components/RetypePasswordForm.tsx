@@ -100,7 +100,9 @@ const RetypePasswordForm = ({
     isPasswordEmpty ||
     isPasswordConfirmEmpty ||
     isPasswordConfirmError ||
-    (useActivationKey ? isActivationKeyEmpty || isActivationKeyError : false);
+    (useActivationKey
+      ? isActivationKeyEmpty || isActivationKeyError
+      : false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -160,23 +162,21 @@ const RetypePasswordForm = ({
           {passwordConfirm.length > 0 && strengthHint(passwordConfirm)}
         </FormHelperText>
       </FormControl>
-      {useActivationKey ? (
-        <FormControl
-          fullWidth
-          error={isActivationKeyError}
-          className={classes.formControl}
-        >
-          <InputLabel className={classes.label}>
-            {locale("초대 코드")}
-          </InputLabel>
-          <OutlinedInput type="text" onChange={handleActivationKeyChange} />
-          <FormHelperText className={classes.helperText}>
-            form helper text
-          </FormHelperText>
-        </FormControl>
-      ) : (
-        <></>
-      )}
+      {useActivationKey
+        ? (
+          <FormControl
+            fullWidth
+            error={isActivationKeyError}
+            className={classes.formControl}
+          >
+            <InputLabel className={classes.label}>{locale("초대 코드")}</InputLabel>
+            <OutlinedInput type="text" onChange={handleActivationKeyChange} />
+            <FormHelperText className={classes.helperText}>
+              form helper text
+            </FormHelperText>
+          </FormControl>
+        )
+        : (<></>)}
       <Button
         disabled={disabled}
         color="primary"
