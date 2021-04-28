@@ -44,12 +44,12 @@ const PreloadProgressView = observer(() => {
   };
 
   const getCurrentStepMessage = () => {
-    if (currentStep < 1 || currentStep >= statusMessage.length) {
+    if (!(0 < currentStep && currentStep <= statusMessage.length)) {
       return "Failed to get message for current step.";
     }
 
     return locale(statusMessage[currentStep - 1]);
-  }
+  };
 
   const makeProgressMessage = () => {
     if (preloadEnded) {
@@ -130,7 +130,10 @@ const PreloadProgressView = observer(() => {
   }, []);
 
   useEffect(() => {
-    ipcRenderer.send("mixpanel-track-event", `Launcher/${getCurrentStepMessage()}`);
+    ipcRenderer.send(
+      "mixpanel-track-event",
+      `Launcher/${getCurrentStepMessage()}`
+    );
   }, [currentStep]);
 
   useEffect(() => {
@@ -190,9 +193,11 @@ const PreloadProgressView = observer(() => {
     }
   }, [preloadEnded]);
 
-  useEffect(
-    () => setProgressMessage(makeProgressMessage()),
-    [preloadEnded, currentStep, progress]);
+  useEffect(() => setProgressMessage(makeProgressMessage()), [
+    preloadEnded,
+    currentStep,
+    progress,
+  ]);
 
   const message =
     exceptionMessage === null ? progressMessage : exceptionMessage;
