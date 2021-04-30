@@ -242,4 +242,5 @@ export interface PreloadProgress {
   "Downloading blocks": LocaleRecord;
   "Downloading states": LocaleRecord;
   "Executing actions": LocaleRecord;
+  "Failed to get message for current step": LocaleRecord;
 }

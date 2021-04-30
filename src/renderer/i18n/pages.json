@@ -1589,6 +1589,9 @@
       "id": "Menjalankan aksi",
       "ja": "処理を実行しています",
       "de": "Aktionen werden ausgeführt"
+    },
+    "Failed to get message for current step": {
+      "en": "Failed to get message for current step"
     }
   }
 }
