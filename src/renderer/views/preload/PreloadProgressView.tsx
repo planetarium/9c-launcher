@@ -235,11 +235,11 @@ const statusMessage = [
   "Downloading State Snapshot",
   "Extracting Snapshot",
   "Starting Headless",
-  "Downloading block hashes",
-  "Downloading blocks",
-  "Verifying block headers",
-  "Downloading states",
-  "Executing actions",
+  "Downloading Block Hashes",
+  "Downloading Blocks",
+  "Verifying Block Headers",
+  "Downloading States",
+  "Executing Actions",
 ] as const;
 
 const getProgress = (
