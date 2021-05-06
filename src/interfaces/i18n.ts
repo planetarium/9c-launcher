@@ -237,9 +237,10 @@ export interface PreloadProgress {
   "Downloading State Snapshot": LocaleRecord;
   "Extracting Snapshot": LocaleRecord;
   "Starting Headless": LocaleRecord;
-  "Verifying block headers": LocaleRecord;
-  "Downloading block hashes": LocaleRecord;
-  "Downloading blocks": LocaleRecord;
-  "Downloading states": LocaleRecord;
-  "Executing actions": LocaleRecord;
+  "Verifying Block Headers": LocaleRecord;
+  "Downloading Block Hashes": LocaleRecord;
+  "Downloading Blocks": LocaleRecord;
+  "Downloading States": LocaleRecord;
+  "Executing Actions": LocaleRecord;
+  "Failed to get message for current step": LocaleRecord;
 }
