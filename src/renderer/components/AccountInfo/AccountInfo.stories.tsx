@@ -43,10 +43,30 @@ Primary.parameters = {
         },
         result: {
           data: {
-
+            stateQuery: {
+              agent: {
+                gold: "102720",
+                stakingLevel: 3,
+                __typename: "AgentStateType"
+              },
+              __typename: "StateQuery"
+            }
+          },
+        },
+        newData: () => {
+          return {
+          data: {
+            stateQuery: {
+              agent: {
+                gold: "102720",
+                stakingLevel: 3,
+                __typename: "AgentStateType"
+              },
+              __typename: "StateQuery"
+            }
+          },
           }
         },
-        newData: () => {},
       },
       {
         request: {
@@ -54,10 +74,98 @@ Primary.parameters = {
         },
         result: {
           data: {
-
+            stateQuery: {
+              stakingSheet: {
+                orderedList: [
+                  {
+                    level: 1,
+                    requiredGold: 500,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 2,
+                    requiredGold: 1800,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 3,
+                    requiredGold: 7200,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 4,
+                    requiredGold: 54000,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 5,
+                    requiredGold: 270000,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 6,
+                    requiredGold: 480000,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 7,
+                    requiredGold: 3000000,
+                    __typename: "StakingRowType"
+                  }
+                ],
+                __typename: "StakingSheetType"
+              },
+              __typename: "StateQuery"
+            }
           }
         },
-        newData: () => {},
+        newData: () => {return {
+          data: {
+            stateQuery: {
+              stakingSheet: {
+                orderedList: [
+                  {
+                    level: 1,
+                    requiredGold: 500,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 2,
+                    requiredGold: 1800,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 3,
+                    requiredGold: 7200,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 4,
+                    requiredGold: 54000,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 5,
+                    requiredGold: 270000,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 6,
+                    requiredGold: 480000,
+                    __typename: "StakingRowType"
+                  },
+                  {
+                    level: 7,
+                    requiredGold: 3000000,
+                    __typename: "StakingRowType"
+                  }
+                ],
+                __typename: "StakingSheetType"
+              },
+              __typename: "StateQuery"
+            }
+          }
+        }},
       },
       {
         request: {
@@ -65,10 +173,28 @@ Primary.parameters = {
         },
         result: {
           data: {
-
-          }
+            stakingStatus: {
+              canReceive: true,
+              __typename: "StakingStatusType",
+              fungibleAssetValue: {
+                quantity: 102740,
+                __typename: "FungibleAssetValueType"
+              }
+            }
+          },
         },
-        newData: () => {},
+        newData: () => {return {
+          data: {
+            stakingStatus: {
+              canReceive: true,
+              __typename: "StakingStatusType",
+              fungibleAssetValue: {
+                quantity: 102740,
+                __typename: "FungibleAssetValueType"
+              }
+            }
+          }
+        }},
       }
     ]
   }
