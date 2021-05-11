@@ -1,0 +1,25 @@
+.RewardItemRectangle {
+  width: 68px;
+  height: 72px;
+  margin: 0 11px;
+  padding: 8px 9px 14px;
+  border-radius: 8px;
+  border: solid 1px #979797;
+  background-color: #ffb115;
+}
+
+.RewardItemQuantityRectangle {
+  position: relative;
+  bottom: 20px;
+  width: 86px;
+  height: 27px;
+  padding: 2px 13px 1px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: solid 1px #979797;
+  background-color: #1f1919;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+}

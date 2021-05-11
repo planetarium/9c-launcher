@@ -24,20 +24,26 @@ main {
     padding-left: 0;
     list-style: none;
   }
-
-  div {
-    background-color: rgba(0, 0, 0, 0.5);
+  .LauncherClientOption{
+    background-color: rgba(26, 26, 26,0.95);
+    padding:8px 12px;
+    position: absolute;
+    right:16px;
+    bottom:24px;
+  }
+  
+  .LauncherClientInfo {
+    background-color: rgba(26, 26, 26,0.95);
     position: absolute;
     font-size: 9px;
     color: antiquewhite;
-    left: 415px;
-    bottom: 10px;
-    margin: 0px 10px;
+    left: 400px;
+    bottom: 0px;
     padding: -5px;
-
+    width:calc(100% - 400px);
+    visibility: hidden;
     ul {
-      margin: 5px;
-
+      margin: 0px;
       code {
         font-size: 10px;
         font-family: "Courier New", Courier, monospace;
@@ -47,6 +53,37 @@ main {
         }
       }
     }
+  }
+}
+.clipboard{
+  position:absolute;
+  width:100px;
+  height:10px;
+  left:-99999px;
+}
+.LauncherClientIcon{
+  display:inline-flex;
+  padding:3px;
+  padding-right:8px;
+  justify-content: flex-start;
+  align-items: center;;
+  background-color: rgba(26, 26, 26,0.95);
+  position:absolute;
+  color:white;
+  border-radius: 30px;
+  font-size:12px;
+  right:16px;
+  bottom:15px;
+  cursor: pointer;
+  width:42px;
+  transition: width 0.5s cubic-bezier(.2,0.8,0,1);
+  svg{
+    width:14px;
+    height:14px;
+    margin-right:4px;
+  }
+  &.activate{
+    width:64px;
   }
 }
 
