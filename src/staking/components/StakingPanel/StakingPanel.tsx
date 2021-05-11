@@ -5,7 +5,7 @@ import { getExpectedReward, getRewardCategoryList, getTotalStakingGold } from ".
 export type Props = {
   sheet: StakingSheetItem[]
   tier: StakingItemTier
-  onEdit: (isEdit: boolean) => void;
+  onEdit: () => void;
 }
 
 const StakingPanel: React.FC<Props> = (props: Props) => {
@@ -23,7 +23,7 @@ const StakingPanel: React.FC<Props> = (props: Props) => {
     {
       getRewardCategoryList().map(x => <div>{RewardCategory[x]}/{currentReward.get(x)}</div>)
     }
-    <button onClick={(e) => {e.preventDefault(); onEdit(true)}}>
+    <button onClick={(e) => {e.preventDefault(); onEdit()}}>
       Edit
     </button>
   </div>

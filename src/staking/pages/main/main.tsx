@@ -256,7 +256,7 @@ const Main: React.FC = () => {
             onPush={addCart}
           />
         ) : (
-          <StakingPanel sheet={stakingSheet} tier={data.stateQuery.agent?.stakingLevel} onEdit={setEdit}  />
+          <StakingPanel sheet={stakingSheet} tier={data.stateQuery.agent?.stakingLevel} onEdit={() => {setEdit(true)}}  />
         )}
       </div>
 
