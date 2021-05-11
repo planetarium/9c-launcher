@@ -186,6 +186,12 @@ mutation CancelStaking($level: Int!) {
   }
 }
 
+mutation ClaimStakeReward($address: String!) {
+  action {
+    claimStakingReward(avatarAddress: $address)
+  }
+}
+
 subscription StakingState {
   stakingState {
     address

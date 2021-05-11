@@ -12,7 +12,7 @@ const customViewports = {
     name: 'staking',
     styles: {
       width: '984px',
-      height: '552px',
+      height: '560px',
     },
   },
 };

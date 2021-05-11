@@ -3,11 +3,7 @@ import { Story, Meta } from '@storybook/react';
 
 import AccountInfoContainer from './AccountInfoContainer';
 import { Provider } from 'mobx-react';
-import { IStoreContainer } from '../../../interfaces/store';
 import AccountStore from '../../stores/account';
-import { RouterStore } from 'mobx-react-router';
-import GameStore from '../../stores/game';
-import StandaloneStore from '../../stores/standaloneStore';
 import { GoldAndStakingLevelDocument, StakingSheetDocument, StakingStatusDocument } from '../../../generated/graphql';
 
 export default {
@@ -15,18 +11,14 @@ export default {
   component: AccountInfoContainer,
 } as Meta;
 
-const store: IStoreContainer = {
-  accountStore: new AccountStore(),
-  routerStore: null,
-  gameStore: null,
-  standaloneStore: null,
-}
+
+const accountStore = new AccountStore()
 
 const address = "0x590c887BDac8d957Ca5d3c1770489Cf2aFBd868E";
-store.accountStore.addAddress(address);
-store.accountStore.setSelectedAddress(address);
+accountStore.addAddress(address);
+accountStore.setSelectedAddress(address);
 
-const Template: Story = () => <Provider {...store}>
+const Template: Story = () => <Provider accountStore={accountStore}>
   <AccountInfoContainer onOpenWindow={() => {}} onReward={()=>{}}/>
   </Provider>;
 

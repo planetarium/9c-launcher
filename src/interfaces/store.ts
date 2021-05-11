@@ -5,7 +5,7 @@ import StandaloneStore from "../renderer/stores/standaloneStore";
 
 export interface IStoreContainer {
   accountStore: AccountStore;
-  routerStore: RouterStore | null;
-  gameStore: GameStore | null;
-  standaloneStore: StandaloneStore | null;
+  routerStore: RouterStore;
+  gameStore: GameStore;
+  standaloneStore: StandaloneStore;
 }

@@ -450,7 +450,7 @@ function initializeIpc() {
     }
   );
 
-  ipcMain.on("open staking page", () => {
+  ipcMain.handle("open staking page", async () => {
     createStakingWindow();
   })
   

@@ -5,17 +5,22 @@ import HomeIcon from "@material-ui/icons/Home";
 import DiscordIcon from "../../components/DiscordIcon";
 import SettingsIcon from "@material-ui/icons/Settings";
 import "../../styles/layout/layout.scss";
-import { useTopmostBlocksQuery } from "../../../generated/graphql";
+import { useStakingStatusSubscription, useTopmostBlocksQuery } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import { observer } from "mobx-react";
 
 import { useLocale } from "../../i18n";
 import { Menu } from "../../../interfaces/i18n";
 import { electronStore } from "../../../config";
+import AccountInfoContainer from "../../components/AccountInfo/AccountInfoContainer";
+import InfoIcon from "../../components/InfoIcon";
+
+
 
 export const Layout: React.FC = observer(({ children }) => {
   const { accountStore, routerStore } = useStores();
   const [awsSinkCloudwatchGuid, setAwsSinkCloudwatchGuid] = useState<string>();
+  const [infoButtonState,setInfoButtonState] = useState(false)
 
   const { locale } = useLocale<Menu>("menu");
 
@@ -33,11 +38,37 @@ export const Layout: React.FC = observer(({ children }) => {
     setAwsSinkCloudwatchGuid(awsSinkGuid);
   }, []);
 
+  function handleInfoClick(){
+    const clipboardElement =(document.getElementById('clipboard') as HTMLTextAreaElement)!;
+    const stringValue = `
+      APV: ${electronStore.get("AppProtocolVersion") as string} 
+      Address: ${accountStore.selectedAddress} 
+      Debug: ${accountStore.isLogin} / ${topmostBlocksResult.loading}
+      Mined blocks: ${minedBlocks?.length} (out of recent ${topmostBlocks?.length} blocks)
+      ${awsSinkCloudwatchGuid !== null && (`Client ID: ${awsSinkCloudwatchGuid}`)}
+    `
+    clipboardElement.value = stringValue
+    clipboardElement.select();
+    document.execCommand('copy');
+    clipboardElement.value = ''
+    clipboardElement.blur();
+
+    setInfoButtonState(true)
+    setTimeout(()=>{
+      setInfoButtonState(false)
+    },1500)
+  }
+
+
   return (
     <>
       <main>{children}</main>
       <nav className="hero">
-        <ul>
+      <AccountInfoContainer
+        minedBlock={Number(minedBlocks?.length)}
+        onReward={() => {}}
+        onOpenWindow={() => {ipcRenderer.invoke('open staking page')}}/>
+        <ul className={"LauncherClientOption"}>
           <li>
             <Button
               startIcon={<HomeIcon />}
@@ -71,50 +102,14 @@ export const Layout: React.FC = observer(({ children }) => {
             </Button>
           </li>
         </ul>
-        <div>
-          <ul>
-            <li>
-              APV:{" "}
-              <code>
-                {
-                  (electronStore.get("AppProtocolVersion") as string).split(
-                    "/"
-                  )[0]
-                }
-                <span className="details">
-                  /
-                  {
-                    (electronStore.get("AppProtocolVersion") as string).split(
-                      "/"
-                    )[1]
-                  }
-                </span>
-              </code>
-            </li>
-            {accountStore.isLogin ? (
-              <li>
-                Address: <code>{accountStore.selectedAddress}</code>
-              </li>
-            ) : (
-              <></>
-            )}
-            {minedBlocks !== null ? (
-              <li>
-                Mined blocks: {minedBlocks.length} (out of recent{" "}
-                {topmostBlocks?.length} blocks)
-              </li>
-            ) : (
-              <li>
-                Debug: {accountStore.isLogin} / {topmostBlocksResult.loading}
-              </li>
-            )}
-            {awsSinkCloudwatchGuid !== null ? (
-              <li>Client ID: {awsSinkCloudwatchGuid}</li>
-            ) : (
-              <></>
-            )}
-          </ul>
+        <div
+          id={'LauncherClientIcon'}
+          className={`LauncherClientIcon ${infoButtonState?'activate':''}`}
+          onClick={handleInfoClick}>
+          <InfoIcon/>
+          <div>{infoButtonState?'copied!':'info'}</div>
         </div>
+        <textarea id={'clipboard'} className={'clipboard'}/>
       </nav>
     </>
   );
