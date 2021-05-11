@@ -11,10 +11,11 @@ export type Props = {
 const StakingItem: React.FC<Props> = (props: Props) => {
     const { item } = props;
     const monsterResources = getMonsterImageFromTier(item.tier);
+    console.log(JSON.stringify(item))
     return <div className={'StakingItemContainer'} >
         <div>
             { item.stakingPhase === StakingPhase.CANDIDATE ?? <CircleAddIcon className={'AddIcon'} /> }
-        <img className={`TIER${Number(item.tier) + 1} ${item.stakingPhase === StakingPhase.LOCKED ?? 'Outline'}`}
+        <img className={`TIER${Number(item.tier)} ${item.stakingPhase >= StakingPhase.CANDIDATE && 'Outline'}`}
             src={require(`../../common/resources/${monsterResources}.png`).default} />
         </div>
     </div>

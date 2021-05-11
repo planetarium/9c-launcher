@@ -7,35 +7,52 @@
 }
 
 .TIER1 {
-    width: 100px;
+  width: 70px;
+  position: relative;
+  bottom: -73px;
+  left: 50px;
 }
 
 .TIER2 {
-    width: 100px;
+  width: 80px;
+  position: relative;
+  bottom: -60px;
+  left: 100px;;
 }
 
 .TIER3 {
-    width: 100px;
+  width: 100px;
+  position: relative;
+  left: -91px;
+  bottom: 35px;
 }
 
 .TIER4 {
-    width: 100px;
+  width: 170px;
+  position: relative;
+  left: -58px;
+  top: -135px;
 }
 
 .TIER5 {
-    width: 100px;
+    width: 250px;
+    position: relative;
+    right: 136px;
+    top: 50px;
 }
 
 .TIER6 {
-    width: 100px;
+    width: 165px;
+    position: relative;
+    right: 207px;
+    top: -63px;
 }
 
 .TIER7 {
-    width: 100px;
-}
-
-.TIER8 {
-    width: 100px;
+    width: 400px;
+    position: relative;
+    right: 226px;
+    bottom: 75px;
 }
 
 .DisplayStakingPriceContaier {

@@ -1,15 +1,14 @@
 .MainContainer {
     font-family: 'Montserrat', sans-serif;
-    width: 978px;
-    height: 552px;
-
-    background-size: 984px 552px;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
     color: white;
 }
 
 .StakingItemList {
     display: flex;
-    position: relative;
+    position: absolute;
     top: 25%;
     flex-direction: row;
     justify-content: space-between;
@@ -22,52 +21,4 @@
     width: 100%;
 }
 
-.ItemPos1 {
-    position: absolute;
-    bottom: 100px;
-    left: 100px;
-}
-
-.ItemPos2 {
-    position: absolute;
-    bottom: 100px;
-    left: 200px;
-}
-
-.ItemPos3 {
-    position: absolute;
-    bottom: 100px;
-    left: 300px;
-}
-
-.ItemPos4 {
-    position: absolute;
-    bottom: 100px;
-    left: 400px;
-}
-
-.ItemPos5 {
-    position: absolute;
-    bottom: 100px;
-    left: 500px;
-}
-
-.ItemPos6 {
-    position: absolute;
-    bottom: 100px;
-    left: 600px;
-}
-
-.ItemPos7 {
-    position: absolute;
-    bottom: 100px;
-    left: 700px;
-}
-
-
-.ItemPos8 {
-    position: absolute;
-    bottom: 100px;
-    left: 800px;
-}
 
