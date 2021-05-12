@@ -136,6 +136,21 @@ query StakingSheet {
       orderedList {
         level
         requiredGold
+        rewards {
+          itemId
+          quantity
+        }
+      }
+    }
+  }
+}
+
+query GetAvatarAddress($address: Address!) {
+  stateQuery {
+    agent(address: $address) {
+      avatarStates {
+        address
+        name
       }
     }
   }
@@ -186,7 +201,7 @@ mutation CancelStaking($level: Int!) {
   }
 }
 
-mutation ClaimStakeReward($address: String!) {
+mutation ClaimStakeReward($address: Address!) {
   action {
     claimStakingReward(avatarAddress: $address)
   }

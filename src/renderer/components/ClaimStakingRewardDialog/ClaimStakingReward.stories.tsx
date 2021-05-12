@@ -19,6 +19,19 @@ Default.args = {
     {itemId: RewardCategory.AP, quantity: 10},
     {itemId: RewardCategory.HOURGLASS, quantity: 10000}
   ],
-  avatarAddresses: ['asdf'],
+  avatar: [{address: '0xan8', name: 'HOTSIX'}],
+  onActionTxId: () => {}
+}
+
+export const MultipleAvatar = Template.bind({});
+MultipleAvatar.args = {
+  rewards: [
+    {itemId: RewardCategory.AP, quantity: 10},
+    {itemId: RewardCategory.HOURGLASS, quantity: 10000}
+  ],
+  avatar: [
+    {address: '0xan8fds', name: 'HOTSIX'},
+    {address: '0xvbas8d', name: 'Starcraft'}
+  ],
   onActionTxId: () => {}
 }
