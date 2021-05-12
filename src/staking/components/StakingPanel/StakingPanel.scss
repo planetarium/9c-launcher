@@ -1,0 +1,50 @@
+$bg-img: url('../../common/resources/bg-staking-bottom-bg.png');
+$info-bg-img: url('../../common/resources/ui-staking-top-bg-03.png');
+
+.StakingPanelContainer {
+  width: 105vw;
+  position: relative;
+  bottom: -30px;
+  left: -30px;
+}
+
+.StakingPanelBackground {
+    background: $bg-img;
+    background-size: 100%;
+    background-repeat: no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 180px;
+}
+
+.StakingPanelButton {
+  position: relative;
+  left: 50px;
+}
+
+.StakingPanelInfo {
+  background: $info-bg-img;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  width: 400px;
+  height: 100%;
+  position: relative;
+  right: 50px;
+  top: 35px;
+
+  p {
+    position: relative;
+    left: 30px;
+    padding: 0;
+    margin-top: 0;
+  }
+
+  ul {
+    position: relative;
+    left: 30px;
+    padding: 0;
+    margin: 0;
+  }
+}

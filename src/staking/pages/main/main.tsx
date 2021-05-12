@@ -19,6 +19,7 @@ import {
 import { StakingItemModel } from "../../models/staking";
 import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedStatusBoard";
 import StakingPanel from "../../components/StakingPanel/StakingPanel";
+import RemainingDisplay from "../../components/RemainingDisplay/RemainingDisplay";
 
 const getStakingPhase = (level: number, stakingLevel: number): StakingPhase => {
   if (level === stakingLevel + 1) return StakingPhase.CANDIDATE;
@@ -49,7 +50,7 @@ const Main: React.FC = () => {
       address: agentAddress,
     },
   });
-  const { data: minerAddress, error: minerError } = useMinerAddressQuery();
+  const { data: minerAddress } = useMinerAddressQuery();
   const [
     staking,
     { data: isStaked, error: stakingError },
@@ -118,7 +119,7 @@ const Main: React.FC = () => {
   useEffect(() => {
     console.log(minerAddress);
     if (minerAddress != null) {
-      setAgentAddress(minerAddress?.minerAddress!);
+      setAgentAddress(minerAddress.minerAddress!);
     }
   }, [minerAddress]);
 
@@ -236,7 +237,9 @@ const Main: React.FC = () => {
           }
         />
       ) : (
-        <></>
+        <div className={'MainRemainDisplayPos'}>
+          <RemainingDisplay remainMin={1000} />
+        </div>
       )}
       <div className={"StakingItemList"}>
         {cartList.map((x, i) => (
