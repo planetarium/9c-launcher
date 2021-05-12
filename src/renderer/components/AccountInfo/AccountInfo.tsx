@@ -8,7 +8,6 @@ export type Props = {
   minedBlock: number;
   goldLabel: string | number;
   stakingLabel: string | number;
-  onReward: (address: string) => void;
   onOpenWindow: () => void;
   canClaimReward: boolean
 }
