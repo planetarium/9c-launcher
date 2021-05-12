@@ -1,7 +1,7 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 
-import AccountInfoContainer from './AccountInfoContainer';
+import AccountInfoContainer, { Props } from './AccountInfoContainer';
 import { Provider } from 'mobx-react';
 import AccountStore from '../../stores/account';
 import { GoldAndStakingLevelDocument, StakingSheetDocument, StakingStatusDocument } from '../../../generated/graphql';
@@ -18,11 +18,16 @@ const address = "0x590c887BDac8d957Ca5d3c1770489Cf2aFBd868E";
 accountStore.addAddress(address);
 accountStore.setSelectedAddress(address);
 
-const Template: Story = () => <Provider accountStore={accountStore}>
-  <AccountInfoContainer onOpenWindow={() => {}} onReward={()=>{}}/>
+const Template: Story<Props> = (props) => <Provider accountStore={accountStore}>
+  <AccountInfoContainer {...props}/>
   </Provider>;
 
 export const Primary = Template.bind({});
+Primary.args = {
+  onOpenWindow: () => {},
+  onReward: () => {},
+  minedBlock: 500
+}
 Primary.parameters = {
   apolloClient: {
     mocks: [
