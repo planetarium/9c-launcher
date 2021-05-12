@@ -745,6 +745,7 @@ async function initializeHeadless(): Promise<void> {
       }
 
       if (!isProcessSuccess) {
+        console.log(recentError.message);
         switch (recentError.constructor) {
           case DownloadSnapshotFailedError:
             win?.webContents.send(
