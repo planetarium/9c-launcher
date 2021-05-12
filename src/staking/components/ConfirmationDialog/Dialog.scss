@@ -1,0 +1,20 @@
+.ConfirmationDialogContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.ConfirmationDialogLabelContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  color: #11ffee00;
+   .label {
+    font-size: 24px;
+    color: rgba(255, 197, 65, 0.63);
+   }
+   img {
+     background-color: transparent;
+   }
+}
