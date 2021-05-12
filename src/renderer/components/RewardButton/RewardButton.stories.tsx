@@ -13,4 +13,6 @@ const Template: Story<Props> = (args) => <RewardButton {...args}/>
 
 export const Default = Template.bind({});
 Default.args = {
+  loading: false,
+  onClick: () => {},
 }
