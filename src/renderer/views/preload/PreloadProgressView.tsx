@@ -43,12 +43,12 @@ const PreloadProgressView = observer(() => {
     routerStore.push(`/error/${page}`);
   };
 
-  const getCurrentStepMessage = () => {
+  const getCurrentStepStatusMessage = () => {
     if (!(0 < currentStep && currentStep <= statusMessage.length)) {
-      return "Failed to get message for current step.";
+      return "Failed to get message for current step";
     }
 
-    return locale(statusMessage[currentStep - 1]);
+    return statusMessage[currentStep - 1];
   };
 
   const makeProgressMessage = () => {
@@ -57,7 +57,7 @@ const PreloadProgressView = observer(() => {
         ? locale("Preload Completed.")
         : locale("No Peers Were Given.");
     } else {
-      return getCurrentStepMessage().concat(
+      return locale(getCurrentStepStatusMessage()).concat(
         ` ... (${currentStep}/${totalStep}) ${Math.floor(progress)}%`
       );
     }
@@ -132,7 +132,7 @@ const PreloadProgressView = observer(() => {
   useEffect(() => {
     ipcRenderer.send(
       "mixpanel-track-event",
-      `Launcher/${getCurrentStepMessage()}`
+      `Launcher/${getCurrentStepStatusMessage()}`
     );
   }, [currentStep]);
 
@@ -235,11 +235,11 @@ const statusMessage = [
   "Downloading State Snapshot",
   "Extracting Snapshot",
   "Starting Headless",
-  "Downloading block hashes",
-  "Downloading blocks",
-  "Verifying block headers",
-  "Downloading states",
-  "Executing actions",
+  "Downloading Block Hashes",
+  "Downloading Blocks",
+  "Verifying Block Headers",
+  "Downloading States",
+  "Executing Actions",
 ] as const;
 
 const getProgress = (
