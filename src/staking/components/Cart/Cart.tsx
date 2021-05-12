@@ -5,7 +5,7 @@ import { StakingItemTier } from "../../types"
 
 import './Cart.scss';
 import CartItem from "./CartItem/CartItem";
-import { Button } from "@material-ui/core";
+import StakingButton from "../Button/Button";
 
 export type Props = {
     cartList: StakingItemModel[],
@@ -32,29 +32,21 @@ const Cart: React.FC<Props> = (props: Props) => {
     }
     return <div className={'CartContainer'}>
         <div className={'OpsButtonContainer'}>
-        <Button
-        variant="contained"
-        style={{
-          width: 164,
-          height: 45,
-          fontSize: 24
-        }}
-        onClick={(e) => {e.preventDefault(); onCancel();}}
+        <StakingButton
+        width={164}
+        height={45}
+        onClick={onCancel}
       >
         Cancel
-      </Button>
-      <Button
-        color="primary"
-        variant="contained"
-        style={{
-          width: 164,
-          height: 45,
-          fontSize: 24
-        }}
-        onClick={(e) => {e.preventDefault(); onSubmit();}}
+      </StakingButton>
+      <StakingButton
+        primary={true}
+        width={164}
+        height={45}
+        onClick={onSubmit}
       >
         Apply
-      </Button>
+      </StakingButton>
         </div>
         <div className={'CartItemListBackground'}>
         <div className={'CartItemListContainer'}>

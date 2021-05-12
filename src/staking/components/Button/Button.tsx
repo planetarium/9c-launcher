@@ -3,7 +3,7 @@ import React from "react";
 import './Button.scss';
 
 export type Props = {
-  label: string;
+  children: React.ReactNode;
   width: number;
   height: number;
   primary?: boolean;
@@ -11,14 +11,14 @@ export type Props = {
 };
 
 const StakingButton: React.FC<Props> = (props: Props) => {
-  const { label, width, height, primary, onClick } = props;
+  const { children, width, height, primary, onClick } = props;
   return (
     <div
       onClick={onClick}
       style={{ width: width, height: height }}
       className={`ButtonContainer ${primary ? "PrimaryButtonContainer" : "CancelButtonContainer"}`}
     >
-      {label}
+      {children}
     </div>
   );
 };

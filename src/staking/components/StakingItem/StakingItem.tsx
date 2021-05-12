@@ -4,6 +4,8 @@ import { StakingPhase } from "../../types";
 import {getMonsterImageFromTier} from '../../common/utils';
 import CircleAddIcon from "../common/icon/CircleAddIcon";
 
+import './StakingItem.scss';
+
 export type Props = {
     item: StakingItemModel;
 }

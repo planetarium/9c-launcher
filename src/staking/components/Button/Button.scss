@@ -5,6 +5,9 @@ $cancel-img: url('../../common/resources/ui-staking-button-cancel.png');
   display: flex;
   justify-content: center;
   align-items: center;
+    cursor:pointer;
+    transition: background 0.5s cubic-bezier(.2,0.8,0,1);
+    background:transparent;
 
 }
 
@@ -22,6 +25,9 @@ $cancel-img: url('../../common/resources/ui-staking-button-cancel.png');
   box-shadow: 0 3px 3px 3px #734302, inset 0 1px 3px 0 #ffffb0;
   border: solid 3px #fec351;
   background-color: #d7a34a;
+    &:hover{
+      background:rgba(215, 163, 74, 0.8);
+    }
 }
 
 .CancelButtonContainer {
@@ -38,4 +44,7 @@ $cancel-img: url('../../common/resources/ui-staking-button-cancel.png');
   box-shadow: 0 3px 3px 3px #000000, inset 0 1px 3px 0 #372c27;
   border: solid 3px #392e27;
   background-color: #2c211c;
+    &:hover{
+      background:rgba(44, 33, 28, 0.8);
+    }
 }
