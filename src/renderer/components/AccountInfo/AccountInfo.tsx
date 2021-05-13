@@ -7,13 +7,13 @@ import './AccountInfo.scss'
 export type Props = {
   minedBlock: number;
   goldLabel: string | number;
-  stakingLabel: string | number;
+  collectionLabel: string | number;
   onOpenWindow: () => void;
   canClaimReward: boolean
 }
 
 const AccountInfo: React.FC<Props> = (props: Props) => {
-  const {minedBlock, goldLabel, stakingLabel, onOpenWindow} = props;
+  const {minedBlock, goldLabel, collectionLabel, onOpenWindow} = props;
 
   const numberWithComma = (number:string|number)=>{
     if(typeof number === 'string') return number;
@@ -28,7 +28,7 @@ const AccountInfo: React.FC<Props> = (props: Props) => {
     </div>
     <div className={'AccountInfoItem Monster'} onClick={() => {onOpenWindow()}}>
       <img className={'Icon'} src={monsterIcon} alt='monster'/>
-      <div className={'value'}>{numberWithComma(stakingLabel)}</div>
+      <div className={'value'}>{numberWithComma(collectionLabel)}</div>
       <div className={'subText'}>{`(Remaning ${0} days)`}</div>
     </div>
   </div>

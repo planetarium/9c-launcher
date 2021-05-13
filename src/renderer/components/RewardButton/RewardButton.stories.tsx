@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react";
 import React from "react";
-import { RewardCategory } from "../../../staking/types";
+import { RewardCategory } from "../../../collection/types";
 import RewardButton, {Props} from "./RewardButton";
 
 export default {

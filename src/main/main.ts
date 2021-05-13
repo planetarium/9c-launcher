@@ -57,7 +57,7 @@ import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-fail
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { PermDeviceInformationSharp } from "@material-ui/icons";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
-import createStakingWindow from "../staking/window";
+import createCollectionWindow from "../collection/window";
 
 initializeSentry();
 
@@ -450,8 +450,8 @@ function initializeIpc() {
     }
   );
 
-  ipcMain.handle("open staking page", async () => {
-    createStakingWindow();
+  ipcMain.handle("open collection page", async () => {
+    createCollectionWindow();
   })
   
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
@@ -941,7 +941,7 @@ function createTray(iconPath: string) {
       {
         label: "Open Staking",
         click: function () {
-          createStakingWindow();
+          createCollectionWindow();
         },
       },
       {

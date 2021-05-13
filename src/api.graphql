@@ -130,9 +130,9 @@ query ValidateSnapshot($raw: String!) {
   }
 }
 
-query StakingSheet {
+query CollectionSheet {
   stateQuery {
-    stakingSheet {
+    monsterCollectionSheet {
       orderedList {
         level
         requiredGold
@@ -156,9 +156,9 @@ query GetAvatarAddress($address: Address!) {
   }
 }
 
-query StakingSheetWithStakingState($address: Address!) {
+query CollectionSheetWithState($address: Address!) {
   stateQuery {
-    stakingSheet {
+    monsterCollectionSheet {
       orderedList {
         level
         requiredGold
@@ -170,17 +170,17 @@ query StakingSheetWithStakingState($address: Address!) {
     }
     agent(address: $address) {
       gold
-      stakingLevel
-      stakingRound
+      monsterCollectionLevel
+      monsterCollectionRound
     }
   }
 }
 
-query GoldAndStakingLevel($address: Address!) {
+query GoldAndCollectionLevel($address: Address!) {
   stateQuery {
     agent(address: $address) {
       gold
-      stakingLevel
+      monsterCollectionLevel
     }
   }
 }
@@ -189,26 +189,26 @@ query MinerAddress {
   minerAddress
 }
 
-mutation Staking($level: Int!) {
+mutation Collect($level: Int!) {
   action {
-    stake(level: $level)
+    monsterCollect(level: $level)
   }
 }
 
-mutation CancelStaking($level: Int!) {
+mutation CancelCollection($level: Int!) {
   action {
-    cancelStaking(level: $level)
+    cancelMonsterCollect(level: $level)
   }
 }
 
-mutation ClaimStakeReward($address: Address!) {
+mutation ClaimCollectionReward($address: Address!) {
   action {
-    claimStakingReward(avatarAddress: $address)
+    claimMonsterCollectionReward(avatarAddress: $address)
   }
 }
 
-subscription StakingState {
-  stakingState {
+subscription CollectionState {
+  monsterCollectionState {
     address
     end
     expiredBlockIndex
@@ -225,22 +225,22 @@ query StagedTx($address: Address!) {
   }
 }
 
-subscription currentGold {
-  stakingStatus {
+subscription CurrentGold {
+  monsterCollectionStatus {
     fungibleAssetValue {
       quantity
     }
   }
 }
 
-subscription canReceive {
-  stakingStatus {
+subscription CanReceiveCollection {
+  monsterCollectionStatus {
     canReceive
   }
 }
 
-subscription stakingStatus {
-  stakingStatus {
+subscription CollectionStatus {
+  monsterCollectionStatus {
     canReceive
     fungibleAssetValue {
       quantity

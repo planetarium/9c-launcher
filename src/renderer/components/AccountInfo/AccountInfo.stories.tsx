@@ -4,7 +4,7 @@ import { Story, Meta } from '@storybook/react';
 import AccountInfoContainer, { Props } from './AccountInfoContainer';
 import { Provider } from 'mobx-react';
 import AccountStore from '../../stores/account';
-import { GoldAndStakingLevelDocument, StakingSheetDocument, StakingStatusDocument } from '../../../generated/graphql';
+import { GoldAndCollectionLevelDocument, CollectionSheetDocument, CollectionStatusDocument } from '../../../generated/graphql';
 
 export default {
   title: 'Renderer/Components/AccountInfo',
@@ -33,7 +33,7 @@ Primary.parameters = {
     mocks: [
       {
         request: {
-          query: GoldAndStakingLevelDocument,
+          query: GoldAndCollectionLevelDocument,
           variables: {
             address: address,
           },
@@ -43,7 +43,7 @@ Primary.parameters = {
             stateQuery: {
               agent: {
                 gold: "102720",
-                stakingLevel: 3,
+                collectionLevel: 3,
                 __typename: "AgentStateType"
               },
               __typename: "StateQuery"
@@ -56,7 +56,7 @@ Primary.parameters = {
             stateQuery: {
               agent: {
                 gold: "102720",
-                stakingLevel: 3,
+                collectionLevel: 3,
                 __typename: "AgentStateType"
               },
               __typename: "StateQuery"
@@ -67,50 +67,50 @@ Primary.parameters = {
       },
       {
         request: {
-          query: StakingSheetDocument
+          query: CollectionSheetDocument
         },
         result: {
           data: {
             stateQuery: {
-              stakingSheet: {
+              collectionSheet: {
                 orderedList: [
                   {
                     level: 1,
                     requiredGold: 500,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 2,
                     requiredGold: 1800,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 3,
                     requiredGold: 7200,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 4,
                     requiredGold: 54000,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 5,
                     requiredGold: 270000,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 6,
                     requiredGold: 480000,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 7,
                     requiredGold: 3000000,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   }
                 ],
-                __typename: "StakingSheetType"
+                __typename: "CollectionSheetType"
               },
               __typename: "StateQuery"
             }
@@ -119,45 +119,45 @@ Primary.parameters = {
         newData: () => {return {
           data: {
             stateQuery: {
-              stakingSheet: {
+              collectionSheet: {
                 orderedList: [
                   {
                     level: 1,
                     requiredGold: 500,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 2,
                     requiredGold: 1800,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 3,
                     requiredGold: 7200,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 4,
                     requiredGold: 54000,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 5,
                     requiredGold: 270000,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 6,
                     requiredGold: 480000,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   },
                   {
                     level: 7,
                     requiredGold: 3000000,
-                    __typename: "StakingRowType"
+                    __typename: "CollectionRowType"
                   }
                 ],
-                __typename: "StakingSheetType"
+                __typename: "CollectionSheetType"
               },
               __typename: "StateQuery"
             }
@@ -166,13 +166,13 @@ Primary.parameters = {
       },
       {
         request: {
-          query: StakingStatusDocument
+          query: CollectionStatusDocument
         },
         result: {
           data: {
-            stakingStatus: {
+            collectionStatus: {
               canReceive: true,
-              __typename: "StakingStatusType",
+              __typename: "CollectionStatusType",
               fungibleAssetValue: {
                 quantity: 102740,
                 __typename: "FungibleAssetValueType"
@@ -182,9 +182,9 @@ Primary.parameters = {
         },
         newData: () => {return {
           data: {
-            stakingStatus: {
+            collectionStatus: {
               canReceive: true,
-              __typename: "StakingStatusType",
+              __typename: "CollectionStatusType",
               fungibleAssetValue: {
                 quantity: 102740,
                 __typename: "FungibleAssetValueType"
