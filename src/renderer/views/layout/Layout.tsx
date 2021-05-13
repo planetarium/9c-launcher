@@ -5,7 +5,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import DiscordIcon from "../../components/DiscordIcon";
 import SettingsIcon from "@material-ui/icons/Settings";
 import "../../styles/layout/layout.scss";
-import { useStakingStatusSubscription, useTopmostBlocksQuery } from "../../../generated/graphql";
+import { useTopmostBlocksQuery } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import { observer } from "mobx-react";
 
@@ -67,7 +67,7 @@ export const Layout: React.FC = observer(({ children }) => {
       <AccountInfoContainer
         minedBlock={Number(minedBlocks?.length)}
         onReward={() => {}}
-        onOpenWindow={() => {ipcRenderer.invoke('open staking page')}}/>
+        onOpenWindow={() => {ipcRenderer.invoke('open collection page')}}/>
         <ul className={"LauncherClientOption"}>
           <li>
             <Button

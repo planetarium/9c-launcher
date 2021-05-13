@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Reward } from "../../../staking/types";
+import { Reward } from "../../../collection/types";
 import {
-  useGoldAndStakingLevelLazyQuery,
+  useGoldAndCollectionLevelLazyQuery,
   useNodeStatusSubscriptionSubscription,
   useStagedTxQuery,
-  useStakingSheetQuery,
-  useStakingStateSubscription,
-  useStakingStatusSubscription,
+  useCollectionSheetQuery,
+  useCollectionStateSubscription,
+  useCollectionStatusSubscription,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
-import ClaimStakingRewardContainer from "../ClaimStakingRewardDialog/ClaimStakingRewardContainer";
+import ClaimCollectionRewardContainer from "../ClaimCollectionRewardDialog/ClaimCollectionRewardContainer";
 import RewardButton from "../RewardButton/RewardButton";
 import AccountInfo from "./AccountInfo";
 
@@ -22,31 +22,27 @@ export type Props = {
 const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   const { minedBlock, onReward, onOpenWindow } = props;
   const { accountStore } = useStores();
-  const [stakedGold, setStakedGold] = useState<number>(0);
+  const [depositedGold, setDepositeGold] = useState<number>(0);
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
   const [
     goldLevelQuery,
     { data: goldAndLevel, loading, error },
-  ] = useGoldAndStakingLevelLazyQuery({
+  ] = useGoldAndCollectionLevelLazyQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
   });
   const {
-    data: sheet,
-    loading: sheetLoading,
     refetch: sheetRefetch,
-  } = useStakingSheetQuery();
+  } = useCollectionSheetQuery();
   const {
-    data: stakingStatus,
-    loading: statusLoading,
-  } = useStakingStatusSubscription();
+    data: collectionStatus,
+  } = useCollectionStatusSubscription();
   const {
-    data: stakingState,
-    loading: stateLoading,
-  } = useStakingStateSubscription();
+    data: collectionState,
+  } = useCollectionStateSubscription();
   const { data: nodeStatus } = useNodeStatusSubscriptionSubscription();
   const { refetch: stagedTxRefetch } = useStagedTxQuery({
     variables: {
@@ -55,15 +51,15 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   });
 
   useEffect(() => {
-    let currentStakedGold = 0;
+    let currentDepositedGold = 0;
     setRewards([]);
     sheetRefetch().then((query) => {
-      const level = stakingState?.stakingState.level
-        ? Number(stakingState?.stakingState.level)
-        : Number(goldAndLevel?.stateQuery.agent?.stakingLevel);
-      query?.data.stateQuery.stakingSheet?.orderedList?.forEach((x) => {
+      const level = collectionState?.monsterCollectionState.level
+        ? Number(collectionState?.monsterCollectionState.level)
+        : Number(goldAndLevel?.stateQuery.agent?.monsterCollectionLevel);
+      query?.data.stateQuery.monsterCollectionSheet?.orderedList?.forEach((x) => {
         if (level >= Number(x?.level)) {
-          currentStakedGold += Number(x?.requiredGold);
+          currentDepositedGold += Number(x?.requiredGold);
           x?.rewards.map((x) =>
             setRewards((state) =>
               state.concat({
@@ -74,22 +70,22 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
           );
         }
       });
-      setStakedGold(currentStakedGold);
+      setDepositeGold(currentDepositedGold);
     });
-  }, [goldAndLevel, stakingState]);
+  }, [goldAndLevel, collectionState]);
 
   useEffect(() => {
     goldLevelQuery();
   }, [accountStore.isLogin]);
 
-  const handleAcion = async (stakingTx: string) => {
+  const handleAcion = async (collectTx: string) => {
     setOpenDialog(false);
     setClaimLoading(true);
-    while (stakingTx) {
+    while (collectTx) {
       const stagedTx = await stagedTxRefetch();
       await new Promise((resolve) => setTimeout(resolve, 3000));
       const tx = stagedTx!.data.nodeStatus.stagedTxIds!.find(
-        (x) => x === stakingTx
+        (x) => x === collectTx
       );
       if (!tx) break;
     }
@@ -102,15 +98,15 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
         <AccountInfo
           minedBlock={minedBlock}
           onOpenWindow={onOpenWindow}
-          canClaimReward={stakingStatus?.stakingStatus.canReceive!}
+          canClaimReward={collectionStatus?.monsterCollectionStatus.canReceive!}
           goldLabel={
-            stakingStatus?.stakingStatus.fungibleAssetValue.quantity
-              ? Number(stakingStatus.stakingStatus.fungibleAssetValue.quantity)
+            collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity
+              ? Number(collectionStatus.monsterCollectionStatus.fungibleAssetValue.quantity)
               : Number(goldAndLevel?.stateQuery.agent?.gold)
           }
-          stakingLabel={stakedGold}
+          collectionLabel={depositedGold}
         />
-        {stakingStatus?.stakingStatus.canReceive ? (
+        {collectionStatus?.monsterCollectionStatus.canReceive ? (
           <RewardButton
             loading={claimLoading}
             onClick={() => {
@@ -121,7 +117,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
           <></>
         )}
         {openDialog ? (
-          <ClaimStakingRewardContainer
+          <ClaimCollectionRewardContainer
             rewards={rewards}
             onActionTxId={handleAcion}
             open={openDialog}
@@ -138,7 +134,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
         onOpenWindow={onOpenWindow}
         canClaimReward={false}
         goldLabel={"loading..."}
-        stakingLabel={"loading..."}
+        collectionLabel={"loading..."}
       />
     </>
   );

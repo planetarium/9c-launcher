@@ -22,6 +22,9 @@ type StandaloneQuery {
 
   # Address of current node.
   minerAddress: Address
+
+  # Current miner's monster collection status.
+  monsterCollectionStatus: MonsterCollectionStatusType
   nextTxNonce(
     # Target address to query
     address: Address!
@@ -58,6 +61,16 @@ type StateQuery {
     # Address of avatar.
     avatarAddress: Address!
   ): AvatarStateType
+  monsterCollectionSheet: MonsterCollectionSheetType
+
+  # State for monster collection.
+  monsterCollectionState(
+    # Address of agent.
+    agentAddress: Address!
+
+    # Monster collection round of agent.
+    monsterCollectionRound: Int
+  ): MonsterCollectionStateType
 
   # State for avatar EXP record.
   rankingMap(
@@ -67,16 +80,6 @@ type StateQuery {
 
   # State for shop.
   shop: ShopStateType
-  stakingSheet: StakingSheetType
-
-  # State for staking.
-  stakingState(
-    # Address of agent.
-    agentAddress: Address!
-
-    # Staking round of agent.
-    stakingRound: Int
-  ): StakingStateType
 
   # State for weekly arena.
   weeklyArena(
@@ -222,6 +225,9 @@ enum ItemSubType {
   HOURGLASS
   AP_STONE
   CHEST
+    @deprecated(
+      reason: "ItemSubType.Chest has never been used outside the MaterialItemSheet. And we won't use it in the future until we have a specific reason."
+    )
   TITLE
 }
 
@@ -483,43 +489,47 @@ type AgentStateType {
   # Current NCG.
   gold: String!
 
-  # Current staking level.
-  stakingLevel: Long!
+  # Current monster collection level.
+  monsterCollectionLevel: Long!
 
-  # Staking round of agent.
-  stakingRound: Long!
+  # Monster collection round of agent.
+  monsterCollectionRound: Long!
 }
 
-type StakingStateType {
+type MonsterCollectionStateType {
   address: Address!
   end: Boolean!
   expiredBlockIndex: Long!
   level: Long!
   receivedBlockIndex: Long!
   rewardLevel: Long!
-  rewardLevelMap: [[StakingRewardInfoType]]
-  rewardMap: [StakingResultType]!
+  rewardLevelMap: [[MonsterCollectionRewardInfoType]]
+  rewardMap: [MonsterCollectionResultType]!
   startedBlockIndex: Long!
+  totalRewards(
+    # The level used to calculate total rewards, including lower level rewards.
+    rewardLevel: Long
+  ): [MonsterCollectionRewardInfoType]
 }
 
-type StakingResultType {
+type MonsterCollectionResultType {
   avatarAddress: Address!
-  rewards: [StakingRewardInfoType]!
+  rewards: [MonsterCollectionRewardInfoType]!
 }
 
-type StakingRewardInfoType {
+type MonsterCollectionRewardInfoType {
   itemId: Int!
   quantity: Int!
 }
 
-type StakingSheetType {
-  orderedList: [StakingRowType]
+type MonsterCollectionSheetType {
+  orderedList: [MonsterCollectionRowType]
 }
 
-type StakingRowType {
+type MonsterCollectionRowType {
   level: Int!
   requiredGold: Int!
-  rewards: [StakingRewardInfoType]!
+  rewards: [MonsterCollectionRewardInfoType]!
 }
 
 # The interface to store s.  An appropriate implementation
@@ -708,6 +718,17 @@ type Action {
   raw(encode: String = "hex"): String!
 }
 
+type MonsterCollectionStatusType {
+  canReceive: Boolean!
+  fungibleAssetValue: FungibleAssetValueType!
+}
+
+# Holds a fungible asset value which holds its  together.
+type FungibleAssetValueType {
+  currency: String!
+  quantity: Decimal!
+}
+
 type StandaloneMutation {
   action: ActionMutation
   activationStatus: ActivationStatusMutation
@@ -764,14 +785,14 @@ type ActionMutation {
     productId: Guid!
   ): TxId!
 
-  # Downgrade staking level.
-  cancelStaking(
-    # The staking level.(1 ~ 6)
+  # Downgrade monster collection level.
+  cancelMonsterCollect(
+    # The monster collection level.(1 ~ 6)
     level: Int!
   ): TxId!
 
-  # Get staking reward.
-  claimStakingReward(
+  # Get monster collection reward.
+  claimMonsterCollectionReward(
     # Address of avatar for get reward.
     avatarAddress: Address!
   ): TxId!
@@ -872,6 +893,12 @@ type ActionMutation {
     slotIndex: Int!
   ): TxId!
 
+  # Start monster collect.
+  monsterCollect(
+    # The monster collection level.(1 ~ 7)
+    level: Int!
+  ): TxId!
+
   # Register item to the shop.
   sell(
     # Avatar address to register shop item.
@@ -883,22 +910,16 @@ type ActionMutation {
     # Item selling price.
     price: Int!
   ): TxId!
-
-  # Staking NCG.
-  stake(
-    # The staking level.(1 ~ 7)
-    level: Int!
-  ): TxId!
 }
 
 type StandaloneSubscription {
   differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
+  monsterCollectionState: MonsterCollectionStateType!
+  monsterCollectionStatus: MonsterCollectionStatusType!
   nodeException: NodeExceptionType!
   nodeStatus: NodeStatusType
   notification: NotificationType!
   preloadProgress: PreloadStateType
-  stakingState: StakingStateType!
-  stakingStatus: StakingStatusType!
   tipChanged: TipChanged
 }
 
@@ -962,15 +983,4 @@ type NodeExceptionType {
 
   # The message of NodeException.
   message: String!
-}
-
-type StakingStatusType {
-  canReceive: Boolean!
-  fungibleAssetValue: FungibleAssetValueType!
-}
-
-# Holds a fungible asset value which holds its  together.
-type FungibleAssetValueType {
-  currency: String!
-  quantity: Decimal!
 }

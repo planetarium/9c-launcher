@@ -1,0 +1,50 @@
+$bg-img: url('../../common/resources/bg-staking-bottom-bg.png');
+$info-bg-img: url('../../common/resources/ui-staking-top-bg-03.png');
+
+.CollectionPanelContainer {
+  width: 105vw;
+  position: relative;
+  bottom: -30px;
+  left: -30px;
+}
+
+.CollectionPanelBackground {
+    background: $bg-img;
+    background-size: 100%;
+    background-repeat: no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 180px;
+}
+
+.CollectionPanelButton {
+  position: relative;
+  left: 50px;
+}
+
+.CollectionPanelInfo {
+  background: $info-bg-img;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  width: 400px;
+  height: 100%;
+  position: relative;
+  right: 50px;
+  top: 35px;
+
+  p {
+    position: relative;
+    left: 30px;
+    padding: 0;
+    margin-top: 0;
+  }
+
+  ul {
+    position: relative;
+    left: 30px;
+    padding: 0;
+    margin: 0;
+  }
+}
