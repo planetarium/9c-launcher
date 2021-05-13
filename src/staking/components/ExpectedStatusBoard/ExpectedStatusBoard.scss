@@ -1,0 +1,21 @@
+$bg-img: url('../../common/resources/bg-staking-top-bg.png');
+
+.ExpectedStatusBoardContainer {
+  background: $bg-img;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    display: flex;
+}
+
+.CurrentStakedGoldContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  .label {
+    display: inline-block;
+  }
+}
+
+.CurrentExpectedRewardContainer {
+  flex: 3;
+}
