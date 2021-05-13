@@ -1,5 +1,5 @@
 import { Dialog } from "@material-ui/core"
-import React from "react"
+import React, { useEffect } from "react"
 import useStores from "../../../hooks/useStores";
 import { useGetAvatarAddressQuery } from "../../../generated/graphql";
 import { Reward, RewardCategory } from "../../../collection/types";
@@ -16,9 +16,17 @@ const ClaimCollectionRewardContainer: React.FC<Props> = (props: Props) => {
   const {open, rewards, onActionTxId} = props;
   const {accountStore} = useStores();
 
-  const {loading, error, data} = useGetAvatarAddressQuery({variables: {
+  const {data, refetch} = useGetAvatarAddressQuery({variables: {
     address: accountStore.selectedAddress,
   }});
+
+  useEffect(() => {
+    if(data?.stateQuery.agent?.avatarStates) return;
+    setInterval(async () => {
+      const result = await refetch();
+      if(result.data.stateQuery.agent?.avatarStates) clearInterval();
+    }, 2000)
+  }, [])
 
   return (
   <Dialog
