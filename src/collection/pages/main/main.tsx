@@ -122,6 +122,9 @@ const Main: React.FC = () => {
 
   if (loading) return <p>loading</p>;
   if (error) return <p>error</p>;
+  if(data?.stateQuery.agent == null) {
+    <div>you need create avatar first</div>
+  }
   if (
     data?.stateQuery.monsterCollectionSheet == null ||
     data.stateQuery.monsterCollectionSheet.orderedList == null
