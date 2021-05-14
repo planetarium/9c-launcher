@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Reward } from "../../../collection/types";
+import { getExpectedReward, getTotalDepositedGold } from "../../../collection/components/common/collectionSheet";
+import { CollectionSheetItem, Reward, RewardCategory } from "../../../collection/types";
 import {
   useGoldAndCollectionLevelLazyQuery,
   useNodeStatusSubscriptionSubscription,
@@ -23,7 +24,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   const { minedBlock, onReward, onOpenWindow } = props;
   const { accountStore } = useStores();
   const [depositedGold, setDepositeGold] = useState<number>(0);
-  const [rewards, setRewards] = useState<Reward[]>([]);
+  const [currentReward, setCurrentReward] = useState<
+    Map<RewardCategory, number>>(new Map<RewardCategory, number>());
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
   const [
@@ -51,26 +53,44 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   });
 
   useEffect(() => {
-    let currentDepositedGold = 0;
-    setRewards([]);
+    if(goldAndLevel?.stateQuery.agent) return;
+    setInterval(async () => {
+      goldLevelQuery()
+      if(goldAndLevel?.stateQuery.agent) clearInterval();
+    }, 2000)
+  }, [])
+
+  useEffect(() => {
+    setCurrentReward(new Map<RewardCategory, number>());
+
+    if (collectionState?.monsterCollectionState.end) {
+      setDepositeGold(0);
+      return;
+    }
+
     sheetRefetch().then((query) => {
       const level = collectionState?.monsterCollectionState.level
         ? Number(collectionState?.monsterCollectionState.level)
         : Number(goldAndLevel?.stateQuery.agent?.monsterCollectionLevel);
-      query?.data.stateQuery.monsterCollectionSheet?.orderedList?.forEach((x) => {
-        if (level >= Number(x?.level)) {
-          currentDepositedGold += Number(x?.requiredGold);
-          x?.rewards.map((x) =>
-            setRewards((state) =>
-              state.concat({
-                itemId: x?.itemId,
-                quantity: x?.quantity,
-              } as Reward)
-            )
-          );
-        }
-      });
-      setDepositeGold(currentDepositedGold);
+      const sheet = query
+        .data
+        .stateQuery
+        .monsterCollectionSheet
+        ?.orderedList
+        ?.map(x => { 
+          return { 
+            level: x?.level, 
+            requiredGold: x?.requiredGold, 
+            reward: x?.rewards.map(x => { 
+              return { 
+                itemId: x?.itemId, 
+                quantity: x?.quantity 
+              } as Reward }) 
+            } as CollectionSheetItem 
+          });
+      if (sheet == null) return;
+      setDepositeGold(getTotalDepositedGold(sheet, level));
+      setCurrentReward(getExpectedReward(sheet, level));
     });
   }, [goldAndLevel, collectionState]);
 
@@ -92,7 +112,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     setClaimLoading(false);
   };
 
-  if (accountStore.isLogin && nodeStatus?.nodeStatus?.preloadEnded)
+  if (accountStore.isLogin && nodeStatus?.nodeStatus?.preloadEnded && goldAndLevel?.stateQuery.agent != null)
     return (
       <>
         <AccountInfo
@@ -118,7 +138,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
         )}
         {openDialog ? (
           <ClaimCollectionRewardContainer
-            rewards={rewards}
+            rewards={[...currentReward].map(x => {return {itemId: x[0], quantity: x[1]} as Reward})}
             onActionTxId={handleAcion}
             open={openDialog}
           />
@@ -131,7 +151,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     <>
       <AccountInfo
         minedBlock={0}
-        onOpenWindow={onOpenWindow}
+        onOpenWindow={() => {}}
         canClaimReward={false}
         goldLabel={"loading..."}
         collectionLabel={"loading..."}

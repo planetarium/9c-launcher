@@ -15,6 +15,7 @@ import {
   useMinerAddressQuery,
   useCollectionSheetWithStateLazyQuery,
   useCollectionStatusSubscription,
+  useCollectionStateSubscription,
 } from "../../../generated/graphql";
 import { CollectionItemModel } from "../../models/collection";
 import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedStatusBoard";
@@ -30,6 +31,7 @@ const getCollectionPhase = (level: number, collectionLevel: number): CollectionP
 
 const Main: React.FC = () => {
   const [agentAddress, setAgentAddress] = useState<string>("");
+  const [latestTxId, setLatestTxId] = useState<string>("");
   const [cartList, setCart] = useState<CollectionItemModel[]>([]);
   const [collectionSheet, setCollectionSheet] = useState<CollectionSheetItem[]>([]);
   const [dialog, setDialog] = useState<boolean>(false);
@@ -59,6 +61,7 @@ const Main: React.FC = () => {
   ] = useCancelCollectionMutation();
 
   const {data: collectionStatus} = useCollectionStatusSubscription();
+  const {data: collectionState} = useCollectionStateSubscription();
 
   useEffect(() => {
     if (
@@ -119,6 +122,30 @@ const Main: React.FC = () => {
       setAgentAddress(minerAddress.minerAddress!);
     }
   }, [minerAddress]);
+
+  useEffect(() => {
+    if(collectionState?.monsterCollectionState.end) {
+      setCart((state) => state.map(x => {
+          return {
+            tier: x.tier,
+            value: x.value,
+            collectionPhase: getCollectionPhase(x.tier, 0),
+          } as CollectionItemModel
+        }));
+      setDepositedGold(0);
+    }
+  }, [collectionState]);
+
+  useEffect(() => {
+    if(collectionState?.monsterCollectionState.level === data?.stateQuery.agent?.monsterCollectionLevel) {
+      setDialog(false);
+      setEdit(false);
+    } else {
+      if(latestTxId === "") {
+        //FIXME: if failed, need action here
+      }
+    }
+  }, [collectionState, data])
 
   if (loading) return <p>loading</p>;
   if (error) return <p>error</p>;
@@ -206,6 +233,13 @@ const Main: React.FC = () => {
   const handleSubmit = async () => {
     setDialog(true);
     const collectionTx = await collectionMutation();
+    if(!collectionTx) {
+      setDialog(false);
+      setEdit(false);
+      return;
+    }
+
+    setLatestTxId(collectionTx);
 
     while (collectionTx) {
       const stagedTx = await stagedTxRefetch();
@@ -216,9 +250,7 @@ const Main: React.FC = () => {
       if (!tx) break;
     }
     await refetch();
-
-    setDialog(false);
-    setEdit(false);
+    setLatestTxId("");
   };
 
   return (
@@ -257,7 +289,7 @@ const Main: React.FC = () => {
             onPush={addCart}
           />
         ) : (
-          <CollectionPanel sheet={collectionSheet} tier={data.stateQuery.agent?.monsterCollectionLevel} onEdit={() => {setEdit(true)}}  />
+          <CollectionPanel sheet={collectionSheet} tier={collectionState?.monsterCollectionState.level} onEdit={() => {setEdit(true)}}  />
         )}
       </div>
 

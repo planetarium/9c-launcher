@@ -24,12 +24,16 @@ const AccountInfo: React.FC<Props> = (props: Props) => {
     <div className={'AccountInfoItem'}>
       <img className={'Icon'} src={goldIcon} alt='gold'/>
       <div className={'value'}>{numberWithComma(goldLabel)}</div>
-      <div className={'subText'}>{`(Mined ${minedBlock} blocks)`}</div>
+      {
+        typeof goldLabel !== "string" && <div className={'subText'}>{`(Mined ${minedBlock} blocks)`}</div>
+      }
     </div>
     <div className={'AccountInfoItem Monster'} onClick={() => {onOpenWindow()}}>
       <img className={'Icon'} src={monsterIcon} alt='monster'/>
       <div className={'value'}>{numberWithComma(collectionLabel)}</div>
-      <div className={'subText'}>{`(Remaning ${0} days)`}</div>
+      {
+        typeof collectionLabel !== 'string' && <div className={'subText'}>{`(Remaning ${0} days)`}</div>
+      }
     </div>
   </div>
 }
