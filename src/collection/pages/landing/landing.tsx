@@ -17,8 +17,10 @@ const Landing: React.FC<Props> = (props: Props) => {
       style={{ backgroundImage: `url(${BackgroundImage})` }}
     >
       <div className={"Title"}>
-        Colllect cute monsters! <br />
-        Then, you can earn various rewards!
+        Collect cute monsters! Then, you can earn special rewards!
+      </div>
+      <div className={"Subtitle"}>
+        NCG is required to collect monsters. You can get rewards as many monsters as you collect.
       </div>
       <div className={"Button"} >
       <Button

@@ -32,18 +32,22 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
           <p>Monster Collection</p>
           <ul>
             <li>
-              Collect various monsters, then you can earn!
+              Gather various monsters with NCG!
             </li>
             <li>
               NCG is required to collect.
             </li>
             <li>
-              Reward cycle is about 7 days.
+              Rewards can be received about every 7 days.
             </li>
           </ul>
         </div>
+        <div>MY BALANCE</div>
         <div>{getTotalDepositednGold(sheet, tier)}</div>
         {getRewardCategoryList().map((x) => (
+          <div>
+            Rewards
+          </div>
           <div>
             {RewardCategory[x]}/{currentReward.get(x)}
           </div>
