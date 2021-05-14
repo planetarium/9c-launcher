@@ -4,7 +4,7 @@ import CollectionButton from "../Button/Button";
 import {
   getExpectedReward,
   getRewardCategoryList,
-  getTotalDepositednGold,
+  getTotalDepositedGold,
 } from "../common/collectionSheet";
 
 import "./CollectionPanel.scss";
@@ -42,7 +42,7 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
             </li>
           </ul>
         </div>
-        <div>{getTotalDepositednGold(sheet, tier)}</div>
+        <div>{getTotalDepositedGold(sheet, tier)}</div>
         {getRewardCategoryList().map((x) => (
           <div>
             {RewardCategory[x]}/{currentReward.get(x)}

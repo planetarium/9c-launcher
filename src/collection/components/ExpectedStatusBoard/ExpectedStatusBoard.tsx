@@ -8,7 +8,7 @@ import {
 import {
   getExpectedReward,
   getRewardCategoryList,
-  getTotalDepositednGold,
+  getTotalDepositedGold,
 } from "../common/collectionSheet";
 import RewardItem from "./RewardItem/RewardItem";
 
@@ -37,7 +37,7 @@ const ExpectedStatusBoard: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     setTargetReward(getExpectedReward(collectionSheet, targetTier));
-    setDepositedGold(getTotalDepositednGold(collectionSheet, targetTier));
+    setDepositedGold(getTotalDepositedGold(collectionSheet, targetTier));
   }, [targetTier, collectionSheet]);
 
   return (

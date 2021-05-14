@@ -25,7 +25,7 @@ export const getExpectedReward = (sheet: CollectionSheetItem[], target: Collecti
   return currentReward;
 }
 
-export const getTotalDepositednGold = (sheet: CollectionSheetItem[], target: CollectionItemTier) => {
+export const getTotalDepositedGold = (sheet: CollectionSheetItem[], target: CollectionItemTier) => {
   let gold = 0;
   sheet.forEach(sheetItem => {
     if(sheetItem.level <= target) gold += sheetItem.requiredGold;
