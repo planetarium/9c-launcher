@@ -21,7 +21,7 @@ const ConfirmationDialog: React.FC<Props> = (props: Props) => {
       <div className="ConfirmationDialogContainer">
         <div className="ConfirmationDialogLabelContainer">
           <img src={loadingIcon} />
-          <div className="label">Processing Collecte...</div>
+          <div className="label">Processing Collecting...</div>
         </div>
       </div>
     </Dialog>

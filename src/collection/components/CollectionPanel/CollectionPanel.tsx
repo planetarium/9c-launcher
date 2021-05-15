@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { RewardCategory, CollectionItemTier, CollectionSheetItem } from "../../types";
+import {
+  RewardCategory,
+  CollectionItemTier,
+  CollectionSheetItem,
+} from "../../types";
 import CollectionButton from "../Button/Button";
 import {
   getExpectedReward,
@@ -28,37 +32,32 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
   return (
     <div className={"CollectionPanelContainer"}>
       <div className={"CollectionPanelBackground"}>
-        <div className={'CollectionPanelInfo'}>
+        <div className={"CollectionPanelInfo"}>
           <p>Monster Collection</p>
           <ul>
-            <li>
-              Collect various monsters, then you can earn!
-            </li>
-            <li>
-              NCG is required to collect.
-            </li>
-            <li>
-              Reward cycle is about 7 days.
-            </li>
+            <li>Gather various monsters with NCG!</li>
+            <li>NCG is required to collect.</li>
+            <li>Rewards can be received about every 7 days.</li>
           </ul>
         </div>
+        <div>MY BALANCE</div>
         <div>{getTotalDepositedGold(sheet, tier)}</div>
         {getRewardCategoryList().map((x) => (
           <div>
             {RewardCategory[x]}/{currentReward.get(x)}
           </div>
         ))}
-        <div className={'CollectionPanelButton'}>
-        <CollectionButton
-          onClick={onEdit}
-          width={140}
-          height={55}
-          primary={true}
-        >
-          Edit
-        </CollectionButton>
+        <div>Rewards</div>
+        <div className={"CollectionPanelButton"}>
+          <CollectionButton
+            onClick={onEdit}
+            width={140}
+            height={55}
+            primary={true}
+          >
+            Edit
+          </CollectionButton>
         </div>
-
       </div>
     </div>
   );
