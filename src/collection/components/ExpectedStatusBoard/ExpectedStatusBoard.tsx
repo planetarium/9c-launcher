@@ -43,12 +43,12 @@ const ExpectedStatusBoard: React.FC<Props> = (props: Props) => {
   return (
     <div className={"ExpectedStatusBoardContainer"}>
       <div className={"CurrentStakedGoldContainer"}>
-        <div>MY COLLECTION</div>
+        <div>MY BALANCE</div>
         <RewardItem left={depositedGold} right={depositedGold} item={"GOLD"} />
       </div>
 
       <div className={"CurrentExpectedRewardContainer"}>
-        <div>Rewards</div>
+        <div>REWARDS</div>
         <div>
           {getRewardCategoryList().map((x) => (
             <RewardItem

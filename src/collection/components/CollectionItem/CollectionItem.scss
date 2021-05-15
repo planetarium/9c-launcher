@@ -1,8 +1,98 @@
+@keyframes tier1 {
+  from {
+      left: 70px;
+      top: 30px;
+  }
+  to {
+      left: 70px;
+      top: 50px;
+  }
+}
+
+@keyframes tier2 {
+  from {
+      left: 70px;
+      top: 30px;
+  }
+  to {
+      left: 70px;
+      top: 50px;
+  }
+}
+
+
+@keyframes tier3 {
+  from {
+      left: 70px;
+      top: 30px;
+  }
+  to {
+      left: 70px;
+      top: 50px;
+  }
+}
+
+@keyframes tier4 {
+  from {
+      left: 70px;
+      top: 30px;
+  }
+  to {
+      left: 70px;
+      top: 50px;
+  }
+}
+
+
+@keyframes tier5 {
+  from {
+      left: 70px;
+      top: 30px;
+  }
+  to {
+      left: 70px;
+      top: 50px;
+  }
+}
+
+@keyframes tier6 {
+  from {
+      left: 70px;
+      top: 50px;
+  }
+  to {
+      left: 70px;
+      top: 70px;
+  }
+}
+
+@keyframes tier7 {
+  from {
+      left: 70px;
+      top: 30px;
+  }
+  to {
+      left: 70px;
+      top: 50px;
+  }
+}
+
+
 .CollectionItemContainer {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
+
+    .arrow {
+      width: 53px;
+    position: relative;
+    animation-duration: 1s;
+    animation-timing-function: ease;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    z-index: 3;
+    }
 }
 
 .TIER1 {
@@ -10,6 +100,9 @@
   position: relative;
   bottom: -73px;
   left: 50px;
+    .arrow{
+      animation-name: tier1;
+    }
 }
 
 .TIER2 {
@@ -17,6 +110,9 @@
   position: relative;
   bottom: -60px;
   left: 100px;;
+    .arrow{
+      animation-name: tier2;
+    }
 }
 
 .TIER3 {
@@ -24,6 +120,9 @@
   position: relative;
   left: -91px;
   bottom: 35px;
+    .arrow{
+      animation-name: tier3;
+    }
 }
 
 .TIER4 {
@@ -31,13 +130,22 @@
   position: relative;
   left: -58px;
   top: -135px;
+    .arrow{
+      animation-name: tier4;
+    }
 }
 
 .TIER5 {
     width: 250px;
     position: relative;
     right: 136px;
-    top: 50px;
+    top: 25px;
+    img {
+      width: 250px;
+    }
+    .arrow{
+      animation-name: tier5;
+    }
 }
 
 .TIER6 {
@@ -45,6 +153,12 @@
     position: relative;
     right: 207px;
     top: -63px;
+    img {
+      width: 165px;
+    }
+    .arrow{
+      animation-name: tier6;
+    }
 }
 
 .TIER7 {
@@ -52,6 +166,12 @@
     position: relative;
     right: 226px;
     bottom: 75px;
+    img {
+      width: 400px;
+    }
+    .arrow{
+      animation-name: tier7;
+    }
 }
 
 .DisplayCollectionPriceContaier {
@@ -68,5 +188,4 @@
 .GrayScale {
     filter: grayscale(1);
 }
-
 

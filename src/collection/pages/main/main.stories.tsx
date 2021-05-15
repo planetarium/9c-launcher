@@ -95,6 +95,39 @@ Primary.parameters = {
       },
       {
         request: {
+          query: CollectionStateDocument,
+        },
+        result: {
+          data: {
+            monsterCollectionState: {
+              address: "",
+              end: "",
+              expiredBlockIndex: "",
+              level: "",
+              rewardLevel: "",
+              receivedBlockIndex: "",
+              startedBlockIndex: "",
+              __typename: "MonsterCollectionStateType"
+            },
+          },
+        },
+        newData: () => {return {
+          data: {
+            monsterCollectionState: {
+              address: "",
+              end: "",
+              expiredBlockIndex: "",
+              level: "",
+              rewardLevel: "",
+              receivedBlockIndex: "",
+              startedBlockIndex: "",
+              __typename: "MonsterCollectionStateType"
+            },
+          },
+        }}
+      },
+      {
+        request: {
           query: StagedTxDocument,
           variables: {
             address: address,
