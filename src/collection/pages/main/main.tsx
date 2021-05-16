@@ -10,7 +10,7 @@ import ConfirmationDialog from "../../components/ConfirmationDialog/Dialog";
 import {
   useCancelCollectionMutation,
   useCollectMutation,
-  useCollectionSheetWithStateQuery,
+  useGetTipQuery,
   useStagedTxQuery,
   useMinerAddressQuery,
   useCollectionSheetWithStateLazyQuery,
@@ -37,6 +37,7 @@ const Main: React.FC = () => {
   const [dialog, setDialog] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const [depositedGold, setDepositedGold] = useState<number>(0);
+  const [remainTime, setRemainTime] = useState<number>(0);
   const [collectionSheetQuery, {
     loading,
     error,
@@ -62,6 +63,18 @@ const Main: React.FC = () => {
 
   const {data: collectionStatus} = useCollectionStatusSubscription();
   const {data: collectionState} = useCollectionStateSubscription();
+  const {data: nodeStatus} = useGetTipQuery({
+    pollInterval: 1000 * 5
+  });
+
+  useEffect(() => {
+    const claimableBlockIndex = Number(collectionState?.monsterCollectionState.claimableBlockIndex || 0);
+    const tipIndex = Number(nodeStatus?.nodeStatus.tip.index || 0)
+    const delta = claimableBlockIndex - tipIndex;
+    if(delta <= 0) return;
+    
+    setRemainTime(Math.round(delta / 5 / 60));
+  }, [nodeStatus, collectionState])
 
   useEffect(() => {
     if (
@@ -268,7 +281,7 @@ const Main: React.FC = () => {
         />
       ) : (
         <div className={'MainRemainDisplayPos'}>
-          <RemainingDisplay remainMin={1000} />
+          <RemainingDisplay remainMin={remainTime} />
         </div>
       )}
       <div className={"CollectionItemList"}>

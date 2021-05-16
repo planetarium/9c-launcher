@@ -29,11 +29,12 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     Map<RewardCategory, number>>(new Map<RewardCategory, number>());
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
-  const { data: goldAndLevel, loading, error, startPolling }
+  const { data: goldAndLevel, refetch: goldAndLevelRefetch, stopPolling }
    = useGoldAndCollectionLevelQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
+    pollInterval: 1000 * 3
   });
   const {
     refetch: sheetRefetch,
@@ -86,8 +87,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   }, [goldAndLevel, collectionState]);
 
   useEffect(() => {
-    startPolling(1000 * 3);
-  }, [accountStore.isLogin]);
+    if(goldAndLevel?.stateQuery.agent != null) stopPolling();
+  },[goldAndLevel])
 
   const handleAcion = async (collectTx: string) => {
     setOpenDialog(false);

@@ -189,6 +189,14 @@ query MinerAddress {
   minerAddress
 }
 
+query GetTip {
+  nodeStatus {
+    tip {
+      index
+    }
+  }
+}
+
 mutation Collect($level: Int!) {
   action {
     monsterCollect(level: $level)
@@ -216,6 +224,7 @@ subscription CollectionState {
     rewardLevel
     receivedBlockIndex
     startedBlockIndex
+    claimableBlockIndex
   }
 }
 

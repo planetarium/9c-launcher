@@ -498,6 +498,7 @@ type AgentStateType {
 
 type MonsterCollectionStateType {
   address: Address!
+  claimableBlockIndex: Long!
   end: Boolean!
   expiredBlockIndex: Long!
   level: Long!
