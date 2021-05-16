@@ -1,21 +1,21 @@
 @keyframes tier1 {
   from {
-      left: 70px;
-      top: 30px;
+      left: 10px;
+      top: 0px;
   }
   to {
-      left: 70px;
-      top: 50px;
+      left: 10px;
+      top: 30px;
   }
 }
 
 @keyframes tier2 {
   from {
-      left: 70px;
+      left: 20px;
       top: 30px;
   }
   to {
-      left: 70px;
+      left: 20px;
       top: 50px;
   }
 }
@@ -23,11 +23,11 @@
 
 @keyframes tier3 {
   from {
-      left: 70px;
+      left: 35px;
       top: 30px;
   }
   to {
-      left: 70px;
+      left: 35px;
       top: 50px;
   }
 }
@@ -47,17 +47,6 @@
 @keyframes tier5 {
   from {
       left: 70px;
-      top: 30px;
-  }
-  to {
-      left: 70px;
-      top: 50px;
-  }
-}
-
-@keyframes tier6 {
-  from {
-      left: 70px;
       top: 50px;
   }
   to {
@@ -66,14 +55,25 @@
   }
 }
 
-@keyframes tier7 {
+@keyframes tier6 {
   from {
       left: 70px;
-      top: 30px;
+      top: 70px;
   }
   to {
       left: 70px;
-      top: 50px;
+      top: 90px;
+  }
+}
+
+@keyframes tier7 {
+  from {
+      left: 180px;
+      top: 200px;
+  }
+  to {
+      left: 180px;
+      top: 220px;
   }
 }
 
@@ -104,7 +104,6 @@
   bottom: -8px;
   left: 50px;
     .arrow{
-      right: 30px;
       animation-name: tier1;
     }
 }
