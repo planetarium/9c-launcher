@@ -8,6 +8,7 @@ import {
   useCollectionSheetQuery,
   useCollectionStateSubscription,
   useCollectionStatusSubscription,
+  useGoldAndCollectionLevelQuery,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import ClaimCollectionRewardContainer from "../ClaimCollectionRewardDialog/ClaimCollectionRewardContainer";
@@ -28,10 +29,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     Map<RewardCategory, number>>(new Map<RewardCategory, number>());
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
-  const [
-    goldLevelQuery,
-    { data: goldAndLevel, loading, error },
-  ] = useGoldAndCollectionLevelLazyQuery({
+  const { data: goldAndLevel, loading, error, startPolling }
+   = useGoldAndCollectionLevelQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
@@ -51,14 +50,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
       address: accountStore.selectedAddress,
     },
   });
-
-  useEffect(() => {
-    if(goldAndLevel?.stateQuery.agent) return;
-    setInterval(async () => {
-      goldLevelQuery()
-      if(goldAndLevel?.stateQuery.agent) clearInterval();
-    }, 2000)
-  }, [])
 
   useEffect(() => {
     setCurrentReward(new Map<RewardCategory, number>());
@@ -95,7 +86,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   }, [goldAndLevel, collectionState]);
 
   useEffect(() => {
-    goldLevelQuery();
+    startPolling(1000 * 3);
   }, [accountStore.isLogin]);
 
   const handleAcion = async (collectTx: string) => {

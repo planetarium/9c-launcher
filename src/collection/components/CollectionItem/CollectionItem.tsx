@@ -18,7 +18,7 @@ const CollectionItem: React.FC<Props> = (props: Props) => {
     const monsterResources = getMonsterImageFromTier(item.tier);
     return <div className={`CollectionItemContainer TIER${Number(item.tier)}`} >
         <div>
-            { item.collectionPhase === CollectionPhase.CANDIDATE ? <img src={ArrowIcon} className={`arrow`} /> : <></>}
+          <img src={ArrowIcon} className={`arrow ${item.collectionPhase === CollectionPhase.CANDIDATE ? 'visible' : 'hide'}`} />
         <img className={`${item.collectionPhase >= CollectionPhase.CANDIDATE && 'Outline'}`}
             src={require(`../../common/resources/${monsterResources}.png`).default} />
         </div>

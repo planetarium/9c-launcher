@@ -93,14 +93,18 @@
     animation-direction: alternate;
     z-index: 3;
     }
+    .hide {
+      visibility: hidden;
+    }
 }
 
 .TIER1 {
   width: 70px;
   position: relative;
-  bottom: -73px;
+  bottom: -8px;
   left: 50px;
     .arrow{
+      right: 30px;
       animation-name: tier1;
     }
 }
@@ -108,7 +112,7 @@
 .TIER2 {
   width: 80px;
   position: relative;
-  bottom: -60px;
+  bottom: 5px;
   left: 100px;;
     .arrow{
       animation-name: tier2;
@@ -119,7 +123,7 @@
   width: 100px;
   position: relative;
   left: -91px;
-  bottom: 35px;
+  bottom: 100px;
     .arrow{
       animation-name: tier3;
     }
@@ -129,7 +133,7 @@
   width: 170px;
   position: relative;
   left: -58px;
-  top: -135px;
+  bottom: 200px;
     .arrow{
       animation-name: tier4;
     }
@@ -139,7 +143,7 @@
     width: 250px;
     position: relative;
     right: 136px;
-    top: 25px;
+    top: -40px;
     img {
       width: 250px;
     }
@@ -152,7 +156,7 @@
     width: 165px;
     position: relative;
     right: 207px;
-    top: -63px;
+    bottom: 120px;
     img {
       width: 165px;
     }
@@ -165,7 +169,7 @@
     width: 400px;
     position: relative;
     right: 226px;
-    bottom: 75px;
+    bottom: 130px;
     img {
       width: 400px;
     }
