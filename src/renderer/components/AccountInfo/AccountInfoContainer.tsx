@@ -119,12 +119,15 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
           collectionLabel={depositedGold}
         />
         {collectionStatus?.monsterCollectionStatus.canReceive ? (
+          <div className={'AccountContainerRewardButton'}>
           <RewardButton
             loading={claimLoading}
             onClick={() => {
               setOpenDialog(true);
             }}
           />
+          </div>
+
         ) : (
           <></>
         )}
