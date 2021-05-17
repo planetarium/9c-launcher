@@ -8,10 +8,13 @@ export type Props = {
 }
 
 const getRemain = (remainMin: number) => {
-  const hour = remainMin / 60;
-  return hour === 0 
-  ? `${remainMin} minute`
-  : `${Math.round(hour)} hours`;
+  const day = remainMin / 60;
+  if(day !== 0) return `${Math.round(day)} days`
+  
+  const hour = remainMin % 60;
+  if(hour !== 0) return `${remainMin} hours`
+
+  return `less then hour`
 }
 
 const RemainingDisplay: React.FC<Props> = (props: Props) => {
