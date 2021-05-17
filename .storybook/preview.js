@@ -1,5 +1,7 @@
 import { MockedProvider } from "@apollo/react-testing";
 
+import './storybook.scss';
+
 const customViewports = {
   kindleFire2: {
     name: 'launcher v2',
@@ -8,8 +10,8 @@ const customViewports = {
       height: '600px',
     },
   },
-  kindleFireHD: {
-    name: 'staking',
+  monsterCollection: {
+    name: 'monsterCollection',
     styles: {
       width: '984px',
       height: '560px',
