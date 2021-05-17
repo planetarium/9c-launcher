@@ -62,7 +62,7 @@ $item-bg: url('../../common/resources/ui-staking-slot-bg.png');
         width: 144px;
         height: 37px;
         position: relative;
-        top: 45px;
+        top: 50px;
         object-fit: contain;
         text-shadow: 0px 1px 0.5px rgba(204, 155, 98, 0.55);
         font-size: 16px;
@@ -132,7 +132,8 @@ $item-bg: url('../../common/resources/ui-staking-slot-bg.png');
 
 .CollectionPanelButton {
   position: relative;
-  right: 50px;
+  right: 30px;
+  top: 20px;
 }
 
 .CollectionPanelInfo {

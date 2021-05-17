@@ -81,7 +81,7 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
           <CollectionButton
             onClick={onEdit}
             width={164}
-            height={70}
+            height={50}
             primary={true}
           >
             Edit
