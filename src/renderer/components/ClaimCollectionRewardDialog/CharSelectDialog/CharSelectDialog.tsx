@@ -3,6 +3,7 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  makeStyles,
   Radio,
   RadioGroup,
 } from "@material-ui/core";
@@ -15,6 +16,19 @@ export type Props = {
   avatar: { address: string; name: string }[];
 };
 
+const charSelectDialogStyle = makeStyles({
+  radioGroup: {
+    width: "400px",
+    height: "250px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-left",
+  },
+  button: {
+    width: "300px",
+  }
+});
+
 const CharSelectDialog: React.FC<Props> = (props: Props) => {
   const { onClick, avatar } = props;
   const [avatarAddress, setAvatarAddress] = React.useState(avatar[0].address);
@@ -22,15 +36,18 @@ const CharSelectDialog: React.FC<Props> = (props: Props) => {
     setAvatarAddress((event.target as HTMLInputElement).value);
   };
 
+  const classes = charSelectDialogStyle();
+
   return (
     <div className={'CharSelectDialogContainer'}>
       <FormControl component="fieldset">
-        <FormLabel component="legend">Select Character</FormLabel>
+        <div className={'CharSelectDialogTitle'}>Select Character</div>
         <RadioGroup
           aria-label="avatar"
           name="avatar1"
           value={avatarAddress}
           onChange={handleChange}
+          className={classes.radioGroup}
         >
           {avatar.map((x) => (
             <FormControlLabel
@@ -42,6 +59,7 @@ const CharSelectDialog: React.FC<Props> = (props: Props) => {
         </RadioGroup>
       </FormControl>
       <Button
+      className={classes.button}
         color="primary"
         variant="contained"
         fullWidth

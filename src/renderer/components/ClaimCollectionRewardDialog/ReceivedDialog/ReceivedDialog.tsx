@@ -7,7 +7,7 @@ import GoldBox from "../../../resources/000.png";
 
 import './ReceivedDialog.scss';
 
-const mainViewStyle = makeStyles({
+const receivedDialogStyle = makeStyles({
   button: {
     width: "189px",
     height: "48px",
@@ -24,7 +24,7 @@ export type Props = {
 
 const ReceivedDialog:React.FC<Props> = (props: Props) => {
   const {rewards, onClick} = props;
-  const classes = mainViewStyle();
+  const classes = receivedDialogStyle();
   return <div className='ReceivedDialogContainer'>
     <div className="ReceivedDialogTitle">
       Reward Received!
