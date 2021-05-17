@@ -11,8 +11,23 @@
   align-items: center;
   color: #11ffee00;
    .label {
+    object-fit: contain;
+    mix-blend-mode: screen;
+    text-shadow: 2px 2px 0 #000000;
+    background-blend-mode: color-dodge, normal;
+    background-image: linear-gradient(to bottom, rgba(255, 197, 65, 0.63), rgba(255, 197, 65, 0.63)), linear-gradient(to top, #a98848, #e7d187), linear-gradient(to bottom, #fff5e3, #fff5e3);
+    font-family: Montserrat;
     font-size: 24px;
-    color: rgba(255, 197, 65, 0.63);
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: left;
+    color: #fff5e3;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
    }
    img {
      background-color: transparent;
