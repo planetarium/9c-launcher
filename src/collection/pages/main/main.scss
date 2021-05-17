@@ -30,9 +30,9 @@ $bg-img: url('../../common/resources/staking_bg.png');
 }
 
 .MainCartContainer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+    position: relative;
+    top: 440px;
+    left: -36px;
 }
 
 .MainRemainDisplayPos {
@@ -44,6 +44,11 @@ $bg-img: url('../../common/resources/staking_bg.png');
 
 .MainCollectionPanelContainer {
   position: relative;
-  bottom: 0px;
+  top: 420px;
   left: -36px;
+}
+
+.MainExpectedStatusBoard {
+  position: relative;
+  left: 152px;
 }

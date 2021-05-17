@@ -96,21 +96,21 @@ $item-bg: url('../../common/resources/ui-staking-slot-bg.png');
     }
 }
 
-.RewardItemBackground {
+.CollectionRewardItemBackground {
   background-image: $item-bg;
   background-size: 100%;
   background-repeat: no-repeat;
   margin: 7px 7px 1px 7px;
 }
 
-.RewardItemListContainer {
+.CollectionRewardItemListContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: row;
 }
 
-.RewardItemContainer {
+.CollectionRewardItemContainer {
   display: flex;
   justify-content: center;
   align-items: center;

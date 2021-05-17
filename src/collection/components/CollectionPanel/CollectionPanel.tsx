@@ -62,11 +62,11 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
         </div>
         <div className={"reward"}>
           <div className={'title'}>REWARDS</div>
-          <div className={"RewardItemListContainer"}>
+          <div className={"CollectionRewardItemListContainer"}>
           {getRewardCategoryList().map((x) => (
-            <div className={"RewardItemContainer"}>
-              <div className={"RewardItemBackground"}>
-                <img className={"RewardItemImage"} src={getRewardImage(x)}/>
+            <div className={"CollectionRewardItemContainer"}>
+              <div className={"CollectionRewardItemBackground"}>
+                <img className={"CollectionRewardItemImage"} src={getRewardImage(x)}/>
               </div>
               <div className={'label'}>
               {currentReward.get(x)}

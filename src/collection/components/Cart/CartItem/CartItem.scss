@@ -1,29 +1,17 @@
 $slot-img: url('../../../common/resources/ui-staking-slot-bg.png');
-$select-img: url('../../../common/resources/ui-staking-slot-select.png');
+$select-img: url('../../../common/resources/ui-staking-slot-select-02.png');
+$selected-img: url('../../../common/resources/ui-staking-slot-select-01.png');
 
-.AddIcon {
-    top: 0;
-    width: 30px;
-    fill: #E97341;
-}
-
-.LockIcon {
-    top: 0;
-    width: 30px;
-    fill: #E97341;
-}
 
 .RemoveButton {
     position: absolute;
-    width: 22px;
-    height: 22px;
+    width: 25px;
+    height: 25px;
     top: 0;
-    right: 10px;
+    right: -2px;
 }
 
 .CartIconContainer {
-    width: 67px;
-    height: 67px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,50 +27,68 @@ $select-img: url('../../../common/resources/ui-staking-slot-select.png');
     justify-content: center;
     align-items: center;
     position: relative;
+    top: 15px;
 }
 
 .CollectionImageBackground {
   background-image: $slot-img;
   background-size: 100%;
   background-repeat: no-repeat;
-}
-
-.CartValueContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    background-color: black;
-    border-radius: 10px;
-    font-weight: normal;
-    width: 104px;
-
-    height: 21px;
+  width: 94px;
+  height: 94px;
 }
 
 .GoldIcon {
-    width: 24px;
-    height: 24px;
-    position: absolute;
-    left: -5px;
-    bottom: -2px;
+    width: 21px;
+    height: 21px;
+}
+
+.CartValue {
+  display: inline-block;
+  text-shadow: 0px 2px 0.2px rgba(0, 0, 0, 0.91);
+  font-family: Montserrat;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 0.64;
+  letter-spacing: 0.7px;
+  text-align: left;
+  color: #fff5e3;
 }
 
 .RedFontColor {
     color: red;
 }
 
-.CandidateItemBackground {
-  background-image: $select-img;
+.AddItem {
+  position: absolute;
+  background: $select-img;
   background-size: 100%;
   background-repeat: no-repeat;
+  width: 115px;
+  height: 115px;
+  left: -5px;
+  top: -5px;
 }
 
 .CartIconListContainer {
   width: 90%;
 }
 
-.AddItem {
-  width: 100%;
-  height: 100%;
+.CartIcon {
+  position: absolute;
+  background-image: $selected-img;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  width: 107px;
+  height: 107px;
+  left: 0px;
+  top: 0px;
+}
+
+.CartValueContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

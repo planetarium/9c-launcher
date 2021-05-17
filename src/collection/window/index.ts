@@ -7,7 +7,7 @@ import isDev from "electron-is-dev";
 const createCollectionWindow = (): BrowserWindow => {
   let _win = new BrowserWindow({
     width: 1166,
-    height: 708,
+    height: 738,
     webPreferences: {
       nodeIntegration: true,
     },

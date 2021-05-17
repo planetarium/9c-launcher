@@ -273,6 +273,7 @@ const Main: React.FC = () => {
     >
       <div className={"MainBorder"}>
       {edit ? (
+        <div className={"MainExpectedStatusBoard"}>
         <ExpectedStatusBoard
           collectionSheet={collectionSheet}
           currentTier={data.stateQuery.agent?.monsterCollectionLevel}
@@ -280,6 +281,8 @@ const Main: React.FC = () => {
             cartList.find((x) => x.collectionPhase === CollectionPhase.LATEST)?.tier || CollectionItemTier.TIER0
           }
         />
+        </div>
+
       ) : (
         <div className={'MainRemainDisplayPos'}>
           <RemainingDisplay remainMin={remainTime} />
@@ -287,11 +290,12 @@ const Main: React.FC = () => {
       )}
       <div className={"CollectionItemList"}>
         {cartList.map((x, i) => (
-          <CollectionItem item={x} key={i} />
+          <CollectionItem item={x} isEdit={edit} key={i} />
         ))}
       </div>
-      <div className={"MainCartContainer"}>
+      
         {edit ? (
+          <div className={"MainCartContainer"}>
           <Cart
             cartList={cartList}
             totalGold={Number(collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity || 0) + depositedGold}
@@ -302,12 +306,13 @@ const Main: React.FC = () => {
             onRemove={removeCard}
             onPush={addCart}
           />
+          </div>
         ) : (
           <div className={'MainCollectionPanelContainer'}>
             <CollectionPanel sheet={collectionSheet} tier={collectionState?.monsterCollectionState.level} onEdit={() => {setEdit(true)}}  />
           </div>
         )}
-      </div>
+      
 
       <ConfirmationDialog open={dialog} />
       </div>

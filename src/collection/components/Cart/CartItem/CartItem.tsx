@@ -1,5 +1,5 @@
 import React from "react";
-import { getMonsterImageFromTier } from "../../../common/utils";
+import { getCartMonsterImageFromTier, getMonsterImageFromTier } from "../../../common/utils";
 import { CollectionItemModel } from "../../../models/collection";
 import { CollectionItemTier, CollectionPhase } from "../../../types";
 import LockImage from "../../../common/resources/ui-staking-slot-lock.png";
@@ -38,8 +38,10 @@ const LockItem: React.FC = () => {
 const AddItem: React.FC<AddItemProps> = (props: AddItemProps) => {
     const {item, onPush} = props;
     return (
-    <div className={'AddItem'} onClick={() => {onPush(item)}}>
-    </div>
+        <div>
+    <div className={'AddItem'} onClick={() => {onPush(item)}}/>
+        </div>
+
     )
 }
 
@@ -47,7 +49,8 @@ const MonsterItem: React.FC<MonsterItemProps> = (props: MonsterItemProps) => {
     const { icon, item, onRemove } = props;
     return (
     <div>
-        <img className={'CartIcon'} src={require(`../../../common/resources/${icon}.png`).default} />
+        <div className={'CartIcon'} />
+        <img src={require(`../../../common/resources/${icon}.png`).default} />
         {
             item.collectionPhase === CollectionPhase.LATEST ? <img className='RemoveButton' src={CancelImage} onClick={() => {onRemove(item)}} /> : <></>
         }
@@ -58,7 +61,7 @@ const CartItem: React.FC<Props> = (props: Props) => {
     const {item, canCollect, onPush, onRemove} = props;
 
     const getResource = (tier: CollectionItemTier) => {
-        return getMonsterImageFromTier(tier);
+        return getCartMonsterImageFromTier(tier);
     }
 
     const getComponent = (item: CollectionItemModel) => {
@@ -69,14 +72,15 @@ const CartItem: React.FC<Props> = (props: Props) => {
 
     return (
         <div className={'CartItemContainer'}>
-            <div className={`CartIconContainer ${item.collectionPhase === CollectionPhase.CANDIDATE ? 'CandidateItemBackground' : 'CollectionImageBackground'}`}>
+            <div className={`CartIconContainer CollectionImageBackground`}>
                 {
                     getComponent(item)
                 }
             </div>
-            <img className={'GoldIcon'} src={GoldImage} />
+            
             <div className={'CartValueContainer'}>
-              <div className={canCollect ? '' : 'RedFontColor'} >
+            <img className={'GoldIcon'} src={GoldImage} />
+              <div className={`CartValue ${canCollect ? '' : 'RedFontColor'}`} >
                   {item.value}
               </div>
             </div>

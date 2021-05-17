@@ -2,14 +2,11 @@ $bg-img: url('../../common/resources/bg-staking-bottom-bg.png');
 
 .CartContainer {
   width: 105vw;
-  position: relative;
-  bottom: -20px;
-  left: -30px;
 }
 
-
-.CartIcon {
-    width: 50px;
+.StepIconPos {
+    position: relative;
+    top: 5px;
 }
 
 .OpsButtonContainer {
@@ -25,7 +22,7 @@ $bg-img: url('../../common/resources/bg-staking-bottom-bg.png');
     justify-content: space-evenly;
     align-items: center;
     height: 170px;
-    width: 90%;
+    width: 65%;
 }
 
 .CartItemListBackground {
@@ -36,4 +33,16 @@ $bg-img: url('../../common/resources/bg-staking-bottom-bg.png');
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 180px;
+}
+
+.CartItemListButtonContainer {
+    position: relative;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: column;
+    left: 80px;
+    top: 15px;
+    height: 150px;
 }

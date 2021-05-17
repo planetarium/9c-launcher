@@ -6,6 +6,7 @@ import { CollectionItemTier } from "../../types"
 import './Cart.scss';
 import CartItem from "./CartItem/CartItem";
 import CollectionButton from "../Button/Button";
+import stepIcon from "../../common/resources/bg-staking-slot-step.png";
 
 export type Props = {
     cartList: CollectionItemModel[],
@@ -31,28 +32,32 @@ const Cart: React.FC<Props> = (props: Props) => {
       return value;
     }
     return <div className={'CartContainer'}>
-        <div className={'OpsButtonContainer'}>
-        <CollectionButton
-        width={164}
-        height={45}
-        onClick={onCancel}
-      >
-        Cancel
-      </CollectionButton>
-      <CollectionButton
+        <div className={'CartItemListBackground'}>
+        <div className={'CartItemListContainer'}>
+        {
+            cartList.map((x, i) => (<>
+            <CartItem canCollect={totalGold >= getNeedGoldAmount(x)} item={x} onPush={onPush} onRemove={onRemove} key={i} />
+            {i !== cartList.length - 1 && <img className={'StepIconPos'} src={stepIcon}/>}
+          </>))
+        }
+        </div>
+        <div className={'CartItemListButtonContainer'}>
+                <CollectionButton
         primary={true}
         width={164}
-        height={45}
+        height={55}
         onClick={onSubmit}
       >
         Apply
       </CollectionButton>
-        </div>
-        <div className={'CartItemListBackground'}>
-        <div className={'CartItemListContainer'}>
-        {
-            cartList.map((x, i) => <CartItem canCollect={totalGold >= getNeedGoldAmount(x)} item={x} onPush={onPush} onRemove={onRemove} key={i} />)
-        }
+        <CollectionButton
+        width={164}
+        height={30}
+        onClick={onCancel}
+      >
+        Cancel
+      </CollectionButton>
+
         </div>
         </div>
 

@@ -41,15 +41,16 @@ const ExpectedStatusBoard: React.FC<Props> = (props: Props) => {
   }, [targetTier, collectionSheet]);
 
   return (
-    <div className={"ExpectedStatusBoardContainer"}>
+    <div className={"ExpectedStatusBoardBackground"}>
+      <div className={"ExpectedStatusBoardContainer"}>
       <div className={"CurrentStakedGoldContainer"}>
-        <div>MY BALANCE</div>
+        <div className={"ExpectedStatusBoardTitle"}>MY BALANCE</div>
         <RewardItem left={depositedGold} right={depositedGold} item={"GOLD"} />
       </div>
 
       <div className={"CurrentExpectedRewardContainer"}>
-        <div>REWARDS</div>
-        <div>
+        <div className={"ExpectedStatusBoardTitle"}>REWARDS</div>
+        <div className={"ExpectedReward"}>
           {getRewardCategoryList().map((x) => (
             <RewardItem
               left={currentReward.get(x) || 0}
@@ -59,6 +60,8 @@ const ExpectedStatusBoard: React.FC<Props> = (props: Props) => {
           ))}
         </div>
       </div>
+      </div>
+
     </div>
   );
 };
