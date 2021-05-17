@@ -147,15 +147,46 @@ $item-bg: url('../../common/resources/ui-staking-slot-bg.png');
 
   p {
     position: relative;
-    left: 30px;
+    left: 15px;
+    top: -8px;
     padding: 0;
-    margin-top: 0;
+    object-fit: contain;
+    mix-blend-mode: screen;
+    font-family: Montserrat;
+    font-size: 15px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.6;
+    letter-spacing: -0.45px;
+    text-align: left;
+    color: #a57843;
   }
 
   ul {
     position: relative;
     left: 30px;
+    bottom: 22px;
     padding: 0;
     margin: 0;
+  }
+
+  li {
+    object-fit: contain;
+    mix-blend-mode: screen;
+    text-shadow: 0px 2px 0 #000000;
+    font-family: Montserrat;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.6;
+    letter-spacing: normal;
+    text-align: left;
+    color: #fff6b9;
+  }
+
+  li::marker {
+      content: '- ';
   }
 }

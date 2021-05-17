@@ -48,7 +48,7 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
     <div className={"CollectionPanelContainer"}>
       <div className={"CollectionPanelBackground"}>
         <div className={"CollectionPanelInfo"}>
-          <p>Monster Collection</p>
+          <p>MONSTER COLLECTION</p>
           <ul>
             <li>Gather various monsters with NCG!</li>
             <li>NCG is required to collect.</li>
