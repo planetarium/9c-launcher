@@ -1,9 +1,21 @@
-import { Button } from "@material-ui/core";
+import { Button, makeStyles } from "@material-ui/core";
 import React from "react"
 import { Reward } from "../../../../collection/types";
 import RewardItemComponent from "../RewardItem/RewardItemComponent";
 
+import GoldBox from "../../../resources/000.png";
+
 import './ReceivedDialog.scss';
+
+const mainViewStyle = makeStyles({
+  button: {
+    width: "189px",
+    height: "48px",
+    fontWeight: "bold",
+    fontSize: "larger",
+    borderRadius: "0",
+  },
+});
 
 export type Props = {
   rewards: Reward[]
@@ -12,20 +24,21 @@ export type Props = {
 
 const ReceivedDialog:React.FC<Props> = (props: Props) => {
   const {rewards, onClick} = props;
+  const classes = mainViewStyle();
   return <div className='ReceivedDialogContainer'>
-    <div>
+    <div className="ReceivedDialogTitle">
       Reward Received!
     </div>
     <div>
-      image
+      <img src={GoldBox} />
     </div>
-    <div>
+    <div className="ReceivedDialogItemList">
     {
       rewards.map(x => <RewardItemComponent reward={x} />)
     }
     </div>
     <div>
-      <Button color='primary' variant='text' onClick={() => {onClick()}}>OK</Button>
+      <Button className={classes.button} color='primary' variant='contained' onClick={() => {onClick()}}>OK</Button>
     </div>
   </div>
 }
