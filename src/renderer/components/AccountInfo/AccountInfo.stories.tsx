@@ -4,7 +4,7 @@ import { Story, Meta } from '@storybook/react';
 import AccountInfoContainer, { Props } from './AccountInfoContainer';
 import { Provider } from 'mobx-react';
 import AccountStore from '../../stores/account';
-import { GoldAndCollectionLevelDocument, CollectionSheetDocument, CollectionStatusDocument } from '../../../generated/graphql';
+import { GoldAndCollectionLevelDocument, CollectionSheetDocument, CollectionStatusDocument, CollectionStateDocument, NodeStatusSubscriptionDocument } from '../../../generated/graphql';
 
 export default {
   title: 'Renderer/Components/AccountInfo',
@@ -163,6 +163,66 @@ Primary.parameters = {
             }
           }
         }},
+      },
+      {
+        request: {
+          query: CollectionStateDocument
+        },
+        result: {
+          data: {
+            monsterCollectionState: {
+              address: "",
+              end: "",
+              expiredBlockIndex: "",
+              claimableBlockIndex: 100,
+              level: 4,
+              rewardLevel: "",
+              receivedBlockIndex: "",
+              startedBlockIndex: "",
+              __typename: "MonsterCollectionStateType"
+            },
+          },
+        },
+        newData: () => { return {
+          data: {
+            monsterCollectionState: {
+              address: "",
+              end: "",
+              expiredBlockIndex: "",
+              claimableBlockIndex: 100,
+              level: 4,
+              rewardLevel: "",
+              receivedBlockIndex: "",
+              startedBlockIndex: "",
+              __typename: "MonsterCollectionStateType"
+            },
+          },
+        }
+        }
+      },
+      {
+        request: {
+          query: NodeStatusSubscriptionDocument
+        },
+        result: {
+          data: {
+            nodeStatus: {
+              bootstrapEnded: true,
+              preloadEnded: true,
+              __typename: "NodeStatusType"
+            }
+          }
+        },
+        newData: () => { return {
+          data: {
+            nodeStatus: {
+              bootstrapEnded: true,
+              preloadEnded: true,
+              __typename: "NodeStatusType"
+            }
+          }
+        }
+        }
       },
       {
         request: {

@@ -10,8 +10,8 @@ export type Props = {
 const getRemain = (remainMin: number) => {
   const hour = remainMin / 60;
   return hour === 0 
-  ? `Min: ${remainMin}`
-  : `Hour: ${Math.round(hour)}`;
+  ? `${remainMin} minute`
+  : `${Math.round(hour)} hours`;
 }
 
 const RemainingDisplay: React.FC<Props> = (props: Props) => {
@@ -21,7 +21,7 @@ const RemainingDisplay: React.FC<Props> = (props: Props) => {
     <div className="RemainingDisplayTitle">
       The monsters are playing happlly
     </div>
-    <div className="RemainingDisplayLable">
+    <div className="RemainingDisplayLabel">
       <img src={starIcon}/>
       <div className='label'>
         Reward Remaining Time: <div className='remain'>{getRemain(remainMin)}</div>

@@ -99,79 +99,63 @@
 }
 
 .TIER1 {
-  width: 70px;
   position: relative;
-  bottom: -8px;
-  left: 50px;
+  bottom: -10px;
+  left: 65px;
     .arrow{
       animation-name: tier1;
     }
 }
 
 .TIER2 {
-  width: 80px;
   position: relative;
-  bottom: 5px;
-  left: 100px;;
+  bottom: 7px;
+  left: 122px;;
     .arrow{
       animation-name: tier2;
     }
 }
 
 .TIER3 {
-  width: 100px;
   position: relative;
-  left: -91px;
-  bottom: 100px;
+  left: -104px;
+  bottom: 117px;
     .arrow{
       animation-name: tier3;
     }
 }
 
 .TIER4 {
-  width: 170px;
   position: relative;
-  left: -58px;
-  bottom: 200px;
+  left: -63px;
+  bottom: 236px;
     .arrow{
       animation-name: tier4;
     }
 }
 
 .TIER5 {
-    width: 250px;
     position: relative;
-    right: 136px;
-    top: -40px;
-    img {
-      width: 250px;
-    }
+    right: 152px;
+    top: -17px;
     .arrow{
       animation-name: tier5;
     }
 }
 
 .TIER6 {
-    width: 165px;
     position: relative;
-    right: 207px;
-    bottom: 120px;
-    img {
-      width: 165px;
-    }
+    right: 244px;
+    bottom: 153px;
     .arrow{
       animation-name: tier6;
     }
 }
 
 .TIER7 {
-    width: 400px;
     position: relative;
-    right: 226px;
-    bottom: 130px;
-    img {
-      width: 400px;
-    }
+    right: 277px;
+    bottom: 167px;
     .arrow{
       animation-name: tier7;
     }

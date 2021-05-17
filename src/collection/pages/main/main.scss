@@ -1,5 +1,19 @@
+$filter: url('../../common/resources/UI_staking_frame.png');
+$bg-img: url('../../common/resources/staking_bg.png');
+
+.MainBorder {
+    background: $filter;
+    background-size: 100%;
+    width: 100.5vw;
+    height: 100.5vh;
+    position: relative;
+    left: -3px;
+    top: -3px;
+}
+
 .MainContainer {
     font-family: 'Montserrat', sans-serif;
+    background: $bg-img;
     width: 100vw;
     height: 100vh;
     background-size: cover;
@@ -23,7 +37,13 @@
 
 .MainRemainDisplayPos {
   position: relative;
-  left: 300px;
-  top: 30px;
+  left: 363px;
+  top: 55px;
+  z-index: 1;
 }
 
+.MainCollectionPanelContainer {
+  position: relative;
+  bottom: 0px;
+  left: -36px;
+}

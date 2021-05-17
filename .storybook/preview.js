@@ -13,8 +13,8 @@ const customViewports = {
   monsterCollection: {
     name: 'monsterCollection',
     styles: {
-      width: '984px',
-      height: '560px',
+      width: '1166px',
+      height: '708px',
     },
   },
 };

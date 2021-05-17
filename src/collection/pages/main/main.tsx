@@ -271,6 +271,7 @@ const Main: React.FC = () => {
       className={"MainContainer"}
       style={{ backgroundImage: `url(${BackgroundImage})` }}
     >
+      <div className={"MainBorder"}>
       {edit ? (
         <ExpectedStatusBoard
           collectionSheet={collectionSheet}
@@ -302,11 +303,15 @@ const Main: React.FC = () => {
             onPush={addCart}
           />
         ) : (
-          <CollectionPanel sheet={collectionSheet} tier={collectionState?.monsterCollectionState.level} onEdit={() => {setEdit(true)}}  />
+          <div className={'MainCollectionPanelContainer'}>
+            <CollectionPanel sheet={collectionSheet} tier={collectionState?.monsterCollectionState.level} onEdit={() => {setEdit(true)}}  />
+          </div>
         )}
       </div>
 
       <ConfirmationDialog open={dialog} />
+      </div>
+
     </div>
   );
 };

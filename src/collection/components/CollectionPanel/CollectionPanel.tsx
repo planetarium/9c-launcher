@@ -11,6 +11,10 @@ import {
   getTotalDepositedGold,
 } from "../common/collectionSheet";
 
+import MyCollectionIcon from '../../common/resources/loading.png'
+import ApIcon from '../../common/resources/ui-staking-slot-item-01.png'
+import HourglassIcon from '../../common/resources/ui-staking-slot-item-02.png'
+
 import "./CollectionPanel.scss";
 
 export type Props = {
@@ -18,6 +22,17 @@ export type Props = {
   tier: CollectionItemTier;
   onEdit: () => void;
 };
+
+const getRewardImage = (item: RewardCategory) => {
+  switch(item) {
+    case RewardCategory.AP:
+      return ApIcon;
+    case RewardCategory.HOURGLASS:
+      return HourglassIcon;
+    default:
+      throw Error(`${item} is not in ${JSON.stringify(RewardCategory)}`);
+  }
+}
 
 const CollectionPanel: React.FC<Props> = (props: Props) => {
   const { sheet, tier, onEdit } = props;
@@ -40,19 +55,33 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
             <li>Rewards can be received about every 7 days.</li>
           </ul>
         </div>
-        <div>MY BALANCE</div>
-        <div>{getTotalDepositedGold(sheet, tier)}</div>
-        {getRewardCategoryList().map((x) => (
-          <div>
-            {RewardCategory[x]}/{currentReward.get(x)}
+        <div className={"balance"}>
+          <div className={'title'} >MY BALANCE</div>
+          <img src={MyCollectionIcon} className={"monster"} />
+          <div className={'deposit'}>{getTotalDepositedGold(sheet, tier)}</div>
+        </div>
+        <div className={"reward"}>
+          <div className={'title'}>REWARDS</div>
+          <div className={"RewardItemListContainer"}>
+          {getRewardCategoryList().map((x) => (
+            <div className={"RewardItemContainer"}>
+              <div className={"RewardItemBackground"}>
+                <img className={"RewardItemImage"} src={getRewardImage(x)}/>
+              </div>
+              <div className={'label'}>
+              {currentReward.get(x)}
+              </div>
+            </div>
+          ))}
           </div>
-        ))}
-        <div>Rewards</div>
+
+        </div>
+
         <div className={"CollectionPanelButton"}>
           <CollectionButton
             onClick={onEdit}
-            width={140}
-            height={55}
+            width={164}
+            height={70}
             primary={true}
           >
             Edit

@@ -9,8 +9,10 @@ import {
   CollectionSheetWithStateDocument,
   CollectionStateDocument,
   CollectionStatusDocument,
+  GetTipDocument,
 } from "../../../generated/graphql";
 import { tableSheetData } from "./main.mock";
+import { variables } from "electron-log";
 
 export default {
   title: "Collection/Pages/Main",
@@ -103,7 +105,8 @@ Primary.parameters = {
               address: "",
               end: "",
               expiredBlockIndex: "",
-              level: "",
+              claimableBlockIndex: 100,
+              level: 4,
               rewardLevel: "",
               receivedBlockIndex: "",
               startedBlockIndex: "",
@@ -117,14 +120,44 @@ Primary.parameters = {
               address: "",
               end: "",
               expiredBlockIndex: "",
-              level: "",
+              level: 4,
               rewardLevel: "",
               receivedBlockIndex: "",
+              claimableBlockIndex: 100,
               startedBlockIndex: "",
               __typename: "MonsterCollectionStateType"
             },
           },
         }}
+      },
+      {
+        request: {
+          query: GetTipDocument
+        },
+        result: {
+          data: {
+            nodeStatus: {
+              tip: {
+                index: 100,
+                __typename: "TipType",
+              },
+              __typename: "NodeStatusType"
+            }
+          }
+        },
+        newData: () => {
+          return {
+            data: {
+              nodeStatus: {
+                tip: {
+                  index: 100,
+                  __typename: "TipType",
+                },
+                __typename: "NodeStatusType"
+              }
+            }
+          }
+        }
       },
       {
         request: {
