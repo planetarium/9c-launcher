@@ -129,3 +129,131 @@ query ValidateSnapshot($raw: String!) {
     metadata(raw: $raw)
   }
 }
+
+query CollectionSheet {
+  stateQuery {
+    monsterCollectionSheet {
+      orderedList {
+        level
+        requiredGold
+        rewards {
+          itemId
+          quantity
+        }
+      }
+    }
+  }
+}
+
+query GetAvatarAddress($address: Address!) {
+  stateQuery {
+    agent(address: $address) {
+      avatarStates {
+        address
+        name
+        updatedAt
+      }
+    }
+  }
+}
+
+query CollectionSheetWithState($address: Address!) {
+  stateQuery {
+    monsterCollectionSheet {
+      orderedList {
+        level
+        requiredGold
+        rewards {
+          itemId
+          quantity
+        }
+      }
+    }
+    agent(address: $address) {
+      gold
+      monsterCollectionLevel
+      monsterCollectionRound
+    }
+  }
+}
+
+query GoldAndCollectionLevel($address: Address!) {
+  stateQuery {
+    agent(address: $address) {
+      gold
+      monsterCollectionLevel
+    }
+  }
+}
+
+query MinerAddress {
+  minerAddress
+}
+
+query GetTip {
+  nodeStatus {
+    tip {
+      index
+    }
+  }
+}
+
+mutation Collect($level: Int!) {
+  action {
+    monsterCollect(level: $level)
+  }
+}
+
+mutation CancelCollection($level: Int!) {
+  action {
+    cancelMonsterCollect(level: $level)
+  }
+}
+
+mutation ClaimCollectionReward($address: Address!) {
+  action {
+    claimMonsterCollectionReward(avatarAddress: $address)
+  }
+}
+
+subscription CollectionState {
+  monsterCollectionState {
+    address
+    end
+    expiredBlockIndex
+    level
+    rewardLevel
+    receivedBlockIndex
+    startedBlockIndex
+    claimableBlockIndex
+  }
+}
+
+query StagedTx($address: Address!) {
+  nodeStatus {
+    stagedTxIds(address: $address)
+  }
+}
+
+subscription CurrentGold {
+  monsterCollectionStatus {
+    fungibleAssetValue {
+      quantity
+    }
+  }
+}
+
+subscription CanReceiveCollection {
+  monsterCollectionStatus {
+    canReceive
+  }
+}
+
+subscription CollectionStatus {
+  monsterCollectionStatus {
+    canReceive
+    fungibleAssetValue {
+      quantity
+    }
+  }
+}

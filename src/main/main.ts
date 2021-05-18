@@ -57,6 +57,7 @@ import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-fail
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { PermDeviceInformationSharp } from "@material-ui/icons";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
+import createCollectionWindow from "../collection/window";
 
 initializeSentry();
 
@@ -449,6 +450,10 @@ function initializeIpc() {
     }
   );
 
+  ipcMain.handle("open collection page", async () => {
+      createCollectionWindow();
+  })
+  
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {
       console.error("Game is already running.");

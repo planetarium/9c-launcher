@@ -1,0 +1,31 @@
+.IntroContainer {
+  font-family: 'Montserrat', sans-serif;
+  width: 100vw;
+  height: 100vh;
+  .Title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    margin: 10px;
+  }
+  .Subtitle {
+    text-align: center;
+    font-size: 20px;
+    font-weight: normal;
+    color: white;
+    margin-bottom: 15px;
+  }  
+}
+
+
+
+.IntroItems {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  bottom: 30px;
+  left: 150px;
+}

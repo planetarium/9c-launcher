@@ -1,0 +1,10 @@
+$bg-img: url('../../common/resources/image-1.png');
+
+.LoadingPageContainer {
+    font-family: 'Montserrat', sans-serif;
+    background: $bg-img;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    color: white;
+}
