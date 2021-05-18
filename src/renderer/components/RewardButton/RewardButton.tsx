@@ -12,7 +12,6 @@ const rewardButtonStyle = makeStyles({
     height: "30px",
     fontFamily: "Montserrat",
     fontSize: "16px",
-    borderRadius: "0",
     backgroundColor: "#dc9c2d",
     color: "white"
   },
