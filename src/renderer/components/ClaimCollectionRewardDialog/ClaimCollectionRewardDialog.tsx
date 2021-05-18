@@ -6,12 +6,13 @@ import ReceivedDialog from "./ReceivedDialog/ReceivedDialog";
 
 export type Props = {
   rewards: Reward[]
-  avatar: {address: string, name: string}[]
+  avatar: {address: string, name: string, updatedAt: number}[]
+  tip: number
   onActionTxId: (txId: string) => void;
 }
 
 const ClaimCollectionRewardDialog: React.FC<Props> = (props: Props) => {
-  const {rewards, avatar, onActionTxId} = props;
+  const {rewards, avatar, tip, onActionTxId} = props;
   const [step, setStep] = useState<number>(0);
   const [claim] = useClaimCollectionRewardMutation();
   const handleStep = () => setStep(step + 1);
@@ -27,7 +28,7 @@ const ClaimCollectionRewardDialog: React.FC<Props> = (props: Props) => {
       return <ReceivedDialog rewards={rewards} onClick={avatar.length === 1 ? () => handleSubmit(avatar[0].address) : handleStep}/>
     
     case 1:
-      return <CharSelectDialog avatar={avatar} onClick={handleSubmit}/>
+      return <CharSelectDialog avatar={avatar.sort((x, y) => y.updatedAt - x.updatedAt)} tip={tip} onClick={handleSubmit}/>
     default:
       return <></>
   }

@@ -13,7 +13,8 @@ import './CharSelectDialog.scss'
 
 export type Props = {
   onClick: (avatarAddress: string) => void;
-  avatar: { address: string; name: string }[];
+  avatar: { address: string; name: string, updatedAt: number }[];
+  tip: number;
 };
 
 const charSelectDialogStyle = makeStyles({
@@ -24,19 +25,44 @@ const charSelectDialogStyle = makeStyles({
     justifyContent: "center",
     alignItems: "flex-left",
   },
+  radio: {
+    '&$checked': {
+      color: '#74f4bc'
+    },
+    color: '#FFFFFF'
+  },
+  checked: {},
   button: {
-    width: "300px",
+    width: "189px",
+    height: "48px",
+    fontWeight: "bold",
+    fontSize: "larger",
+    borderRadius: "0",
   }
 });
 
+const getRemain = (remainMin: number) => {
+  const hour = remainMin / 60;
+
+  const days = hour / 12;
+  if(days >= 1) return `${Math.round(days)} days`
+
+  if(hour >= 1) return `${Math.round(hour)} hours`
+
+  return `less then hour`
+}
+
 const CharSelectDialog: React.FC<Props> = (props: Props) => {
-  const { onClick, avatar } = props;
+  const { onClick, tip, avatar } = props;
   const [avatarAddress, setAvatarAddress] = React.useState(avatar[0].address);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAvatarAddress((event.target as HTMLInputElement).value);
   };
 
   const classes = charSelectDialogStyle();
+  console.log(avatar.map(x => {
+    console.log(`address: ${x.address} updateAt: ${x.updatedAt}`)
+  }))
 
   return (
     <div className={'CharSelectDialogContainer'}>
@@ -52,12 +78,13 @@ const CharSelectDialog: React.FC<Props> = (props: Props) => {
           {avatar.map((x) => (
             <FormControlLabel
               value={x.address}
-              control={<Radio />}
-              label={x.name}
+              control={<Radio classes={{root: classes.radio, checked: classes.checked}} />}
+              label={`${x.name} #${x.address.substring(2, 6)} \n Latest login at: ${getRemain((tip - x.updatedAt) / 5 )}`}
             />
           ))}
         </RadioGroup>
       </FormControl>
+      <div className={'CharSelectDialogButtonPos'}>
       <Button
       className={classes.button}
         color="primary"
@@ -67,6 +94,8 @@ const CharSelectDialog: React.FC<Props> = (props: Props) => {
       >
         Send
       </Button>
+      </div>
+
     </div>
   );
 };

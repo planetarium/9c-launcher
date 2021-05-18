@@ -1,7 +1,7 @@
 import { Dialog } from "@material-ui/core"
 import React, { useEffect } from "react"
 import useStores from "../../../hooks/useStores";
-import { useGetAvatarAddressQuery } from "../../../generated/graphql";
+import { useGetAvatarAddressQuery, useGetTipQuery } from "../../../generated/graphql";
 import { Reward, RewardCategory } from "../../../collection/types";
 import ClaimCollectionRewardDialog from "./ClaimCollectionRewardDialog";
 
@@ -16,17 +16,15 @@ const ClaimCollectionRewardContainer: React.FC<Props> = (props: Props) => {
   const {open, rewards, onActionTxId} = props;
   const {accountStore} = useStores();
 
-  const {data, refetch} = useGetAvatarAddressQuery({variables: {
+  const {data, refetch, stopPolling} = useGetAvatarAddressQuery({variables: {
     address: accountStore.selectedAddress,
-  }});
+  }, pollInterval: 2000});
+  
+  const {data: nodeStatus} = useGetTipQuery({
+    pollInterval: 1000 * 5
+  });
 
-  useEffect(() => {
-    if(data?.stateQuery.agent?.avatarStates) return;
-    setInterval(async () => {
-      const result = await refetch();
-      if(result.data.stateQuery.agent?.avatarStates) clearInterval();
-    }, 2000)
-  }, [])
+  console.log(`avatarInfo: ${JSON.stringify(data?.stateQuery.agent?.avatarStates)}`)
 
   return (
   <Dialog
@@ -36,8 +34,9 @@ const ClaimCollectionRewardContainer: React.FC<Props> = (props: Props) => {
       {
         data?.stateQuery.agent?.avatarStates 
         ? <ClaimCollectionRewardDialog
+        tip={nodeStatus?.nodeStatus.tip.index!}
         rewards={rewards}
-        avatar={data!.stateQuery.agent!.avatarStates!.map(x => {return {address: x.address, name: x.name}})}
+        avatar={data!.stateQuery.agent!.avatarStates!.map(x => {return {address: x.address, name: x.name, updatedAt: x.updatedAt}})}
         onActionTxId={onActionTxId}/>
         : <div>You need create avatar first</div>
       }
