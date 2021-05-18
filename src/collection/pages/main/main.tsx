@@ -21,6 +21,7 @@ import { CollectionItemModel } from "../../models/collection";
 import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedStatusBoard";
 import CollectionPanel from "../../components/CollectionPanel/CollectionPanel";
 import RemainingDisplay from "../../components/RemainingDisplay/RemainingDisplay";
+import LoadingPage from "./loading";
 
 const getCollectionPhase = (level: number, collectionLevel: number): CollectionPhase => {
   if (level === collectionLevel + 1) return CollectionPhase.CANDIDATE;
@@ -73,7 +74,7 @@ const Main: React.FC = () => {
     const delta = claimableBlockIndex - tipIndex;
     if(delta <= 0) return;
     
-    setRemainTime(Math.round(delta / 5 / 60));
+    setRemainTime(Math.round(delta / 5));
   }, [nodeStatus, collectionState])
 
   useEffect(() => {
@@ -160,7 +161,7 @@ const Main: React.FC = () => {
     }
   }, [collectionState, data])
 
-  if (loading) return <p>loading</p>;
+  if (loading) return <LoadingPage/>;
   if (error) return <p>error</p>;
   if(data?.stateQuery.agent == null) {
     <div>you need create avatar first</div>
@@ -293,12 +294,11 @@ const Main: React.FC = () => {
           <CollectionItem item={x} isEdit={edit} key={i} />
         ))}
       </div>
-      
         {edit ? (
           <div className={"MainCartContainer"}>
           <Cart
             cartList={cartList}
-            totalGold={Number(collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity || 0) + depositedGold}
+            totalGold={Number(collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity || data.stateQuery.agent?.gold) + depositedGold}
             onCancel={() => {
               setEdit(false);
             }}
@@ -309,7 +309,7 @@ const Main: React.FC = () => {
           </div>
         ) : (
           <div className={'MainCollectionPanelContainer'}>
-            <CollectionPanel sheet={collectionSheet} tier={collectionState?.monsterCollectionState.level} onEdit={() => {setEdit(true)}}  />
+            <CollectionPanel sheet={collectionSheet} tier={collectionState?.monsterCollectionState.level ? collectionState.monsterCollectionState.level : data.stateQuery.agent?.monsterCollectionLevel} onEdit={() => {setEdit(true)}}  />
           </div>
         )}
       
