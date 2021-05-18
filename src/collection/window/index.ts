@@ -17,8 +17,6 @@ const createCollectionWindow = (): BrowserWindow => {
     icon: path.join(app.getAppPath(), logoImage),
   });
 
-  console.log(app.getAppPath());
-
   if (isDev) {
     _win.loadURL("http://localhost:9000/collection.html");
     _win.webContents.openDevTools();

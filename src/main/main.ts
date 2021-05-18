@@ -451,7 +451,7 @@ function initializeIpc() {
   );
 
   ipcMain.handle("open collection page", async () => {
-    createCollectionWindow();
+      createCollectionWindow();
   })
   
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
@@ -938,12 +938,6 @@ function createTray(iconPath: string) {
   tray = new Tray(trayIcon);
   tray.setContextMenu(
     Menu.buildFromTemplate([
-      {
-        label: "Open Staking",
-        click: function () {
-          createCollectionWindow();
-        },
-      },
       {
         label: "Open Window",
         click: function () {
