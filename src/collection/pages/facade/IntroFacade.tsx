@@ -1,16 +1,16 @@
-import React from "react"
-import Introduce from "../introduce/introduce";
+import { ipcRenderer } from "electron";
+import React, { useState } from "react"
 import Landing from "../landing/landing";
 import Main from "../main/main";
 
 export type Props = {
-    isIntro: boolean,
-    handleClick: () => void;
+    isFirst: boolean,
 }
 
 const IntroFacade: React.FC<Props> = (props: Props) => {
-    const {isIntro, handleClick} = props;
-    if(!isIntro) return <Landing handleNextButton={handleClick}/>
+    const {isFirst} = props;
+    const [isIntro, setIsIntro] = useState<boolean>(isFirst);
+    if(!isIntro) return <Landing handleNextButton={() => {setIsIntro(true)}}/>
     else return <Main />
 }
 

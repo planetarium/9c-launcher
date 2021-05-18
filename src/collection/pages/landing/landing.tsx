@@ -1,6 +1,6 @@
-import Button from "@material-ui/core/Button";
 import React from "react";
-import BackgroundImage from "../../common/resources/intro.png";
+import CollectionButton from "../../components/Button/Button";
+import BackgroundImage from "../../common/resources/image-1.png";
 import './landing.scss';
 
 export type Props = {
@@ -16,27 +16,25 @@ const Landing: React.FC<Props> = (props: Props) => {
       className={"IntroContainer"}
       style={{ backgroundImage: `url(${BackgroundImage})` }}
     >
+      <div className={"IntroItems"}>
       <div className={"Title"}>
-        Colllect cute monsters! <br />
         Collect cute monsters! Then, you can earn special rewards!
       </div>
       <div className={"Subtitle"}>
         NCG is required to collect monsters. You can get rewards as many monsters as you collect.
       </div>
       <div className={"Button"} >
-      <Button
-        color="primary"
-        variant="contained"
-        style={{
-          width: 164,
-          height: 45,
-          fontSize: 24
-        }}
-        onClick={(e) => {e.preventDefault(); gotoIntro();}}
+      <CollectionButton
+      width={240}
+      height={66}
+      primary={true}
+        onClick={() => {gotoIntro();}}
       >
         Start
-      </Button>
+      </CollectionButton>
       </div>
+      </div>
+
     </div>
   );
 };

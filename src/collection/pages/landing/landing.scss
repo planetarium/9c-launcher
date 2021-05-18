@@ -1,25 +1,31 @@
 .IntroContainer {
   font-family: 'Montserrat', sans-serif;
-  width: 984px;
-  height: 552px;
+  width: 100vw;
+  height: 100vh;
+  .Title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    margin: 10px;
+  }
+  .Subtitle {
+    text-align: center;
+    font-size: 20px;
+    font-weight: normal;
+    color: white;
+    margin-bottom: 15px;
+  }  
+}
+
+
+
+.IntroItems {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-.Title {
-  position: relative;
-  top:32px;
-  flex: 1.4;
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-  color: white;
+  position: fixed;
+  bottom: 30px;
+  left: 150px;
 }
-
-.Button {
-  flex: 5;
-}
-
-
-}
-
