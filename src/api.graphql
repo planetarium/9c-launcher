@@ -151,6 +151,7 @@ query GetAvatarAddress($address: Address!) {
       avatarStates {
         address
         name
+        updatedAt
       }
     }
   }

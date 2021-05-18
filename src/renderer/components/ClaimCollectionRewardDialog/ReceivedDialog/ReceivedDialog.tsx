@@ -3,7 +3,7 @@ import React from "react"
 import { Reward } from "../../../../collection/types";
 import RewardItemComponent from "../RewardItem/RewardItemComponent";
 
-import GoldBox from "../../../resources/000.png";
+import GoldBox from "../../../resources/staking_box_01.png";
 
 import './ReceivedDialog.scss';
 
