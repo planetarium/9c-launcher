@@ -10,6 +10,8 @@ import './App.scss';
 import { getMainDefinition } from "apollo-utilities";
 import Main from "./pages/main/main";
 import { ApolloProvider } from "react-apollo";
+import IntroFacade from "./pages/facade/IntroFacade";
+import path from "path";
 
 
 const wsLink = new WebSocketLink({
@@ -34,6 +36,23 @@ const apiLink = split(
   httpLink
 );
 
+function getIsFileExsist() {
+  var remote = require('electron').remote;
+  var electronFs = remote.require('fs');
+  const filePath = path.join(remote.app.getAppPath(), "monster-collection-intro");
+  console.log(`path: ${filePath}`)
+  if(electronFs.existsSync(filePath)) {
+    return true;
+  } else {
+    electronFs.openSync(filePath, 'w');
+    return false;
+  }
+
+}
+
+const isFirst = getIsFileExsist();
+console.log(isFirst);
+
 const link = ApolloLink.from([new RetryLink(), apiLink]);
 
 const client = new ApolloClient({
@@ -44,7 +63,7 @@ const client = new ApolloClient({
 const App: React.FC = () => {
   return (
   <ApolloProvider client={client}>
-    <Main />
+    <IntroFacade isFirst={isFirst}/>
     </ApolloProvider>
   )
 };
