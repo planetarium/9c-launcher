@@ -7,12 +7,13 @@ export type Props = {
   remainMin: number;
 }
 
-const getRemain = (remainMin: number) => {
-  const day = remainMin / 60;
-  if(day !== 0) return `${Math.round(day)} days`
-  
-  const hour = remainMin % 60;
-  if(hour !== 0) return `${remainMin} hours`
+const getRemain = (remainHour: number) => {
+  const hour = remainHour / 60;
+
+  const days = hour / 12;
+  if(days >= 1) return `${Math.round(days)} days`
+
+  if(hour >= 1) return `${Math.round(hour)} hours`
 
   return `less then hour`
 }
