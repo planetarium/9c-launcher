@@ -295,11 +295,8 @@ const Main: React.FC = () => {
         </div>
       )}
       <div className={"CollectionItemList"}>
-        {edit ? (tempCartList.map((x, i) => (
-          <CollectionItem item={x} isEdit={edit} key={i} /> 
-        ))) : (cartList.map((x, i) => (
-          <CollectionItem item={x} isEdit={edit} key={i} /> 
-        )))}
+        {(edit ? tempCartList : cartList).map((x, i) => (
+          <CollectionItem item={x} isEdit={edit} key={i} />))}
       </div>
         {edit ? (
           <div className={"MainCartContainer"}>
