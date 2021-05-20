@@ -167,12 +167,14 @@ const Main: React.FC = () => {
   }, [collectionState, data])
 
   if (loading || minerAddressLoading) return <LoadingPage/>;
-  if (error) return <p>error</p>;
-  if(data?.stateQuery.agent == null) {
-    <div>you need create avatar first</div>
-  }
+  if (error) return <div><p>Error: </p>{JSON.stringify(error)}</div>;
   if(minerAddress?.minerAddress == null) {
-    <div>you need login first</div>
+    // FIXME we should translate this message.
+    return <div>you need login first</div>
+  }
+  if(data?.stateQuery.agent == null) {
+    // FIXME we should translate this message.
+    return <div>you need create avatar first</div>
   }
   if (
     data?.stateQuery.monsterCollectionSheet == null ||
