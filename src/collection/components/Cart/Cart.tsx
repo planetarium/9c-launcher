@@ -19,11 +19,7 @@ export type Props = {
 
 const Cart: React.FC<Props> = (props: Props) => {
     const { cartList, totalGold, onPush, onRemove, onCancel, onSubmit } = props;
-    // TODO: change to useMemo
-    const getResource = (tier: CollectionItemTier) => {
-        return getMonsterImageFromTier(tier);
-    }
-
+    
     const getNeedGoldAmount = (item: CollectionItemModel) => {
       let value = 0;
       cartList.forEach(x => {
