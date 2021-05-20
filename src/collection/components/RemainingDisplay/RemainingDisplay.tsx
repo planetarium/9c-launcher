@@ -16,7 +16,7 @@ const getRemain = (remainHour: number) => {
 
   if(hour >= 1) return `${Math.round(hour)} hours`
 
-  return `less then 1 hour`
+  return `less then an hour`
 }
 
 const RemainingDisplay: React.FC<Props> = (props: Props) => {
