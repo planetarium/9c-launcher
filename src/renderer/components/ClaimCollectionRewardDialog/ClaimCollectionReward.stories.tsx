@@ -17,7 +17,7 @@ Default.args = {
     {itemId: RewardCategory.AP, quantity: 10},
     {itemId: RewardCategory.HOURGLASS, quantity: 10000}
   ],
-  avatar: [{address: '0xan8', name: 'HOTSIX'}],
+  avatar: [{address: '0xan8', name: 'HOTSIX', updatedAt: 100024}],
   onActionTxId: () => {}
 }
 
@@ -28,8 +28,8 @@ MultipleAvatar.args = {
     {itemId: RewardCategory.HOURGLASS, quantity: 10000}
   ],
   avatar: [
-    {address: '0xan8fds', name: 'HOTSIX'},
-    {address: '0xvbas8d', name: 'Starcraft'}
+    {address: '0xan8fds', name: 'HOTSIX', updatedAt: 100024},
+    {address: '0xvbas8d', name: 'Starcraft', updatedAt: 100052}
   ],
   onActionTxId: () => {}
 }
