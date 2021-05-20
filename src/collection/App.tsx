@@ -68,7 +68,7 @@ const client = new ApolloClient({
 const App: React.FC = () => {
   return (
   <ApolloProvider client={client}>
-    <IntroFacade isFirst={isFirst} onCreateFile={createFile} />
+    <IntroFacade isFirst={isFileExsist} onCreateFile={createFile} />
     </ApolloProvider>
   )
 };
