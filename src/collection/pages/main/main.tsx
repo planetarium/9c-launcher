@@ -209,6 +209,7 @@ const Main: React.FC = () => {
 
   const removeCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.LATEST) return;
+    if (item.tier === CollectionItemTier.TIER1) return;
 
     setTempCart((state) =>
       state.map((x) =>
@@ -234,10 +235,17 @@ const Main: React.FC = () => {
   };
 
   const collectionMutation = async () => {
-    const latestCollectionItem = tempCartList.find(
+    let latestCollectionItem = tempCartList.find(
       (x) => x.collectionPhase === CollectionPhase.LATEST
     );
-    if (!latestCollectionItem) return;
+    
+    if(!latestCollectionItem) {
+      latestCollectionItem = {
+        tier: CollectionItemTier.TIER0,
+        collectionPhase: CollectionPhase.LATEST,
+        value: 0,
+      } as CollectionItemModel;  
+    }
 
     if (data.stateQuery.agent!.monsterCollectionLevel < latestCollectionItem.tier) {
       const collectionResult = await collect({
