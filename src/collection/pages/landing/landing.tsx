@@ -16,6 +16,7 @@ const Landing: React.FC<Props> = (props: Props) => {
       className={"IntroContainer"}
       style={{ backgroundImage: `url(${BackgroundImage})` }}
     >
+      <div className={'IntroPageBorder'}>
       <div className={"IntroItems"}>
       <div className={"Title"}>
         Collect cute monsters! Then, you can earn special rewards!
@@ -34,6 +35,8 @@ const Landing: React.FC<Props> = (props: Props) => {
       </CollectionButton>
       </div>
       </div>
+      </div>
+
 
     </div>
   );
