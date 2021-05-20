@@ -164,9 +164,11 @@ const Main: React.FC = () => {
   if (loading || minerAddressLoading) return <LoadingPage/>;
   if (error) return <div><p>Error: </p>{JSON.stringify(error)}</div>;
   if(minerAddress?.minerAddress == null) {
+    // FIXME we should translate this message.
     return <div>you need login first</div>
   }
   if(data?.stateQuery.agent == null) {
+    // FIXME we should translate this message.
     return <div>you need create avatar first</div>
   }
   if (
