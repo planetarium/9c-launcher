@@ -47,11 +47,16 @@ function getIsFileExsist() {
     electronFs.openSync(filePath, 'w');
     return false;
   }
-
 }
 
-const isFirst = getIsFileExsist();
-console.log(isFirst);
+function createFile() {
+  var remote = require('electron').remote;
+  var electronFs = remote.require('fs');
+  const filePath = path.join(remote.app.getAppPath(), "monster-collection-intro");
+  electronFs.openSync(filePath, 'w');
+}
+
+const isFileExsist = getIsFileExsist();
 
 const link = ApolloLink.from([new RetryLink(), apiLink]);
 
@@ -63,7 +68,7 @@ const client = new ApolloClient({
 const App: React.FC = () => {
   return (
   <ApolloProvider client={client}>
-    <IntroFacade isFirst={isFirst}/>
+    <IntroFacade isFirst={isFirst} onCreateFile={createFile} />
     </ApolloProvider>
   )
 };

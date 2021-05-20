@@ -3,9 +3,10 @@ import path from "path";
 import logoImage from "./resources/logo.png";
 import isDev from "electron-is-dev";
 
+let _win: BrowserWindow | null = null;
 
 const createCollectionWindow = (): BrowserWindow => {
-  let _win = new BrowserWindow({
+  _win = new BrowserWindow({
     width: 1166,
     height: 738,
     webPreferences: {

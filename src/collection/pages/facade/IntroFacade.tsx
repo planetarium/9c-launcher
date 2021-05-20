@@ -5,12 +5,18 @@ import Main from "../main/main";
 
 export type Props = {
     isFirst: boolean,
+    onCreateFile: () => void,
 }
 
 const IntroFacade: React.FC<Props> = (props: Props) => {
-    const {isFirst} = props;
+    const {isFirst, onCreateFile} = props;
     const [isIntro, setIsIntro] = useState<boolean>(isFirst);
-    if(!isIntro) return <Landing handleNextButton={() => {setIsIntro(true)}}/>
+    const handleNextButton = () => {
+        onCreateFile();
+        setIsIntro(true);
+    }
+
+    if(!isIntro) return <Landing handleNextButton={handleNextButton}/>
     else return <Main />
 }
 

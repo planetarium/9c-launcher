@@ -34,6 +34,7 @@ const Main: React.FC = () => {
   const [agentAddress, setAgentAddress] = useState<string>("");
   const [latestTxId, setLatestTxId] = useState<string>("");
   const [cartList, setCart] = useState<CollectionItemModel[]>([]);
+  const [tempCartList, setTempCart] = useState<CollectionItemModel[]>([]);
   const [collectionSheet, setCollectionSheet] = useState<CollectionSheetItem[]>([]);
   const [dialog, setDialog] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
@@ -112,6 +113,10 @@ const Main: React.FC = () => {
   }, [data, loading]);
 
   useEffect(() => {
+    setTempCart(cartList);
+  }, [cartList])
+
+  useEffect(() => {
     if (
       data?.stateQuery.monsterCollectionSheet == null ||
       data.stateQuery.monsterCollectionSheet.orderedList == null
@@ -162,36 +167,38 @@ const Main: React.FC = () => {
   }, [collectionState, data])
 
   if (loading || minerAddressLoading) return <LoadingPage/>;
-  if (error) return <p>error</p>;
-  if(data?.stateQuery.agent == null) {
-    <div>you need create avatar first</div>
-  }
+  if (error) return <div><p>Error: </p>{JSON.stringify(error)}</div>;
   if(minerAddress?.minerAddress == null) {
-    <div>you need login first</div>
+    // FIXME we should translate this message.
+    return <div>you need login first</div>
+  }
+  if(data?.stateQuery.agent == null) {
+    // FIXME we should translate this message.
+    return <div>you need create avatar first</div>
   }
   if (
     data?.stateQuery.monsterCollectionSheet == null ||
     data.stateQuery.monsterCollectionSheet.orderedList == null
   )
-    return <></>;
+    return <div>Chain has no monstercollection sheet</div>;
   const addCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.CANDIDATE) return;
 
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier - 1
           ? ({ ...x, collectionPhase: CollectionPhase.COLLECTED } as CollectionItemModel)
           : x
       )
     );
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier
           ? ({ ...x, collectionPhase: CollectionPhase.LATEST } as CollectionItemModel)
           : x
       )
     );
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier + 1
           ? ({ ...x, collectionPhase: CollectionPhase.CANDIDATE } as CollectionItemModel)
@@ -200,24 +207,24 @@ const Main: React.FC = () => {
     );
   };
 
-  const removeCard = (item: CollectionItemModel) => {
+  const removeCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.LATEST) return;
 
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier - 1
           ? ({ ...x, collectionPhase: CollectionPhase.LATEST } as CollectionItemModel)
           : x
       )
     );
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier
           ? ({ ...x, collectionPhase: CollectionPhase.CANDIDATE } as CollectionItemModel)
           : x
       )
     );
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier + 1
           ? ({ ...x, collectionPhase: CollectionPhase.LOCKED } as CollectionItemModel)
@@ -227,7 +234,7 @@ const Main: React.FC = () => {
   };
 
   const collectionMutation = async () => {
-    const latestCollectionItem = cartList.find(
+    const latestCollectionItem = tempCartList.find(
       (x) => x.collectionPhase === CollectionPhase.LATEST
     );
     if (!latestCollectionItem) return;
@@ -289,24 +296,26 @@ const Main: React.FC = () => {
 
       ) : (
         <div className={'MainRemainDisplayPos'}>
-          <RemainingDisplay remainMin={remainTime} />
+          <RemainingDisplay remainMin={remainTime} isCollected={
+            collectionState?.monsterCollectionState.level > 0
+            || data.stateQuery.agent?.monsterCollectionLevel > 0
+          } />
         </div>
       )}
       <div className={"CollectionItemList"}>
-        {cartList.map((x, i) => (
-          <CollectionItem item={x} isEdit={edit} key={i} />
-        ))}
+        {(edit ? tempCartList : cartList).map((x, i) => (
+          <CollectionItem item={x} isEdit={edit} key={i} />))}
       </div>
         {edit ? (
           <div className={"MainCartContainer"}>
           <Cart
-            cartList={cartList}
+            cartList={tempCartList}
             totalGold={Number(collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity || data.stateQuery.agent?.gold) + depositedGold}
             onCancel={() => {
               setEdit(false);
             }}
             onSubmit={handleSubmit}
-            onRemove={removeCard}
+            onRemove={removeCart}
             onPush={addCart}
           />
           </div>

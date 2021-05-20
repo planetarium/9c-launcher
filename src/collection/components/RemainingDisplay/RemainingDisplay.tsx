@@ -5,6 +5,7 @@ import './RemainingDisplay.scss'
 
 export type Props = {
   remainMin: number;
+  isCollected: boolean;
 }
 
 const getRemain = (remainHour: number) => {
@@ -15,11 +16,11 @@ const getRemain = (remainHour: number) => {
 
   if(hour >= 1) return `${Math.round(hour)} hours`
 
-  return `less then hour`
+  return `less then an hour`
 }
 
 const RemainingDisplay: React.FC<Props> = (props: Props) => {
-  const {remainMin} = props;
+  const {remainMin, isCollected} = props;
 
   return (<div className="RemainingDisplayContainer">
     <div className="RemainingDisplayTitle">
@@ -28,7 +29,12 @@ const RemainingDisplay: React.FC<Props> = (props: Props) => {
     <div className="RemainingDisplayLabel">
       <img src={starIcon}/>
       <div className='label'>
-        Reward Remaining Time: <div className='remain'>{getRemain(remainMin)}</div>
+      {
+        isCollected 
+          ? <>Reward Remaining Time: <div className='remain'>{getRemain(remainMin)}</div></>
+          : `Click the Edit button to collect monsters!`
+      }
+        
       </div>
       <img src={starIcon}/>
     </div>
