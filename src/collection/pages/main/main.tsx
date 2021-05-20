@@ -180,7 +180,7 @@ const Main: React.FC = () => {
     data?.stateQuery.monsterCollectionSheet == null ||
     data.stateQuery.monsterCollectionSheet.orderedList == null
   )
-    return <></>;
+    return <div>Chain has no monstercollection sheet</div>;
   const addCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.CANDIDATE) return;
 
@@ -296,7 +296,10 @@ const Main: React.FC = () => {
 
       ) : (
         <div className={'MainRemainDisplayPos'}>
-          <RemainingDisplay remainMin={remainTime} />
+          <RemainingDisplay remainMin={remainTime} isCollected={
+            collectionState?.monsterCollectionState.level > 0
+            || data.stateQuery.agent?.monsterCollectionLevel > 0
+          } />
         </div>
       )}
       <div className={"CollectionItemList"}>
