@@ -56,8 +56,7 @@ function createFile() {
   electronFs.openSync(filePath, 'w');
 }
 
-const isFirst = getIsFileExsist();
-console.log(isFirst);
+const isFileExsist = getIsFileExsist();
 
 const link = ApolloLink.from([new RetryLink(), apiLink]);
 
