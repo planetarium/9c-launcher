@@ -54,7 +54,7 @@ const Main: React.FC = () => {
       address: agentAddress,
     },
   });
-  const { data: minerAddress } = useMinerAddressQuery();
+  const { data: minerAddress, loading: minerAddressLoading } = useMinerAddressQuery();
   const [
     collect,
   ] = useCollectMutation();
@@ -161,10 +161,13 @@ const Main: React.FC = () => {
     }
   }, [collectionState, data])
 
-  if (loading) return <LoadingPage/>;
+  if (loading || minerAddressLoading) return <LoadingPage/>;
   if (error) return <p>error</p>;
   if(data?.stateQuery.agent == null) {
     <div>you need create avatar first</div>
+  }
+  if(minerAddress?.minerAddress == null) {
+    <div>you need login first</div>
   }
   if (
     data?.stateQuery.monsterCollectionSheet == null ||
