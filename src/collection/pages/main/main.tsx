@@ -235,17 +235,11 @@ const Main: React.FC = () => {
   };
 
   const collectionMutation = async () => {
-    let latestCollectionItem = tempCartList.find(
+    const latestCollectionItem = tempCartList.find(
       (x) => x.collectionPhase === CollectionPhase.LATEST
     );
-    
-    if(!latestCollectionItem) {
-      latestCollectionItem = {
-        tier: CollectionItemTier.TIER0,
-        collectionPhase: CollectionPhase.LATEST,
-        value: 0,
-      } as CollectionItemModel;  
-    }
+
+    if(!latestCollectionItem) throw Error("Mutation target cannot be 0");
 
     if (data.stateQuery.agent!.monsterCollectionLevel < latestCollectionItem.tier) {
       const collectionResult = await collect({
@@ -297,7 +291,7 @@ const Main: React.FC = () => {
           collectionSheet={collectionSheet}
           currentTier={data.stateQuery.agent?.monsterCollectionLevel}
           targetTier={
-            cartList.find((x) => x.collectionPhase === CollectionPhase.LATEST)?.tier || CollectionItemTier.TIER0
+            tempCartList.find((x) => x.collectionPhase === CollectionPhase.LATEST)?.tier || CollectionItemTier.TIER0
           }
         />
         </div>
