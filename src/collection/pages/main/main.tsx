@@ -284,6 +284,15 @@ const Main: React.FC = () => {
     setLatestTxId("");
   };
 
+  const handleEdit = () => {
+    setEdit(true)
+  }
+
+  const handleCancel = () => {
+    setEdit(false)
+    setTempCart(cartList);
+  }
+
   return (
     <div
       className={"MainContainer"}
@@ -318,9 +327,7 @@ const Main: React.FC = () => {
           <Cart
             cartList={tempCartList}
             totalGold={Number(collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity || data.stateQuery.agent?.gold) + depositedGold}
-            onCancel={() => {
-              setEdit(false);
-            }}
+            onCancel={handleCancel}
             onSubmit={handleSubmit}
             onRemove={removeCart}
             onPush={addCart}
@@ -328,7 +335,12 @@ const Main: React.FC = () => {
           </div>
         ) : (
           <div className={'MainCollectionPanelContainer'}>
-            <CollectionPanel sheet={collectionSheet} tier={collectionState?.monsterCollectionState.level ? collectionState.monsterCollectionState.level : data.stateQuery.agent?.monsterCollectionLevel} onEdit={() => {setEdit(true)}}  />
+            <CollectionPanel 
+            sheet={collectionSheet} 
+            tier={collectionState?.monsterCollectionState.level 
+              ? collectionState.monsterCollectionState.level 
+              : data.stateQuery.agent?.monsterCollectionLevel} 
+            onEdit={handleEdit}  />
           </div>
         )}
       
