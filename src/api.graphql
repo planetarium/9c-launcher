@@ -198,6 +198,20 @@ query GetTip {
   }
 }
 
+query StateQueryMonsterCollection($agentAddress: Address!) {
+  stateQuery{
+  monsterCollectionState(agentAddress: $agentAddress) {
+    end
+    expiredBlockIndex
+    level
+    rewardLevel
+    receivedBlockIndex
+    startedBlockIndex
+    claimableBlockIndex
+  }
+  }
+}
+
 mutation Collect($level: Int!) {
   action {
     monsterCollect(level: $level)

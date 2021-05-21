@@ -16,6 +16,7 @@ import {
   useCollectionSheetWithStateLazyQuery,
   useCollectionStatusSubscription,
   useCollectionStateSubscription,
+  useStateQueryMonsterCollectionQuery,
 } from "../../../generated/graphql";
 import { CollectionItemModel } from "../../models/collection";
 import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedStatusBoard";
@@ -68,15 +69,19 @@ const Main: React.FC = () => {
   const {data: nodeStatus} = useGetTipQuery({
     pollInterval: 1000 * 5
   });
+  const {data: queryMonsterCollectionState} = useStateQueryMonsterCollectionQuery();
 
   useEffect(() => {
-    const claimableBlockIndex = Number(collectionState?.monsterCollectionState.claimableBlockIndex || 0);
-    const tipIndex = Number(nodeStatus?.nodeStatus.tip.index || 0)
-    const delta = claimableBlockIndex - tipIndex;
-    if(delta <= 0) return;
-    
-    setRemainTime(Math.round(delta / 5));
-  }, [nodeStatus, collectionState])
+    let targetBlock = 0;
+    if(!collectionState?.monsterCollectionState.claimableBlockIndex) {
+      targetBlock = collectionState?.monsterCollectionState.claimableBlockIndex;
+    } else {
+      targetBlock = queryMonsterCollectionState?.stateQuery.monsterCollectionState?.claimableBlockIndex;
+    }
+      const currentTip = nodeStatus?.nodeStatus.tip.index || 0;
+      const delta = targetBlock - currentTip;
+      setRemainTime(Math.round(delta / 5))
+  }, [nodeStatus, collectionState, queryMonsterCollectionState])
 
   useEffect(() => {
     if (

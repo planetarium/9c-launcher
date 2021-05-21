@@ -6,6 +6,7 @@ import './AccountInfo.scss'
 
 export type Props = {
   minedBlock: number;
+  remainText: string;
   goldLabel: string | number;
   collectionLabel: string | number;
   onOpenWindow: () => void;
@@ -13,7 +14,7 @@ export type Props = {
 }
 
 const AccountInfo: React.FC<Props> = (props: Props) => {
-  const {minedBlock, goldLabel, collectionLabel, onOpenWindow} = props;
+  const {minedBlock, remainText, goldLabel, collectionLabel, onOpenWindow} = props;
 
   const numberWithComma = (number:string|number)=>{
     if(typeof number === 'string') return number;
@@ -32,7 +33,7 @@ const AccountInfo: React.FC<Props> = (props: Props) => {
       <img className={'Icon'} src={monsterIcon} alt='monster'/>
       <div className={'value'}>{numberWithComma(collectionLabel)}</div>
       {
-        typeof collectionLabel !== 'string' && <div className={'subText'}>{`(Remaning ${0} days)`}</div>
+        typeof collectionLabel !== 'string' && <div className={'subText'}>{`(Remaning ${remainText})`}</div>
       }
     </div>
   </div>
