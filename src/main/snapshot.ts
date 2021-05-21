@@ -191,6 +191,7 @@ export async function downloadSnapshot(
     if (token.reason === "clear-cache") {
       throw new ClearCacheException();
     } else {
+      console.error(error);
       throw new DownloadSnapshotFailedError(basePath, savingPaths.join(", "));
     }
   }
