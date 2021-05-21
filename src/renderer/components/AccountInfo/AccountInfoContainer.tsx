@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { getRemain } from "../../../collection/common/utils";
 import { getExpectedReward, getTotalDepositedGold } from "../../../collection/components/common/collectionSheet";
 import { CollectionSheetItem, Reward, RewardCategory } from "../../../collection/types";
 import {
-  useGoldAndCollectionLevelLazyQuery,
   useNodeStatusSubscriptionSubscription,
   useStagedTxQuery,
   useCollectionSheetQuery,
   useCollectionStateSubscription,
   useCollectionStatusSubscription,
   useGoldAndCollectionLevelQuery,
+  useStateQueryMonsterCollectionQuery,
+  useGetTipQuery,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import ClaimCollectionRewardContainer from "../ClaimCollectionRewardDialog/ClaimCollectionRewardContainer";
@@ -25,6 +27,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   const { minedBlock, onReward, onOpenWindow } = props;
   const { accountStore } = useStores();
   const [depositedGold, setDepositeGold] = useState<number>(0);
+  const [remainMin, setRemainMin] = useState<number>(0);
   const [currentReward, setCurrentReward] = useState<
     Map<RewardCategory, number>>(new Map<RewardCategory, number>());
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -51,6 +54,11 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
       address: accountStore.selectedAddress,
     },
   });
+  const { data: queryMonsterCollectionState } = useStateQueryMonsterCollectionQuery();
+
+const { data: tip } = useGetTipQuery({
+  pollInterval: 1000 * 3
+});
 
   useEffect(() => {
     setCurrentReward(new Map<RewardCategory, number>());
@@ -87,6 +95,18 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   }, [goldAndLevel, collectionState]);
 
   useEffect(() => {
+    let targetBlock = 0;
+    if(!collectionState?.monsterCollectionState.claimableBlockIndex) {
+      targetBlock = collectionState?.monsterCollectionState.claimableBlockIndex;
+    } else {
+      targetBlock = queryMonsterCollectionState?.stateQuery.monsterCollectionState?.claimableBlockIndex;
+    }
+      const currentTip = tip?.nodeStatus.tip.index || 0;
+      const delta = targetBlock - currentTip;
+      setRemainMin(Math.round(delta / 5))
+  }, [queryMonsterCollectionState, collectionState, tip]);
+
+  useEffect(() => {
     if(goldAndLevel?.stateQuery.agent != null) stopPolling();
   },[goldAndLevel])
 
@@ -117,6 +137,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
               : Number(goldAndLevel?.stateQuery.agent?.gold)
           }
           collectionLabel={depositedGold}
+          remainText={getRemain(remainMin)}
         />
         {collectionStatus?.monsterCollectionStatus.canReceive ? (
           <div className={'AccountContainerRewardButton'}>
@@ -150,6 +171,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
         canClaimReward={false}
         goldLabel={"loading..."}
         collectionLabel={"loading..."}
+        remainText={''}
       />
     </>
   );
