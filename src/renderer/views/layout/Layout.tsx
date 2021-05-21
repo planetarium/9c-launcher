@@ -102,6 +102,7 @@ export const Layout: React.FC = observer(({ children }) => {
             </Button>
           </li>
         </ul>
+        <div className='LauncherLayoutVersion'>{`v${(electronStore.get("AppProtocolVersion") as string).split('/')[0]}`}</div>
         <div
           id={'LauncherClientIcon'}
           className={`LauncherClientIcon ${infoButtonState?'activate':''}`}

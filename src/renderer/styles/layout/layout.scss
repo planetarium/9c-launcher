@@ -32,6 +32,14 @@ main {
     bottom:24px;
   }
   
+  .LauncherLayoutVersion {
+    position: absolute;
+    bottom: 15px;
+    right: 90px;
+    color: white;
+    font-size: 13px;
+  }
+
   .LauncherClientInfo {
     background-color: rgba(26, 26, 26,0.95);
     position: absolute;
