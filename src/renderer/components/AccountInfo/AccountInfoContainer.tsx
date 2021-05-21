@@ -124,7 +124,10 @@ const { data: tip } = useGetTipQuery({
     setClaimLoading(false);
   };
 
-  if (accountStore.isLogin && nodeStatus?.nodeStatus?.preloadEnded && goldAndLevel?.stateQuery.agent != null)
+  if (accountStore.isLogin 
+      && nodeStatus?.nodeStatus?.preloadEnded 
+      && goldAndLevel?.stateQuery.agent != null 
+      && accountStore.isMiningConfigEnded)
     return (
       <>
         <AccountInfo

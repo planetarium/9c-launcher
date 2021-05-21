@@ -172,7 +172,6 @@ const Main: React.FC = () => {
   }, [collectionState, data])
 
   if (loading || minerAddressLoading) return <LoadingPage/>;
-  if (error) return <div><p>Error: </p>{JSON.stringify(error)}</div>;
   if(minerAddress?.minerAddress == null) {
     // FIXME we should translate this message.
     return <div>you need login first</div>
@@ -186,6 +185,7 @@ const Main: React.FC = () => {
     data.stateQuery.monsterCollectionSheet.orderedList == null
   )
     return <div>Chain has no monstercollection sheet</div>;
+  if (error) return <div><p>Error: </p>{JSON.stringify(error)}</div>;
   const addCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.CANDIDATE) return;
 
