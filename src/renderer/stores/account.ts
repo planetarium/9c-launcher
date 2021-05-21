@@ -24,6 +24,9 @@ export default class AccountStore implements IAccountStore {
   public isLogin: boolean = false;
 
   @observable
+  public isMiningConfigEnded: boolean = false;
+
+  @observable
   public activationKey: string = "";
 
   @action
@@ -54,6 +57,11 @@ export default class AccountStore implements IAccountStore {
   @action
   setLoginStatus = (status: boolean) => {
     this.isLogin = status;
+  };
+
+  @action
+  setMiningConfigStatus = (status: boolean) => {
+    this.isMiningConfigEnded = status;
   };
 
   @action
