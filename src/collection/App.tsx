@@ -44,7 +44,6 @@ function getIsFileExsist() {
   if(electronFs.existsSync(filePath)) {
     return true;
   } else {
-    electronFs.openSync(filePath, 'w');
     return false;
   }
 }
