@@ -52,7 +52,9 @@ const MonsterItem: React.FC<MonsterItemProps> = (props: MonsterItemProps) => {
         <div className={'CartIcon'} />
         <img src={require(`../../../common/resources/${icon}.png`).default} />
         {
-            item.collectionPhase === CollectionPhase.LATEST ? <img className='RemoveButton' src={CancelImage} onClick={() => {onRemove(item)}} /> : <></>
+            item.collectionPhase === CollectionPhase.LATEST && item.tier != CollectionItemTier.TIER1 
+                ? <img className='RemoveButton' src={CancelImage} onClick={() => {onRemove(item)}} /> 
+                : <></>
         }
     </div>)
 }
