@@ -69,14 +69,18 @@ const Main: React.FC = () => {
   const {data: nodeStatus} = useGetTipQuery({
     pollInterval: 1000 * 5
   });
-  const {data: queryMonsterCollectionState} = useStateQueryMonsterCollectionQuery();
+  const {data: queryMonsterCollectionState} = useStateQueryMonsterCollectionQuery({
+    variables: {
+      agentAddress: agentAddress
+    }
+  });
 
   useEffect(() => {
     let targetBlock = 0;
-    if(!collectionState?.monsterCollectionState.claimableBlockIndex) {
-      targetBlock = collectionState?.monsterCollectionState.claimableBlockIndex;
+    if(collectionState?.monsterCollectionState != null) {
+      targetBlock = Number(collectionState?.monsterCollectionState.claimableBlockIndex);
     } else {
-      targetBlock = queryMonsterCollectionState?.stateQuery.monsterCollectionState?.claimableBlockIndex;
+      targetBlock = Number(queryMonsterCollectionState?.stateQuery.monsterCollectionState?.claimableBlockIndex);
     }
       const currentTip = nodeStatus?.nodeStatus.tip.index || 0;
       const delta = targetBlock - currentTip;

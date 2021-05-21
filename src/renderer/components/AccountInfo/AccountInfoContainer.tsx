@@ -54,7 +54,11 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
       address: accountStore.selectedAddress,
     },
   });
-  const { data: queryMonsterCollectionState } = useStateQueryMonsterCollectionQuery();
+  const { data: queryMonsterCollectionState } = useStateQueryMonsterCollectionQuery({
+    variables: {
+      agentAddress: accountStore.selectedAddress
+    }
+  });
 
 const { data: tip } = useGetTipQuery({
   pollInterval: 1000 * 3
@@ -96,14 +100,14 @@ const { data: tip } = useGetTipQuery({
 
   useEffect(() => {
     let targetBlock = 0;
-    if(!collectionState?.monsterCollectionState.claimableBlockIndex) {
-      targetBlock = collectionState?.monsterCollectionState.claimableBlockIndex;
+    if(collectionState?.monsterCollectionState != null) {
+      targetBlock = Number(collectionState?.monsterCollectionState.claimableBlockIndex);
     } else {
-      targetBlock = queryMonsterCollectionState?.stateQuery.monsterCollectionState?.claimableBlockIndex;
+      targetBlock = Number(queryMonsterCollectionState?.stateQuery.monsterCollectionState?.claimableBlockIndex);
     }
       const currentTip = tip?.nodeStatus.tip.index || 0;
       const delta = targetBlock - currentTip;
-      setRemainMin(Math.round(delta / 5))
+      setRemainMin(Math.round(delta / 5));
   }, [queryMonsterCollectionState, collectionState, tip]);
 
   useEffect(() => {

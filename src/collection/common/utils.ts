@@ -10,8 +10,8 @@ export const getCartMonsterImageFromTier = (tier: CollectionItemTier): string =>
   return `${prefix}${tier}`;
 }
 
-export const getRemain = (remainHour: number) => {
-  const hour = remainHour / 60;
+export const getRemain = (remainMin: number) => {
+  const hour = remainMin / 60;
 
   const days = hour / 24;
   if(days >= 1) return `${Math.round(days)} days`
