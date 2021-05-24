@@ -110,7 +110,7 @@ const { data: tip } = useGetTipQuery({
       if (sheet == null) return;
       setDepositeGold(getTotalDepositedGold(sheet, level));
     });
-  }, [collectionState]);
+  }, [collectionState, queryMonsterCollectionState]);
 
   useEffect(() => {
     let targetBlock = 0;
