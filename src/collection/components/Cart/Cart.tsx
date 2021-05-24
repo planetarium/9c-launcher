@@ -43,9 +43,6 @@ const Cart: React.FC<Props> = (props: Props) => {
       setWarning(true);
       let timer = setTimeout(() => setWarning(false), 5 * 1000);
 
-      // this will clear Timeout
-      // when component unmount like in willComponentUnmount
-      // and show will not change to true
       return () => {
         clearTimeout(timer);
       };
