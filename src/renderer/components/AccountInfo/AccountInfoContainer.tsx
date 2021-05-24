@@ -73,9 +73,9 @@ const { data: tip } = useGetTipQuery({
     }
 
     sheetRefetch().then((query) => {
-      const level = collectionState?.monsterCollectionState.level
-        ? Number(collectionState?.monsterCollectionState.level)
-        : Number(goldAndLevel?.stateQuery.agent?.monsterCollectionLevel);
+      const level = collectionState?.monsterCollectionState.rewardLevel
+        ? Number(collectionState?.monsterCollectionState.rewardLevel)
+        : Number(queryMonsterCollectionState?.stateQuery.monsterCollectionState?.rewardLevel);
       const sheet = query
         .data
         .stateQuery
