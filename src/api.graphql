@@ -269,5 +269,22 @@ subscription CollectionStatus {
     fungibleAssetValue {
       quantity
     }
+    rewardInfos {
+      itemId
+      quantity
+    }
+  }
+}
+
+query CollectionStatusQuery {
+  monsterCollectionStatus {
+    canReceive
+    fungibleAssetValue {
+      quantity
+    }
+    rewardInfos {
+      itemId
+      quantity
+    }
   }
 }

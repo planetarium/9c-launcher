@@ -7,6 +7,7 @@ schema {
 type StandaloneQuery {
   # Check if the provided address is activated.
   activationStatus: ActivationStatusQuery!
+  chainQuery: ExplorerQuery!
   getTx(
     # transaction id.
     txId: TxId!
@@ -44,6 +45,10 @@ type StandaloneQuery {
     # Offset block hash for query.
     hash: ByteString
   ): StateQuery!
+  transferNCGHistories(
+    blockHash: ByteString!
+    recipient: Address
+  ): [TransferNCGHistoryType!]!
 
   # The validation method provider for Libplanet types.
   validation: ValidationQuery!
@@ -533,6 +538,14 @@ type MonsterCollectionRowType {
   rewards: [MonsterCollectionRewardInfoType]!
 }
 
+type TransferNCGHistoryType {
+  amount: String!
+  blockHash: ByteString!
+  recipient: Address!
+  sender: Address!
+  txId: ByteString!
+}
+
 # The interface to store s.  An appropriate implementation
 #             should be used according to a running platform.
 type KeyStoreType {
@@ -635,6 +648,109 @@ type BlockHeader {
 
 scalar TxId
 
+type ExplorerQuery {
+  blockQuery: BlockQuery
+  nodeState: NodeState!
+  transactionQuery: TransactionQuery
+}
+
+type BlockQuery {
+  block(hash: ID, index: ID): Block
+  blocks(
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int
+    excludeEmptyTxs: Boolean = false
+    miner: Address
+  ): [Block!]!
+}
+
+type Block {
+  difficulty: Long!
+  hash: ID!
+  index: Long!
+  miner: Address!
+  nonce: ByteString!
+  previousBlock: Block
+  stateRootHash: ByteString
+  timestamp: DateTimeOffset!
+  totalDifficulty: BigInt!
+  transactions: [Transaction!]!
+}
+
+scalar BigInt
+
+# The `DateTimeOffset` scalar type represents a date, time and offset from UTC. `DateTimeOffset` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar DateTimeOffset
+
+type Transaction {
+  actions: [Action!]!
+  blockRef: [Block!]
+  id: ID!
+  nonce: Long!
+  publicKey: ByteString!
+  signature: ByteString!
+  signer: Address!
+  timestamp: DateTimeOffset!
+  updatedAddresses: [Address!]!
+}
+
+# An in-game action.  Every action should be replayable, because
+#             multiple nodes in a network should execute an action and get the same
+#             result.
+#             A “class” which implements this interface is
+#             analogous to a function, and its instance is analogous to a
+#             partial
+#             function application, in other words, a function with some bound
+#             arguments.  Those parameters that will be bound at runtime should be
+#             represented as fields or properties in an action class, and bound
+#             argument values to these parameters should be received through
+#             a constructor parameters of that class.From a perspective of security, an action class belongs to
+#             the network protocol, and property values in an action belong to
+#             a node's will (i.e., a user/player's choice).
+#             That means if you define an action class it also defines what every
+#             honest node can do in the network.  Even if a malicious node changes
+#             their own action code it won't affect other honest nodes in
+#             the network.For example, where honest nodes share the common action
+#             Heal(Target) => PreviousStates[Target] + 1, suppose a malicious
+#             node m changes their own Heal action code to
+#             Heal(Target) => PreviousStates[Target] + 2 (2 instead of 1),
+#             and then send an action Heal(m).
+#             Fortunately, this action does not work as m's intention,
+#             because the changed code in itself is not used by other honest nodes,
+#             so they still increase only 1, not 2.  The effect of that double healing
+#             is a sort of “illusion” only visible to the malicious node
+#             alone.In conclusion, action code is a part of the protocol and it works with
+#             consensus in the network, so only things each node can affect the network
+#             in general is property values of each action they sign and send,
+#             not code of an action.
+type Action {
+  inspection: String!
+  raw(encode: String = "hex"): String!
+}
+
+type TransactionQuery {
+  stagedTransactions(
+    signer: Address
+    involvedAddress: Address
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int
+  ): [Transaction!]!
+  transaction(id: ID): Transaction
+  transactions(
+    signer: Address
+    involvedAddress: Address
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int
+  ): [Transaction!]!
+}
+
+type NodeState {
+  preloaded: Boolean!
+}
+
 type ValidationQuery {
   metadata(
     # The raw value of json metadata.
@@ -685,43 +801,10 @@ type TransactionType_1 {
   updatedAddresses: [Address]!
 }
 
-# An in-game action.  Every action should be replayable, because
-#             multiple nodes in a network should execute an action and get the same
-#             result.
-#             A “class” which implements this interface is
-#             analogous to a function, and its instance is analogous to a
-#             partial
-#             function application, in other words, a function with some bound
-#             arguments.  Those parameters that will be bound at runtime should be
-#             represented as fields or properties in an action class, and bound
-#             argument values to these parameters should be received through
-#             a constructor parameters of that class.From a perspective of security, an action class belongs to
-#             the network protocol, and property values in an action belong to
-#             a node's will (i.e., a user/player's choice).
-#             That means if you define an action class it also defines what every
-#             honest node can do in the network.  Even if a malicious node changes
-#             their own action code it won't affect other honest nodes in
-#             the network.For example, where honest nodes share the common action
-#             Heal(Target) => PreviousStates[Target] + 1, suppose a malicious
-#             node m changes their own Heal action code to
-#             Heal(Target) => PreviousStates[Target] + 2 (2 instead of 1),
-#             and then send an action Heal(m).
-#             Fortunately, this action does not work as m's intention,
-#             because the changed code in itself is not used by other honest nodes,
-#             so they still increase only 1, not 2.  The effect of that double healing
-#             is a sort of “illusion” only visible to the malicious node
-#             alone.In conclusion, action code is a part of the protocol and it works with
-#             consensus in the network, so only things each node can affect the network
-#             in general is property values of each action they sign and send,
-#             not code of an action.
-type Action {
-  inspection: String!
-  raw(encode: String = "hex"): String!
-}
-
 type MonsterCollectionStatusType {
   canReceive: Boolean!
   fungibleAssetValue: FungibleAssetValueType!
+  rewardInfos: [MonsterCollectionRewardInfoType]
 }
 
 # Holds a fungible asset value which holds its  together.
