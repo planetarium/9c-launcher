@@ -18,7 +18,7 @@ const AccountInfo: React.FC<Props> = (props: Props) => {
 
   const numberWithComma = (number:string|number)=>{
     if(typeof number === 'string') return number;
-    return Number.parseInt(number.toString()).toLocaleString();
+    return number.toLocaleString();
   }
 
   return <div className='AccountInfoContainer'>
