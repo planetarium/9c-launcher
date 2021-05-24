@@ -266,6 +266,14 @@ const Main: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+
+    // We don't care about removing exist monster because we've blocked editting on e8423105b0b5abbcfd12279443f1a5cc774a72f2
+    // FIXME should adjust this logic after allowing editting.
+    if (tempCartList[0].collectionPhase !== CollectionPhase.LATEST) {
+      alert("Please select at least 1 monster.");
+      return;
+    }
+
     setDialog(true);
     const collectionTx = await collectionMutation();
     if (!collectionTx) {
