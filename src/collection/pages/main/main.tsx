@@ -41,6 +41,7 @@ const Main: React.FC = () => {
   const [edit, setEdit] = useState<boolean>(false);
   const [depositedGold, setDepositedGold] = useState<number>(0);
   const [remainTime, setRemainTime] = useState<number>(0);
+  const [currentTier, setCurrentTier] = useState<CollectionItemTier>(0);
   const [collectionSheetQuery, {
     loading,
     error,
@@ -175,8 +176,18 @@ const Main: React.FC = () => {
     }
   }, [collectionState, data])
 
-  if (loading || minerAddressLoading) return <LoadingPage />;
-  if (minerAddress?.minerAddress == null) {
+  useEffect(() => {
+    if(collectionState?.monsterCollectionState.end) {
+      setCurrentTier(0);
+    } else {
+      setCurrentTier(collectionState?.monsterCollectionState.level 
+        ? collectionState.monsterCollectionState.level 
+        : data?.stateQuery.agent?.monsterCollectionLevel);
+    }
+  }, [collectionState, data])
+
+  if (loading || minerAddressLoading) return <LoadingPage/>;
+  if(minerAddress?.minerAddress == null) {
     // FIXME we should translate this message.
     return <div>you need login first</div>
   }
@@ -352,12 +363,10 @@ const Main: React.FC = () => {
           </div>
         ) : (
           <div className={'MainCollectionPanelContainer'}>
-            <CollectionPanel
-              sheet={collectionSheet}
-              tier={collectionState?.monsterCollectionState.level
-                ? collectionState.monsterCollectionState.level
-                : data.stateQuery.agent?.monsterCollectionLevel}
-              onEdit={handleEdit} />
+            <CollectionPanel 
+            sheet={collectionSheet} 
+            tier={currentTier} 
+            onEdit={handleEdit}  />
           </div>
         )}
 
