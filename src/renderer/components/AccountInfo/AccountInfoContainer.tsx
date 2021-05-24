@@ -11,6 +11,7 @@ import {
   useGoldAndCollectionLevelQuery,
   useStateQueryMonsterCollectionQuery,
   useGetTipQuery,
+  useCollectionStatusQueryQuery,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import ClaimCollectionRewardContainer from "../ClaimCollectionRewardDialog/ClaimCollectionRewardContainer";
@@ -59,6 +60,9 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
       agentAddress: accountStore.selectedAddress
     }
   });
+  const {
+    data: collectionStatusQuery,
+  } = useCollectionStatusQueryQuery();
 
 const { data: tip } = useGetTipQuery({
   pollInterval: 1000 * 3
@@ -66,7 +70,19 @@ const { data: tip } = useGetTipQuery({
 
   useEffect(() => {
     setCurrentReward(new Map<RewardCategory, number>());
+    const rewardInfos = collectionStatus?.monsterCollectionStatus.rewardInfos
+      ? collectionStatus?.monsterCollectionStatus.rewardInfos
+      : collectionStatusQuery?.monsterCollectionStatus?.rewardInfos;
 
+    const currentReward = new Map<RewardCategory, number>();
+
+    rewardInfos?.forEach(x => {
+      currentReward.set(x!.itemId, x!.quantity)
+    });
+    setCurrentReward(currentReward);
+  }, [collectionStatus, collectionStatusQuery])
+
+  useEffect(() => {
     if (collectionState?.monsterCollectionState.end) {
       setDepositeGold(0);
       return;
@@ -75,7 +91,7 @@ const { data: tip } = useGetTipQuery({
     sheetRefetch().then((query) => {
       const level = collectionState?.monsterCollectionState.level
         ? Number(collectionState?.monsterCollectionState.level)
-        : Number(goldAndLevel?.stateQuery.agent?.monsterCollectionLevel);
+        : Number(queryMonsterCollectionState?.stateQuery.monsterCollectionState?.level);
       const sheet = query
         .data
         .stateQuery
@@ -94,9 +110,8 @@ const { data: tip } = useGetTipQuery({
           });
       if (sheet == null) return;
       setDepositeGold(getTotalDepositedGold(sheet, level));
-      setCurrentReward(getExpectedReward(sheet, level));
     });
-  }, [goldAndLevel, collectionState]);
+  }, [collectionState]);
 
   useEffect(() => {
     let targetBlock = 0;
