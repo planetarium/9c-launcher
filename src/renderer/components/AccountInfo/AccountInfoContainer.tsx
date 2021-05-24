@@ -70,9 +70,8 @@ const { data: tip } = useGetTipQuery({
 
   useEffect(() => {
     setCurrentReward(new Map<RewardCategory, number>());
-    const rewardInfos = collectionStatus?.monsterCollectionStatus.rewardInfos
-      ? collectionStatus?.monsterCollectionStatus.rewardInfos
-      : collectionStatusQuery?.monsterCollectionStatus?.rewardInfos;
+    const rewardInfos = collectionStatus?.monsterCollectionStatus.rewardInfos 
+      ?? collectionStatusQuery?.monsterCollectionStatus?.rewardInfos;
 
     const currentReward = new Map<RewardCategory, number>();
 
