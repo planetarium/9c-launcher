@@ -9,16 +9,22 @@ export type Props = {
   remainText: string;
   goldLabel: string | number;
   collectionLabel: string | number;
+  isCollecting: boolean;
   onOpenWindow: () => void;
   canClaimReward: boolean
 }
 
 const AccountInfo: React.FC<Props> = (props: Props) => {
-  const {minedBlock, remainText, goldLabel, collectionLabel, onOpenWindow} = props;
+  const {minedBlock, remainText, goldLabel, collectionLabel, isCollecting, onOpenWindow} = props;
 
   const numberWithComma = (number:string|number)=>{
     if(typeof number === 'string') return number;
     return number.toLocaleString();
+  }
+
+  const decorateRemainText = () => {
+    if(!isCollecting) return `(-)`
+    return `(Remaning ${remainText})`
   }
 
   return <div className='AccountInfoContainer'>
@@ -33,7 +39,7 @@ const AccountInfo: React.FC<Props> = (props: Props) => {
       <img className={'Icon'} src={monsterIcon} alt='monster'/>
       <div className={'value'}>{numberWithComma(collectionLabel)}</div>
       {
-        typeof collectionLabel !== 'string' && <div className={'subText'}>{`(Remaning ${remainText})`}</div>
+        typeof collectionLabel !== 'string' && <div className={'subText'}>{decorateRemainText()}</div>
       }
     </div>
   </div>
