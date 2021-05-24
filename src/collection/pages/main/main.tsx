@@ -248,7 +248,7 @@ const Main: React.FC = () => {
       (x) => x.collectionPhase === CollectionPhase.LATEST
     );
 
-    if(!latestCollectionItem) throw Error("Mutation target cannot be 0");
+    if(!latestCollectionItem) return;
 
     if (data.stateQuery.agent!.monsterCollectionLevel < latestCollectionItem.tier) {
       const collectionResult = await collect({

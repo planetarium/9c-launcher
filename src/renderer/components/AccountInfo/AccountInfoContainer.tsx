@@ -150,7 +150,11 @@ const { data: tip } = useGetTipQuery({
       <>
         <AccountInfo
           minedBlock={minedBlock}
-          onOpenWindow={onOpenWindow}
+          onOpenWindow={
+            collectionStatus?.monsterCollectionStatus.canReceive 
+            || collectionStatusQuery?.monsterCollectionStatus?.canReceive
+              ? ()=> {} 
+              : onOpenWindow}
           canClaimReward={collectionStatus?.monsterCollectionStatus.canReceive!}
           goldLabel={
             collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity
@@ -164,7 +168,10 @@ const { data: tip } = useGetTipQuery({
             || goldAndLevel.stateQuery.agent?.monsterCollectionLevel > 0
           }
         />
-        {collectionStatus?.monsterCollectionStatus.canReceive ? (
+        {
+          collectionStatus?.monsterCollectionStatus.canReceive 
+            || collectionStatusQuery?.monsterCollectionStatus?.canReceive 
+          ? (
           <div className={'AccountContainerRewardButton'}>
           <RewardButton
             loading={claimLoading}
