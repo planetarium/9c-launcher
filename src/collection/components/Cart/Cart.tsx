@@ -1,7 +1,7 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { CollectionItemModel } from "../../models/collection";
 import { getMonsterImageFromTier } from "../../common/utils";
-import { CollectionItemTier } from "../../types"
+import { CollectionItemTier, CollectionPhase } from "../../types"
 
 import './Cart.scss';
 import CartItem from "./CartItem/CartItem";
@@ -13,12 +13,13 @@ export type Props = {
     totalGold: number,
     onCancel: () => void,
     onPush: (item: CollectionItemModel) => void,
-    onRemove: (tier: CollectionItemModel) => void,
+    onRemove: (item: CollectionItemModel) => void,
     onSubmit: () => void,
 }
 
 const Cart: React.FC<Props> = (props: Props) => {
     const { cartList, totalGold, onPush, onRemove, onCancel, onSubmit } = props;
+    const [warning, setWarning] = useState<boolean>();
     
     const getNeedGoldAmount = (item: CollectionItemModel) => {
       let value = 0;
@@ -27,12 +28,43 @@ const Cart: React.FC<Props> = (props: Props) => {
       });
       return value;
     }
+
+    const handleItemClick = (item: CollectionItemModel) => {
+      if(item.tier !== CollectionItemTier.TIER1) return;
+      
+      const latestItem = cartList.find(x => x.collectionPhase === CollectionPhase.LATEST);
+      
+      if(latestItem?.tier !== CollectionItemTier.TIER1) return;
+
+      displayWarning();
+    }
+
+    const displayWarning = async () => {
+      setWarning(true);
+      let timer = setTimeout(() => setWarning(false), 5 * 1000);
+
+      // this will clear Timeout
+      // when component unmount like in willComponentUnmount
+      // and show will not change to true
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+
+
     return <div className={'CartContainer'}>
-        <div className={'CartItemListBackground'}>
+        <div className={'CartItemListBackground'}> 
+        {
+          warning &&
+          <div className='CartWarningMessage'>
+            To receive rewards, the first monster cannot be abandoned.
+          </div>
+        }
+
         <div className={'CartItemListContainer'}>
         {
             cartList.map((x, i) => (<>
-            <CartItem canCollect={totalGold >= getNeedGoldAmount(x)} item={x} onPush={onPush} onRemove={onRemove} key={i} />
+            <CartItem canCollect={totalGold >= getNeedGoldAmount(x)} item={x} onClick={handleItemClick} onPush={onPush} onRemove={onRemove} key={i} />
             {i !== cartList.length - 1 && <img className={'StepIconPos'} src={stepIcon}/>}
           </>))
         }
