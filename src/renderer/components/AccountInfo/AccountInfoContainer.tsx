@@ -145,6 +145,10 @@ const { data: tip } = useGetTipQuery({
           }
           collectionLabel={depositedGold}
           remainText={getRemain(remainMin)}
+          isCollecting={
+            collectionState?.monsterCollectionState.level > 0
+            || goldAndLevel.stateQuery.agent?.monsterCollectionLevel > 0
+          }
         />
         {collectionStatus?.monsterCollectionStatus.canReceive ? (
           <div className={'AccountContainerRewardButton'}>
@@ -179,6 +183,7 @@ const { data: tip } = useGetTipQuery({
         goldLabel={"loading..."}
         collectionLabel={"loading..."}
         remainText={''}
+        isCollecting={false}
       />
     </>
   );
