@@ -7,6 +7,7 @@ import './Cart.scss';
 import CartItem from "./CartItem/CartItem";
 import CollectionButton from "../Button/Button";
 import stepIcon from "../../common/resources/bg-staking-slot-step.png";
+import Animated from "react-mount-animation";
 
 export type Props = {
     cartList: CollectionItemModel[],
@@ -19,7 +20,8 @@ export type Props = {
 
 const Cart: React.FC<Props> = (props: Props) => {
     const { cartList, totalGold, onPush, onRemove, onCancel, onSubmit } = props;
-    const [warning, setWarning] = useState<boolean>();
+    const [warning, setWarning] = useState<boolean>(false);
+    const [warningTimer, setWarningTimer] = useState<NodeJS.Timeout>();
     
     const getNeedGoldAmount = (item: CollectionItemModel) => {
       let value = 0;
@@ -36,27 +38,27 @@ const Cart: React.FC<Props> = (props: Props) => {
       
       if(latestItem?.tier !== CollectionItemTier.TIER1) return;
 
-      displayWarning();
-    }
+      if(warningTimer != null) {
+        clearTimeout(warningTimer);
+      }
 
-    const displayWarning = async () => {
       setWarning(true);
-      let timer = setTimeout(() => setWarning(false), 5 * 1000);
-
-      return () => {
-        clearTimeout(timer);
-      };
+      const timer = setTimeout(() => setWarning(false), 5 * 1000);
+      setWarningTimer(timer);
     }
+
+    useEffect(() => {
+      return () => {
+        if(warningTimer) clearTimeout(warningTimer);
+      }
+    }, [])
 
 
     return <div className={'CartContainer'}>
         <div className={'CartItemListBackground'}> 
-        {
-          warning &&
-          <div className='CartWarningMessage'>
-            To receive rewards, the first monster cannot be abandoned.
-          </div>
-        }
+        <Animated.div show={warning} className='CartWarningMessage' unmountAnimId='fadeout'>
+          To receive rewards, the first monster cannot be abandoned.
+        </Animated.div>
 
         <div className={'CartItemListContainer'}>
         {
