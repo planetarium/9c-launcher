@@ -12,6 +12,7 @@ import {
   useStateQueryMonsterCollectionQuery,
   useGetTipQuery,
   useCollectionStatusQueryQuery,
+  useGetAvatarAddressQuery,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import ClaimCollectionRewardContainer from "../ClaimCollectionRewardDialog/ClaimCollectionRewardContainer";
@@ -67,6 +68,13 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
 const { data: tip } = useGetTipQuery({
   pollInterval: 1000 * 3
 });
+
+  const {data: avatarAddressQuery} = useGetAvatarAddressQuery({
+    variables: {
+      address: accountStore.selectedAddress,
+    },
+    pollInterval: 1000 * 2
+  });
 
   useEffect(() => {
     setCurrentReward(new Map<RewardCategory, number>());
@@ -145,6 +153,7 @@ const { data: tip } = useGetTipQuery({
   if (accountStore.isLogin 
       && nodeStatus?.nodeStatus?.preloadEnded 
       && goldAndLevel?.stateQuery.agent != null 
+      && avatarAddressQuery != null
       && accountStore.isMiningConfigEnded)
     return (
       <>
@@ -186,6 +195,8 @@ const { data: tip } = useGetTipQuery({
         )}
         {openDialog ? (
           <ClaimCollectionRewardContainer
+            avatarAddressQuery={avatarAddressQuery}
+            tip={tip?.nodeStatus.tip.index || 0}
             rewards={[...currentReward].map(x => {return {itemId: x[0], quantity: x[1]} as Reward})}
             onActionTxId={handleAcion}
             open={openDialog}
