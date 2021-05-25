@@ -33,6 +33,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     Map<RewardCategory, number>>(new Map<RewardCategory, number>());
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
+  const [isCollecting, setIsCollecting] = useState<boolean>(false);
+  const [canClaim, setCanClaim] = useState<boolean>(false);
   const { data: goldAndLevel, refetch: goldAndLevelRefetch, stopPolling }
    = useGoldAndCollectionLevelQuery({
     variables: {
@@ -55,7 +57,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
       address: accountStore.selectedAddress,
     },
   });
-  const { data: queryMonsterCollectionState } = useStateQueryMonsterCollectionQuery({
+  const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
       agentAddress: accountStore.selectedAddress
     }
@@ -64,9 +66,9 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     data: collectionStatusQuery,
   } = useCollectionStatusQueryQuery();
 
-const { data: tip } = useGetTipQuery({
-  pollInterval: 1000 * 3
-});
+  const { data: tip } = useGetTipQuery({
+    pollInterval: 1000 * 3
+  });
 
   useEffect(() => {
     setCurrentReward(new Map<RewardCategory, number>());
@@ -90,7 +92,7 @@ const { data: tip } = useGetTipQuery({
     sheetRefetch().then((query) => {
       const level = collectionState?.monsterCollectionState.level
         ? Number(collectionState?.monsterCollectionState.level)
-        : Number(queryMonsterCollectionState?.stateQuery.monsterCollectionState?.level);
+        : Number(collectionStateQuery?.stateQuery.monsterCollectionState?.level);
       const sheet = query
         .data
         .stateQuery
@@ -110,23 +112,41 @@ const { data: tip } = useGetTipQuery({
       if (sheet == null) return;
       setDepositeGold(getTotalDepositedGold(sheet, level));
     });
-  }, [collectionState, queryMonsterCollectionState]);
+  }, [collectionState, collectionStateQuery]);
 
   useEffect(() => {
     let targetBlock = 0;
     if(collectionState?.monsterCollectionState != null) {
       targetBlock = Number(collectionState?.monsterCollectionState.claimableBlockIndex);
     } else {
-      targetBlock = Number(queryMonsterCollectionState?.stateQuery.monsterCollectionState?.claimableBlockIndex);
+      targetBlock = Number(collectionStateQuery?.stateQuery.monsterCollectionState?.claimableBlockIndex);
     }
       const currentTip = tip?.nodeStatus.tip.index || 0;
       const delta = targetBlock - currentTip;
       setRemainMin(Math.round(delta / 5));
-  }, [queryMonsterCollectionState, collectionState, tip]);
+  }, [collectionStateQuery, collectionState, tip]);
 
   useEffect(() => {
     if(goldAndLevel?.stateQuery.agent != null) stopPolling();
   },[goldAndLevel])
+
+  useEffect(() => {
+    if(collectionState?.monsterCollectionState.level) {
+      setIsCollecting(collectionState.monsterCollectionState.level > 0)
+    } else {
+      setIsCollecting(collectionStateQuery?.stateQuery.monsterCollectionState?.level > 0)
+    }
+  }, [collectionState, collectionStateQuery])
+
+  useEffect(() => {
+    if(collectionStatus?.monsterCollectionStatus.canReceive) {
+      setCanClaim(collectionStatus.monsterCollectionStatus.canReceive)
+    } else {
+      collectionStatusQuery?.monsterCollectionStatus?.canReceive
+      ? setCanClaim(true)
+      : setCanClaim(false)
+    }
+  }, [collectionStatus, collectionStatusQuery])
 
   const handleAcion = async (collectTx: string) => {
     setOpenDialog(false);
@@ -151,8 +171,7 @@ const { data: tip } = useGetTipQuery({
         <AccountInfo
           minedBlock={minedBlock}
           onOpenWindow={
-            collectionStatus?.monsterCollectionStatus.canReceive 
-            || collectionStatusQuery?.monsterCollectionStatus?.canReceive
+            canClaim
               ? ()=> {} 
               : onOpenWindow}
           canClaimReward={collectionStatus?.monsterCollectionStatus.canReceive!}
@@ -163,14 +182,10 @@ const { data: tip } = useGetTipQuery({
           }
           collectionLabel={depositedGold}
           remainText={getRemain(remainMin)}
-          isCollecting={
-            collectionState?.monsterCollectionState.level > 0
-            || goldAndLevel.stateQuery.agent?.monsterCollectionLevel > 0
-          }
+          isCollecting={isCollecting}
         />
         {
-          collectionStatus?.monsterCollectionStatus.canReceive 
-            || collectionStatusQuery?.monsterCollectionStatus?.canReceive 
+          canClaim
           ? (
           <div className={'AccountContainerRewardButton'}>
           <RewardButton
