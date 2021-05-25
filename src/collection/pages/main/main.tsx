@@ -17,6 +17,7 @@ import {
   useCollectionStatusSubscription,
   useCollectionStateSubscription,
   useStateQueryMonsterCollectionQuery,
+  useCollectionStatusQueryQuery,
 } from "../../../generated/graphql";
 import { CollectionItemModel } from "../../models/collection";
 import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedStatusBoard";
@@ -42,6 +43,8 @@ const Main: React.FC = () => {
   const [depositedGold, setDepositedGold] = useState<number>(0);
   const [remainTime, setRemainTime] = useState<number>(0);
   const [currentTier, setCurrentTier] = useState<CollectionItemTier>(0);
+  const [isCollecting, setIsCollecting] = useState<boolean>(false);
+
   const [collectionSheetQuery, {
     loading,
     error,
@@ -70,7 +73,7 @@ const Main: React.FC = () => {
   const { data: nodeStatus } = useGetTipQuery({
     pollInterval: 1000 * 5
   });
-  const { data: queryMonsterCollectionState } = useStateQueryMonsterCollectionQuery({
+  const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
       agentAddress: agentAddress
     }
@@ -81,12 +84,12 @@ const Main: React.FC = () => {
     if (collectionState?.monsterCollectionState != null) {
       targetBlock = Number(collectionState?.monsterCollectionState.claimableBlockIndex);
     } else {
-      targetBlock = Number(queryMonsterCollectionState?.stateQuery.monsterCollectionState?.claimableBlockIndex);
+      targetBlock = Number(collectionStateQuery?.stateQuery.monsterCollectionState?.claimableBlockIndex);
     }
     const currentTip = nodeStatus?.nodeStatus.tip.index || 0;
     const delta = targetBlock - currentTip;
     setRemainTime(Math.round(delta / 5))
-  }, [nodeStatus, collectionState, queryMonsterCollectionState])
+  }, [nodeStatus, collectionState, collectionStateQuery])
 
   useEffect(() => {
     if (
@@ -186,6 +189,14 @@ const Main: React.FC = () => {
     }
   }, [collectionState, data])
 
+  useEffect(() => {
+    if(collectionState?.monsterCollectionState.level) {
+      setIsCollecting(collectionState.monsterCollectionState.level > 0)
+    } else {
+      setIsCollecting(collectionStateQuery?.stateQuery.monsterCollectionState?.level > 0)
+    }
+  }, [collectionState, collectionStateQuery])
+
   if (loading || minerAddressLoading) return <LoadingPage/>;
   if(minerAddress?.minerAddress == null) {
     // FIXME we should translate this message.
@@ -280,7 +291,7 @@ const Main: React.FC = () => {
 
     // We don't care about removing exist monster because we've blocked editting on e8423105b0b5abbcfd12279443f1a5cc774a72f2
     // FIXME should adjust this logic after allowing editting.
-    if (tempCartList[0].collectionPhase !== CollectionPhase.LATEST) {
+    if (tempCartList[0].collectionPhase === CollectionPhase.CANDIDATE) {
       alert("Please select at least 1 monster.");
       return;
     }
@@ -309,7 +320,7 @@ const Main: React.FC = () => {
 
   const handleEdit = () => {
     // FIXME Block collection editing until collection design changes.
-    if (!!collectionState) {
+    if (isCollecting) {
       alert("Once the collection is saved, it can be modified after 1 month.");
     } else {
       setEdit(true);
@@ -340,10 +351,7 @@ const Main: React.FC = () => {
 
         ) : (
           <div className={'MainRemainDisplayPos'}>
-            <RemainingDisplay remainMin={remainTime} isCollected={
-              collectionState?.monsterCollectionState.level > 0
-              || data.stateQuery.agent?.monsterCollectionLevel > 0
-            } />
+            <RemainingDisplay remainMin={remainTime} isCollected={isCollecting} />
           </div>
         )}
         <div className={"CollectionItemList"}>
