@@ -190,6 +190,11 @@ const Main: React.FC = () => {
   }, [collectionState, data])
 
   useEffect(() => {
+    if(collectionState?.monsterCollectionState.end) {
+      setIsCollecting(false);
+      return;
+    }
+
     if(collectionState?.monsterCollectionState.level) {
       setIsCollecting(collectionState.monsterCollectionState.level > 0)
     } else {

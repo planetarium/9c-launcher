@@ -139,6 +139,11 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   },[goldAndLevel])
 
   useEffect(() => {
+    if(collectionState?.monsterCollectionState.end) {
+      setIsCollecting(false);
+      return;
+    }
+
     if(collectionState?.monsterCollectionState.level) {
       setIsCollecting(collectionState.monsterCollectionState.level > 0)
     } else {
