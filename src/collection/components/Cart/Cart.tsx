@@ -56,9 +56,14 @@ const Cart: React.FC<Props> = (props: Props) => {
 
   return <div className={'CartContainer'}>
     <div className={'CartItemListBackground'}>
+      {/*
+      Temporarly comment out as a workaround for overwarpping with below message.
+      FIXME: we should restore it or remove `warning` state entirely.
+
       <Animated.div show={warning} className='CartWarningMessage' unmountAnimId='fadeout'>
         To receive rewards, the first monster cannot be abandoned.
         </Animated.div>
+      */}
 
       <Animated.div show={true} className='CartWarningMessage' unmountAnimId='fadeout'>
         Once the collection is saved, it can be modified after 1 month.
