@@ -19,7 +19,7 @@ function createRenderConfig(isDev) {
     target: "electron-renderer", // any other target value makes react-hot-loader stop working
 
     resolve: {
-      extensions: [".js", ".ts", ".tsx", ".json"],
+      extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
@@ -29,6 +29,7 @@ function createRenderConfig(isDev) {
     entry: {
       polyfill: "@babel/polyfill",
       render: "./renderer/render.tsx",
+      collection: "./collection/collection.tsx",
     },
 
     output: {
@@ -49,14 +50,9 @@ function createRenderConfig(isDev) {
         {
           test: /\.scss$/,
           use: [
-            {
-              loader: MiniCssExtractPlugin.loader,
-              options: {
-                hmr: isDev,
-              },
-            },
-            "css-loader",
-            "sass-loader",
+            { loader: 'style-loader' },
+            { loader: 'css-loader' },
+            { loader: 'sass-loader' },
           ],
         },
 
@@ -69,7 +65,9 @@ function createRenderConfig(isDev) {
               presets: [
                 "@babel/preset-typescript",
                 "@babel/preset-react",
-                "@babel/preset-env",
+                ["@babel/preset-env", {
+                  "targets": {"chrome": "55"}
+                }],
               ],
               plugins: [
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
@@ -99,7 +97,13 @@ function createRenderConfig(isDev) {
       new HtmlPlugin({
         filename: "index.html",
         template: "index.html",
-        cache: true,
+        chunks: ["render"], // respective JS files
+      }),
+
+      new HtmlPlugin({
+        template: `collection.html`, // relative path to the HTML files
+        filename: `collection.html`, // output HTML files
+        chunks: ["collection"], // respective JS files
       }),
 
       new HtmlExternalsPlugin({

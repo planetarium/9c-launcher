@@ -57,6 +57,7 @@ import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-fail
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { PermDeviceInformationSharp } from "@material-ui/icons";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
+import createCollectionWindow from "../collection/window";
 
 initializeSentry();
 
@@ -119,6 +120,7 @@ const standaloneExecutableArgs = [
 }
 
 let win: BrowserWindow | null = null;
+let collectionWin: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
@@ -449,6 +451,17 @@ function initializeIpc() {
     }
   );
 
+  ipcMain.handle("open collection page", async () => {
+    if(collectionWin != null){
+      collectionWin.focus();
+      return;
+    };
+    collectionWin = createCollectionWindow();
+    collectionWin.on("close", function (event: any) {
+        collectionWin = null;
+    });
+  })
+  
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {
       console.error("Game is already running.");

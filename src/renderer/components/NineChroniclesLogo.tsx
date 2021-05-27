@@ -1,6 +1,6 @@
 import { Container, makeStyles } from "@material-ui/core";
 import React from "react";
-import logo from "../resources/logo.png";
+import logo from "../resources/nine-chronicles-logo.png";
 
 const useStyles = makeStyles({
   img: {
