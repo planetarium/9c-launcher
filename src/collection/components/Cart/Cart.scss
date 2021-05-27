@@ -46,3 +46,28 @@ $bg-img: url('../../common/resources/bg-staking-bottom-bg.png');
     top: 15px;
     height: 150px;
 }
+
+.CartWarningMessage {
+    position: absolute;
+    z-index: 5;
+    bottom: 170px;
+    font-family: Montserrat;
+    font-size: 20px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeout {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}

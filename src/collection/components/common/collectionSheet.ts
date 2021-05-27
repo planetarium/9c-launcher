@@ -11,17 +11,11 @@ export const getRewardCategoryList = (): number[] => {
 
 export const getExpectedReward = (sheet: CollectionSheetItem[], target: CollectionItemTier) => {
   const currentReward = new Map<RewardCategory, number>();
-
-  sheet.forEach(sheetItem => {
-    if(sheetItem.level <= target) {
-      sheetItem.reward.forEach(x => {
-        const reward = currentReward.get(x.itemId);
-        currentReward.set(x.itemId, reward 
-          ? reward + x.quantity 
-          : x.quantity);
-      });
-    }
+  const cell = sheet.find(sheetItem => sheetItem.level === target);
+  cell?.reward.forEach(x => {
+    currentReward.set(x.itemId, x.quantity);
   });
+
   return currentReward;
 }
 

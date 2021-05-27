@@ -1,7 +1,7 @@
 import { Dialog } from "@material-ui/core"
 import React, { useEffect } from "react"
 import useStores from "../../../hooks/useStores";
-import { useGetAvatarAddressQuery, useGetTipQuery } from "../../../generated/graphql";
+import { GetAvatarAddressQuery, useGetAvatarAddressQuery, useGetTipQuery } from "../../../generated/graphql";
 import { Reward, RewardCategory } from "../../../collection/types";
 import ClaimCollectionRewardDialog from "./ClaimCollectionRewardDialog";
 
@@ -9,20 +9,13 @@ import ClaimCollectionRewardDialog from "./ClaimCollectionRewardDialog";
 type Props = {
   open: boolean;
   rewards: Reward[];
+  avatarAddressQuery: GetAvatarAddressQuery;
+  tip: number;
   onActionTxId: (txId: string) => void;
 }
 
 const ClaimCollectionRewardContainer: React.FC<Props> = (props: Props) => {
-  const {open, rewards, onActionTxId} = props;
-  const {accountStore} = useStores();
-
-  const {data, refetch, stopPolling} = useGetAvatarAddressQuery({variables: {
-    address: accountStore.selectedAddress,
-  }, pollInterval: 2000});
-  
-  const {data: nodeStatus} = useGetTipQuery({
-    pollInterval: 1000 * 5
-  });
+  const {open, rewards, onActionTxId, avatarAddressQuery: data, tip} = props;
 
   console.log(`avatarInfo: ${JSON.stringify(data?.stateQuery.agent?.avatarStates)}`)
 
@@ -34,7 +27,7 @@ const ClaimCollectionRewardContainer: React.FC<Props> = (props: Props) => {
       {
         data?.stateQuery.agent?.avatarStates 
         ? <ClaimCollectionRewardDialog
-        tip={nodeStatus?.nodeStatus.tip.index!}
+        tip={tip}
         rewards={rewards}
         avatar={data!.stateQuery.agent!.avatarStates!.map(x => {return {address: x.address, name: x.name, updatedAt: x.updatedAt}})}
         onActionTxId={onActionTxId}/>

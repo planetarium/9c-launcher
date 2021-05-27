@@ -1,3 +1,5 @@
+$filter: url('../../common/resources/UI_staking_frame.png');
+
 .IntroContainer {
   font-family: 'Montserrat', sans-serif;
   width: 100vw;
@@ -18,6 +20,16 @@
   }  
 }
 
+.IntroPageBorder {
+  background: $filter;
+  background-size: 100%;
+  width: 100.5vw;
+  height: 100.5vh;
+  position: relative;
+  background-size: cover;
+  left: -3px;
+  top: -3px;
+}
 
 
 .IntroItems {
