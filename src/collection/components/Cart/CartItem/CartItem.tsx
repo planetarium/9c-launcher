@@ -12,6 +12,7 @@ export type Props = {
     item: CollectionItemModel
     canCollect: boolean
     onPush: (item: CollectionItemModel) => void,
+    onClick: (item: CollectionItemModel) => void,
     onRemove: (tier: CollectionItemModel) => void,
 }
 
@@ -19,11 +20,14 @@ type MonsterItemProps = {
     icon: string
     item: CollectionItemModel
     onRemove: (tier: CollectionItemModel) => void,
+    onClick: (item: CollectionItemModel) => void,
 }
 
 type AddItemProps = {
     item: CollectionItemModel
-    onPush: (item: CollectionItemModel) => void
+    canCollect: boolean
+    onPush: (item: CollectionItemModel) => void,
+    onClick: (item: CollectionItemModel) => void,
 }
 
 
@@ -36,29 +40,35 @@ const LockItem: React.FC = () => {
 }
 
 const AddItem: React.FC<AddItemProps> = (props: AddItemProps) => {
-    const {item, onPush} = props;
+    const { item, canCollect, onClick, onPush } = props;
+
+    const handleClick = () => {
+        canCollect ? onPush(item) : onClick(item)
+    }
     return (
         <div>
-    <div className={'AddItem'} onClick={() => {onPush(item)}}/>
+            <div className={'AddItem'} onClick={handleClick} />
         </div>
 
     )
 }
 
 const MonsterItem: React.FC<MonsterItemProps> = (props: MonsterItemProps) => {
-    const { icon, item, onRemove } = props;
+    const { icon, item, onClick, onRemove } = props;
     return (
     <div>
-        <div className={'CartIcon'} />
+        <div className={'CartIcon'} onClick={() => {onClick(item)}} />
         <img src={require(`../../../common/resources/${icon}.png`).default} />
         {
-            item.collectionPhase === CollectionPhase.LATEST ? <img className='RemoveButton' src={CancelImage} onClick={() => {onRemove(item)}} /> : <></>
+            item.collectionPhase === CollectionPhase.LATEST && item.tier != CollectionItemTier.TIER1 
+                ? <img className='RemoveButton' src={CancelImage} onClick={() => {onRemove(item)}} /> 
+                : <></>
         }
     </div>)
 }
 
 const CartItem: React.FC<Props> = (props: Props) => {
-    const {item, canCollect, onPush, onRemove} = props;
+    const {item, canCollect, onPush, onRemove, onClick} = props;
 
     const getResource = (tier: CollectionItemTier) => {
         return getCartMonsterImageFromTier(tier);
@@ -66,8 +76,8 @@ const CartItem: React.FC<Props> = (props: Props) => {
 
     const getComponent = (item: CollectionItemModel) => {
         if(item.collectionPhase === CollectionPhase.LOCKED) return <LockItem />
-        else if(item.collectionPhase === CollectionPhase.CANDIDATE) return <AddItem item={item} onPush={canCollect ? onPush : ()=>{}} />
-        else return <MonsterItem icon={getResource(item.tier)} item={item} onRemove={onRemove} />
+        else if(item.collectionPhase === CollectionPhase.CANDIDATE) return <AddItem item={item} onPush={onPush} onClick={onClick} canCollect={canCollect} />
+        else return <MonsterItem icon={getResource(item.tier)} onClick={onClick} item={item} onRemove={onRemove} />
     }
 
     return (

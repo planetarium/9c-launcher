@@ -16,6 +16,8 @@ import {
   useCollectionSheetWithStateLazyQuery,
   useCollectionStatusSubscription,
   useCollectionStateSubscription,
+  useStateQueryMonsterCollectionQuery,
+  useCollectionStatusQueryQuery,
 } from "../../../generated/graphql";
 import { CollectionItemModel } from "../../models/collection";
 import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedStatusBoard";
@@ -34,11 +36,15 @@ const Main: React.FC = () => {
   const [agentAddress, setAgentAddress] = useState<string>("");
   const [latestTxId, setLatestTxId] = useState<string>("");
   const [cartList, setCart] = useState<CollectionItemModel[]>([]);
+  const [tempCartList, setTempCart] = useState<CollectionItemModel[]>([]);
   const [collectionSheet, setCollectionSheet] = useState<CollectionSheetItem[]>([]);
   const [dialog, setDialog] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const [depositedGold, setDepositedGold] = useState<number>(0);
   const [remainTime, setRemainTime] = useState<number>(0);
+  const [currentTier, setCurrentTier] = useState<CollectionItemTier>(0);
+  const [isCollecting, setIsCollecting] = useState<boolean>(false);
+
   const [collectionSheetQuery, {
     loading,
     error,
@@ -54,7 +60,7 @@ const Main: React.FC = () => {
       address: agentAddress,
     },
   });
-  const { data: minerAddress } = useMinerAddressQuery();
+  const { data: minerAddress, loading: minerAddressLoading } = useMinerAddressQuery();
   const [
     collect,
   ] = useCollectMutation();
@@ -62,20 +68,28 @@ const Main: React.FC = () => {
     cancelCollection,
   ] = useCancelCollectionMutation();
 
-  const {data: collectionStatus} = useCollectionStatusSubscription();
-  const {data: collectionState} = useCollectionStateSubscription();
-  const {data: nodeStatus} = useGetTipQuery({
+  const { data: collectionStatus } = useCollectionStatusSubscription();
+  const { data: collectionState } = useCollectionStateSubscription();
+  const { data: nodeStatus } = useGetTipQuery({
     pollInterval: 1000 * 5
+  });
+  const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
+    variables: {
+      agentAddress: agentAddress
+    }
   });
 
   useEffect(() => {
-    const claimableBlockIndex = Number(collectionState?.monsterCollectionState.claimableBlockIndex || 0);
-    const tipIndex = Number(nodeStatus?.nodeStatus.tip.index || 0)
-    const delta = claimableBlockIndex - tipIndex;
-    if(delta <= 0) return;
-    
-    setRemainTime(Math.round(delta / 5));
-  }, [nodeStatus, collectionState])
+    let targetBlock = 0;
+    if (collectionState?.monsterCollectionState != null) {
+      targetBlock = Number(collectionState?.monsterCollectionState.claimableBlockIndex);
+    } else {
+      targetBlock = Number(collectionStateQuery?.stateQuery.monsterCollectionState?.claimableBlockIndex);
+    }
+    const currentTip = nodeStatus?.nodeStatus.tip.index || 0;
+    const delta = targetBlock - currentTip;
+    setRemainTime(Math.round(delta / 5))
+  }, [nodeStatus, collectionState, collectionStateQuery])
 
   useEffect(() => {
     if (
@@ -112,6 +126,10 @@ const Main: React.FC = () => {
   }, [data, loading]);
 
   useEffect(() => {
+    setTempCart(cartList);
+  }, [cartList])
+
+  useEffect(() => {
     if (
       data?.stateQuery.monsterCollectionSheet == null ||
       data.stateQuery.monsterCollectionSheet.orderedList == null
@@ -127,7 +145,7 @@ const Main: React.FC = () => {
   }, [data, loading]);
 
   useEffect(() => {
-    if(data?.stateQuery) refetch();
+    if (data?.stateQuery) refetch();
     else collectionSheetQuery();
   }, [agentAddress]);
 
@@ -138,57 +156,80 @@ const Main: React.FC = () => {
   }, [minerAddress]);
 
   useEffect(() => {
-    if(collectionState?.monsterCollectionState.end) {
+    if (collectionState?.monsterCollectionState.end) {
       setCart((state) => state.map(x => {
-          return {
-            tier: x.tier,
-            value: x.value,
-            collectionPhase: getCollectionPhase(x.tier, 0),
-          } as CollectionItemModel
-        }));
+        return {
+          tier: x.tier,
+          value: x.value,
+          collectionPhase: getCollectionPhase(x.tier, 0),
+        } as CollectionItemModel
+      }));
       setDepositedGold(0);
     }
   }, [collectionState]);
 
   useEffect(() => {
-    if(collectionState?.monsterCollectionState.level === data?.stateQuery.agent?.monsterCollectionLevel) {
+    if (collectionState?.monsterCollectionState.level === data?.stateQuery.agent?.monsterCollectionLevel) {
       setDialog(false);
       setEdit(false);
     } else {
-      if(latestTxId === "") {
+      if (latestTxId === "") {
         //FIXME: if failed, need action here
       }
     }
   }, [collectionState, data])
 
-  if (loading) return <LoadingPage/>;
-  if (error) return <p>error</p>;
-  if(data?.stateQuery.agent == null) {
-    <div>you need create avatar first</div>
+  useEffect(() => {
+    if(collectionState?.monsterCollectionState.end) {
+      setCurrentTier(0);
+    } else {
+      setCurrentTier(collectionState?.monsterCollectionState.level 
+        ? collectionState.monsterCollectionState.level 
+        : data?.stateQuery.agent?.monsterCollectionLevel);
+    }
+  }, [collectionState, data])
+
+  useEffect(() => {
+    if(collectionState?.monsterCollectionState.level) {
+      setIsCollecting(collectionState.monsterCollectionState.level > 0)
+    } else {
+      setIsCollecting(collectionStateQuery?.stateQuery.monsterCollectionState?.level > 0)
+    }
+  }, [collectionState, collectionStateQuery])
+
+  if (loading || minerAddressLoading) return <LoadingPage/>;
+  if(minerAddress?.minerAddress == null) {
+    // FIXME we should translate this message.
+    return <div>you need login first</div>
+  }
+  if (data?.stateQuery.agent == null) {
+    // FIXME we should translate this message.
+    return <div>you need create avatar first</div>
   }
   if (
     data?.stateQuery.monsterCollectionSheet == null ||
     data.stateQuery.monsterCollectionSheet.orderedList == null
   )
-    return <></>;
+    return <div>Chain has no monstercollection sheet</div>;
+  if (error) return <div><p>Error: </p>{JSON.stringify(error)}</div>;
   const addCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.CANDIDATE) return;
 
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier - 1
           ? ({ ...x, collectionPhase: CollectionPhase.COLLECTED } as CollectionItemModel)
           : x
       )
     );
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier
           ? ({ ...x, collectionPhase: CollectionPhase.LATEST } as CollectionItemModel)
           : x
       )
     );
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier + 1
           ? ({ ...x, collectionPhase: CollectionPhase.CANDIDATE } as CollectionItemModel)
@@ -197,24 +238,25 @@ const Main: React.FC = () => {
     );
   };
 
-  const removeCard = (item: CollectionItemModel) => {
+  const removeCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.LATEST) return;
+    if (item.tier === CollectionItemTier.TIER1) return;
 
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier - 1
           ? ({ ...x, collectionPhase: CollectionPhase.LATEST } as CollectionItemModel)
           : x
       )
     );
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier
           ? ({ ...x, collectionPhase: CollectionPhase.CANDIDATE } as CollectionItemModel)
           : x
       )
     );
-    setCart((state) =>
+    setTempCart((state) =>
       state.map((x) =>
         x.tier === item.tier + 1
           ? ({ ...x, collectionPhase: CollectionPhase.LOCKED } as CollectionItemModel)
@@ -224,9 +266,10 @@ const Main: React.FC = () => {
   };
 
   const collectionMutation = async () => {
-    const latestCollectionItem = cartList.find(
+    const latestCollectionItem = tempCartList.find(
       (x) => x.collectionPhase === CollectionPhase.LATEST
     );
+
     if (!latestCollectionItem) return;
 
     if (data.stateQuery.agent!.monsterCollectionLevel < latestCollectionItem.tier) {
@@ -245,9 +288,17 @@ const Main: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+
+    // We don't care about removing exist monster because we've blocked editting on e8423105b0b5abbcfd12279443f1a5cc774a72f2
+    // FIXME should adjust this logic after allowing editting.
+    if (tempCartList[0].collectionPhase === CollectionPhase.CANDIDATE) {
+      alert("Please select at least 1 monster.");
+      return;
+    }
+
     setDialog(true);
     const collectionTx = await collectionMutation();
-    if(!collectionTx) {
+    if (!collectionTx) {
       setDialog(false);
       setEdit(false);
       return;
@@ -267,54 +318,68 @@ const Main: React.FC = () => {
     setLatestTxId("");
   };
 
+  const handleEdit = () => {
+    // FIXME Block collection editing until collection design changes.
+    if (isCollecting) {
+      alert("Once the collection is saved, it can be modified after 1 month.");
+    } else {
+      setEdit(true);
+    }
+  }
+
+  const handleCancel = () => {
+    setEdit(false)
+    setTempCart(cartList);
+  }
+
   return (
     <div
       className={"MainContainer"}
       style={{ backgroundImage: `url(${BackgroundImage})` }}
     >
       <div className={"MainBorder"}>
-      {edit ? (
-        <div className={"MainExpectedStatusBoard"}>
-        <ExpectedStatusBoard
-          collectionSheet={collectionSheet}
-          currentTier={data.stateQuery.agent?.monsterCollectionLevel}
-          targetTier={
-            cartList.find((x) => x.collectionPhase === CollectionPhase.LATEST)?.tier || CollectionItemTier.TIER0
-          }
-        />
-        </div>
+        {edit ? (
+          <div className={"MainExpectedStatusBoard"}>
+            <ExpectedStatusBoard
+              collectionSheet={collectionSheet}
+              currentTier={data.stateQuery.agent?.monsterCollectionLevel}
+              targetTier={
+                tempCartList.find((x) => x.collectionPhase === CollectionPhase.LATEST)?.tier || CollectionItemTier.TIER0
+              }
+            />
+          </div>
 
-      ) : (
-        <div className={'MainRemainDisplayPos'}>
-          <RemainingDisplay remainMin={remainTime} />
+        ) : (
+          <div className={'MainRemainDisplayPos'}>
+            <RemainingDisplay remainMin={remainTime} isCollected={isCollecting} />
+          </div>
+        )}
+        <div className={"CollectionItemList"}>
+          {(edit ? tempCartList : cartList).map((x, i) => (
+            <CollectionItem item={x} isEdit={edit} key={i} />))}
         </div>
-      )}
-      <div className={"CollectionItemList"}>
-        {cartList.map((x, i) => (
-          <CollectionItem item={x} isEdit={edit} key={i} />
-        ))}
-      </div>
         {edit ? (
           <div className={"MainCartContainer"}>
-          <Cart
-            cartList={cartList}
-            totalGold={Number(collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity || data.stateQuery.agent?.gold) + depositedGold}
-            onCancel={() => {
-              setEdit(false);
-            }}
-            onSubmit={handleSubmit}
-            onRemove={removeCard}
-            onPush={addCart}
-          />
+            <Cart
+              cartList={tempCartList}
+              totalGold={Number(collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity || data.stateQuery.agent?.gold) + depositedGold}
+              onCancel={handleCancel}
+              onSubmit={handleSubmit}
+              onRemove={removeCart}
+              onPush={addCart}
+            />
           </div>
         ) : (
           <div className={'MainCollectionPanelContainer'}>
-            <CollectionPanel sheet={collectionSheet} tier={collectionState?.monsterCollectionState.level ? collectionState.monsterCollectionState.level : data.stateQuery.agent?.monsterCollectionLevel} onEdit={() => {setEdit(true)}}  />
+            <CollectionPanel 
+            sheet={collectionSheet} 
+            tier={currentTier} 
+            onEdit={handleEdit}  />
           </div>
         )}
-      
 
-      <ConfirmationDialog open={dialog} />
+
+        <ConfirmationDialog open={dialog} />
       </div>
 
     </div>

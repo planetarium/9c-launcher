@@ -8,6 +8,7 @@ import {
   RadioGroup,
 } from "@material-ui/core";
 import React from "react";
+import { getRemain } from "../../../../collection/common/utils";
 
 import './CharSelectDialog.scss'
 
@@ -40,17 +41,6 @@ const charSelectDialogStyle = makeStyles({
     borderRadius: "0",
   }
 });
-
-const getRemain = (remainMin: number) => {
-  const hour = remainMin / 60;
-
-  const days = hour / 12;
-  if(days >= 1) return `${Math.round(days)} days`
-
-  if(hour >= 1) return `${Math.round(hour)} hours`
-
-  return `less then hour`
-}
 
 const CharSelectDialog: React.FC<Props> = (props: Props) => {
   const { onClick, tip, avatar } = props;

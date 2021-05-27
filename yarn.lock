@@ -14433,6 +14433,13 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.npmjs.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-mount-animation@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/react-mount-animation/-/react-mount-animation-0.0.9.tgz#f78cf3147fe21ac233d517c9a4fa84a93742846c"
+  integrity sha512-4CR+vtLDzhAyDGcns+9C7V1l7IMQIAn5sjznV0WCR1LJs9pMwm6FGAmLC73VOXVHU9kc1KJPxezcclIbpWw9RQ==
+  dependencies:
+    react "^17.0.1"
+
 react-popper-tooltip@^3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/react-popper-tooltip/-/react-popper-tooltip-3.1.1.tgz"
@@ -14551,6 +14558,14 @@ react@^16.13.1:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
+
+react@^17.0.1:
+  version "17.0.2"
+  resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
+  integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
 
 read-config-file@6.0.0:
   version "6.0.0"

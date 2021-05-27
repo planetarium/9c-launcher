@@ -21,6 +21,7 @@ const MiningView = observer(
       );
       if (setSucceed) {
         standaloneStore.setPrivateKeyEnded(true);
+        accountStore.setMiningConfigStatus(true);
       } else {
         routerStore.push("/error/relaunch");
       }
