@@ -1,6 +1,7 @@
 import React from "react"
 import goldIcon from '../../resources/gold.png'
 import monsterIcon from '../../resources/monster.png'
+import exportIcon from '../../resources/export-icon.png'
 
 import './AccountInfo.scss'
 
@@ -39,7 +40,7 @@ const AccountInfo: React.FC<Props> = (props: Props) => {
       <img className={'Icon'} src={monsterIcon} alt='monster'/>
       <div className={'value'}>{numberWithComma(collectionLabel)}</div>
       {
-        typeof collectionLabel !== 'string' && <div className={'subText'}>{decorateRemainText()}</div>
+        typeof collectionLabel !== 'string' && <div className={'AccountInfoCollection'}><div className={'subText'}>{decorateRemainText()}</div><img className={'exportIcon'} src={exportIcon} /></div>
       }
     </div>
   </div>
