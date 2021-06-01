@@ -20,4 +20,5 @@ export interface IElectronStore {
   AwsAccessKey: string | undefined;
   AwsSecretKey: string | undefined;
   AwsRegion: string | undefined;
+  DataProviderUrl: string | undefined;
 }

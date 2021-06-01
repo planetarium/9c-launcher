@@ -99,6 +99,10 @@ export const electronStore = new Store<IElectronStore>({
       type: "string",
       default: undefined,
     },
+    DataProviderUrl: {
+      type: "string",
+      default: undefined
+    }
   },
 });
 
