@@ -69,7 +69,7 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
                 <img className={"CollectionRewardItemImage"} src={getRewardImage(x)}/>
               </div>
               <div className={'label'}>
-              {currentReward.get(x)}
+              {currentReward.get(x) || 0}
               </div>
             </div>
           ))}
