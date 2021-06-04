@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: "14"
       - name: Install Dependencies
-        run: yarn install
+        run: yarn
       - run: yarn add @planetarium/cli
       - name: Generate key
         id: gen-key
