@@ -22,15 +22,15 @@ The basic structure is as follows:
 First, install all dependencies required for development.
 
 ```bash
-npm install
+yarn
 ```
 
 In addition, there are two binaries required:
 
-- 9C Headless (Standalone): can be built with `npm run build-headless`
+- 9C Headless (Standalone): can be built with `yarn build-headless`
   (.NET Core SDK required)
-- 9C Unity Player (_9c.exe_/_9c.app_): can be downloaded with `npm run bundle-player`
-  - `npm run bundle-player` downloads the CI-built binary from the NineChronicles repository based on the `NineChronicles` git submodule commit hash.
+- 9C Unity Player (_9c.exe_/_9c.app_): can be downloaded with `yarn bundle-player`
+  - `yarn bundle-player` downloads the CI-built binary from the NineChronicles repository based on the `NineChronicles` git submodule commit hash.
   - Download may fail if the CI-build hasn't been completed. In this case, you can directly build to `dist` as the output directory with Unity Editor.
 
 Place the two binaries in the exact path as visualized below: 
@@ -49,7 +49,7 @@ Place the two binaries in the exact path as visualized below:
 After, run the following command.
 
 ```sh
-npm run dev
+yarn dev
 ```
 
 위 명령은 내부적으로 알아서 _NineChronicles.Headless_ 서버도 함께 실행합니다.
@@ -63,7 +63,7 @@ NC_RPC_SERVER_HOST=127.0.0.1 \
 NC_RPC_SERVER_PORT=23142 \
 NC_GRAPHQL_SERVER_HOST=127.0.0.1 \
 NC_GRAPHQL_SERVER_PORT=23061 \
-npm run dev
+yarn dev
 ```
 
 ## Development
@@ -76,7 +76,7 @@ Developing the renderer process does not require electron relaunch. However, whe
 mobx-devtools can be used in this project. First, install a standalone mobx-devtools.
 
 ```sh
-npm install -g mobx-devtools
+yarn global add mobx-devtools
 ```
 
 After, run mobx-devtools.
@@ -85,30 +85,30 @@ After, run mobx-devtools.
 mobx-devtools
 ```
 
-Run `npm run server` & `npm run start`. The global state will appear on mobx-devtools.
+Run `yarn server` & `yarn start`. The global state will appear on mobx-devtools.
 
 ## Build
 
 ```bash
-npm install
-npm run build  # development build
-npm run build-headless  # 9C Headless (Standalone) build (.NET Core SDK required)
-npm run bundle-player  # 9C Unity Player download
-APV_SIGN_KEY=... APV_NO=... npm run sign-apv  # APV sign (planet command required)
-npm run build-prod  # production build
+yarn
+yarn build  # development build
+yarn build-headless  # 9C Headless (Standalone) build (.NET Core SDK required)
+yarn bundle-player  # 9C Unity Player download
+APV_SIGN_KEY=... APV_NO=... yarn sign-apv  # APV sign (planet command required)
+yarn build-prod  # production build
 ```
 
 ## Packaging
 
 ```bash
 # generate/sign a new APV with the given private key and pack
-APV_SIGN_KEY=... npm run pack-all
+APV_SIGN_KEY=... yarn pack-all
 # generate/sign a specific APV with the given private key and pack
-APV_SIGN_KEY=... APV_NO=1234 npm run pack-all
+APV_SIGN_KEY=... APV_NO=1234 yarn pack-all
 # pack with the given APV
-APV=... npm run pack-all
+APV=... yarn pack-all
 # pack without APV (for reusing the APV of the latest release)
-npm run pack-all
+yarn pack-all
 ```
 
 Packaging requires the following environment variables. If both the `APV` and `APV_SIGN_KEY` are ommited,
@@ -141,7 +141,7 @@ scripts/replace-config.sh path/Windows.zip < config.json
 ```bash
 # Windows (nsis)
 # macOS (dmg, zip)
-npm run pack-all:electron-builder
+yarn pack-all:electron-builder
 ```
 
 ## Log Path
