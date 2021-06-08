@@ -12,20 +12,14 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      - name: Restore npm cache
+      - name: Pull node_modules cache
         uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
         with:
-          path: "%AppData%/npm-cache"
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install Dependencies
-        run: npm install
-      - run: npm install @planetarium/cli
+        run: yarn
+      - run: yarn add @planetarium/cli
       - name: Generate key
         id: gen-key
         run: scripts\\create-key.ps1
@@ -35,13 +29,13 @@ jobs:
             dotnet clean -c Release
             dotnet nuget locals all --clear
           popd
-          npm run build-headless
+          yarn build-headless
       - name: Build Launcher
-        run: npm run build-prod
+        run: yarn build-prod
       - name: Copy config
         run: scripts\copy-config.ps1
       - name: Run E2E Test
-        run: npm run test
+        run: yarn test
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
