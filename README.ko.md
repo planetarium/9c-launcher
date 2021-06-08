@@ -22,15 +22,15 @@ Nine Chronicles를 구동하기 위한 일렉트론 기반의 멀티플랫폼 �
 먼저, 개발에 필요한 의존성부터 모두 설치합니다.
 
 ```bash
-npm install
+yarn
 ```
 
 추가로, 두 개의 별도 바이너리가 필요합니다.
 
-- 9C Headless (Standalone): `npm run build-headless`로 빌드 가능
+- 9C Headless (Standalone): `yarn build-headless`로 빌드 가능
   (.NET Core SDK 필요)
-- 9C Unity Player (_9c.exe_/_9c.app_): `npm run bundle-player`로 다운로드 가능
-  - `npm run bundle-player` 는 `NineChronicles` git 서브 모듈의 커밋 해시를 기준으로 NineChronicles 저장소 CI에서 미리 빌드된 바이너리를 다운로드 받습니다.
+- 9C Unity Player (_9c.exe_/_9c.app_): `yarn bundle-player`로 다운로드 가능
+  - `yarn bundle-player` 는 `NineChronicles` git 서브 모듈의 커밋 해시를 기준으로 NineChronicles 저장소 CI에서 미리 빌드된 바이너리를 다운로드 받습니다.
   - 빌드가 끝나지 않은 경우 다운로드에 실패하는데, 이 경우엔 Unity 에디터에서 `dist` 디렉토리를 출력 디렉토리로 하여 직접 빌드하시면 됩니다.
 
 두 개의 바이너리를 해당 디렉터리와 같게 배치해 주십시오.
@@ -49,7 +49,7 @@ npm install
 그 뒤 하기의 명령어를 입력합니다.
 
 ```javascript
-npm run dev
+yarn dev
 ```
 
 ## 개발 방법
@@ -62,7 +62,7 @@ npm run dev
 mobx-devtools를 사용할 수 있습니다. 먼저, 스탠드얼론 mobx-devtools를 설치해 주십시오
 
 ```sh
-npm install -g mobx-devtools
+yarn global add mobx-devtools
 ```
 
 그 다음, mobx-devtools를 실행해 주십시오
@@ -71,30 +71,30 @@ npm install -g mobx-devtools
 mobx-devtools
 ```
 
-이제 `npm run server` 와 `npm run start`를 하시면 mobx-devtools에 전역 상태가 나타나는 것을 볼 수 있습니다.
+이제 `yarn server` 와 `yarn start`를 하시면 mobx-devtools에 전역 상태가 나타나는 것을 볼 수 있습니다.
 
 ## 빌드 방법
 
 ```bash
-npm install
-npm run build  # 개발 빌드
-npm run build-headless  # 9C Headless (Standalone) 빌드 (.NET Core SDK 필요)
-npm run bundle-player  # 9C Unity Player 받기
-APV_SIGN_KEY=... APV_NO=... npm run sign-apv  # APV 서명 (planet 명령 필요)
-npm run build-prod  # 프로덕션 빌드
+yarn
+yarn build  # 개발 빌드
+yarn build-headless  # 9C Headless (Standalone) 빌드 (.NET Core SDK 필요)
+yarn bundle-player  # 9C Unity Player 받기
+APV_SIGN_KEY=... APV_NO=... yarn sign-apv  # APV 서명 (planet 명령 필요)
+yarn build-prod  # 프로덕션 빌드
 ```
 
 ## 패키징 방법
 
 ```bash
 # 주어진 비밀키로 새 버전 APV를 생성/서명 후 적용
-APV_SIGN_KEY=... npm run pack-all
+APV_SIGN_KEY=... yarn pack-all
 # 주어진 비밀키로 지정된 버전의 APV를 생성/서명 후 적용
-APV_SIGN_KEY=... APV_NO=1234 npm run pack-all
+APV_SIGN_KEY=... APV_NO=1234 yarn pack-all
 # 주어진 APV를 그대로 적용
-APV=... npm run pack-all
+APV=... yarn pack-all
 # APV 미적용 (가장 마지막에 릴리스된 패키지에 적용된 APV 재사용)
-npm run pack-all
+yarn pack-all
 ```
 
 다음 환경 변수를 요구합니다. `APV`와 `APV_SIGN_KEY` 양 쪽 모두 누락됐을 경우
@@ -130,7 +130,7 @@ scripts/replace-config.sh path/Windows.zip < config.json
 ```bash
 # Windows (nsis)
 # macOS (dmg, zip)
-npm run pack-all:electron-builder
+yarn pack-all:electron-builder
 ```
 
 ## 로깅 위치
