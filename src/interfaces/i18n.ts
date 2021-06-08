@@ -64,7 +64,8 @@ export interface Intro {
 }
 
 export interface Menu {
-  Forum: LocaleRecord;
+  "Patch Note": LocaleRecord;
+  Explorer: LocaleRecord;
   Discord: LocaleRecord;
   Settings: LocaleRecord;
 }

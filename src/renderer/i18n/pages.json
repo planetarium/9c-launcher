@@ -23,15 +23,25 @@
     }
   },
   "menu": {
-    "Forum": {
-      "ko": "Forum",
-      "en": "Forum",
-      "pl": "Forum",
-      "pt-BR": "Fórum",
-      "th": "Forum",
-      "ja": "Forum",
-      "de": "Forum",
-      "id": "Forum"
+    "Patch Note": {
+      "ko": "Patch Note",
+      "en": "Patch Note",
+      "pl": "Patch Note",
+      "pt-BR": "Patch Note",
+      "th": "Patch Note",
+      "ja": "Patch Note",
+      "de": "Patch Note",
+      "id": "Patch Note"     
+    },
+    "Explorer": {
+      "ko": "Explorer",
+      "en": "Explorer",
+      "pl": "Explorer",
+      "pt-BR": "Explorer",
+      "th": "Explorer",
+      "ja": "Explorer",
+      "de": "Explorer",
+      "id": "Explorer"
     },
     "Discord": {
       "ko": "Discord",
