@@ -23,7 +23,7 @@ const Template: Story = () => <Main />;
 const address = "0x590c887BDac8d957Ca5d3c1770489Cf2aFBd868E";
 
 export const Primary = Template.bind({});
-let primaryLevel = 4;
+let primaryLevel = 0;
 Primary.parameters = {
   apolloClient: {
     mocks: [
@@ -106,7 +106,7 @@ Primary.parameters = {
               end: "",
               expiredBlockIndex: "",
               claimableBlockIndex: 100,
-              level: 4,
+              level: primaryLevel,
               rewardLevel: "",
               receivedBlockIndex: "",
               startedBlockIndex: "",
@@ -120,7 +120,7 @@ Primary.parameters = {
               address: "",
               end: "",
               expiredBlockIndex: "",
-              level: 4,
+              level: primaryLevel,
               rewardLevel: "",
               receivedBlockIndex: "",
               claimableBlockIndex: 100,
