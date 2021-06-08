@@ -1,7 +1,6 @@
 import { ipcRenderer, shell } from "electron";
 import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
-import HomeIcon from "@material-ui/icons/Home";
 import DiscordIcon from "../../components/DiscordIcon";
 import SettingsIcon from "@material-ui/icons/Settings";
 import "../../styles/layout/layout.scss";
@@ -15,6 +14,8 @@ import { electronStore } from "../../../config";
 import AccountInfoContainer from "../../components/AccountInfo/AccountInfoContainer";
 import InfoIcon from "../../components/InfoIcon";
 
+import explorerLogo from "../../resources/block-explorer-logo.png"
+import patchNoteLogo from "../../resources/wrench.png"
 
 
 export const Layout: React.FC = observer(({ children }) => {
@@ -71,12 +72,22 @@ export const Layout: React.FC = observer(({ children }) => {
         <ul className={"LauncherClientOption"}>
           <li>
             <Button
-              startIcon={<HomeIcon />}
+              startIcon={<img src={patchNoteLogo}/>}
               onClick={() => {
-                shell.openExternal("https://forum.nine-chronicles.com");
+                shell.openExternal("https://wiki.nine-chronicles.com/en/9C/patch-notes");
               }}
             >
-              {locale("Forum")}
+              {locale("Patch Note")}
+            </Button>
+          </li>
+          <li>
+            <Button
+              startIcon={<img src={explorerLogo}/>}
+              onClick={() => {
+                shell.openExternal("http://explorer.libplanet.io/9c-main/");
+              }}
+            >
+              {locale("Explorer")}
             </Button>
           </li>
           <li>
