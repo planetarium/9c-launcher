@@ -58,6 +58,7 @@ import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snaps
 import { PermDeviceInformationSharp } from "@material-ui/icons";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import createCollectionWindow from "../collection/window";
+import { Client as NTPClient } from 'ntp-time'
 
 initializeSentry();
 
@@ -135,6 +136,7 @@ let initializeHeadlessCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
 } | null = null;
+const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
 export type MixpanelInfo = {
   mixpanel: Mixpanel | null;
@@ -143,6 +145,23 @@ export type MixpanelInfo = {
 };
 
 ipv4().then((value) => (ip = value));
+
+client
+  .syncTime()
+  .then(time => {
+    const timeFromNTP = new Date(time.receiveTimestamp);
+    const computerTime = new Date();
+    const delta = Math.abs(timeFromNTP.getTime() - computerTime.getTime());
+
+    if(delta > 15000) {
+      dialog.showErrorBox(
+        "Computer Time Incorrect",
+        "The current computer time is incorrect. Please sync your computer's time correctly.")
+    }
+  })
+  .catch(error => {
+    console.error(error);
+  });
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
