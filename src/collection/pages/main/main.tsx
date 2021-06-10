@@ -6,7 +6,7 @@ import Cart from "../../components/Cart/Cart";
 import { Reward, CollectionItemTier, CollectionPhase, CollectionSheetItem } from "../../types";
 
 import "./main.scss";
-import ConfirmationDialog from "../../components/ConfirmationDialog/Dialog";
+import ConfirmationDialog from "../../components/ConfirmationDialog/ConfirmationDialog";
 import {
   useCancelCollectionMutation,
   useCollectMutation,

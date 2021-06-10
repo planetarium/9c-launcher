@@ -2,7 +2,7 @@ import { Dialog, DialogTitle, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
 import loadingIcon from "../../common/resources/staking_ani3.png";
 
-import "./Dialog.scss";
+import "./ConfirmationDialog.scss";
 
 export type Props = {
   open: boolean;
