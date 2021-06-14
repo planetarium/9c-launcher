@@ -1,7 +1,7 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 
-import ConfirmationDialog, {Props} from './Dialog';
+import ConfirmationDialog, {Props} from './ConfirmationDialog';
 
 export default {
   title: 'Collection/ConfirmationDialog',

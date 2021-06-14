@@ -109,8 +109,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}-build
       # 의존성 설치
       - run: yarn
       # 코드 스타일 린트
