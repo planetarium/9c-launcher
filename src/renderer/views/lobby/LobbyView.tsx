@@ -18,12 +18,11 @@ import {
   useActivateMutation,
   useActivationLazyQuery,
 } from "../../../generated/graphql";
-import { Lobby } from "../../../interfaces/i18n";
 import { IStoreContainer } from "../../../interfaces/store";
 import { sleep } from "../../../utils";
 import { ipcRenderer } from "electron";
 
-import { useLocale } from "../../i18n";
+import { T } from "@transifex/react";
 
 import lobbyViewStyle from "./LobbyView.style";
 
@@ -51,8 +50,6 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   );
   const [polling, setPollingState] = useState(false);
   const [hasAutoActivateBegin, setHasAutoActivateBegin] = useState(false);
-
-  const { locale } = useLocale<Lobby>("lobby");
 
   const handleActivationKeyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -125,7 +122,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   if ((loading || polling) && activatedError === undefined) {
     child = (
       <div>
-        <p className={classes.verifing}>{locale("확인 중...")}</p>
+        <p className={classes.verifing}><T _str="Verifying..." _tags="lobby" /></p>
         <CircularProgress />
       </div>
     );
@@ -138,7 +135,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       <form onSubmit={handleActivationKeySubmit}>
         <TextField
           error={activatedError?.message !== undefined}
-          label={locale("초대 코드")}
+          label={<T _str="Invitation Code" _tags="lobby" />}
           onChange={handleActivationKeyChange}
           fullWidth
         />
@@ -159,7 +156,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
           className={classes.activation}
           type="submit"
         >
-          {locale("활성화")}
+          <T _str="Activation" _tags="lobby" />
         </ButtonOrigin>
       </form>
     );
@@ -168,10 +165,9 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 });
 
 const PreloadWaitingButton = () => {
-  const { locale } = useLocale<Lobby>("lobby");
   return (
     <Button disabled={true} className={lobbyViewStyle().gameStartButton}>
-      {locale("프리로딩 중...")}
+      <T _str="Preloading..." _tags="lobby" />
     </Button>
   );
 };
@@ -184,8 +180,6 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
     gameStore.startGame(accountStore.privateKey);
     props.onLaunch();
   };
-
-  const { locale } = useLocale<Lobby>("lobby");
 
   useEffect(() => {
     if (standaloneStore.Ready) {
@@ -200,9 +194,10 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
       className={classes.gameStartButton}
       id="start-game"
     >
+
       {gameStore.isGameStarted
-        ? `${locale("실행 중...")}`
-        : `${locale("게임 시작하기")}`}
+        ? <T _str="Now Running..." _tags="lobby" />
+        : <T _str="Start Game" _tags="lobby" />}
     </Button>
   );
 });

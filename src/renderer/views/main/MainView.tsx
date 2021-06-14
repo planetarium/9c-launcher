@@ -8,34 +8,26 @@ import { Button, Container, Box } from "@material-ui/core";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import mainViewStyle from "./MainView.style";
 
-import { useLocale } from "../../i18n";
-import { Main } from "../../../interfaces/i18n";
+import { T } from "@transifex/react";
 import TextButton from "../../components/TextButton";
 
 const MainView = observer(
   ({ accountStore, routerStore, gameStore }: IStoreContainer) => {
     const classes = mainViewStyle();
-    const { locale } = useLocale<Main>("main");
 
     const handleResetPassword = (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       routerStore.push("/account/reset/review-private-key");
     };
 
-    const description = locale("description");
-    if (typeof description === "string")
-      throw Error("main.description is not array in src/i18n/index.json");
-
     return (
       <Container className={classes.root}>
         <NineChroniclesLogo />
         <h1 className={classes.title}>
-          {locale("나인 크로니클에 오신 걸 환영합니다!")}
+          <T _str="Welcome to Nine Chronicles!" _tags="main" />
         </h1>
         <article className={classes.body}>
-          {description.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
+          <T _str="This is a fantasy world on the blockchain.\nYou need to create an account to start the game." _tags="main" />
         </article>
 
         <Box className={classes.buttonContainer}>
@@ -45,10 +37,10 @@ const MainView = observer(
             color="primary"
             className={classes.button}
           >
-            {locale("계정 생성하기")}
+            <T _str="Create Account" _tags="main" />
           </Button>
           <TextButton onClick={handleResetPassword} className={classes.revoke}>
-            {locale("이미 개인키를 가지고 있습니다")}
+            <T _str="I already have my private key" _tags="main" />
           </TextButton>
         </Box>
       </Container>

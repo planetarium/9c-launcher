@@ -10,8 +10,7 @@ import { ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React, { useState, MouseEvent, ChangeEvent } from "react";
-import { useLocale } from "../../../i18n";
-import { InputPrivateKey } from "../../../../interfaces/i18n";
+import { T } from "@transifex/react";
 import AccountStore from "../../../stores/account";
 import reviewPrivateKeyViewStyle from "./ReviewPrivateKeyView.style";
 import TextButton from "../../../components/TextButton";
@@ -27,8 +26,6 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
     const [isInvalid, setIsInvalid] = useState<boolean>();
 
     const classes = reviewPrivateKeyViewStyle();
-
-    const { locale } = useLocale<InputPrivateKey>("inputPrivateKey");
 
     const privateKeyChangeHandle = (event: ChangeEvent<HTMLInputElement>) => {
       setPrivateKey(event.target.value);
@@ -59,14 +56,16 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
             startIcon={<ArrowBackIosIcon />}
             onClick={() => routerStore.push("/")}
           >
-            {locale("뒤로")}
+            <T _str="Back" _tags="inputPrivateKey" />
           </Button>
         </div>
         <Typography variant="h1" className={classes.title}>
-          {locale("비밀번호를 재설정하기 위해 개인키를 입력해주세요.")}
+          <T
+            _str="Enter your private key to reset your password"
+            _tags="inputPrivateKey" />
         </Typography>
         <FormControl fullWidth>
-          <InputLabel className={classes.label}>{locale("개인키")}</InputLabel>
+          <InputLabel className={classes.label}><T _str="Private Key" _tags="inputPrivateKey" /></InputLabel>
           <OutlinedInput error={isInvalid} onChange={privateKeyChangeHandle} />
         </FormControl>
         <Button
@@ -74,10 +73,10 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
           className={classes.submit}
           onClick={handleSubmit}
         >
-          {locale("Enter")}
+          <T _str="Enter" _tags="inputPrivateKey" />
         </Button>
         <TextButton onClick={handleRevokeAccount} className={classes.revoke}>
-          {locale("개인키를 잊으셨나요?")}
+          <T _str="Forgot private key?" _tags="inputPrivateKey" />
         </TextButton>
       </div>
     );

@@ -3,8 +3,7 @@ import { clipboard, ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React from "react";
-import { CopyPrivateKey } from "../../../interfaces/i18n";
-import { useLocale } from "../../i18n";
+import { T } from "@transifex/react";
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CopyCreatedPrivateKeyView.style";
 
@@ -17,27 +16,30 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
   ({ accountStore, routerStore }) => {
     const classes = createAccountViewStyle();
 
-    const { locale } = useLocale<CopyPrivateKey>("copyPrivateKey");
-
     return (
       <div className={classes.root}>
         <Typography variant="h1" className={classes.title}>
-          {(locale("title") as string[]).map((paragraph) => (
-            <span key={paragraph}>{paragraph}</span>
-          ))}
+          <T
+            _str="Almost done!\nPlease copy and store\nyour private key in a safe place."
+            _keys="copyPrivateKey"
+          />
         </Typography>
         <article className={classes.description}>
-          {(locale("description") as string[]).map((paragraph) => (
-            <Typography key={paragraph}>{paragraph}</Typography>
-          ))}
+          <T
+            _str="Nine Chronicles is a fully decentralized game.\nTherefore, there is not a server that stores your password."
+            _keys="copyPrivateKey"
+          />
         </article>
         <article className={classes.warning}>
-          {(locale("warning") as string[]).map((paragraph) => (
-            <Typography key={paragraph}>{paragraph}</Typography>
-          ))}
+          <T
+            _str="This key is the only means to recover your password.\nNever expose your private key to others.\nAnyone can steal your assets if this key is exposed."
+            _keys="copyPrivateKey"
+          />
         </article>
         <div className={classes.privateKeyContainer}>
-          <h2 className={classes.privateKeyText}>{locale("개인키")}</h2>
+          <h2 className={classes.privateKeyText}>
+            <T _str="Your Private key" _tags="copyPrivateKey" />
+          </h2>
           <TextField
             id="created-private-key"
             variant="outlined"
@@ -60,7 +62,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
               clipboard.writeText(accountStore.privateKey);
             }}
           >
-            {locale("복사하기")}
+            <T _str="Copy" _tags="copyPrivateKey" />
           </Button>
         </div>
         <Button
@@ -73,7 +75,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             routerStore.push("/");
           }}
         >
-          {locale("확인")}
+          <T _str="Done" _tags="copyPrivateKey" />
         </Button>
       </div>
     );
