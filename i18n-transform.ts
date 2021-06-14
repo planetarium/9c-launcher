@@ -8,13 +8,16 @@ function identity<T>(v: T) {
 }
 
 function createT(j: JSCodeshift, value: string, key: string) {
-  const strWrap = value.includes('"') ? j.jsxExpressionContainer : identity
+  const strWrap = value.includes('"') ? j.jsxExpressionContainer : identity;
 
   return j.jsxElement(
     j.jsxOpeningElement(
       j.jsxIdentifier("T"),
       [
-        j.jsxAttribute(j.jsxIdentifier("_str"), strWrap(j.stringLiteral(value))),
+        j.jsxAttribute(
+          j.jsxIdentifier("_str"),
+          strWrap(j.stringLiteral(value))
+        ),
         j.jsxAttribute(j.jsxIdentifier("_tags"), j.stringLiteral(key)),
       ],
       true
@@ -54,7 +57,7 @@ const transform: Transform = (file, api) => {
         node.specifiers[0].imported.type === "Identifier" &&
         node.specifiers[0].imported.name === "useLocale"
     )
-    .replaceWith(j.template.statement`import { T } from '@transifex/react';`);
+    .replaceWith(j.template.statement`import { T } from "@transifex/react";`);
 
   ast
     .find(j.JSXExpressionContainer)
@@ -69,7 +72,9 @@ const transform: Transform = (file, api) => {
     .replaceWith(({ node, parent }) => {
       if (node.expression.type !== "CallExpression") return null;
       function wrap(path: JSXElement) {
-        return parent.value.type === "JSXAttribute" ? j.jsxExpressionContainer(path) : path;
+        return parent.value.type === "JSXAttribute"
+          ? j.jsxExpressionContainer(path)
+          : path;
       }
       const value =
         node.expression.arguments[0].type === "StringLiteral" &&
