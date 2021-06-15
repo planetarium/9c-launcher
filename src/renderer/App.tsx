@@ -23,9 +23,7 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
 import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
 import montserrat from "./styles/font";
-
-import LocaleProvider, { useLocale } from "./i18n";
-import { Locale, AppLocale } from "../interfaces/i18n";
+import { t } from "@transifex/native";
 import { ipcRenderer } from "electron";
 
 const wsLink = new WebSocketLink({
@@ -92,14 +90,12 @@ function App() {
     []
   );
 
-  const { locale } = useLocale<AppLocale>("appLocale");
-
   function listenOnlineStatus() {
     const updateOnlineStatus = () => {
       if (!navigator.onLine) {
         window.alert(
-          locale(
-            "인터넷 연결이 끊겼습니다. 인터넷 연결 상태를 확인한 후에 다시 시도해주십시오."
+          t(
+            "Internet connection has been lost. Unable to connect. Please check your network connection."
           )
         );
       }
@@ -126,11 +122,7 @@ function App() {
         <Router history={history}>
           <Provider {...Store}>
             <ThemeProvider theme={theme}>
-              <LocaleProvider
-                value={{ locale: electronStore.get("Locale") as Locale }}
-              >
-                <Root />
-              </LocaleProvider>
+              <Root />
             </ThemeProvider>
           </Provider>
         </Router>
