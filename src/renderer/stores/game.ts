@@ -43,6 +43,7 @@ export default class GameStore {
     const awsSinkGuid: string = ipcRenderer.sendSync(
       "get-aws-sink-cloudwatch-guid"
     );
+    const dataProviderUrl = electronStore.get("DataProviderUrl");
 
     ipcRenderer.send("launch game", {
       args: [
@@ -54,7 +55,7 @@ export default class GameStore {
         `--language=${this._language}`,
         `--app-protocol-version=${this._appProtocolVersion}`,
         `--aws-sink-guid=${awsSinkGuid}`,
-      ],
+      ].concat((dataProviderUrl === undefined) ? [] : [`--api-server-host=${dataProviderUrl}`]),
     });
     this._isGameStarted = true;
   };
