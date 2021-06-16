@@ -25,6 +25,7 @@ import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProv
 import montserrat from "./styles/font";
 import { t } from "@transifex/native";
 import { ipcRenderer } from "electron";
+import { LocaleProvider } from "./i18n";
 
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
@@ -122,7 +123,9 @@ function App() {
         <Router history={history}>
           <Provider {...Store}>
             <ThemeProvider theme={theme}>
-              <Root />
+              <LocaleProvider>
+                <Root />
+              </LocaleProvider>
             </ThemeProvider>
           </Provider>
         </Router>
