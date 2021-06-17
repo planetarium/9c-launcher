@@ -1,6 +1,5 @@
 import { observable, action, computed } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { supportedLocales } from "../i18n";
 import { RPC_SERVER_HOST, RPC_SERVER_PORT, electronStore } from "../../config";
 
 export default class GameStore {
@@ -22,10 +21,6 @@ export default class GameStore {
     this._appProtocolVersion = electronStore.get(
       "AppProtocolVersion"
     ) as string;
-
-    if (!(this._language in supportedLocales)) {
-      this._language = "en";
-    }
   }
 
   @computed
