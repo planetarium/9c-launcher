@@ -1,0 +1,24 @@
+name: translation
+
+on:
+  push:
+    branches: ["development"]
+
+jobs:
+  update-translations:
+    runs-on: ubuntu-20.04
+    env:
+      TRANSIFEX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN }}
+      TRANSIFEX_SECRET: ${{ secrets.TRANSIFEX_SECRET }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          ssh-key: ${{ secrets.SUBMODULE_PULL_KEY }}
+          lfs: false
+      - name: Use Node.js 15.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 15.x
+      - run: yarn install --frozen-lockfile
+      - run: yarn update-translations
