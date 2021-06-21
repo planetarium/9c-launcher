@@ -20,38 +20,59 @@ interface RetypePasswordFormProps {
 
 // XXX: Since Transifex reads the translation code by static analysis, it had to be hadcoded.
 const passwordHints: Record<ZXCVBNFeedbackWarning, string> = {
-  "A word by itself is easy to guess": t("A word by itself is easy to guess"),
+  "A word by itself is easy to guess": t("A word by itself is easy to guess", {
+    _tags: "zxcvbn",
+  }),
   "Common names and surnames are easy to guess": t(
-    "Common names and surnames are easy to guess"
+    "Common names and surnames are easy to guess",
+    { _tags: "zxcvbn" }
   ),
-  "Dates are often easy to guess": t("Dates are often easy to guess"),
+  "Dates are often easy to guess": t("Dates are often easy to guess", {
+    _tags: "zxcvbn",
+  }),
   "Names and surnames by themselves are easy to guess": t(
-    "Names and surnames by themselves are easy to guess"
+    "Names and surnames by themselves are easy to guess",
+    { _tags: "zxcvbn" }
   ),
-  "Recent years are easy to guess": t("Recent years are easy to guess"),
+  "Recent years are easy to guess": t("Recent years are easy to guess", {
+    _tags: "zxcvbn",
+  }),
   'Repeats like "aaa" are easy to guess': t(
-    'Repeats like "aaa" are easy to guess'
+    'Repeats like "aaa" are easy to guess',
+    { _tags: "zxcvbn" }
   ),
   'Repeats like "abcabcabc" are only slightly harder to guess than "abc"': t(
-    'Repeats like "abcabcabc" are only slightly harder to guess than "abc"'
+    'Repeats like "abcabcabc" are only slightly harder to guess than "abc"',
+    { _tags: "zxcvbn" }
   ),
   "Sequences like abc or 6543 are easy to guess": t(
-    "Sequences like abc or 6543 are easy to guess"
+    "Sequences like abc or 6543 are easy to guess",
+    { _tags: "zxcvbn" }
   ),
   "Short keyboard patterns are easy to guess": t(
-    "Short keyboard patterns are easy to guess"
+    "Short keyboard patterns are easy to guess",
+    { _tags: "zxcvbn" }
   ),
   "Straight rows of keys are easy to guess": t(
-    "Straight rows of keys are easy to guess"
+    "Straight rows of keys are easy to guess",
+    { _tags: "zxcvbn" }
   ),
-  "This is a top-10 common password": t("This is a top-10 common password"),
-  "This is a top-100 common password": t("This is a top-100 common password"),
-  "This is a very common password": t("This is a very common password"),
+  "This is a top-10 common password": t("This is a top-10 common password", {
+    _tags: "zxcvbn",
+  }),
+  "This is a top-100 common password": t("This is a top-100 common password", {
+    _tags: "zxcvbn",
+  }),
+  "This is a very common password": t("This is a very common password", {
+    _tags: "zxcvbn",
+  }),
   "This is similar to a commonly used password": t(
-    "This is similar to a commonly used password"
+    "This is similar to a commonly used password",
+    { _tags: "zxcvbn" }
   ),
   "Use a longer keyboard pattern with more turns": t(
-    "Use a longer keyboard pattern with more turns"
+    "Use a longer keyboard pattern with more turns",
+    { _tags: "zxcvbn" }
   ),
   "": "",
 };
