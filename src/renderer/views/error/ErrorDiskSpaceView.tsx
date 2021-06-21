@@ -20,10 +20,10 @@ const ErrorDiskSpaceView = () => {
         <T _str="Disk space is not enough." _tags="errorDiskSpace" />
       </Typography>
       <Typography>
-        <T _str="Required free space:" _tags="errorDiskSpace" /> {prettyBytes(REQUIRED_DISK_SPACE)}
+        <T _str="Required free space: {space}" _tags="errorDiskSpace" space={prettyBytes(REQUIRED_DISK_SPACE)}/>
       </Typography>
       <Typography>
-        <T _str="Root chain store path:" _tags="errorDiskSpace" /> {BLOCKCHAIN_STORE_PATH}
+        <T _str="Root chain store path: {path}" _tags="errorDiskSpace" path={BLOCKCHAIN_STORE_PATH} />
       </Typography>
     </div>
   );
