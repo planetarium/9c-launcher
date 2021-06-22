@@ -6,6 +6,8 @@ import * as Sentry from "@sentry/electron";
 
 import { T } from "@transifex/react";
 
+const transifexTags = "errorClearCache";
+
 const ErrorClearCacheView = () => {
   const classes = errorViewStyle();
 
@@ -22,12 +24,13 @@ const ErrorClearCacheView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        <T _str="Something went wrong." _tags="errorClearCache" />
+        <T _str="Something went wrong." _tags={transifexTags} />
       </Typography>
       <Typography variant="subtitle1">
         <T
           _str="Please press the button below to clear cache. The launcher will restart automatically."
-          _tags="errorClearCache" />
+          _tags={transifexTags}
+        />
       </Typography>
       <Button
         className={classes.button}
@@ -36,7 +39,7 @@ const ErrorClearCacheView = () => {
         fullWidth
         onClick={handleClearCache}
       >
-        <T _str="Clear cache" _tags="errorClearCache" />
+        <T _str="Clear cache" _tags={transifexTags} />
       </Button>
     </div>
   );

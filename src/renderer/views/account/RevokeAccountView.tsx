@@ -15,6 +15,8 @@ interface IRevokeAccountProps {
   routerStore: RouterStore;
 }
 
+const transifexTags = "revokeAccount";
+
 const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
   ({ accountStore, routerStore }) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
@@ -39,14 +41,12 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
           startIcon={<ArrowBackIosIcon />}
           onClick={() => routerStore.push("/")}
         >
-          <T _str="Back" _tags="revokeAccount" />
+          <T _str="Back" _tags={transifexTags} />
         </Button>
         <Typography className={classes.title}>
-          <T _str="Revoke your account" _tags="revokeAccount" />
+          <T _str="Revoke your account" _tags={transifexTags} />
         </Typography>
-        <Typography>
-          {description}
-        </Typography>
+        <Typography>{description}</Typography>
         <Button
           variant="contained"
           color="primary"
@@ -61,7 +61,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
             routerStore.push("/main");
           }}
         >
-          <T _str="revoke key" _tags="revokeAccount" />
+          <T _str="revoke key" _tags={transifexTags} />
         </Button>
       </div>
     );

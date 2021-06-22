@@ -4,7 +4,8 @@ import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
 import { T } from "@transifex/react";
-import { ErrorReinstall } from "../../../interfaces/i18n";
+
+const transifexTags = "errorReinstall";
 
 const ErrorReinstallView = () => {
   const classes = errorViewStyle();
@@ -30,13 +31,13 @@ const ErrorReinstallView = () => {
       <Typography variant="h1" gutterBottom className={classes.title}>
         <T
           _str="Press the button below to clear the cache."
-          _tags="errorReinstall"
+          _tags={transifexTags}
         />
       </Typography>
       <Typography>
         <T
           _str="If you are still seeing this page after clearing cache, please try to reinstall the app through the link below or get support via Discord."
-          _tags="errorReinstall"
+          _tags={transifexTags}
         />{" "}
         <a
           className={classes.link}
@@ -46,7 +47,7 @@ const ErrorReinstallView = () => {
             );
           }}
         >
-          <T _str="Install Link" _tags="errorReinstall" />
+          <T _str="Install Link" _tags={transifexTags} />
         </a>
         .
       </Typography>
@@ -57,7 +58,7 @@ const ErrorReinstallView = () => {
         fullWidth
         onClick={handleExit}
       >
-        <T _str="Clear Cache & Restart" _tags="errorReinstall" />
+        <T _str="Clear Cache & Restart" _tags={transifexTags} />
       </Button>
     </div>
   );

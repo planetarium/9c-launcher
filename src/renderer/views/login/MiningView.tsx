@@ -9,6 +9,8 @@ import { T } from "@transifex/react";
 import textFit from "textfit";
 import { ipcRenderer } from "electron";
 
+const transifexTags = "mining";
+
 const MiningView = observer(
   ({ accountStore, standaloneStore, routerStore }: IStoreContainer) => {
     const classes = miningViewStyle();
@@ -46,16 +48,20 @@ const MiningView = observer(
 
     return (
       <Container className={classes.root}>
-        <h1 className={classes.title}><T _str="Do you want to turn the mining feature on?" _tags="mining" /></h1>
+        <h1 className={classes.title}>
+          <T
+            _str="Do you want to turn the mining feature on?"
+            _tags={transifexTags}
+          />
+        </h1>
         <img className={classes.jade} src={jade} />
         <p ref={descriptionEl} className={classes.description}>
           <T
             _str="Nine Chronicles pursues an in-game economy that users create together. You can produce Nine Chronicles Gold just by playing the game. During gameplay, you may contribute your computer resources to the operation of Nine Chronicles to earn gold."
-            _tags="mining" />
+            _tags={transifexTags}
+          />
         </p>
-        <p ref={requirementEl} className={classes.requirement}>
-          
-        </p>
+        <p ref={requirementEl} className={classes.requirement}></p>
         <Box className={classes.buttonContainer}>
           <Button
             className={`${classes.button} ${classes.buttonLeft}`}
@@ -66,7 +72,7 @@ const MiningView = observer(
               setMining(false);
             }}
           >
-            <T _str="OFF" _tags="mining" />
+            <T _str="OFF" _tags={transifexTags} />
           </Button>
           <Button
             className={`${classes.button} ${classes.buttonRight}`}
@@ -76,7 +82,7 @@ const MiningView = observer(
               setMining(true);
             }}
           >
-            <T _str="ON" _tags="mining" />
+            <T _str="ON" _tags={transifexTags} />
           </Button>
         </Box>
       </Container>

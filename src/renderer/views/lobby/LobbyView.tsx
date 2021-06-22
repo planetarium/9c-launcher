@@ -34,6 +34,8 @@ const Button = (
   props: Omit<ButtonProps, "fullWidth" | "variant" | "color">
 ) => <ButtonOrigin fullWidth variant="contained" color="primary" {...props} />;
 
+const transifexTags = "lobby";
+
 const LobbyView = observer((props: ILobbyViewProps) => {
   const classes = lobbyViewStyle();
   const { accountStore, standaloneStore } = props;
@@ -122,7 +124,9 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   if ((loading || polling) && activatedError === undefined) {
     child = (
       <div>
-        <p className={classes.verifing}><T _str="Verifying..." _tags="lobby" /></p>
+        <p className={classes.verifing}>
+          <T _str="Verifying..." _tags={transifexTags} />
+        </p>
         <CircularProgress />
       </div>
     );
@@ -135,7 +139,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       <form onSubmit={handleActivationKeySubmit}>
         <TextField
           error={activatedError?.message !== undefined}
-          label={<T _str="Invitation Code" _tags="lobby" />}
+          label={<T _str="Invitation Code" _tags={transifexTags} />}
           onChange={handleActivationKeyChange}
           fullWidth
         />
@@ -156,7 +160,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
           className={classes.activation}
           type="submit"
         >
-          <T _str="Activation" _tags="lobby" />
+          <T _str="Activation" _tags={transifexTags} />
         </ButtonOrigin>
       </form>
     );
@@ -167,7 +171,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 const PreloadWaitingButton = () => {
   return (
     <Button disabled={true} className={lobbyViewStyle().gameStartButton}>
-      <T _str="Preloading..." _tags="lobby" />
+      <T _str="Preloading..." _tags={transifexTags} />
     </Button>
   );
 };
@@ -194,10 +198,11 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
       className={classes.gameStartButton}
       id="start-game"
     >
-
-      {gameStore.isGameStarted
-        ? <T _str="Now Running..." _tags="lobby" />
-        : <T _str="Start Game" _tags="lobby" />}
+      {gameStore.isGameStarted ? (
+        <T _str="Now Running..." _tags={transifexTags} />
+      ) : (
+        <T _str="Start Game" _tags={transifexTags} />
+      )}
     </Button>
   );
 });

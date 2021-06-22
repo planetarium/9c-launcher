@@ -6,7 +6,8 @@ import CreateAccountView from "./CreateAccountView";
 import RevokeAccountView from "./RevokeAccountView";
 
 import { T } from "@transifex/react";
-import { Account } from "../../../interfaces/i18n";
+
+const transifexTags = "account";
 
 const AccountView: React.FC<IStoreContainer> = observer(
   ({ accountStore, routerStore }) => {
@@ -17,28 +18,28 @@ const AccountView: React.FC<IStoreContainer> = observer(
             routerStore.push("/account/create");
           }}
         >
-          <T _str="create key" _tags="account" />
+          <T _str="create key" _tags={transifexTags} />
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/revoke");
           }}
         >
-          <T _str="revoke key" _tags="account" />
+          <T _str="revoke key" _tags={transifexTags} />
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/reset/review-private-key");
           }}
         >
-          <T _str="reset key" _tags="account" />
+          <T _str="reset key" _tags={transifexTags} />
         </button>
         <button
           onClick={() => {
             routerStore.push("/");
           }}
         >
-          <T _str="back to the home" _tags="account" />
+          <T _str="back to the home" _tags={transifexTags} />
         </button>
       </div>
     );

@@ -6,6 +6,8 @@ import { BLOCKCHAIN_STORE_PATH } from "../../../config";
 import * as Sentry from "@sentry/electron";
 import { T } from "@transifex/react";
 
+const transifexTags = "errorNoPermission";
+
 const ErrorNoPermissionView = () => {
   const classes = errorViewStyle();
 
@@ -18,32 +20,32 @@ const ErrorNoPermissionView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        <T _str="No permission." _tags="errorNoPermission" />
+        <T _str="No permission." _tags={transifexTags} />
       </Typography>
       <Typography variant="subtitle1">
         <T
           _str="Application does not have permission at below path:"
-          _tags="errorNoPermission"
+          _tags={transifexTags}
         />
         <br />
         <code className={classes.code}>{BLOCKCHAIN_STORE_PATH}</code>
         <br />
         <T
           _str="Please change chain directory by following steps below."
-          _tags="errorNoPermission"
+          _tags={transifexTags}
         />
       </Typography>
       <ol>
         <li>
           <T
             _str="Open SETTINGS page by clicking the button at the right side."
-            _tags="errorNoPermission"
+            _tags={transifexTags}
           />
         </li>
         <li>
           <T
             _str='Change \"Root chain store path\" by click \"SELECT PATH\" Button'
-            _tags="errorNoPermission"
+            _tags={transifexTags}
           />
         </li>
       </ol>

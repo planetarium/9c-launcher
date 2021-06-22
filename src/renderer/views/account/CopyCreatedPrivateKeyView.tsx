@@ -12,6 +12,8 @@ interface ICopyCreatedPrivateKeyProps {
   routerStore: RouterStore;
 }
 
+const transifexTags = "copyPrivateKey";
+
 const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observer(
   ({ accountStore, routerStore }) => {
     const classes = createAccountViewStyle();
@@ -21,24 +23,24 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
         <Typography variant="h1" className={classes.title}>
           <T
             _str="Almost done!\nPlease copy and store\nyour private key in a safe place."
-            _keys="copyPrivateKey"
+            _tags={transifexTags}
           />
         </Typography>
         <article className={classes.description}>
           <T
             _str="Nine Chronicles is a fully decentralized game.\nTherefore, there is not a server that stores your password."
-            _keys="copyPrivateKey"
+            _tags={transifexTags}
           />
         </article>
         <article className={classes.warning}>
           <T
             _str="This key is the only means to recover your password.\nNever expose your private key to others.\nAnyone can steal your assets if this key is exposed."
-            _keys="copyPrivateKey"
+            _tags={transifexTags}
           />
         </article>
         <div className={classes.privateKeyContainer}>
           <h2 className={classes.privateKeyText}>
-            <T _str="Your Private key" _tags="copyPrivateKey" />
+            <T _str="Your Private key" _tags={transifexTags} />
           </h2>
           <TextField
             id="created-private-key"
@@ -62,7 +64,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
               clipboard.writeText(accountStore.privateKey);
             }}
           >
-            <T _str="Copy" _tags="copyPrivateKey" />
+            <T _str="Copy" _tags={transifexTags} />
           </Button>
         </div>
         <Button
@@ -75,7 +77,7 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
             routerStore.push("/");
           }}
         >
-          <T _str="Done" _tags="copyPrivateKey" />
+          <T _str="Done" _tags={transifexTags} />
         </Button>
       </div>
     );

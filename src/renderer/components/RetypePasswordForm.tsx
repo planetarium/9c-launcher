@@ -11,6 +11,8 @@ import zxcvbn, { ZXCVBNFeedbackWarning } from "zxcvbn";
 import { T } from "@transifex/react";
 import VisibilityAdornment from "./VisibilityAdornment";
 
+const transifexTags = "retypePassword";
+
 interface RetypePasswordFormProps {
   onSubmit: (password: string, activationKey: string) => void;
   useActivationKey: boolean;
@@ -175,7 +177,7 @@ const RetypePasswordForm = ({
         className={classes.formControl}
       >
         <InputLabel className={classes.label}>
-          <T _str="Password" _tags="retypePassword" />
+          <T _str="Password" _tags={transifexTags} />
         </InputLabel>
         <OutlinedInput
           id="password-input"
@@ -198,7 +200,7 @@ const RetypePasswordForm = ({
         className={classes.formControl}
       >
         <InputLabel className={classes.label}>
-          <T _str="Password (Confirm)" _tags="retypePassword" />
+          <T _str="Password (Confirm)" _tags={transifexTags}/>
         </InputLabel>
         <OutlinedInput
           id="password-confirm-input"
@@ -222,7 +224,7 @@ const RetypePasswordForm = ({
           className={classes.formControl}
         >
           <InputLabel className={classes.label}>
-            <T _str="Invitation Code" _tags="retypePassword" />
+            <T _str="Invitation Code" _tags={transifexTags}/>
           </InputLabel>
           <OutlinedInput type="text" onChange={handleActivationKeyChange} />
           <FormHelperText className={classes.helperText}>
@@ -237,7 +239,7 @@ const RetypePasswordForm = ({
         className={classes.submit}
         variant="contained"
       >
-        <T _str="Done" _tags="retypePassword" />
+        <T _str="Done" _tags={transifexTags}/>
       </Button>
     </form>
   );

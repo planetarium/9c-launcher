@@ -42,6 +42,8 @@ const popoverLayout: Pick<PopoverProps, "anchorOrigin" | "transformOrigin"> = {
   },
 };
 
+const transifexTags = "login";
+
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
     const classes = loginViewStyle();
@@ -110,7 +112,7 @@ const LoginView = observer(
             <Grid item xs={12}>
               <article className={classes.ID}>
                 <InputLabel className={classes.label}>
-                  <T _str="ID" _tags="login" />
+                  <T _str="ID" _tags={transifexTags}/>
                   <IconButton
                     size="small"
                     component="span"
@@ -120,14 +122,14 @@ const LoginView = observer(
                   </IconButton>
                 </InputLabel>
                 <ClearCacheButton className={classes.cacheButton}>
-                  <T _str="CLEAR CACHE" _tags="login" />
+                  <T _str="CLEAR CACHE" _tags={transifexTags}/>
                 </ClearCacheButton>
               </article>
               <Popover
                 {...bindPopover(addressCopiedPopupState)}
                 {...popoverLayout}
               >
-                <T _str="Copied to clipboard!" _tags="login" />
+                <T _str="Copied to clipboard!" _tags={transifexTags}/>
               </Popover>
               <Select
                 items={accountStore.addresses}
@@ -137,7 +139,7 @@ const LoginView = observer(
             </Grid>
             <Grid item xs={12}>
               <InputLabel className={classes.label}>
-                <T _str="Password" _tags="login" />
+                <T _str="Password" _tags={transifexTags}/>
               </InputLabel>
               <FormControl fullWidth>
                 <OutlinedInput
@@ -162,13 +164,13 @@ const LoginView = observer(
               variant="contained"
               color="primary"
             >
-              <T _str="Login" _tags="login" />
+              <T _str="Login" _tags={transifexTags}/>
             </Button>
             <TextButton
               className={classes.resetLink}
               onClick={handleResetPassword}
             >
-              <T _str="Forgot password?" _tags="login" />
+              <T _str="Forgot password?" _tags={transifexTags}/>
             </TextButton>
           </Box>
         </form>

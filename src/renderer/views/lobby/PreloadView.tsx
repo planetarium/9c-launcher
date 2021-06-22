@@ -21,6 +21,8 @@ import { YouTubeInternal } from "../../../interfaces/refs";
 
 import { T } from "@transifex/react";
 
+const transifexTags = "preload";
+
 const PreloadView = observer((props: IStoreContainer) => {
   const classes = preloadViewStyle();
 
@@ -56,7 +58,7 @@ const PreloadView = observer((props: IStoreContainer) => {
       <Typography variant="h1" className={classes.title}>
         <T
           _str="Receiving data from other users.\nLet's watch the trailer and new content!"
-          _tags="preload"
+          _tags={transifexTags}
         />
       </Typography>
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
@@ -67,7 +69,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary={<T _str="Block Explorer" _tags="preload" />}
+            primary={<T _str="Block Explorer" _tags={transifexTags} />}
           />
         </ListItem>
         <ListItem button onClick={handleClickPlayerGuide}>
@@ -76,7 +78,9 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary={<T _str="Nine Chronicles Player Guide" _tags="preload" />}
+            primary={
+              <T _str="Nine Chronicles Player Guide" _tags={transifexTags} />
+            }
           />
         </ListItem>
       </List>

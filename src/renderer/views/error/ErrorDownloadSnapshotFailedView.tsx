@@ -4,6 +4,8 @@ import React, { useCallback, useEffect } from "react";
 import { T } from "@transifex/react";
 import errorViewStyle from "./ErrorView.style";
 
+const transifexTags = "errorDownloadSnapshotFailed";
+
 const ErrorDownloadSnapshotFailedView = () => {
   const classes = errorViewStyle();
 
@@ -19,12 +21,13 @@ const ErrorDownloadSnapshotFailedView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        <T _str="Failed to download Snapshot." _tags="errorDownloadSnapshotFailed" />
+        <T _str="Failed to download Snapshot." _tags={transifexTags} />
       </Typography>
       <Typography variant="subtitle1">
         <T
           _str="Unable to connect. Please check your network connection."
-          _tags="errorDownloadSnapshotFailed" />
+          _tags={transifexTags}
+        />
       </Typography>
       <Button
         className={classes.button}
@@ -33,7 +36,7 @@ const ErrorDownloadSnapshotFailedView = () => {
         fullWidth
         onClick={handleRestart}
       >
-        <T _str="Restart" _tags="errorDownloadSnapshotFailed" />
+        <T _str="Restart" _tags={transifexTags} />
       </Button>
     </div>
   );

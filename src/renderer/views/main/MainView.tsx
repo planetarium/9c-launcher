@@ -11,6 +11,8 @@ import mainViewStyle from "./MainView.style";
 import { T } from "@transifex/react";
 import TextButton from "../../components/TextButton";
 
+const transifexTags = "main";
+
 const MainView = observer(
   ({ accountStore, routerStore, gameStore }: IStoreContainer) => {
     const classes = mainViewStyle();
@@ -24,10 +26,10 @@ const MainView = observer(
       <Container className={classes.root}>
         <NineChroniclesLogo />
         <h1 className={classes.title}>
-          <T _str="Welcome to Nine Chronicles!" _tags="main" />
+          <T _str="Welcome to Nine Chronicles!" _tags={transifexTags}/>
         </h1>
         <article className={classes.body}>
-          <T _str="This is a fantasy world on the blockchain.\nYou need to create an account to start the game." _tags="main" />
+          <T _str="This is a fantasy world on the blockchain.\nYou need to create an account to start the game." _tags={transifexTags}/>
         </article>
 
         <Box className={classes.buttonContainer}>
@@ -37,10 +39,10 @@ const MainView = observer(
             color="primary"
             className={classes.button}
           >
-            <T _str="Create Account" _tags="main" />
+            <T _str="Create Account" _tags={transifexTags}/>
           </Button>
           <TextButton onClick={handleResetPassword} className={classes.revoke}>
-            <T _str="I already have my private key" _tags="main" />
+            <T _str="I already have my private key" _tags={transifexTags}/>
           </TextButton>
         </Box>
       </Container>

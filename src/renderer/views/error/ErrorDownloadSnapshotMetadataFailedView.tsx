@@ -4,6 +4,8 @@ import React, { useCallback, useEffect } from "react";
 import { T } from "@transifex/react";
 import errorViewStyle from "./ErrorView.style";
 
+const transifexTags = "errorDownloadSnapshotMetadataFailed";
+
 const ErrorDownloadSnapshotMetadataFailedView = () => {
   const classes = errorViewStyle();
 
@@ -13,20 +15,22 @@ const ErrorDownloadSnapshotMetadataFailedView = () => {
   }, []);
 
   useEffect(() => {
-    ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorDownloadSnapshotMetadata");
+    ipcRenderer.send(
+      "mixpanel-track-event",
+      "Launcher/ErrorDownloadSnapshotMetadata"
+    );
   }, []);
 
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        <T
-          _str="Failed to download Snapshot metadata."
-          _tags="errorDownloadSnapshotMetadataFailed" />
+        <T _str="Failed to download Snapshot metadata." _tags={transifexTags} />
       </Typography>
       <Typography variant="subtitle1">
         <T
           _str="Unable to connect. Please check your network connection."
-          _tags="errorDownloadSnapshotMetadataFailed" />
+          _tags={transifexTags}
+        />
       </Typography>
       <Button
         className={classes.button}
@@ -35,7 +39,7 @@ const ErrorDownloadSnapshotMetadataFailedView = () => {
         fullWidth
         onClick={handleRestart}
       >
-        <T _str="Restart" _tags="errorDownloadSnapshotMetadataFailed" />
+        <T _str="Restart" _tags={transifexTags} />
       </Button>
     </div>
   );

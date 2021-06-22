@@ -20,6 +20,8 @@ interface IReviewPrivateKeyViewProps {
   routerStore: RouterStore;
 }
 
+const transifexTags = "inputPrivateKey";
+
 const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
   ({ accountStore, routerStore }) => {
     const [privateKey, setPrivateKey] = useState("");
@@ -56,16 +58,19 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
             startIcon={<ArrowBackIosIcon />}
             onClick={() => routerStore.push("/")}
           >
-            <T _str="Back" _tags="inputPrivateKey" />
+            <T _str="Back" _tags={transifexTags} />
           </Button>
         </div>
         <Typography variant="h1" className={classes.title}>
           <T
             _str="Enter your private key to reset your password"
-            _tags="inputPrivateKey" />
+            _tags={transifexTags}
+          />
         </Typography>
         <FormControl fullWidth>
-          <InputLabel className={classes.label}><T _str="Private Key" _tags="inputPrivateKey" /></InputLabel>
+          <InputLabel className={classes.label}>
+            <T _str="Private Key" _tags={transifexTags} />
+          </InputLabel>
           <OutlinedInput error={isInvalid} onChange={privateKeyChangeHandle} />
         </FormControl>
         <Button
@@ -73,10 +78,10 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
           className={classes.submit}
           onClick={handleSubmit}
         >
-          <T _str="Enter" _tags="inputPrivateKey" />
+          <T _str="Enter" _tags={transifexTags} />
         </Button>
         <TextButton onClick={handleRevokeAccount} className={classes.revoke}>
-          <T _str="Forgot private key?" _tags="inputPrivateKey" />
+          <T _str="Forgot private key?" _tags={transifexTags} />
         </TextButton>
       </div>
     );
