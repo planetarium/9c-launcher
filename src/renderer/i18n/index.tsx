@@ -15,7 +15,14 @@ const { Provider } = context;
 
 export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
   const [locale, setLocale] = useState(() => electronStore.get("Locale"));
-  const languages = useLanguages();
+
+  useEffect(() => {
+    const unsubscribe = electronStore.onDidChange("Locale", (v) =>
+      setLocale(v ?? "en")
+    );
+    validateLocale(locale).then((valid) => valid || setLocale("en"));
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     if (!tx.token)
@@ -24,14 +31,15 @@ export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
         currentLocale: locale,
       });
     else tx.setCurrentLocale(locale);
+    electronStore.set("Locale", locale);
   }, [locale]);
 
-  useEffect(() => {
-    const unsubscribe = electronStore.onDidChange("Locale", (v) =>
-      setLocale(v ?? "en")
-    );
-    return unsubscribe;
-  }, []);
-
   return <Provider value={{ locale }}>{children}</Provider>;
+}
+
+export async function validateLocale(locale: string): Promise<boolean> {
+  const languages = await tx.getLanguages();
+  return languages.some((lang: Record<"code", string>) =>
+    locale.startsWith(lang.code)
+  );
 }

@@ -21,6 +21,11 @@ export default class GameStore {
     this._appProtocolVersion = electronStore.get(
       "AppProtocolVersion"
     ) as string;
+
+    electronStore.onDidChange(
+      "Locale",
+      (value) => (this._language = value ?? "en")
+    );
   }
 
   @computed
@@ -50,7 +55,11 @@ export default class GameStore {
         `--language=${this._language}`,
         `--app-protocol-version=${this._appProtocolVersion}`,
         `--aws-sink-guid=${awsSinkGuid}`,
-      ].concat((dataProviderUrl === undefined) ? [] : [`--api-server-host=${dataProviderUrl}`]),
+      ].concat(
+        dataProviderUrl === undefined
+          ? []
+          : [`--api-server-host=${dataProviderUrl}`]
+      ),
     });
     this._isGameStarted = true;
   };
