@@ -26,7 +26,7 @@ import ClearCacheButton from "../../components/ClearCacheButton";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
-  const languages: Array<Record<"code" | "name", string>> = useLanguages();
+  const languages: Array<Record<"code" | "name" | "localized_name", string>> = useLanguages();
   const selectedLocale: string = useLocale();
 
   const [rootChainPath, setRootChainPath] = React.useState<string>(
@@ -41,7 +41,7 @@ const ConfigurationView = observer(() => {
     electronStore.set("BlockchainStoreDirName", chainDir);
 
     const localeName =
-      languages.find((v) => v.name === event.target.select.value)?.code ?? "en";
+      languages.find((v) => v.localized_name === event.target.select.value)?.code ?? "en";
     electronStore.set("Locale", localeName);
 
     const agreeAnalytic = event.target.analytic.checked;
@@ -119,9 +119,9 @@ const ConfigurationView = observer(() => {
           <Select
             name="select"
             className={classes.selectLocale}
-            items={languages.map(({ name }) => name)}
+            items={languages.map(({ localized_name }) => localized_name)}
             defaultValue={
-              languages.find(({ code }) => code === selectedLocale)?.name ??
+              languages.find(({ code }) => code === selectedLocale)?.localized_name ??
               "English"
             }
           />
