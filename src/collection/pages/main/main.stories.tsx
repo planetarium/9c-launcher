@@ -3,7 +3,6 @@ import { Story, Meta } from "@storybook/react";
 
 import Main from "./main";
 import {
-  CancelCollectionDocument,
   MinerAddressDocument,
   StagedTxDocument,
   CollectionSheetWithStateDocument,
@@ -12,7 +11,6 @@ import {
   GetTipDocument,
 } from "../../../generated/graphql";
 import { tableSheetData } from "./main.mock";
-import { variables } from "electron-log";
 
 export default {
   title: "Collection/Pages/Main",
@@ -49,9 +47,9 @@ Primary.parameters = {
       },
       {
         request: {
-          query: CancelCollectionDocument,
+          query: CollectionStateDocument,
           variables: {
-            level: 2,
+            level: 0,
           },
         },
         result: {
@@ -103,7 +101,6 @@ Primary.parameters = {
           data: {
             monsterCollectionState: {
               address: "",
-              end: "",
               expiredBlockIndex: "",
               claimableBlockIndex: 100,
               level: primaryLevel,
@@ -114,21 +111,23 @@ Primary.parameters = {
             },
           },
         },
-        newData: () => {return {
-          data: {
-            monsterCollectionState: {
-              address: "",
-              end: "",
-              expiredBlockIndex: "",
-              level: primaryLevel,
-              rewardLevel: "",
-              receivedBlockIndex: "",
-              claimableBlockIndex: 100,
-              startedBlockIndex: "",
-              __typename: "MonsterCollectionStateType"
+        newData: () => {
+          return {
+            data: {
+              monsterCollectionState: {
+                address: "",
+                end: "",
+                expiredBlockIndex: "",
+                level: primaryLevel,
+                rewardLevel: "",
+                receivedBlockIndex: "",
+                claimableBlockIndex: 100,
+                startedBlockIndex: "",
+                __typename: "MonsterCollectionStateType"
+              },
             },
-          },
-        }}
+          }
+        }
       },
       {
         request: {

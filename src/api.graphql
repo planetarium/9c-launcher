@@ -201,7 +201,6 @@ query GetTip {
 query StateQueryMonsterCollection($agentAddress: Address!) {
   stateQuery{
   monsterCollectionState(agentAddress: $agentAddress) {
-    end
     expiredBlockIndex
     level
     rewardLevel
@@ -218,12 +217,6 @@ mutation Collect($level: Int!) {
   }
 }
 
-mutation CancelCollection($level: Int!) {
-  action {
-    cancelMonsterCollect(level: $level)
-  }
-}
-
 mutation ClaimCollectionReward($address: Address!) {
   action {
     claimMonsterCollectionReward(avatarAddress: $address)
@@ -233,7 +226,6 @@ mutation ClaimCollectionReward($address: Address!) {
 subscription CollectionState {
   monsterCollectionState {
     address
-    end
     expiredBlockIndex
     level
     rewardLevel
@@ -259,13 +251,15 @@ subscription CurrentGold {
 
 subscription CanReceiveCollection {
   monsterCollectionStatus {
-    canReceive
+    rewardInfos {
+      itemId
+      quantity
+    }
   }
 }
 
 subscription CollectionStatus {
   monsterCollectionStatus {
-    canReceive
     fungibleAssetValue {
       quantity
     }
@@ -278,7 +272,6 @@ subscription CollectionStatus {
 
 query CollectionStatusQuery {
   monsterCollectionStatus {
-    canReceive
     fungibleAssetValue {
       quantity
     }
