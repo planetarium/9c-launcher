@@ -220,7 +220,7 @@ const RetypePasswordForm = ({
           {passwordConfirm.length > 0 && strengthHint(passwordConfirm)}
         </FormHelperText>
       </FormControl>
-      {useActivationKey ? (
+      {useActivationKey && (
         <FormControl
           fullWidth
           error={isActivationKeyError}
@@ -234,8 +234,6 @@ const RetypePasswordForm = ({
             form helper text
           </FormHelperText>
         </FormControl>
-      ) : (
-        <></>
       )}
       <Button
         disabled={disabled}
