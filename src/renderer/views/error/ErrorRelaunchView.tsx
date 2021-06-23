@@ -4,17 +4,14 @@ import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
 
-import { useLocale } from "../../i18n";
-import { ErrorRelaunch } from "../../../interfaces/i18n";
+import { T, useT } from "@transifex/react";
+
+const transifexTags = "errorRelaunch";
 
 const ErrorRelaunchView = () => {
   const classes = errorViewStyle();
 
-  const { locale } = useLocale<ErrorRelaunch>("errorRelaunch");
-
-  const steps = locale("steps");
-  if (typeof steps === "string")
-    throw Error("errorRelaunch.steps is not array in src/i18n/index.json");
+  const steps = useT("Relaunch “Nine Chronicles”\n" + "Login once again", { _tags: "errorRelaunch" });
 
   const handleRelaunch = useCallback(() => {
     remote.app.relaunch();
@@ -28,13 +25,13 @@ const ErrorRelaunchView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("무언가 잘못 되었습니다.")}
+        <T _str="Something went wrong." _tags={transifexTags}/>
       </Typography>
       <Typography variant="subtitle1">
-        {locale("아래 절차를 따라 해주세요.")}
+        <T _str="Please follow the steps below." _tags={transifexTags}/>
       </Typography>
       <ol>
-        {steps.map((step) => (
+        {steps.split('\n').map((step: string) => (
           <li key={step}>{step}</li>
         ))}
       </ol>
@@ -45,7 +42,7 @@ const ErrorRelaunchView = () => {
         fullWidth
         onClick={handleRelaunch}
       >
-        {locale("Relaunch")}
+        <T _str="Relaunch" _tags={transifexTags}/>
       </Button>
     </div>
   );

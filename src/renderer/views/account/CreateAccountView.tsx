@@ -4,10 +4,9 @@ import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React from "react";
 import { useCreatePrivateKeyMutation } from "../../../generated/graphql";
-import { CreateAccount } from "../../../interfaces/i18n";
 import { ProtectedPrivateKey } from "../../../main/headless/key-store";
 import RetypePasswordForm from "../../components/RetypePasswordForm";
-import { useLocale } from "../../i18n";
+import { T } from "@transifex/react";
 import AccountStore from "../../stores/account";
 import createAccountViewStyle from "./CreateAccountView.style";
 
@@ -19,8 +18,6 @@ interface ICreateAccountProps {
 const CreateAccountView = observer(
   ({ accountStore, routerStore }: ICreateAccountProps) => {
     const [createAccount, { data }] = useCreatePrivateKeyMutation();
-
-    const { locale } = useLocale<CreateAccount>("createAccount");
 
     const classes = createAccountViewStyle();
 
@@ -54,11 +51,7 @@ const CreateAccountView = observer(
     return (
       <div className={`create-account ${classes.root}`}>
         <Typography variant="h1" className={classes.info}>
-          {(locale(
-            "계정 생성을 마치기 위해 비밀번호를 설정해주세요."
-          ) as string[]).map((paragraph) => (
-            <span key={paragraph}>{paragraph}</span>
-          ))}
+          <T _str="Please set the password to complete account creation." _tags="createAccount" />
         </Typography>
         <RetypePasswordForm onSubmit={handleSubmit} useActivationKey={true} />
       </div>

@@ -8,22 +8,20 @@ import { useTopmostBlocksQuery } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import { observer } from "mobx-react";
 
-import { useLocale } from "../../i18n";
-import { Menu } from "../../../interfaces/i18n";
+import { T } from "@transifex/react";
 import { electronStore } from "../../../config";
 import AccountInfoContainer from "../../components/AccountInfo/AccountInfoContainer";
 import InfoIcon from "../../components/InfoIcon";
 
-import explorerLogo from "../../resources/block-explorer-logo.png"
-import patchNoteLogo from "../../resources/wrench.png"
+import explorerLogo from "../../resources/block-explorer-logo.png";
+import patchNoteLogo from "../../resources/wrench.png";
 
+const transifexTags = "menu";
 
 export const Layout: React.FC = observer(({ children }) => {
   const { accountStore, routerStore } = useStores();
   const [awsSinkCloudwatchGuid, setAwsSinkCloudwatchGuid] = useState<string>();
-  const [infoButtonState,setInfoButtonState] = useState(false)
-
-  const { locale } = useLocale<Menu>("menu");
+  const [infoButtonState, setInfoButtonState] = useState(false);
 
   const topmostBlocksResult = useTopmostBlocksQuery();
   topmostBlocksResult.startPolling(1000 * 10); // 10 seconds
@@ -39,55 +37,63 @@ export const Layout: React.FC = observer(({ children }) => {
     setAwsSinkCloudwatchGuid(awsSinkGuid);
   }, []);
 
-  function handleInfoClick(){
-    const clipboardElement =(document.getElementById('clipboard') as HTMLTextAreaElement)!;
+  function handleInfoClick() {
+    const clipboardElement = (document.getElementById(
+      "clipboard"
+    ) as HTMLTextAreaElement)!;
     const stringValue = `
       APV: ${electronStore.get("AppProtocolVersion") as string} 
       Address: ${accountStore.selectedAddress} 
       Debug: ${accountStore.isLogin} / ${topmostBlocksResult.loading}
-      Mined blocks: ${minedBlocks?.length} (out of recent ${topmostBlocks?.length} blocks)
-      ${awsSinkCloudwatchGuid !== null && (`Client ID: ${awsSinkCloudwatchGuid}`)}
-    `
-    clipboardElement.value = stringValue
+      Mined blocks: ${minedBlocks?.length} (out of recent ${
+      topmostBlocks?.length
+    } blocks)
+      ${awsSinkCloudwatchGuid !== null && `Client ID: ${awsSinkCloudwatchGuid}`}
+    `;
+    clipboardElement.value = stringValue;
     clipboardElement.select();
-    document.execCommand('copy');
-    clipboardElement.value = ''
+    document.execCommand("copy");
+    clipboardElement.value = "";
     clipboardElement.blur();
 
-    setInfoButtonState(true)
-    setTimeout(()=>{
-      setInfoButtonState(false)
-    },1500)
+    setInfoButtonState(true);
+    setTimeout(() => {
+      setInfoButtonState(false);
+    }, 1500);
   }
-
 
   return (
     <>
       <main>{children}</main>
       <nav className="hero">
-      <AccountInfoContainer
-        minedBlock={Number(minedBlocks?.length)}
-        onReward={() => {}}
-        onOpenWindow={() => {ipcRenderer.invoke('open collection page')}}/>
+        <AccountInfoContainer
+          minedBlock={Number(minedBlocks?.length)}
+          onReward={() => {}}
+          onOpenWindow={() => {
+            ipcRenderer.invoke("open collection page");
+          }}
+        />
         <ul className={"LauncherClientOption"}>
           <li>
             <Button
-              startIcon={<img src={patchNoteLogo}/>}
+              startIcon={<img src={patchNoteLogo} />}
               onClick={() => {
-                shell.openExternal("https://wiki.nine-chronicles.com/en/9C/patch-notes");
+                shell.openExternal(
+                  "https://wiki.nine-chronicles.com/en/9C/patch-notes"
+                );
               }}
             >
-              {locale("Patch Note")}
+              <T _str="Patch Note" _tags={transifexTags} />
             </Button>
           </li>
           <li>
             <Button
-              startIcon={<img src={explorerLogo}/>}
+              startIcon={<img src={explorerLogo} />}
               onClick={() => {
                 shell.openExternal("http://explorer.libplanet.io/9c-main/");
               }}
             >
-              {locale("Explorer")}
+              <T _str="Explorer" _tags={transifexTags} />
             </Button>
           </li>
           <li>
@@ -97,7 +103,7 @@ export const Layout: React.FC = observer(({ children }) => {
                 shell.openExternal("https://discord.gg/planetarium");
               }}
             >
-              {locale("Discord")}
+              <T _str="Discord" _tags={transifexTags} />
             </Button>
           </li>
           <li>
@@ -109,19 +115,22 @@ export const Layout: React.FC = observer(({ children }) => {
                 routerStore.push("/config");
               }}
             >
-              {locale("Settings")}
+              <T _str="Settings" _tags={transifexTags} />
             </Button>
           </li>
         </ul>
-        <div className='LauncherLayoutVersion'>{`v${(electronStore.get("AppProtocolVersion") as string).split('/')[0]}`}</div>
+        <div className="LauncherLayoutVersion">{`v${
+          (electronStore.get("AppProtocolVersion") as string).split("/")[0]
+        }`}</div>
         <div
-          id={'LauncherClientIcon'}
-          className={`LauncherClientIcon ${infoButtonState?'activate':''}`}
-          onClick={handleInfoClick}>
-          <InfoIcon/>
-          <div>{infoButtonState?'copied!':'info'}</div>
+          id={"LauncherClientIcon"}
+          className={`LauncherClientIcon ${infoButtonState ? "activate" : ""}`}
+          onClick={handleInfoClick}
+        >
+          <InfoIcon />
+          <div>{infoButtonState ? "copied!" : "info"}</div>
         </div>
-        <textarea id={'clipboard'} className={'clipboard'}/>
+        <textarea id={"clipboard"} className={"clipboard"} />
       </nav>
     </>
   );

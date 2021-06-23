@@ -28,9 +28,8 @@ import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import VisibilityAdornment from "../../components/VisibilityAdornment";
 
 import loginViewStyle from "./LoginView.style";
-import { useLocale } from "../../i18n";
+import { T } from "@transifex/react";
 import TextButton from "../../components/TextButton";
-import { Login } from "../../../interfaces/i18n";
 
 const popoverLayout: Pick<PopoverProps, "anchorOrigin" | "transformOrigin"> = {
   anchorOrigin: {
@@ -42,6 +41,8 @@ const popoverLayout: Pick<PopoverProps, "anchorOrigin" | "transformOrigin"> = {
     horizontal: "center",
   },
 };
+
+const transifexTags = "login";
 
 const LoginView = observer(
   ({ accountStore, routerStore, standaloneStore }: IStoreContainer) => {
@@ -103,7 +104,6 @@ const LoginView = observer(
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }
 
-    const { locale } = useLocale<Login>("login");
     return (
       <div className={`login ${classes.root}`}>
         <NineChroniclesLogo />
@@ -112,7 +112,7 @@ const LoginView = observer(
             <Grid item xs={12}>
               <article className={classes.ID}>
                 <InputLabel className={classes.label}>
-                  {locale("ID")}
+                  <T _str="ID" _tags={transifexTags}/>
                   <IconButton
                     size="small"
                     component="span"
@@ -122,14 +122,14 @@ const LoginView = observer(
                   </IconButton>
                 </InputLabel>
                 <ClearCacheButton className={classes.cacheButton}>
-                  {locale("캐시 지우기")}
+                  <T _str="CLEAR CACHE" _tags={transifexTags}/>
                 </ClearCacheButton>
               </article>
               <Popover
                 {...bindPopover(addressCopiedPopupState)}
                 {...popoverLayout}
               >
-                {locale("클립보드에 복사되었습니다!")}
+                <T _str="Copied to clipboard!" _tags={transifexTags}/>
               </Popover>
               <Select
                 items={accountStore.addresses}
@@ -139,7 +139,7 @@ const LoginView = observer(
             </Grid>
             <Grid item xs={12}>
               <InputLabel className={classes.label}>
-                {locale("비밀번호")}
+                <T _str="Password" _tags={transifexTags}/>
               </InputLabel>
               <FormControl fullWidth>
                 <OutlinedInput
@@ -164,13 +164,13 @@ const LoginView = observer(
               variant="contained"
               color="primary"
             >
-              {locale("로그인")}
+              <T _str="Login" _tags={transifexTags}/>
             </Button>
             <TextButton
               className={classes.resetLink}
               onClick={handleResetPassword}
             >
-              {locale("비밀번호 찾기")}
+              <T _str="Forgot password?" _tags={transifexTags}/>
             </TextButton>
           </Box>
         </form>

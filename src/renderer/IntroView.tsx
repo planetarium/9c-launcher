@@ -3,8 +3,7 @@ import { observer, inject } from "mobx-react";
 import { IStoreContainer } from "../interfaces/store";
 import { useProtectedPrivateKeysQuery } from "../generated/graphql";
 
-import { useLocale } from "./i18n";
-import { Intro } from "../interfaces/i18n";
+import { T } from "@transifex/react";
 import { ipcRenderer } from "electron";
 import { ProtectedPrivateKey } from "src/main/headless/key-store";
 
@@ -12,7 +11,6 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
   const protectedPrivateKeys: ProtectedPrivateKey[] = ipcRenderer.sendSync(
     "get-protected-private-keys"
   );
-  const { locale } = useLocale<Intro>("intro");
 
   useEffect(() => {
     if (protectedPrivateKeys.length < 1) {
@@ -29,7 +27,7 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
     }
   }, [protectedPrivateKeys]);
 
-  return <div>{locale("불러오는 중...")}</div>;
+  return <div><T _str="Now Loading..." _tags="intro" /></div>;
 });
 
 export default inject("accountStore", "routerStore")(IntroView);

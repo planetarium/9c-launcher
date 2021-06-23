@@ -4,13 +4,12 @@ import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import { BLOCKCHAIN_STORE_PATH } from "../../../config";
 import * as Sentry from "@sentry/electron";
-import { useLocale } from "../../i18n";
-import { ErrorNoPermission } from "../../../interfaces/i18n";
+import { T } from "@transifex/react";
+
+const transifexTags = "errorNoPermission";
 
 const ErrorNoPermissionView = () => {
   const classes = errorViewStyle();
-
-  const { locale } = useLocale<ErrorNoPermission>("errorNoPermission");
 
   useEffect(() => {
     ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorNoPerm");
@@ -21,21 +20,33 @@ const ErrorNoPermissionView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("권한이 없습니다.")}
+        <T _str="No permission." _tags={transifexTags} />
       </Typography>
       <Typography variant="subtitle1">
-        {locale("아래 경로에 애플리케이션이 접근할 수 없습니다:")}
+        <T
+          _str="Application does not have permission at below path:"
+          _tags={transifexTags}
+        />
         <br />
         <code className={classes.code}>{BLOCKCHAIN_STORE_PATH}</code>
         <br />
-        {locale("체인 경로를 아래의 단계를 따라 바꿔주세요.")}
+        <T
+          _str="Please change chain directory by following steps below."
+          _tags={transifexTags}
+        />
       </Typography>
       <ol>
-        <li>{locale("오른쪽의 버튼을 클릭하여 설정 페이지를 여세요.")}</li>
         <li>
-          {locale(
-            '"경로 선택하기" 버튼을 클릭해서 체인이 저장되는 경로를 바꿔주세요.'
-          )}
+          <T
+            _str="Open SETTINGS page by clicking the button at the right side."
+            _tags={transifexTags}
+          />
+        </li>
+        <li>
+          <T
+            _str='Change \"Root chain store path\" by click \"SELECT PATH\" Button'
+            _tags={transifexTags}
+          />
         </li>
       </ol>
     </div>
