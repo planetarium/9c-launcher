@@ -96,7 +96,8 @@ function App() {
       if (!navigator.onLine) {
         window.alert(
           t(
-            "Internet connection has been lost. Unable to connect. Please check your network connection."
+            "Internet connection has been lost. Unable to connect. Please check your network connection.",
+            { _tags: "app" }
           )
         );
       }
