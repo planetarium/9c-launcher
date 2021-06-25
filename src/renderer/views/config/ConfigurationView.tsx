@@ -1,7 +1,7 @@
 import path from "path";
 
 import { ipcRenderer, remote, shell } from "electron";
-import React from "react";
+import React, { useMemo } from "react";
 import { observer } from "mobx-react";
 import {
   Button,
@@ -28,8 +28,15 @@ const transifexTags = "configuration";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
-  const languages: Array<Record<"code" | "name" | "localized_name", string>> = useLanguages();
+  const languages: Array<Record<
+    "code" | "name" | "localized_name",
+    string
+  >> = useLanguages();
   const selectedLocale: string = useLocale();
+  const selectedLanguage = useMemo(
+    () => languages.find(({ code }) => code === selectedLocale)?.localized_name,
+    [languages, selectedLocale]
+  );
 
   const [rootChainPath, setRootChainPath] = React.useState<string>(
     blockchainStoreDirParent
@@ -43,7 +50,8 @@ const ConfigurationView = observer(() => {
     electronStore.set("BlockchainStoreDirName", chainDir);
 
     const localeName =
-      languages.find((v) => v.localized_name === event.target.select.value)?.code ?? "en";
+      languages.find((v) => v.localized_name === event.target.select.value)
+        ?.code ?? "en";
     electronStore.set("Locale", localeName);
 
     const agreeAnalytic = event.target.analytic.checked;
@@ -68,7 +76,7 @@ const ConfigurationView = observer(() => {
     <div className={classes.root}>
       <header className={classes.titleWarp}>
         <Typography variant="h1" gutterBottom className={classes.title}>
-          <T _str="Settings" _tags={transifexTags}/>
+          <T _str="Settings" _tags={transifexTags} />
         </Typography>
         <IconButton onClick={routerStore.goBack}>
           <Close />
@@ -77,17 +85,17 @@ const ConfigurationView = observer(() => {
       <form onSubmit={handleSubmit}>
         <article className={classes.fields}>
           <FormLabel className={classes.line}>
-            <T _str="Clear cache" _tags={transifexTags}/>
+            <T _str="Clear cache" _tags={transifexTags} />
           </FormLabel>
           <ClearCacheButton
             variant="outlined"
             color="inherit"
             className={classes.openPath}
           >
-            <T _str="clear" _tags={transifexTags}/>
+            <T _str="clear" _tags={transifexTags} />
           </ClearCacheButton>
           <FormLabel className={classes.newLine}>
-            <T _str="Root chain store path" _tags={transifexTags}/>
+            <T _str="Root chain store path" _tags={transifexTags} />
           </FormLabel>
           <TextField
             fullWidth
@@ -103,11 +111,11 @@ const ConfigurationView = observer(() => {
             className={classes.selectDir}
             startIcon={<FolderOpen />}
           >
-            <T _str="Select path" _tags={transifexTags}/>
+            <T _str="Select path" _tags={transifexTags} />
           </Button>
 
           <FormLabel className={classes.newLine}>
-            <T _str="Chain store directory name" _tags={transifexTags}/>
+            <T _str="Chain store directory name" _tags={transifexTags} />
           </FormLabel>
           <TextField
             fullWidth
@@ -116,19 +124,18 @@ const ConfigurationView = observer(() => {
             defaultValue={electronStore.get("BlockchainStoreDirName")}
           />
           <FormLabel className={classes.newLine}>
-            <T _str="Select Language" _tags={transifexTags}/>
+            <T _str="Select Language" _tags={transifexTags} />
           </FormLabel>
-          <Select
-            name="select"
-            className={classes.selectLocale}
-            items={languages.map(({ localized_name }) => localized_name)}
-            defaultValue={
-              languages.find(({ code }) => code === selectedLocale)?.localized_name ??
-              "English"
-            }
-          />
+          {languages.length > 0 && (
+            <Select
+              name="select"
+              className={classes.selectLocale}
+              items={languages.map(({ localized_name }) => localized_name)}
+              defaultValue={selectedLanguage ?? "English"}
+            />
+          )}
           <FormLabel className={classes.newLine}>
-            <T _str="Key store path" _tags={transifexTags}/>
+            <T _str="Key store path" _tags={transifexTags} />
           </FormLabel>
           <Button
             onClick={handleOpenKeyStorePath}
@@ -137,12 +144,12 @@ const ConfigurationView = observer(() => {
             className={classes.openPath}
             startIcon={<FolderOpen />}
           >
-            <T _str="Open Path" _tags={transifexTags}/>
+            <T _str="Open Path" _tags={transifexTags} />
           </Button>
 
           <FormControl className={classes.checkboxGroup}>
             <FormLabel className={classes.newLine}>
-              <T _str="Send Information" _tags={transifexTags}/>
+              <T _str="Send Information" _tags={transifexTags} />
             </FormLabel>
             <FormGroup>
               <FormControlLabel
@@ -154,7 +161,7 @@ const ConfigurationView = observer(() => {
                     name="sentry"
                   />
                 }
-                label={<T _str="Report Error" _tags={transifexTags}/>}
+                label={<T _str="Report Error" _tags={transifexTags} />}
               />
               <FormControlLabel
                 control={
@@ -165,7 +172,7 @@ const ConfigurationView = observer(() => {
                     name="analytic"
                   />
                 }
-                label={<T _str="Behavior Analysis" _tags={transifexTags}/>}
+                label={<T _str="Behavior Analysis" _tags={transifexTags} />}
               />
             </FormGroup>
             <FormHelperText className={classes.checkboxHelper}>
@@ -182,7 +189,7 @@ const ConfigurationView = observer(() => {
           color="primary"
           variant="contained"
         >
-          <T _str="Save" _tags={transifexTags}/>
+          <T _str="Save" _tags={transifexTags} />
         </Button>
         <FormLabel className={classes.labelRelaunch}>
           <T
