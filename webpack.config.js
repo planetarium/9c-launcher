@@ -27,7 +27,6 @@ function createRenderConfig(isDev) {
     devtool: isDev ? "source-map" : "none",
 
     entry: {
-      polyfill: "@babel/polyfill",
       render: "./renderer/render.tsx",
       collection: "./collection/collection.tsx",
     },
