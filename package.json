@@ -195,8 +195,8 @@
     "storybook-addon-apollo-client": "^4.0.6",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.3",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11",
+    "webpack": "^5.40.0",
+    "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.0",
     "xml2js": "^0.4.23"
   }

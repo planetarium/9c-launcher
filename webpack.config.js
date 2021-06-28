@@ -1,6 +1,5 @@
 const path = require("path");
 const HtmlPlugin = require("html-webpack-plugin");
-const HtmlExternalsPlugin = require("html-webpack-externals-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { DefinePlugin, SourceMapDevToolPlugin } = require("webpack");
@@ -39,9 +38,6 @@ function createRenderConfig(isDev) {
     },
 
     externals: {
-      react: "React",
-      "react-dom": "ReactDOM",
-      "react-router-dom": "ReactRouterDOM",
       electron: "require('electron')",
     },
 
@@ -66,7 +62,7 @@ function createRenderConfig(isDev) {
                 "@babel/preset-typescript",
                 "@babel/preset-react",
                 ["@babel/preset-env", {
-                  "targets": {"chrome": "55"}
+                  "targets": {"electron": "9.0.2"}
                 }],
               ],
               plugins: [
@@ -74,6 +70,7 @@ function createRenderConfig(isDev) {
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 "react-hot-loader/babel",
               ],
+              sourceMaps: isDev && 'inline'
             },
           },
         },
@@ -104,33 +101,6 @@ function createRenderConfig(isDev) {
         template: `collection.html`, // relative path to the HTML files
         filename: `collection.html`, // output HTML files
         chunks: ["collection"], // respective JS files
-      }),
-
-      new HtmlExternalsPlugin({
-        cwpOptions: { context: path.join(__dirname, "node_modules") },
-        externals: [
-          {
-            module: "react",
-            global: "React",
-            entry: isDev
-              ? "umd/react.development.js"
-              : "umd/react.production.min.js",
-          },
-          {
-            module: "react-dom",
-            global: "ReactDOM",
-            entry: isDev
-              ? "umd/react-dom.development.js"
-              : "umd/react-dom.production.min.js",
-          },
-          {
-            module: "react-router-dom",
-            global: "ReactRouterDOM",
-            entry: isDev
-              ? "umd/react-router-dom.js"
-              : "umd/react-router-dom.min.js",
-          },
-        ],
       }),
 
       new SourceMapDevToolPlugin({
