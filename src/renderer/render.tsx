@@ -3,6 +3,7 @@ import electronLog from "electron-log";
 import React from "react";
 import * as DOM from "react-dom";
 
+import "core-js";
 import { initializeSentry } from "../preload/sentry";
 
 import App from "./App";

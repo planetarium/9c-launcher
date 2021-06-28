@@ -67,7 +67,9 @@ function createRenderConfig(isDev) {
                 "@babel/preset-typescript",
                 "@babel/preset-react",
                 ["@babel/preset-env", {
-                  "targets": {"electron": "9.0.2"}
+                  targets: { electron: "9.0.2" },
+                  useBuiltIns: "entry",
+                  corejs: 3
                 }],
               ],
               plugins: [
@@ -75,7 +77,7 @@ function createRenderConfig(isDev) {
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 "react-hot-loader/babel",
               ],
-              sourceMaps: isDev && 'inline'
+              sourceMaps: isDev
             },
           },
         },
@@ -158,7 +160,11 @@ function createMainConfig(isDev) {
           use: {
             loader: "babel-loader",
             options: {
-              presets: ["@babel/preset-typescript", "@babel/preset-env"],
+              presets: ["@babel/preset-typescript", ["@babel/preset-env", {
+                targets: { node: "current" },
+                useBuiltIns: "entry",
+                corejs: 3
+              }]],
               plugins: [
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
               ],
