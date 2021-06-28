@@ -51,7 +51,12 @@ function createRenderConfig(isDev) {
             { loader: 'sass-loader' },
           ],
         },
-
+        {
+          test: /\.m?js/,
+          resolve: {
+            fullySpecified: false // https://github.com/webpack/webpack/issues/11467
+          }
+        },
         {
           test: /\.tsx?$/,
           exclude: /node_modules/,
