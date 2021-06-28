@@ -6,6 +6,7 @@ const { DefinePlugin, SourceMapDevToolPlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
+const nodeExternals = require("webpack-node-externals");
 
 // const to avoid typos
 const DEVELOPMENT = "development";
@@ -137,6 +138,8 @@ function createMainConfig(isDev) {
     },
 
     devtool: "source-map",
+    
+    externals: [nodeExternals()],
 
     output: {
       filename: "[name].js",
