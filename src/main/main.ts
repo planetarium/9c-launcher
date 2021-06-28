@@ -544,7 +544,12 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.on("relaunch standalone", async (event) => {
+  ipcMain.on("relaunch standalone", async (event, param: {}) => {
+    mixpanel?.track("Launcher/Relaunch Headless", {
+      distinct_id: mixpanelUUID,
+      ip,
+      ...param,
+    });
     await relaunchHeadless();
     event.returnValue = true;
   });
@@ -572,10 +577,11 @@ function initializeIpc() {
     event.returnValue = "Not supported platform.";
   });
 
-  ipcMain.on("mixpanel-track-event", async (_, eventName: string) => {
+  ipcMain.on("mixpanel-track-event", async (_, eventName: string, param: {}) => {
     mixpanel?.track(eventName, {
       distinct_id: mixpanelUUID,
       ip,
+      ...param,
     });
   });
 
