@@ -19,7 +19,7 @@ import LobbyView from "./LobbyView";
 import { electronStore } from "../../../config";
 import { YouTubeInternal } from "../../../interfaces/refs";
 
-import { T } from "@transifex/react";
+import { T, useT } from "@transifex/react";
 
 const transifexTags = "preload";
 
@@ -53,13 +53,17 @@ const PreloadView = observer((props: IStoreContainer) => {
     player.pauseVideo();
   }, [youtubeRef]);
 
+  const welcomeMessage = useT(
+    "Receiving data from other users.\nLet's watch the trailer and new content!",
+    { _tags: transifexTags }
+  );
+
   return (
     <Container className={classes.root}>
       <Typography variant="h1" className={classes.title}>
-        <T
-          _str="Receiving data from other users.\nLet's watch the trailer and new content!"
-          _tags={transifexTags}
-        />
+        {welcomeMessage.split("\n").map((v: string) => (
+          <p>{v}</p>
+        ))}
       </Typography>
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
       <List className={classes.links}>
