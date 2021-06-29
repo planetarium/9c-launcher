@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
 const nodeExternals = require("webpack-node-externals");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // const to avoid typos
 const DEVELOPMENT = "development";
@@ -111,10 +112,11 @@ function createRenderConfig(isDev) {
         chunks: ["collection"], // respective JS files
       }),
 
-      new SourceMapDevToolPlugin({
-        filename: "[file].map",
+      isDev && new BundleAnalyzerPlugin({
+        analyzerMode: "static",
+        openAnalyzer: false
       }),
-    ],
+    ].filter(Boolean),
 
     devServer: isDev
       ? {
