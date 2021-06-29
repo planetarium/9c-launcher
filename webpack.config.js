@@ -7,7 +7,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
 const nodeExternals = require("webpack-node-externals");
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const TerserPlugin = require("terser-webpack-plugin");
 
 // const to avoid typos
 const DEVELOPMENT = "development";
@@ -128,6 +129,8 @@ function createRenderConfig(isDev) {
       : undefined,
 
     optimization: {
+      minimize: !isDev,
+      minimizer: [new TerserPlugin()],
       splitChunks: {
         chunks: 'all',
         cacheGroups: {
