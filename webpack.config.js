@@ -36,8 +36,12 @@ function createRenderConfig(isDev) {
 
     output: {
       filename: isDev ? "[name].js" : "[name].[contenthash].js",
+      assetModuleFilename: "assets/[hash][ext][query]",
       path: path.join(__dirname, "dist"),
       publicPath: isDev ? "/" : undefined,
+      clean: {
+        keep: /\.(?:exe|dll|json)|(?:9c_Data|MonoBleedingEdge|publish)[\\\/]$/
+      }
     },
 
     externals: {
@@ -88,10 +92,7 @@ function createRenderConfig(isDev) {
         {
           test: /\.(svg|jpg|png|ttf)$/,
           exclude: /node_modules/,
-          use: {
-            loader: "url-loader",
-            options: {},
-          },
+          type: 'asset'
         },
       ],
     },
