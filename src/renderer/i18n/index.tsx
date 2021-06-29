@@ -20,7 +20,6 @@ export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
     const unsubscribe = electronStore.onDidChange("Locale", (v) =>
       setLocale(v ?? "en")
     );
-    validateLocale(locale).then((valid) => valid || setLocale("en"));
     return unsubscribe;
   }, []);
 
@@ -28,9 +27,11 @@ export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
     if (!tx.token)
       tx.init({
         token: TRANSIFEX_TOKEN,
-        currentLocale: locale,
       });
-    else tx.setCurrentLocale(locale);
+    tx.setCurrentLocale(locale);
+
+    validateLocale(locale).then((valid) => valid || setLocale("en"));
+
     electronStore.set("Locale", locale);
   }, [locale]);
 
