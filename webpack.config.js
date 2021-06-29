@@ -24,7 +24,7 @@ function createRenderConfig(isDev) {
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
 
-    devtool: isDev ? "source-map" : "none",
+    devtool: isDev && "eval-cheap-module-source-map",
 
     entry: {
       render: "./renderer/render.tsx",
@@ -32,7 +32,7 @@ function createRenderConfig(isDev) {
     },
 
     output: {
-      filename: isDev ? "[name].js" : "[name].[hash].js",
+      filename: isDev ? "[name].js" : "[name].[contenthash].js",
       path: path.join(__dirname, "dist"),
       publicPath: isDev ? "/" : undefined,
     },
