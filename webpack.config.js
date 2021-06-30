@@ -114,8 +114,9 @@ function createRenderConfig(isDev) {
         chunks: ["collection"], // respective JS files
       }),
 
-      isDev && new BundleAnalyzerPlugin({
+      new BundleAnalyzerPlugin({
         analyzerMode: "static",
+        reportFilename: "../report.html",
         openAnalyzer: false
       }),
     ].filter(Boolean),
