@@ -520,11 +520,9 @@ function initializeIpc() {
 
   ipcMain.on("clear cache", async (event, rerun: boolean) => {
     console.log(`Clear cache is requested. (rerun: ${rerun})`);
-    if (mixpanel !== null) {
-      mixpanel.track(
-        "Launcher/Clear Cache",
-        { distinct_id: mixpanelUUID, ip });
-    }
+    mixpanel?.track(
+      "Launcher/Clear Cache",
+      { distinct_id: mixpanelUUID, ip });
     await quitAllProcesses("clear-cache");
     utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
     if (rerun) initializeHeadless();
