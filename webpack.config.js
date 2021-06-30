@@ -2,12 +2,11 @@ const path = require("path");
 const HtmlPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { DefinePlugin, SourceMapDevToolPlugin } = require("webpack");
+const { DefinePlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
 const nodeExternals = require("webpack-node-externals");
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TerserPlugin = require("terser-webpack-plugin");
 
 // const to avoid typos
@@ -113,13 +112,7 @@ function createRenderConfig(isDev) {
         filename: `collection.html`, // output HTML files
         chunks: ["collection"], // respective JS files
       }),
-
-      new BundleAnalyzerPlugin({
-        analyzerMode: "static",
-        reportFilename: "../report.html",
-        openAnalyzer: false
-      }),
-    ].filter(Boolean),
+    ],
 
     devServer: isDev
       ? {
