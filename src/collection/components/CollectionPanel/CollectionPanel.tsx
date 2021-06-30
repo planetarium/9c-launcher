@@ -24,7 +24,7 @@ export type Props = {
 };
 
 const getRewardImage = (item: RewardCategory) => {
-  switch(item) {
+  switch (item) {
     case RewardCategory.AP:
       return ApIcon;
     case RewardCategory.HOURGLASS:
@@ -63,16 +63,16 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
         <div className={"reward"}>
           <div className={'title'}>REWARDS</div>
           <div className={"CollectionRewardItemListContainer"}>
-          {getRewardCategoryList().map((x) => (
-            <div className={"CollectionRewardItemContainer"}>
-              <div className={"CollectionRewardItemBackground"}>
-                <img className={"CollectionRewardItemImage"} src={getRewardImage(x)}/>
+            {getRewardCategoryList().map((x, i) => (
+              <div className={"CollectionRewardItemContainer"} key={i}>
+                <div className={"CollectionRewardItemBackground"}>
+                  <img className={"CollectionRewardItemImage"} src={getRewardImage(x)} />
+                </div>
+                <div className={'label'}>
+                  {currentReward.get(x) || 0}
+                </div>
               </div>
-              <div className={'label'}>
-              {currentReward.get(x) || 0}
-              </div>
-            </div>
-          ))}
+            ))}
           </div>
 
         </div>

@@ -8,7 +8,6 @@ import { Reward, CollectionItemTier, CollectionPhase, CollectionSheetItem } from
 import "./main.scss";
 import ConfirmationDialog from "../../components/ConfirmationDialog/ConfirmationDialog";
 import {
-  useCancelCollectionMutation,
   useCollectMutation,
   useGetTipQuery,
   useStagedTxQuery,
@@ -17,7 +16,6 @@ import {
   useCollectionStatusSubscription,
   useCollectionStateSubscription,
   useStateQueryMonsterCollectionQuery,
-  useCollectionStatusQueryQuery,
 } from "../../../generated/graphql";
 import { CollectionItemModel } from "../../models/collection";
 import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedStatusBoard";
@@ -64,9 +62,6 @@ const Main: React.FC = () => {
   const [
     collect,
   ] = useCollectMutation();
-  const [
-    cancelCollection,
-  ] = useCancelCollectionMutation();
 
   const { data: collectionStatus } = useCollectionStatusSubscription();
   const { data: collectionState } = useCollectionStateSubscription();
@@ -156,7 +151,7 @@ const Main: React.FC = () => {
   }, [minerAddress]);
 
   useEffect(() => {
-    if (collectionState?.monsterCollectionState.end) {
+    if (collectionState?.monsterCollectionState.level === 0) {
       setCart((state) => state.map(x => {
         return {
           tier: x.tier,
@@ -167,6 +162,16 @@ const Main: React.FC = () => {
       setDepositedGold(0);
     }
   }, [collectionState]);
+
+  useEffect(() => {
+    if (collectionState?.monsterCollectionState.level === 0) {
+      setCurrentTier(0);
+    } else {
+      setCurrentTier(collectionState?.monsterCollectionState.level
+        ? collectionState.monsterCollectionState.level
+        : data?.stateQuery.agent?.monsterCollectionLevel);
+    }
+  }, [collectionState, data]);
 
   useEffect(() => {
     if (collectionState?.monsterCollectionState.level === data?.stateQuery.agent?.monsterCollectionLevel) {
@@ -180,25 +185,15 @@ const Main: React.FC = () => {
   }, [collectionState, data])
 
   useEffect(() => {
-    if(collectionState?.monsterCollectionState.end) {
-      setCurrentTier(0);
-    } else {
-      setCurrentTier(collectionState?.monsterCollectionState.level 
-        ? collectionState.monsterCollectionState.level 
-        : data?.stateQuery.agent?.monsterCollectionLevel);
-    }
-  }, [collectionState, data])
-
-  useEffect(() => {
-    if(collectionState?.monsterCollectionState.level) {
+    if (collectionState?.monsterCollectionState.level) {
       setIsCollecting(collectionState.monsterCollectionState.level > 0)
     } else {
       setIsCollecting(collectionStateQuery?.stateQuery.monsterCollectionState?.level > 0)
     }
   }, [collectionState, collectionStateQuery])
 
-  if (loading || minerAddressLoading) return <LoadingPage/>;
-  if(minerAddress?.minerAddress == null) {
+  if (loading || minerAddressLoading) return <LoadingPage />;
+  if (minerAddress?.minerAddress == null) {
     // FIXME we should translate this message.
     return <div>you need login first</div>
   }
@@ -272,19 +267,11 @@ const Main: React.FC = () => {
 
     if (!latestCollectionItem) return;
 
-    if (data.stateQuery.agent!.monsterCollectionLevel < latestCollectionItem.tier) {
-      const collectionResult = await collect({
-        variables: { level: latestCollectionItem.tier },
-      });
-      return collectionResult.data!.action!.monsterCollect as string;
-    } else if (data.stateQuery.agent!.monsterCollectionLevel > latestCollectionItem.tier) {
-      const collectionResult = await cancelCollection({
-        variables: { level: latestCollectionItem.tier },
-      });
-      return collectionResult.data!.action!.cancelMonsterCollect as string;
-    } else {
-      return;
-    }
+    const collectionResult = await collect({
+      variables: { level: latestCollectionItem.tier },
+    });
+
+    return collectionResult.data!.action!.monsterCollect as string;
   };
 
   const handleSubmit = async () => {
@@ -371,10 +358,10 @@ const Main: React.FC = () => {
           </div>
         ) : (
           <div className={'MainCollectionPanelContainer'}>
-            <CollectionPanel 
-            sheet={collectionSheet} 
-            tier={currentTier} 
-            onEdit={handleEdit}  />
+            <CollectionPanel
+              sheet={collectionSheet}
+              tier={currentTier}
+              onEdit={handleEdit} />
           </div>
         )}
 
