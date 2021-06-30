@@ -153,6 +153,7 @@ function createRenderConfig(isDev) {
   };
 }
 
+/** @returns {import('webpack').Configuration} */
 function createMainConfig(isDev) {
   return {
     context: path.join(__dirname, "src"),
@@ -224,6 +225,11 @@ function createMainConfig(isDev) {
         patterns: [{ from: "package.json", to: "./", context: "../" }],
       }),
     ],
+    
+    optimization: {
+      minimize: !isDev,
+      minimizer: [new TerserPlugin()],
+    }
   };
 }
 
