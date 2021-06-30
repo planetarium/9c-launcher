@@ -142,6 +142,12 @@ function createRenderConfig(isDev) {
             name: 'vendors',
             reuseExistingChunk: true,
           },
+          graphql: {
+            test: /[\\/]src[\\/]generated[\\/]/,
+            priority: -11,
+            name: 'graphql',
+            reuseExistingChunk: true
+          },
           default: {
             minChunks: 2,
             priority: -20,
