@@ -6,7 +6,8 @@ import Cart from "../../components/Cart/Cart";
 import { Reward, CollectionItemTier, CollectionPhase, CollectionSheetItem } from "../../types";
 
 import "./main.scss";
-import ConfirmationDialog from "../../components/ConfirmationDialog/ConfirmationDialog";
+import ConfirmationDialog from "../../components/RenewDialog/RenewDialog";
+import LoadingDialog from "../../components/LoadingDialog/LoadingDialog";
 import {
   useCollectMutation,
   useGetTipQuery,
@@ -38,7 +39,8 @@ const Main: React.FC = () => {
   const [cartList, setCart] = useState<CollectionItemModel[]>([]);
   const [tempCartList, setTempCart] = useState<CollectionItemModel[]>([]);
   const [collectionSheet, setCollectionSheet] = useState<CollectionSheetItem[]>([]);
-  const [dialog, setDialog] = useState<boolean>(false);
+  const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
+  const [openLoading, setOpenLoading] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const [depositedGold, setDepositedGold] = useState<number>(0);
   const [remainTime, setRemainTime] = useState<number>(0);
@@ -189,7 +191,7 @@ const Main: React.FC = () => {
 
   useEffect(() => {
     if (collectionLevel === sheetQuery?.stateQuery.monsterCollectionState?.level) {
-      setDialog(false);
+      setOpenLoading(false);
       setEdit(false);
     } else {
       if (latestTxId === "") {
@@ -286,11 +288,36 @@ const Main: React.FC = () => {
     return collectionResult.data!.action!.monsterCollect as string;
   };
 
-  const handleSubmit = async () => {
-    setDialog(true);
+  const handleSubmit = () => {
+    if (hasRewards) {
+      alert("There are rewards to be received. Please try again after receiving the reward.");
+      return;
+    }
+
+    setOpenConfirmation(true);
+  };
+
+  const handleEdit = () => {
+    if (hasRewards) {
+      alert("There are rewards to be received. Please try again after receiving the reward.");
+    }
+    else {
+      setEdit(true);
+    }
+  }
+
+  const handleCancel = () => {
+    setEdit(false)
+    setTempCart(cartList);
+  }
+
+  const handleConfirmSubmit = async () => {
+    setOpenConfirmation(false);
+    setOpenLoading(true);
+
     const collectionTx = await collectionMutation();
     if (!collectionTx) {
-      setDialog(false);
+      setOpenLoading(false);
       setEdit(false);
       return;
     }
@@ -307,20 +334,10 @@ const Main: React.FC = () => {
     }
     await refetch();
     setLatestTxId("");
-  };
-
-  const handleEdit = () => {
-    if (hasRewards) {
-      alert("There are rewards to be received. Please try again after receiving the reward.");
-    }
-    else {
-      setEdit(true);
-    }
   }
 
-  const handleCancel = () => {
-    setEdit(false)
-    setTempCart(cartList);
+  const handleConfirmCancel = () => {
+    setOpenConfirmation(false);
   }
 
   return (
@@ -369,7 +386,13 @@ const Main: React.FC = () => {
           </div>
         )}
 
-        <ConfirmationDialog open={dialog} />
+        <ConfirmationDialog
+          open={openConfirmation}
+          onSubmit={handleConfirmSubmit}
+          onCancel={handleConfirmCancel}
+        />
+
+        <LoadingDialog open={openLoading} />
       </div>
 
     </div>
