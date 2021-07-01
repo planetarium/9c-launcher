@@ -71,10 +71,16 @@ const Cart: React.FC<Props> = (props: Props) => {
 
       <div className={'CartItemListContainer'}>
         {
-          cartList.map((x, i) => (<>
-            <CartItem canCollect={totalGold >= getNeedGoldAmount(x)} item={x} onClick={handleItemClick} onPush={onPush} onRemove={onRemove} key={i} />
+          cartList.map((x, i) => (<React.Fragment key={i}>
+            <CartItem
+              canCollect={totalGold >= getNeedGoldAmount(x)}
+              item={x}
+              onClick={handleItemClick}
+              onPush={onPush}
+              onRemove={onRemove} />
             {i !== cartList.length - 1 && <img className={'StepIconPos'} src={stepIcon} />}
-          </>))
+          </React.Fragment>)
+          )
         }
       </div>
       <div className={'CartItemListButtonContainer'}>
