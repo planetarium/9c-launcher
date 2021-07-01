@@ -126,7 +126,7 @@ const Main: React.FC = () => {
           tier: x!.level,
           collectionPhase: getCollectionPhase(
             x!.level,
-            sheetQuery!.stateQuery.agent!.monsterCollectionLevel
+            sheetQuery!.stateQuery.monsterCollectionState?.level
           ),
           value: x!.requiredGold,
         } as CollectionItemModel)
@@ -159,7 +159,7 @@ const Main: React.FC = () => {
     if (sheetQuery?.stateQuery.agent == null) return;
     setDepositedGold(0);
     sheetQuery.stateQuery.monsterCollectionSheet.orderedList.forEach((tier) => {
-      if (sheetQuery.stateQuery.agent!.monsterCollectionLevel >= tier!.level) {
+      if (sheetQuery.stateQuery.monsterCollectionState?.level >= tier!.level) {
         setDepositedGold((x) => x + tier!.requiredGold);
       }
     });
@@ -188,7 +188,7 @@ const Main: React.FC = () => {
   }, [collectionLevel]);
 
   useEffect(() => {
-    if (collectionLevel === sheetQuery?.stateQuery.agent?.monsterCollectionLevel) {
+    if (collectionLevel === sheetQuery?.stateQuery.monsterCollectionState?.level) {
       setDialog(false);
       setEdit(false);
     } else {
@@ -241,7 +241,6 @@ const Main: React.FC = () => {
 
   const removeCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.LATEST) return;
-    if (item.tier === CollectionItemTier.TIER1) return;
 
     if (hasRewards) {
       alert("There are rewards to be received. Please try again after receiving the reward.");
@@ -280,25 +279,14 @@ const Main: React.FC = () => {
     const latestCollectionItem = tempCartList.find(
       (x) => x.collectionPhase === CollectionPhase.LATEST
     );
-
-    if (!latestCollectionItem) return;
-
     const collectionResult = await collect({
-      variables: { level: latestCollectionItem.tier },
+      variables: { level: latestCollectionItem?.tier ?? 0 },
     });
 
     return collectionResult.data!.action!.monsterCollect as string;
   };
 
   const handleSubmit = async () => {
-
-    // We don't care about removing exist monster because we've blocked editting on e8423105b0b5abbcfd12279443f1a5cc774a72f2
-    // FIXME should adjust this logic after allowing editting.
-    if (tempCartList[0].collectionPhase === CollectionPhase.CANDIDATE) {
-      alert("Please select at least 1 monster.");
-      return;
-    }
-
     setDialog(true);
     const collectionTx = await collectionMutation();
     if (!collectionTx) {

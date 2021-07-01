@@ -171,8 +171,9 @@ query CollectionSheetWithState($address: Address!) {
     }
     agent(address: $address) {
       gold
-      monsterCollectionLevel
-      monsterCollectionRound
+    }
+    monsterCollectionState(agentAddress: $address) {
+      level
     }
   }
 }
@@ -181,7 +182,9 @@ query GoldAndCollectionLevel($address: Address!) {
   stateQuery {
     agent(address: $address) {
       gold
-      monsterCollectionLevel
+    }
+    monsterCollectionState(agentAddress: $address) {
+      level
     }
   }
 }
