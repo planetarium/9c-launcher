@@ -200,14 +200,14 @@ query GetTip {
 
 query StateQueryMonsterCollection($agentAddress: Address!) {
   stateQuery{
-  monsterCollectionState(agentAddress: $agentAddress) {
-    expiredBlockIndex
-    level
-    rewardLevel
-    receivedBlockIndex
-    startedBlockIndex
-    claimableBlockIndex
-  }
+    monsterCollectionState(agentAddress: $agentAddress) {
+      expiredBlockIndex
+      level
+      rewardLevel
+      receivedBlockIndex
+      startedBlockIndex
+      claimableBlockIndex
+    }
   }
 }
 
@@ -244,15 +244,6 @@ query StagedTx($address: Address!) {
 subscription CurrentGold {
   monsterCollectionStatus {
     fungibleAssetValue {
-      quantity
-    }
-  }
-}
-
-subscription CanReceiveCollection {
-  monsterCollectionStatus {
-    rewardInfos {
-      itemId
       quantity
     }
   }
