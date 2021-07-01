@@ -260,6 +260,7 @@ subscription CanReceiveCollection {
 
 subscription CollectionStatus {
   monsterCollectionStatus {
+    lockup
     fungibleAssetValue {
       quantity
     }
@@ -272,6 +273,7 @@ subscription CollectionStatus {
 
 query CollectionStatusQuery {
   monsterCollectionStatus {
+    lockup
     fungibleAssetValue {
       quantity
     }
