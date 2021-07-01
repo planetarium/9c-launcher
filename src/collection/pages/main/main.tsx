@@ -375,6 +375,7 @@ const Main: React.FC = () => {
               onSubmit={handleSubmit}
               onRemove={removeCart}
               onPush={addCart}
+              warningMessage={lockup ? "During the lockup period, you can only add monsters." : ""}
             />
           </div>
         ) : (
