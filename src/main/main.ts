@@ -30,7 +30,7 @@ import { ChildProcessWithoutNullStreams } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import logoImage from "./resources/logo.png";
 import { initializeSentry } from "../preload/sentry";
-import "@babel/polyfill";
+import "core-js";
 import extractZip from "extract-zip";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
