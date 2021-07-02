@@ -95,11 +95,10 @@ const Main: React.FC = () => {
 
   useEffect(() => {
     const level = collectionState?.monsterCollectionState.level ??
-      collectionStateQuery?.stateQuery.monsterCollectionState?.level;
-    if (level != null) {
-      setCollectionLevel(level);
-    }
+      collectionStateQuery?.stateQuery.monsterCollectionState?.level ??
+      0;
 
+    setCollectionLevel(level);
     setIsCollecting(level > 0);
     setCurrentTier(level);
   }, [collectionState, collectionStateQuery]);
@@ -128,7 +127,7 @@ const Main: React.FC = () => {
           tier: x!.level,
           collectionPhase: getCollectionPhase(
             x!.level,
-            sheetQuery!.stateQuery.monsterCollectionState?.level
+            sheetQuery!.stateQuery.monsterCollectionState?.level ?? 0
           ),
           value: x!.requiredGold,
         } as CollectionItemModel)
@@ -161,7 +160,7 @@ const Main: React.FC = () => {
     if (sheetQuery?.stateQuery.agent == null) return;
     setDepositedGold(0);
     sheetQuery.stateQuery.monsterCollectionSheet.orderedList.forEach((tier) => {
-      if (sheetQuery.stateQuery.monsterCollectionState?.level >= tier!.level) {
+      if ((sheetQuery.stateQuery.monsterCollectionState?.level ?? 0) >= tier!.level) {
         setDepositedGold((x) => x + tier!.requiredGold);
       }
     });
@@ -190,7 +189,7 @@ const Main: React.FC = () => {
   }, [collectionLevel]);
 
   useEffect(() => {
-    if (collectionLevel === sheetQuery?.stateQuery.monsterCollectionState?.level) {
+    if (collectionLevel === (sheetQuery?.stateQuery.monsterCollectionState?.level ?? 0)) {
       setOpenLoading(false);
       setEdit(false);
     } else {
