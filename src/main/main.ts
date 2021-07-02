@@ -86,6 +86,7 @@ let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Headless = new Headless(standaloneExecutablePath);
 let ip: string | null = null;
+let relaunched: boolean = false;
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: Mixpanel | null =
   getConfig("Mixpanel") && !isDev
@@ -548,9 +549,11 @@ function initializeIpc() {
     mixpanel?.track("Launcher/Relaunch Headless", {
       distinct_id: mixpanelUUID,
       ip,
+      relaunched,
       ...param,
     });
     await relaunchHeadless();
+    relaunched = true;
     event.returnValue = true;
   });
 
