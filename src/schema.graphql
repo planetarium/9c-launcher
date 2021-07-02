@@ -274,6 +274,8 @@ type MaterialType {
 scalar ByteString
 
 type EquipmentType {
+  buffSkills: [SkillType]
+
   # Item elemental.
   elementalType: ElementalType!
   equipped: Boolean!
@@ -290,8 +292,11 @@ type EquipmentType {
 
   # Item category.
   itemType: ItemType!
+  level: Int!
   setId: Int!
+  skills: [SkillType]
   stat: DecimalStatType!
+  statsMap: StatsMapType!
 }
 
 type DecimalStatType {
@@ -300,6 +305,22 @@ type DecimalStatType {
 }
 
 scalar Decimal
+
+type SkillType {
+  chance: Int!
+  elementalType: ElementalType!
+  id: Int!
+  power: Int!
+}
+
+type StatsMapType {
+  aTK: Int!
+  cRI: Int!
+  dEF: Int!
+  hIT: Int!
+  hP: Int!
+  sPD: Int!
+}
 
 type CostumeType {
   # Item elemental.
@@ -789,6 +810,7 @@ type TransactionType_1 {
 
 type MonsterCollectionStatusType {
   fungibleAssetValue: FungibleAssetValueType!
+  lockup: Boolean!
   rewardInfos: [MonsterCollectionRewardInfoType]
 }
 

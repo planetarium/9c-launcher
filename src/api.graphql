@@ -171,8 +171,9 @@ query CollectionSheetWithState($address: Address!) {
     }
     agent(address: $address) {
       gold
-      monsterCollectionLevel
-      monsterCollectionRound
+    }
+    monsterCollectionState(agentAddress: $address) {
+      level
     }
   }
 }
@@ -181,7 +182,9 @@ query GoldAndCollectionLevel($address: Address!) {
   stateQuery {
     agent(address: $address) {
       gold
-      monsterCollectionLevel
+    }
+    monsterCollectionState(agentAddress: $address) {
+      level
     }
   }
 }
@@ -200,14 +203,14 @@ query GetTip {
 
 query StateQueryMonsterCollection($agentAddress: Address!) {
   stateQuery{
-  monsterCollectionState(agentAddress: $agentAddress) {
-    expiredBlockIndex
-    level
-    rewardLevel
-    receivedBlockIndex
-    startedBlockIndex
-    claimableBlockIndex
-  }
+    monsterCollectionState(agentAddress: $agentAddress) {
+      expiredBlockIndex
+      level
+      rewardLevel
+      receivedBlockIndex
+      startedBlockIndex
+      claimableBlockIndex
+    }
   }
 }
 
@@ -249,17 +252,9 @@ subscription CurrentGold {
   }
 }
 
-subscription CanReceiveCollection {
-  monsterCollectionStatus {
-    rewardInfos {
-      itemId
-      quantity
-    }
-  }
-}
-
 subscription CollectionStatus {
   monsterCollectionStatus {
+    lockup
     fungibleAssetValue {
       quantity
     }
@@ -272,6 +267,7 @@ subscription CollectionStatus {
 
 query CollectionStatusQuery {
   monsterCollectionStatus {
+    lockup
     fungibleAssetValue {
       quantity
     }

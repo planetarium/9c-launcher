@@ -150,9 +150,10 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     let rewardInfos = collectionStatus?.monsterCollectionStatus?.rewardInfos;
-    if (rewardInfos) {
+    if (!rewardInfos) {
       rewardInfos = collectionStatusQuery?.monsterCollectionStatus?.rewardInfos;
     }
+
     setCanClaim(rewardInfos != undefined && rewardInfos?.length > 0);
   }, [collectionStatus, collectionStatusQuery])
 
