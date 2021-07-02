@@ -1,5 +1,12 @@
 import { tx } from "@transifex/native";
-import React, { createContext, useEffect, useState } from "react";
+import { useT } from "@transifex/react";
+import React, {
+  createContext,
+  ReactChild,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { userConfigStore, get, TRANSIFEX_TOKEN } from "../../config";
 
 interface LocaleContext {
@@ -42,4 +49,33 @@ export async function validateLocale(locale: string): Promise<boolean> {
   return languages.some((lang: Record<"code", string>) => {
     return locale.startsWith(lang.code.replace('_', '-'));
   });
+}
+
+type TransifexProps<T> = {
+  _str: string;
+  _tags: string;
+} & T;
+
+export function T<Content = {}>({
+  _str,
+  ...props
+}: TransifexProps<Content>): JSX.Element {
+  const node: ReactChild = useT(_str, props);
+  return <>{newlineToBreak(node)}</>;
+}
+
+function newlineToBreak(str: ReactChild): ReactNode {
+  if (typeof str == "number") {
+    return str;
+  }
+  else if (typeof str == "string") {
+    const tokens = str.split("\n");
+    if (tokens.length === 1) return str;
+    return tokens.flatMap(token => [token, <br />]).slice(0, -1);
+  }
+  else if (Array.isArray(str.props.children)) {
+    return str.props.children.map(newlineToBreak);
+  } else {
+    return newlineToBreak(str.props.children);
+  }
 }
