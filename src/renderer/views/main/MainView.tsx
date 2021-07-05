@@ -31,7 +31,8 @@ const MainView = observer(
         <article className={classes.body}>
           <T
             _str={
-              "This is a fantasy world on the blockchain.\nYou need to create an account to start the game."
+              "This is a fantasy world on the blockchain.\n" + 
+              "You need to create an account to start the game."
             }
             _tags={transifexTags}
           />
