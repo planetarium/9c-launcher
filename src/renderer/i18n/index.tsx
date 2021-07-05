@@ -61,21 +61,21 @@ export function T<Content = {}>({
   ...props
 }: TransifexProps<Content>): JSX.Element {
   const node: ReactChild = useT(_str, props);
-  return <>{newlineToBreak(node)}</>;
+  return <>{newlineToLineBreak(node)}</>;
 }
 
-function newlineToBreak(str: ReactChild): ReactNode {
-  if (typeof str == "number") {
-    return str;
+function newlineToLineBreak(node: ReactChild): ReactNode {
+  if (typeof node == "number") {
+    return node;
   }
-  else if (typeof str == "string") {
-    const tokens = str.split("\n");
-    if (tokens.length === 1) return str;
+  else if (typeof node == "string") {
+    const tokens = node.split("\n");
+    if (tokens.length === 1) return node;
     return tokens.flatMap(token => [token, <br />]).slice(0, -1);
   }
-  else if (Array.isArray(str.props.children)) {
-    return str.props.children.map(newlineToBreak);
+  else if (Array.isArray(node.props.children)) {
+    return node.props.children.map(newlineToLineBreak);
   } else {
-    return newlineToBreak(str.props.children);
+    return newlineToLineBreak(node.props.children);
   }
 }
