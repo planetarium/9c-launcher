@@ -23,16 +23,11 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
 
     const description = useT(
       "Delete all records related to your account.\n" +
-        "Nine Chronicles is a fully decentralized game. Therefore, there is no central server that manages your password.\n" +
-        "If you lose your private key, you must create a new account to play the game from the beginning.\n" +
-        "Private keys can be found in the Settings menu of the in-game, so make sure to copy them separately next time and keep them in a safe place.",
+      "Nine Chronicles is a fully decentralized game. Therefore, there is no central server that manages your password.\n" +
+      "If you lose your private key, you must create a new account to play the game from the beginning.\n" +
+      "Private keys can be found in the Settings menu of the in-game, so make sure to copy them separately next time and keep them in a safe place.",
       { _tags: "revokeAccount" }
     );
-
-    if (typeof description === "string")
-      throw Error(
-        "revokeAccount.description is not array in src/i18n/index.json"
-      );
 
     const classes = revokeAccountViewStyle();
     return (
