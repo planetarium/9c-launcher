@@ -248,6 +248,7 @@ subscription CurrentGold {
   monsterCollectionStatus {
     fungibleAssetValue {
       quantity
+      currency
     }
   }
 }
@@ -257,6 +258,7 @@ subscription CollectionStatus {
     lockup
     fungibleAssetValue {
       quantity
+      currency
     }
     rewardInfos {
       itemId
@@ -270,6 +272,7 @@ query CollectionStatusQuery {
     lockup
     fungibleAssetValue {
       quantity
+      currency
     }
     rewardInfos {
       itemId

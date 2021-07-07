@@ -11,13 +11,13 @@ import LoadingDialog from "../../components/LoadingDialog/LoadingDialog";
 import {
   useCollectMutation,
   useGetTipQuery,
-  useStagedTxQuery,
   useMinerAddressQuery,
   useCollectionSheetWithStateLazyQuery,
   useCollectionStatusSubscription,
   useCollectionStatusQueryQuery,
   useCollectionStateSubscription,
   useStateQueryMonsterCollectionQuery,
+  MonsterCollectionStatusType,
 } from "../../../generated/graphql";
 import { CollectionItemModel } from "../../models/collection";
 import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedStatusBoard";
@@ -98,9 +98,9 @@ const Main: React.FC = () => {
     setCurrentTier(level);
   };
 
-  const applyCollectionStatus = (status) => {
-    setLockup(status?.lockup);
-    setHasRewards(status?.rewardInfos!.length > 0);
+  const applyCollectionStatus = (status: MonsterCollectionStatusType | undefined | null) => {
+    setLockup(status?.lockup ?? false);
+    setHasRewards((status?.rewardInfos?.length ?? 0) > 0);
   }
 
   useEffect(() => {
