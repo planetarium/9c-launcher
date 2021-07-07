@@ -4,7 +4,6 @@ import { getTotalDepositedGold } from "../../../collection/components/common/col
 import { CollectionSheetItem, Reward, RewardCategory } from "../../../collection/types";
 import {
   useNodeStatusSubscriptionSubscription,
-  useStagedTxQuery,
   useCollectionSheetQuery,
   useCollectionStateSubscription,
   useCollectionStatusSubscription,
@@ -53,11 +52,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     data: collectionState,
   } = useCollectionStateSubscription();
   const { data: nodeStatus } = useNodeStatusSubscriptionSubscription();
-  const { refetch: stagedTxRefetch } = useStagedTxQuery({
-    variables: {
-      address: accountStore.selectedAddress,
-    },
-  });
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
       agentAddress: accountStore.selectedAddress
@@ -97,7 +91,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    sheetRefetch().then((query) => {
+    sheetRefetch().then(query => {
       const level = collectionState?.monsterCollectionState.level
         ? Number(collectionState?.monsterCollectionState.level)
         : Number(collectionStateQuery?.stateQuery.monsterCollectionState?.level);
@@ -140,7 +134,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   }, [goldAndLevel])
 
   useEffect(() => {
-    console.log(`collectionState on accountinfo: ${collectionState?.monsterCollectionState.level}`)
     if (collectionState?.monsterCollectionState.level) {
       setIsCollecting(collectionState.monsterCollectionState.level > 0)
     } else {
@@ -148,27 +141,25 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     }
   }, [collectionState, collectionStateQuery])
 
-  useEffect(() => {
-    let rewardInfos = collectionStatus?.monsterCollectionStatus?.rewardInfos;
-    if (!rewardInfos) {
-      rewardInfos = collectionStatusQuery?.monsterCollectionStatus?.rewardInfos;
-    }
-
+  const applyCanClaim = (rewardInfos) => {
     setCanClaim(rewardInfos != undefined && rewardInfos?.length > 0);
-  }, [collectionStatus, collectionStatusQuery])
+  };
+
+  useEffect(() => {
+    applyCanClaim(collectionStatus?.monsterCollectionStatus?.rewardInfos);
+  }, [collectionStatus])
+
+  useEffect(() => {
+    applyCanClaim(collectionStatusQuery?.monsterCollectionStatus?.rewardInfos);
+  }, [collectionStatusQuery])
+
+  useEffect(() => {
+    setClaimLoading(false);
+  }, [canClaim]);
 
   const handleAcion = async (collectTx: string) => {
     setOpenDialog(false);
     setClaimLoading(true);
-    while (collectTx) {
-      const stagedTx = await stagedTxRefetch();
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      const tx = stagedTx!.data.nodeStatus.stagedTxIds!.find(
-        (x) => x === collectTx
-      );
-      if (!tx) break;
-    }
-    setClaimLoading(false);
   };
 
   if (accountStore.isLogin

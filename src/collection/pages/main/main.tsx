@@ -34,7 +34,6 @@ const getCollectionPhase = (level: number, collectionLevel: number): CollectionP
 
 const Main: React.FC = () => {
   const [agentAddress, setAgentAddress] = useState<string>("");
-  const [latestTxId, setLatestTxId] = useState<string>("");
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
   const [cartList, setCart] = useState<CollectionItemModel[]>([]);
   const [tempCartList, setTempCart] = useState<CollectionItemModel[]>([]);
@@ -51,15 +50,9 @@ const Main: React.FC = () => {
 
   const [collectionSheetQuery, {
     loading,
-    error,
     data: sheetQuery,
     refetch,
   }] = useCollectionSheetWithStateLazyQuery({
-    variables: {
-      address: agentAddress,
-    },
-  });
-  const { refetch: stagedTxRefetch } = useStagedTxQuery({
     variables: {
       address: agentAddress,
     },
@@ -77,7 +70,8 @@ const Main: React.FC = () => {
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
       agentAddress: agentAddress
-    }
+    },
+    pollInterval: 1000 * 5
   });
   const { data: collectionStatusQuery } = useCollectionStatusQueryQuery();
 
@@ -93,25 +87,37 @@ const Main: React.FC = () => {
     setRemainTime(Math.round(delta / 5))
   }, [nodeStatus, collectionState, collectionStateQuery])
 
-  useEffect(() => {
-    const level = collectionState?.monsterCollectionState.level ??
-      collectionStateQuery?.stateQuery.monsterCollectionState?.level ??
-      0;
+  const applyCollectionLevel = (level: number) => {
+    if (openLoading) {
+      setOpenLoading(false);
+      setEdit(false);
+    }
 
     setCollectionLevel(level);
     setIsCollecting(level > 0);
     setCurrentTier(level);
-  }, [collectionState, collectionStateQuery]);
+  };
+
+  const applyCollectionStatus = (status) => {
+    setLockup(status?.lockup);
+    setHasRewards(status?.rewardInfos!.length > 0);
+  }
 
   useEffect(() => {
-    const status = collectionStatus?.monsterCollectionStatus ??
-      collectionStatusQuery?.monsterCollectionStatus;
+    applyCollectionLevel(collectionState?.monsterCollectionState.level ?? 0);
+  }, [collectionState]);
 
-    if (status != null) {
-      setLockup(status.lockup);
-      setHasRewards(status?.rewardInfos!.length > 0);
-    }
-  }, [collectionStatus, collectionStatusQuery]);
+  useEffect(() => {
+    applyCollectionLevel(collectionStateQuery?.stateQuery.monsterCollectionState?.level ?? 0);
+  }, [collectionStateQuery]);
+
+  useEffect(() => {
+    applyCollectionStatus(collectionStatus?.monsterCollectionStatus);
+  }, [collectionStatus]);
+
+  useEffect(() => {
+    applyCollectionStatus(collectionStatusQuery?.monsterCollectionStatus);
+  }, [collectionStatusQuery]);
 
   useEffect(() => {
     if (
@@ -119,6 +125,7 @@ const Main: React.FC = () => {
       sheetQuery.stateQuery.monsterCollectionSheet.orderedList == null
     )
       return;
+
     setCart((state) => []);
     setCollectionSheet((state) => []);
     sheetQuery!.stateQuery.monsterCollectionSheet!.orderedList!.map((x) => {
@@ -127,7 +134,7 @@ const Main: React.FC = () => {
           tier: x!.level,
           collectionPhase: getCollectionPhase(
             x!.level,
-            sheetQuery!.stateQuery.monsterCollectionState?.level ?? 0
+            collectionLevel
           ),
           value: x!.requiredGold,
         } as CollectionItemModel)
@@ -145,26 +152,18 @@ const Main: React.FC = () => {
         } as CollectionSheetItem)
       );
     });
-  }, [sheetQuery, loading]);
+
+    setDepositedGold(0);
+    sheetQuery.stateQuery.monsterCollectionSheet.orderedList.forEach((tier) => {
+      if (collectionLevel >= tier!.level) {
+        setDepositedGold((x) => x + tier!.requiredGold);
+      }
+    });
+  }, [sheetQuery, collectionLevel]);
 
   useEffect(() => {
     setTempCart(cartList);
   }, [cartList])
-
-  useEffect(() => {
-    if (
-      sheetQuery?.stateQuery.monsterCollectionSheet == null ||
-      sheetQuery.stateQuery.monsterCollectionSheet.orderedList == null
-    )
-      return;
-    if (sheetQuery?.stateQuery.agent == null) return;
-    setDepositedGold(0);
-    sheetQuery.stateQuery.monsterCollectionSheet.orderedList.forEach((tier) => {
-      if ((sheetQuery.stateQuery.monsterCollectionState?.level ?? 0) >= tier!.level) {
-        setDepositedGold((x) => x + tier!.requiredGold);
-      }
-    });
-  }, [sheetQuery, loading]);
 
   useEffect(() => {
     if (sheetQuery?.stateQuery) refetch();
@@ -188,17 +187,6 @@ const Main: React.FC = () => {
     }
   }, [collectionLevel]);
 
-  useEffect(() => {
-    if (collectionLevel === (sheetQuery?.stateQuery.monsterCollectionState?.level ?? 0)) {
-      setOpenLoading(false);
-      setEdit(false);
-    } else {
-      if (latestTxId === "") {
-        //FIXME: if failed, need action here
-      }
-    }
-  }, [collectionLevel, sheetQuery])
-
   if (loading || minerAddressLoading) return <LoadingPage />;
   if (minerAddress?.minerAddress == null) {
     // FIXME we should translate this message.
@@ -213,7 +201,6 @@ const Main: React.FC = () => {
     sheetQuery.stateQuery.monsterCollectionSheet.orderedList == null
   )
     return <div>Chain has no monstercollection sheet</div>;
-  if (error) return <div><p>Error: </p>{JSON.stringify(error)}</div>;
   const addCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.CANDIDATE) return;
 
@@ -320,19 +307,6 @@ const Main: React.FC = () => {
       setEdit(false);
       return;
     }
-
-    setLatestTxId(collectionTx);
-
-    while (collectionTx) {
-      const stagedTx = await stagedTxRefetch();
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      const tx = stagedTx!.data.nodeStatus.stagedTxIds!.find(
-        (x) => x === collectionTx
-      );
-      if (!tx) break;
-    }
-    await refetch();
-    setLatestTxId("");
   }
 
   const handleConfirmCancel = () => {
