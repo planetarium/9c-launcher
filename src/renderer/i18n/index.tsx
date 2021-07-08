@@ -41,12 +41,6 @@ export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
 export async function validateLocale(locale: string): Promise<boolean> {
   const languages = await tx.getLanguages();
   return languages.some((lang: Record<"code", string>) => {
-    let code = lang.code;
-    if (code === "pt_BR")
-    {
-      code = "pt-BR";
-    }
-
-    return locale.startsWith(code);
+    return locale.startsWith(lang.code.replace('_', '-'));
   });
 }
