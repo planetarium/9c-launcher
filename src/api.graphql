@@ -178,17 +178,6 @@ query CollectionSheetWithState($address: Address!) {
   }
 }
 
-query GoldAndCollectionLevel($address: Address!) {
-  stateQuery {
-    agent(address: $address) {
-      gold
-    }
-    monsterCollectionState(agentAddress: $address) {
-      level
-    }
-  }
-}
-
 query MinerAddress {
   minerAddress
 }
@@ -203,6 +192,11 @@ query GetTip {
 
 query StateQueryMonsterCollection($agentAddress: Address!) {
   stateQuery{
+
+    agent(address: $agentAddress) {
+      gold
+    }
+
     monsterCollectionState(agentAddress: $agentAddress) {
       expiredBlockIndex
       level

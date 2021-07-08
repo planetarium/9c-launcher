@@ -4,7 +4,7 @@ import { Story, Meta } from '@storybook/react';
 import AccountInfoContainer, { Props } from './AccountInfoContainer';
 import { Provider } from 'mobx-react';
 import AccountStore from '../../stores/account';
-import { GoldAndCollectionLevelDocument, CollectionSheetDocument, CollectionStatusDocument, CollectionStateDocument, NodeStatusSubscriptionDocument } from '../../../generated/graphql';
+import { CollectionSheetDocument, CollectionStatusDocument, CollectionStateDocument, NodeStatusSubscriptionDocument } from '../../../generated/graphql';
 
 export default {
   title: 'Renderer/Components/AccountInfo',
@@ -19,52 +19,18 @@ accountStore.addAddress(address);
 accountStore.setSelectedAddress(address);
 
 const Template: Story<Props> = (props) => <Provider accountStore={accountStore}>
-  <AccountInfoContainer {...props}/>
-  </Provider>;
+  <AccountInfoContainer {...props} />
+</Provider>;
 
 export const Primary = Template.bind({});
 Primary.args = {
-  onOpenWindow: () => {},
-  onReward: () => {},
+  onOpenWindow: () => { },
+  onReward: () => { },
   minedBlock: 500
 }
 Primary.parameters = {
   apolloClient: {
     mocks: [
-      {
-        request: {
-          query: GoldAndCollectionLevelDocument,
-          variables: {
-            address: address,
-          },
-        },
-        result: {
-          data: {
-            stateQuery: {
-              agent: {
-                gold: "102720",
-                collectionLevel: 3,
-                __typename: "AgentStateType"
-              },
-              __typename: "StateQuery"
-            }
-          },
-        },
-        newData: () => {
-          return {
-          data: {
-            stateQuery: {
-              agent: {
-                gold: "102720",
-                collectionLevel: 3,
-                __typename: "AgentStateType"
-              },
-              __typename: "StateQuery"
-            }
-          },
-          }
-        },
-      },
       {
         request: {
           query: CollectionSheetDocument
@@ -116,53 +82,55 @@ Primary.parameters = {
             }
           }
         },
-        newData: () => {return {
-          data: {
-            stateQuery: {
-              collectionSheet: {
-                orderedList: [
-                  {
-                    level: 1,
-                    requiredGold: 500,
-                    __typename: "CollectionRowType"
-                  },
-                  {
-                    level: 2,
-                    requiredGold: 1800,
-                    __typename: "CollectionRowType"
-                  },
-                  {
-                    level: 3,
-                    requiredGold: 7200,
-                    __typename: "CollectionRowType"
-                  },
-                  {
-                    level: 4,
-                    requiredGold: 54000,
-                    __typename: "CollectionRowType"
-                  },
-                  {
-                    level: 5,
-                    requiredGold: 270000,
-                    __typename: "CollectionRowType"
-                  },
-                  {
-                    level: 6,
-                    requiredGold: 480000,
-                    __typename: "CollectionRowType"
-                  },
-                  {
-                    level: 7,
-                    requiredGold: 3000000,
-                    __typename: "CollectionRowType"
-                  }
-                ],
-                __typename: "CollectionSheetType"
-              },
-              __typename: "StateQuery"
+        newData: () => {
+          return {
+            data: {
+              stateQuery: {
+                collectionSheet: {
+                  orderedList: [
+                    {
+                      level: 1,
+                      requiredGold: 500,
+                      __typename: "CollectionRowType"
+                    },
+                    {
+                      level: 2,
+                      requiredGold: 1800,
+                      __typename: "CollectionRowType"
+                    },
+                    {
+                      level: 3,
+                      requiredGold: 7200,
+                      __typename: "CollectionRowType"
+                    },
+                    {
+                      level: 4,
+                      requiredGold: 54000,
+                      __typename: "CollectionRowType"
+                    },
+                    {
+                      level: 5,
+                      requiredGold: 270000,
+                      __typename: "CollectionRowType"
+                    },
+                    {
+                      level: 6,
+                      requiredGold: 480000,
+                      __typename: "CollectionRowType"
+                    },
+                    {
+                      level: 7,
+                      requiredGold: 3000000,
+                      __typename: "CollectionRowType"
+                    }
+                  ],
+                  __typename: "CollectionSheetType"
+                },
+                __typename: "StateQuery"
+              }
             }
           }
-        }},
+        },
       },
       {
         request: {
@@ -170,6 +138,14 @@ Primary.parameters = {
         },
         result: {
           data: {
+            stateQuery: {
+              agent: {
+                gold: "102720",
+                collectionLevel: 3,
+                __typename: "AgentStateType"
+              },
+              __typename: "StateQuery"
+            },
             monsterCollectionState: {
               address: "",
               end: "",
@@ -183,21 +159,30 @@ Primary.parameters = {
             },
           },
         },
-        newData: () => { return {
-          data: {
-            monsterCollectionState: {
-              address: "",
-              end: "",
-              expiredBlockIndex: "",
-              claimableBlockIndex: 100,
-              level: 4,
-              rewardLevel: "",
-              receivedBlockIndex: "",
-              startedBlockIndex: "",
-              __typename: "MonsterCollectionStateType"
+        newData: () => {
+          return {
+            data: {
+              stateQuery: {
+                agent: {
+                  gold: "102720",
+                  collectionLevel: 3,
+                  __typename: "AgentStateType"
+                },
+                __typename: "StateQuery"
+              },
+              monsterCollectionState: {
+                address: "",
+                end: "",
+                expiredBlockIndex: "",
+                claimableBlockIndex: 100,
+                level: 4,
+                rewardLevel: "",
+                receivedBlockIndex: "",
+                startedBlockIndex: "",
+                __typename: "MonsterCollectionStateType"
+              },
             },
-          },
-        }
+          }
         }
       },
       {
@@ -213,15 +198,16 @@ Primary.parameters = {
             }
           }
         },
-        newData: () => { return {
-          data: {
-            nodeStatus: {
-              bootstrapEnded: true,
-              preloadEnded: true,
-              __typename: "NodeStatusType"
+        newData: () => {
+          return {
+            data: {
+              nodeStatus: {
+                bootstrapEnded: true,
+                preloadEnded: true,
+                __typename: "NodeStatusType"
+              }
             }
           }
-        }
         }
       },
       {
@@ -240,18 +226,20 @@ Primary.parameters = {
             }
           },
         },
-        newData: () => {return {
-          data: {
-            collectionStatus: {
-              canReceive: true,
-              __typename: "CollectionStatusType",
-              fungibleAssetValue: {
-                quantity: 102740,
-                __typename: "FungibleAssetValueType"
+        newData: () => {
+          return {
+            data: {
+              collectionStatus: {
+                canReceive: true,
+                __typename: "CollectionStatusType",
+                fungibleAssetValue: {
+                  quantity: 102740,
+                  __typename: "FungibleAssetValueType"
+                }
               }
             }
           }
-        }},
+        },
       }
     ]
   }

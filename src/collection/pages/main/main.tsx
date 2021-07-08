@@ -55,7 +55,7 @@ const Main: React.FC = () => {
   }] = useCollectionSheetWithStateLazyQuery({
     variables: {
       address: agentAddress,
-    },
+    }
   });
   const { data: minerAddress, loading: minerAddressLoading } = useMinerAddressQuery();
   const [
@@ -88,11 +88,6 @@ const Main: React.FC = () => {
   }, [nodeStatus, collectionState, collectionStateQuery])
 
   const applyCollectionLevel = (level: number) => {
-    if (openLoading) {
-      setOpenLoading(false);
-      setEdit(false);
-    }
-
     setCollectionLevel(level);
     setIsCollecting(level > 0);
     setCurrentTier(level);
@@ -177,6 +172,11 @@ const Main: React.FC = () => {
   }, [minerAddress]);
 
   useEffect(() => {
+    if (openLoading) {
+      setOpenLoading(false);
+      setEdit(false);
+    }
+
     if (collectionLevel === 0) {
       setCart((state) => state.map(x => ({
         tier: x.tier,
@@ -343,7 +343,7 @@ const Main: React.FC = () => {
           <div className={"MainCartContainer"}>
             <Cart
               cartList={tempCartList}
-              totalGold={Number(collectionStatus?.monsterCollectionStatus.fungibleAssetValue.quantity || sheetQuery.stateQuery.agent?.gold) + depositedGold}
+              totalGold={Number(collectionStateQuery?.stateQuery.agent?.gold ?? 0) + depositedGold}
               onCancel={handleCancel}
               onSubmit={handleSubmit}
               onRemove={removeCart}
