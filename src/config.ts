@@ -180,4 +180,4 @@ export const BLOCKCHAIN_STORE_PATH = path.join(
   electronStore.get("BlockchainStoreDirName")
 );
 export const MIXPANEL_TOKEN = "80a1e14b57d050536185c7459d45195a";
-export const TRANSIFEX_TOKEN = "1/a0e9b601e795f5839d6f78e29fcf455175000672";
+export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
