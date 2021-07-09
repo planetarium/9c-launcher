@@ -36,6 +36,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   const [isCollecting, setIsCollecting] = useState<boolean>(false);
   const [canClaim, setCanClaim] = useState<boolean>(false);
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
+  const [receivedBlockIndex, setReceivedBlockIndex] = useState<number>(0);
   const {
     refetch: sheetRefetch,
   } = useCollectionSheetQuery();
@@ -124,11 +125,17 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     setCollectionLevel(Number(collectionState?.monsterCollectionState?.level ?? 0));
+    setReceivedBlockIndex(collectionState?.monsterCollectionState?.receivedBlockIndex ?? 0);
   }, [collectionState])
 
   useEffect(() => {
     setCollectionLevel(Number(collectionStateQuery?.stateQuery.monsterCollectionState?.level ?? 0));
+    setReceivedBlockIndex(collectionStateQuery?.stateQuery.monsterCollectionState?.receivedBlockIndex ?? 0);
   }, [collectionStateQuery])
+
+  useEffect(() => {
+    setClaimLoading(false);
+  }, [receivedBlockIndex]);
 
   const applyCanClaim = (rewardInfos: (MonsterCollectionRewardInfoType | null)[] | null | undefined) => {
     setCanClaim(rewardInfos != undefined && rewardInfos?.length > 0);
@@ -140,13 +147,9 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     applyCanClaim(collectionStatusQuery?.monsterCollectionStatus?.rewardInfos);
-  }, [collectionStatusQuery])
+  }, [collectionStatusQuery]);
 
-  useEffect(() => {
-    setClaimLoading(false);
-  }, [canClaim]);
-
-  const handleAcion = async (collectTx: string) => {
+  const handleAcion = () => {
     setOpenDialog(false);
     setClaimLoading(true);
   };

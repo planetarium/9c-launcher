@@ -12,7 +12,7 @@ import {
   useCollectMutation,
   useGetTipQuery,
   useMinerAddressQuery,
-  useCollectionSheetWithStateLazyQuery,
+  useCollectionSheetWithStateQuery,
   useCollectionStatusSubscription,
   useCollectionStatusQueryQuery,
   useCollectionStateSubscription,
@@ -48,11 +48,10 @@ const Main: React.FC = () => {
   const [lockup, setLockup] = useState<boolean>(false);
   const [hasRewards, setHasRewards] = useState<boolean>(false);
 
-  const [collectionSheetQuery, {
+  const {
     loading,
     data: sheetQuery,
-    refetch,
-  }] = useCollectionSheetWithStateLazyQuery({
+  } = useCollectionSheetWithStateQuery({
     variables: {
       address: agentAddress,
     }
@@ -88,9 +87,11 @@ const Main: React.FC = () => {
   }, [nodeStatus, collectionState, collectionStateQuery])
 
   const applyCollectionLevel = (level: number) => {
-    setCollectionLevel(level);
-    setIsCollecting(level > 0);
-    setCurrentTier(level);
+    if (!edit) {
+      setCollectionLevel(level);
+      setIsCollecting(level > 0);
+      setCurrentTier(level);
+    }
   };
 
   const applyCollectionStatus = (status: MonsterCollectionStatusType | undefined | null) => {
@@ -99,7 +100,7 @@ const Main: React.FC = () => {
   }
 
   useEffect(() => {
-    applyCollectionLevel(collectionState?.monsterCollectionState.level ?? 0);
+    applyCollectionLevel(collectionState?.monsterCollectionState?.level ?? 0);
   }, [collectionState]);
 
   useEffect(() => {
@@ -117,12 +118,14 @@ const Main: React.FC = () => {
   useEffect(() => {
     if (
       sheetQuery?.stateQuery.monsterCollectionSheet == null ||
-      sheetQuery.stateQuery.monsterCollectionSheet.orderedList == null
+      sheetQuery.stateQuery.monsterCollectionSheet.orderedList == null ||
+      edit ||
+      openLoading
     )
       return;
 
-    setCart((state) => []);
-    setCollectionSheet((state) => []);
+    setCart(() => []);
+    setCollectionSheet(() => []);
     sheetQuery!.stateQuery.monsterCollectionSheet!.orderedList!.map((x) => {
       setCart((state) =>
         state.concat({
@@ -158,12 +161,7 @@ const Main: React.FC = () => {
 
   useEffect(() => {
     setTempCart(cartList);
-  }, [cartList])
-
-  useEffect(() => {
-    if (sheetQuery?.stateQuery) refetch();
-    else collectionSheetQuery();
-  }, [agentAddress]);
+  }, [cartList]);
 
   useEffect(() => {
     if (minerAddress != null) {
@@ -172,10 +170,7 @@ const Main: React.FC = () => {
   }, [minerAddress]);
 
   useEffect(() => {
-    if (openLoading) {
-      setOpenLoading(false);
-      setEdit(false);
-    }
+    setOpenLoading(false);
 
     if (collectionLevel === 0) {
       setCart((state) => state.map(x => ({
@@ -186,6 +181,16 @@ const Main: React.FC = () => {
       setDepositedGold(0);
     }
   }, [collectionLevel]);
+
+  useEffect(() => {
+    setOpenLoading(false);
+  }, [hasRewards]);
+
+  useEffect(() => {
+    if (!openLoading) {
+      setEdit(false);
+    }
+  }, [openLoading]);
 
   if (loading || minerAddressLoading) return <LoadingPage />;
   if (minerAddress?.minerAddress == null) {
@@ -297,20 +302,17 @@ const Main: React.FC = () => {
     setTempCart(cartList);
   }
 
-  const handleConfirmSubmit = async () => {
+  const handleConfirmSubmit = () => {
     setOpenConfirmation(false);
+    setEdit(false);
     setOpenLoading(true);
 
-    const collectionTx = await collectionMutation();
-    if (!collectionTx) {
-      setOpenLoading(false);
-      setEdit(false);
-      return;
-    }
+    collectionMutation();
   }
 
   const handleConfirmCancel = () => {
     setOpenConfirmation(false);
+    setEdit(false);
   }
 
   return (
