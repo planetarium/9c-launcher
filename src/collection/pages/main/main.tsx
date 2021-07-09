@@ -35,8 +35,8 @@ const getCollectionPhase = (level: number, collectionLevel: number): CollectionP
 const Main: React.FC = () => {
   const [agentAddress, setAgentAddress] = useState<string>("");
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
-  const [cartList, setCart] = useState<CollectionItemModel[]>([]);
-  const [tempCartList, setTempCart] = useState<CollectionItemModel[]>([]);
+  const [cartList, setCartList] = useState<CollectionItemModel[]>([]);
+  const [tempCartList, setTempCartList] = useState<CollectionItemModel[]>([]);
   const [collectionSheet, setCollectionSheet] = useState<CollectionSheetItem[]>([]);
   const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
   const [openLoading, setOpenLoading] = useState<boolean>(false);
@@ -124,10 +124,10 @@ const Main: React.FC = () => {
     )
       return;
 
-    setCart(() => []);
+    setCartList(() => []);
     setCollectionSheet(() => []);
     sheetQuery!.stateQuery.monsterCollectionSheet!.orderedList!.map((x) => {
-      setCart((state) =>
+      setCartList((state) =>
         state.concat({
           tier: x!.level,
           collectionPhase: getCollectionPhase(
@@ -160,7 +160,7 @@ const Main: React.FC = () => {
   }, [sheetQuery, collectionLevel]);
 
   useEffect(() => {
-    setTempCart(cartList);
+    setTempCartList(cartList);
   }, [cartList]);
 
   useEffect(() => {
@@ -173,7 +173,7 @@ const Main: React.FC = () => {
     setOpenLoading(false);
 
     if (collectionLevel === 0) {
-      setCart((state) => state.map(x => ({
+      setCartList((state) => state.map(x => ({
         tier: x.tier,
         value: x.value,
         collectionPhase: getCollectionPhase(x.tier, 0),
@@ -209,21 +209,21 @@ const Main: React.FC = () => {
   const addCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.CANDIDATE) return;
 
-    setTempCart((state) =>
+    setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier - 1
           ? ({ ...x, collectionPhase: CollectionPhase.COLLECTED } as CollectionItemModel)
           : x
       )
     );
-    setTempCart((state) =>
+    setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier
           ? ({ ...x, collectionPhase: CollectionPhase.LATEST } as CollectionItemModel)
           : x
       )
     );
-    setTempCart((state) =>
+    setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier + 1
           ? ({ ...x, collectionPhase: CollectionPhase.CANDIDATE } as CollectionItemModel)
@@ -235,31 +235,26 @@ const Main: React.FC = () => {
   const removeCart = (item: CollectionItemModel) => {
     if (item.collectionPhase != CollectionPhase.LATEST) return;
 
-    if (hasRewards) {
-      alert("There are rewards to be received. Please try again after receiving the reward.");
-      return;
-    }
-
     if (lockup && item.tier <= collectionLevel) {
       alert("Locked-up monsters can be removed after about 1 month (201,600 blocks).");
       return;
     }
 
-    setTempCart((state) =>
+    setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier - 1
           ? ({ ...x, collectionPhase: CollectionPhase.LATEST } as CollectionItemModel)
           : x
       )
     );
-    setTempCart((state) =>
+    setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier
           ? ({ ...x, collectionPhase: CollectionPhase.CANDIDATE } as CollectionItemModel)
           : x
       )
     );
-    setTempCart((state) =>
+    setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier + 1
           ? ({ ...x, collectionPhase: CollectionPhase.LOCKED } as CollectionItemModel)
@@ -285,6 +280,12 @@ const Main: React.FC = () => {
       return;
     }
 
+    if (cartList.findIndex(c => c.collectionPhase === CollectionPhase.CANDIDATE) ===
+      tempCartList.findIndex(c => c.collectionPhase === CollectionPhase.CANDIDATE)) {
+      alert("Please add or remove at least one monster.");
+      return;
+    }
+
     setOpenConfirmation(true);
   };
 
@@ -299,7 +300,7 @@ const Main: React.FC = () => {
 
   const handleCancel = () => {
     setEdit(false)
-    setTempCart(cartList);
+    setTempCartList(cartList);
   }
 
   const handleConfirmSubmit = () => {
