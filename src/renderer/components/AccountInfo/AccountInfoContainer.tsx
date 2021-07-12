@@ -7,7 +7,6 @@ import {
   useCollectionSheetQuery,
   useCollectionStateSubscription,
   useCollectionStatusSubscription,
-  useGoldAndCollectionLevelQuery,
   useStateQueryMonsterCollectionQuery,
   useGetTipQuery,
   useCollectionStatusQueryQuery,
@@ -37,13 +36,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   const [isCollecting, setIsCollecting] = useState<boolean>(false);
   const [canClaim, setCanClaim] = useState<boolean>(false);
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
-  const { data: goldAndLevel, refetch: goldAndLevelRefetch, stopPolling }
-    = useGoldAndCollectionLevelQuery({
-      variables: {
-        address: accountStore.selectedAddress,
-      },
-      pollInterval: 1000 * 3
-    });
+  const [receivedBlockIndex, setReceivedBlockIndex] = useState<number>(0);
   const {
     refetch: sheetRefetch,
   } = useCollectionSheetQuery();
@@ -131,16 +124,18 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   }, [collectionStateQuery, collectionState, tip]);
 
   useEffect(() => {
-    if (goldAndLevel?.stateQuery.agent != null) stopPolling();
-  }, [goldAndLevel])
-
-  useEffect(() => {
     setCollectionLevel(Number(collectionState?.monsterCollectionState?.level ?? 0));
+    setReceivedBlockIndex(collectionState?.monsterCollectionState?.receivedBlockIndex ?? 0);
   }, [collectionState])
 
   useEffect(() => {
     setCollectionLevel(Number(collectionStateQuery?.stateQuery.monsterCollectionState?.level ?? 0));
+    setReceivedBlockIndex(collectionStateQuery?.stateQuery.monsterCollectionState?.receivedBlockIndex ?? 0);
   }, [collectionStateQuery])
+
+  useEffect(() => {
+    setClaimLoading(false);
+  }, [receivedBlockIndex]);
 
   const applyCanClaim = (rewardInfos: (MonsterCollectionRewardInfoType | null)[] | null | undefined) => {
     setCanClaim(rewardInfos != undefined && rewardInfos?.length > 0);
@@ -152,20 +147,15 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     applyCanClaim(collectionStatusQuery?.monsterCollectionStatus?.rewardInfos);
-  }, [collectionStatusQuery])
+  }, [collectionStatusQuery]);
 
-  useEffect(() => {
-    setClaimLoading(false);
-  }, [canClaim]);
-
-  const handleAcion = async (collectTx: string) => {
+  const handleAcion = () => {
     setOpenDialog(false);
     setClaimLoading(true);
   };
 
   if (accountStore.isLogin
     && nodeStatus?.nodeStatus?.preloadEnded
-    && goldAndLevel?.stateQuery.agent != null
     && avatarAddressQuery != null
     && accountStore.isMiningConfigEnded) {
     const mcStatus = collectionStatus?.monsterCollectionStatus;
@@ -178,11 +168,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
               ? () => { }
               : onOpenWindow}
           canClaimReward={mcStatus?.rewardInfos != null && mcStatus.rewardInfos.length > 0}
-          goldLabel={
-            mcStatus?.fungibleAssetValue.quantity
-              ? Number(mcStatus.fungibleAssetValue.quantity)
-              : Number(goldAndLevel?.stateQuery.agent?.gold)
-          }
+          goldLabel={Number(collectionStateQuery?.stateQuery.agent?.gold)}
           collectionLabel={depositedGold}
           remainText={getRemain(remainMin)}
           isCollecting={isCollecting}
