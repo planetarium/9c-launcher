@@ -1,11 +1,11 @@
 import Store from "electron-store";
 import path from "path";
-import { IElectronStore } from "./interfaces/config";
+import { IConfig } from "./interfaces/config";
 
 const { app } =
   process.type === "browser" ? require("electron") : require("electron").remote;
 
-export const electronStore = new Store<IElectronStore>({
+export const configStore = new Store<IConfig>({
   cwd: app.getAppPath(),
   schema: {
     AppProtocolVersion: {
@@ -160,9 +160,9 @@ const getLocalApplicationDataPath = (): string => {
 };
 
 export const blockchainStoreDirParent =
-  electronStore.get("BlockchainStoreDirParent") === ""
+  configStore.get("BlockchainStoreDirParent") === ""
     ? path.join(getLocalApplicationDataPath(), "planetarium")
-    : electronStore.get("BlockchainStoreDirParent");
+    : configStore.get("BlockchainStoreDirParent");
 
 export const REQUIRED_DISK_SPACE = 2 * 1000 * 1000 * 1000;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
@@ -181,7 +181,7 @@ export const CUSTOM_SERVER: boolean =
   RpcServerPort().notDefault;
 export const BLOCKCHAIN_STORE_PATH = path.join(
   blockchainStoreDirParent,
-  electronStore.get("BlockchainStoreDirName")
+  configStore.get("BlockchainStoreDirName")
 );
 export const MIXPANEL_TOKEN = "80a1e14b57d050536185c7459d45195a";
 export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
