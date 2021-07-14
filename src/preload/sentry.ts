@@ -1,5 +1,5 @@
 import isDev from "electron-is-dev";
-import { electronStore } from "../config";
+import { configStore } from "../config";
 import { version } from "../../package.json";
 
 const { init } =
@@ -15,7 +15,7 @@ export function initializeSentry() {
     console.debug("Sentry is disabled in development mode.");
     return;
   }
-  if (electronStore.get("Sentry") === true) {
+  if (configStore.get("Sentry") === true) {
     console.debug("Sentry is enabled in production mode.");
     init({
       dsn: dsn,

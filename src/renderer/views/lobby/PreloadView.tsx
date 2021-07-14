@@ -16,7 +16,7 @@ import MenuBookIcon from "@material-ui/icons/MenuBook";
 import GrainIcon from "@material-ui/icons/Grain";
 import preloadViewStyle from "./PreloadView.style";
 import LobbyView from "./LobbyView";
-import { electronStore } from "../../../config";
+import { configStore } from "../../../config";
 import { YouTubeInternal } from "../../../interfaces/refs";
 
 import { T, useT } from "@transifex/react";
@@ -31,7 +31,7 @@ const PreloadView = observer((props: IStoreContainer) => {
     height: "220",
     playerVars: {
       autoplay: 1,
-      mute: electronStore.get("MuteTeaser") ? 1 : 0,
+      mute: configStore.get("MuteTeaser") ? 1 : 0,
     },
   };
 
@@ -49,7 +49,7 @@ const PreloadView = observer((props: IStoreContainer) => {
   const handleLaunch = useCallback(() => {
     const player = youtubeRef.current?.internalPlayer;
     if (player === undefined) throw Error("YouTube Player not found");
-    if (videoOpts.playerVars?.mute === 0) electronStore.set("MuteTeaser", true);
+    if (videoOpts.playerVars?.mute === 0) configStore.set("MuteTeaser", true);
     player.pauseVideo();
   }, [youtubeRef]);
 

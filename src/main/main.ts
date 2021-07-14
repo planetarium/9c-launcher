@@ -3,7 +3,7 @@ import {
   CUSTOM_SERVER,
   LOCAL_SERVER_HOST,
   LOCAL_SERVER_PORT,
-  electronStore,
+  configStore,
   BLOCKCHAIN_STORE_PATH,
   MAC_GAME_PATH,
   WIN_GAME_PATH,
@@ -59,7 +59,7 @@ import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snaps
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from 'ntp-time'
-import { IElectronStore } from "src/interfaces/config";
+import { IConfig } from "src/interfaces/config";
 
 initializeSentry();
 
@@ -73,18 +73,18 @@ const standaloneExecutablePath = path.join(
   "NineChronicles.Headless.Executable"
 );
 const standaloneExecutableArgs = [
-  `-V=${electronStore.get("AppProtocolVersion")}`,
-  `-G=${electronStore.get("GenesisBlockPath")}`,
-  `-D=${electronStore.get("MinimumDifficulty")}`,
-  `--store-type=${electronStore.get("StoreType")}`,
+  `-V=${configStore.get("AppProtocolVersion")}`,
+  `-G=${configStore.get("GenesisBlockPath")}`,
+  `-D=${configStore.get("MinimumDifficulty")}`,
+  `--store-type=${configStore.get("StoreType")}`,
   `--store-path=${BLOCKCHAIN_STORE_PATH}`,
-  ...electronStore
+  ...configStore
     .get("IceServerStrings")
     .map((iceServerString) => `-I=${iceServerString}`),
-  ...electronStore
+  ...configStore
     .get("PeerStrings")
     .map((peerString) => `--peer=${peerString}`),
-  ...electronStore
+  ...configStore
     .get("TrustedAppProtocolVersionSigners")
     .map(
       (trustedAppProtocolVersionSigner) =>
@@ -97,16 +97,16 @@ const standaloneExecutableArgs = [
   "--graphql-server",
   `--graphql-host=${LOCAL_SERVER_HOST}`,
   `--graphql-port=${LOCAL_SERVER_PORT}`,
-  `--workers=${electronStore.get("Workers")}`,
-  `--confirmations=${electronStore.get("Confirmations")}`,
-  ...electronStore.get("HeadlessArgs", []),
+  `--workers=${configStore.get("Workers")}`,
+  `--confirmations=${configStore.get("Confirmations")}`,
+  ...configStore.get("HeadlessArgs", []),
   ...(isDev ? ["--no-cors"] : []),
 ];
 
 {
-  const awsAccessKey = electronStore.get("AwsAccessKey");
-  const awsSecretKey = electronStore.get("AwsSecretKey");
-  const awsRegion = electronStore.get("AwsRegion");
+  const awsAccessKey = configStore.get("AwsAccessKey");
+  const awsSecretKey = configStore.get("AwsSecretKey");
+  const awsRegion = configStore.get("AwsRegion");
 
   if (
     awsAccessKey !== undefined &&
@@ -132,7 +132,7 @@ let standalone: Headless = new Headless(standaloneExecutablePath);
 let ip: string | null = null;
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: Mixpanel | null =
-  electronStore.get("Mixpanel") && !isDev
+  configStore.get("Mixpanel") && !isDev
     ? createMixpanel(MIXPANEL_TOKEN)
     : null;
 let initializeHeadlessCts: {
@@ -201,16 +201,16 @@ if (!app.requestSingleInstanceLock()) {
 async function intializeConfig() {
   try {
     const res = await axios(REMOTE_CONFIG_URL);
-    const remoteConfig: IElectronStore = res.data;
+    const remoteConfig: IConfig = res.data;
 
-    const localApv = electronStore.get("AppProtocolVersion");
+    const localApv = configStore.get("AppProtocolVersion");
     const remoteApv = remoteConfig.AppProtocolVersion;
     if (localApv !== remoteApv) {
       console.log(`APVs are different, ignore. (local: ${localApv}, remote: ${remoteApv})`);
       return;
     }
 
-    const localConfigVersion = electronStore.get("ConfigVersion");
+    const localConfigVersion = configStore.get("ConfigVersion");
     const remoteConfigVersion = remoteConfig.ConfigVersion;
     if (localConfigVersion > remoteConfigVersion) {
       console.log(`Local config is newer than remote, ignore. (local: ${localConfigVersion}, remote: ${remoteConfigVersion})`);
@@ -218,7 +218,7 @@ async function intializeConfig() {
     }
 
     // Replace config
-    electronStore.store = remoteConfig;
+    configStore.store = remoteConfig;
   }
   catch (error) {
     console.error(`An unexpected error occurred during fetching remote config. ${error}`);
@@ -727,18 +727,18 @@ async function initializeHeadless(): Promise<void> {
     return;
   }
 
-  const peerInfos = electronStore.get("PeerStrings");
+  const peerInfos = configStore.get("PeerStrings");
   if (peerInfos.length > 0) {
     const peerApvToken = standalone.apv.query(peerInfos[0]);
     if (peerApvToken !== null) {
       if (
         standalone.apv.verify(
-          electronStore.get("TrustedAppProtocolVersionSigners"),
+          configStore.get("TrustedAppProtocolVersionSigners"),
           peerApvToken
         )
       ) {
         const peerApv = standalone.apv.analyze(peerApvToken);
-        const localApvToken = electronStore.get("AppProtocolVersion");
+        const localApvToken = configStore.get("AppProtocolVersion");
         const localApv = standalone.apv.analyze(localApvToken);
 
         await update(
@@ -779,17 +779,17 @@ async function initializeHeadless(): Promise<void> {
     }
     win?.webContents.send("start bootstrap");
     const snapshot =
-      electronStore.get("StoreType") === "rocksdb"
+      configStore.get("StoreType") === "rocksdb"
         ? partitionSnapshot
         : monoSnapshot;
 
-    const snapshotPaths: string[] = electronStore.get("SnapshotPaths");
+    const snapshotPaths: string[] = configStore.get("SnapshotPaths");
     if (CUSTOM_SERVER) {
       console.log(
         "As a custom headless server is used, snapshot won't be used."
       );
     } else if (snapshotPaths.length > 0 && win != null) {
-      const snapshotDownloadUrls: string[] = electronStore.get("SnapshotPaths");
+      const snapshotDownloadUrls: string[] = configStore.get("SnapshotPaths");
       let isProcessSuccess = false;
       let recentError: Error = Error();
       for (const snapshotDownloadUrl of snapshotDownloadUrls) {

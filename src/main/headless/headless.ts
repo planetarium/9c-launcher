@@ -1,7 +1,7 @@
 import { ChildProcess, execFileSync } from "child_process";
 import { ipcMain } from "electron";
 import { dirname, basename } from "path";
-import { electronStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../../config";
+import { configStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../../config";
 import { retry } from "@lifeomic/attempt";
 import { FetchError, HeadlessExitedError } from "../../errors";
 import { execute, sleep } from "../../utils";
@@ -85,7 +85,7 @@ class Headless {
       console.log("Connecting to the custom headless server...");
       console.log(
         "If the connection is not successful, check if the headless server " +
-          `is executed with the following options:${argsString}`
+        `is executed with the following options:${argsString}`
       );
     } else {
       console.log(
@@ -120,7 +120,7 @@ class Headless {
 
   public async setMining(mine: boolean): Promise<boolean> {
     console.log(`Setting mining: ${mine}`);
-    electronStore.set("NoMiner", !mine);
+    configStore.set("NoMiner", !mine);
     const body = JSON.stringify({
       Mine: mine,
     });
@@ -243,8 +243,7 @@ class Headless {
 
         if (await this.needRetry(response)) {
           console.log(
-            `Failed to fetch standalone (${addr}). Retrying... ${
-              context.attemptNum
+            `Failed to fetch standalone (${addr}). Retrying... ${context.attemptNum
             }/${context.attemptsRemaining + context.attemptNum}`
           );
           throw new Error("Retry required.");
