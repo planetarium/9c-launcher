@@ -51,8 +51,8 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
           <p>MONSTER COLLECTION</p>
           <ul>
             <li>Gather various monsters with NCG!</li>
-            <li>NCG is required to collect.</li>
             <li>Rewards can be received about every 7 days.</li>
+            <li>Collected monsters can be removed after 1 month.</li>
           </ul>
         </div>
         <div className={"balance"}>

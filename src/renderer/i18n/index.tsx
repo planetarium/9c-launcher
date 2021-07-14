@@ -40,7 +40,7 @@ export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
 
 export async function validateLocale(locale: string): Promise<boolean> {
   const languages = await tx.getLanguages();
-  return languages.some((lang: Record<"code", string>) =>
-    locale.startsWith(lang.code)
-  );
+  return languages.some((lang: Record<"code", string>) => {
+    return locale.startsWith(lang.code.replace('_', '-'));
+  });
 }

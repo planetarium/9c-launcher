@@ -16,10 +16,19 @@ export type Props = {
   onPush: (item: CollectionItemModel) => void,
   onRemove: (item: CollectionItemModel) => void,
   onSubmit: () => void,
+  warningMessage: string,
 }
 
 const Cart: React.FC<Props> = (props: Props) => {
-  const { cartList, totalGold, onPush, onRemove, onCancel, onSubmit } = props;
+  const {
+    cartList,
+    totalGold,
+    onPush,
+    onRemove,
+    onCancel,
+    onSubmit,
+    warningMessage
+  } = props;
   const [warning, setWarning] = useState<boolean>(false);
   const [warningTimer, setWarningTimer] = useState<NodeJS.Timeout>();
 
@@ -56,25 +65,22 @@ const Cart: React.FC<Props> = (props: Props) => {
 
   return <div className={'CartContainer'}>
     <div className={'CartItemListBackground'}>
-      {/*
-      Temporarly comment out as a workaround for overwarpping with below message.
-      FIXME: we should restore it or remove `warning` state entirely.
-
-      <Animated.div show={warning} className='CartWarningMessage' unmountAnimId='fadeout'>
-        To receive rewards, the first monster cannot be abandoned.
-        </Animated.div>
-      */}
-
-      <Animated.div show={true} className='CartWarningMessage' unmountAnimId='fadeout'>
-        Once the collection is saved, it can be modified after 1 month.
-        </Animated.div>
+      <Animated.div show={warningMessage != ""} className='CartWarningMessage' unmountAnimId='fadeout'>
+        {warningMessage}
+      </Animated.div>
 
       <div className={'CartItemListContainer'}>
         {
-          cartList.map((x, i) => (<>
-            <CartItem canCollect={totalGold >= getNeedGoldAmount(x)} item={x} onClick={handleItemClick} onPush={onPush} onRemove={onRemove} key={i} />
+          cartList.map((x, i) => (<React.Fragment key={i}>
+            <CartItem
+              canCollect={totalGold >= getNeedGoldAmount(x)}
+              item={x}
+              onClick={handleItemClick}
+              onPush={onPush}
+              onRemove={onRemove} />
             {i !== cartList.length - 1 && <img className={'StepIconPos'} src={stepIcon} />}
-          </>))
+          </React.Fragment>)
+          )
         }
       </div>
       <div className={'CartItemListButtonContainer'}>
