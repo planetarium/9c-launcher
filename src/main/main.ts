@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   CUSTOM_SERVER,
   LOCAL_SERVER_HOST,
@@ -55,10 +56,10 @@ import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
 import { Address, PrivateKey } from "./headless/key-store";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
-import { PermDeviceInformationSharp } from "@material-ui/icons";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from 'ntp-time'
+import { IElectronStore } from "src/interfaces/config";
 
 initializeSentry();
 
@@ -120,6 +121,8 @@ const standaloneExecutableArgs = [
   }
 }
 
+const REMOTE_CONFIG_URL = "https://download.nine-chronicles.com/9c-launcher-config.json";
+
 let win: BrowserWindow | null = null;
 let collectionWin: BrowserWindow | null = null;
 let tray: Tray;
@@ -153,7 +156,7 @@ client
     const computerTime = new Date();
     const delta = Math.abs(timeFromNTP.getTime() - computerTime.getTime());
 
-    if(delta > 15000) {
+    if (delta > 15000) {
       dialog.showErrorBox(
         "Computer Time Incorrect",
         "The current computer time is incorrect. Please sync your computer's time correctly.")
@@ -166,7 +169,7 @@ client
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on("second-instance", (event, commandLine, workingDirectory) => {
+  app.on("second-instance", (_event, _commandLine) => {
     win?.show();
   });
 
@@ -190,8 +193,36 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
+  intializeConfig();
   initializeApp();
   initializeIpc();
+}
+
+async function intializeConfig() {
+  try {
+    const res = await axios(REMOTE_CONFIG_URL);
+    const remoteConfig: IElectronStore = res.data;
+
+    const localApv = electronStore.get("AppProtocolVersion");
+    const remoteApv = remoteConfig.AppProtocolVersion;
+    if (localApv !== remoteApv) {
+      console.log(`APVs are different, ignore. (local: ${localApv}, remote: ${remoteApv})`);
+      return;
+    }
+
+    const localConfigVersion = electronStore.get("ConfigVersion");
+    const remoteConfigVersion = remoteConfig.ConfigVersion;
+    if (localConfigVersion > remoteConfigVersion) {
+      console.log(`Local config is newer than remote, ignore. (local: ${localConfigVersion}, remote: ${remoteConfigVersion})`);
+      return;
+    }
+
+    // Replace config
+    electronStore.store = remoteConfig;
+  }
+  catch (error) {
+    console.error(`An unexpected error occurred during fetching remote config. ${error}`);
+  }
 }
 
 function initializeApp() {
@@ -261,8 +292,8 @@ async function update(
     process.platform === "win32"
       ? windowsBinaryUrl
       : process.platform === "darwin"
-      ? macOSBinaryUrl
-      : null;
+        ? macOSBinaryUrl
+        : null;
 
   if (downloadUrl == null) {
     console.log(`Stop update process. Not support ${process.platform}.`);
@@ -471,16 +502,16 @@ function initializeIpc() {
   );
 
   ipcMain.handle("open collection page", async () => {
-    if(collectionWin != null){
+    if (collectionWin != null) {
       collectionWin.focus();
       return;
     };
     collectionWin = createCollectionWindow();
     collectionWin.on("close", function (event: any) {
-        collectionWin = null;
+      collectionWin = null;
     });
   })
-  
+
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {
       console.error("Game is already running.");
@@ -1010,3 +1041,4 @@ function relaunch() {
     app.exit();
   }
 }
+
