@@ -1,7 +1,7 @@
 import path from "path";
 
 import { ipcRenderer, remote, shell } from "electron";
-import React from "react";
+import React, { useMemo } from "react";
 import { observer } from "mobx-react";
 import {
   Button,
@@ -20,20 +20,26 @@ import useStores from "../../../hooks/useStores";
 import { electronStore, blockchainStoreDirParent } from "../../../config";
 import { SettingsFormEvent } from "../../../interfaces/event";
 import configurationViewStyle from "./ConfigurationView.style";
-import { useLocale } from "../../i18n";
+import { T, useLanguages, useLocale } from "@transifex/react";
 import { Select } from "../../components/Select";
-import { Configuration } from "../../../interfaces/i18n";
 import ClearCacheButton from "../../components/ClearCacheButton";
+
+const transifexTags = "configuration";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
+  const languages: Array<Record<
+    "code" | "name" | "localized_name",
+    string
+  >> = useLanguages();
+  const selectedLocale: string = useLocale();
+  const selectedLanguage = useMemo(
+    () => languages.find(({ code }) => code === selectedLocale)?.localized_name,
+    [languages, selectedLocale]
+  );
 
   const [rootChainPath, setRootChainPath] = React.useState<string>(
     blockchainStoreDirParent
-  );
-
-  const { locale, supportedLocales, selectedLocale } = useLocale<Configuration>(
-    "configuration"
   );
 
   const classes = configurationViewStyle();
@@ -43,7 +49,9 @@ const ConfigurationView = observer(() => {
     electronStore.set("BlockchainStoreDirParent", rootChainPath);
     electronStore.set("BlockchainStoreDirName", chainDir);
 
-    const localeName = SupportLocalesKeyValueSwap[event.target.select.value];
+    const localeName =
+      languages.find((v) => v.localized_name === event.target.select.value)
+        ?.code ?? "en";
     electronStore.set("Locale", localeName);
 
     const agreeAnalytic = event.target.analytic.checked;
@@ -57,24 +65,18 @@ const ConfigurationView = observer(() => {
   };
 
   const handleChangeDir = () => {
-    const directory = ipcRenderer.sendSync("select-directory") as string[] | null;
+    const directory = ipcRenderer.sendSync("select-directory") as
+      | string[]
+      | null;
     if (directory === null) return;
     setRootChainPath(path.join(...directory));
   };
-
-  const SupportLocalesKeyValueSwap = Object.entries(supportedLocales).reduce(
-    (pre, [key, value]) => {
-      pre[value] = key;
-      return pre;
-    },
-    {} as Record<string, string>
-  );
 
   return (
     <div className={classes.root}>
       <header className={classes.titleWarp}>
         <Typography variant="h1" gutterBottom className={classes.title}>
-          {locale("설정")}
+          <T _str="Settings" _tags={transifexTags} />
         </Typography>
         <IconButton onClick={routerStore.goBack}>
           <Close />
@@ -83,17 +85,17 @@ const ConfigurationView = observer(() => {
       <form onSubmit={handleSubmit}>
         <article className={classes.fields}>
           <FormLabel className={classes.line}>
-            {locale("캐시 비우기")}
+            <T _str="Clear cache" _tags={transifexTags} />
           </FormLabel>
           <ClearCacheButton
             variant="outlined"
             color="inherit"
             className={classes.openPath}
           >
-            {locale("비우기")}
+            <T _str="clear" _tags={transifexTags} />
           </ClearCacheButton>
           <FormLabel className={classes.newLine}>
-            {locale("체인이 저장되는 경로")}
+            <T _str="Root chain store path" _tags={transifexTags} />
           </FormLabel>
           <TextField
             fullWidth
@@ -109,11 +111,11 @@ const ConfigurationView = observer(() => {
             className={classes.selectDir}
             startIcon={<FolderOpen />}
           >
-            {locale("경로 선택")}
+            <T _str="Select path" _tags={transifexTags} />
           </Button>
 
           <FormLabel className={classes.newLine}>
-            {locale("체인 폴더의 이름")}
+            <T _str="Chain store directory name" _tags={transifexTags} />
           </FormLabel>
           <TextField
             fullWidth
@@ -122,16 +124,18 @@ const ConfigurationView = observer(() => {
             defaultValue={electronStore.get("BlockchainStoreDirName")}
           />
           <FormLabel className={classes.newLine}>
-            {locale("언어 선택")}
+            <T _str="Select Language" _tags={transifexTags} />
           </FormLabel>
-          <Select
-            name="select"
-            className={classes.selectLocale}
-            items={Object.values(supportedLocales)}
-            defaultValue={supportedLocales[selectedLocale] ?? "English"}
-          />
+          {languages.length > 0 && (
+            <Select
+              name="select"
+              className={classes.selectLocale}
+              items={languages.map(({ localized_name }) => localized_name)}
+              defaultValue={selectedLanguage ?? "English"}
+            />
+          )}
           <FormLabel className={classes.newLine}>
-            {locale("키 저장 경로")}
+            <T _str="Key store path" _tags={transifexTags} />
           </FormLabel>
           <Button
             onClick={handleOpenKeyStorePath}
@@ -140,12 +144,12 @@ const ConfigurationView = observer(() => {
             className={classes.openPath}
             startIcon={<FolderOpen />}
           >
-            {locale("경로 열기")}
+            <T _str="Open Path" _tags={transifexTags} />
           </Button>
 
           <FormControl className={classes.checkboxGroup}>
             <FormLabel className={classes.newLine}>
-              {locale("정보 수집")}
+              <T _str="Send Information" _tags={transifexTags} />
             </FormLabel>
             <FormGroup>
               <FormControlLabel
@@ -157,7 +161,7 @@ const ConfigurationView = observer(() => {
                     name="sentry"
                   />
                 }
-                label={locale("오류 보고")}
+                label={<T _str="Report Error" _tags={transifexTags} />}
               />
               <FormControlLabel
                 control={
@@ -168,11 +172,14 @@ const ConfigurationView = observer(() => {
                     name="analytic"
                   />
                 }
-                label={locale("행동 분석")}
+                label={<T _str="Behavior Analysis" _tags={transifexTags} />}
               />
             </FormGroup>
             <FormHelperText className={classes.checkboxHelper}>
-              {locale("두 데이터는 게임 개발에 도움이 됩니다.")}
+              <T
+                _str="These data is helpful for Game development."
+                _tags={transifexTags}
+              />
             </FormHelperText>
           </FormControl>
         </article>
@@ -182,10 +189,13 @@ const ConfigurationView = observer(() => {
           color="primary"
           variant="contained"
         >
-          {locale("저장")}
+          <T _str="Save" _tags={transifexTags} />
         </Button>
         <FormLabel className={classes.labelRelaunch}>
-          {locale("저장 후 론처가 재시작 됩니다.")}
+          <T
+            _str="After saving, the launcher will restart."
+            _tags={transifexTags}
+          />
         </FormLabel>
       </form>
     </div>

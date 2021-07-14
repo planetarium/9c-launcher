@@ -1,21 +1,21 @@
-import { Dialog, DialogTitle, makeStyles, Typography } from "@material-ui/core";
+import { Dialog } from "@material-ui/core";
 import React from "react";
 import loadingIcon from "../../common/resources/staking_ani3.png";
 
-import "./Dialog.scss";
+import "./LoadingDialog.scss";
 
 export type Props = {
   open: boolean;
 };
 
-const ConfirmationDialog: React.FC<Props> = (props: Props) => {
+const LoadingDialog: React.FC<Props> = (props: Props) => {
   const { open } = props;
 
   return (
     <Dialog
       disableBackdropClick
       disableEscapeKeyDown
-      aria-labelledby="confirmation-dialog-title"
+      aria-labelledby="loading-dialog-title"
       open={open}
       PaperProps={{
         style: {
@@ -24,8 +24,8 @@ const ConfirmationDialog: React.FC<Props> = (props: Props) => {
         },
       }}
     >
-      <div className="ConfirmationDialogContainer">
-        <div className="ConfirmationDialogLabelContainer">
+      <div className="LoadingDialogContainer">
+        <div className="LoadingDialogLabelContainer">
           <img src={loadingIcon} />
           <div className="label">Processing Collecting...</div>
         </div>
@@ -35,4 +35,4 @@ const ConfirmationDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default ConfirmationDialog;
+export default LoadingDialog;

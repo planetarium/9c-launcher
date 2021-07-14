@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "14"
       # 의존성 설치
-      - run: npm install @planetarium/cli
+      - run: yarn add @planetarium/cli
       # APV 생성
       - id: make-apv
         run: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
@@ -105,36 +105,26 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      - name: Get npm cache directory
-        id: npm-cache
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-      - name: Restore npm cache
+      - name: Pull node_modules cache
         uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
         with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}-build
       # 의존성 설치
-      - run: npm install --loglevel verbose
+      - run: yarn
       # 코드 스타일 린트
       - run: npx pretty-quick --check --branch "${{ github.base_ref }}"
       - name: Generate GraphQL types
-        run: npm run codegen
+        run: yarn codegen
       - name: Type Check
         run: npx tsc --noEmit
         if: github.event_name == 'pull_request'
       # 빌드
-      - run: npm run build-prod
+      - run: yarn build-prod
       # 이전 릴리스 버전으로부터 config.json 복사
       - run: |
           set -ex
-          latest_apv_no="$(npm run --silent latest-apv-no)"
+          latest_apv_no="$(yarn --silent latest-apv-no)"
           temp_dir="$(mktemp -d)"
           pushd "$temp_dir"
           curl -o tmp.zip "$(printf "$URL_PATTERN" "$latest_apv_no")"
@@ -145,7 +135,7 @@ jobs:
         env:
           URL_PATTERN: "https://download.nine-chronicles.com/v%d/Windows.zip"
       # APV 서명 (config.json에 반영)
-      - run: npm run sign-apv
+      - run: yarn sign-apv
       # 빌드 아티팩트
       - if: runner.os == 'Windows'
         run: 7z a -r "../9c-launcher-dist-${{ matrix.os }}.7z" *
@@ -163,7 +153,7 @@ jobs:
             dotnet clean -c Release
             dotnet nuget locals all --clear
           popd
-          npm run pack-release
+          yarn pack-release
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
@@ -175,7 +165,7 @@ jobs:
             dotnet clean -c Release
             dotnet nuget locals all --clear
           popd
-          npm run pack-all
+          yarn pack-all
         env:
           SKIP_APV_SIGN: "1" # 위에서 npm run sign-apv 따로 돌림
       # 패키지 아티팩트

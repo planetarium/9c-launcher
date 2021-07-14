@@ -19,12 +19,12 @@ import LobbyView from "./LobbyView";
 import { electronStore } from "../../../config";
 import { YouTubeInternal } from "../../../interfaces/refs";
 
-import { useLocale } from "../../i18n";
-import { Preload } from "../../../interfaces/i18n";
+import { T, useT } from "@transifex/react";
+
+const transifexTags = "preload";
 
 const PreloadView = observer((props: IStoreContainer) => {
   const classes = preloadViewStyle();
-  const { locale } = useLocale<Preload>("preload");
 
   const videoOpts: IYoutubeOption = {
     width: "330",
@@ -53,13 +53,16 @@ const PreloadView = observer((props: IStoreContainer) => {
     player.pauseVideo();
   }, [youtubeRef]);
 
+  const welcomeMessage = useT(
+    "Receiving data from other users.\nLet's watch the trailer and new content!",
+    { _tags: transifexTags }
+  );
+
   return (
     <Container className={classes.root}>
       <Typography variant="h1" className={classes.title}>
-        {(locale(
-          "다른 사용자에게 데이터를 받는 중입니다. 트레일러와 새로운 콘텐츠를 봅시다!"
-        ) as string[]).map((paragraph) => (
-          <span key={paragraph}>{paragraph}</span>
+        {welcomeMessage.split("\n").map((v: string) => (
+          <p>{v}</p>
         ))}
       </Typography>
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
@@ -70,7 +73,7 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary={locale("블록 익스플로러")}
+            primary={<T _str="Block Explorer" _tags={transifexTags} />}
           />
         </ListItem>
         <ListItem button onClick={handleClickPlayerGuide}>
@@ -79,7 +82,9 @@ const PreloadView = observer((props: IStoreContainer) => {
           </ListItemIcon>
           <ListItemText
             className={classes.listItemText}
-            primary={locale("나인 크로니클 플레이어 가이드")}
+            primary={
+              <T _str="Nine Chronicles Player Guide" _tags={transifexTags} />
+            }
           />
         </ListItem>
       </List>

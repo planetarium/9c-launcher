@@ -4,13 +4,12 @@ import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
 
-import { useLocale } from "../../i18n";
-import { ErrorClearCache } from "../../../interfaces/i18n";
+import { T } from "@transifex/react";
+
+const transifexTags = "errorClearCache";
 
 const ErrorClearCacheView = () => {
   const classes = errorViewStyle();
-
-  const { locale } = useLocale<ErrorClearCache>("errorClearCache");
 
   const handleClearCache = useCallback(() => {
     ipcRenderer.sendSync("clear cache", false);
@@ -25,12 +24,13 @@ const ErrorClearCacheView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("실행 도중 오류가 발생했습니다.")}
+        <T _str="Something went wrong." _tags={transifexTags} />
       </Typography>
       <Typography variant="subtitle1">
-        {locale(
-          "아래 버튼을 눌러 캐시를 지워주세요. 론처가 자동으로 재시작됩니다."
-        )}
+        <T
+          _str="Please press the button below to clear cache. The launcher will restart automatically."
+          _tags={transifexTags}
+        />
       </Typography>
       <Button
         className={classes.button}
@@ -39,7 +39,7 @@ const ErrorClearCacheView = () => {
         fullWidth
         onClick={handleClearCache}
       >
-        {locale("ClearCache")}
+        <T _str="Clear cache" _tags={transifexTags} />
       </Button>
     </div>
   );

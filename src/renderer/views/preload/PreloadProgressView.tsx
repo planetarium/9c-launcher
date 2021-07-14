@@ -9,9 +9,9 @@ import {
   usePreloadProgressSubscriptionSubscription,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
-import { PreloadProgress } from "../../../interfaces/i18n";
 import { IDownloadProgress } from "../../../interfaces/ipc";
-import { useLocale } from "../../i18n";
+import { useT } from "@transifex/react";
+import { t } from "@transifex/native";
 import preloadProgressViewStyle from "./PreloadProgressView.style";
 
 const PreloadProgressView = observer(() => {
@@ -35,7 +35,6 @@ const PreloadProgressView = observer(() => {
   const [progress, setProgress] = useState(0);
   const [progressMessage, setProgressMessage] = useState<string | string[]>("");
   const [exceptionMessage, setExceptionMessage] = useState<string | null>(null);
-  const { locale } = useLocale<PreloadProgress>("preloadProgress");
 
   const gotoErrorPage = (page: string) => {
     console.log(`Direct to error page: ${page}`);
@@ -51,13 +50,20 @@ const PreloadProgressView = observer(() => {
     return statusMessage[currentStep - 1];
   };
 
+  const completedMessage = useT("Preload Completed.", {
+    _tags: "preloadProgress",
+  });
+  const noPeerMessage = useT("No Peers Were Given.", {
+    _tags: "preloadProgress",
+  });
+
   const makeProgressMessage = () => {
     if (preloadEnded) {
       return electronStore.get("PeerStrings").length > 0
-        ? locale("Preload Completed.")
-        : locale("No Peers Were Given.");
+        ? completedMessage
+        : noPeerMessage;
     } else {
-      return locale(getCurrentStepStatusMessage()).concat(
+      return getCurrentStepStatusMessage().concat(
         ` ... (${currentStep}/${totalStep}) ${Math.floor(progress)}%`
       );
     }
@@ -230,16 +236,16 @@ const PreloadProgressView = observer(() => {
 });
 
 const statusMessage = [
-  "Validating Snapshot",
-  "Downloading Snapshot",
-  "Downloading State Snapshot",
-  "Extracting Snapshot",
-  "Starting Headless",
-  "Downloading Block Hashes",
-  "Downloading Blocks",
-  "Verifying Block Headers",
-  "Downloading States",
-  "Executing Actions",
+  t("Validating Snapshot"),
+  t("Downloading Snapshot"),
+  t("Downloading State Snapshot"),
+  t("Extracting Snapshot"),
+  t("Starting Headless"),
+  t("Downloading Block Hashes"),
+  t("Downloading Blocks"),
+  t("Verifying Block Headers"),
+  t("Downloading States"),
+  t("Executing Actions"),
 ] as const;
 
 const getProgress = (

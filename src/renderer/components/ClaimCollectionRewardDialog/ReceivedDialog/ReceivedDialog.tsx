@@ -22,8 +22,8 @@ export type Props = {
   onClick: () => void;
 }
 
-const ReceivedDialog:React.FC<Props> = (props: Props) => {
-  const {rewards, onClick} = props;
+const ReceivedDialog: React.FC<Props> = (props: Props) => {
+  const { rewards, onClick } = props;
   const classes = receivedDialogStyle();
   return <div className='ReceivedDialogContainer'>
     <div className="ReceivedDialogTitle">
@@ -33,12 +33,12 @@ const ReceivedDialog:React.FC<Props> = (props: Props) => {
       <img src={GoldBox} />
     </div>
     <div className="ReceivedDialogItemList">
-    {
-      rewards.map(x => <RewardItemComponent reward={x} />)
-    }
+      {
+        rewards.map((x, i) => <RewardItemComponent reward={x} key={i} />)
+      }
     </div>
     <div>
-      <Button className={classes.button} color='primary' variant='contained' onClick={() => {onClick()}}>OK</Button>
+      <Button className={classes.button} color='primary' variant='contained' onClick={() => { onClick() }}>OK</Button>
     </div>
   </div>
 }

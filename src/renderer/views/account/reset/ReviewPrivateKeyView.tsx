@@ -10,8 +10,7 @@ import { ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React, { useState, MouseEvent, ChangeEvent } from "react";
-import { useLocale } from "../../../i18n";
-import { InputPrivateKey } from "../../../../interfaces/i18n";
+import { T } from "@transifex/react";
 import AccountStore from "../../../stores/account";
 import reviewPrivateKeyViewStyle from "./ReviewPrivateKeyView.style";
 import TextButton from "../../../components/TextButton";
@@ -21,14 +20,14 @@ interface IReviewPrivateKeyViewProps {
   routerStore: RouterStore;
 }
 
+const transifexTags = "inputPrivateKey";
+
 const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
   ({ accountStore, routerStore }) => {
     const [privateKey, setPrivateKey] = useState("");
     const [isInvalid, setIsInvalid] = useState<boolean>();
 
     const classes = reviewPrivateKeyViewStyle();
-
-    const { locale } = useLocale<InputPrivateKey>("inputPrivateKey");
 
     const privateKeyChangeHandle = (event: ChangeEvent<HTMLInputElement>) => {
       setPrivateKey(event.target.value);
@@ -59,14 +58,19 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
             startIcon={<ArrowBackIosIcon />}
             onClick={() => routerStore.push("/")}
           >
-            {locale("뒤로")}
+            <T _str="Back" _tags={transifexTags} />
           </Button>
         </div>
         <Typography variant="h1" className={classes.title}>
-          {locale("비밀번호를 재설정하기 위해 개인키를 입력해주세요.")}
+          <T
+            _str="Enter your private key to reset your password"
+            _tags={transifexTags}
+          />
         </Typography>
         <FormControl fullWidth>
-          <InputLabel className={classes.label}>{locale("개인키")}</InputLabel>
+          <InputLabel className={classes.label}>
+            <T _str="Private Key" _tags={transifexTags} />
+          </InputLabel>
           <OutlinedInput error={isInvalid} onChange={privateKeyChangeHandle} />
         </FormControl>
         <Button
@@ -74,10 +78,10 @@ const ReviewPrivateKeyView: React.FC<IReviewPrivateKeyViewProps> = observer(
           className={classes.submit}
           onClick={handleSubmit}
         >
-          {locale("Enter")}
+          <T _str="Enter" _tags={transifexTags} />
         </Button>
         <TextButton onClick={handleRevokeAccount} className={classes.revoke}>
-          {locale("개인키를 잊으셨나요?")}
+          <T _str="Forgot private key?" _tags={transifexTags} />
         </TextButton>
       </div>
     );

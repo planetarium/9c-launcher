@@ -5,12 +5,12 @@ import { Container, InputLabel } from "@material-ui/core";
 import CreateAccountView from "./CreateAccountView";
 import RevokeAccountView from "./RevokeAccountView";
 
-import { useLocale } from "../../i18n";
-import { Account } from "../../../interfaces/i18n";
+import { T } from "@transifex/react";
+
+const transifexTags = "account";
 
 const AccountView: React.FC<IStoreContainer> = observer(
   ({ accountStore, routerStore }) => {
-    const { locale } = useLocale<Account>("account");
     return (
       <div>
         <button
@@ -18,28 +18,28 @@ const AccountView: React.FC<IStoreContainer> = observer(
             routerStore.push("/account/create");
           }}
         >
-          {locale("키 생성하기")}
+          <T _str="create key" _tags={transifexTags} />
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/revoke");
           }}
         >
-          {locale("키 지우기")}
+          <T _str="revoke key" _tags={transifexTags} />
         </button>
         <button
           onClick={() => {
             routerStore.push("/account/reset/review-private-key");
           }}
         >
-          {locale("키 초기화하기")}
+          <T _str="reset key" _tags={transifexTags} />
         </button>
         <button
           onClick={() => {
             routerStore.push("/");
           }}
         >
-          {locale("홈으로 돌아가기")}
+          <T _str="back to the home" _tags={transifexTags} />
         </button>
       </div>
     );

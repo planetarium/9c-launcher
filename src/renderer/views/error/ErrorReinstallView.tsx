@@ -3,12 +3,12 @@ import { shell, remote, ipcRenderer } from "electron";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
-import { useLocale } from "../../i18n";
-import { ErrorReinstall } from "../../../interfaces/i18n";
+import { T } from "@transifex/react";
+
+const transifexTags = "errorReinstall";
 
 const ErrorReinstallView = () => {
   const classes = errorViewStyle();
-  const { locale } = useLocale<ErrorReinstall>("errorReinstall");
 
   const handleExit = useCallback(() => {
     if (
@@ -29,12 +29,16 @@ const ErrorReinstallView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        {locale("클리어 캐시 버튼을 눌러 주십시오.")}
+        <T
+          _str="Press the button below to clear the cache."
+          _tags={transifexTags}
+        />
       </Typography>
       <Typography>
-        {`${locale(
-          "혹시 이 페이지를 클리어 캐시 후에 여전히 보셨다면, 아래 링크로 앱을 재설치 하거나 디스코드에서 지원 요청해주시길 바랍니다."
-        )} `}
+        <T
+          _str="If you are still seeing this page after clearing cache, please try to reinstall the app through the link below or get support via Discord."
+          _tags={transifexTags}
+        />{" "}
         <a
           className={classes.link}
           onClick={() => {
@@ -43,7 +47,7 @@ const ErrorReinstallView = () => {
             );
           }}
         >
-          {locale("Install Link")}
+          <T _str="Install Link" _tags={transifexTags} />
         </a>
         .
       </Typography>
@@ -54,7 +58,7 @@ const ErrorReinstallView = () => {
         fullWidth
         onClick={handleExit}
       >
-        {locale("캐시 클리어 & 재시작")}
+        <T _str="Clear Cache & Restart" _tags={transifexTags} />
       </Button>
     </div>
   );

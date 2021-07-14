@@ -171,17 +171,9 @@ query CollectionSheetWithState($address: Address!) {
     }
     agent(address: $address) {
       gold
-      monsterCollectionLevel
-      monsterCollectionRound
     }
-  }
-}
-
-query GoldAndCollectionLevel($address: Address!) {
-  stateQuery {
-    agent(address: $address) {
-      gold
-      monsterCollectionLevel
+    monsterCollectionState(agentAddress: $address) {
+      level
     }
   }
 }
@@ -200,27 +192,25 @@ query GetTip {
 
 query StateQueryMonsterCollection($agentAddress: Address!) {
   stateQuery{
-  monsterCollectionState(agentAddress: $agentAddress) {
-    end
-    expiredBlockIndex
-    level
-    rewardLevel
-    receivedBlockIndex
-    startedBlockIndex
-    claimableBlockIndex
-  }
+
+    agent(address: $agentAddress) {
+      gold
+    }
+
+    monsterCollectionState(agentAddress: $agentAddress) {
+      expiredBlockIndex
+      level
+      rewardLevel
+      receivedBlockIndex
+      startedBlockIndex
+      claimableBlockIndex
+    }
   }
 }
 
 mutation Collect($level: Int!) {
   action {
     monsterCollect(level: $level)
-  }
-}
-
-mutation CancelCollection($level: Int!) {
-  action {
-    cancelMonsterCollect(level: $level)
   }
 }
 
@@ -233,7 +223,6 @@ mutation ClaimCollectionReward($address: Address!) {
 subscription CollectionState {
   monsterCollectionState {
     address
-    end
     expiredBlockIndex
     level
     rewardLevel
@@ -253,21 +242,17 @@ subscription CurrentGold {
   monsterCollectionStatus {
     fungibleAssetValue {
       quantity
+      currency
     }
-  }
-}
-
-subscription CanReceiveCollection {
-  monsterCollectionStatus {
-    canReceive
   }
 }
 
 subscription CollectionStatus {
   monsterCollectionStatus {
-    canReceive
+    lockup
     fungibleAssetValue {
       quantity
+      currency
     }
     rewardInfos {
       itemId
@@ -278,9 +263,10 @@ subscription CollectionStatus {
 
 query CollectionStatusQuery {
   monsterCollectionStatus {
-    canReceive
+    lockup
     fungibleAssetValue {
       quantity
+      currency
     }
     rewardInfos {
       itemId

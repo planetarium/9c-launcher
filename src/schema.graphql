@@ -72,9 +72,6 @@ type StateQuery {
   monsterCollectionState(
     # Address of agent.
     agentAddress: Address!
-
-    # Monster collection round of agent.
-    monsterCollectionRound: Int
   ): MonsterCollectionStateType
 
   # State for avatar EXP record.
@@ -277,6 +274,8 @@ type MaterialType {
 scalar ByteString
 
 type EquipmentType {
+  buffSkills: [SkillType]
+
   # Item elemental.
   elementalType: ElementalType!
   equipped: Boolean!
@@ -293,8 +292,11 @@ type EquipmentType {
 
   # Item category.
   itemType: ItemType!
+  level: Int!
   setId: Int!
+  skills: [SkillType]
   stat: DecimalStatType!
+  statsMap: StatsMapType!
 }
 
 type DecimalStatType {
@@ -303,6 +305,22 @@ type DecimalStatType {
 }
 
 scalar Decimal
+
+type SkillType {
+  chance: Int!
+  elementalType: ElementalType!
+  id: Int!
+  power: Int!
+}
+
+type StatsMapType {
+  aTK: Int!
+  cRI: Int!
+  dEF: Int!
+  hIT: Int!
+  hP: Int!
+  sPD: Int!
+}
 
 type CostumeType {
   # Item elemental.
@@ -504,28 +522,11 @@ type AgentStateType {
 type MonsterCollectionStateType {
   address: Address!
   claimableBlockIndex: Long!
-  end: Boolean!
   expiredBlockIndex: Long!
   level: Long!
   receivedBlockIndex: Long!
   rewardLevel: Long!
-  rewardLevelMap: [[MonsterCollectionRewardInfoType]]
-  rewardMap: [MonsterCollectionResultType]!
   startedBlockIndex: Long!
-  totalRewards(
-    # The level used to calculate total rewards, including lower level rewards.
-    rewardLevel: Long
-  ): [MonsterCollectionRewardInfoType]
-}
-
-type MonsterCollectionResultType {
-  avatarAddress: Address!
-  rewards: [MonsterCollectionRewardInfoType]!
-}
-
-type MonsterCollectionRewardInfoType {
-  itemId: Int!
-  quantity: Int!
 }
 
 type MonsterCollectionSheetType {
@@ -538,9 +539,15 @@ type MonsterCollectionRowType {
   rewards: [MonsterCollectionRewardInfoType]!
 }
 
+type MonsterCollectionRewardInfoType {
+  itemId: Int!
+  quantity: Int!
+}
+
 type TransferNCGHistoryType {
   amount: String!
   blockHash: ByteString!
+  memo: String
   recipient: Address!
   sender: Address!
   txId: ByteString!
@@ -802,8 +809,8 @@ type TransactionType_1 {
 }
 
 type MonsterCollectionStatusType {
-  canReceive: Boolean!
   fungibleAssetValue: FungibleAssetValueType!
+  lockup: Boolean!
   rewardInfos: [MonsterCollectionRewardInfoType]
 }
 
@@ -835,6 +842,9 @@ type StandaloneMutation {
 
     # A hex-encoded value for address of currency to be transferred. The default is the NCG's address.
     currencyAddress: String! = "000000000000000000000000000000000000000A"
+
+    # A 80-max length string to note.
+    memo: String
   ): TxId
   transferGold(recipient: Address!, amount: String!): TxId
     @deprecated(
@@ -867,12 +877,6 @@ type ActionMutation {
 
     # ShopItem product ID.
     productId: Guid!
-  ): TxId!
-
-  # Downgrade monster collection level.
-  cancelMonsterCollect(
-    # The monster collection level.(1 ~ 6)
-    level: Int!
   ): TxId!
 
   # Get monster collection reward.

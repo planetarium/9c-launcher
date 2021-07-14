@@ -6,7 +6,7 @@ import { RouterStore } from "mobx-react-router";
 import React from "react";
 import { useRevokePrivateKeyMutation } from "../../../generated/graphql";
 import { RevokeAccount } from "../../../interfaces/i18n";
-import { useLocale } from "../../i18n";
+import { T, useT } from "@transifex/react";
 import AccountStore from "../../stores/account";
 import revokeAccountViewStyle from "./RevokeAccountView.style";
 
@@ -15,41 +15,33 @@ interface IRevokeAccountProps {
   routerStore: RouterStore;
 }
 
+const transifexTags = "revokeAccount";
+
 const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
   ({ accountStore, routerStore }) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
 
-    const { locale } = useLocale<RevokeAccount>("revokeAccount");
-
-    const description = locale("description");
-
-    if (typeof description === "string")
-      throw Error(
-        "revokeAccount.description is not array in src/i18n/index.json"
-      );
+    const description = useT(
+      "Delete all records related to your account.\n" +
+      "Nine Chronicles is a fully decentralized game. Therefore, there is no central server that manages your password.\n" +
+      "If you lose your private key, you must create a new account to play the game from the beginning.\n" +
+      "Private keys can be found in the Settings menu of the in-game, so make sure to copy them separately next time and keep them in a safe place.",
+      { _tags: "revokeAccount" }
+    );
 
     const classes = revokeAccountViewStyle();
     return (
       <div className={classes.root}>
         <Button
           startIcon={<ArrowBackIosIcon />}
-          onClick={() => routerStore.push("/")}>
-          {locale("뒤로")}
+          onClick={() => routerStore.push("/")}
+        >
+          <T _str="Back" _tags={transifexTags} />
         </Button>
         <Typography className={classes.title}>
-          {locale("계정 지우기")}
+          <T _str="Revoke your account" _tags={transifexTags} />
         </Typography>
-        <Typography>
-          {description[0]}
-          <br />
-          <br />
-          {description[1]}
-          <br />
-          {description[2]}
-          <br />
-          <br />
-          {description[3]}
-        </Typography>
+        <Typography>{description}</Typography>
         <Button
           variant="contained"
           color="primary"
@@ -64,7 +56,7 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
             routerStore.push("/main");
           }}
         >
-          {locale("키 지우기")}
+          <T _str="revoke key" _tags={transifexTags} />
         </Button>
       </div>
     );

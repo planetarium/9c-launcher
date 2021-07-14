@@ -6,16 +6,73 @@ import {
   OutlinedInput,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import React, { useState, ChangeEvent, MouseEvent } from "react";
-import zxcvbn from "zxcvbn";
-import { RetypePassword } from "../../interfaces/i18n";
-import { useLocale } from "../i18n";
+import React, { useState, ChangeEvent, MouseEvent, ReactNode } from "react";
+import zxcvbn, { ZXCVBNFeedbackWarning } from "zxcvbn";
+import { T } from "@transifex/react";
 import VisibilityAdornment from "./VisibilityAdornment";
+
+const transifexTags = "retypePassword";
 
 interface RetypePasswordFormProps {
   onSubmit: (password: string, activationKey: string) => void;
   useActivationKey: boolean;
 }
+
+// XXX: Since Transifex reads the translation code by static analysis, it had to be hadcoded.
+const passwordHints: Record<ZXCVBNFeedbackWarning, ReactNode> = {
+  "A word by itself is easy to guess": (
+    <T _str="A word by itself is easy to guess" _tags="zxcvbn" />
+  ),
+  "Common names and surnames are easy to guess": (
+    <T _str="Common names and surnames are easy to guess" _tags="zxcvbn" />
+  ),
+  "Dates are often easy to guess": (
+    <T _str="Dates are often easy to guess" _tags="zxcvbn" />
+  ),
+  "Names and surnames by themselves are easy to guess": (
+    <T
+      _str="Names and surnames by themselves are easy to guess"
+      _tags="zxcvbn"
+    />
+  ),
+  "Recent years are easy to guess": (
+    <T _str="Recent years are easy to guess" _tags="zxcvbn" />
+  ),
+  'Repeats like "aaa" are easy to guess': (
+    <T _str='Repeats like "aaa" are easy to guess' _tags="zxcvbn" />
+  ),
+  'Repeats like "abcabcabc" are only slightly harder to guess than "abc"': (
+    <T
+      _str='Repeats like "abcabcabc" are only slightly harder to guess than "abc"'
+      _tags="zxcvbn"
+    />
+  ),
+  "Sequences like abc or 6543 are easy to guess": (
+    <T _str="Sequences like abc or 6543 are easy to guess" _tags="zxcvbn" />
+  ),
+  "Short keyboard patterns are easy to guess": (
+    <T _str="Short keyboard patterns are easy to guess" _tags="zxcvbn" />
+  ),
+  "Straight rows of keys are easy to guess": (
+    <T _str="Straight rows of keys are easy to guess" _tags="zxcvbn" />
+  ),
+  "This is a top-10 common password": (
+    <T _str="This is a top-10 common password" _tags="zxcvbn" />
+  ),
+  "This is a top-100 common password": (
+    <T _str="This is a top-100 common password" _tags="zxcvbn" />
+  ),
+  "This is a very common password": (
+    <T _str="This is a very common password" _tags="zxcvbn" />
+  ),
+  "This is similar to a commonly used password": (
+    <T _str="This is similar to a commonly used password" _tags="zxcvbn" />
+  ),
+  "Use a longer keyboard pattern with more turns": (
+    <T _str="Use a longer keyboard pattern with more turns" _tags="zxcvbn" />
+  ),
+  "": "",
+};
 
 const RetypePasswordForm = ({
   onSubmit,
@@ -33,8 +90,6 @@ const RetypePasswordForm = ({
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-
-  const { locale } = useLocale<RetypePassword>("retypePassword");
 
   const classes = createStyle();
 
@@ -100,9 +155,7 @@ const RetypePasswordForm = ({
     isPasswordEmpty ||
     isPasswordConfirmEmpty ||
     isPasswordConfirmError ||
-    (useActivationKey
-      ? isActivationKeyEmpty || isActivationKeyError
-      : false);
+    (useActivationKey ? isActivationKeyEmpty || isActivationKeyError : false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -113,7 +166,7 @@ const RetypePasswordForm = ({
   function strengthHint(password: string) {
     const { warning } = zxcvbn(password).feedback;
     if (warning === "") return "";
-    return locale(warning);
+    return passwordHints[warning];
   }
 
   return (
@@ -123,7 +176,9 @@ const RetypePasswordForm = ({
         error={password.length > 0 && isPasswordEmpty}
         className={classes.formControl}
       >
-        <InputLabel className={classes.label}>{locale("비밀번호")}</InputLabel>
+        <InputLabel className={classes.label}>
+          <T _str="Password" _tags={transifexTags} />
+        </InputLabel>
         <OutlinedInput
           id="password-input"
           onChange={handlePasswordChange}
@@ -145,7 +200,7 @@ const RetypePasswordForm = ({
         className={classes.formControl}
       >
         <InputLabel className={classes.label}>
-          {locale("비밀번호 (확인)")}
+          <T _str="Password (Confirm)" _tags={transifexTags}/>
         </InputLabel>
         <OutlinedInput
           id="password-confirm-input"
@@ -162,21 +217,21 @@ const RetypePasswordForm = ({
           {passwordConfirm.length > 0 && strengthHint(passwordConfirm)}
         </FormHelperText>
       </FormControl>
-      {useActivationKey
-        ? (
-          <FormControl
-            fullWidth
-            error={isActivationKeyError}
-            className={classes.formControl}
-          >
-            <InputLabel className={classes.label}>{locale("초대 코드")}</InputLabel>
-            <OutlinedInput type="text" onChange={handleActivationKeyChange} />
-            <FormHelperText className={classes.helperText}>
-              form helper text
-            </FormHelperText>
-          </FormControl>
-        )
-        : (<></>)}
+      {useActivationKey && (
+        <FormControl
+          fullWidth
+          error={isActivationKeyError}
+          className={classes.formControl}
+        >
+          <InputLabel className={classes.label}>
+            <T _str="Invitation Code" _tags={transifexTags}/>
+          </InputLabel>
+          <OutlinedInput type="text" onChange={handleActivationKeyChange} />
+          <FormHelperText className={classes.helperText}>
+            form helper text
+          </FormHelperText>
+        </FormControl>
+      )}
       <Button
         disabled={disabled}
         color="primary"
@@ -184,7 +239,7 @@ const RetypePasswordForm = ({
         className={classes.submit}
         variant="contained"
       >
-        {locale("확인")}
+        <T _str="Done" _tags={transifexTags}/>
       </Button>
     </form>
   );
