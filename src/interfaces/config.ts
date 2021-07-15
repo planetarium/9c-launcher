@@ -1,4 +1,5 @@
-export interface IElectronStore {
+export interface IConfig {
+  ConfigVersion: number;
   AppProtocolVersion: string;
   SnapshotPaths: string[];
   GenesisBlockPath: string;
