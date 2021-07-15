@@ -1,6 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { RPC_SERVER_HOST, RPC_SERVER_PORT, configStore } from "../../config";
+import { RPC_SERVER_HOST, RPC_SERVER_PORT, userConfigStore, get as getConfig } from "../../config";
 
 export default class GameStore {
   @observable
@@ -16,13 +16,13 @@ export default class GameStore {
     ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
       this._isGameStarted = false;
     });
-    this._genesisBlockPath = configStore.get("GenesisBlockPath") as string;
-    this._language = configStore.get("Locale") as string;
-    this._appProtocolVersion = configStore.get(
+    this._genesisBlockPath = getConfig("GenesisBlockPath") as string;
+    this._language = getConfig("Locale") as string;
+    this._appProtocolVersion = getConfig(
       "AppProtocolVersion"
     ) as string;
 
-    configStore.onDidChange(
+    userConfigStore.onDidChange(
       "Locale",
       (value) => (this._language = value ?? "en")
     );
@@ -43,7 +43,7 @@ export default class GameStore {
     const awsSinkGuid: string = ipcRenderer.sendSync(
       "get-aws-sink-cloudwatch-guid"
     );
-    const dataProviderUrl = configStore.get("DataProviderUrl");
+    const dataProviderUrl = getConfig("DataProviderUrl");
 
     ipcRenderer.send("launch game", {
       args: [

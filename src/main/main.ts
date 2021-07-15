@@ -4,7 +4,8 @@ import {
   LOCAL_SERVER_HOST,
   LOCAL_SERVER_PORT,
   configStore,
-  BLOCKCHAIN_STORE_PATH,
+  get as getConfig,
+  getBlockChainStorePath,
   MAC_GAME_PATH,
   WIN_GAME_PATH,
   RPC_SERVER_HOST,
@@ -72,54 +73,6 @@ const standaloneExecutablePath = path.join(
   "publish",
   "NineChronicles.Headless.Executable"
 );
-const standaloneExecutableArgs = [
-  `-V=${configStore.get("AppProtocolVersion")}`,
-  `-G=${configStore.get("GenesisBlockPath")}`,
-  `-D=${configStore.get("MinimumDifficulty")}`,
-  `--store-type=${configStore.get("StoreType")}`,
-  `--store-path=${BLOCKCHAIN_STORE_PATH}`,
-  ...configStore
-    .get("IceServerStrings")
-    .map((iceServerString) => `-I=${iceServerString}`),
-  ...configStore
-    .get("PeerStrings")
-    .map((peerString) => `--peer=${peerString}`),
-  ...configStore
-    .get("TrustedAppProtocolVersionSigners")
-    .map(
-      (trustedAppProtocolVersionSigner) =>
-        `-T=${trustedAppProtocolVersionSigner}`
-    ),
-  "--no-miner",
-  "--rpc-server",
-  `--rpc-listen-host=${RPC_SERVER_HOST}`,
-  `--rpc-listen-port=${RPC_SERVER_PORT}`,
-  "--graphql-server",
-  `--graphql-host=${LOCAL_SERVER_HOST}`,
-  `--graphql-port=${LOCAL_SERVER_PORT}`,
-  `--workers=${configStore.get("Workers")}`,
-  `--confirmations=${configStore.get("Confirmations")}`,
-  ...configStore.get("HeadlessArgs", []),
-  ...(isDev ? ["--no-cors"] : []),
-];
-
-{
-  const awsAccessKey = configStore.get("AwsAccessKey");
-  const awsSecretKey = configStore.get("AwsSecretKey");
-  const awsRegion = configStore.get("AwsRegion");
-
-  if (
-    awsAccessKey !== undefined &&
-    awsSecretKey !== undefined &&
-    awsRegion !== undefined
-  ) {
-    standaloneExecutableArgs.push(
-      `--aws-access-key=${awsAccessKey}`,
-      `--aws-secret-key=${awsSecretKey}`,
-      `--aws-region=${awsRegion}`
-    );
-  }
-}
 
 const REMOTE_CONFIG_URL = "https://download.nine-chronicles.com/9c-launcher-config.json";
 
@@ -132,7 +85,7 @@ let standalone: Headless = new Headless(standaloneExecutablePath);
 let ip: string | null = null;
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: Mixpanel | null =
-  configStore.get("Mixpanel") && !isDev
+  getConfig("Mixpanel") && !isDev
     ? createMixpanel(MIXPANEL_TOKEN)
     : null;
 let initializeHeadlessCts: {
@@ -203,14 +156,14 @@ async function intializeConfig() {
     const res = await axios(REMOTE_CONFIG_URL);
     const remoteConfig: IConfig = res.data;
 
-    const localApv = configStore.get("AppProtocolVersion");
+    const localApv = getConfig("AppProtocolVersion");
     const remoteApv = remoteConfig.AppProtocolVersion;
     if (localApv !== remoteApv) {
       console.log(`APVs are different, ignore. (local: ${localApv}, remote: ${remoteApv})`);
       return;
     }
 
-    const localConfigVersion = configStore.get("ConfigVersion");
+    const localConfigVersion = getConfig("ConfigVersion");
     const remoteConfigVersion = remoteConfig.ConfigVersion;
     if (localConfigVersion > remoteConfigVersion) {
       console.log(`Local config is newer than remote, ignore. (local: ${localConfigVersion}, remote: ${remoteConfigVersion})`);
@@ -555,7 +508,7 @@ function initializeIpc() {
       "Launcher/Clear Cache",
       { distinct_id: mixpanelUUID, ip });
     await quitAllProcesses("clear-cache");
-    utils.deleteBlockchainStoreSync(BLOCKCHAIN_STORE_PATH);
+    utils.deleteBlockchainStoreSync(getBlockChainStorePath());
     if (rerun) initializeHeadless();
     event.returnValue = true;
   });
@@ -727,18 +680,18 @@ async function initializeHeadless(): Promise<void> {
     return;
   }
 
-  const peerInfos = configStore.get("PeerStrings");
+  const peerInfos: string[] = getConfig("PeerStrings");
   if (peerInfos.length > 0) {
     const peerApvToken = standalone.apv.query(peerInfos[0]);
     if (peerApvToken !== null) {
       if (
         standalone.apv.verify(
-          configStore.get("TrustedAppProtocolVersionSigners"),
+          getConfig("TrustedAppProtocolVersionSigners"),
           peerApvToken
         )
       ) {
         const peerApv = standalone.apv.analyze(peerApvToken);
-        const localApvToken = configStore.get("AppProtocolVersion");
+        const localApvToken = getConfig("AppProtocolVersion");
         const localApv = standalone.apv.analyze(localApvToken);
 
         await update(
@@ -763,40 +716,41 @@ async function initializeHeadless(): Promise<void> {
   };
 
   try {
-    if (!utils.isDiskPermissionValid(BLOCKCHAIN_STORE_PATH)) {
+    const chainPath = getBlockChainStorePath();
+    if (!utils.isDiskPermissionValid(chainPath)) {
       win?.webContents.send("go to error page", "no-permission");
       throw new HeadlessInitializeError(
-        `Not enough permission. ${BLOCKCHAIN_STORE_PATH}`
+        `Not enough permission. ${chainPath}`
       );
     }
 
-    let freeSpace = await utils.getDiskSpace(BLOCKCHAIN_STORE_PATH);
+    let freeSpace = await utils.getDiskSpace(chainPath);
     if (freeSpace < REQUIRED_DISK_SPACE) {
       win?.webContents.send("go to error page", "disk-space");
       throw new HeadlessInitializeError(
-        `Not enough space. ${BLOCKCHAIN_STORE_PATH} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
+        `Not enough space. ${chainPath} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
       );
     }
     win?.webContents.send("start bootstrap");
     const snapshot =
-      configStore.get("StoreType") === "rocksdb"
+      getConfig("StoreType") === "rocksdb"
         ? partitionSnapshot
         : monoSnapshot;
 
-    const snapshotPaths: string[] = configStore.get("SnapshotPaths");
+    const snapshotPaths: string[] = getConfig("SnapshotPaths");
     if (CUSTOM_SERVER) {
       console.log(
         "As a custom headless server is used, snapshot won't be used."
       );
     } else if (snapshotPaths.length > 0 && win != null) {
-      const snapshotDownloadUrls: string[] = configStore.get("SnapshotPaths");
+      const snapshotDownloadUrls: string[] = getConfig("SnapshotPaths");
       let isProcessSuccess = false;
       let recentError: Error = Error();
       for (const snapshotDownloadUrl of snapshotDownloadUrls) {
         try {
           isProcessSuccess = await snapshot.processSnapshot(
             snapshotDownloadUrl,
-            BLOCKCHAIN_STORE_PATH,
+            chainPath,
             app.getPath("userData"),
             standalone,
             win,
@@ -844,7 +798,7 @@ async function initializeHeadless(): Promise<void> {
 
     initializeHeadlessCts.token.throwIfCancelled();
     win?.webContents.send("start headless");
-    await standalone.execute(standaloneExecutableArgs);
+    await standalone.execute(getHeadlessArgs());
 
     console.log("Register exit handler.");
     standalone.once("exit", async () => {
@@ -1040,5 +994,55 @@ function relaunch() {
     app.relaunch();
     app.exit();
   }
+}
+
+function getHeadlessArgs(): string[] {
+  const args = [
+    `-V=${getConfig("AppProtocolVersion")}`,
+    `-G=${getConfig("GenesisBlockPath")}`,
+    `-D=${getConfig("MinimumDifficulty")}`,
+    `--store-type=${getConfig("StoreType")}`,
+    `--store-path=${getBlockChainStorePath()}`,
+    ...getConfig("IceServerStrings")
+      .map((iceServerString) => `-I=${iceServerString}`),
+    ...getConfig("PeerStrings")
+      .map((peerString) => `--peer=${peerString}`),
+    ...getConfig("TrustedAppProtocolVersionSigners")
+      .map(
+        (trustedAppProtocolVersionSigner) =>
+          `-T=${trustedAppProtocolVersionSigner}`
+      ),
+    "--no-miner",
+    "--rpc-server",
+    `--rpc-listen-host=${RPC_SERVER_HOST}`,
+    `--rpc-listen-port=${RPC_SERVER_PORT}`,
+    "--graphql-server",
+    `--graphql-host=${LOCAL_SERVER_HOST}`,
+    `--graphql-port=${LOCAL_SERVER_PORT}`,
+    `--workers=${getConfig("Workers")}`,
+    `--confirmations=${getConfig("Confirmations")}`,
+    ...getConfig("HeadlessArgs", []),
+    ...(isDev ? ["--no-cors"] : []),
+  ];
+
+  {
+    const awsAccessKey = getConfig("AwsAccessKey");
+    const awsSecretKey = getConfig("AwsSecretKey");
+    const awsRegion = getConfig("AwsRegion");
+
+    if (
+      awsAccessKey !== undefined &&
+      awsSecretKey !== undefined &&
+      awsRegion !== undefined
+    ) {
+      args.push(
+        `--aws-access-key=${awsAccessKey}`,
+        `--aws-secret-key=${awsSecretKey}`,
+        `--aws-region=${awsRegion}`
+      );
+    }
+  }
+
+  return args;
 }
 

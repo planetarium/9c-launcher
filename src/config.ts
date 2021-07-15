@@ -5,110 +5,113 @@ import { IConfig } from "./interfaces/config";
 const { app } =
   process.type === "browser" ? require("electron") : require("electron").remote;
 
+const schema: any = {
+  AppProtocolVersion: {
+    type: "string",
+    default:
+      "2001/019101FEec7ed4f918D396827E1277DEda1e20D4/MEQCIBlLqJk+INI.EHa2EvdUl.7LIZoOXRm3+9GF0fQPakw8AiBE2wbRGSnohWgDHm1gSU+iSpVv7sxKQFHcrfKFTD72dg==/ZHUxNjpXaW5kb3dzQmluYXJ5VXJsdTU0Omh0dHBzOi8vZG93bmxvYWQubmluZS1jaHJvbmljbGVzLmNvbS92MjAwMS9XaW5kb3dzLnppcHUxNDptYWNPU0JpbmFyeVVybHU1NTpodHRwczovL2Rvd25sb2FkLm5pbmUtY2hyb25pY2xlcy5jb20vdjIwMDEvbWFjT1MudGFyLmd6dTk6dGltZXN0YW1wdTIwOjIwMjAtMDYtMzBUMDU6NDg6MTFaZQ==",
+  },
+  SnapshotPaths: {
+    type: "array",
+    default: [],
+  },
+  GenesisBlockPath: {
+    type: "string",
+    default: "",
+  },
+  MinimumDifficulty: {
+    type: "integer",
+    default: 5000000,
+  },
+  StoreType: {
+    type: "string",
+    default: "rocksdb",
+  },
+  NoMiner: {
+    type: "boolean",
+    default: true,
+  },
+  TrustedAppProtocolVersionSigners: {
+    type: "array",
+    default: [
+      "02a5e2811a9bfa4eec274e806debd622c53702bce39a809918563a4cf34189ff85",
+    ],
+  },
+  IceServerStrings: {
+    type: "array",
+    default: [
+      "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us.planetarium.dev:3478",
+      "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us2.planetarium.dev:3478",
+      "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us3.planetarium.dev:3478",
+    ],
+  },
+  PeerStrings: {
+    type: "array",
+    default: [],
+  },
+  BlockchainStoreDirParent: {
+    type: "string",
+    default: "",
+  },
+  BlockchainStoreDirName: {
+    type: "string",
+    default: "9c",
+  },
+  Locale: {
+    type: "string",
+    default: app.getLocale(),
+  },
+  Workers: {
+    type: "integer",
+    default: 20,
+  },
+  Confirmations: {
+    type: "integer",
+    default: 0,
+  },
+  HeadlessArgs: {
+    type: "array",
+    default: [],
+  },
+  Mixpanel: {
+    type: "boolean",
+    default: true,
+  },
+  Sentry: {
+    type: "boolean",
+    default: true,
+  },
+  MuteTeaser: {
+    type: "boolean",
+    default: false,
+  },
+  AwsAccessKey: {
+    type: "string",
+    default: undefined,
+  },
+  AwsSecretKey: {
+    type: "string",
+    default: undefined,
+  },
+  AwsRegion: {
+    type: "string",
+    default: undefined,
+  },
+  DataProviderUrl: {
+    type: "string",
+    default: undefined
+  },
+  ConfigVersion: {
+    type: "integer",
+    default: 0
+  }
+}
+
 export const configStore = new Store<IConfig>({
   cwd: app.getAppPath(),
-  schema: {
-    AppProtocolVersion: {
-      type: "string",
-      default:
-        "2001/019101FEec7ed4f918D396827E1277DEda1e20D4/MEQCIBlLqJk+INI.EHa2EvdUl.7LIZoOXRm3+9GF0fQPakw8AiBE2wbRGSnohWgDHm1gSU+iSpVv7sxKQFHcrfKFTD72dg==/ZHUxNjpXaW5kb3dzQmluYXJ5VXJsdTU0Omh0dHBzOi8vZG93bmxvYWQubmluZS1jaHJvbmljbGVzLmNvbS92MjAwMS9XaW5kb3dzLnppcHUxNDptYWNPU0JpbmFyeVVybHU1NTpodHRwczovL2Rvd25sb2FkLm5pbmUtY2hyb25pY2xlcy5jb20vdjIwMDEvbWFjT1MudGFyLmd6dTk6dGltZXN0YW1wdTIwOjIwMjAtMDYtMzBUMDU6NDg6MTFaZQ==",
-    },
-    SnapshotPaths: {
-      type: "array",
-      default: [],
-    },
-    GenesisBlockPath: {
-      type: "string",
-      default: "",
-    },
-    MinimumDifficulty: {
-      type: "integer",
-      default: 5000000,
-    },
-    StoreType: {
-      type: "string",
-      default: "rocksdb",
-    },
-    NoMiner: {
-      type: "boolean",
-      default: true,
-    },
-    TrustedAppProtocolVersionSigners: {
-      type: "array",
-      default: [
-        "02a5e2811a9bfa4eec274e806debd622c53702bce39a809918563a4cf34189ff85",
-      ],
-    },
-    IceServerStrings: {
-      type: "array",
-      default: [
-        "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us.planetarium.dev:3478",
-        "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us2.planetarium.dev:3478",
-        "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us3.planetarium.dev:3478",
-      ],
-    },
-    PeerStrings: {
-      type: "array",
-      default: [],
-    },
-    BlockchainStoreDirParent: {
-      type: "string",
-      default: "",
-    },
-    BlockchainStoreDirName: {
-      type: "string",
-      default: "9c",
-    },
-    Locale: {
-      type: "string",
-      default: app.getLocale(),
-    },
-    Workers: {
-      type: "integer",
-      default: 20,
-    },
-    Confirmations: {
-      type: "integer",
-      default: 0,
-    },
-    HeadlessArgs: {
-      type: "array",
-      default: [],
-    },
-    Mixpanel: {
-      type: "boolean",
-      default: true,
-    },
-    Sentry: {
-      type: "boolean",
-      default: true,
-    },
-    MuteTeaser: {
-      type: "boolean",
-      default: false,
-    },
-    AwsAccessKey: {
-      type: "string",
-      default: undefined,
-    },
-    AwsSecretKey: {
-      type: "string",
-      default: undefined,
-    },
-    AwsRegion: {
-      type: "string",
-      default: undefined,
-    },
-    DataProviderUrl: {
-      type: "string",
-      default: undefined
-    },
-    ConfigVersion: {
-      type: "number",
-      default: 0
-    }
-  },
+  schema
 });
+export const userConfigStore = new Store<IConfig>();
 
 const LocalServerUrl = (): string => {
   return `${LocalServerHost().host}:${LocalServerPort().port}`;
@@ -160,9 +163,24 @@ const getLocalApplicationDataPath = (): string => {
 };
 
 export const blockchainStoreDirParent =
-  configStore.get("BlockchainStoreDirParent") === ""
+  get("BlockchainStoreDirParent") === ""
     ? path.join(getLocalApplicationDataPath(), "planetarium")
-    : configStore.get("BlockchainStoreDirParent");
+    : get("BlockchainStoreDirParent");
+
+export function get<K extends keyof IConfig>(key: K, defaultValue?: IConfig[K]): IConfig[K] {
+  if (userConfigStore.has(key)) {
+    return userConfigStore.get(key);
+  }
+
+  return configStore.get(key, defaultValue);
+}
+
+export function getBlockChainStorePath(): string {
+  return path.join(
+    blockchainStoreDirParent,
+    get("BlockchainStoreDirName")
+  )
+}
 
 export const REQUIRED_DISK_SPACE = 2 * 1000 * 1000 * 1000;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
@@ -179,9 +197,5 @@ export const CUSTOM_SERVER: boolean =
   LocalServerPort().notDefault ||
   RpcServerHost().notDefault ||
   RpcServerPort().notDefault;
-export const BLOCKCHAIN_STORE_PATH = path.join(
-  blockchainStoreDirParent,
-  configStore.get("BlockchainStoreDirName")
-);
 export const MIXPANEL_TOKEN = "80a1e14b57d050536185c7459d45195a";
 export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";

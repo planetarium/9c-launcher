@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
 import errorViewStyle from "./ErrorView.style";
-import { Button, Typography } from "@material-ui/core";
-import { BLOCKCHAIN_STORE_PATH } from "../../../config";
+import { Typography } from "@material-ui/core";
+import { getBlockChainStorePath } from "../../../config";
 import * as Sentry from "@sentry/electron";
 import { T } from "@transifex/react";
 
@@ -28,7 +28,7 @@ const ErrorNoPermissionView = () => {
           _tags={transifexTags}
         />
         <br />
-        <code className={classes.code}>{BLOCKCHAIN_STORE_PATH}</code>
+        <code className={classes.code}>{getBlockChainStorePath()}</code>
         <br />
         <T
           _str="Please change chain directory by following steps below."

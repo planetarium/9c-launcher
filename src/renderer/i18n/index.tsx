@@ -1,7 +1,6 @@
 import { tx } from "@transifex/native";
-import { useLanguages } from "@transifex/react";
 import React, { createContext, useEffect, useState } from "react";
-import { configStore, TRANSIFEX_TOKEN } from "../../config";
+import { userConfigStore, get, TRANSIFEX_TOKEN } from "../../config";
 
 interface LocaleContext {
   locale: string;
@@ -14,10 +13,10 @@ const context = createContext<LocaleContext>({
 const { Provider } = context;
 
 export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
-  const [locale, setLocale] = useState(() => configStore.get("Locale"));
+  const [locale, setLocale] = useState(() => get("Locale"));
 
   useEffect(() => {
-    const unsubscribe = configStore.onDidChange("Locale", (v) =>
+    const unsubscribe = userConfigStore.onDidChange("Locale", (v) =>
       setLocale(v ?? "en")
     );
     return unsubscribe;
@@ -32,7 +31,7 @@ export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
 
     validateLocale(locale).then((valid) => valid || setLocale("en"));
 
-    configStore.set("Locale", locale);
+    userConfigStore.set("Locale", locale);
   }, [locale]);
 
   return <Provider value={{ locale }}>{children}</Provider>;
