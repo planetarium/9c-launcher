@@ -2,11 +2,10 @@ const path = require("path");
 const HtmlPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { DefinePlugin } = require("webpack");
+const { DefinePlugin, IgnorePlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
-const nodeExternals = require("webpack-node-externals");
 const TerserPlugin = require("terser-webpack-plugin");
 
 // const to avoid typos
@@ -43,8 +42,8 @@ function createRenderConfig(isDev) {
       }
     },
 
-    externals: {
-      electron: "require('electron')",
+    externalsPresets: {
+      electronRenderer: true,
     },
 
     module: {
@@ -170,10 +169,25 @@ function createMainConfig(isDev) {
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
     },
+    
+    stats: {
+      errorDetails: true,
+    },
+
+    ignoreWarnings: [
+      /^Critical dependency:/, // fix keyv and got using weird tricks to avoid webpack
+    ],
 
     devtool: "source-map",
-    
-    externals: [nodeExternals()],
+
+    externalsPresets: {
+      node: true,
+      electronMain: true,
+    }, 
+
+    externals: {
+      "spawn-sync": "require('child_process').spawnSync" // fix child-process-promise/cross
+    },
 
     output: {
       filename: "[name].js",
@@ -224,6 +238,10 @@ function createMainConfig(isDev) {
       new CopyWebpackPlugin({
         patterns: [{ from: "package.json", to: "./", context: "../" }],
       }),
+
+      new IgnorePlugin({
+        resourceRegExp: /^(utf\-8\-validate|bufferutil)/, // fix ws module
+      })
     ],
     
     optimization: {
