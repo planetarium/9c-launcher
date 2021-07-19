@@ -3,7 +3,7 @@ import checkDiskSpace from "check-disk-space";
 import path from "path";
 import fs from "fs";
 import axios from "axios";
-import stream from "stream";
+import { pipeline } from "stream/promises";
 import { promisify } from "util";
 import { IDownloadProgress } from "./interfaces/ipc";
 import CancellationToken from "cancellationtoken";
@@ -11,7 +11,6 @@ import extractZip from "extract-zip";
 import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
 import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
 
-const pipeline = promisify(stream.pipeline);
 
 export async function getDiskSpace(diskpath: string): Promise<number> {
   let diskSpace = await checkDiskSpace(diskpath);
@@ -104,7 +103,15 @@ export async function cancellableDownload(
 ): Promise<void> {
   try {
     const axiosCts = axios.CancelToken.source();
-    token.onCancelled((_) => axiosCts.cancel());
+    const ac = new AbortController();
+    const options = {
+      signal: ac.signal,
+    };
+
+    token.onCancelled((_) => {
+      axiosCts.cancel();
+      ac.abort();
+    });
 
     const res = await axios(url, {
       cancelToken: axiosCts.token,
@@ -121,7 +128,7 @@ export async function cancellableDownload(
         transferredBytes,
       });
     });
-    await pipeline(res.data, fs.createWriteStream(downloadPath));
+    await pipeline(res.data, fs.createWriteStream(downloadPath), options);
   } catch (error) {
     throw new CancellableDownloadFailedError(url, downloadPath);
   }
