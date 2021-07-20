@@ -1,7 +1,7 @@
 import { ChildProcess, execFileSync } from "child_process";
 import { ipcMain } from "electron";
 import { dirname, basename } from "path";
-import { configStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../../config";
+import { userConfigStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../../config";
 import { retry } from "@lifeomic/attempt";
 import { FetchError, HeadlessExitedError } from "../../errors";
 import { execute, sleep } from "../../utils";
@@ -120,7 +120,7 @@ class Headless {
 
   public async setMining(mine: boolean): Promise<boolean> {
     console.log(`Setting mining: ${mine}`);
-    configStore.set("NoMiner", !mine);
+    userConfigStore.set("NoMiner", !mine);
     const body = JSON.stringify({
       Mine: mine,
     });
