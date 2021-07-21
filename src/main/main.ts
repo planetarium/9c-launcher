@@ -61,6 +61,7 @@ import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from 'ntp-time'
 import { IConfig } from "src/interfaces/config";
+import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron-devtools-installer';
 
 initializeSentry();
 
@@ -183,6 +184,10 @@ function initializeApp() {
     win = createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
     win.webContents.on("dom-ready", (event) => initializeHeadless());
+
+    if(isDev) installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
+        .then((name) => console.log(`Added Extension:  ${name}`))
+        .catch((err) => console.log('An error occurred: ', err));
   });
 
   app.on("quit", (event) => {
