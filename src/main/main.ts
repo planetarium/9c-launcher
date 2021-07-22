@@ -32,7 +32,7 @@ import { ChildProcessWithoutNullStreams } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import logoImage from "./resources/logo.png";
 import { initializeSentry } from "../preload/sentry";
-import "@babel/polyfill";
+import "core-js";
 import extractZip from "extract-zip";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
@@ -61,6 +61,7 @@ import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from 'ntp-time'
 import { IConfig } from "src/interfaces/config";
+import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron-devtools-installer';
 
 initializeSentry();
 
@@ -183,6 +184,10 @@ function initializeApp() {
     win = createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
     win.webContents.on("dom-ready", (event) => initializeHeadless());
+
+    if(isDev) installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
+        .then((name) => console.log(`Added Extension:  ${name}`))
+        .catch((err) => console.log('An error occurred: ', err));
   });
 
   app.on("quit", (event) => {
