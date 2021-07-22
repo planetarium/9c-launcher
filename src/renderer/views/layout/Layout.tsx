@@ -9,7 +9,7 @@ import useStores from "../../../hooks/useStores";
 import { observer } from "mobx-react";
 
 import { T } from "@transifex/react";
-import { configStore } from "../../../config";
+import { get as getConfig } from "../../../config";
 import AccountInfoContainer from "../../components/AccountInfo/AccountInfoContainer";
 import InfoIcon from "../../components/InfoIcon";
 
@@ -42,7 +42,7 @@ export const Layout: React.FC = observer(({ children }) => {
       "clipboard"
     ) as HTMLTextAreaElement)!;
     const stringValue = `
-      APV: ${configStore.get("AppProtocolVersion") as string} 
+      APV: ${getConfig("AppProtocolVersion") as string} 
       Address: ${accountStore.selectedAddress} 
       Debug: ${accountStore.isLogin} / ${topmostBlocksResult.loading}
       Mined blocks: ${minedBlocks?.length} (out of recent ${topmostBlocks?.length
@@ -118,7 +118,7 @@ export const Layout: React.FC = observer(({ children }) => {
             </Button>
           </li>
         </ul>
-        <div className="LauncherLayoutVersion">{`v${(configStore.get("AppProtocolVersion") as string).split("/")[0]
+        <div className="LauncherLayoutVersion">{`v${(getConfig("AppProtocolVersion") as string).split("/")[0]
           }`}</div>
         <div
           id={"LauncherClientIcon"}

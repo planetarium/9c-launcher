@@ -17,7 +17,7 @@ import {
 } from "@material-ui/core";
 import { FolderOpen, Close } from "@material-ui/icons";
 import useStores from "../../../hooks/useStores";
-import { configStore, blockchainStoreDirParent } from "../../../config";
+import { userConfigStore, get as getConfig, blockchainStoreDirParent } from "../../../config";
 import { SettingsFormEvent } from "../../../interfaces/event";
 import configurationViewStyle from "./ConfigurationView.style";
 import { T, useLanguages, useLocale } from "@transifex/react";
@@ -46,19 +46,19 @@ const ConfigurationView = observer(() => {
   const handleSubmit = (event: SettingsFormEvent) => {
     event.preventDefault();
     const chainDir = event.target.chain.value;
-    configStore.set("BlockchainStoreDirParent", rootChainPath);
-    configStore.set("BlockchainStoreDirName", chainDir);
+    userConfigStore.set("BlockchainStoreDirParent", rootChainPath);
+    userConfigStore.set("BlockchainStoreDirName", chainDir);
 
     const localeName =
       languages.find((v) => v.localized_name === event.target.select.value)
         ?.code ?? "en";
-    configStore.set("Locale", localeName);
+    userConfigStore.set("Locale", localeName);
 
     const agreeAnalytic = event.target.analytic.checked;
-    configStore.set("Mixpanel", agreeAnalytic);
+    userConfigStore.set("Mixpanel", agreeAnalytic);
 
     const isEnableSentry = event.target.sentry.checked;
-    configStore.set("Sentry", isEnableSentry);
+    userConfigStore.set("Sentry", isEnableSentry);
 
     remote.app.relaunch();
     remote.app.exit();
@@ -121,7 +121,7 @@ const ConfigurationView = observer(() => {
             fullWidth
             name="chain"
             className={classes.textField}
-            defaultValue={configStore.get("BlockchainStoreDirName")}
+            defaultValue={getConfig("BlockchainStoreDirName")}
           />
           <FormLabel className={classes.newLine}>
             <T _str="Select Language" _tags={transifexTags} />
@@ -156,7 +156,7 @@ const ConfigurationView = observer(() => {
                 control={
                   <Checkbox
                     className={classes.checkbox}
-                    defaultChecked={configStore.get("Sentry")}
+                    defaultChecked={getConfig("Sentry")}
                     color="default"
                     name="sentry"
                   />
@@ -167,7 +167,7 @@ const ConfigurationView = observer(() => {
                 control={
                   <Checkbox
                     className={classes.checkbox}
-                    defaultChecked={configStore.get("Mixpanel")}
+                    defaultChecked={getConfig("Mixpanel")}
                     color="default"
                     name="analytic"
                   />

@@ -2,7 +2,7 @@ import { Container, Typography, CircularProgress } from "@material-ui/core";
 import { observer } from "mobx-react";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import React, { useState, useEffect } from "react";
-import { configStore } from "../../../config";
+import { get as getConfig } from "../../../config";
 import {
   useNodeExceptionSubscription,
   useNodeStatusSubscriptionSubscription,
@@ -59,7 +59,7 @@ const PreloadProgressView = observer(() => {
 
   const makeProgressMessage = () => {
     if (preloadEnded) {
-      return configStore.get("PeerStrings").length > 0
+      return getConfig("PeerStrings").length > 0
         ? completedMessage
         : noPeerMessage;
     } else {

@@ -1,5 +1,5 @@
 import { observable, action } from "mobx";
-import { configStore } from "../../config";
+import { get } from "../../config";
 
 export default class StandaloneStore {
   @observable
@@ -12,7 +12,7 @@ export default class StandaloneStore {
   public IsSetPrivateKeyEnded: boolean;
 
   constructor() {
-    this.NoMiner = configStore.get("NoMiner") as boolean;
+    this.NoMiner = get("NoMiner") as boolean;
     this.Ready = false;
     this.IsSetPrivateKeyEnded = false;
   }
