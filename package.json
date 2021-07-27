@@ -124,6 +124,7 @@
     "@babel/preset-typescript": "^7.10.1",
     "@graphql-codegen/cli": "^1.15.4",
     "@graphql-codegen/typescript": "^1.15.4",
+    "@graphql-codegen/typescript-graphql-request": "^3.2.5",
     "@graphql-codegen/typescript-operations": "^1.15.4",
     "@graphql-codegen/typescript-react-apollo": "^1.15.4",
     "@graphql-codegen/typescript-resolvers": "^1.16.3",

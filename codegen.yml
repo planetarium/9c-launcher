@@ -14,3 +14,10 @@ generates:
       scalars:
         Address: ../mappers#Address
         ByteString: ../mappers#ByteStringHex
+  src/generated/graphql-request.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request
+    config:
+      rawRequest: true
