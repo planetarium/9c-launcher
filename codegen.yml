@@ -18,6 +18,7 @@ generates:
     plugins:
       - typescript
       - typescript-operations
+      - typescript-resolvers
       - typescript-graphql-request
     config:
       rawRequest: true
