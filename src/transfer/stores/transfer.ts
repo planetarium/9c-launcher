@@ -55,4 +55,14 @@ export default class TransferStore implements ITransferStore {
     const bridgeAddress = "0xa208a3E10964dd8bB044a87a31967bafd9458907"; // testnet
     return await this.transferGold(bridgeAddress, amount, recipient);
   }
+  
+  @action 
+  getBalance = async (address: string): Promise<number> => {
+    this.checkAgentAddress();
+    const balance = await this.graphqlSdk.GetNCGBalance({address: address});
+    if(balance.data) {
+      return parseFloat(balance.data.goldBalance);
+    }
+    return 0;
+  }
 }
