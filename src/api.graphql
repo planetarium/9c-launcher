@@ -190,6 +190,12 @@ query GetTip {
   }
 }
 
+query GetNextTxNonce($address: Address!) {
+  transaction {
+    nextTxNonce(address: $address)
+  }
+}
+
 query StateQueryMonsterCollection($agentAddress: Address!) {
   stateQuery{
 
@@ -218,6 +224,10 @@ mutation ClaimCollectionReward($address: Address!) {
   action {
     claimMonsterCollectionReward(avatarAddress: $address)
   }
+}
+
+mutation Transfer($recipient: Address! $amount: String! $txNonce: Long! $memo: String!) {
+  transfer(recipient: $recipient, amount: $amount, txNonce: $txNonce, memo: $memo)
 }
 
 subscription CollectionState {
