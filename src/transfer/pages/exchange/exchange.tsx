@@ -3,13 +3,13 @@ import React from "react"
 import { MenuItems } from "src/transfer/stores/menu";
 import useStores from "../../../transfer/hooks";
 
-const transifexTags = "Transfer/Transfer";
+const transifexTags = "Transfer/Exchange";
 
-const TransferPage: React.FC = () => {
+const ExchangePage: React.FC = () => {
 
   return (
     <></>
   );
 }
 
-export default TransferPage;
+export default ExchangePage;

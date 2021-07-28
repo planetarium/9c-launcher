@@ -7,8 +7,8 @@ let _win: BrowserWindow | null = null;
 
 const createCollectionWindow = (): BrowserWindow => {
   _win = new BrowserWindow({
-    width: 1166,
-    height: 738,
+    width: 970,
+    height: 680,
     webPreferences: {
       nodeIntegration: true,
     },
