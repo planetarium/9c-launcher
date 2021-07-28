@@ -75,6 +75,10 @@ query ProtectedPrivateKeys {
   }
 }
 
+query GetNCGBalance($address: Address!) {
+  goldBalance(address: $address)
+}
+
 query ConvertPrivateKeyToAddress($privateKey: ByteString!) {
   keyStore {
     privateKey(hex: $privateKey) {
