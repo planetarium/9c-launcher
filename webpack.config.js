@@ -21,6 +21,10 @@ function createRenderConfig(isDev) {
 
     resolve: {
       extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
+      alias: {
+        root: __dirname,
+        src: path.resolve(__dirname, "src"),
+      }
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
