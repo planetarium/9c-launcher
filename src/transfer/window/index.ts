@@ -5,7 +5,7 @@ import isDev from "electron-is-dev";
 
 let _win: BrowserWindow | null = null;
 
-const createCollectionWindow = (): BrowserWindow => {
+const createTransferWindow = (): BrowserWindow => {
   _win = new BrowserWindow({
     width: 970,
     height: 680,
@@ -28,4 +28,4 @@ const createCollectionWindow = (): BrowserWindow => {
   return _win;
 };
 
-export default createCollectionWindow;
+export default createTransferWindow;

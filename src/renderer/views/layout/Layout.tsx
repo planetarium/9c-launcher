@@ -15,6 +15,7 @@ import InfoIcon from "../../components/InfoIcon";
 
 import explorerLogo from "../../resources/block-explorer-logo.png";
 import patchNoteLogo from "../../resources/wrench.png";
+import NCGLogo from "../../resources/ncgLogo.png";
 
 const transifexTags = "menu";
 
@@ -73,6 +74,16 @@ export const Layout: React.FC = observer(({ children }) => {
           }}
         />
         <ul className={"LauncherClientOption"}>
+          <li>
+            <Button
+              startIcon={<img src={NCGLogo} />}
+              onClick={() => {
+                ipcRenderer.invoke("open transfer page");
+              }}
+            >
+              <T _str="Send NCG" _tags={transifexTags} />
+            </Button>
+          </li>
           <li>
             <Button
               startIcon={<img src={patchNoteLogo} />}

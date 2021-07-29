@@ -61,6 +61,7 @@ import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from 'ntp-time'
 import { IConfig } from "src/interfaces/config";
+import createTransferWindow from "../transfer/window";
 
 initializeSentry();
 
@@ -464,6 +465,17 @@ function initializeIpc() {
       collectionWin = null;
     });
   })
+
+  ipcMain.handle("open transfer page", async () => {
+    if (collectionWin != null) {
+      collectionWin.focus();
+      return;
+    }
+    collectionWin = createTransferWindow();
+    collectionWin.on("close", function (event: any) {
+      collectionWin = null;
+    });
+  });
 
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {

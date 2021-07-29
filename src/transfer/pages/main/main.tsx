@@ -1,15 +1,17 @@
 import { T } from "@transifex/react";
+import { observer } from "mobx-react";
 import React from "react"
+import { useContext } from "react";
+import { StoreContext } from "src/transfer/hooks";
 import TransferMenu from "../../components/transferMenu/transferMenu";
 import { MenuItems } from "../../stores/menu";
-import useStores from "../../../transfer/hooks";
 import ExchangePage from "../exchange/exchange";
 import TransferPage from "../transfer/transfer";
 
 const transifexTags = "Transfer/Main";
 
-const MainPage: React.FC = () => {
-  const { menuStore } = useStores();
+const MainPage: React.FC = observer(() => {
+  const { menuStore } = useContext(StoreContext);
 
   return (
     <div>
@@ -27,6 +29,6 @@ const MainPage: React.FC = () => {
       </div>
     </div>
   );
-}
+});
 
 export default MainPage;
