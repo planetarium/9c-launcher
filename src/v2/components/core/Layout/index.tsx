@@ -2,8 +2,9 @@ import React, { useMemo } from "react";
 import { observer } from "mobx-react";
 import styles from "./styles.module.scss";
 import { useTopmostBlocksQuery } from "../../../generated/graphql";
-import { useStore } from "src/v2/utils/useStore";
+import { useStore } from "../../../utils/useStore";
 import { ipcRenderer } from "electron";
+import WindowControls from "./WindowControls";
 
 const awsSinkGuid: string = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid"
@@ -25,6 +26,7 @@ function Layout({ children }: React.PropsWithChildren<LayoutProps>) {
   , [accountStore.isLogin, topmostBlocks]); 
 
   return <div className={styles.layout}>
+    <WindowControls />
     <main>{children}</main>
   </div>;
 }
