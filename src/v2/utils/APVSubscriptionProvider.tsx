@@ -46,7 +46,7 @@ export default function APVSubscriptionProvider({
   }, []);
 
   return state.value === "ok" ? (
-    <>children</>
+    <>{children}</>
   ) : (
     <UpdateView state={state.value} progress={state.context.progress} />
   );
