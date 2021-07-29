@@ -184,14 +184,13 @@ async function intializeConfig() {
 }
 
 function initializeApp() {
-  app.on("ready", () => {
-    win = createWindow();
-    createTray(path.join(app.getAppPath(), logoImage));
-    win.webContents.on("dom-ready", (event) => initializeHeadless());
-
-    if(isDev) installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
-        .then((name) => console.log(`Added Extension:  ${name}`))
+  app.on("ready", async () => {
+    if(isDev) await installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
         .catch((err) => console.log('An error occurred: ', err));
+
+    win = await createWindow();
+    createTray(path.join(app.getAppPath(), logoImage));
+    initializeHeadless();
   });
 
   app.on("quit", (event) => {
@@ -865,7 +864,7 @@ async function initializeHeadless(): Promise<void> {
   }
 }
 
-function createWindow(): BrowserWindow {
+async function createWindow(): Promise<BrowserWindow> {
   let _win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -882,8 +881,8 @@ function createWindow(): BrowserWindow {
   console.log(app.getAppPath());
 
   if (isDev) {
-    _win.loadURL("http://localhost:9000");
-    _win.webContents.openDevTools();
+    await _win.loadURL("http://localhost:9000");
+    await _win.webContents.openDevTools();
   } else {
     _win.loadFile("index.html");
   }
