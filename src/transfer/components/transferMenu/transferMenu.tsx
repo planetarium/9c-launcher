@@ -1,16 +1,20 @@
 import { T } from "@transifex/react";
-import React from "react"
+import { observer } from "mobx-react";
+import React, { useContext } from "react"
+import { StoreContext } from "src/transfer/hooks";
 import { MenuItems } from "src/transfer/stores/menu";
-import useStores from "../../../transfer/hooks";
 
 const transifexTags = "Transfer/Menu";
 
-const TransferMenu: React.FC = () => {
-  const { menuStore } = useStores();
+const TransferMenu: React.FC = observer(() => {
+  const { menuStore } = useContext(StoreContext);
 
-  return (
-    <></>
-  );
-}
+  switch (menuStore.currentMenu) {
+    case MenuItems.TRANSFER:
+      return <T _str="Send other user" tag={transifexTags} onClick={menuStore.changeMenu(MenuItems.TRANSFER)}/>;
+    case MenuItems.EXCHANGE:
+      return <T _str="Exchange" tag={transifexTags} onClick={menuStore.changeMenu(MenuItems.EXCHANGE)}/>;
+  }
+});
 
 export default TransferMenu;
