@@ -10,7 +10,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     webPreferences: {
       nodeIntegration: true,
     },
-    frame: true,
+    frame: false,
     resizable: false,
     autoHideMenuBar: true,
     icon: join(app.getAppPath(), logoImage),
