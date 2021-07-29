@@ -9,15 +9,25 @@ export interface ITransferStore {
 export default class TransferStore implements ITransferStore {
   private agentAddress: string = "";
   private graphqlSdk: GraphQLSDK;
+  @observable public balance: number = 0;
 
   constructor(sdk: GraphQLSDK) {
     this.graphqlSdk = sdk;
   }
 
-  checkAgentAddress = (): void => {
+  assertAgentAddress = (): void => {
     if (this.agentAddress === "") {
       throw new Error("Agent address is empty");
     }
+  }
+
+  getBalance = async (): Promise<number> => {
+    this.assertAgentAddress();
+    const balance = await this.graphqlSdk.GetNCGBalance({address: this.agentAddress});
+    if(balance.data) {
+      return parseFloat(balance.data.goldBalance);
+    }
+    return 0;
   }
 
   @action
@@ -38,7 +48,7 @@ export default class TransferStore implements ITransferStore {
 
   @action
   transferGold = async (recipient: string, amount: number, memo: string): Promise<boolean> => {
-    this.checkAgentAddress();
+    this.assertAgentAddress();
 
     const nextTxNonceData = await this.graphqlSdk.GetNextTxNonce({address: this.agentAddress});
     if (!nextTxNonceData.data) {
@@ -57,12 +67,9 @@ export default class TransferStore implements ITransferStore {
   }
   
   @action 
-  getBalance = async (address: string): Promise<number> => {
-    this.checkAgentAddress();
-    const balance = await this.graphqlSdk.GetNCGBalance({address: address});
-    if(balance.data) {
-      return parseFloat(balance.data.goldBalance);
-    }
-    return 0;
+  updateBalance = async (): Promise<number> => {
+    const balance = await this.getBalance();
+    this.balance = balance;
+    return balance;
   }
 }
