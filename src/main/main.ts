@@ -65,6 +65,7 @@ import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron
 import prettyBytes from "pretty-bytes";
 import createTransferWindow from "../transfer/window";
 import { NineChroniclesMixpanel } from "./mixpanel";
+import { createWindow as createV2Window } from "./v2/application";
 
 initializeSentry();
 
@@ -180,9 +181,11 @@ async function intializeConfig() {
 function initializeApp() {
   app.on("ready", async () => {
     if(isDev) await installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
+        .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log('An error occurred: ', err));
 
-    win = await createWindow();
+    if (app.commandLine.hasSwitch("v2")) win = await createV2Window();
+    else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
     initializeHeadless();
   });
