@@ -5,6 +5,7 @@ import { useTopmostBlocksQuery } from "../../../generated/graphql";
 import { useStore } from "../../../utils/useStore";
 import { ipcRenderer } from "electron";
 import WindowControls from "./WindowControls";
+import Menu from "../Menu";
 
 const awsSinkGuid: string = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid"
@@ -28,6 +29,9 @@ function Layout({ children }: React.PropsWithChildren<LayoutProps>) {
   return <div className={styles.layout}>
     <WindowControls />
     <main>{children}</main>
+    <aside className={styles.bottomControls}>
+      <Menu />
+    </aside>
   </div>;
 }
 

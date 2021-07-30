@@ -19,3 +19,12 @@
     margin-left: 1em;
   }
 }
+
+.bottomControls {
+  display: flex;
+  position: fixed;
+  right: 40px;
+  bottom: 45px;
+  justify-content: flex-end;
+  align-items: flex-end;
+}

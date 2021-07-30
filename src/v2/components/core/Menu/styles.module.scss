@@ -1,0 +1,17 @@
+.menu {
+  opacity: 0.9;
+  background-color: #1a1a1a;
+  box-sizing: border-box;
+  width: 160px;
+  padding: 20px;
+  margin-left: 20px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  color: white;
+  img {
+    padding-right: 1em;
+  }
+}
