@@ -8,13 +8,25 @@ import { ITransferStoreContainer, StoreContext } from "./hooks";
 import MainPage from "./pages/main/main";
 import MenuStore from "./stores/views/menu";
 import HeadlessStore from "./stores/headless";
+import TransferPageStore from "./stores/views/transfer";
 
 const client = new GraphQLClient(`http://localhost:23061/graphql`);
 const headlessGraphQLSDK = getSdk(client);
 
 const storeContainer: ITransferStoreContainer = {
   headlessStore: new HeadlessStore(headlessGraphQLSDK),
-  menuStore: new MenuStore()
+  menuStore: new MenuStore(),
+  transferPage: new TransferPageStore()
+}
+
+const handleDetailView = (tx: string) => {
+  if (process.versions['electron']) {
+    import('electron')
+      .then(({ shell }) => {
+        shell.openExternal(
+          `https://explorer.libplanet.io/9c-main/transaction/?${tx}`);
+      });
+  }
 }
 
 const App: React.FC = () => {
@@ -27,7 +39,7 @@ const App: React.FC = () => {
   }, []);
   return (
     <StoreContext.Provider value={storeContainer}>
-      <MainPage />
+      <MainPage onDetailedView={handleDetailView} />
     </StoreContext.Provider>
   )
 };

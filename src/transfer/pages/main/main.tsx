@@ -9,8 +9,12 @@ import ExchangePage from "../exchange/exchange";
 import TransferPage from "../transfer/transfer";
 
 const transifexTags = "Transfer/Main";
+export type Props = {
+  onDetailedView: (tx: string) => void;
+};
 
-const MainPage: React.FC = observer(() => {
+const MainPage: React.FC<Props> = observer((props: Props) => {
+  const { onDetailedView } = props;
   const { menuStore } = useContext(StoreContext);
 
   return (
@@ -25,7 +29,7 @@ const MainPage: React.FC = observer(() => {
         <TransferMenu />
       </div>
       <div>
-        {menuStore.currentMenu === MenuItems.TRANSFER ? <TransferPage /> : <ExchangePage />}
+        {menuStore.currentMenu === MenuItems.TRANSFER ? <TransferPage onDetailedView={onDetailedView} /> : <ExchangePage />}
       </div>
     </div>
   );
