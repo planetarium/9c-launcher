@@ -5,6 +5,19 @@ import headlessGraphQLSDK, { GraphQLSDK } from "../middleware/graphql";
 
 export interface IHeadlessStore {
   balance: number;
+  assertAgentAddress: () => void;
+  getBalance: () => Promise<number>;
+  getAgentAddress: () => string;
+  trySetAgentAddress: () => Promise<boolean>;
+  transferGold: (recipient: string, amount: number, memo: string) => Promise<string>;
+  swapToWNCG: (recipient: string, amount: number) => Promise<string>;
+  confirmTransaction: (
+    txId: string,
+    timeout: number | undefined,
+    onSuccess: TxExecutionCallback,
+    onFailure: TxExecutionCallback,
+    onTimeout: TxExecutionCallback) => Promise<void>;
+  updateBalance: () => Promise<number>
 }
 
 type TxExecutionCallback = (blockIndex: number, blockHash: string) => void;
