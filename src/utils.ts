@@ -3,6 +3,7 @@ import checkDiskSpace from "check-disk-space";
 import path from "path";
 import fs from "fs";
 import axios from "axios";
+import * as rax from 'retry-axios';
 import stream from "stream";
 import { promisify } from "util";
 import { IDownloadProgress } from "./interfaces/ipc";
@@ -106,10 +107,18 @@ export async function cancellableDownload(
     const axiosCts = axios.CancelToken.source();
     token.onCancelled((_) => axiosCts.cancel());
 
+    rax.attach();
     const res = await axios(url, {
       cancelToken: axiosCts.token,
       method: "get",
       responseType: "stream",
+      raxConfig: {
+        retry: 5, // number of retry when facing 400 or 500
+        onRetryAttempt: err => {
+          const cfg = rax.getConfig(err);
+          console.log(`Retry attempt #${cfg?.currentRetryAttempt}`); // track current trial
+        }
+      }
     });
     const totalBytes = parseInt(res.headers["content-length"]);
     let transferredBytes: number = 0;
