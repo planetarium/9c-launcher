@@ -467,7 +467,7 @@ function initializeIpc() {
       collectionWin.focus();
       return;
     }
-    collectionWin = createCollectionWindow();
+    collectionWin = await createCollectionWindow();
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
