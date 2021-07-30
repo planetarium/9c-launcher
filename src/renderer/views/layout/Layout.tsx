@@ -80,6 +80,7 @@ export const Layout: React.FC = observer(({ children }) => {
               onClick={() => {
                 ipcRenderer.invoke("open transfer page");
               }}
+              disabled={!accountStore.isLogin}
             >
               <T _str="Send NCG" _tags={transifexTags} />
             </Button>
