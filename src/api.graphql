@@ -79,6 +79,16 @@ query GetNCGBalance($address: Address!) {
   goldBalance(address: $address)
 }
 
+query TransactionResult($txId: TxId!) {
+  transaction {
+    transactionResult(txId: $txId) {
+      blockHash
+      blockIndex
+      txStatus
+    }
+  }
+}
+
 query ConvertPrivateKeyToAddress($privateKey: ByteString!) {
   keyStore {
     privateKey(hex: $privateKey) {

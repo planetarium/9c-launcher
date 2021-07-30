@@ -5,6 +5,8 @@ schema {
 }
 
 type StandaloneQuery {
+  activated(invitationCode: String!): Boolean!
+
   # Check if the provided address is activated.
   activationStatus: ActivationStatusQuery!
   chainQuery: ExplorerQuery!
@@ -856,6 +858,36 @@ type TransactionHeadlessQuery {
     # Target address to query
     address: Address!
   ): Long!
+  transactionResult(
+    # transaction id.
+    txId: TxId!
+  ): TxResultType!
+}
+
+type TxResultType {
+  # The block hash which the target transaction executed.
+  blockHash: String
+
+  # The block index which the target transaction executed.
+  blockIndex: Long
+
+  # The transaction status.
+  txStatus: TxStatus!
+}
+
+# The result of querying transaction.
+enum TxStatus {
+  # The Transaction doesn't staged or invalid.
+  INVALID
+
+  # The Transaction do not executed yet.
+  STAGNING
+
+  # The Transaction is success.
+  SUCCESS
+
+  # The Transaction is failure.
+  FAILURE
 }
 
 type StandaloneMutation {
@@ -1083,5 +1115,4 @@ type NodeExceptionType {
   # The message of NodeException.
   message: String!
 }
-
 
