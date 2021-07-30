@@ -1,11 +1,11 @@
 import { Context, createContext, useContext } from "react";
 
 import { MobXProviderContext } from "mobx-react";
-import TransferStore from "../stores/transfer";
-import MenuStore from "../stores/menu";
+import HeadlessStore from "../stores/headless";
+import MenuStore from "../stores/views/menu";
 
 export interface ITransferStoreContainer {
-    transferStore: TransferStore
+    headlessStore: HeadlessStore
     menuStore: MenuStore
 }
 

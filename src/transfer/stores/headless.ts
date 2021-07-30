@@ -3,12 +3,13 @@ import { observable, action, decorate } from "mobx";
 import { sleep } from "src/utils";
 import headlessGraphQLSDK, { GraphQLSDK } from "../middleware/graphql";
 
-export interface ITransferStore {
+export interface IHeadlessStore {
+  balance: number;
 }
 
 type TxExecutionCallback = (blockIndex: number, blockHash: string) => void;
 
-export default class TransferStore implements ITransferStore {
+export default class HeadlessStore implements IHeadlessStore {
   private agentAddress: string = "";
   private graphqlSdk: GraphQLSDK;
   @observable public balance: number = 0;
