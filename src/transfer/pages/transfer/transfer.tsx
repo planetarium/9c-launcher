@@ -1,3 +1,4 @@
+import { Container, styled } from "@material-ui/core";
 import { T } from "@transifex/react";
 import { observer } from "mobx-react";
 import React, { useContext } from "react"
@@ -12,6 +13,10 @@ const transifexTags = "Transfer/Transfer";
 export type Props = {
   onDetailedView: (tx: string) => void;
 };
+
+const TransferContainer = styled(Container)({
+  flex: '3',
+});
 
 
 const TransferPage: React.FC<Props> = observer((props: Props) => {
@@ -41,7 +46,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
   }
 
   return (
-    <div>
+    <TransferContainer>
       <div>
         <h2>
           <T _str="User Address" _tags={transifexTags} />
@@ -95,7 +100,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
         onDetailedView={() => onDetailedView(transferPage.tx)}
         onClose={() => transferPage.finish()}
       />
-    </div>
+    </TransferContainer>
   );
 });
 

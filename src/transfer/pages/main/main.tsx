@@ -1,3 +1,4 @@
+import { Container, styled, Typography } from "@material-ui/core";
 import { T } from "@transifex/react";
 import { observer } from "mobx-react";
 import React from "react"
@@ -13,25 +14,56 @@ export type Props = {
   onDetailedView: (tx: string) => void;
 };
 
+const MainPageContainer = styled(Container)({
+  backgroundColor: "black",
+  padding: '48px 52px',
+  display: "flex",
+  flexDirection: "column",
+  color: 'white'
+});
+
+const TitleContainer = styled(Container)({
+  display: "flex",
+  flexDirection: "column",
+});
+
+const LayoutContainer = styled(Container)({
+  display: "flex",
+  flexDirection: "row",
+  marginTop: "25px",
+});
+
+const TitleMessage = styled(Typography)({
+  color: '#74f4bc',
+  fontFamily: "Montserrat",
+  fontSize: "40px",
+  fontWeight: "bold"
+});
+
+const DescriptionTitleMessage = styled(Typography)({
+  color: 'white',
+  fontSize: '18px',
+});
+
 const MainPage: React.FC<Props> = observer((props: Props) => {
   const { onDetailedView } = props;
   const { menuStore } = useContext(StoreContext);
 
   return (
-    <div>
-      <h1>
-        <T _str="Send NCG" _tags={transifexTags} />
-      </h1>
-      <p>
-        <T _str="You can transfer NCG to other user or ETH account." _tags={transifexTags} />
-      </p>
-      <div>
-        <TransferMenu />
-      </div>
-      <div>
-        {menuStore.currentMenu === MenuItems.TRANSFER ? <TransferPage onDetailedView={onDetailedView} /> : <ExchangePage />}
-      </div>
-    </div>
+    <MainPageContainer>
+      <TitleContainer>
+        <TitleMessage>
+          <T _str="Send NCG" _tags={transifexTags} />
+        </TitleMessage>
+        <DescriptionTitleMessage>
+          <T _str="You can transfer NCG to other user or ETH account." _tags={transifexTags} />
+        </DescriptionTitleMessage>
+      </TitleContainer>
+      <LayoutContainer>
+          <TransferMenu />
+          {menuStore.currentMenu === MenuItems.TRANSFER ? <TransferPage onDetailedView={onDetailedView} /> : <ExchangePage />}
+      </LayoutContainer>
+    </MainPageContainer>
   );
 });
 
