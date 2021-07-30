@@ -178,6 +178,7 @@ const PreloadWaitingButton = () => {
 
 const GameStartButton = observer((props: ILobbyViewProps) => {
   const { accountStore, gameStore, standaloneStore } = props;
+  const [shouldAutostart, setShouldAutostart] = useState(true);
   const classes = lobbyViewStyle();
   const handleStartGame = () => {
     ipcRenderer.send("mixpanel-track-event", "Launcher/Unity Player Start");
@@ -186,10 +187,11 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
   };
 
   useEffect(() => {
-    if (standaloneStore.Ready) {
+    if (standaloneStore.Ready && shouldAutostart) {
       handleStartGame();
+      setShouldAutostart(false);
     }
-  }, [standaloneStore.Ready]);
+  }, [standaloneStore.Ready, shouldAutostart]);
 
   return (
     <Button

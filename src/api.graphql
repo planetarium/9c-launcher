@@ -24,9 +24,9 @@ query NodeStatus {
   }
 }
 
-query TopmostBlocks($limit: Int = 500, $miner: Address = null) {
+query TopmostBlocks($limit: Int = 500, $offset: Int = 100, $miner: Address = null) {
   nodeStatus {
-    topmostBlocks(limit: $limit, miner: $miner) {
+    topmostBlocks(limit: $limit, offset: $offset, miner: $miner) {
       id
       hash
       index
