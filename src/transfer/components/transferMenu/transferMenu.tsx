@@ -2,7 +2,7 @@ import { T } from "@transifex/react";
 import { observer } from "mobx-react";
 import React, { useContext } from "react"
 import { StoreContext } from "src/transfer/hooks";
-import { MenuItems } from "src/transfer/stores/menu";
+import { MenuItems } from "src/transfer/stores/views/menu";
 
 const transifexTags = "Transfer/Menu";
 

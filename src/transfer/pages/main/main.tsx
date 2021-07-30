@@ -3,8 +3,8 @@ import { observer } from "mobx-react";
 import React from "react"
 import { useContext } from "react";
 import { StoreContext } from "src/transfer/hooks";
-import TransferMenu from "../../components/transferMenu/transferMenu";
-import { MenuItems } from "../../stores/menu";
+import TransferMenu from "../../components/TransferMenu/TransferMenu";
+import { MenuItems } from "../../stores/views/menu";
 import ExchangePage from "../exchange/exchange";
 import TransferPage from "../transfer/transfer";
 
