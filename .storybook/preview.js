@@ -17,6 +17,13 @@ const customViewports = {
       height: '708px',
     },
   },
+  transfer: {
+    name: 'transfer',
+    styles: {
+      width: '970px',
+      height: '680px',
+    },
+  },
 };
 
 export const parameters = {
