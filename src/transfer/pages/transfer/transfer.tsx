@@ -1,42 +1,42 @@
 import { T } from "@transifex/react";
-import { shell } from "electron";
 import { observer } from "mobx-react";
 import React, { useContext } from "react"
-import { useState } from "react";
+import FailureDialog from "src/transfer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/transfer/components/SendingDialog/SendingDialog";
+import SuccessDialog from "src/transfer/components/SuccessDialog/SuccessDialog";
 import { StoreContext } from "src/transfer/hooks";
+import { TransferPhase } from "src/transfer/stores/views/transfer";
 
 const transifexTags = "Transfer/Transfer";
 
-const TransferPage: React.FC = observer(() => {
-  const { headlessStore } = useContext(StoreContext);
-  const [recipient, setRecipient] = useState<string>('');
-  const [memo, setMemo] = useState<string>('');
-  const [tx, setTx] = useState<string>('');
-  const [amount, setAmount] = useState<number>(0);
-  const [isSending, setIsSending] = useState<boolean>(false);
+export type Props = {
+  onDetailedView: (tx: string) => void;
+};
+
+
+const TransferPage: React.FC<Props> = observer((props: Props) => {
+  const { headlessStore, transferPage } = useContext(StoreContext);
+  const { onDetailedView } = props;
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setIsSending(true);
+    transferPage.startSend();
+    const { recipient, amount, memo } = transferPage;
     const tx = await headlessStore.transferGold(recipient, amount, memo);
-    setTx(tx);
+    transferPage.setTx(tx);
 
     headlessStore.confirmTransaction(tx, undefined,
       (blockIndex, blockHash) => {
         console.log(`Block #${blockIndex} (${blockHash})`);
-        setIsSending(false);
-        setTx('');
+        transferPage.endSend(true);
       },
       (blockIndex, blockHash) => {
         console.log(`Failed`);
-        setIsSending(false);
-        setTx('');
+        transferPage.endSend(false);
       },
       (blockIndex, blockHash) => {
         console.log(`Timeout`);
-        setIsSending(false);
-        setTx('');
+        transferPage.endSend(false);
       });
   }
 
@@ -52,7 +52,7 @@ const TransferPage: React.FC = observer(() => {
         <p>
           <T _str="Enter the other user's Nine Chronicles address." _tags={transifexTags} />
         </p>
-        <input onChange={e => setRecipient(e.target.value)}></input>
+        <input onChange={e => transferPage.setRecipient(e.target.value)}></input>
       </div>
       <div>
         <h2>
@@ -65,7 +65,7 @@ const TransferPage: React.FC = observer(() => {
           <T _str="(Your balance: {ncg} NCG)" _tags={transifexTags} ncg={headlessStore.balance} />
         </p>
         <button onClick={() => headlessStore.updateBalance()}>refresh</button>
-        <input onChange={e => setAmount(parseFloat(e.target.value))}></input>
+        <input onChange={e => transferPage.setAmount(parseFloat(e.target.value))}></input>
       </div>
       <div>
         <h2>
@@ -74,20 +74,27 @@ const TransferPage: React.FC = observer(() => {
         <p>
           <T _str="Enter a additional note." _tags={transifexTags} />
         </p>
-        <input onChange={e => setMemo(e.target.value)}></input>
+        <input onChange={e => transferPage.setMemo(e.target.value)}></input>
       </div>
       <div>
-        <button onClick={handleButton} disabled={isSending}>Send</button>
+        <button onClick={handleButton} disabled={transferPage.currentPhase !== TransferPhase.READY}>Send</button>
       </div>
       <SendingDialog
-        open={tx !== ''}
-        onDetailedView={() => {
-          shell.openExternal(
-            `https://explorer.libplanet.io/9c-main/transaction/?${tx}`
-          );
-        }}
+        open={transferPage.currentPhase === TransferPhase.SENDING}
+        onDetailedView={() => onDetailedView(transferPage.tx)}
       />
 
+      <SuccessDialog
+        open={transferPage.currentPhase === TransferPhase.FINISHED && transferPage.success}
+        onDetailedView={() => onDetailedView(transferPage.tx)}
+        onClose={() => transferPage.finish()}
+      />
+
+      <FailureDialog
+        open={transferPage.currentPhase === TransferPhase.FINISHED && !transferPage.success}
+        onDetailedView={() => onDetailedView(transferPage.tx)}
+        onClose={() => transferPage.finish()}
+      />
     </div>
   );
 });
