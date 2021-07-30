@@ -62,6 +62,7 @@ import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
 import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron-devtools-installer';
+import prettyBytes from "pretty-bytes";
 
 initializeSentry();
 
@@ -730,12 +731,19 @@ async function initializeHeadless(): Promise<void> {
       );
     }
 
-    let freeSpace = await utils.getDiskSpace(chainPath);
-    if (freeSpace < REQUIRED_DISK_SPACE) {
-      win?.webContents.send("go to error page", "disk-space");
-      throw new HeadlessInitializeError(
-        `Not enough space. ${chainPath} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
-      );
+    try {
+      let freeSpace = await utils.getDiskSpace(chainPath);
+      if (freeSpace < REQUIRED_DISK_SPACE) {
+        win?.webContents.send("go to error page", "disk-space");
+        throw new HeadlessInitializeError(
+          `Not enough space. ${chainPath} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
+        );
+      }
+    } catch {
+      await dialog.showMessageBox(win!, {
+        message: `Failed to check free space. Please make sure you have at least ${prettyBytes(REQUIRED_DISK_SPACE)} available on your disk.`,
+        type: "warning",
+      });
     }
     win?.webContents.send("start bootstrap");
     const snapshot =
