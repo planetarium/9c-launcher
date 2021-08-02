@@ -1,3 +1,4 @@
+
 schema {
   query: StandaloneQuery
   mutation: StandaloneMutation
@@ -881,7 +882,7 @@ enum TxStatus {
   INVALID
 
   # The Transaction do not executed yet.
-  STAGNING
+  STAGING
 
   # The Transaction is success.
   SUCCESS
