@@ -11,7 +11,7 @@ interface MachineContext {
   progress?: number;
 }
 
-export type UpdateMachineState =
+type UpdateMachineState =
   | {
       value: "download" | "extract";
       context: Required<MachineContext>;
@@ -21,7 +21,7 @@ export type UpdateMachineState =
       context: {};
     };
 
-export const machine = createMachine<
+export default createMachine<
   MachineContext,
   MachineEvent,
   UpdateMachineState

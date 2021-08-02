@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { ipcRenderer } from "electron";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import UpdateView from "../components/UpdateView";
-import { machine } from "./updateMachine";
+import machine from "../machines/updateMachine";
 
 export default function APVSubscriptionProvider({
   children,
