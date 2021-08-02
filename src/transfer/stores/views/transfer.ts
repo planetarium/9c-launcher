@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import { action, observable } from "mobx";
 
 export enum TransferPhase {
@@ -11,7 +12,7 @@ export interface ITransferPageStore {
   recipient: string;
   memo: string;
   tx: string;
-  amount: number;
+  amount: Decimal;
   success: boolean;
   currentPhase: TransferPhase;
 }
@@ -21,7 +22,7 @@ export default class TransferPageStore implements ITransferPageStore {
   @observable public recipient: string;
   @observable public memo: string;
   @observable public tx: string;
-  @observable public amount: number;
+  @observable public amount: Decimal;
   @observable public success: boolean;
   @observable public currentPhase: TransferPhase;
 
@@ -29,7 +30,7 @@ export default class TransferPageStore implements ITransferPageStore {
     this.recipient = "";
     this.memo = "";
     this.tx = "";
-    this.amount = -1;
+    this.amount = new Decimal(-1);
     this.success = false;
 
     this.currentPhase = TransferPhase.READY;
@@ -46,7 +47,7 @@ export default class TransferPageStore implements ITransferPageStore {
   }
 
   @action
-  public setAmount(amount: number) {
+  public setAmount(amount: Decimal) {
     this.amount = amount;
   }
 

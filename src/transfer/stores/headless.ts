@@ -1,34 +1,39 @@
+import Decimal from "decimal.js";
 import { ipcRenderer } from "electron";
 import { observable, action, decorate } from "mobx";
 import { sleep } from "src/utils";
 import headlessGraphQLSDK, { GraphQLSDK } from "../middleware/graphql";
 
 export interface IHeadlessStore {
-  balance: number;
+  balance: Decimal;
   assertAgentAddress: () => void;
-  getBalance: () => Promise<number>;
+  getBalance: () => Promise<Decimal>;
   getAgentAddress: () => string;
   trySetAgentAddress: () => Promise<boolean>;
-  transferGold: (recipient: string, amount: number, memo: string) => Promise<string>;
-  swapToWNCG: (recipient: string, amount: number) => Promise<string>;
+  transferGold: (recipient: string, amount: Decimal, memo: string) => Promise<string>;
+  swapToWNCG: (recipient: string, amount: Decimal) => Promise<string>;
   confirmTransaction: (
     txId: string,
     timeout: number | undefined,
-    onSuccess: TxExecutionCallback,
-    onFailure: TxExecutionCallback,
-    onTimeout: TxExecutionCallback) => Promise<void>;
-  updateBalance: () => Promise<number>
+    listener: TransactionConfirmationListener) => Promise<void>;
+  updateBalance: () => Promise<Decimal>
 }
 
 type TxExecutionCallback = (blockIndex: number, blockHash: string) => void;
+export interface TransactionConfirmationListener {
+	onSuccess: TxExecutionCallback;
+    onFailure: TxExecutionCallback;
+    onTimeout: TxExecutionCallback;
+}
 
 export default class HeadlessStore implements IHeadlessStore {
   private agentAddress: string = "";
   private graphqlSdk: GraphQLSDK;
-  @observable public balance: number = 0;
+  @observable public balance: Decimal;
 
   constructor(sdk: GraphQLSDK) {
     this.graphqlSdk = sdk;
+    this.balance = new Decimal(0);
   }
 
   assertAgentAddress = (): void => {
@@ -37,13 +42,13 @@ export default class HeadlessStore implements IHeadlessStore {
     }
   }
 
-  getBalance = async (): Promise<number> => {
+  getBalance = async (): Promise<Decimal> => {
     this.assertAgentAddress();
     const balance = await this.graphqlSdk.GetNCGBalance({address: this.agentAddress});
     if(balance.data) {
-      return parseFloat(balance.data.goldBalance);
+      return new Decimal(balance.data.goldBalance);
     }
-    return 0;
+    return new Decimal(0);
   }
 
   @action
@@ -63,7 +68,7 @@ export default class HeadlessStore implements IHeadlessStore {
   };
 
   @action
-  transferGold = async (recipient: string, amount: number, memo: string): Promise<string> => {
+  transferGold = async (recipient: string, amount: Decimal, memo: string): Promise<string> => {
     this.assertAgentAddress();
 
     const nextTxNonceData = await this.graphqlSdk.GetNextTxNonce({address: this.agentAddress});
@@ -80,7 +85,7 @@ export default class HeadlessStore implements IHeadlessStore {
   }
 
   @action
-  swapToWNCG = async (recipient: string, amount: number): Promise<string> => {
+  swapToWNCG = async (recipient: string, amount: Decimal): Promise<string> => {
     const bridgeAddress = "0xa208a3E10964dd8bB044a87a31967bafd9458907"; // testnet
     return await this.transferGold(bridgeAddress, amount, recipient);
   }
@@ -89,13 +94,18 @@ export default class HeadlessStore implements IHeadlessStore {
   confirmTransaction = async (
     txId: string,
     timeout: number | undefined,
-    onSuccess: TxExecutionCallback,
-    onFailure: TxExecutionCallback,
-    onTimeout: TxExecutionCallback): Promise<void> => {
+    listener: {
+      onSuccess: TxExecutionCallback,
+      onFailure: TxExecutionCallback,
+      onTimeout: TxExecutionCallback
+    }
+): Promise<void> => {
     const txStatus = await this.graphqlSdk.TransactionResult({txId});
     if (!txStatus.data) {
       throw new Error("Failed to get transaction status");
     }
+
+    const { onSuccess, onFailure, onTimeout } = listener;
 
     const startTime = Date.now();
 
@@ -127,7 +137,7 @@ export default class HeadlessStore implements IHeadlessStore {
   }
   
   @action 
-  updateBalance = async (): Promise<number> => {
+  updateBalance = async (): Promise<Decimal> => {
     const balance = await this.getBalance();
     this.balance = balance;
     return balance;
