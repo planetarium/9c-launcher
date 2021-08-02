@@ -1,4 +1,4 @@
-import { assign, createMachine } from "@xstate/fsm";
+import { assign, createMachine } from "xstate";
 
 type MachineEvent =
   | { type: "UPDATE_PROGRESS"; progress: number }
@@ -8,18 +8,23 @@ type MachineEvent =
   | { type: "DONE" };
 
 interface MachineContext {
-  progress: number;
+  progress?: number;
 }
 
-interface MachineState {
-  value: "ok" | "download" | "extract" | "copy";
-  context: MachineContext;
-}
+export type UpdateMachineState =
+  | {
+      value: "download" | "extract";
+      context: Required<MachineContext>;
+    }
+  | {
+      value: "copy" | "ok";
+      context: {};
+    };
 
 export const machine = createMachine<
   MachineContext,
   MachineEvent,
-  MachineState
+  UpdateMachineState
 >(
   {
     initial: "ok",
@@ -56,7 +61,7 @@ export const machine = createMachine<
   },
   {
     actions: {
-      resetProgress: assign({ progress: 0 }),
+      resetProgress: assign<MachineContext, MachineEvent>({ progress: 0 }),
       updateProgress: assign({
         progress: (context, event) =>
           event.type === "UPDATE_PROGRESS" ? event.progress : context.progress,

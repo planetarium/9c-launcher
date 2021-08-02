@@ -1,8 +1,10 @@
 import React from "react";
+import { StateFrom } from "xstate";
+import type { machine } from "../utils/updateMachine";
 
 interface UpdateViewProps {
-  state: "download" | "extract" | "copy";
-  progress: number;
+  state: StateFrom<typeof machine>;
+  progress?: number;
 }
 
 export default function UpdateView({ state, progress }: UpdateViewProps) {

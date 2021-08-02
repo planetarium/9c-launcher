@@ -1,5 +1,5 @@
 import React from "react";
-import { useMachine } from "@xstate/react/lib/fsm";
+import { useMachine } from "@xstate/react";
 import { useDifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
 import { useEffect } from "react";
 import { ipcRenderer } from "electron";
@@ -11,6 +11,7 @@ export default function APVSubscriptionProvider({
   children,
 }: React.PropsWithChildren<{}>) {
   const [state, send] = useMachine(machine);
+  state.value
   const {
     loading,
     data,
@@ -45,9 +46,9 @@ export default function APVSubscriptionProvider({
     ipcRenderer.on("update copying complete", () => send("DONE"));
   }, []);
 
-  return state.value === "ok" ? (
+  return state.matches("ok") ? (
     <>{children}</>
   ) : (
-    <UpdateView state={state.value} progress={state.context.progress} />
+    <UpdateView state={state} progress={state.context.progress} />
   );
 }
