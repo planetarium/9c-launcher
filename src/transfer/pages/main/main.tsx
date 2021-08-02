@@ -15,7 +15,7 @@ export type Props = {
 };
 
 const MainPageContainer = styled(Container)({
-  backgroundColor: "black",
+  backgroundColor: "#1d1e1f",
   padding: '48px 52px',
   display: "flex",
   flexDirection: "column",
