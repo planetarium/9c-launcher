@@ -119,7 +119,7 @@ export default class HeadlessStore implements IHeadlessStore {
           onFailure(txResult.blockIndex, txResult.blockHash as string);
           return;
         case "INVALID":
-        case "STAGNING":
+        case "STAGING":
           if(timeout) {
             const elapsed = Date.now() - startTime;
             if(elapsed >= timeout) {
