@@ -5,7 +5,7 @@ const currentWindow = require('electron').remote.getCurrentWindow();
 
 export default function WindowControls() {
   return <div className={styles.windowControls}>
-    <span onClick={() => currentWindow.minimize()}>_</span>
-    <span onClick={() => currentWindow.close()}>×</span>
+    <div onClick={() => currentWindow.minimize()}>_</div>
+    <div onClick={() => currentWindow.close()}>×</div>
   </div>
 }
