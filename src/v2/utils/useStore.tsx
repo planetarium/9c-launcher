@@ -20,11 +20,13 @@ export function StoreProvider({ children }: React.PropsWithChildren<{}>) {
 /**
  * Returns the store for the given store name.
  * If the store name is not provided, returns the store object containing all stores.
- * 
+ *
  * @param {string=} [store] - The name of the store to return. Optional.
  * @returns {object} The store specified by the store name.
  */
-export function useStore<T extends keyof typeof stores>(store: T): typeof stores[T];
+export function useStore<T extends keyof typeof stores>(
+  store: T
+): typeof stores[T];
 /**
  * @returns {object} The store object containing all stores.
  */

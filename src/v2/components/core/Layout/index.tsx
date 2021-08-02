@@ -12,7 +12,7 @@ const awsSinkGuid: string = ipcRenderer.sendSync(
 );
 
 interface LayoutProps {
-  sidebar?: boolean
+  sidebar?: boolean;
 }
 
 function Layout({ children }: React.PropsWithChildren<LayoutProps>) {
@@ -20,19 +20,23 @@ function Layout({ children }: React.PropsWithChildren<LayoutProps>) {
   const { loading, data } = useTopmostBlocksQuery({ pollInterval: 1000 * 10 });
   const topmostBlocks = data?.nodeStatus.topmostBlocks;
 
-  const minedBlocks = useMemo(() => 
-    accountStore.isLogin && topmostBlocks != null
-      ? topmostBlocks.filter((b) => b?.miner == accountStore.selectedAddress)
-      : null
-  , [accountStore.isLogin, topmostBlocks]); 
+  const minedBlocks = useMemo(
+    () =>
+      accountStore.isLogin && topmostBlocks != null
+        ? topmostBlocks.filter((b) => b?.miner == accountStore.selectedAddress)
+        : null,
+    [accountStore.isLogin, topmostBlocks]
+  );
 
-  return <div className={styles.layout}>
-    <WindowControls />
-    <main>{children}</main>
-    <aside className={styles.bottomControls}>
-      <Menu />
-    </aside>
-  </div>;
+  return (
+    <div className={styles.layout}>
+      <WindowControls />
+      <main>{children}</main>
+      <aside className={styles.bottomControls}>
+        <Menu />
+      </aside>
+    </div>
+  );
 }
 
 export default observer(Layout);

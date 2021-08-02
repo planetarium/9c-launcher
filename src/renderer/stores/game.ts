@@ -1,6 +1,11 @@
 import { observable, action, computed } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { RPC_SERVER_HOST, RPC_SERVER_PORT, userConfigStore, get as getConfig } from "../../config";
+import {
+  RPC_SERVER_HOST,
+  RPC_SERVER_PORT,
+  userConfigStore,
+  get as getConfig,
+} from "../../config";
 
 export default class GameStore {
   @observable
@@ -18,9 +23,7 @@ export default class GameStore {
     });
     this._genesisBlockPath = getConfig("GenesisBlockPath") as string;
     this._language = getConfig("Locale") as string;
-    this._appProtocolVersion = getConfig(
-      "AppProtocolVersion"
-    ) as string;
+    this._appProtocolVersion = getConfig("AppProtocolVersion") as string;
 
     userConfigStore.onDidChange(
       "Locale",

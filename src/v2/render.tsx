@@ -1,4 +1,3 @@
-
 import electronLog from "electron-log";
 import React from "react";
 import * as DOM from "react-dom";

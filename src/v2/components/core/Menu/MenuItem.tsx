@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import styles from "./styles.module.scss";
 
 interface MenuItemProps {
@@ -8,8 +8,10 @@ interface MenuItemProps {
 }
 
 export default function MenuItem({ onClick, icon, text }: MenuItemProps) {
-  return <div className={styles.menuItem} onClick={onClick}>
-    <img alt="" src={icon} />
-    <span>{text}</span>
-  </div>;
+  return (
+    <div className={styles.menuItem} onClick={onClick}>
+      <img alt="" src={icon} />
+      <span>{text}</span>
+    </div>
+  );
 }
