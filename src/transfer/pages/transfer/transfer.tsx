@@ -1,4 +1,4 @@
-import { Container, OutlinedInput, styled, TextField, Typography } from "@material-ui/core";
+import { Button, Container, FormControl, InputAdornment, OutlinedInput, styled, TextField, Typography } from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
 import { observer } from "mobx-react";
@@ -9,6 +9,8 @@ import SuccessDialog from "src/transfer/components/SuccessDialog/SuccessDialog";
 import { StoreContext } from "src/transfer/hooks";
 import { TransactionConfirmationListener } from "src/transfer/stores/headless";
 import { TransferPhase } from "src/transfer/stores/views/transfer";
+import refreshIcon from "../../resources/refreshIcon.png";
+import { verify as addressVerify } from 'eip55'
 
 const transifexTags = "Transfer/Transfer";
 
@@ -31,9 +33,23 @@ const TransferSecondTitle = styled(Typography)({
   color: '#dddddd',
 });
 
-const TransferTextField = styled(TextField)({
-  color: 'white',
-  borderColor: 'white',
+const TransferInput = styled(OutlinedInput)({
+  marginTop: '5px',
+  marginBottom: '10px',
+  height: '50px'
+});
+
+const TransferButton = styled(Button)({
+  width: '303px',
+  height: '60px',
+  fontFamily: 'Montserrat',
+  fontSize: '18px',
+  fontWeight: 'bold',
+  textTransform: 'none',
+  margin: '10px',
+  borderRadius: '2px',
+  position: 'relative',
+  left: '100px',
 });
 
 const TransferPage: React.FC<Props> = observer((props: Props) => {
@@ -57,6 +73,9 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    if(!transferPage.validAddress || transferPage.amount.isNegative()) {
+      return; 
+    }
     transferPage.startSend();
     const { recipient, amount, memo } = transferPage;
     const tx = await headlessStore.transferGold(recipient, amount, memo);
@@ -67,43 +86,63 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
 
   return (
     <TransferContainer>
-      <div>
+      <FormControl fullWidth>
         <TransferTitle>
           <T _str="User Address" _tags={transifexTags} />
         </TransferTitle>
         <TransferSecondTitle>
           <T _str="Enter the Nine Chronicle user address, not the ETH address." _tags={transifexTags} />
         </TransferSecondTitle>
-        <OutlinedInput
-          label="Address"
+        <TransferInput
+          type="text"
+          name="address"
+          error={!transferPage.validAddress}
           onChange={e => transferPage.setRecipient(e.target.value)}
+          onBlur={() => transferPage.validateAddress()}
+          onFocus={() => transferPage.resetValidate()}
         />
-      </div>
-      <div>
-        <h2>
+        <TransferTitle>
           <T _str="NCG Amount" _tags={transifexTags} />
-        </h2>
-        <p>
-          <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
-        </p>
-        <p>
-          <T _str="(Your balance: {ncg} NCG)" _tags={transifexTags} ncg={headlessStore.balance} />
-        </p>
-        <button onClick={() => headlessStore.updateBalance()}>refresh</button>
-        <input onChange={e => transferPage.setAmount(new Decimal(e.target.value))}></input>
-      </div>
-      <div>
-        <h2>
+        </TransferTitle>
+        <TransferSecondTitle>
+          <T _str="Enter the amount of NCG to send." _tags={transifexTags} />&nbsp;
+          <b>
+            <T _str="(Your balance: {ncg} NCG)" _tags={transifexTags} ncg={headlessStore.balance} />
+          </b>
+        <Button
+          startIcon={<img src={refreshIcon} alt="refresh" />}
+          onClick={() => headlessStore.updateBalance()}
+        />
+        </TransferSecondTitle>
+        <TransferInput
+          type="number"
+          name="amount"
+          onChange={e => transferPage.setAmount(new Decimal(e.target.value === '' ? -1 : e.target.value))}
+          error={!transferPage.validateAmount}
+          endAdornment={
+            <InputAdornment position="end">NCG</InputAdornment>
+          }
+          defaultValue={0}
+        />
+        <TransferTitle>
           <T _str="Memo" _tags={transifexTags} />
-        </h2>
-        <p>
-          <T _str="Enter a additional note." _tags={transifexTags} />
-        </p>
-        <input onChange={e => transferPage.setMemo(e.target.value)}></input>
-      </div>
-      <div>
-        <button onClick={handleButton} disabled={transferPage.currentPhase !== TransferPhase.READY}>Send</button>
-      </div>
+        </TransferTitle>
+        <TransferSecondTitle>
+          <T _str="Enter an additional note." _tags={transifexTags} />
+        </TransferSecondTitle>
+        <TransferInput
+          type="text"
+          name="memo"
+          onChange={e => transferPage.setMemo(e.target.value)}
+        />
+        <TransferButton
+          variant="contained"
+          color="primary"
+          onClick={handleButton}
+          disabled={!transferPage.validAddress || !transferPage.validateAmount}
+        > Send </TransferButton>
+      </FormControl>
+
       <SendingDialog
         open={transferPage.currentPhase === TransferPhase.SENDING}
         onDetailedView={() => onDetailedView(transferPage.tx)}

@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { action, observable } from "mobx";
+import { action, computed, observable } from "mobx";
 import { verify as addressVerify } from 'eip55'
 
 export enum TransferPhase {
@@ -33,7 +33,7 @@ export default class TransferPageStore implements ITransferPageStore {
     this.recipient = "";
     this.memo = "";
     this.tx = "";
-    this.amount = new Decimal(-1);
+    this.amount = new Decimal(0);
     this.success = false;
     this.validAddress = true;
 
@@ -58,6 +58,10 @@ export default class TransferPageStore implements ITransferPageStore {
   @action
   public validateAddress() {
     this.validAddress = addressVerify(this.recipient, true);
+  }
+
+  @computed get validateAmount() {
+    return this.amount.gt(0);
   }
 
   @action

@@ -8,7 +8,7 @@ let _win: BrowserWindow | null = null;
 const createTransferWindow = (): BrowserWindow => {
   _win = new BrowserWindow({
     width: 970,
-    height: 680,
+    height: 650,
     webPreferences: {
       nodeIntegration: true,
     },
