@@ -15,7 +15,8 @@ export interface ITransferPageStore {
   tx: string;
   amount: Decimal;
   success: boolean;
-  validAddress: boolean;
+  recipientWarning: boolean;
+  amountWarning: boolean;
   currentPhase: TransferPhase;
 }
 
@@ -26,7 +27,8 @@ export default class TransferPageStore implements ITransferPageStore {
   @observable public tx: string;
   @observable public amount: Decimal;
   @observable public success: boolean;
-  @observable public validAddress: boolean;
+  @observable public recipientWarning: boolean;
+  @observable public amountWarning: boolean;
   @observable public currentPhase: TransferPhase;
 
   constructor() {
@@ -35,9 +37,22 @@ export default class TransferPageStore implements ITransferPageStore {
     this.tx = "";
     this.amount = new Decimal(0);
     this.success = false;
-    this.validAddress = true;
+    this.recipientWarning = false;
+    this.amountWarning = false;
 
     this.currentPhase = TransferPhase.READY;
+  }
+
+  @computed get validateRecipient() {
+    return addressVerify(this.recipient, true);
+  }
+
+  @computed get validateAmount() {
+    return this.amount.gt(0);
+  }
+
+  @computed get sendButtonActivated() {
+    return this.validateRecipient && this.validateAmount;
   }
 
   @action
@@ -56,17 +71,23 @@ export default class TransferPageStore implements ITransferPageStore {
   }
 
   @action
-  public validateAddress() {
-    this.validAddress = addressVerify(this.recipient, true);
-  }
-
-  @computed get validateAmount() {
-    return this.amount.gt(0);
+  public resetRecipientWarning() {
+    this.recipientWarning = false;
   }
 
   @action
-  public resetValidate() {
-    this.validAddress = true;
+  public setRecipientWarning() {
+    this.recipientWarning = !this.validateRecipient;
+  }
+
+  @action
+  public resetAmountWarning() {
+    this.amountWarning = false;
+  }
+
+  @action
+  public setAmountWarning() {
+    this.amountWarning = !this.validateAmount;
   }
 
   /*
@@ -95,10 +116,5 @@ export default class TransferPageStore implements ITransferPageStore {
   public finish() {
     this.currentPhase = TransferPhase.READY;
     this.success = false;
-  }
-
-  @action
-  public validateRecipient(): boolean {
-    return /^0x[0-9a-fA-F]{40}$/.test(this.recipient);
   }
 }

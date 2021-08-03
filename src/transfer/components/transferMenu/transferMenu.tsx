@@ -36,12 +36,13 @@ const SelectedButton = styled(MenuButton)({
 
 const TransferMenu: React.FC = observer(() => {
   const { menuStore } = useContext(StoreContext);
+  const notImplemented = () => alert("This page is not implemented yet.");
   const getMenuItem = (menuItem: MenuItems) => {
     switch (menuItem) {
       case MenuItems.TRANSFER:
-        return <T _str="Send other user" tag={transifexTags} onClick={() => menuStore.changeMenu(MenuItems.TRANSFER)} />;
-      case MenuItems.EXCHANGE:
-        return <T _str="Exchange" tag={transifexTags} onClick={() => menuStore.changeMenu(MenuItems.EXCHANGE)} />;
+        return <T _str="Send other user" tag={transifexTags}/>;
+      case MenuItems.SWAP:
+        return <T _str="Swap to WNCG" tag={transifexTags}/>;
     }
   }
 
@@ -53,7 +54,7 @@ const TransferMenu: React.FC = observer(() => {
           if (menu === menuStore.currentMenu) {
             return <SelectedButton key={key}>{getMenuItem(menu)}</SelectedButton>
           } else {
-            return <MenuButton key={key}>{getMenuItem(menu)}</MenuButton>
+            return <MenuButton key={key} onClick={notImplemented}>{getMenuItem(menu)}</MenuButton>
           }
         }
       })
