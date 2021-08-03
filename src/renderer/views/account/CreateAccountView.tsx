@@ -28,8 +28,10 @@ const CreateAccountView = observer(
         password
       );
 
-      const [privateKey, error]: [string | undefined, Error | undefined] =
-        ipcRenderer.sendSync("unprotect-private-key", address, password);
+      const [privateKey, error]: [
+        string | undefined,
+        Error | undefined
+      ] = ipcRenderer.sendSync("unprotect-private-key", address, password);
       if (
         error !== undefined ||
         privateKey === undefined ||

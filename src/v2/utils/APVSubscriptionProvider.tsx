@@ -12,8 +12,10 @@ export default function APVSubscriptionProvider({
 }: React.PropsWithChildren<{}>) {
   const [state, send] = useMachine(machine);
   state.value;
-  const { loading, data } =
-    useDifferentAppProtocolVersionEncounterSubscription();
+  const {
+    loading,
+    data,
+  } = useDifferentAppProtocolVersionEncounterSubscription();
 
   useEffect(() => {
     if (loading) return;
