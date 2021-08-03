@@ -4,7 +4,7 @@ import headlessGraphQLSDK, { GraphQLSDK } from "../../middleware/graphql";
 
 export enum MenuItems {
   TRANSFER,
-  EXCHANGE,
+  SWAP,
 }
 
 export interface IMenuStore {

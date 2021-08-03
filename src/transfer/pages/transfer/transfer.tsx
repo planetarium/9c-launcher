@@ -73,7 +73,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if(!transferPage.validAddress || transferPage.amount.isNegative()) {
+    if(!transferPage.validateRecipient || transferPage.validateAmount) {
       return; 
     }
     transferPage.startSend();
@@ -96,10 +96,10 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
         <TransferInput
           type="text"
           name="address"
-          error={!transferPage.validAddress}
+          error={transferPage.recipientWarning}
           onChange={e => transferPage.setRecipient(e.target.value)}
-          onBlur={() => transferPage.validateAddress()}
-          onFocus={() => transferPage.resetValidate()}
+          onBlur={() => transferPage.setRecipientWarning()}
+          onFocus={() => transferPage.resetRecipientWarning()}
         />
         <TransferTitle>
           <T _str="NCG Amount" _tags={transifexTags} />
@@ -118,7 +118,9 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
           type="number"
           name="amount"
           onChange={e => transferPage.setAmount(new Decimal(e.target.value === '' ? -1 : e.target.value))}
-          error={!transferPage.validateAmount}
+          onBlur={() => transferPage.setAmountWarning()}
+          onFocus={() => transferPage.resetAmountWarning()}
+          error={transferPage.amountWarning}
           endAdornment={
             <InputAdornment position="end">NCG</InputAdornment>
           }
@@ -139,7 +141,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
           variant="contained"
           color="primary"
           onClick={handleButton}
-          disabled={!transferPage.validAddress || !transferPage.validateAmount}
+          disabled={!transferPage.sendButtonActivated}
         > Send </TransferButton>
       </FormControl>
 

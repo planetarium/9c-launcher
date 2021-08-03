@@ -13,7 +13,7 @@ export interface IHeadlessStore {
   transferGold: (recipient: string, amount: Decimal, memo: string) => Promise<string>;
   swapToWNCG: (recipient: string, amount: Decimal) => Promise<string>;
   confirmTransaction: (
-    txId: string,
+    txId: TxId,
     timeout: number | undefined,
     listener: TransactionConfirmationListener) => Promise<void>;
   updateBalance: () => Promise<Decimal>
@@ -25,6 +25,8 @@ export interface TransactionConfirmationListener {
     onFailure: TxExecutionCallback;
     onTimeout: TxExecutionCallback;
 }
+
+type TxId = string;
 
 export default class HeadlessStore implements IHeadlessStore {
   private agentAddress: string = "";
@@ -68,7 +70,7 @@ export default class HeadlessStore implements IHeadlessStore {
   };
 
   @action
-  transferGold = async (recipient: string, amount: Decimal, memo: string): Promise<string> => {
+  transferGold = async (recipient: string, amount: Decimal, memo: string): Promise<TxId> => {
     this.assertAgentAddress();
 
     const nextTxNonceData = await this.graphqlSdk.GetNextTxNonce({address: this.agentAddress});
@@ -85,14 +87,14 @@ export default class HeadlessStore implements IHeadlessStore {
   }
 
   @action
-  swapToWNCG = async (recipient: string, amount: Decimal): Promise<string> => {
+  swapToWNCG = async (recipient: string, amount: Decimal): Promise<TxId> => {
     const bridgeAddress = "0xa208a3E10964dd8bB044a87a31967bafd9458907"; // testnet
     return await this.transferGold(bridgeAddress, amount, recipient);
   }
 
   @action
   confirmTransaction = async (
-    txId: string,
+    txId: TxId,
     timeout: number | undefined,
     listener: {
       onSuccess: TxExecutionCallback,

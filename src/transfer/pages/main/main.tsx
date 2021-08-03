@@ -6,7 +6,7 @@ import { useContext } from "react";
 import { StoreContext } from "src/transfer/hooks";
 import TransferMenu from "../../components/TransferMenu/TransferMenu";
 import { MenuItems } from "../../stores/views/menu";
-import ExchangePage from "../exchange/exchange";
+import ExchangePage from "../swap/swap";
 import TransferPage from "../transfer/transfer";
 
 const transifexTags = "Transfer/Main";
