@@ -1,4 +1,5 @@
 import React, { createContext, useContext } from "react";
+import OverlayStore from "../stores/overlay";
 import AccountStore from "../stores/account";
 import GameStore from "../stores/game";
 import StandaloneStore from "../stores/standaloneStore";
@@ -7,6 +8,7 @@ const stores = {
   account: new AccountStore(),
   game: new GameStore(),
   standalone: new StandaloneStore(),
+  overlay: new OverlayStore(),
 } as const;
 
 export const StoreContext = createContext<typeof stores>(stores);
