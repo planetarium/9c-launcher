@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import Layout from "../../components/core/Layout";
 
 function WelcomeView() {
-  return <Layout />;
+  return <Layout sidebar />;
 }
 
 export default observer(WelcomeView);

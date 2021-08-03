@@ -27,3 +27,13 @@
   justify-content: flex-end;
   align-items: flex-end;
 }
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 560px;
+  height: 100%;
+  background-color: #1d1e1f;
+  opacity: 0.95;
+}
