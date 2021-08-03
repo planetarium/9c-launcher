@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import styles from "./styles.module.scss";
 import MenuItem from "./MenuItem";
 import MenuDivider from "./MenuDivider";
+import { useStore } from "../../../utils/useStore";
 
 import settings from "../../../resources/icons/settings.png";
 import refresh from "../../../resources/icons/refresh.png";
@@ -12,6 +13,8 @@ import shop from "../../../resources/icons/shop.png";
 import staking from "../../../resources/icons/staking.png";
 
 function Menu() {
+  const overlay = useStore("overlay");
+
   return (
     <div className={styles.menu}>
       <MenuItem icon={staking} text="Staking" onClick={() => void 0} />
@@ -20,7 +23,12 @@ function Menu() {
       <MenuItem icon={discord} text="Discord" onClick={() => void 0} />
       <MenuDivider />
       <MenuItem icon={refresh} text="Restart" onClick={() => void 0} />
-      <MenuItem icon={settings} text="Settings" onClick={() => void 0} />
+      <MenuItem
+        icon={settings}
+        disabled={overlay.page === "settings"}
+        text="Settings"
+        onClick={() => overlay.open("settings")}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@
   width: 160px;
   padding: 10px;
   margin-left: 20px;
+  -webkit-app-region: no-drag;
 }
 
 .menuItem {
@@ -15,6 +16,10 @@
   img {
     padding-right: 1em;
   }
+}
+
+.disabledMenuItem {
+  opacity: 0.8;
 }
 
 .menuDivider {
