@@ -54,7 +54,11 @@ const App: React.FC = () => {
 
   useEffect(() => {
     async function main() {
-      await storeContainer.headlessStore.trySetAgentAddress();
+      const success = await storeContainer.headlessStore.trySetAgentAddress();
+      if(!success) {
+        //FIXME: make a error page and show it.
+        throw new Error("Could not set agent address");
+      }
       await storeContainer.headlessStore.updateBalance();
     }
     main();
