@@ -75,6 +75,20 @@ query ProtectedPrivateKeys {
   }
 }
 
+query GetNCGBalance($address: Address!) {
+  goldBalance(address: $address)
+}
+
+query TransactionResult($txId: TxId!) {
+  transaction {
+    transactionResult(txId: $txId) {
+      blockHash
+      blockIndex
+      txStatus
+    }
+  }
+}
+
 query ConvertPrivateKeyToAddress($privateKey: ByteString!) {
   keyStore {
     privateKey(hex: $privateKey) {
@@ -190,6 +204,12 @@ query GetTip {
   }
 }
 
+query GetNextTxNonce($address: Address!) {
+  transaction {
+    nextTxNonce(address: $address)
+  }
+}
+
 query StateQueryMonsterCollection($agentAddress: Address!) {
   stateQuery{
 
@@ -218,6 +238,10 @@ mutation ClaimCollectionReward($address: Address!) {
   action {
     claimMonsterCollectionReward(avatarAddress: $address)
   }
+}
+
+mutation Transfer($recipient: Address! $amount: String! $txNonce: Long! $memo: String!) {
+  transfer(recipient: $recipient, amount: $amount, txNonce: $txNonce, memo: $memo)
 }
 
 subscription CollectionState {

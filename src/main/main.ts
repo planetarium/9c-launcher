@@ -63,6 +63,7 @@ import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
 import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron-devtools-installer';
 import prettyBytes from "pretty-bytes";
+import createTransferWindow from "../transfer/window";
 
 initializeSentry();
 
@@ -467,6 +468,17 @@ function initializeIpc() {
       return;
     }
     collectionWin = createCollectionWindow();
+    collectionWin.on("close", function (event: any) {
+      collectionWin = null;
+    });
+  });
+
+  ipcMain.handle("open transfer page", async () => {
+    if (collectionWin != null) {
+      collectionWin.focus();
+      return;
+    }
+    collectionWin = createTransferWindow();
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
