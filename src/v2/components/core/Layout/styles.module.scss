@@ -37,3 +37,18 @@
   background-color: #1d1e1f;
   opacity: 0.95;
 }
+
+.overlayContainer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1d1e1f80;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  -webkit-app-region: no-drag;
+}
