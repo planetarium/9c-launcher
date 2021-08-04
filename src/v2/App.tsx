@@ -6,15 +6,18 @@ import Routes from "./Routes";
 import client from "./utils/apolloClient";
 import APVSubscriptionProvider from "./utils/APVSubscriptionProvider";
 import "./global.scss";
+import { StoreProvider } from "./utils/useStore";
 
 function App() {
   return (
     <ApolloProvider client={client}>
-      <APVSubscriptionProvider>
-        <Router>
-          <Routes />
-        </Router>
-      </APVSubscriptionProvider>
+      <StoreProvider>
+        <APVSubscriptionProvider>
+          <Router>
+            <Routes />
+          </Router>
+        </APVSubscriptionProvider>
+      </StoreProvider>
     </ApolloProvider>
   );
 }
