@@ -11,6 +11,7 @@ import HeadlessStore from "./stores/headless";
 import TransferPageStore from "./stores/views/transfer";
 import './App.scss';
 import montserrat from "src/renderer/styles/font";
+import SwapPageStore from "./stores/views/swap";
 
 const client = new GraphQLClient(`http://localhost:23061/graphql`);
 const headlessGraphQLSDK = getSdk(client);
@@ -18,7 +19,8 @@ const headlessGraphQLSDK = getSdk(client);
 const storeContainer: ITransferStoreContainer = {
   headlessStore: new HeadlessStore(headlessGraphQLSDK),
   menuStore: new MenuStore(),
-  transferPage: new TransferPageStore()
+  transferPage: new TransferPageStore(),
+  swapPage: new SwapPageStore()
 }
 
 const handleDetailView = (tx: string) => {

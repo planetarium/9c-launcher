@@ -15,6 +15,7 @@ export type Props = {
 };
 
 const MainPageContainer = styled(Container)({
+  height: "100%",
   backgroundColor: "#1d1e1f",
   padding: '48px 52px',
   display: "flex",
@@ -61,7 +62,9 @@ const MainPage: React.FC<Props> = observer((props: Props) => {
       </TitleContainer>
       <LayoutContainer>
           <TransferMenu />
-          {menuStore.currentMenu === MenuItems.TRANSFER ? <TransferPage onDetailedView={onDetailedView} /> : <ExchangePage />}
+          {menuStore.currentMenu === MenuItems.TRANSFER 
+          ? <TransferPage onDetailedView={onDetailedView} /> 
+          : <ExchangePage onDetailedView={onDetailedView}/>}
       </LayoutContainer>
     </MainPageContainer>
   );

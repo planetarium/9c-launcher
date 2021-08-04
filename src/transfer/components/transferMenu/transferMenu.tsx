@@ -9,6 +9,7 @@ const transifexTags = "Transfer/Menu";
 
 
 const MenuContainer = styled(Container)({
+  height: "100%",
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-start',
@@ -52,9 +53,9 @@ const TransferMenu: React.FC = observer(() => {
         const menu = MenuItems[key as keyof typeof MenuItems];
         if(!isNaN(Number(menu))) {
           if (menu === menuStore.currentMenu) {
-            return <SelectedButton key={key}>{getMenuItem(menu)}</SelectedButton>
+            return <SelectedButton key={key} onClick={() => menuStore.changeMenu(menu)}>{getMenuItem(menu)}</SelectedButton>
           } else {
-            return <MenuButton key={key} onClick={notImplemented}>{getMenuItem(menu)}</MenuButton>
+            return <MenuButton key={key} onClick={() => menuStore.changeMenu(menu)}>{getMenuItem(menu)}</MenuButton>
           }
         }
       })
