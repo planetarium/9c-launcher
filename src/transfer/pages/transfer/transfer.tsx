@@ -73,7 +73,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if(!transferPage.validateRecipient || transferPage.validateAmount) {
+    if(!transferPage.validateRecipient || !transferPage.validateAmount) {
       return; 
     }
     transferPage.startSend();
@@ -154,7 +154,9 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
         open={transferPage.currentPhase === TransferPhase.FINISHED && transferPage.success}
         onDetailedView={() => onDetailedView(transferPage.tx)}
         onClose={() => transferPage.finish()}
-      />
+      >
+          <T _str="Send Success!" _tags={transifexTags} />
+      </SuccessDialog>
 
       <FailureDialog
         open={transferPage.currentPhase === TransferPhase.FINISHED && !transferPage.success}
