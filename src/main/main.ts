@@ -145,12 +145,12 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
-  intializeConfig();
+  initializeConfig();
   initializeApp();
   initializeIpc();
 }
 
-async function intializeConfig() {
+async function initializeConfig() {
   try {
     const res = await axios(REMOTE_CONFIG_URL);
     const remoteConfig: IConfig = res.data;
