@@ -7,6 +7,7 @@ export type Props = {
   open: boolean;
   onDetailedView: () => void;
   onClose: () => void;
+  children: React.ReactNode;
 };
 
 const DetailButton = styled(Button)({
@@ -46,7 +47,7 @@ const SelectContainer = styled(Container)({
 const transifexTags = "Transfer/Components/SuccessDialog";
 
 const SuccessDialog: React.FC<Props> = (props: Props) => {
-  const { open, onDetailedView, onClose } = props;
+  const { open, onDetailedView, onClose, children } = props;
 
   return (
     <Dialog
@@ -59,13 +60,15 @@ const SuccessDialog: React.FC<Props> = (props: Props) => {
           backgroundColor: 'transparent',
           boxShadow: 'none',
           maxWidth: '770px',
-          height: '150px'
+          height: '600px',
+          display: 'flex',
+          justifyContent: 'center',
         },
       }}
     >
       <div>
         <SuccessMessage>
-          <T _str="Send Success!" _tags={transifexTags} />
+          {children}
         </SuccessMessage>
         <SelectContainer>
           <BackToMainButton
