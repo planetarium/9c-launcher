@@ -4,8 +4,11 @@ import styles from "./styles.module.scss";
 import { useTopmostBlocksQuery } from "../../../generated/graphql";
 import { useStore } from "../../../utils/useStore";
 import { ipcRenderer } from "electron";
+
 import WindowControls from "./WindowControls";
 import Menu from "../Menu";
+import StatusBar from "./StatusBar";
+
 import SettingsOverlay from "../../../views/SettingsOverlay";
 import StakingOverlay from "../../../views/StakingOverlay";
 
@@ -46,6 +49,7 @@ function Layout({ children, sidebar }: React.PropsWithChildren<LayoutProps>) {
     <div className={styles.layout}>
       {sidebar && <main className={styles.sidebar}>{children}</main>}
       <aside className={styles.bottomControls}>
+        <StatusBar />
         <Menu />
       </aside>
       {overlay.isOpen && (
