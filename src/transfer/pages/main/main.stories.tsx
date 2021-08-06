@@ -9,6 +9,7 @@ import TransferPageStore from 'src/transfer/stores/views/transfer';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core';
 import montserrat from 'src/renderer/styles/font';
+import SwapPageStore from 'src/transfer/stores/views/swap';
 
 export default {
   title: 'Transfer/Pages/Main',
@@ -36,6 +37,7 @@ const storeContainer: ITransferStoreContainer = {
     headlessStore: new MockedHeadlessStore(),
     menuStore: new MenuStore(),
     transferPage: new TransferPageStore(),
+    swapPage: new SwapPageStore(),
 }
 
 const Template: Story<Props> = (props: Props) =>(
