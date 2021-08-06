@@ -20,7 +20,7 @@ import NCGLogo from "../../resources/ncgLogo.png";
 const transifexTags = "menu";
 
 export const Layout: React.FC = observer(({ children }) => {
-  const { accountStore, routerStore } = useStores();
+  const { accountStore, routerStore, standaloneStore } = useStores();
   const [awsSinkCloudwatchGuid, setAwsSinkCloudwatchGuid] = useState<string>();
   const [infoButtonState, setInfoButtonState] = useState(false);
 
@@ -80,7 +80,7 @@ export const Layout: React.FC = observer(({ children }) => {
               onClick={() => {
                 ipcRenderer.invoke("open transfer page");
               }}
-              disabled={!accountStore.isMiningConfigEnded}
+              disabled={!accountStore.isMiningConfigEnded || !standaloneStore.Ready}
             >
               <T _str="Send NCG" _tags={transifexTags} />
             </Button>

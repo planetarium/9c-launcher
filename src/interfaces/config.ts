@@ -21,5 +21,7 @@ export interface IConfig {
   AwsAccessKey: string | undefined;
   AwsSecretKey: string | undefined;
   AwsRegion: string | undefined;
+  Network: string;
+  SwapAddress: string | undefined;
   DataProviderUrl: string | undefined;
 }

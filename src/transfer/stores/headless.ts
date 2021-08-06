@@ -30,11 +30,13 @@ type TxId = string;
 
 export default class HeadlessStore implements IHeadlessStore {
   private agentAddress: string = "";
+  private bridgeAddress: string = "";
   private graphqlSdk: GraphQLSDK;
   @observable public balance: Decimal;
 
-  constructor(sdk: GraphQLSDK) {
+  constructor(sdk: GraphQLSDK, bridgeAddress: string) {
     this.graphqlSdk = sdk;
+    this.bridgeAddress = bridgeAddress;
     this.balance = new Decimal(0);
   }
 
@@ -88,8 +90,7 @@ export default class HeadlessStore implements IHeadlessStore {
 
   @action
   swapToWNCG = async (recipient: string, amount: Decimal): Promise<TxId> => {
-    const bridgeAddress = "0xa208a3E10964dd8bB044a87a31967bafd9458907"; // testnet
-    return await this.transferGold(bridgeAddress, amount, recipient);
+    return await this.transferGold(this.bridgeAddress, amount, recipient);
   }
 
   @action
