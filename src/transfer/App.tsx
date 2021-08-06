@@ -3,7 +3,6 @@ import { GraphQLClient } from "graphql-request";
 import React, { useMemo } from "react";
 import { useEffect } from "react";
 import { getSdk } from "src/generated/graphql-request";
-import { IStoreContainer } from "src/interfaces/store";
 import { ITransferStoreContainer, StoreContext } from "./hooks";
 import MainPage from "./pages/main/main";
 import MenuStore from "./stores/views/menu";
@@ -12,23 +11,27 @@ import TransferPageStore from "./stores/views/transfer";
 import './App.scss';
 import montserrat from "src/renderer/styles/font";
 import SwapPageStore from "./stores/views/swap";
+import {get as getConfig} from "src/config";
 
 const client = new GraphQLClient(`http://localhost:23061/graphql`);
 const headlessGraphQLSDK = getSdk(client);
 
 const storeContainer: ITransferStoreContainer = {
-  headlessStore: new HeadlessStore(headlessGraphQLSDK),
+  headlessStore: new HeadlessStore(
+    headlessGraphQLSDK,
+    getConfig("SwapAddress") || "0x9093dd96c4bb6b44A9E0A522e2DE49641F146223"),
   menuStore: new MenuStore(),
   transferPage: new TransferPageStore(),
   swapPage: new SwapPageStore()
 }
 
 const handleDetailView = (tx: string) => {
+  const network = getConfig("Network", "9c-main");
   if (process.versions['electron']) {
     import('electron')
       .then(({ shell }) => {
         shell.openExternal(
-          `https://explorer.libplanet.io/9c-main/transaction/?${tx}`);
+          `https://explorer.libplanet.io/${network}/transaction/?${tx}`);
       });
   }
 }
