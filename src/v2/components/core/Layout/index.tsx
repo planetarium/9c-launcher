@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
 import { observer } from "mobx-react";
 import styles from "./styles.module.scss";
-import { useTopmostBlocksQuery } from "../../../generated/graphql";
 import { useStore } from "../../../utils/useStore";
-import { ipcRenderer } from "electron";
 
 import WindowControls from "./WindowControls";
 import Menu from "../Menu";
@@ -11,10 +9,7 @@ import StatusBar from "./StatusBar";
 
 import SettingsOverlay from "../../../views/SettingsOverlay";
 import StakingOverlay from "../../../views/StakingOverlay";
-
-const awsSinkGuid: string = ipcRenderer.sendSync(
-  "get-aws-sink-cloudwatch-guid"
-);
+import InfoText from "./InfoText";
 
 interface LayoutProps {
   sidebar?: boolean;
@@ -22,16 +17,6 @@ interface LayoutProps {
 
 function Layout({ children, sidebar }: React.PropsWithChildren<LayoutProps>) {
   const { account, overlay } = useStore();
-  const { loading, data } = useTopmostBlocksQuery({ pollInterval: 1000 * 10 });
-  const topmostBlocks = data?.nodeStatus.topmostBlocks;
-
-  const minedBlocks = useMemo(
-    () =>
-      account.isLogin && topmostBlocks != null
-        ? topmostBlocks.filter((b) => b?.miner == account.selectedAddress)
-        : null,
-    [account.isLogin, topmostBlocks]
-  );
 
   const page =
     overlay.page &&
@@ -52,6 +37,7 @@ function Layout({ children, sidebar }: React.PropsWithChildren<LayoutProps>) {
         <StatusBar />
         <Menu />
       </aside>
+      <InfoText />
       {overlay.isOpen && (
         <div
           className={styles.overlayContainer}
