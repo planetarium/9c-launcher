@@ -10,12 +10,18 @@ import StatusBar from "./StatusBar";
 import SettingsOverlay from "../../../views/SettingsOverlay";
 import StakingOverlay from "../../../views/StakingOverlay";
 import InfoText from "./InfoText";
+import clsx from "clsx";
 
 interface LayoutProps {
   sidebar?: boolean;
+  className?: string;
 }
 
-function Layout({ children, sidebar }: React.PropsWithChildren<LayoutProps>) {
+function Layout({
+  children,
+  sidebar,
+  className,
+}: React.PropsWithChildren<LayoutProps>) {
   const { account, overlay } = useStore();
 
   const page =
@@ -32,7 +38,9 @@ function Layout({ children, sidebar }: React.PropsWithChildren<LayoutProps>) {
 
   return (
     <div className={styles.layout}>
-      {sidebar && <main className={styles.sidebar}>{children}</main>}
+      {sidebar && (
+        <main className={clsx(styles.sidebar, className)}>{children}</main>
+      )}
       <aside className={styles.bottomControls}>
         <StatusBar />
         <Menu />
