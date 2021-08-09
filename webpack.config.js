@@ -24,7 +24,7 @@ function createRenderConfig(isDev) {
       alias: {
         root: __dirname,
         src: path.resolve(__dirname, "src"),
-      }
+      },
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
@@ -35,7 +35,7 @@ function createRenderConfig(isDev) {
       render: "./renderer/render.tsx",
       collection: "./collection/collection.tsx",
       transfer: "./transfer/transfer.tsx",
-      v2: "./v2/render.tsx"
+      ...(isDev && { v2: "./v2/render.tsx" }),
     },
 
     output: {
@@ -44,8 +44,8 @@ function createRenderConfig(isDev) {
       path: path.join(__dirname, "dist"),
       publicPath: isDev ? "/" : undefined,
       clean: {
-        keep: /\.(?:exe|dll|json)$|(?:9c_Data|MonoBleedingEdge|publish)[\\\/]/
-      }
+        keep: /\.(?:exe|dll|json)$|(?:9c_Data|MonoBleedingEdge|publish)[\\\/]/,
+      },
     },
 
     externalsPresets: {
@@ -61,16 +61,16 @@ function createRenderConfig(isDev) {
         {
           test: /\.scss$/,
           use: [
-            { loader: 'style-loader' },
-            { loader: 'css-loader' },
-            { loader: 'sass-loader' },
+            { loader: "style-loader" },
+            { loader: "css-loader" },
+            { loader: "sass-loader" },
           ],
         },
         {
           test: /\.m?js/,
           resolve: {
-            fullySpecified: false // https://github.com/webpack/webpack/issues/11467
-          }
+            fullySpecified: false, // https://github.com/webpack/webpack/issues/11467
+          },
         },
         {
           test: /\.tsx?$/,
@@ -81,11 +81,14 @@ function createRenderConfig(isDev) {
               presets: [
                 "@babel/preset-typescript",
                 "@babel/preset-react",
-                ["@babel/preset-env", {
-                  targets: { electron: "9.0.2" },
-                  useBuiltIns: "entry",
-                  corejs: 3
-                }],
+                [
+                  "@babel/preset-env",
+                  {
+                    targets: { electron: "9.0.2" },
+                    useBuiltIns: "entry",
+                    corejs: 3,
+                  },
+                ],
               ],
               plugins: [
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
@@ -94,7 +97,7 @@ function createRenderConfig(isDev) {
                 ["@babel/plugin-proposal-private-property-in-object", { loose: true }],
                 "react-hot-loader/babel",
               ],
-              sourceMaps: isDev
+              sourceMaps: isDev,
             },
           },
         },
@@ -102,7 +105,7 @@ function createRenderConfig(isDev) {
         {
           test: /\.(svg|jpg|png|ttf)$/,
           exclude: /node_modules/,
-          type: 'asset'
+          type: "asset",
         },
       ],
     },
@@ -129,7 +132,7 @@ function createRenderConfig(isDev) {
         filename: `transfer.html`, // output HTML files
         chunks: ["transfer"], // respective JS files
       }),
-      
+
       new HtmlPlugin({
         template: "v2.html", // relative path to the HTML files
         filename: "v2.html", // output HTML files
@@ -150,20 +153,20 @@ function createRenderConfig(isDev) {
       minimize: !isDev,
       minimizer: [new TerserPlugin()],
       splitChunks: {
-        chunks: 'all',
+        chunks: "all",
         cacheGroups: {
           vendors: {
             test: /[\\/]node_modules[\\/]/,
             priority: -10,
             minSize: 0,
-            name: 'vendors',
+            name: "vendors",
             reuseExistingChunk: true,
           },
           graphql: {
             test: /[\\/]src[\\/]generated[\\/]/,
             priority: -11,
-            name: 'graphql',
-            reuseExistingChunk: true
+            name: "graphql",
+            reuseExistingChunk: true,
           },
           default: {
             minChunks: 2,
@@ -171,8 +174,8 @@ function createRenderConfig(isDev) {
             reuseExistingChunk: true,
           },
         },
-      }
-    }
+      },
+    },
   };
 }
 
@@ -210,7 +213,7 @@ function createMainConfig(isDev) {
     },
 
     externals: {
-      "spawn-sync": "require('child_process').spawnSync" // fix child-process-promise/cross
+      "spawn-sync": "require('child_process').spawnSync", // fix child-process-promise/cross
     },
 
     output: {
@@ -226,11 +229,17 @@ function createMainConfig(isDev) {
           use: {
             loader: "babel-loader",
             options: {
-              presets: ["@babel/preset-typescript", ["@babel/preset-env", {
-                targets: { electron: "9.0.2" },
-                useBuiltIns: "entry",
-                corejs: 3
-              }]],
+              presets: [
+                "@babel/preset-typescript",
+                [
+                  "@babel/preset-env",
+                  {
+                    targets: { node: "current" },
+                    useBuiltIns: "entry",
+                    corejs: 3,
+                  },
+                ],
+              ],
               plugins: [
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 ["@babel/plugin-proposal-private-methods", { loose: true }],
@@ -275,13 +284,13 @@ function createMainConfig(isDev) {
 
       new IgnorePlugin({
         resourceRegExp: /^(utf\-8\-validate|bufferutil)/, // fix ws module
-      })
+      }),
     ],
 
     optimization: {
       minimize: !isDev,
       minimizer: [new TerserPlugin()],
-    }
+    },
   };
 }
 
