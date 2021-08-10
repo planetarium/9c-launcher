@@ -101,6 +101,14 @@ const schema: any = {
     type: "string",
     default: undefined
   },
+  Network: {
+    type: "string",
+    default: "9c-main",
+  },
+  SwapAddress: {
+    type: "string",
+    default: undefined,
+  },
   ConfigVersion: {
     type: "integer",
     default: 0
