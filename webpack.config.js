@@ -1,17 +1,18 @@
 const path = require("path");
 const HtmlPlugin = require("html-webpack-plugin");
-const HtmlExternalsPlugin = require("html-webpack-externals-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { DefinePlugin, SourceMapDevToolPlugin } = require("webpack");
+const { DefinePlugin, IgnorePlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
+const TerserPlugin = require("terser-webpack-plugin");
 
 // const to avoid typos
 const DEVELOPMENT = "development";
 const PRODUCTION = "production";
 
+/** @returns {import('webpack').Configuration} */
 function createRenderConfig(isDev) {
   return {
     context: path.join(__dirname, "src"),
@@ -20,29 +21,34 @@ function createRenderConfig(isDev) {
 
     resolve: {
       extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
+      alias: {
+        root: __dirname,
+        src: path.resolve(__dirname, "src"),
+      }
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
 
-    devtool: isDev ? "source-map" : "none",
+    devtool: isDev && "eval-cheap-module-source-map",
 
     entry: {
-      polyfill: "@babel/polyfill",
       render: "./renderer/render.tsx",
       collection: "./collection/collection.tsx",
+      transfer: "./transfer/transfer.tsx",
     },
 
     output: {
-      filename: isDev ? "[name].js" : "[name].[hash].js",
+      filename: isDev ? "[name].js" : "[name].[contenthash].js",
+      assetModuleFilename: "assets/[hash][ext][query]",
       path: path.join(__dirname, "dist"),
       publicPath: isDev ? "/" : undefined,
+      clean: {
+        keep: /\.(?:exe|dll|json)$|(?:9c_Data|MonoBleedingEdge|publish)[\\\/]/
+      }
     },
 
-    externals: {
-      react: "React",
-      "react-dom": "ReactDOM",
-      "react-router-dom": "ReactRouterDOM",
-      electron: "require('electron')",
+    externalsPresets: {
+      electronRenderer: true,
     },
 
     module: {
@@ -55,7 +61,12 @@ function createRenderConfig(isDev) {
             { loader: 'sass-loader' },
           ],
         },
-
+        {
+          test: /\.m?js/,
+          resolve: {
+            fullySpecified: false // https://github.com/webpack/webpack/issues/11467
+          }
+        },
         {
           test: /\.tsx?$/,
           exclude: /node_modules/,
@@ -66,7 +77,9 @@ function createRenderConfig(isDev) {
                 "@babel/preset-typescript",
                 "@babel/preset-react",
                 ["@babel/preset-env", {
-                  "targets": {"chrome": "55"}
+                  targets: { electron: "9.0.2" },
+                  useBuiltIns: "entry",
+                  corejs: 3
                 }],
               ],
               plugins: [
@@ -74,6 +87,7 @@ function createRenderConfig(isDev) {
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 "react-hot-loader/babel",
               ],
+              sourceMaps: isDev
             },
           },
         },
@@ -81,10 +95,7 @@ function createRenderConfig(isDev) {
         {
           test: /\.(svg|jpg|png|ttf)$/,
           exclude: /node_modules/,
-          use: {
-            loader: "url-loader",
-            options: {},
-          },
+          type: 'asset'
         },
       ],
     },
@@ -106,35 +117,10 @@ function createRenderConfig(isDev) {
         chunks: ["collection"], // respective JS files
       }),
 
-      new HtmlExternalsPlugin({
-        cwpOptions: { context: path.join(__dirname, "node_modules") },
-        externals: [
-          {
-            module: "react",
-            global: "React",
-            entry: isDev
-              ? "umd/react.development.js"
-              : "umd/react.production.min.js",
-          },
-          {
-            module: "react-dom",
-            global: "ReactDOM",
-            entry: isDev
-              ? "umd/react-dom.development.js"
-              : "umd/react-dom.production.min.js",
-          },
-          {
-            module: "react-router-dom",
-            global: "ReactRouterDOM",
-            entry: isDev
-              ? "umd/react-router-dom.js"
-              : "umd/react-router-dom.min.js",
-          },
-        ],
-      }),
-
-      new SourceMapDevToolPlugin({
-        filename: "[file].map",
+      new HtmlPlugin({
+        template: `index.html`, // relative path to the HTML files
+        filename: `transfer.html`, // output HTML files
+        chunks: ["transfer"], // respective JS files
       }),
     ],
 
@@ -146,9 +132,38 @@ function createRenderConfig(isDev) {
           historyApiFallback: true,
         }
       : undefined,
+
+    optimization: {
+      minimize: !isDev,
+      minimizer: [new TerserPlugin()],
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10,
+            minSize: 0,
+            name: 'vendors',
+            reuseExistingChunk: true,
+          },
+          graphql: {
+            test: /[\\/]src[\\/]generated[\\/]/,
+            priority: -11,
+            name: 'graphql',
+            reuseExistingChunk: true
+          },
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+        },
+      }
+    }
   };
 }
 
+/** @returns {import('webpack').Configuration} */
 function createMainConfig(isDev) {
   return {
     context: path.join(__dirname, "src"),
@@ -165,8 +180,25 @@ function createMainConfig(isDev) {
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
     },
+    
+    stats: {
+      errorDetails: true,
+    },
+
+    ignoreWarnings: [
+      /^Critical dependency:/, // fix keyv and got using weird tricks to avoid webpack
+    ],
 
     devtool: "source-map",
+
+    externalsPresets: {
+      node: true,
+      electronMain: true,
+    }, 
+
+    externals: {
+      "spawn-sync": "require('child_process').spawnSync" // fix child-process-promise/cross
+    },
 
     output: {
       filename: "[name].js",
@@ -181,7 +213,11 @@ function createMainConfig(isDev) {
           use: {
             loader: "babel-loader",
             options: {
-              presets: ["@babel/preset-typescript", "@babel/preset-env"],
+              presets: ["@babel/preset-typescript", ["@babel/preset-env", {
+                targets: { node: "current" },
+                useBuiltIns: "entry",
+                corejs: 3
+              }]],
               plugins: [
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
               ],
@@ -213,7 +249,16 @@ function createMainConfig(isDev) {
       new CopyWebpackPlugin({
         patterns: [{ from: "package.json", to: "./", context: "../" }],
       }),
+
+      new IgnorePlugin({
+        resourceRegExp: /^(utf\-8\-validate|bufferutil)/, // fix ws module
+      })
     ],
+    
+    optimization: {
+      minimize: !isDev,
+      minimizer: [new TerserPlugin()],
+    }
   };
 }
 

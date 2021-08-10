@@ -24,9 +24,9 @@ query NodeStatus {
   }
 }
 
-query TopmostBlocks($limit: Int = 500, $miner: Address = null) {
+query TopmostBlocks($limit: Int = 500, $offset: Int = 100, $miner: Address = null) {
   nodeStatus {
-    topmostBlocks(limit: $limit, miner: $miner) {
+    topmostBlocks(limit: $limit, offset: $offset, miner: $miner) {
       id
       hash
       index
@@ -71,6 +71,20 @@ query ProtectedPrivateKeys {
   keyStore {
     protectedPrivateKeys {
       address
+    }
+  }
+}
+
+query GetNCGBalance($address: Address!) {
+  goldBalance(address: $address)
+}
+
+query TransactionResult($txId: TxId!) {
+  transaction {
+    transactionResult(txId: $txId) {
+      blockHash
+      blockIndex
+      txStatus
     }
   }
 }
@@ -190,6 +204,12 @@ query GetTip {
   }
 }
 
+query GetNextTxNonce($address: Address!) {
+  transaction {
+    nextTxNonce(address: $address)
+  }
+}
+
 query StateQueryMonsterCollection($agentAddress: Address!) {
   stateQuery{
 
@@ -218,6 +238,10 @@ mutation ClaimCollectionReward($address: Address!) {
   action {
     claimMonsterCollectionReward(avatarAddress: $address)
   }
+}
+
+mutation Transfer($recipient: Address! $amount: String! $txNonce: Long! $memo: String!) {
+  transfer(recipient: $recipient, amount: $amount, txNonce: $txNonce, memo: $memo)
 }
 
 subscription CollectionState {

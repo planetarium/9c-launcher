@@ -23,6 +23,7 @@ import configurationViewStyle from "./ConfigurationView.style";
 import { T, useLanguages, useLocale } from "@transifex/react";
 import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
+import log from "electron-log";
 
 const transifexTags = "configuration";
 
@@ -147,6 +148,19 @@ const ConfigurationView = observer(() => {
             <T _str="Open Path" _tags={transifexTags} />
           </Button>
 
+          <FormLabel className={classes.newLine}>
+            <T _str="Log path" _tags={transifexTags} />
+          </FormLabel>
+          <Button
+            onClick={handleOpenLogPath}
+            variant="outlined"
+            color="inherit"
+            className={classes.openPath}
+            startIcon={<FolderOpen />}
+          >
+            <T _str="Open Path" _tags={transifexTags} />
+          </Button>
+
           <FormControl className={classes.checkboxGroup}>
             <FormLabel className={classes.newLine}>
               <T _str="Send Information" _tags={transifexTags} />
@@ -209,6 +223,12 @@ function handleOpenKeyStorePath() {
     "keystore"
   );
   console.log(`Open keystore folder. ${openpath}`);
+  shell.showItemInFolder(openpath);
+}
+
+function handleOpenLogPath() {
+  const openpath = log.transports.file.getFile().path;
+  console.log(`Open log folder. ${openpath}`);
   shell.showItemInFolder(openpath);
 }
 
