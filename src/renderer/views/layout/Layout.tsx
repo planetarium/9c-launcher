@@ -15,11 +15,12 @@ import InfoIcon from "../../components/InfoIcon";
 
 import explorerLogo from "../../resources/block-explorer-logo.png";
 import patchNoteLogo from "../../resources/wrench.png";
+import NCGLogo from "../../resources/ncgLogo.png";
 
 const transifexTags = "menu";
 
 export const Layout: React.FC = observer(({ children }) => {
-  const { accountStore, routerStore } = useStores();
+  const { accountStore, routerStore, standaloneStore } = useStores();
   const [awsSinkCloudwatchGuid, setAwsSinkCloudwatchGuid] = useState<string>();
   const [infoButtonState, setInfoButtonState] = useState(false);
 
@@ -73,6 +74,17 @@ export const Layout: React.FC = observer(({ children }) => {
           }}
         />
         <ul className={"LauncherClientOption"}>
+          <li>
+            <Button
+              startIcon={<img src={NCGLogo} />}
+              onClick={() => {
+                ipcRenderer.invoke("open transfer page");
+              }}
+              disabled={!accountStore.isMiningConfigEnded || !standaloneStore.Ready}
+            >
+              <T _str="Send NCG" _tags={transifexTags} />
+            </Button>
+          </li>
           <li>
             <Button
               startIcon={<img src={patchNoteLogo} />}

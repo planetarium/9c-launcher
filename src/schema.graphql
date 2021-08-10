@@ -1,3 +1,4 @@
+
 schema {
   query: StandaloneQuery
   mutation: StandaloneMutation
@@ -5,6 +6,8 @@ schema {
 }
 
 type StandaloneQuery {
+  activated(invitationCode: String!): Boolean!
+
   # Check if the provided address is activated.
   activationStatus: ActivationStatusQuery!
   chainQuery: ExplorerQuery!
@@ -12,6 +15,9 @@ type StandaloneQuery {
     # transaction id.
     txId: TxId!
   ): TransactionType_1
+    @deprecated(
+      reason: "The root query is not the best place for getTx so it was moved. Use transaction.getTx()"
+    )
   goldBalance(
     # Target address to query
     address: Address!
@@ -30,6 +36,9 @@ type StandaloneQuery {
     # Target address to query
     address: Address!
   ): Long!
+    @deprecated(
+      reason: "The root query is not the best place for nextTxNonce so it was moved. Use transaction.nextTxNonce()"
+    )
   nodeStatus: NodeStatusType!
 
   # Get the peer's block chain state
@@ -45,6 +54,9 @@ type StandaloneQuery {
     # Offset block hash for query.
     hash: ByteString
   ): StateQuery!
+
+  # Query for transaction.
+  transaction: TransactionHeadlessQuery!
   transferNCGHistories(
     blockHash: ByteString!
     recipient: Address
@@ -511,6 +523,7 @@ type AgentStateType {
 
   # Current NCG.
   gold: String!
+  hasTradedItem: Boolean!
 
   # Current monster collection level.
   monsterCollectionLevel: Long!
@@ -823,6 +836,61 @@ type FungibleAssetValueType {
   quantity: Decimal!
 }
 
+type TransactionHeadlessQuery {
+  attachSignature(
+    # The base64-encoded unsigned transaction to attach the given signature.
+    unsignedTransaction: String!
+
+    # The base64-encoded signature of the given unsigned transaction.
+    signature: String!
+  ): String!
+  createUnsignedTx(
+    # The base64-encoded public key for Transaction.
+    publicKey: String!
+
+    # The base64-encoded plain value of action for Transaction.
+    plainValue: String!
+  ): String!
+  getTx(
+    # transaction id.
+    txId: TxId!
+  ): TransactionType_1
+  nextTxNonce(
+    # Target address to query
+    address: Address!
+  ): Long!
+  transactionResult(
+    # transaction id.
+    txId: TxId!
+  ): TxResultType!
+}
+
+type TxResultType {
+  # The block hash which the target transaction executed.
+  blockHash: String
+
+  # The block index which the target transaction executed.
+  blockIndex: Long
+
+  # The transaction status.
+  txStatus: TxStatus!
+}
+
+# The result of querying transaction.
+enum TxStatus {
+  # The Transaction doesn't staged or invalid.
+  INVALID
+
+  # The Transaction do not executed yet.
+  STAGING
+
+  # The Transaction is success.
+  SUCCESS
+
+  # The Transaction is failure.
+  FAILURE
+}
+
 type StandaloneMutation {
   action: ActionMutation
   activationStatus: ActivationStatusMutation
@@ -830,7 +898,7 @@ type StandaloneMutation {
 
   # Add a new transaction to staging
   stageTx(
-    # Hex-encoded bytes for new transaction.
+    # The base64-encoded bytes for new transaction.
     payload: String!
   ): Boolean!
   transfer(
@@ -867,21 +935,6 @@ type ActivationStatusMutation {
 }
 
 type ActionMutation {
-  # Buy registered shop item.
-  buy(
-    # Agent address from registered ShopItem.
-    sellerAgentAddress: Address!
-
-    # Avatar address from registered ShopItem.
-    sellerAvatarAddress: Address!
-
-    # Avatar address.
-    buyerAvatarAddress: Address!
-
-    # ShopItem product ID.
-    productId: Guid!
-  ): TxId!
-
   # Get monster collection reward.
   claimMonsterCollectionReward(
     # Address of avatar for get reward.
@@ -989,18 +1042,6 @@ type ActionMutation {
     # The monster collection level.(1 ~ 7)
     level: Int!
   ): TxId!
-
-  # Register item to the shop.
-  sell(
-    # Avatar address to register shop item.
-    sellerAvatarAddress: Address!
-
-    # Item Guid to register on shop.
-    itemId: Guid!
-
-    # Item selling price.
-    price: Int!
-  ): TxId!
 }
 
 type StandaloneSubscription {
@@ -1075,3 +1116,4 @@ type NodeExceptionType {
   # The message of NodeException.
   message: String!
 }
+
