@@ -1,4 +1,5 @@
 const rendererConfig = require('../webpack.config.js');
+const path = require('path');
 
 module.exports = {
   "core": {
@@ -21,6 +22,11 @@ module.exports = {
       target: "renderer",
       release: false,
     });
+
+    config.resolve.modules = [
+      path.resolve(__dirname, ".."),
+      "node_modules",
+    ]
     return { ...config, module: { ...config.module, rules: custom.module.rules } };
   }
 }
