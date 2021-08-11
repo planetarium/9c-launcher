@@ -81,7 +81,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
     const tx = await headlessStore.transferGold(recipient, amount, memo);
     transferPage.setTx(tx);
 
-    headlessStore.confirmTransaction(tx, undefined, listener);
+    headlessStore.confirmTransaction(tx, 300000, listener);
   }
 
   return (
