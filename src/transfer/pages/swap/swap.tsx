@@ -80,7 +80,7 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
     const tx = await headlessStore.swapToWNCG(recipient, amount);
     swapPage.setTx(tx);
 
-    headlessStore.confirmTransaction(tx, undefined, listener);
+    headlessStore.confirmTransaction(tx, 300000, listener);
   }
 
   return (
