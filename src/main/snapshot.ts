@@ -7,7 +7,6 @@ import { BlockMetadata } from "src/interfaces/block-header";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import Headless from "./headless/headless";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
-import { MixpanelInfo } from "./main";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 import { INineChroniclesMixpanel } from "./mixpanel";

@@ -95,12 +95,6 @@ let initializeHeadlessCts: {
 } | null = null;
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
-export type MixpanelInfo = {
-  mixpanel: Mixpanel | null;
-  mixpanelUUID: string;
-  ip: string | null;
-};
-
 ipv4().then((value) => (ip = value));
 
 const mixpanelUUID = loadInstallerMixpanelUUID();
