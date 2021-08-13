@@ -11,16 +11,16 @@ export interface INineChroniclesMixpanel {
 export class NineChroniclesMixpanel implements INineChroniclesMixpanel {
     private readonly _mixpanel: Mixpanel;
     private readonly _mixpanelUuid: string;
-    private readonly _ip: string;
+    // _ip must not be changed. It should be treated like an immutable variable.
+    private _ip: string;
     private _login: boolean = false;
     private _miningConfig: boolean = false;
 
     constructor(mixpanel: Mixpanel, mixpanelUuid: string) {
         this._mixpanel = mixpanel;
         this._mixpanelUuid = mixpanelUuid;
-        let ip: string = 'unknown'
-        ipv4().then((value) => (ip = value));
-        this._ip = ip;
+        this._ip = "unknown";
+        ipv4().then((value) => (this._ip = value));
     }
 
     public track(event: string, properties?: object, callback?: () => void): void {
