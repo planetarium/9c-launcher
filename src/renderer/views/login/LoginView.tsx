@@ -61,9 +61,10 @@ const LoginView = observer(
     useEffect(() => {
       if (unprotectedPrivateKey !== undefined) {
         accountStore.setPrivateKey(unprotectedPrivateKey);
-        accountStore.toggleLogin();
+        accountStore.setLoginStatus(true);
         ipcRenderer.send("mixpanel-alias", accountStore.selectedAddress);
         ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
+        ipcRenderer.send("login");
         routerStore.push("/login/mining");
       }
     }, [unprotectedPrivateKey]);
