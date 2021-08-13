@@ -1,3 +1,4 @@
+import { v4 as ipv4 } from "public-ip";
 import { Mixpanel } from "mixpanel";
 
 export interface INineChroniclesMixpanel {
@@ -14,9 +15,11 @@ export class NineChroniclesMixpanel implements INineChroniclesMixpanel {
     private _login: boolean = false;
     private _miningConfig: boolean = false;
 
-    constructor(mixpanel: Mixpanel, mixpanelUuid: string, ip: string) {
+    constructor(mixpanel: Mixpanel, mixpanelUuid: string) {
         this._mixpanel = mixpanel;
         this._mixpanelUuid = mixpanelUuid;
+        let ip: string = 'unknown'
+        ipv4().then((value) => (ip = value));
         this._ip = ip;
     }
 

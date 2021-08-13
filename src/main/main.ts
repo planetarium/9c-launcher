@@ -100,7 +100,7 @@ ipv4().then((value) => (ip = value));
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: NineChroniclesMixpanel | undefined =
   getConfig("Mixpanel") && !isDev
-    ? new NineChroniclesMixpanel(createMixpanel(MIXPANEL_TOKEN), mixpanelUUID, ip || "unknown")
+    ? new NineChroniclesMixpanel(createMixpanel(MIXPANEL_TOKEN), mixpanelUUID)
     : undefined;
 
 client
