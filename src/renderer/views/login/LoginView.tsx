@@ -111,7 +111,7 @@ const LoginView = observer(
         <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <article className={classes.ID}>
+              <article className={classes.labelContainer}>
                 <InputLabel className={classes.label}>
                   <T _str="ID" _tags={transifexTags}/>
                   <IconButton
@@ -139,9 +139,14 @@ const LoginView = observer(
               />
             </Grid>
             <Grid item xs={12}>
-              <InputLabel className={classes.label}>
-                <T _str="Password" _tags={transifexTags}/>
-              </InputLabel>
+              <article className={classes.labelContainer}>
+                <InputLabel className={classes.label}>
+                  <T _str="Password" _tags={transifexTags}/>
+                </InputLabel>
+                <InputLabel error className={classes.label}>
+                  {isInvalid && <T _str="Invalid password" _tags={transifexTags}/>}
+                </InputLabel>
+              </article>
               <FormControl fullWidth>
                 <OutlinedInput
                   type={showPassword ? "text" : "password"}
