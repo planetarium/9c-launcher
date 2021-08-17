@@ -12,14 +12,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      - name: Pull node_modules cache
-        uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}-e2e
       - name: Install Dependencies
-        run: yarn
-      - run: yarn add @planetarium/cli
+        run: yarn add @planetarium/cli # Will run yarn install implictly
       - name: Generate key
         id: gen-key
         run: scripts\\create-key.ps1

@@ -41,7 +41,7 @@ const PreloadView = observer((props: IStoreContainer) => {
 
   const handleClickPlayerGuide = useCallback(() => {
     shell.openExternal(
-      "https://forum.nine-chronicles.com/t/nine-chronicles-quick-game-guide/31"
+      "https://wiki.nine-chronicles.com/en/9C/getting-started"
     );
   }, []);
 

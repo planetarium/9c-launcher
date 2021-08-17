@@ -32,7 +32,7 @@ import { ChildProcessWithoutNullStreams } from "child_process";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import logoImage from "./resources/logo.png";
 import { initializeSentry } from "../preload/sentry";
-import "@babel/polyfill";
+import "core-js";
 import extractZip from "extract-zip";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
@@ -59,8 +59,9 @@ import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-fail
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import createCollectionWindow from "../collection/window";
-import { Client as NTPClient } from 'ntp-time'
+import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
+import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron-devtools-installer';
 
 initializeSentry();
 
@@ -104,7 +105,7 @@ ipv4().then((value) => (ip = value));
 
 client
   .syncTime()
-  .then(time => {
+  .then((time) => {
     const timeFromNTP = new Date(time.receiveTimestamp);
     const computerTime = new Date();
     const delta = Math.abs(timeFromNTP.getTime() - computerTime.getTime());
@@ -112,10 +113,11 @@ client
     if (delta > 15000) {
       dialog.showErrorBox(
         "Computer Time Incorrect",
-        "The current computer time is incorrect. Please sync your computer's time correctly.")
+        "The current computer time is incorrect. Please sync your computer's time correctly."
+      );
     }
   })
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
   });
 
@@ -183,6 +185,10 @@ function initializeApp() {
     win = createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
     win.webContents.on("dom-ready", (event) => initializeHeadless());
+
+    if(isDev) installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
+        .then((name) => console.log(`Added Extension:  ${name}`))
+        .catch((err) => console.log('An error occurred: ', err));
   });
 
   app.on("quit", (event) => {
@@ -458,12 +464,12 @@ function initializeIpc() {
     if (collectionWin != null) {
       collectionWin.focus();
       return;
-    };
+    }
     collectionWin = createCollectionWindow();
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
-  })
+  });
 
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {
@@ -772,14 +778,18 @@ async function initializeHeadless(): Promise<void> {
               "go to error page",
               "download-snapshot-failed-error"
             );
-            throw new HeadlessInitializeError(`Snapshot download failed.`);
+            throw new HeadlessInitializeError(
+              `Snapshot download failed.`,
+              recentError
+            );
           case DownloadSnapshotMetadataFailedError:
             win?.webContents.send(
               "go to error page",
               "download-snapshot-metadata-failed-error"
             );
             throw new HeadlessInitializeError(
-              `Snapshot metadata download failed.`
+              `Snapshot metadata download failed.`,
+              recentError
             );
           case ClearCacheException:
             // do nothing when clearing cache
@@ -790,7 +800,8 @@ async function initializeHeadless(): Promise<void> {
               "download-snapshot-failed-error"
             );
             throw new HeadlessInitializeError(
-              `Unexpected Error occupied when download snapshot.`
+              `Unexpected Error occupied when download snapshot.`,
+              recentError
             );
         }
       }

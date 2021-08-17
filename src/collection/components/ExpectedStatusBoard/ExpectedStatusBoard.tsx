@@ -43,23 +43,24 @@ const ExpectedStatusBoard: React.FC<Props> = (props: Props) => {
   return (
     <div className={"ExpectedStatusBoardBackground"}>
       <div className={"ExpectedStatusBoardContainer"}>
-      <div className={"CurrentStakedGoldContainer"}>
-        <div className={"ExpectedStatusBoardTitle"}>MY BALANCE</div>
-        <RewardItem left={depositedGold} right={depositedGold} item={"GOLD"} />
-      </div>
-
-      <div className={"CurrentExpectedRewardContainer"}>
-        <div className={"ExpectedStatusBoardTitle"}>REWARDS</div>
-        <div className={"ExpectedReward"}>
-          {getRewardCategoryList().map((x) => (
-            <RewardItem
-              left={currentReward.get(x) || 0}
-              right={targetReward.get(x) || 0}
-              item={x}
-            />
-          ))}
+        <div className={"CurrentStakedGoldContainer"}>
+          <div className={"ExpectedStatusBoardTitle"}>MY BALANCE</div>
+          <RewardItem left={depositedGold} right={depositedGold} item={"GOLD"} />
         </div>
-      </div>
+
+        <div className={"CurrentExpectedRewardContainer"}>
+          <div className={"ExpectedStatusBoardTitle"}>REWARDS</div>
+          <div className={"ExpectedReward"}>
+            {getRewardCategoryList().map((x, i) => (
+              <RewardItem
+                key={i}
+                left={currentReward.get(x) || 0}
+                right={targetReward.get(x) || 0}
+                item={x}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
     </div>
