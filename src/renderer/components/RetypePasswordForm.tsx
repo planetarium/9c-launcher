@@ -135,7 +135,7 @@ const RetypePasswordForm = ({
     const splits = code.split("/");
     const privateKey = splits[0];
     const address = splits[1];
-    if (privateKey.length !== 64 || address.length !== 40) {
+    if (address.length !== 40) {
       return false;
     }
 
