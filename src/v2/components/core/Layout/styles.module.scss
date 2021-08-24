@@ -16,6 +16,7 @@
     flex: 1;
     margin-left: 1em;
   }
+  -webkit-app-region: no-drag;
 }
 
 .bottomControls {
@@ -35,6 +36,7 @@
   height: 100%;
   background-color: #1d1e1f;
   opacity: 0.95;
+  -webkit-app-region: no-drag;
 }
 
 .overlayContainer {
@@ -79,4 +81,5 @@
   position: fixed;
   bottom: 50px;
   left: 50px;
+  -webkit-app-region: no-drag;
 }
