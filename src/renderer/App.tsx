@@ -15,7 +15,7 @@ import { Provider } from "mobx-react";
 import AccountStore from "./stores/account";
 import { IStoreContainer } from "../interfaces/store";
 import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
-import { LOCAL_SERVER_URL } from "../config";
+import { LOCAL_SERVER_URL, REMOTE_HEADLESS_URL, get } from "../config";
 import GameStore from "./stores/game";
 import Root from "./Root";
 import StandaloneStore from "./stores/standaloneStore";
@@ -27,14 +27,15 @@ import { t } from "@transifex/native";
 import { ipcRenderer } from "electron";
 import { LocaleProvider } from "./i18n";
 
+const baseUrl = get("UseRemoteHeadless") ? REMOTE_HEADLESS_URL : LOCAL_SERVER_URL;
 const wsLink = new WebSocketLink({
-  uri: `ws://${LOCAL_SERVER_URL}/graphql`,
+  uri: `ws://${baseUrl}/graphql`,
   options: {
     reconnect: true,
   },
 });
 
-const httpLink = createHttpLink({ uri: `http://${LOCAL_SERVER_URL}/graphql` });
+const httpLink = createHttpLink({ uri: `http://${baseUrl}/graphql` });
 
 const apiLink = split(
   // split based on operation type
