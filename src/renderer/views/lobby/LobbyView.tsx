@@ -16,7 +16,7 @@ import React, {
 } from "react";
 import {
   useActivateMutation,
-  useActivationLazyQuery,
+  useActivationAddressLazyQuery,
 } from "../../../generated/graphql";
 import { IStoreContainer } from "../../../interfaces/store";
 import { sleep } from "../../../utils";
@@ -42,7 +42,11 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   const [
     activation,
     { loading, error: statusError, data: status, refetch: activationRefetch },
-  ] = useActivationLazyQuery();
+  ] = useActivationAddressLazyQuery({
+    variables: {
+      addressHex: accountStore.selectedAddress
+    }
+  });
   const [
     activate,
     { data: isActivated, error: activatedError },
@@ -72,7 +76,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
     const activated = async () => {
       const result = await activationRefetch();
-      return result.data.activationStatus.activated;
+      return result.data.activationStatus.addressActivated;
     };
 
     if (await activated()) {
@@ -109,7 +113,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   if (
     !loading &&
     !polling &&
-    !status?.activationStatus.activated &&
+    !status?.activationStatus.addressActivated &&
     activationKey !== "" &&
     !hasAutoActivateBegin &&
     activationRefetch !== undefined
@@ -132,7 +136,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     );
   } else if (!standaloneStore.Ready) {
     child = <PreloadWaitingButton />;
-  } else if (status?.activationStatus.activated) {
+  } else if (status?.activationStatus.addressActivated) {
     child = <GameStartButton {...props} />;
   } else {
     child = (

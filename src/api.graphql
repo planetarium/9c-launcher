@@ -111,6 +111,12 @@ query Activation {
   }
 }
 
+query ActivationAddress($addressHex: Address!) {
+  activationStatus {
+    addressActivated(addressHex: $addressHex)
+  }
+}
+
 mutation Activate($encodedActivationKey: String!) {
   activationStatus {
     activateAccount(encodedActivationKey: $encodedActivationKey)
