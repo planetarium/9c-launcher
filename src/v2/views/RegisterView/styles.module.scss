@@ -1,0 +1,7 @@
+.register {
+  padding: 52px;
+  box-sizing: border-box;
+  * + * {
+    margin-top: 1em;
+  }
+}
