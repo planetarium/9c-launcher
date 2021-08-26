@@ -16,15 +16,6 @@ class RemoteHeadless {
   constructor() {
     this._url = `${get("RemoteRpcServerHost")}/${get("RemoteRpcServerPort")}`;
     this._running = false;
-
-    ipcMain.on(
-      "standalone/set-private-key",
-      async (event, privateKey: string) => {
-        let ret = await this.login(privateKey);
-        console.log(`set-private-key: ${ret}`);
-        event.returnValue = ret;
-      }
-    );
   }
 
   private _url: string;
@@ -53,18 +44,6 @@ class RemoteHeadless {
       console.log(
         "Executing the remote headless server:" + `\n  ${this._url}`
       );
-
-    if (this._privateKey !== undefined) {
-      await this.setPrivateKey(this._privateKey);
-    }
-  }
-
-  public async setPrivateKey(privateKey: string): Promise<boolean> {
-    console.log("Setting private key.");
-    const body = JSON.stringify({
-      PrivateKeyString: privateKey,
-    });
-    return this.retriableFetch("set-private-key", body);
   }
 
   public async kill(): Promise<void> {
@@ -88,12 +67,6 @@ class RemoteHeadless {
 
     NODESTATUS.QuitRequested = false;
     console.log("Standalone killed successfully.");
-  }
-
-  public async login(privateKey: string): Promise<boolean> {
-    this._privateKey = privateKey;
-    if (this.alive) return await this.setPrivateKey(privateKey);
-    return true;
   }
 
   public getTip(storeType: string, storePath: string): BlockMetadata | null {
