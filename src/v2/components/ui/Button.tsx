@@ -4,22 +4,34 @@ import type { LocationDescriptor } from "history";
 import styles from "./styles.module.scss";
 import { useHistory } from "react-router-dom";
 
-export interface ButtonProps {
+export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   primary?: boolean;
   className?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  centeredWidth?: React.CSSProperties["width"];
 }
 
 export default function Button({
   primary,
   onClick,
+  centeredWidth,
   className,
   children,
+  ...buttonAttrs
 }: React.PropsWithChildren<ButtonProps>) {
   return (
     <button
       onClick={onClick}
-      className={clsx(styles.button, primary && styles.primary, className)}
+      style={{ width: centeredWidth, ...buttonAttrs.style }}
+      className={clsx(
+        {
+          [styles.button]: true,
+          [styles.primary]: primary,
+          [styles.centered]: centeredWidth != null,
+        },
+        className
+      )}
+      {...buttonAttrs}
     >
       {children}
     </button>

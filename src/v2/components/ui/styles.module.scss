@@ -11,3 +11,62 @@
 .primary {
   background-color: #3e2a8d;
 }
+
+.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.input {
+  position: relative;
+  outline: none;
+  border: 1px solid #979797;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  &.invalid {
+    border: 1px solid #f66;
+    color: #f66;
+  }
+  input {
+    display: block;
+    color: #8c8c8c;
+    -webkit-appearance: none;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    margin-top: 1.1rem;
+    margin-left: .5rem;
+    height: 2.5rem;
+  }
+  label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    transition: .2s ease;
+    margin: 0;
+    margin-left: .6rem;
+  }
+  input:not(:placeholder-shown) ~ label,
+  input:focus ~ label {
+    top: .6rem;
+    transform: none;
+  }
+  .message {
+    position: absolute;
+    top: .6rem;
+    right: 0;
+    margin: 0;
+    margin-right: .5rem;
+    color: #74f4bc;
+  }
+  &.invalid .message {
+    color: #f66;
+  }
+  input:placeholder-shown ~ .message {
+    display: none;
+  }
+}
