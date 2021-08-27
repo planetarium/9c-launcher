@@ -65,13 +65,16 @@ export const Layout: React.FC = observer(({ children }) => {
     <>
       <main>{children}</main>
       <nav className="hero">
-        <AccountInfoContainer
-          minedBlock={Number(minedBlocks?.length)}
-          onReward={() => { }}
-          onOpenWindow={() => {
-            ipcRenderer.invoke("open collection page");
-          }}
-        />
+        { getConfig("UseRemoteHeadless")
+            ? null
+            : <AccountInfoContainer
+                minedBlock={Number(minedBlocks?.length)}
+                onReward={() => { }}
+                onOpenWindow={() => {
+                  ipcRenderer.invoke("open collection page");
+                }}
+            />
+        }
         <ul className={"LauncherClientOption"}>
           <li>
             <Button
