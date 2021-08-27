@@ -15,7 +15,7 @@ import React, {
   FormEvent,
 } from "react";
 import {
-  useActivateMutation,
+  useActivatePrivateKeyMutation,
   useActivationAddressLazyQuery,
 } from "../../../generated/graphql";
 import { IStoreContainer } from "../../../interfaces/store";
@@ -50,7 +50,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   const [
     activate,
     { data: isActivated, error: activatedError },
-  ] = useActivateMutation();
+  ] = useActivatePrivateKeyMutation();
   const [activationKey, setActivationKey] = useState(
     accountStore.activationKey
   );
@@ -87,10 +87,11 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     const activateResult = await activate({
       variables: {
         encodedActivationKey: activationKey,
+        privateKeyHex: accountStore.privateKey
       },
     });
 
-    if (!activateResult.data?.activationStatus?.activateAccount) {
+    if (!activateResult.data?.activationStatus?.activatePrivateKey) {
       setPollingState(false);
       return;
     }

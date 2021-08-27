@@ -123,6 +123,12 @@ mutation Activate($encodedActivationKey: String!) {
   }
 }
 
+mutation ActivatePrivateKey($encodedActivationKey: String!, $privateKeyHex: String!) {
+  activationStatus {
+    activatePrivateKey(encodedActivationKey: $encodedActivationKey, privateKeyHex: $privateKeyHex)
+  }
+}
+
 subscription Notification {
   notification {
     type
