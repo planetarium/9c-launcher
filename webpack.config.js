@@ -21,6 +21,10 @@ function createRenderConfig(isDev) {
 
     resolve: {
       extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
+      alias: {
+        root: __dirname,
+        src: path.resolve(__dirname, "src"),
+      }
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
@@ -30,6 +34,7 @@ function createRenderConfig(isDev) {
     entry: {
       render: "./renderer/render.tsx",
       collection: "./collection/collection.tsx",
+      transfer: "./transfer/transfer.tsx",
     },
 
     output: {
@@ -110,6 +115,12 @@ function createRenderConfig(isDev) {
         template: `collection.html`, // relative path to the HTML files
         filename: `collection.html`, // output HTML files
         chunks: ["collection"], // respective JS files
+      }),
+
+      new HtmlPlugin({
+        template: `index.html`, // relative path to the HTML files
+        filename: `transfer.html`, // output HTML files
+        chunks: ["transfer"], // respective JS files
       }),
     ],
 

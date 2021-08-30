@@ -25,7 +25,7 @@ const AccountInfo: React.FC<Props> = (props: Props) => {
 
   const decorateRemainText = () => {
     if(!isCollecting) return `(-)`
-    return `(Remaning ${remainText})`
+    return `(Remaining ${remainText})`
   }
 
   return <div className='AccountInfoContainer'>
