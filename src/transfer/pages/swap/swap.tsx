@@ -36,12 +36,12 @@ const SwapNoticeTitle = styled(Typography)({
   fontWeight: 'bold',
   marginTop: '10px',
   fontSize: '16px',
-  color: '#dddddd',
+  color: '#979797',
 });
 
 const SwapNoticeLabel = styled(Typography)({
   fontSize: '14px',
-  color: '#dddddd',
+  color: '#979797',
 });
 
 const SwapInput = styled(OutlinedInput)({
