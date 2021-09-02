@@ -23,5 +23,6 @@
   "Workers": 20,
   "Confirmations": 0,
   "Mixpanel": true,
-  "Sentry": true
+  "Sentry": true,
+  "UseRemoteHeadless": false
 }

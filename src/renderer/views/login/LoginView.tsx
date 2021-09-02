@@ -22,6 +22,7 @@ import { observer, inject } from "mobx-react";
 
 import "../../styles/login/login.scss";
 import { useDecryptedPrivateKeyLazyQuery } from "../../../generated/graphql";
+import { get } from "../../../config";
 import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
@@ -64,7 +65,16 @@ const LoginView = observer(
         accountStore.toggleLogin();
         ipcRenderer.send("mixpanel-alias", accountStore.selectedAddress);
         ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
-        routerStore.push("/login/mining");
+        if (get("UseRemoteHeadless"))
+        {
+            routerStore.push("lobby/preload");
+            standaloneStore.setPrivateKeyEnded(true);
+            accountStore.setMiningConfigStatus(true);
+        }
+        else
+        {
+            routerStore.push("/login/mining");
+        }
       }
     }, [unprotectedPrivateKey]);
 

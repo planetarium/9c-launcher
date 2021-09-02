@@ -1,65 +1,26 @@
 import { ChildProcess, execFileSync } from "child_process";
 import { ipcMain } from "electron";
 import { dirname, basename } from "path";
-import { userConfigStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../../config";
+import { userConfigStore, CUSTOM_SERVER, get } from "../../config";
 import { retry } from "@lifeomic/attempt";
 import { FetchError, HeadlessExitedError } from "../../errors";
 import { execute, sleep } from "../../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
 import { BlockMetadata } from "src/interfaces/block-header";
-import { KeyStore } from "./key-store";
-import { Validation } from "./validation";
-import { Apv } from "./apv";
-
-export const retryOptions = {
-  delay: 100,
-  factor: 1.5,
-  maxAttempts: 100,
-  timeout: 30000,
-  jitter: true,
-  minDelay: 100,
-};
-
-interface NodeStatus {
-  Node: ChildProcess | null;
-  QuitRequested: Boolean;
-  ExitCode: number | null;
-}
-
-export const NODESTATUS: NodeStatus = {
-  Node: null,
-  QuitRequested: false,
-  ExitCode: null,
-};
+import { NODESTATUS, retryOptions } from "./headless";
 
 const eventEmitter = new EventEmitter();
 
-class Headless {
-  constructor(path: string) {
-    this._path = path;
+class RemoteHeadless {
+  constructor() {
+    this._url = `${get("RemoteRpcServerHost")}/${get("RemoteRpcServerPort")}`;
     this._running = false;
-
-    ipcMain.on(
-      "standalone/set-private-key",
-      async (event, privateKey: string) => {
-        let ret = await this.login(privateKey);
-        console.log(`set-private-key: ${ret}`);
-        event.returnValue = ret;
-      }
-    );
-
-    ipcMain.on("standalone/set-mining", async (event, mining: boolean) => {
-      let ret = await this.miningOption(mining);
-      console.log(`set-mining: ${ret}`);
-      event.returnValue = ret;
-    });
   }
 
-  private _path: string;
+  private _url: string;
   private _running: boolean;
   private _privateKey: string | undefined;
-  private _mining: boolean | undefined;
 
   // execute-kill
   public get alive(): boolean {
@@ -79,52 +40,10 @@ class Headless {
     return "Not implemented";
   }
 
-  public async execute(args: string[]): Promise<void> {
-    const argsString: string = "\n  " + args.join("\n  ");
-    if (CUSTOM_SERVER) {
-      console.log("Connecting to the custom headless server...");
+  public async execute(): Promise<void> {
       console.log(
-        "If the connection is not successful, check if the headless server " +
-        `is executed with the following options:${argsString}`
+        "Executing the remote headless server:" + `\n  ${this._url}`
       );
-    } else {
-      console.log(
-        "Executing the headless server:" + `\n  ${this._path}${argsString}`
-      );
-      if (NODESTATUS.Node !== null) {
-        throw new Error(
-          "Cannot spawn a new headless process when there's already alive one."
-        );
-      }
-
-      let node = execute(this._path, args);
-      node.addListener("exit", this.exitedHandler);
-      NODESTATUS.Node = node;
-    }
-
-    if (this._privateKey !== undefined) {
-      await this.setPrivateKey(this._privateKey);
-    }
-    if (this._mining !== undefined) {
-      await this.setMining(this._mining);
-    }
-  }
-
-  public async setPrivateKey(privateKey: string): Promise<boolean> {
-    console.log("Setting private key.");
-    const body = JSON.stringify({
-      PrivateKeyString: privateKey,
-    });
-    return this.retriableFetch("set-private-key", body);
-  }
-
-  public async setMining(mine: boolean): Promise<boolean> {
-    console.log(`Setting mining: ${mine}`);
-    userConfigStore.set("NoMiner", !mine);
-    const body = JSON.stringify({
-      Mine: mine,
-    });
-    return this.retriableFetch("set-mining", body);
   }
 
   public async kill(): Promise<void> {
@@ -150,43 +69,19 @@ class Headless {
     console.log("Standalone killed successfully.");
   }
 
-  public async login(privateKey: string): Promise<boolean> {
-    this._privateKey = privateKey;
-    if (this.alive) return await this.setPrivateKey(privateKey);
-    return true;
-  }
-
-  public async miningOption(mining: boolean): Promise<boolean> {
-    this._mining = mining;
-    if (this.alive) return await this.setMining(mining);
-    return true;
-  }
-
-  public get keyStore(): KeyStore {
-    return new KeyStore(this._path);
-  }
-
-  public get validation(): Validation {
-    return new Validation(this._path);
-  }
-
-  public get apv(): Apv {
-    return new Apv(this._path);
-  }
-
   public getTip(storeType: string, storePath: string): BlockMetadata | null {
     try {
       console.log(
-        `cmd: [${basename(this._path)} chain tip ${storeType} ${storePath}]`
+        `cmd: [${basename(this._url)} chain tip ${storeType} ${storePath}]`
       );
-      console.log(`cwd: [${dirname(this._path)}]`);
+      console.log(`cwd: [${dirname(this._url)}]`);
 
       const output = execFileSync(
-        basename(this._path),
+        basename(this._url),
         ["chain", "tip", storeType, storePath],
         {
           encoding: "utf-8",
-          cwd: dirname(this._path),
+          cwd: dirname(this._url),
         }
       );
 
@@ -233,7 +128,7 @@ class Headless {
       }
 
       try {
-        let response = await fetch(`http://${LOCAL_SERVER_URL}/${addr}`, {
+        let response = await fetch(`http://${this._url}/${addr}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -280,4 +175,4 @@ class Headless {
   }
 }
 
-export default Headless;
+export default RemoteHeadless;
