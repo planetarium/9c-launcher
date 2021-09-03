@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { motion } from "framer-motion";
 import React from "react";
 import styles from "./styles.module.scss";
 
@@ -8,6 +9,7 @@ export interface TextFieldProps
   label: string;
   invalid?: boolean;
   message?: string;
+  motion?: boolean;
 }
 
 function randomId() {
@@ -16,11 +18,23 @@ function randomId() {
 
 const TextField = React.forwardRef(
   (
-    { id = randomId(), label, invalid, message, ...inputAttrs }: TextFieldProps,
+    {
+      id = randomId(),
+      label,
+      invalid,
+      message,
+      motion: useMotion,
+      ...inputAttrs
+    }: TextFieldProps,
     ref: React.Ref<HTMLInputElement>
   ) => {
+    const Div = useMotion ? motion.div : "div";
+
     return (
-      <div className={clsx(styles.input, invalid && styles.invalid)}>
+      <Div
+        className={clsx(styles.input, invalid && styles.invalid)}
+        layout={useMotion}
+      >
         <input
           type="text"
           id={id}
@@ -30,7 +44,7 @@ const TextField = React.forwardRef(
         />
         <label htmlFor={id}>{label}</label>
         {message && <span className={styles.message}>{message}</span>}
-      </div>
+      </Div>
     );
   }
 );

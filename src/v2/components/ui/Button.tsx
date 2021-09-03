@@ -3,38 +3,41 @@ import React, { useCallback } from "react";
 import type { LocationDescriptor } from "history";
 import styles from "./styles.module.scss";
 import { useHistory } from "react-router-dom";
+import { HTMLMotionProps, motion } from "framer-motion";
 
-export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends HTMLMotionProps<"button"> {
   primary?: boolean;
   className?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  centeredWidth?: React.CSSProperties["width"];
+  centered?: boolean;
+  motion?: boolean;
 }
 
 export default function Button({
   primary,
   onClick,
-  centeredWidth,
+  centered,
+  motion: useMotion,
   className,
   children,
   ...buttonAttrs
 }: React.PropsWithChildren<ButtonProps>) {
   return (
-    <button
+    <motion.button
+      layout={useMotion}
       onClick={onClick}
-      style={{ width: centeredWidth, ...buttonAttrs.style }}
       className={clsx(
         {
           [styles.button]: true,
           [styles.primary]: primary,
-          [styles.centered]: centeredWidth != null,
+          [styles.centered]: centered,
         },
         className
       )}
       {...buttonAttrs}
     >
       {children}
-    </button>
+    </motion.button>
   );
 }
 

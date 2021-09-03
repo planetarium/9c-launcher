@@ -1,5 +1,6 @@
 import React from "react";
 import { useRef } from "react";
+import { AnimateSharedLayout } from "framer-motion";
 import { useForm } from "react-hook-form";
 import zxcvbn from "zxcvbn";
 import Button from "./ui/Button";
@@ -34,47 +35,52 @@ export default function RetypePasswordForm({
   const confirmRef = useRef<HTMLInputElement>(null);
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        type="password"
-        label="Password"
-        message={errors.password?.type === "password" ? "Too weak" : "Strong"}
-        invalid={errors.password && errors.password?.type !== "confirm"}
-        {...register("password", {
-          required: true,
-          validate: {
-            password: passwordStrengthValidator,
-            confirm: (v) => v === confirmRef.current?.value,
-          },
-        })}
-      />
-      <TextField
-        type="password"
-        label="Verify Password"
-        ref={confirmRef}
-        message={
-          errors.password?.type === "confirm"
-            ? "Passwords doesn't match"
-            : "Correct"
-        }
-        invalid={errors.password?.type === "confirm"}
-        onChange={() => trigger("password")}
-      />
-      {useActivitionKey && (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <AnimateSharedLayout>
         <TextField
-          type="text"
-          label="Invitation Code"
-          message={errors.activationKey ? "Invalid code" : "Correct"}
-          invalid={errors.activationKey != null}
-          {...register("activationKey", {
+          motion
+          type="password"
+          label="Password"
+          message={errors.password?.type === "password" ? "Too weak" : "Strong"}
+          invalid={errors.password?.type !== "confirm"}
+          {...register("password", {
             required: true,
-            pattern: /^[0-9a-f]+\/[0-9a-f]{40}$/,
+            validate: {
+              password: passwordStrengthValidator,
+              confirm: (v) => v === confirmRef.current?.value,
+            },
           })}
         />
-      )}
-      <Button layout type="primary" centered css={{ width: 200 }}>
-        NEXT
-      </Button>
-    </Form>
+        <TextField
+          motion
+          type="password"
+          label="Verify Password"
+          ref={confirmRef}
+          message={
+            errors.password?.type === "confirm"
+              ? "Passwords doesn't match"
+              : "Correct"
+          }
+          invalid={errors.password?.type === "confirm"}
+          onChange={() => trigger("password")}
+        />
+        {useActivitionKey && (
+          <TextField
+            motion
+            type="text"
+            label="Invitation Code"
+            message={errors.activationKey ? "Invalid code" : "Correct"}
+            invalid={errors.activationKey != null}
+            {...register("activationKey", {
+              required: true,
+              pattern: /^[0-9a-f]+\/[0-9a-f]{40}$/,
+            })}
+          />
+        )}
+        <Button motion primary centered style={{ width: "200px" }}>
+          NEXT
+        </Button>
+      </AnimateSharedLayout>
+    </form>
   );
 }

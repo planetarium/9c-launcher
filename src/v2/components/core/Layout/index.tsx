@@ -11,6 +11,7 @@ import SettingsOverlay from "../../../views/SettingsOverlay";
 import StakingOverlay from "../../../views/StakingOverlay";
 import InfoText from "./InfoText";
 import clsx from "clsx";
+import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 
 interface LayoutProps {
   sidebar?: boolean;
@@ -46,14 +47,19 @@ function Layout({
         <Menu />
       </aside>
       <InfoText />
-      {overlay.isOpen && (
-        <div
-          className={styles.overlayContainer}
-          onClick={onOverlayOutsideClicked}
-        >
-          {page}
-        </div>
-      )}
+      <AnimatePresence>
+        {overlay.isOpen && (
+          <motion.div
+            className={styles.overlayContainer}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onOverlayOutsideClicked}
+          >
+            {page}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <WindowControls />
     </div>
   );
