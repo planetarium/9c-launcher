@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import zxcvbn from "zxcvbn";
 import Button from "./ui/Button";
 import TextField from "./ui/TextField";
+import { styled } from "../stitches.config";
 
 interface Props {
   onSubmit: (data: FormData) => void;
@@ -18,6 +19,12 @@ export interface FormData {
 
 const passwordStrengthValidator = (password: string) =>
   zxcvbn(password).score >= 2 || zxcvbn(password).feedback.warning;
+
+const Form = styled("form", {
+  "& > * + *": {
+    marginBlockStart: "1rem",
+  },
+});
 
 export default function RetypePasswordForm({
   onSubmit,
@@ -35,7 +42,7 @@ export default function RetypePasswordForm({
   const confirmRef = useRef<HTMLInputElement>(null);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <AnimateSharedLayout>
         <TextField
           motion
@@ -77,10 +84,10 @@ export default function RetypePasswordForm({
             })}
           />
         )}
-        <Button motion primary centered style={{ width: "200px" }}>
+        <Button layout type="primary" centered css={{ width: 200 }}>
           NEXT
         </Button>
       </AnimateSharedLayout>
-    </form>
+    </Form>
   );
 }

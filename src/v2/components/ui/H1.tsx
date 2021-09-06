@@ -1,7 +1,7 @@
-import clsx from "clsx";
-import React from "react";
-import styles from "./styles.module.scss";
+import { styled } from "src/v2/stitches.config";
 
-export default function H1(props: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h1 className={clsx(styles.heading, props.className)} {...props} />;
-}
+const H1 = styled("h1", {
+  color: "$accent",
+});
+
+export default H1;

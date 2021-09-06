@@ -1,49 +1,40 @@
-import clsx from "clsx";
 import React, { useCallback } from "react";
 import type { LocationDescriptor } from "history";
-import styles from "./styles.module.scss";
 import { useHistory } from "react-router-dom";
 import { HTMLMotionProps, motion } from "framer-motion";
+import { styled } from "src/v2/stitches.config";
+import type * as Stitches from "@stitches/react";
 
-export interface ButtonProps extends HTMLMotionProps<"button"> {
-  primary?: boolean;
-  className?: string;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  centered?: boolean;
-  motion?: boolean;
-}
+const Button = styled(motion.button, {
+  backgroundColor: "$gray",
+  height: 72,
+  margin: "16px 40px",
+  fontSize: 32,
+  border: "none",
+  color: "White",
+  fontWeight: "bold",
+  variants: {
+    type: {
+      primary: {
+        backgroundColor: "$primary",
+      },
+    },
+    centered: {
+      true: {
+        display: "block",
+        marginLeft: "auto",
+        marginRight: "auto",
+      },
+    },
+  },
+});
 
-export default function Button({
-  primary,
-  onClick,
-  centered,
-  motion: useMotion,
-  className,
-  children,
-  ...buttonAttrs
-}: React.PropsWithChildren<ButtonProps>) {
-  return (
-    <motion.button
-      layout={useMotion}
-      onClick={onClick}
-      className={clsx(
-        {
-          [styles.button]: true,
-          [styles.primary]: primary,
-          [styles.centered]: centered,
-        },
-        className
-      )}
-      {...buttonAttrs}
-    >
-      {children}
-    </motion.button>
-  );
-}
+export default Button;
 
-type ButtonLinkProps = Omit<ButtonProps, "onClick"> & {
-  to: LocationDescriptor;
-};
+type ButtonLinkProps = Omit<HTMLMotionProps<"button">, "onClick" | "type"> &
+  Stitches.VariantProps<typeof Button> & {
+    to: LocationDescriptor;
+  };
 
 export function ButtonLink({
   to,

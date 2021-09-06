@@ -1,15 +1,27 @@
 import React from "react";
-import styles from "./styles.module.scss";
 import { observer } from "mobx-react";
 import ProgressBar from "./ProgressBar";
+import { styled } from "src/v2/stitches.config";
+
+const StatusBarStyled = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  width: 500,
+});
+
+const StatusMessage = styled("span", {
+  marginBottom: 8,
+  fontWeight: "bold",
+  textShadow: "$text",
+});
 
 function StatusBar() {
   // TODO: Implement status fetcher
   return (
-    <div className={styles.statusBar}>
-      <span>Executing Actions.. (8/8) 37% 1130</span>
+    <StatusBarStyled>
+      <StatusMessage>Executing Actions.. (8/8) 37% 1130</StatusMessage>
       <ProgressBar percent={40} />
-    </div>
+    </StatusBarStyled>
   );
 }
 

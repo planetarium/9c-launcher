@@ -1,10 +1,22 @@
 import React from "react";
-import styles from "./styles.module.scss";
+import { styled } from "src/v2/stitches.config";
 
 interface ProgressBarProps {
   percent: number;
 }
 
+const Progress = styled("progress", {
+  appearance: "none",
+  width: "100%",
+  height: 15,
+  "&::-webkit-progress-value": {
+    backgroundColor: "$accent",
+  },
+  "&::-webkit-progress-bar": {
+    backgroundColor: "$gray",
+  },
+});
+
 export default function ProgressBar({ percent }: ProgressBarProps) {
-  return <progress className={styles.progressBar} max="100" value={percent} />;
+  return <Progress max="100" value={percent} />;
 }

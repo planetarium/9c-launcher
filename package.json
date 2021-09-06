@@ -66,6 +66,7 @@
     "@material-ui/styles": "^4.10.0",
     "@planetarium/check-free-space": "^0.0.1",
     "@sentry/electron": "^1.3.0",
+    "@stitches/react": "^1.0.0",
     "@transifex/native": "^1.0.0",
     "@transifex/react": "^1.0.0",
     "@types/lockfile": "^1.0.1",

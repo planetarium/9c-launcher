@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { observer } from "mobx-react";
-import styles from "./styles.module.scss";
 import { useStore } from "../../../utils/useStore";
 
 import WindowControls from "./WindowControls";
@@ -11,19 +10,62 @@ import SettingsOverlay from "../../../views/SettingsOverlay";
 import StakingOverlay from "../../../views/StakingOverlay";
 import InfoText from "./InfoText";
 import clsx from "clsx";
-import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { CSS, styled } from "src/v2/stitches.config";
+import background from "../../../resources/launcher-png.png";
 
 interface LayoutProps {
   sidebar?: boolean;
-  className?: string;
+  css?: CSS;
 }
+
+const Background = styled("div", {
+  backgroundImage: `url(${background})`,
+  height: "100%",
+  width: "100%",
+  dragable: true,
+});
+
+const Sidebar = styled("main", {
+  position: "fixed",
+  left: 0,
+  top: 0,
+  width: 560,
+  height: "100%",
+  backgroundColor: "$gray",
+  opacity: 0.95,
+  dragable: false,
+});
+
+const BottomControls = styled("aside", {
+  display: "flex",
+  position: "fixed",
+  right: "40px",
+  bottom: "45px",
+  justifyContent: "flex-end",
+  alignItems: "flex-end",
+  dragable: false,
+});
+
+const OverlayContainer = styled(motion.div, {
+  position: "fixed",
+  left: 0,
+  top: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "$gray80",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  dragable: false,
+});
 
 function Layout({
   children,
   sidebar,
-  className,
+  css,
 }: React.PropsWithChildren<LayoutProps>) {
-  const { account, overlay } = useStore();
+  const overlay = useStore("overlay");
 
   const page =
     overlay.page &&
@@ -38,30 +80,27 @@ function Layout({
   };
 
   return (
-    <div className={styles.layout}>
-      {sidebar && (
-        <main className={clsx(styles.sidebar, className)}>{children}</main>
-      )}
-      <aside className={styles.bottomControls}>
+    <Background>
+      {sidebar && <Sidebar css={css}>{children}</Sidebar>}
+      <BottomControls>
         <StatusBar />
         <Menu />
-      </aside>
+      </BottomControls>
       <InfoText />
       <AnimatePresence>
         {overlay.isOpen && (
-          <motion.div
-            className={styles.overlayContainer}
+          <OverlayContainer
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onOverlayOutsideClicked}
           >
             {page}
-          </motion.div>
+          </OverlayContainer>
         )}
       </AnimatePresence>
       <WindowControls />
-    </div>
+    </Background>
   );
 }
 

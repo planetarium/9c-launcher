@@ -1,27 +1,40 @@
 import React from "react";
-import styles from "./styles.module.scss";
-import clsx from "clsx";
+import { styled } from "src/v2/stitches.config";
+import type * as Stitches from "@stitches/react";
 
-interface MenuItemProps {
+const MenuItemContainer = styled("div", {
+  display: "flex",
+  alignItems: "center",
+  padding: "10px",
+  "& img": {
+    paddingRight: "1rem",
+  },
+  variants: {
+    disabled: {
+      true: {
+        opacity: 0.8,
+      },
+    },
+  },
+});
+
+interface MenuItemProps
+  extends Stitches.VariantProps<typeof MenuItemContainer> {
   onClick: () => void;
   icon: string;
   text: string;
-  disabled?: boolean;
 }
 
 export default function MenuItem({
   onClick,
   icon,
   text,
-  disabled,
+  ...props
 }: MenuItemProps) {
   return (
-    <div
-      className={clsx(styles.menuItem, disabled && styles.disabledMenuItem)}
-      onClick={onClick}
-    >
+    <MenuItemContainer onClick={onClick} {...props}>
       <img alt="" src={icon} />
       <span>{text}</span>
-    </div>
+    </MenuItemContainer>
   );
 }

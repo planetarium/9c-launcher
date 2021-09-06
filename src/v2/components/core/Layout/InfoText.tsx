@@ -1,15 +1,22 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { observer } from "mobx-react";
-import styles from "./styles.module.scss";
 
 import { useStore } from "../../../utils/useStore";
 import { clipboard, ipcRenderer } from "electron";
 import { get as getConfig } from "../../../../config";
 import { useTopmostBlocksQuery } from "../../../generated/graphql";
+import { styled } from "src/v2/stitches.config";
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid"
 );
+
+const InfoTextStyled = styled("div", {
+  position: "fixed",
+  bottom: 50,
+  left: 50,
+  dragable: false,
+});
 
 function InfoText() {
   const account = useStore("account");
@@ -50,10 +57,10 @@ function InfoText() {
   }, [copied]);
 
   return (
-    <div className={styles.infotext} onClick={onClick}>
+    <InfoTextStyled onClick={onClick}>
       {`v${getConfig("AppProtocolVersion").split("/")[0]}`}
       {copied && " copied!"}
-    </div>
+    </InfoTextStyled>
   );
 }
 
