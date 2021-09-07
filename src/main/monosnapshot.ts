@@ -10,8 +10,8 @@ import * as utils from "../utils";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
-import { MixpanelInfo } from "./main";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
+import { INineChroniclesMixpanel } from "./mixpanel";
 
 export async function downloadMetadata(
   basePath: string,
@@ -96,8 +96,8 @@ export async function processSnapshot(
   userDataPath: string,
   standalone: Headless,
   win: Electron.BrowserWindow,
-  mixpanelInfo: MixpanelInfo,
-  token: CancellationToken
+  token: CancellationToken,
+  mixpanelInfo?: INineChroniclesMixpanel,
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);
 

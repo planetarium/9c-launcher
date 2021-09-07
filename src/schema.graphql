@@ -654,8 +654,8 @@ type NodeStatusType {
     # The number of blocks to get.
     limit: Int!
 
-    # The number of blocks to skip from chain tip.
-    offset: Int!
+    # The number of blocks to skip from tip.
+    offset: Int = 0
 
     # List only blocks mined by the given address.  (List everything if omitted.)
     miner: Address

@@ -84,8 +84,8 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if(!swapPage.validateRecipient || !swapPage.validateAmount) {
-      return; 
+    if (!swapPage.validateRecipient || !swapPage.validateAmount) {
+      return;
     }
     swapPage.startSend();
     const { recipient, amount } = swapPage;
@@ -120,10 +120,10 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
           <b>
             <T _str="(Your balance: {ncg} NCG)" _tags={transifexTags} ncg={headlessStore.balance} />
           </b>
-        <Button
-          startIcon={<img src={refreshIcon} alt="refresh" />}
-          onClick={() => headlessStore.updateBalance()}
-        />
+          <Button
+            startIcon={<img src={refreshIcon} alt="refresh" />}
+            onClick={() => headlessStore.updateBalance()}
+          />
         </SwapSecondTitle>
         <SwapInput
           type="number"
@@ -140,7 +140,7 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
         <SwapNoticeTitle>
           <T _str="Notice" _tags={transifexTags} />
         </SwapNoticeTitle>
-        <ul style={{listStyleType: "none", padding: 0, marginTop: '5px'}}>
+        <ul style={{ listStyleType: "none", padding: 0, marginTop: '5px' }}>
           <li>
             <SwapNoticeLabel>
               <T _str="* Minimum 100 NCG per transfer" _tags={transifexTags} />
@@ -175,7 +175,7 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
         onDetailedView={() => onDetailedView(swapPage.tx)}
         onClose={() => swapPage.finish()}
       >
-          <T _str="Although the NCG remittance was successful, the WNCG conversion takes about 20 minutes." _tags={transifexTags} />
+        <T _str="Although the NCG remittance was successful, the WNCG conversion takes about 20 minutes." _tags={transifexTags} />
       </SuccessDialog>
 
       <FailureDialog
@@ -183,7 +183,7 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
         onDetailedView={() => onDetailedView(swapPage.tx)}
         onClose={() => swapPage.finish()}
       />
-    </SwapContainer>
+    </SwapContainer >
   );
 });
 

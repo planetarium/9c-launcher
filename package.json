@@ -206,5 +206,8 @@
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2",
     "xml2js": "^0.4.23"
+  },
+  "resolutions": {
+    "eip55/keccak": "^3.0.2"
   }
 }
