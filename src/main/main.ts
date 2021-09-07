@@ -63,7 +63,6 @@ import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
 import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron-devtools-installer';
 import createTransferWindow from "../transfer/window";
-import RemoteHeadless from "./headless/remoteHeadless";
 
 initializeSentry();
 
@@ -85,14 +84,12 @@ let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Headless = new Headless(standaloneExecutablePath);
-let remoteHeadless: RemoteHeadless;
 let ip: string | null = null;
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: Mixpanel | null =
   getConfig("Mixpanel") && !isDev
     ? createMixpanel(MIXPANEL_TOKEN)
     : null;
-let useRemoteHeadless: boolean = false;
 let initializeHeadlessCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
@@ -152,13 +149,12 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
-  initializeConfig();
-  useRemoteHeadless = configStore.get("UseRemoteHeadless");
+  intializeConfig();
   initializeApp();
   initializeIpc();
 }
 
-async function initializeConfig() {
+async function intializeConfig() {
   try {
     const res = await axios(REMOTE_CONFIG_URL);
     const remoteConfig: IConfig = res.data;
@@ -189,16 +185,7 @@ function initializeApp() {
   app.on("ready", () => {
     win = createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
-    win.webContents.on("dom-ready", (event) => {
-      if (useRemoteHeadless)
-      {
-        initializeRemoteHeadless();
-      }
-      else
-      {
-        initializeHeadless();
-      }
-    });
+    win.webContents.on("dom-ready", (event) => initializeHeadless());
 
     if (isDev) installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
       .then((name) => console.log(`Added Extension:  ${name}`))
@@ -540,15 +527,7 @@ function initializeIpc() {
       { distinct_id: mixpanelUUID, ip });
     await quitAllProcesses("clear-cache");
     utils.deleteBlockchainStoreSync(getBlockChainStorePath());
-    if (rerun) {
-      if (useRemoteHeadless)
-      {
-        initializeRemoteHeadless();
-      }
-      else {
-        initializeHeadless();
-      }
-    }
+    if (rerun) initializeHeadless();
     event.returnValue = true;
   });
 
@@ -907,92 +886,6 @@ function createWindow(): BrowserWindow {
   return _win;
 }
 
-async function initializeRemoteHeadless(): Promise<void> {
-  /*
-  1. Check APV and update if needed.
-  2. Execute remote headless.
-  */
-  console.log(`Initialize remote headless. (win: ${win?.getTitle})`);
-
-  if (initializeHeadlessCts !== null) {
-    console.error("Cannot initialize remote headless while initializing headless.");
-    return;
-  }
-
-  if (standalone.alive) {
-    console.error("Cannot initialize remote headless while headless is running.");
-    return;
-  }
-
-  if (lockfile.checkSync(lockfilePath)) {
-    console.error(
-        "Cannot initialize remote headless while updater is running.\n",
-        lockfilePath
-    );
-    return;
-  }
-
-  const peerInfos: string[] = getConfig("PeerStrings");
-  if (peerInfos.length > 0) {
-    const peerApvToken = standalone.apv.query(peerInfos[0]);
-    if (peerApvToken !== null) {
-      if (
-          standalone.apv.verify(
-              getConfig("TrustedAppProtocolVersionSigners"),
-              peerApvToken
-          )
-      ) {
-        const peerApv = standalone.apv.analyze(peerApvToken);
-        const localApvToken = getConfig("AppProtocolVersion");
-        const localApv = standalone.apv.analyze(localApvToken);
-
-        await update(
-            localApv.version,
-            peerApv.version,
-            encode(peerApv.extra).toString("hex")
-        );
-      } else {
-        console.log(
-            `Ignore APV[${peerApvToken}] due to failure to validating.`
-        );
-      }
-    }
-  }
-
-  initializeHeadlessCts = CancellationToken.create();
-
-  try {
-    initializeHeadlessCts.token.throwIfCancelled();
-    win?.webContents.send("start remote headless");
-    remoteHeadless = new RemoteHeadless();
-    await remoteHeadless.execute();
-
-    console.log("Register exit handler.");
-    standalone.once("exit", async () => {
-      console.error("remote headless exited by self.");
-      await relaunchHeadless();
-    });
-  } catch (error) {
-    console.error(`Error occurred during initialize remote headless(). ${error}`);
-    if (
-        error instanceof HeadlessInitializeError ||
-        error instanceof CancellationToken.CancellationError
-    ) {
-      console.error(`Initialize remote headless() halted: ${error}`);
-    } else if (error instanceof HeadlessExitedError) {
-      console.error("remote headless exited during initialization:", error);
-      win?.webContents.send("go to error page", "clear-cache");
-    } else {
-      win?.webContents.send("go to error page", "reinstall");
-      throw error;
-    }
-  } finally {
-    console.log("initialize remote headless() finished.");
-    initializeHeadlessCts = null;
-  }
-}
-
-
 /**
  * 프로그램이 시작될 때 이전 실행에서 발생한 부산물을 정리합니다.
  */
@@ -1055,14 +948,7 @@ function loadInstallerMixpanelUUID(): string {
 
 async function relaunchHeadless(reason: string = "default") {
   await stopHeadlessProcess(reason);
-  if (useRemoteHeadless)
-  {
-    initializeRemoteHeadless();
-  }
-  else
-  {
-    initializeHeadless();
-  }
+  initializeHeadless();
 }
 
 async function quitAllProcesses(reason: string = "default") {
