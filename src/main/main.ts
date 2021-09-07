@@ -483,7 +483,7 @@ function initializeIpc() {
       collectionWin.focus();
       return;
     }
-    collectionWin = createTransferWindow();
+    collectionWin = await createTransferWindow();
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
