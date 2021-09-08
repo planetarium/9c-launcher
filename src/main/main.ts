@@ -857,10 +857,11 @@ function createWindow(): BrowserWindow {
       preload: path.join(app.getAppPath(), "preload.js"),
     },
     frame: true,
-    resizable: false,
     autoHideMenuBar: true,
     icon: path.join(app.getAppPath(), logoImage),
   });
+
+  _win.setResizable(false); // see: https://github.com/electron/electron/issues/19565#issuecomment-867283465
 
   console.log(app.getAppPath());
 
