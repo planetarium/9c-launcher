@@ -148,7 +148,7 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
           </li>
           <li>
             <SwapNoticeLabel>
-              <T _str="* Maximum 100,000 NCG per day" _tags={transifexTags} />
+              <T _str="* Maximum 5,000 NCG per day" _tags={transifexTags} />
             </SwapNoticeLabel>
           </li>
           <li>
