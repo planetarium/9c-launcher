@@ -62,10 +62,7 @@ import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
 import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron-devtools-installer';
-import prettyBytes from "pretty-bytes";
 import createTransferWindow from "../transfer/window";
-import { NineChroniclesMixpanel } from "./mixpanel";
-import { createWindow as createV2Window } from "./v2/application";
 
 initializeSentry();
 
@@ -88,21 +85,24 @@ let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Headless = new Headless(standaloneExecutablePath);
 let ip: string | null = null;
-let relaunched: boolean = false;
-
+const mixpanelUUID = loadInstallerMixpanelUUID();
+const mixpanel: Mixpanel | null =
+  getConfig("Mixpanel") && !isDev
+    ? createMixpanel(MIXPANEL_TOKEN)
+    : null;
 let initializeHeadlessCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
 } | null = null;
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
-ipv4().then((value) => (ip = value));
+export type MixpanelInfo = {
+  mixpanel: Mixpanel | null;
+  mixpanelUUID: string;
+  ip: string | null;
+};
 
-const mixpanelUUID = loadInstallerMixpanelUUID();
-const mixpanel: NineChroniclesMixpanel | undefined =
-  getConfig("Mixpanel") && !isDev
-    ? new NineChroniclesMixpanel(createMixpanel(MIXPANEL_TOKEN), mixpanelUUID)
-    : undefined;
+ipv4().then((value) => (ip = value));
 
 client
   .syncTime()
@@ -135,7 +135,10 @@ if (!app.requestSingleInstanceLock()) {
       event.preventDefault();
       mixpanel?.track(
         "Launcher/Quit",
-        undefined,
+        {
+          distinct_id: mixpanelUUID,
+          ip,
+        },
         () => {
           quitTracked = true;
           app.quit();
@@ -179,15 +182,14 @@ async function intializeConfig() {
 }
 
 function initializeApp() {
-  app.on("ready", async () => {
-    if(isDev) await installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
-        .then((name) => console.log(`Added Extension:  ${name}`))
-        .catch((err) => console.log('An error occurred: ', err));
-
-    if (app.commandLine.hasSwitch("v2")) win = await createV2Window();
-    else win = await createWindow();
+  app.on("ready", () => {
+    win = createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
-    initializeHeadless();
+    win.webContents.on("dom-ready", (event) => initializeHeadless());
+
+    if (isDev) installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log('An error occurred: ', err));
   });
 
   app.on("quit", (event) => {
@@ -464,7 +466,7 @@ function initializeIpc() {
       collectionWin.focus();
       return;
     }
-    collectionWin = await createCollectionWindow();
+    collectionWin = createCollectionWindow();
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
@@ -475,7 +477,7 @@ function initializeIpc() {
       collectionWin.focus();
       return;
     }
-    collectionWin = await createTransferWindow();
+    collectionWin = createTransferWindow();
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
@@ -521,7 +523,8 @@ function initializeIpc() {
   ipcMain.on("clear cache", async (event, rerun: boolean) => {
     console.log(`Clear cache is requested. (rerun: ${rerun})`);
     mixpanel?.track(
-      "Launcher/Clear Cache");
+      "Launcher/Clear Cache",
+      { distinct_id: mixpanelUUID, ip });
     await quitAllProcesses("clear-cache");
     utils.deleteBlockchainStoreSync(getBlockChainStorePath());
     if (rerun) initializeHeadless();
@@ -540,21 +543,8 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.on("login", async () => {
-    mixpanel?.login();
-  });
-
-  ipcMain.on("set mining", async () => {
-    mixpanel?.miningConfig();
-  });
-
-  ipcMain.on("relaunch standalone", async (event, param: object) => {
-    mixpanel?.track("Launcher/Relaunch Headless", {
-      relaunched,
-      ...param,
-    });
+  ipcMain.on("relaunch standalone", async (event) => {
     await relaunchHeadless();
-    relaunched = true;
     event.returnValue = true;
   });
 
@@ -581,14 +571,15 @@ function initializeIpc() {
     event.returnValue = "Not supported platform.";
   });
 
-  ipcMain.on("mixpanel-track-event", async (_, eventName: string, param: object) => {
+  ipcMain.on("mixpanel-track-event", async (_, eventName: string) => {
     mixpanel?.track(eventName, {
-      ...param,
+      distinct_id: mixpanelUUID,
+      ip,
     });
   });
 
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
-    mixpanel?.alias(alias);
+    mixpanel?.alias(mixpanelUUID, alias);
   });
 
   ipcMain.on("get-protected-private-keys", async (event) => {
@@ -736,6 +727,12 @@ async function initializeHeadless(): Promise<void> {
 
   initializeHeadlessCts = CancellationToken.create();
 
+  const mixpanelInfo: MixpanelInfo = {
+    mixpanel: mixpanel,
+    mixpanelUUID: mixpanelUUID,
+    ip: ip,
+  };
+
   try {
     const chainPath = getBlockChainStorePath();
     if (!utils.isDiskPermissionValid(chainPath)) {
@@ -745,19 +742,12 @@ async function initializeHeadless(): Promise<void> {
       );
     }
 
-    try {
-      let freeSpace = await utils.getDiskSpace(chainPath);
-      if (freeSpace < REQUIRED_DISK_SPACE) {
-        win?.webContents.send("go to error page", "disk-space");
-        throw new HeadlessInitializeError(
-          `Not enough space. ${chainPath} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
-        );
-      }
-    } catch {
-      await dialog.showMessageBox(win!, {
-        message: `Failed to check free space. Please make sure you have at least ${prettyBytes(REQUIRED_DISK_SPACE)} available on your disk.`,
-        type: "warning",
-      });
+    let freeSpace = await utils.getDiskSpace(chainPath);
+    if (freeSpace < REQUIRED_DISK_SPACE) {
+      win?.webContents.send("go to error page", "disk-space");
+      throw new HeadlessInitializeError(
+        `Not enough space. ${chainPath} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
+      );
     }
     win?.webContents.send("start bootstrap");
     const snapshot =
@@ -782,8 +772,8 @@ async function initializeHeadless(): Promise<void> {
             app.getPath("userData"),
             standalone,
             win,
-            initializeHeadlessCts.token,
-            mixpanel,
+            mixpanelInfo,
+            initializeHeadlessCts.token
           );
 
           if (isProcessSuccess) break;
@@ -858,7 +848,7 @@ async function initializeHeadless(): Promise<void> {
   }
 }
 
-async function createWindow(): Promise<BrowserWindow> {
+function createWindow(): BrowserWindow {
   let _win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -867,16 +857,17 @@ async function createWindow(): Promise<BrowserWindow> {
       preload: path.join(app.getAppPath(), "preload.js"),
     },
     frame: true,
-    resizable: false,
     autoHideMenuBar: true,
     icon: path.join(app.getAppPath(), logoImage),
   });
 
+  _win.setResizable(false); // see: https://github.com/electron/electron/issues/19565#issuecomment-867283465
+
   console.log(app.getAppPath());
 
   if (isDev) {
-    await _win.loadURL("http://localhost:9000");
-    await _win.webContents.openDevTools();
+    _win.loadURL("http://localhost:9000");
+    _win.webContents.openDevTools();
   } else {
     _win.loadFile("index.html");
   }
@@ -1014,10 +1005,10 @@ function createTray(iconPath: string) {
 }
 
 function relaunch() {
-  if (mixpanel !== undefined) {
+  if (mixpanel !== null) {
     mixpanel.track(
       "Launcher/Relaunch",
-      undefined,
+      { distinct_id: mixpanelUUID, ip },
       () => {
         app.relaunch();
         app.exit();

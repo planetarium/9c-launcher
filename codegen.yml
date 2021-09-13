@@ -9,7 +9,6 @@ generates:
       - typescript-resolvers
       - typescript-react-apollo
     config:
-      reactApolloVersion: 2
       withHooks: true
       withMutationFn: true
       scalars:
@@ -23,18 +22,3 @@ generates:
       - typescript-graphql-request
     config:
       rawRequest: true
-  src/v2/generated/graphql.tsx:
-    plugins:
-      - typescript
-      - typescript-operations
-      - typescript-resolvers
-      - typescript-react-apollo
-    config:
-      reactApolloVersion: 3
-      withHooks: true
-      withMutationFn: true
-      withComponent: false
-      withHOC: false
-      scalars:
-        Address: ../../mappers#Address
-        ByteString: ../../mappers#ByteStringHex

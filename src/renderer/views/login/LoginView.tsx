@@ -22,6 +22,7 @@ import { observer, inject } from "mobx-react";
 
 import "../../styles/login/login.scss";
 import { useDecryptedPrivateKeyLazyQuery } from "../../../generated/graphql";
+import { get } from "../../../config";
 import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
@@ -61,11 +62,19 @@ const LoginView = observer(
     useEffect(() => {
       if (unprotectedPrivateKey !== undefined) {
         accountStore.setPrivateKey(unprotectedPrivateKey);
-        accountStore.setLoginStatus(true);
+        accountStore.toggleLogin();
         ipcRenderer.send("mixpanel-alias", accountStore.selectedAddress);
         ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
-        ipcRenderer.send("login");
-        routerStore.push("/login/mining");
+        if (get("UseRemoteHeadless"))
+        {
+            routerStore.push("lobby/preload");
+            standaloneStore.setPrivateKeyEnded(true);
+            accountStore.setMiningConfigStatus(true);
+        }
+        else
+        {
+            routerStore.push("/login/mining");
+        }
       }
     }, [unprotectedPrivateKey]);
 
@@ -111,7 +120,7 @@ const LoginView = observer(
         <form onSubmit={handleSubmit}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <article className={classes.labelContainer}>
+              <article className={classes.ID}>
                 <InputLabel className={classes.label}>
                   <T _str="ID" _tags={transifexTags}/>
                   <IconButton
@@ -139,14 +148,9 @@ const LoginView = observer(
               />
             </Grid>
             <Grid item xs={12}>
-              <article className={classes.labelContainer}>
-                <InputLabel className={classes.label}>
-                  <T _str="Password" _tags={transifexTags}/>
-                </InputLabel>
-                <InputLabel error className={classes.label}>
-                  {isInvalid && <T _str="Invalid password" _tags={transifexTags}/>}
-                </InputLabel>
-              </article>
+              <InputLabel className={classes.label}>
+                <T _str="Password" _tags={transifexTags}/>
+              </InputLabel>
               <FormControl fullWidth>
                 <OutlinedInput
                   type={showPassword ? "text" : "password"}

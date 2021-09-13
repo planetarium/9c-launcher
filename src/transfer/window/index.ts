@@ -5,7 +5,7 @@ import isDev from "electron-is-dev";
 
 let _win: BrowserWindow | null = null;
 
-const createTransferWindow = async (): Promise<BrowserWindow> => {
+const createTransferWindow = (): BrowserWindow => {
   _win = new BrowserWindow({
     width: 970,
     height: 650,
@@ -19,8 +19,8 @@ const createTransferWindow = async (): Promise<BrowserWindow> => {
   });
 
   if (isDev) {
-    await _win.loadURL("http://localhost:9000/transfer.html");
-    await _win.webContents.openDevTools();
+    _win.loadURL("http://localhost:9000/transfer.html");
+    _win.webContents.openDevTools();
   } else {
     _win.loadFile("transfer.html");
   }

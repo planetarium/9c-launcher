@@ -35,7 +35,6 @@ function createRenderConfig(isDev) {
       render: "./renderer/render.tsx",
       collection: "./collection/collection.tsx",
       transfer: "./transfer/transfer.tsx",
-      v2: "./v2/render.tsx"
     },
 
     output: {
@@ -113,8 +112,8 @@ function createRenderConfig(isDev) {
       }),
 
       new HtmlPlugin({
-        template: "collection.html", // relative path to the HTML files
-        filename: "collection.html", // output HTML files
+        template: `collection.html`, // relative path to the HTML files
+        filename: `collection.html`, // output HTML files
         chunks: ["collection"], // respective JS files
       }),
 
@@ -123,21 +122,15 @@ function createRenderConfig(isDev) {
         filename: `transfer.html`, // output HTML files
         chunks: ["transfer"], // respective JS files
       }),
-      
-      new HtmlPlugin({
-        template: "v2.html", // relative path to the HTML files
-        filename: "v2.html", // output HTML files
-        chunks: ["v2"], // respective JS files
-      }),
     ],
 
     devServer: isDev
       ? {
-          contentBase: path.join(__dirname, "dist"),
-          compress: true,
-          port: 9000,
-          historyApiFallback: true,
-        }
+        contentBase: path.join(__dirname, "dist"),
+        compress: true,
+        port: 9000,
+        historyApiFallback: true,
+      }
       : undefined,
 
     optimization: {
@@ -187,7 +180,7 @@ function createMainConfig(isDev) {
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
     },
-    
+
     stats: {
       errorDetails: true,
     },
@@ -201,7 +194,7 @@ function createMainConfig(isDev) {
     externalsPresets: {
       node: true,
       electronMain: true,
-    }, 
+    },
 
     externals: {
       "spawn-sync": "require('child_process').spawnSync" // fix child-process-promise/cross
@@ -261,7 +254,7 @@ function createMainConfig(isDev) {
         resourceRegExp: /^(utf\-8\-validate|bufferutil)/, // fix ws module
       })
     ],
-    
+
     optimization: {
       minimize: !isDev,
       minimizer: [new TerserPlugin()],
@@ -294,10 +287,8 @@ module.exports = (env) => {
   }
 
   console.log(
-    `\n##\n## BUILDING BUNDLE FOR: ${
-      target === "main" ? "main process" : "render process"
-    }\n## CONFIGURATION: ${
-      isDev ? DEVELOPMENT : PRODUCTION
+    `\n##\n## BUILDING BUNDLE FOR: ${target === "main" ? "main process" : "render process"
+    }\n## CONFIGURATION: ${isDev ? DEVELOPMENT : PRODUCTION
     }\n## VERSION: ${version}\n##\n`
   );
 
