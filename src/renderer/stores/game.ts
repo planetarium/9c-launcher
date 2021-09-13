@@ -45,12 +45,20 @@ export default class GameStore {
     );
     const dataProviderUrl = getConfig("DataProviderUrl");
 
+    let rpcHost = RPC_SERVER_HOST;
+    let rpcPort = RPC_SERVER_PORT;
+    if (getConfig("UseRemoteHeadless"))
+    {
+      rpcHost = getConfig("RemoteRpcServerHost");
+      rpcPort = getConfig("RemoteRpcServerPort");
+    }
+
     ipcRenderer.send("launch game", {
       args: [
         `--private-key=${privateKey}`,
         `--rpc-client=true`,
-        `--rpc-server-host=${RPC_SERVER_HOST}`,
-        `--rpc-server-port=${RPC_SERVER_PORT}`,
+        `--rpc-server-host=${rpcHost}`,
+        `--rpc-server-port=${rpcPort}`,
         `--genesis-block-path=${this._genesisBlockPath}`,
         `--language=${this._language}`,
         `--app-protocol-version=${this._appProtocolVersion}`,

@@ -24,4 +24,9 @@ export interface IConfig {
   Network: string;
   SwapAddress: string | undefined;
   DataProviderUrl: string | undefined;
+  RemoteRpcServerHost: string;
+  RemoteRpcServerPort: number;
+  RemoteGraphQLServerHost: string;
+  RemoteGraphQLServerPort: number;
+  UseRemoteHeadless: boolean;
 }

@@ -171,7 +171,7 @@
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^5.2.6",
     "dotenv": "^8.2.0",
-    "electron": "^9.0.2",
+    "electron": "^9.4.4",
     "electron-builder": "^22.7.0",
     "electron-devtools-installer": "^3.2.0",
     "electron-download": "^4.1.1",
