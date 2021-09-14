@@ -5,7 +5,7 @@ import isDev from "electron-is-dev";
 
 let _win: BrowserWindow | null = null;
 
-const createCollectionWindow = (): BrowserWindow => {
+const createCollectionWindow = async (): Promise<BrowserWindow> => {
   _win = new BrowserWindow({
     width: 1166,
     height: 738,
@@ -19,10 +19,10 @@ const createCollectionWindow = (): BrowserWindow => {
   });
 
   if (isDev) {
-    _win.loadURL("http://localhost:9000/collection.html");
-    _win.webContents.openDevTools();
+    await _win.loadURL("http://localhost:9000/collection.html");
+    await _win.webContents.openDevTools();
   } else {
-    _win.loadFile("collection.html");
+    await _win.loadFile("collection.html");
   }
 
   return _win;
