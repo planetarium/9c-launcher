@@ -5,7 +5,7 @@ import { createHttpLink } from "apollo-link-http";
 import { RetryLink } from "apollo-link-retry";
 import { WebSocketLink } from "apollo-link-ws";
 import React, { useState } from "react";
-import { LOCAL_SERVER_URL } from "../config";
+import { LOCAL_SERVER_URL, REMOTE_HEADLESS_URL, get } from "../config";
 import './App.scss';
 import { getMainDefinition } from "apollo-utilities";
 import Main from "./pages/main/main";
@@ -14,6 +14,7 @@ import IntroFacade from "./pages/facade/IntroFacade";
 import path from "path";
 
 
+const baseUrl = get("UseRemoteHeadless") ? REMOTE_HEADLESS_URL : LOCAL_SERVER_URL;
 const wsLink = new WebSocketLink({
   uri: `ws://${LOCAL_SERVER_URL}/graphql`,
   options: {
@@ -21,7 +22,7 @@ const wsLink = new WebSocketLink({
   },
 });
 
-const httpLink = createHttpLink({ uri: `http://${LOCAL_SERVER_URL}/graphql` });
+const httpLink = createHttpLink({ uri: `http://${baseUrl}/graphql` });
 
 const apiLink = split(
   // split based on operation type
