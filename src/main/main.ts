@@ -481,17 +481,6 @@ function initializeIpc() {
     });
   });
 
-  ipcMain.handle("open transfer page", async () => {
-    if (collectionWin != null) {
-      collectionWin.focus();
-      return;
-    }
-    collectionWin = createTransferWindow();
-    collectionWin.on("close", function (event: any) {
-      collectionWin = null;
-    });
-  });
-
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {
       console.error("Game is already running.");
