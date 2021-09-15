@@ -19,6 +19,7 @@
   "BlockchainStoreDirParent": "",
   "BlockchainStoreDirName": "9c",
   "Locale": "",
+	"ConfigVersion": 5,
   "MPT": false,
   "Workers": 20,
   "Confirmations": 0,
