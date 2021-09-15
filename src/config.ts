@@ -112,6 +112,26 @@ const schema: any = {
   ConfigVersion: {
     type: "integer",
     default: 0
+  },
+  RemoteRpcServerHost: {
+    type: "string",
+    default: "ec2-3-139-54-137.us-east-2.compute.amazonaws.com"
+  },
+  RemoteRpcServerPort: {
+    type: "integer",
+    default: 31238
+  },
+  RemoteGraphQLServerHost: {
+    type: "string",
+    default: "ec2-3-139-54-137.us-east-2.compute.amazonaws.com"
+  },
+  RemoteGraphQLServerPort: {
+    type: "integer",
+    default: 80
+  },
+  UseRemoteHeadless : {
+    type: "boolean",
+    default: false
   }
 }
 
@@ -128,6 +148,14 @@ const LocalServerUrl = (): string => {
 const GraphQLServer = (): string => {
   return `${LocalServerUrl}/graphql`;
 };
+
+const RemoteGraphQLServer = (): string => {
+  return `${RemoteHeadlessUrl}/graphql`;
+}
+
+const RemoteHeadlessUrl = (): string => {
+  return `${get("RemoteGraphQLServerHost")}:${get("RemoteGraphQLServerPort")}`;
+}
 
 const RpcServerHost = (): { host: string; notDefault: boolean } => {
   const host = process.env.NC_RPC_SERVER_HOST;
@@ -196,6 +224,8 @@ export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
+export const REMOTE_HEADLESS_URL = RemoteHeadlessUrl();
+export const REMOTE_GRAPHQL_SERVER_URL = RemoteGraphQLServer();
 export const LOCAL_SERVER_HOST: string = LocalServerHost().host;
 export const LOCAL_SERVER_PORT: number = LocalServerPort().port;
 export const RPC_SERVER_HOST: string = RpcServerHost().host;

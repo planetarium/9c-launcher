@@ -32,6 +32,18 @@ const SwapSecondTitle = styled(Typography)({
   color: '#dddddd',
 });
 
+const SwapNoticeTitle = styled(Typography)({
+  fontWeight: 'bold',
+  marginTop: '10px',
+  fontSize: '16px',
+  color: '#979797',
+});
+
+const SwapNoticeLabel = styled(Typography)({
+  fontSize: '14px',
+  color: '#979797',
+});
+
 const SwapInput = styled(OutlinedInput)({
   marginTop: '5px',
   marginBottom: '10px',
@@ -125,6 +137,26 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
           }
           defaultValue={0}
         />
+        <SwapNoticeTitle>
+          <T _str="Notice" _tags={transifexTags} />
+        </SwapNoticeTitle>
+        <ul style={{listStyleType: "none", padding: 0, marginTop: '5px'}}>
+          <li>
+            <SwapNoticeLabel>
+              <T _str="* Minimum 100 NCG per transfer" _tags={transifexTags} />
+            </SwapNoticeLabel>
+          </li>
+          <li>
+            <SwapNoticeLabel>
+              <T _str="* Maximum {max, number, integer} NCG per day" _tags={transifexTags} max={5000} />
+            </SwapNoticeLabel>
+          </li>
+          <li>
+            <SwapNoticeLabel>
+              <T _str="* 1% fee deducted to operate bridge (ETH gas fee & development cost)" _tags={transifexTags} />
+            </SwapNoticeLabel>
+          </li>
+        </ul>
         <SwapButton
           variant="contained"
           color="primary"
