@@ -90,6 +90,8 @@ function createRenderConfig(isDev) {
               plugins: [
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
+                ["@babel/plugin-proposal-private-methods", { loose: true }],
+                ["@babel/plugin-proposal-private-property-in-object", { loose: true }],
                 "react-hot-loader/babel",
               ],
               sourceMaps: isDev
@@ -231,6 +233,8 @@ function createMainConfig(isDev) {
               }]],
               plugins: [
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
+                ["@babel/plugin-proposal-private-methods", { loose: true }],
+                ["@babel/plugin-proposal-private-property-in-object", { loose: true }]
               ],
             },
           },
