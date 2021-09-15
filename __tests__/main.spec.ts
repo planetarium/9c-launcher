@@ -87,6 +87,8 @@ describe("test", function () {
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
     await app.client.saveScreenshot(path.join(snapshotDir, `lobby.png`));
 
+    await app.client.waitUntil(() => app.client.$("$start-game").then(Boolean), {timeout: 60 * 1000});
+
     const submitButton = await app.client.$("#start-game");
     const text = await submitButton.getText();
     expect(text).to.equal("NOW RUNNING...");
