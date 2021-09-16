@@ -51,6 +51,10 @@ function createRenderConfig(isDev) {
       electronRenderer: true,
     },
 
+    externals: {
+      "spawn-sync": "require('child_process').spawnSync", // fix child-process-promise/cross
+    },
+
     module: {
       rules: [
         {

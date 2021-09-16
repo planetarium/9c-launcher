@@ -304,3 +304,11 @@ query CollectionStatusQuery {
     }
   }
 }
+
+query ActivationKeyNonce($encodedActivationKey: String!) {
+  activationKeyNonce(invitationCode: $encodedActivationKey)
+}
+
+mutation StageTx($encodedTx: String!) {
+  stageTx(payload: $encodedTx)
+}
