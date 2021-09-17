@@ -6,8 +6,14 @@ import {
   FormHelperText,
   TextField,
 } from "@material-ui/core";
-import {inject, observer} from "mobx-react";
-import React, {ChangeEvent, FormEvent, useCallback, useEffect, useState,} from "react";
+import { inject, observer } from "mobx-react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   useActivateMutation,
   useActivationAddressLazyQuery,
@@ -15,14 +21,14 @@ import {
   useGetNextTxNonceQuery,
   useStageTxMutation,
 } from "../../../generated/graphql";
-import {IStoreContainer} from "../../../interfaces/store";
-import {sleep} from "../../../utils";
-import {ipcRenderer} from "electron";
+import { IStoreContainer } from "../../../interfaces/store";
+import { sleep } from "../../../utils";
+import { ipcRenderer } from "electron";
 
-import {T} from "@transifex/react";
+import { T } from "@transifex/react";
 
 import lobbyViewStyle from "./LobbyView.style";
-import {tmpName} from "tmp-promise";
+import { tmpName } from "tmp-promise";
 import { get } from "../../../config";
 
 interface ILobbyViewProps extends IStoreContainer {
@@ -43,13 +49,11 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     { loading, error: statusError, data: status, refetch: activationRefetch },
   ] = useActivationAddressLazyQuery({
     variables: {
-      address: accountStore.selectedAddress
-    }
+      address: accountStore.selectedAddress,
+    },
   });
-  const [
-    activate,
-    { data: isActivated, error: activatedError },
-  ] = useActivateMutation();
+  const [activate, { data: isActivated, error: activatedError }] =
+    useActivateMutation();
   const [activationKey, setActivationKey] = useState(
     accountStore.activationKey
   );
@@ -66,21 +70,18 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   const { refetch: nonceRefetch } = useActivationKeyNonceQuery({
     variables: {
-      encodedActivationKey: activationKey
-    }
+      encodedActivationKey: activationKey,
+    },
   });
 
   const { refetch: txNoceRefetch } = useGetNextTxNonceQuery({
     variables: {
-      address: accountStore.selectedAddress
-    }
-  })
+      address: accountStore.selectedAddress,
+    },
+  });
 
-  const [
-    stage,
-    { data: isStage, error: stageError },
-  ] = useStageTxMutation();
-  
+  const [stage, { data: isStage, error: stageError }] = useStageTxMutation();
+
   const handleActivationKeySubmit = async (
     event: FormEvent<HTMLFormElement>
   ) => {
@@ -88,19 +89,16 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     await makeTx();
   };
 
-
-  const activateMutation = async() => {
-    if (tx !== "")
-    {
+  const activateMutation = async () => {
+    if (tx !== "") {
       setPollingState(true);
       const stageResult = await stage({
         variables: {
-          encodedTx: tx
-        }
+          encodedTx: tx,
+        },
       });
 
-      if (stageResult.data?.stageTx)
-      {
+      if (stageResult.data?.stageTx) {
         while (true) {
           await sleep(1000);
           if (await activated()) {
@@ -110,22 +108,21 @@ const LobbyView = observer((props: ILobbyViewProps) => {
         }
       }
     }
-  }
+  };
 
-  const makeTx = async() => {
+  const makeTx = async () => {
     // get key nonce.
     setTx("");
     setErrorMsg("");
     setPollingState(true);
     const ended = async () => {
       return await nonceRefetch();
-    }
+    };
     let nonce;
     try {
       let res = await ended();
       nonce = res.data.activationKeyNonce;
-    }
-    catch (e) {
+    } catch (e) {
       setErrorMsg(e.message);
       setPollingState(false);
       return;
@@ -133,42 +130,44 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
     // create action.
     const fileName = await tmpName();
-    if (!ipcRenderer.sendSync("activate-account", activationKey, nonce, fileName))
-    {
+    if (
+      !ipcRenderer.sendSync("activate-account", activationKey, nonce, fileName)
+    ) {
       setPollingState(false);
-      setErrorMsg("create activate account action failed.")
+      setErrorMsg("create activate account action failed.");
       return;
     }
 
     // get tx nonce.
     const ended2 = async () => {
-      return await txNoceRefetch({address: accountStore.selectedAddress});
-    }
+      return await txNoceRefetch({ address: accountStore.selectedAddress });
+    };
     let txNonce;
     try {
       let res = await ended2();
       txNonce = res.data.transaction.nextTxNonce;
-    }
-    catch (e) {
+    } catch (e) {
       setErrorMsg(e.message);
       setPollingState(false);
       return;
     }
 
     // sign tx.
-    const result = ipcRenderer.sendSync("sign-tx", txNonce,
-        new Date().toISOString(), fileName);
-    if (result.stderr != "")
-    {
+    const result = ipcRenderer.sendSync(
+      "sign-tx",
+      txNonce,
+      new Date().toISOString(),
+      fileName
+    );
+    if (result.stderr != "") {
       setErrorMsg(result.stderr);
     }
-    if (result.stdout != "")
-    {
+    if (result.stdout != "") {
       setTx(result.stdout);
     }
     setPollingState(false);
     return;
-  }
+  };
 
   const activated = async () => {
     const result = await activationRefetch();
@@ -181,8 +180,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     }
   }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
 
-  if (!polling && tx !== "" && !status?.activationStatus.addressActivated)
-  {
+  if (!polling && tx !== "" && !status?.activationStatus.addressActivated) {
     activateMutation();
   }
 
@@ -213,12 +211,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
         {errorMsg !== "" && (
           <FormHelperText>
             {/* FIXME 예외 타입으로 구분해서 메시지 국제화 할 것 */}
-            {errorMsg
-              ?.split("\n")
-              ?.shift()
-              ?.split(":")
-              ?.pop()
-              ?.trim()}
+            {errorMsg?.split("\n")?.shift()?.split(":")?.pop()?.trim()}
           </FormHelperText>
         )}
         <ButtonOrigin

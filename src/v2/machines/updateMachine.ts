@@ -21,11 +21,7 @@ type UpdateMachineState =
       context: {};
     };
 
-export default createMachine<
-  MachineContext,
-  MachineEvent,
-  UpdateMachineState
->(
+export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
   {
     initial: "ok",
     context: {

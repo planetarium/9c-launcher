@@ -1,18 +1,17 @@
-import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import React from "react";
+import { Story, Meta } from "@storybook/react";
 
-import SuccessDialog, {Props} from './SuccessDialog';
+import SuccessDialog, { Props } from "./SuccessDialog";
 
 export default {
-  title: 'Transfer/SuccessDialog',
+  title: "Transfer/SuccessDialog",
   component: SuccessDialog,
-  parameters: { actions: { argTypesRegex: '^on.*' } },
+  parameters: { actions: { argTypesRegex: "^on.*" } },
 } as Meta;
 
-const Template: Story<Props> = (args) => <SuccessDialog {...args}/>;
-
+const Template: Story<Props> = (args) => <SuccessDialog {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  open: true
-}
+  open: true,
+};

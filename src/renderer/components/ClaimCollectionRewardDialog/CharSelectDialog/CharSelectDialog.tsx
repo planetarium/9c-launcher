@@ -10,11 +10,11 @@ import {
 import React from "react";
 import { getRemain } from "../../../../collection/common/utils";
 
-import './CharSelectDialog.scss'
+import "./CharSelectDialog.scss";
 
 export type Props = {
   onClick: (avatarAddress: string) => void;
-  avatar: { address: string; name: string, updatedAt: number }[];
+  avatar: { address: string; name: string; updatedAt: number }[];
   tip: number;
 };
 
@@ -27,10 +27,10 @@ const charSelectDialogStyle = makeStyles({
     alignItems: "flex-left",
   },
   radio: {
-    '&$checked': {
-      color: '#74f4bc'
+    "&$checked": {
+      color: "#74f4bc",
     },
-    color: '#FFFFFF'
+    color: "#FFFFFF",
   },
   checked: {},
   button: {
@@ -39,7 +39,7 @@ const charSelectDialogStyle = makeStyles({
     fontWeight: "bold",
     fontSize: "larger",
     borderRadius: "0",
-  }
+  },
 });
 
 const CharSelectDialog: React.FC<Props> = (props: Props) => {
@@ -50,14 +50,16 @@ const CharSelectDialog: React.FC<Props> = (props: Props) => {
   };
 
   const classes = charSelectDialogStyle();
-  console.log(avatar.map(x => {
-    console.log(`address: ${x.address} updateAt: ${x.updatedAt}`)
-  }))
+  console.log(
+    avatar.map((x) => {
+      console.log(`address: ${x.address} updateAt: ${x.updatedAt}`);
+    })
+  );
 
   return (
-    <div className={'CharSelectDialogContainer'}>
+    <div className={"CharSelectDialogContainer"}>
       <FormControl component="fieldset">
-        <div className={'CharSelectDialogTitle'}>Select Character</div>
+        <div className={"CharSelectDialogTitle"}>Select Character</div>
         <RadioGroup
           aria-label="avatar"
           name="avatar1"
@@ -68,24 +70,30 @@ const CharSelectDialog: React.FC<Props> = (props: Props) => {
           {avatar.map((x) => (
             <FormControlLabel
               value={x.address}
-              control={<Radio classes={{root: classes.radio, checked: classes.checked}} />}
-              label={`${x.name} #${x.address.substring(2, 6)} \n Latest login at: ${getRemain((tip - x.updatedAt) / 5 )}`}
+              control={
+                <Radio
+                  classes={{ root: classes.radio, checked: classes.checked }}
+                />
+              }
+              label={`${x.name} #${x.address.substring(
+                2,
+                6
+              )} \n Latest login at: ${getRemain((tip - x.updatedAt) / 5)}`}
             />
           ))}
         </RadioGroup>
       </FormControl>
-      <div className={'CharSelectDialogButtonPos'}>
-      <Button
-      className={classes.button}
-        color="primary"
-        variant="contained"
-        fullWidth
-        onClick={() => onClick(avatarAddress)}
-      >
-        Send
-      </Button>
+      <div className={"CharSelectDialogButtonPos"}>
+        <Button
+          className={classes.button}
+          color="primary"
+          variant="contained"
+          fullWidth
+          onClick={() => onClick(avatarAddress)}
+        >
+          Send
+        </Button>
       </div>
-
     </div>
   );
 };

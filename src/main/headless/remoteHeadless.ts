@@ -41,9 +41,7 @@ class RemoteHeadless {
   }
 
   public async execute(): Promise<void> {
-      console.log(
-        "Executing the remote headless server:" + `\n  ${this._url}`
-      );
+    console.log("Executing the remote headless server:" + `\n  ${this._url}`);
   }
 
   public async kill(): Promise<void> {
@@ -138,7 +136,8 @@ class RemoteHeadless {
 
         if (await this.needRetry(response)) {
           console.log(
-            `Failed to fetch standalone (${addr}). Retrying... ${context.attemptNum
+            `Failed to fetch standalone (${addr}). Retrying... ${
+              context.attemptNum
             }/${context.attemptsRemaining + context.attemptNum}`
           );
           throw new Error("Retry required.");

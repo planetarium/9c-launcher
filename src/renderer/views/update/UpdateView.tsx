@@ -1,14 +1,10 @@
 import React from "react";
-import {
-  LinearProgress,
-  withStyles,
-  createStyles,
-} from "@material-ui/core";
+import { LinearProgress, withStyles, createStyles } from "@material-ui/core";
 
-import PlanetariumLogoImage from "../../resources/planetarium-logo-hor.png"
-import NineChroniclesLogoImage from "../../resources/nine-chronicles-logo.png"
-import NineChroniclesLogoIconImage from "../../resources/nine-chronicles-logo-icon.png"
-import DiscordIconImage from "../../resources/discord-icon-32x32.png"
+import PlanetariumLogoImage from "../../resources/planetarium-logo-hor.png";
+import NineChroniclesLogoImage from "../../resources/nine-chronicles-logo.png";
+import NineChroniclesLogoIconImage from "../../resources/nine-chronicles-logo-icon.png";
+import DiscordIconImage from "../../resources/discord-icon-32x32.png";
 
 import UpdateViewStyle from "./UpdateView.style";
 
@@ -34,14 +30,14 @@ const UpdateView = ({ state, variant, progress }: UpdateViewProps) => {
         backgroundColor: "rgba(216, 216, 216, 0.8)",
       },
       bar: {
-        backgroundColor: '#20d1c2',
+        backgroundColor: "#20d1c2",
       },
-    }))(LinearProgress);
-  
-  const progressToString = variant === "determinate"
-    ? ` ${Math.round(progress)}%`
-    : "";
-  
+    })
+  )(LinearProgress);
+
+  const progressToString =
+    variant === "determinate" ? ` ${Math.round(progress)}%` : "";
+
   var progressMessage;
   switch (state) {
     case "copy":
@@ -58,20 +54,22 @@ const UpdateView = ({ state, variant, progress }: UpdateViewProps) => {
   return (
     <div className={styles.root}>
       <img src={PlanetariumLogoImage} className={styles.planetariumLogo} />
-      <img src={NineChroniclesLogoImage} className={styles.nineChroniclesLogo} />
+      <img
+        src={NineChroniclesLogoImage}
+        className={styles.nineChroniclesLogo}
+      />
       <div className={styles.menu}>
         <a href="https://forum.nine-chronicles.com/" target="_blank">
           <div className={styles.menuItem}>
-            <img 
+            <img
               src={NineChroniclesLogoIconImage}
-              style={{width: 25, height: 27}}/>
+              style={{ width: 25, height: 27 }}
+            />
           </div>
         </a>
         <a href="https://bit.ly/planetarium-discord" target="_blank">
-          <div className={styles.menuItem} style={{marginTop: 10}}>
-            <img
-              src={DiscordIconImage}
-              style={{width: 32, height: 32}}/>
+          <div className={styles.menuItem} style={{ marginTop: 10 }}>
+            <img src={DiscordIconImage} style={{ width: 32, height: 32 }} />
           </div>
         </a>
       </div>

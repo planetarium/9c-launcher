@@ -49,7 +49,8 @@ const PreloadView = observer((props: IStoreContainer) => {
   const handleLaunch = useCallback(() => {
     const player = youtubeRef.current?.internalPlayer;
     if (player === undefined) throw Error("YouTube Player not found");
-    if (videoOpts.playerVars?.mute === 0) userConfigStore.set("MuteTeaser", true);
+    if (videoOpts.playerVars?.mute === 0)
+      userConfigStore.set("MuteTeaser", true);
     player.pauseVideo();
   }, [youtubeRef]);
 

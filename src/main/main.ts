@@ -61,7 +61,10 @@ import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
-import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron-devtools-installer';
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+  MOBX_DEVTOOLS,
+} from "electron-devtools-installer";
 import prettyBytes from "pretty-bytes";
 import createTransferWindow from "../transfer/window";
 import RemoteHeadless from "./headless/remoteHeadless";
@@ -80,7 +83,8 @@ const standaloneExecutablePath = path.join(
   "NineChronicles.Headless.Executable"
 );
 
-const REMOTE_CONFIG_URL = "https://download.nine-chronicles.com/9c-launcher-config.json";
+const REMOTE_CONFIG_URL =
+  "https://download.nine-chronicles.com/9c-launcher-config.json";
 
 let win: BrowserWindow | null = null;
 let collectionWin: BrowserWindow | null = null;
@@ -97,8 +101,8 @@ let initializeHeadlessCts: {
 } | null = null;
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
-let remoteHeadless : RemoteHeadless;
-let useRemoteHeadless : boolean;
+let remoteHeadless: RemoteHeadless;
+let useRemoteHeadless: boolean;
 
 ipv4().then((value) => (ip = value));
 
@@ -137,14 +141,10 @@ if (!app.requestSingleInstanceLock()) {
   app.on("before-quit", (event) => {
     if (mixpanel !== null && !quitTracked) {
       event.preventDefault();
-      mixpanel?.track(
-        "Launcher/Quit",
-        undefined,
-        () => {
-          quitTracked = true;
-          app.quit();
-        }
-      );
+      mixpanel?.track("Launcher/Quit", undefined, () => {
+        quitTracked = true;
+        app.quit();
+      });
     }
   });
 
@@ -164,40 +164,43 @@ async function intializeConfig() {
     const localApv = getConfig("AppProtocolVersion");
     const remoteApv = remoteConfig.AppProtocolVersion;
     if (localApv !== remoteApv) {
-      console.log(`APVs are different, ignore. (local: ${localApv}, remote: ${remoteApv})`);
+      console.log(
+        `APVs are different, ignore. (local: ${localApv}, remote: ${remoteApv})`
+      );
       return;
     }
 
     const localConfigVersion = getConfig("ConfigVersion");
     const remoteConfigVersion = remoteConfig.ConfigVersion;
     if (localConfigVersion > remoteConfigVersion) {
-      console.log(`Local config is newer than remote, ignore. (local: ${localConfigVersion}, remote: ${remoteConfigVersion})`);
+      console.log(
+        `Local config is newer than remote, ignore. (local: ${localConfigVersion}, remote: ${remoteConfigVersion})`
+      );
       return;
     }
 
     // Replace config
     configStore.store = remoteConfig;
-  }
-  catch (error) {
-    console.error(`An unexpected error occurred during fetching remote config. ${error}`);
+  } catch (error) {
+    console.error(
+      `An unexpected error occurred during fetching remote config. ${error}`
+    );
   }
 }
 
 function initializeApp() {
   app.on("ready", async () => {
-    if(isDev) await installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
+    if (isDev)
+      await installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
         .then((name) => console.log(`Added Extension:  ${name}`))
-        .catch((err) => console.log('An error occurred: ', err));
+        .catch((err) => console.log("An error occurred: ", err));
 
     if (app.commandLine.hasSwitch("v2")) win = await createV2Window();
     else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
-    if (useRemoteHeadless)
-    {
-      initializeRemoteHeadless()
-    }
-    else
-    {
+    if (useRemoteHeadless) {
+      initializeRemoteHeadless();
+    } else {
       initializeHeadless();
     }
   });
@@ -262,8 +265,8 @@ async function update(
     process.platform === "win32"
       ? windowsBinaryUrl
       : process.platform === "darwin"
-        ? macOSBinaryUrl
-        : null;
+      ? macOSBinaryUrl
+      : null;
 
   if (downloadUrl == null) {
     console.log(`Stop update process. Not support ${process.platform}.`);
@@ -535,17 +538,13 @@ function initializeIpc() {
 
   ipcMain.on("clear cache", async (event, rerun: boolean) => {
     console.log(`Clear cache is requested. (rerun: ${rerun})`);
-    mixpanel?.track(
-      "Launcher/Clear Cache");
+    mixpanel?.track("Launcher/Clear Cache");
     await quitAllProcesses("clear-cache");
     utils.deleteBlockchainStoreSync(getBlockChainStorePath());
     if (rerun) {
-      if (useRemoteHeadless)
-      {
-        initializeRemoteHeadless()
-      }
-      else
-      {
+      if (useRemoteHeadless) {
+        initializeRemoteHeadless();
+      } else {
         initializeHeadless();
       }
     }
@@ -605,11 +604,14 @@ function initializeIpc() {
     event.returnValue = "Not supported platform.";
   });
 
-  ipcMain.on("mixpanel-track-event", async (_, eventName: string, param: object) => {
-    mixpanel?.track(eventName, {
-      ...param,
-    });
-  });
+  ipcMain.on(
+    "mixpanel-track-event",
+    async (_, eventName: string, param: object) => {
+      mixpanel?.track(eventName, {
+        ...param,
+      });
+    }
+  );
 
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
     mixpanel?.alias(alias);
@@ -650,9 +652,8 @@ function initializeIpc() {
   );
 
   ipcMain.on("create-private-key", async (event, passphrase: string) => {
-    event.returnValue = standalone.keyStore.createProtectedPrivateKey(
-      passphrase
-    );
+    event.returnValue =
+      standalone.keyStore.createProtectedPrivateKey(passphrase);
   });
 
   ipcMain.on(
@@ -764,16 +765,12 @@ async function initializeHeadless(): Promise<void> {
     const chainPath = getBlockChainStorePath();
     if (!utils.isDiskPermissionValid(chainPath)) {
       win?.webContents.send("go to error page", "no-permission");
-      throw new HeadlessInitializeError(
-        `Not enough permission. ${chainPath}`
-      );
+      throw new HeadlessInitializeError(`Not enough permission. ${chainPath}`);
     }
 
     win?.webContents.send("start bootstrap");
     const snapshot =
-      getConfig("StoreType") === "rocksdb"
-        ? partitionSnapshot
-        : monoSnapshot;
+      getConfig("StoreType") === "rocksdb" ? partitionSnapshot : monoSnapshot;
 
     const snapshotPaths: string[] = getConfig("SnapshotPaths");
     if (CUSTOM_SERVER) {
@@ -804,12 +801,14 @@ async function initializeHeadless(): Promise<void> {
                 }
               } catch {
                 await dialog.showMessageBox(win!, {
-                  message: `Failed to check free space. Please make sure you have at least ${prettyBytes(size)} available on your disk.`,
+                  message: `Failed to check free space. Please make sure you have at least ${prettyBytes(
+                    size
+                  )} available on your disk.`,
                   type: "warning",
                 });
               }
             },
-            mixpanel,
+            mixpanel
           );
 
           if (isProcessSuccess) break;
@@ -892,19 +891,23 @@ async function initializeRemoteHeadless(): Promise<void> {
   console.log(`Initialize remote headless. (win: ${win?.getTitle})`);
 
   if (initializeHeadlessCts !== null) {
-    console.error("Cannot initialize remote headless while initializing headless.");
+    console.error(
+      "Cannot initialize remote headless while initializing headless."
+    );
     return;
   }
 
   if (standalone.alive) {
-    console.error("Cannot initialize remote headless while headless is running.");
+    console.error(
+      "Cannot initialize remote headless while headless is running."
+    );
     return;
   }
 
   if (lockfile.checkSync(lockfilePath)) {
     console.error(
-        "Cannot initialize remote headless while updater is running.\n",
-        lockfilePath
+      "Cannot initialize remote headless while updater is running.\n",
+      lockfilePath
     );
     return;
   }
@@ -914,23 +917,23 @@ async function initializeRemoteHeadless(): Promise<void> {
     const peerApvToken = standalone.apv.query(peerInfos[0]);
     if (peerApvToken !== null) {
       if (
-          standalone.apv.verify(
-              getConfig("TrustedAppProtocolVersionSigners"),
-              peerApvToken
-          )
+        standalone.apv.verify(
+          getConfig("TrustedAppProtocolVersionSigners"),
+          peerApvToken
+        )
       ) {
         const peerApv = standalone.apv.analyze(peerApvToken);
         const localApvToken = getConfig("AppProtocolVersion");
         const localApv = standalone.apv.analyze(localApvToken);
 
         await update(
-            localApv.version,
-            peerApv.version,
-            encode(peerApv.extra).toString("hex")
+          localApv.version,
+          peerApv.version,
+          encode(peerApv.extra).toString("hex")
         );
       } else {
         console.log(
-            `Ignore APV[${peerApvToken}] due to failure to validating.`
+          `Ignore APV[${peerApvToken}] due to failure to validating.`
         );
       }
     }
@@ -950,10 +953,12 @@ async function initializeRemoteHeadless(): Promise<void> {
       await relaunchHeadless();
     });
   } catch (error) {
-    console.error(`Error occurred during initialize remote headless(). ${error}`);
+    console.error(
+      `Error occurred during initialize remote headless(). ${error}`
+    );
     if (
-        error instanceof HeadlessInitializeError ||
-        error instanceof CancellationToken.CancellationError
+      error instanceof HeadlessInitializeError ||
+      error instanceof CancellationToken.CancellationError
     ) {
       console.error(`Initialize remote headless() halted: ${error}`);
     } else if (error instanceof HeadlessExitedError) {
@@ -1070,12 +1075,9 @@ function loadInstallerMixpanelUUID(): string {
 
 async function relaunchHeadless(reason: string = "default") {
   await stopHeadlessProcess(reason);
-  if (useRemoteHeadless)
-  {
-    initializeRemoteHeadless()
-  }
-  else
-  {
+  if (useRemoteHeadless) {
+    initializeRemoteHeadless();
+  } else {
     initializeHeadless();
   }
 }
@@ -1134,14 +1136,10 @@ function createTray(iconPath: string) {
 
 function relaunch() {
   if (mixpanel !== undefined) {
-    mixpanel.track(
-      "Launcher/Relaunch",
-      undefined,
-      () => {
-        app.relaunch();
-        app.exit();
-      }
-    );
+    mixpanel.track("Launcher/Relaunch", undefined, () => {
+      app.relaunch();
+      app.exit();
+    });
   } else {
     app.relaunch();
     app.exit();
@@ -1155,15 +1153,14 @@ function getHeadlessArgs(): string[] {
     `-D=${getConfig("MinimumDifficulty")}`,
     `--store-type=${getConfig("StoreType")}`,
     `--store-path=${getBlockChainStorePath()}`,
-    ...getConfig("IceServerStrings")
-      .map((iceServerString) => `-I=${iceServerString}`),
-    ...getConfig("PeerStrings")
-      .map((peerString) => `--peer=${peerString}`),
-    ...getConfig("TrustedAppProtocolVersionSigners")
-      .map(
-        (trustedAppProtocolVersionSigner) =>
-          `-T=${trustedAppProtocolVersionSigner}`
-      ),
+    ...getConfig("IceServerStrings").map(
+      (iceServerString) => `-I=${iceServerString}`
+    ),
+    ...getConfig("PeerStrings").map((peerString) => `--peer=${peerString}`),
+    ...getConfig("TrustedAppProtocolVersionSigners").map(
+      (trustedAppProtocolVersionSigner) =>
+        `-T=${trustedAppProtocolVersionSigner}`
+    ),
     "--no-miner",
     "--rpc-server",
     `--rpc-listen-host=${RPC_SERVER_HOST}`,
@@ -1197,4 +1194,3 @@ function getHeadlessArgs(): string[] {
 
   return args;
 }
-

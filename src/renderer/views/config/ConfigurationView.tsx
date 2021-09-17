@@ -17,7 +17,11 @@ import {
 } from "@material-ui/core";
 import { FolderOpen, Close } from "@material-ui/icons";
 import useStores from "../../../hooks/useStores";
-import { userConfigStore, get as getConfig, blockchainStoreDirParent } from "../../../config";
+import {
+  userConfigStore,
+  get as getConfig,
+  blockchainStoreDirParent,
+} from "../../../config";
 import { SettingsFormEvent } from "../../../interfaces/event";
 import configurationViewStyle from "./ConfigurationView.style";
 import { T, useLanguages, useLocale } from "@transifex/react";
@@ -29,10 +33,8 @@ const transifexTags = "configuration";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
-  const languages: Array<Record<
-    "code" | "name" | "localized_name",
-    string
-  >> = useLanguages();
+  const languages: Array<Record<"code" | "name" | "localized_name", string>> =
+    useLanguages();
   const selectedLocale: string = useLocale();
   const selectedLanguage = useMemo(
     () => languages.find(({ code }) => code === selectedLocale)?.localized_name,
