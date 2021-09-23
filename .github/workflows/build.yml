@@ -114,6 +114,7 @@ jobs:
       - run: yarn
       # 코드 스타일 린트
       - run: npx prettier --check "src/**/*.{ts,tsx,json}"
+        if: runner.os != 'Windows' # Windows uses CRLF line endings
       # 빌드
       - run: yarn build-prod
       - name: Type Check
