@@ -1,6 +1,6 @@
 import { observable, action, computed } from "mobx";
 
-export type Page = "settings" | "staking";
+export type Page = "settings" | "staking" | "onboarding";
 
 export default class OverlayStore {
   @observable

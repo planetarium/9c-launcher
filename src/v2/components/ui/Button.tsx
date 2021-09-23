@@ -6,9 +6,10 @@ import { styled } from "src/v2/stitches.config";
 import type * as Stitches from "@stitches/react";
 
 const Button = styled(motion.button, {
-  backgroundColor: "$gray",
+  backgroundColor: "#4f4f4f",
   height: 72,
   margin: "16px 40px",
+  padding: "0 1em",
   fontSize: 32,
   border: "none",
   color: "White",
