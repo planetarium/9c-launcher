@@ -8,6 +8,7 @@ import { useStore } from "./utils/useStore";
 import LoginView from "./views/LoginView";
 import WelcomeView from "./views/WelcomeView";
 import RegisterView from "./views/RegisterView";
+import LobbyView from "./views/LobbyView";
 
 const Redirector = observer(() => {
   const account = useStore("account");
@@ -39,6 +40,7 @@ export default function Routes() {
       <Route path="/login" component={LoginView} />
       <Route path="/welcome" component={WelcomeView} />
       <Route path="/register" component={RegisterView} />
+      <Route path="/lobby" component={LobbyView} />
       <Route exact path="/" component={Redirector} />
       <Redirect from="*" to="/" />
     </Switch>
