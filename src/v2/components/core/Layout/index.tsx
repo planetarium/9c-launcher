@@ -13,6 +13,8 @@ import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { CSS, styled } from "src/v2/stitches.config";
 import background from "../../../resources/launcher-png.png";
+import OnboardingOverlay from "src/v2/views/OnboardingOverlay";
+import UserInfo from "./UserInfo";
 
 interface LayoutProps {
   sidebar?: boolean;
@@ -72,6 +74,7 @@ function Layout({
     {
       settings: <SettingsOverlay />,
       staking: <StakingOverlay />,
+      onboarding: <OnboardingOverlay />,
     }[overlay.page];
 
   const onOverlayOutsideClicked = (ev: React.MouseEvent<HTMLDivElement>) => {
@@ -81,7 +84,7 @@ function Layout({
 
   return (
     <Background>
-      {sidebar && <Sidebar css={css}>{children}</Sidebar>}
+      {sidebar ? <Sidebar css={css}>{children}</Sidebar> : <UserInfo />}
       <BottomControls>
         <StatusBar />
         <Menu />
