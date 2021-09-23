@@ -23,7 +23,6 @@ import {T} from "@transifex/react";
 
 import lobbyViewStyle from "./LobbyView.style";
 import {tmpName} from "tmp-promise";
-import moment from "moment";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
@@ -156,7 +155,8 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     }
 
     // sign tx.
-    const result = ipcRenderer.sendSync("sign-tx", accountStore.privateKey, txNonce, moment().utc().format(), fileName);
+    const result = ipcRenderer.sendSync("sign-tx", accountStore.privateKey, txNonce,
+        new Date().toISOString(), fileName);
     if (result.stderr != "")
     {
       setErrorMsg(result.stderr);
