@@ -434,6 +434,7 @@ type StandaloneQuery {
     monsterCollectionStatus: MonsterCollectionStatusType
     transaction: TransactionHeadlessQuery!
     activated(invitationCode: String!): Boolean!
+    activationKeyNonce(invitationCode: String!): String!
 }
 
 type StandaloneSubscription {

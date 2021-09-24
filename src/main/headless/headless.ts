@@ -1,16 +1,18 @@
-import { ChildProcess, execFileSync } from "child_process";
-import { ipcMain } from "electron";
-import { dirname, basename } from "path";
-import { userConfigStore, CUSTOM_SERVER, LOCAL_SERVER_URL } from "../../config";
-import { retry } from "@lifeomic/attempt";
-import { FetchError, HeadlessExitedError } from "../../errors";
-import { execute, sleep } from "../../utils";
-import fetch, { Response } from "electron-fetch";
-import { EventEmitter } from "ws";
-import { BlockMetadata } from "src/interfaces/block-header";
-import { KeyStore } from "./key-store";
-import { Validation } from "./validation";
-import { Apv } from "./apv";
+import {ChildProcess, execFileSync} from "child_process";
+import {ipcMain} from "electron";
+import {basename, dirname} from "path";
+import {CUSTOM_SERVER, LOCAL_SERVER_URL, userConfigStore} from "../../config";
+import {retry} from "@lifeomic/attempt";
+import {FetchError, HeadlessExitedError} from "../../errors";
+import {execute, sleep} from "../../utils";
+import fetch, {Response} from "electron-fetch";
+import {EventEmitter} from "ws";
+import {BlockMetadata} from "src/interfaces/block-header";
+import {KeyStore} from "./key-store";
+import {Validation} from "./validation";
+import {Apv} from "./apv";
+import {Tx} from "./tx";
+import {Action} from "./action";
 
 export const retryOptions = {
   delay: 100,
@@ -53,6 +55,16 @@ class Headless {
       let ret = await this.miningOption(mining);
       console.log(`set-mining: ${ret}`);
       event.returnValue = ret;
+    });
+
+    ipcMain.on("activate-account", async (event, activationKey: string, nonce: string, filePath: string) => {
+      console.log("activate-account")
+      event.returnValue = this.action.ActivateAccount(activationKey, nonce, filePath);
+    });
+
+    ipcMain.on("sign-tx", async (event, privateKey: string, nonce: number, timeStamp: string, filePath: string) => {
+      console.log("sign-tx")
+      event.returnValue = this.tx.Sign(privateKey, nonce, "4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce", timeStamp, filePath)
     });
   }
 
@@ -172,6 +184,14 @@ class Headless {
 
   public get apv(): Apv {
     return new Apv(this._path);
+  }
+
+  public get tx() : Tx {
+    return new Tx(this._path);
+  }
+
+  public get action() : Action {
+    return new Action(this._path);
   }
 
   public getTip(storeType: string, storePath: string): BlockMetadata | null {
