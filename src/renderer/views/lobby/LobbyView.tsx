@@ -25,6 +25,7 @@ import { ipcRenderer } from "electron";
 import { T } from "@transifex/react";
 
 import lobbyViewStyle from "./LobbyView.style";
+import { get } from "../../../config";
 
 interface ILobbyViewProps extends IStoreContainer {
   onLaunch: () => void;
@@ -182,7 +183,7 @@ const PreloadWaitingButton = () => {
 
 const GameStartButton = observer((props: ILobbyViewProps) => {
   const { accountStore, gameStore, standaloneStore } = props;
-  const [shouldAutostart, setShouldAutostart] = useState(true);
+  const [shouldAutostart, setShouldAutostart] = useState(get("LaunchPlayer"));
   const classes = lobbyViewStyle();
   const handleStartGame = () => {
     ipcRenderer.send("mixpanel-track-event", "Launcher/Unity Player Start");
