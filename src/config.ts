@@ -115,7 +115,7 @@ const schema: any = {
   },
   RemoteRpcServerHost: {
     type: "string",
-    default: "ec2-3-139-54-137.us-east-2.compute.amazonaws.com"
+    default: "ec2-18-190-48-27.us-east-2.compute.amazonaws.com"
   },
   RemoteRpcServerPort: {
     type: "integer",
@@ -123,7 +123,7 @@ const schema: any = {
   },
   RemoteGraphQLServerHost: {
     type: "string",
-    default: "ec2-3-139-54-137.us-east-2.compute.amazonaws.com"
+    default: "ec2-18-190-48-27.us-east-2.compute.amazonaws.com"
   },
   RemoteGraphQLServerPort: {
     type: "integer",
