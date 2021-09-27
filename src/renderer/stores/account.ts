@@ -79,5 +79,5 @@ export default class AccountStore implements IAccountStore {
   @action
   setActivationKey = (activationKey: string) => {
     this.activationKey = activationKey;
-  }
+  };
 }
