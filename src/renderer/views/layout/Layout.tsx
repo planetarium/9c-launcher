@@ -77,17 +77,20 @@ export const Layout: React.FC = observer(({ children }) => {
             />
         }
         <ul className={"LauncherClientOption"}>
-          <li>
-            <Button
-              startIcon={<img src={NCGLogo} />}
-              onClick={() => {
-                ipcRenderer.invoke("open transfer page");
-              }}
-              disabled={!accountStore.isMiningConfigEnded || !standaloneStore.Ready}
-            >
-              <T _str="Send NCG" _tags={transifexTags} />
-            </Button>
-          </li>
+          { getConfig("UseRemoteHeadless")
+              ? null
+              : <li>
+                  <Button
+                      startIcon={<img src={NCGLogo} />}
+                      onClick={() => {
+                        ipcRenderer.invoke("open transfer page");
+                      }}
+                      disabled={!accountStore.isMiningConfigEnded || !standaloneStore.Ready}
+                  >
+                    <T _str="Send NCG" _tags={transifexTags} />
+                  </Button>
+                </li>
+          }
           <li>
             <Button
               startIcon={<img src={patchNoteLogo} />}
