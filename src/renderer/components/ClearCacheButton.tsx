@@ -6,7 +6,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 const { dialog } = remote;
-const message = t("All block data will be deleted and re-downloaded again. This process can take up to 30 minutes. Are you sure to continue?");
+const message = t("All local chain data will be deleted and re-downloaded again. This process can take up to 30 minutes. Are you sure to continue?");
 
 interface IClearCacheButtonProps extends ButtonProps {
   disabled?: boolean;
