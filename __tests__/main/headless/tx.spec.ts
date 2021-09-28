@@ -18,17 +18,24 @@ describe("Tx", function () {
         assert.isEmpty(sign.stdout)
       });
     })
-    context("with ActivateAccount action", function () {
-      const actionPath = path.join(__dirname, "..", "..", "fixture", "activate_account.txt");
-      const txPath = path.join(__dirname, "..", "..", "fixture", "tx_activate_account.txt");
-      it("It returns dumped tx", function () {
-        let sign = tx.Sign(privateKey, 1, genesisHash, new Date(timeStamp).toISOString(), actionPath);
-        assert.isNotEmpty(sign.stdout);
-        assert.isEmpty(sign.stderr)
-        let result = sign.stdout;
-        const expected = fs.readFileSync(txPath, "utf-8");
-        assert.equal(result, expected);
-      });
+    context("with actions", function () {
+      const actions = [
+        "activate_account",
+        "monster_collect",
+        "claim_monster_collection_reward"
+      ]
+      actions.forEach((action) => {
+        const actionPath = path.join(__dirname, "..", "..", "fixture", `${action}.txt`);
+        const txPath = path.join(__dirname, "..", "..", "fixture", `tx_${action}.txt`);
+        it(`It returns dumped tx with ${action}`, function () {
+          let sign = tx.Sign(privateKey, 1, genesisHash, new Date(timeStamp).toISOString(), actionPath);
+          assert.isNotEmpty(sign.stdout);
+          assert.isEmpty(sign.stderr)
+          let result = sign.stdout;
+          const expected = fs.readFileSync(txPath, "utf-8");
+          assert.equal(result, expected);
+        });
+      })
     });
   });
 });
