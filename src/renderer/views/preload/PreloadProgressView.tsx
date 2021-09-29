@@ -160,21 +160,21 @@ const PreloadProgressView = observer(() => {
         break;
       case 0x02:
         console.error("Chain is too low. Automatically relaunch.");
-        ipcRenderer.send("relaunch standalone");
+        ipcRenderer.send("relaunch standalone", {reason: "Tip is low."});
         break;
       case 0x03:
         console.error("Chain's tip is stale. Automatically relaunch.");
-        ipcRenderer.send("relaunch standalone");
+        ipcRenderer.send("relaunch standalone", {reason: "Tip is stale."});
         break;
       case 0x04:
         console.error(
           "Haven't received any messages for some time. Automatically relaunch."
         );
-        ipcRenderer.send("relaunch standalone");
+        ipcRenderer.send("relaunch standalone", {reason: "Haven't received message."});
         break;
       case 0x05:
         console.error("Action Timeout. Automatically relaunch.");
-        ipcRenderer.send("relaunch standalone");
+        ipcRenderer.send("relaunch standalone", {reason: "Action Timeout."});
         break;
     }
   }, [nodeExceptionSubscriptionResult?.nodeException?.code]);
