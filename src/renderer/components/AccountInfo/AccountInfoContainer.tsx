@@ -5,12 +5,12 @@ import { CollectionSheetItem, Reward, RewardCategory } from "../../../collection
 import {
   useNodeStatusSubscriptionSubscription,
   useCollectionSheetQuery,
-  useCollectionStateSubscription,
-  useCollectionStatusSubscription,
   useStateQueryMonsterCollectionQuery,
   useGetTipQuery,
   useCollectionStatusQueryQuery,
   useGetAvatarAddressQuery,
+  useCollectionStateByAgentSubscription,
+  useCollectionStatusByAgentSubscription,
   MonsterCollectionRewardInfoType,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
@@ -42,10 +42,18 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   } = useCollectionSheetQuery();
   const {
     data: collectionStatus,
-  } = useCollectionStatusSubscription();
+  } = useCollectionStatusByAgentSubscription({
+    variables: {
+      address: accountStore.selectedAddress
+    }
+  });
   const {
     data: collectionState,
-  } = useCollectionStateSubscription();
+  } = useCollectionStateByAgentSubscription({
+    variables: {
+      address: accountStore.selectedAddress
+    }
+  });
   const { data: nodeStatus } = useNodeStatusSubscriptionSubscription();
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
@@ -55,7 +63,11 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   });
   const {
     data: collectionStatusQuery,
-  } = useCollectionStatusQueryQuery();
+  } = useCollectionStatusQueryQuery({
+    variables: {
+      address: accountStore.selectedAddress
+    }
+  });
 
   const { data: tip } = useGetTipQuery({
     pollInterval: 1000 * 3
@@ -70,7 +82,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     setCurrentReward(new Map<RewardCategory, number>());
-    const rewardInfos = collectionStatus?.monsterCollectionStatus?.rewardInfos
+    const rewardInfos = collectionStatus?.monsterCollectionStatusByAgent?.rewardInfos
       ?? collectionStatusQuery?.monsterCollectionStatus?.rewardInfos;
 
     const currentReward = new Map<RewardCategory, number>();
@@ -113,8 +125,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     let targetBlock = 0;
-    if (collectionState?.monsterCollectionState != null) {
-      targetBlock = Number(collectionState?.monsterCollectionState.claimableBlockIndex);
+    if (collectionState?.monsterCollectionStateByAgent != null) {
+      targetBlock = Number(collectionState?.monsterCollectionStateByAgent.claimableBlockIndex);
     } else {
       targetBlock = Number(collectionStateQuery?.stateQuery.monsterCollectionState?.claimableBlockIndex);
     }
@@ -124,8 +136,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   }, [collectionStateQuery, collectionState, tip]);
 
   useEffect(() => {
-    setCollectionLevel(Number(collectionState?.monsterCollectionState?.level ?? 0));
-    setReceivedBlockIndex(collectionState?.monsterCollectionState?.receivedBlockIndex ?? 0);
+    setCollectionLevel(Number(collectionState?.monsterCollectionStateByAgent?.level ?? 0));
+    setReceivedBlockIndex(collectionState?.monsterCollectionStateByAgent?.receivedBlockIndex ?? 0);
   }, [collectionState])
 
   useEffect(() => {
@@ -142,7 +154,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   };
 
   useEffect(() => {
-    applyCanClaim(collectionStatus?.monsterCollectionStatus?.rewardInfos);
+    applyCanClaim(collectionStatus?.monsterCollectionStatusByAgent?.rewardInfos);
   }, [collectionStatus])
 
   useEffect(() => {
@@ -158,7 +170,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     && nodeStatus?.nodeStatus?.preloadEnded
     && avatarAddressQuery != null
     && accountStore.isMiningConfigEnded) {
-    const mcStatus = collectionStatus?.monsterCollectionStatus;
+    const mcStatus = collectionStatus?.monsterCollectionStatusByAgent;
     return (
       <>
         <AccountInfo

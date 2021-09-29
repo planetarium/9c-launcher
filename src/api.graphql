@@ -291,8 +291,8 @@ subscription CollectionStatus {
   }
 }
 
-query CollectionStatusQuery {
-  monsterCollectionStatus {
+query CollectionStatusQuery($address: Address) {
+  monsterCollectionStatus(address: $address) {
     lockup
     fungibleAssetValue {
       quantity
@@ -312,3 +312,30 @@ query ActivationKeyNonce($encodedActivationKey: String!) {
 mutation StageTx($encodedTx: String!) {
   stageTx(payload: $encodedTx)
 }
+
+subscription CollectionStateByAgent($address: Address!) {
+  monsterCollectionStateByAgent(address: $address) {
+    address
+    expiredBlockIndex
+    level
+    rewardLevel
+    receivedBlockIndex
+    startedBlockIndex
+    claimableBlockIndex
+  }
+}
+
+subscription CollectionStatusByAgent($address: Address!) {
+  monsterCollectionStatusByAgent(address: $address) {
+    lockup
+    fungibleAssetValue {
+      quantity
+      currency
+    }
+    rewardInfos {
+      itemId
+      quantity
+    }
+  }
+}
+

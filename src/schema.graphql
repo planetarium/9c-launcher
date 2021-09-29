@@ -431,7 +431,7 @@ type StandaloneQuery {
     nextTxNonce(address: Address!): Long!
     getTx(txId: TxId!): TransactionType_1
     minerAddress: Address
-    monsterCollectionStatus: MonsterCollectionStatusType
+    monsterCollectionStatus(address: Address): MonsterCollectionStatusType
     transaction: TransactionHeadlessQuery!
     activated(invitationCode: String!): Boolean!
     activationKeyNonce(invitationCode: String!): String!
@@ -446,6 +446,8 @@ type StandaloneSubscription {
     nodeException: NodeExceptionType!
     monsterCollectionState: MonsterCollectionStateType!
     monsterCollectionStatus: MonsterCollectionStatusType!
+    monsterCollectionStatusByAgent(address: Address!): MonsterCollectionStatusType!
+    monsterCollectionStateByAgent(address: Address!): MonsterCollectionStateType!
 }
 
 enum StatType {
