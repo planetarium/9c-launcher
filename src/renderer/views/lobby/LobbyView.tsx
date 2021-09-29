@@ -155,7 +155,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     }
 
     // sign tx.
-    const result = ipcRenderer.sendSync("sign-tx", accountStore.privateKey, txNonce,
+    const result = ipcRenderer.sendSync("sign-tx", txNonce,
         new Date().toISOString(), fileName);
     if (result.stderr != "")
     {

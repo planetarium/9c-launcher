@@ -51,6 +51,15 @@ class Headless {
       }
     );
 
+    ipcMain.on(
+      "standalone/set-signer-private-key",
+      async (event, privateKey: string) => {
+        let ret = await this.setSignerPrivateKey(privateKey);
+        console.log(`set-signer-private-key: ${ret}`);
+        event.returnValue = ret;
+      }
+    );
+
     ipcMain.on("standalone/set-mining", async (event, mining: boolean) => {
       let ret = await this.miningOption(mining);
       console.log(`set-mining: ${ret}`);
@@ -72,9 +81,13 @@ class Headless {
       event.returnValue = this.action.ClaimMonsterCollectionReward(avatarAddress, filePath);
     });
 
-    ipcMain.on("sign-tx", async (event, privateKey: string, nonce: number, timeStamp: string, filePath: string) => {
+    ipcMain.on("sign-tx", async (event, nonce: number, timeStamp: string, filePath: string) => {
       console.log("sign-tx")
-      event.returnValue = this.tx.Sign(privateKey, nonce, "4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce", timeStamp, filePath)
+      if (this._signerPrivateKey == undefined || "")
+      {
+        throw new Error("set signer private key first.");
+      }
+      event.returnValue = this.tx.Sign(this._signerPrivateKey, nonce, "4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce", timeStamp, filePath)
     });
   }
 
