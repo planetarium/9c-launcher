@@ -413,6 +413,7 @@ type StandaloneMutation {
     activationStatus: ActivationStatusMutation
     action: ActionMutation
     stageTx(payload: String!): Boolean!
+    stageTxTxId(payload: String!): TxId!
     transfer(recipient: Address!, amount: String!, txNonce: Long!, currencyAddress: String! = "000000000000000000000000000000000000000A", memo: String): TxId
     transferGold(recipient: Address!, amount: String!): TxId
 }

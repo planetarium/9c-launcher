@@ -207,6 +207,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
             rewards={[...currentReward].map(x => ({ itemId: x[0], quantity: x[1] } as Reward))}
             onActionTxId={handleAcion}
             open={openDialog}
+            agentAddress={accountStore.selectedAddress}
           />
         ) : (
           <></>

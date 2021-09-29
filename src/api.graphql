@@ -339,3 +339,6 @@ subscription CollectionStatusByAgent($address: Address!) {
   }
 }
 
+mutation StageTxTxId($encodedTx: String!) {
+  stageTxTxId(payload: $encodedTx)
+}
