@@ -1,0 +1,24 @@
+.menu {
+  opacity: 0.9;
+  background-color: #1a1a1a;
+  box-sizing: border-box;
+  width: 160px;
+  padding: 10px;
+  margin-left: 20px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  color: white;
+  padding: 10px;
+  img {
+    padding-right: 1em;
+  }
+}
+
+.menuDivider {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid #979797;
+}
