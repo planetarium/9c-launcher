@@ -17,7 +17,7 @@ const Template: Story<React.PropsWithChildren<
 export const Primary = Template.bind({});
 Primary.args = {
   children: "OK",
-  type: "primary",
+  variant: "primary",
 };
 
 export const Cancel = Template.bind({});

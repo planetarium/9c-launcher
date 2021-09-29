@@ -84,7 +84,7 @@ export default function RetypePasswordForm({
             })}
           />
         )}
-        <Button layout type="primary" centered css={{ width: 200 }}>
+        <Button layout variant="primary" centered css={{ width: 200 }}>
           NEXT
         </Button>
       </AnimateSharedLayout>

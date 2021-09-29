@@ -32,6 +32,7 @@ const sectionVariants: Variants = {
     opacity: 1,
   },
 };
+
 interface SectionProps {
   next: () => void;
 }
@@ -48,7 +49,7 @@ function MiningSection({ next }: SectionProps) {
       <p>You can change this in setting later.</p>
       <ButtonBar>
         <Button>NO</Button>
-        <Button type="primary" onClick={next}>
+        <Button variant="primary" onClick={next}>
           OK
         </Button>
       </ButtonBar>

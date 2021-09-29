@@ -22,7 +22,7 @@ function WelcomeView() {
     <Layout sidebar css={welcomeStyles}>
       <img src={logo} />
       <h1>Welcome to Nine Chronicles!</h1>
-      <ButtonLink type="primary" to="/register">
+      <ButtonLink variant="primary" to="/register">
         Create New Account
       </ButtonLink>
     </Layout>

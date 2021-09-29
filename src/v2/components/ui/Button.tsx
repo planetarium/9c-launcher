@@ -15,7 +15,7 @@ const Button = styled(motion.button, {
   color: "White",
   fontWeight: "bold",
   variants: {
-    type: {
+    variant: {
       primary: {
         backgroundColor: "$primary",
       },
