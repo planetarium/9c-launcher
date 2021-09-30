@@ -4,7 +4,7 @@ import { split, ApolloLink } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 import { RetryLink } from "apollo-link-retry";
 import { WebSocketLink } from "apollo-link-ws";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { LOCAL_SERVER_URL, REMOTE_HEADLESS_URL, get } from "../config";
 import './App.scss';
 import { getMainDefinition } from "apollo-utilities";
@@ -12,11 +12,12 @@ import Main from "./pages/main/main";
 import { ApolloProvider } from "react-apollo";
 import IntroFacade from "./pages/facade/IntroFacade";
 import path from "path";
+import {ipcRenderer} from "electron";
 
 
 const baseUrl = get("UseRemoteHeadless") ? REMOTE_HEADLESS_URL : LOCAL_SERVER_URL;
 const wsLink = new WebSocketLink({
-  uri: `ws://${LOCAL_SERVER_URL}/graphql`,
+  uri: `ws://${baseUrl}/graphql`,
   options: {
     reconnect: true,
   },
@@ -66,9 +67,14 @@ const client = new ApolloClient({
 });
 
 const App: React.FC = () => {
+  const [agentAddress, setAgentAddress] = useState<string>("");
+  ipcRenderer.on("set miner address", (_, address) => {
+    console.log("set miner address Main.tsx")
+    setAgentAddress(address);
+  })
   return (
   <ApolloProvider client={client}>
-    <IntroFacade isFirst={isFileExsist} onCreateFile={createFile} />
+    <IntroFacade isFirst={isFileExsist} onCreateFile={createFile} agentAddress={agentAddress}/>
     </ApolloProvider>
   )
 };

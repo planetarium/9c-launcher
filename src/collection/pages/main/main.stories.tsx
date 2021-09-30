@@ -17,7 +17,7 @@ export default {
   component: Main,
 } as Meta;
 
-const Template: Story = () => <Main />;
+const Template: Story = () => <Main signer={address} addressLoading={false}/>;
 const address = "0x590c887BDac8d957Ca5d3c1770489Cf2aFBd868E";
 
 export const Primary = Template.bind({});

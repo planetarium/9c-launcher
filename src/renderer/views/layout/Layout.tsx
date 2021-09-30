@@ -70,7 +70,7 @@ export const Layout: React.FC = observer(({ children }) => {
           minedBlock={Number(minedBlocks?.length)}
           onReward={() => { }}
           onOpenWindow={() => {
-            ipcRenderer.invoke("open collection page");
+            ipcRenderer.invoke("open collection page", accountStore.selectedAddress);
           }}
         />
         <ul className={"LauncherClientOption"}>

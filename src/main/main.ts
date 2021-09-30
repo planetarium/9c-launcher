@@ -476,12 +476,16 @@ function initializeIpc() {
     }
   );
 
-  ipcMain.handle("open collection page", async () => {
+  ipcMain.handle("open collection page", async (_, selectedAddress) => {
     if (collectionWin != null) {
       collectionWin.focus();
       return;
     }
     collectionWin = createCollectionWindow();
+    collectionWin.webContents.on("did-finish-load", () => {
+      collectionWin!.webContents.send("set miner address", selectedAddress);
+    });
+
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
