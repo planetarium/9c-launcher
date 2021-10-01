@@ -36,7 +36,6 @@ describe("Action", function () {
       const fileName = tmpNameSync();
       const levels = [
         -1,
-        0,
         8
       ]
       levels.forEach((level) => {
