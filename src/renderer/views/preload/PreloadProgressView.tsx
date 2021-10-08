@@ -44,7 +44,7 @@ const PreloadProgressView = observer(() => {
 
   const getCurrentStepStatusMessage = () => {
     if (!(0 < currentStep && currentStep <= statusMessage.length)) {
-      return "Failed to get message for current step";
+      return Array(2).fill("Failed to get message for current step");
     }
 
     return statusMessage[currentStep - 1];
