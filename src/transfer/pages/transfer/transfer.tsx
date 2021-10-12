@@ -91,7 +91,10 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
           <T _str="User Address" _tags={transifexTags} />
         </TransferTitle>
         <TransferSecondTitle>
-          <T _str="Enter the Nine Chronicle user address, not the ETH address." _tags={transifexTags} />
+          <T _str="Enter the Nine Chronicle user address. " _tags={transifexTags} />
+          <b style={{color: "#ff5555"}}>
+            <T _str="Not the ETH address." _tags={transifexTags} />
+          </b>
         </TransferSecondTitle>
         <TransferInput
           type="text"
