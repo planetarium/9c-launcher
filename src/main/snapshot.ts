@@ -17,9 +17,7 @@ export type Epoch = {
 };
 
 export type DownloadStatus = {
-  [name: string]: {
-    percent: number;
-  };
+  [name: string]: IDownloadProgress;
 };
 
 export const getCurrentEpoch = (storePath: string): Epoch => {
@@ -158,12 +156,11 @@ export async function downloadSnapshot(
         basePath + `/${downloadTargetName}`,
         savingPath,
         (status) => {
-          progressDict[downloadTargetName] = {
-            percent: status.percent,
-          };
+          progressDict[downloadTargetName] = status;
           const value = Object.values(progressDict);
-          const sum = value.reduce((a, b) => a + b.percent, 0);
-          status.percent = sum / target.length;
+          const progressSum = value.reduce((a, b) => a + b.transferredBytes, 0);
+          const totalSum = value.reduce((a, b) => a + b.totalBytes, 0);
+          status.percent = progressSum * 100 / totalSum;
           onProgress(status);
         },
         token
