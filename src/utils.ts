@@ -3,7 +3,7 @@ import checkDiskSpace from "check-disk-space";
 import path from "path";
 import fs from "fs";
 import axios from "axios";
-import * as rax from 'retry-axios';
+import * as rax from "retry-axios";
 import stream from "stream";
 import { promisify } from "util";
 import { IDownloadProgress } from "./interfaces/ipc";
@@ -103,7 +103,18 @@ export async function cancellableDownload(
   onProgress: (arg0: IDownloadProgress) => void,
   token: CancellationToken
 ): Promise<void> {
+  const tempFilePath = `${downloadPath}.part`;
+
   try {
+    const startingBytes =
+      fs.existsSync(tempFilePath) && fs.statSync(tempFilePath).size;
+    const headers =
+      startingBytes
+        ? {
+            Range: `bytes=${startingBytes}-`,
+          }
+        : null;
+
     const axiosCts = axios.CancelToken.source();
     token.onCancelled((_) => axiosCts.cancel());
 
@@ -112,13 +123,14 @@ export async function cancellableDownload(
       cancelToken: axiosCts.token,
       method: "get",
       responseType: "stream",
+      headers,
       raxConfig: {
         retry: 5, // number of retry when facing 400 or 500
-        onRetryAttempt: err => {
+        onRetryAttempt: (err) => {
           const cfg = rax.getConfig(err);
           console.log(`Retry attempt #${cfg?.currentRetryAttempt}`); // track current trial
-        }
-      }
+        },
+      },
     });
     const totalBytes = parseInt(res.headers["content-length"]);
     let transferredBytes: number = 0;
@@ -130,7 +142,8 @@ export async function cancellableDownload(
         transferredBytes,
       });
     });
-    await pipeline(res.data, fs.createWriteStream(downloadPath));
+    await pipeline(res.data, fs.createWriteStream(tempFilePath, { flags: "a" }));
+    fs.renameSync(tempFilePath, downloadPath);
   } catch (error) {
     throw new CancellableDownloadFailedError(url, downloadPath);
   }
