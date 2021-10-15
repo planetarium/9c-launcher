@@ -114,13 +114,11 @@ jobs:
       - run: yarn
       # 코드 스타일 린트
       - run: npx pretty-quick --check --branch "${{ github.base_ref }}"
-      - name: Generate GraphQL types
-        run: yarn codegen
+      # 빌드
+      - run: yarn build-prod
       - name: Type Check
         run: npx tsc --noEmit
         if: github.event_name == 'pull_request'
-      # 빌드
-      - run: yarn build-prod
       # 이전 릴리스 버전으로부터 config.json 복사
       - run: |
           set -ex
