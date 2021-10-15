@@ -144,14 +144,15 @@ export async function cancellableDownload(
   url: string,
   downloadPath: string,
   onProgress: (arg0: IDownloadProgress) => void,
-  token: CancellationToken
+  token: CancellationToken,
+  partial: boolean = true,
 ): Promise<void> {
   const tempFilePath = `${downloadPath}.part`;
   const metaFilePath = `${downloadPath}.meta`;
 
   try {
     const metadata: DownloadMetadata | false =
-      fs.existsSync(metaFilePath) &&
+      partial && fs.existsSync(metaFilePath) &&
       JSON.parse(fs.readFileSync(metaFilePath).toString());
     let startingBytes =
       metadata && fs.existsSync(tempFilePath) && fs.statSync(tempFilePath).size;
@@ -194,6 +195,7 @@ export async function cancellableDownload(
     fs.renameSync(tempFilePath, downloadPath);
     fs.unlinkSync(metaFilePath);
   } catch (error) {
+    console.error("Download failed: ", error);
     throw new CancellableDownloadFailedError(url, downloadPath);
   }
 }

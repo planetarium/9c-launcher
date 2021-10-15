@@ -108,7 +108,7 @@ export async function downloadMetadata(
   const downloadPath = basePath + "/" + downloadFileName;
 
   try {
-    await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
+    await cancellableDownload(downloadPath, savingPath, (_) => {}, token, false);
     token.throwIfCancelled();
 
     let meta = await fs.promises.readFile(savingPath, "utf-8");
