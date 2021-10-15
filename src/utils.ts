@@ -2,7 +2,7 @@ import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import checkDiskSpace from "check-disk-space";
 import path from "path";
 import fs from "fs";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import * as rax from "retry-axios";
 import stream from "stream";
 import { promisify } from "util";
@@ -97,6 +97,49 @@ export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export const downloadAxios = axios.create({
+  responseType: "stream",
+  raxConfig: {
+    retry: 5, // number of retry when facing 400 or 500
+    onRetryAttempt(err) {
+      const cfg = rax.getConfig(err);
+      if (err.response?.status === 412) {
+      }
+      console.log(`Retry attempt #${cfg?.currentRetryAttempt}`); // track current trial
+    },
+  },
+});
+
+downloadAxios.interceptors.response.use(
+  (res) => res,
+  (err: AxiosError) => {
+    if (err.response?.status == 412) {
+      // Precondition Failed (ETag doesn't match)
+      err.config.headers["Range"] = null;
+      err.config.headers["If-Match"] = null;
+      err.config.onETagFailed?.(err);
+      return downloadAxios.request(err.config);
+    }
+    return Promise.reject(err);
+  }
+);
+
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    /**
+     * If the ETag doesn't match, calls this function after removing headers.
+     * It will be ignored unless you're using `downloadAxios`.
+     */
+    onETagFailed?(err: AxiosError): void;
+  }
+}
+
+rax.attach(downloadAxios);
+
+interface DownloadMetadata {
+  etag: string;
+}
+
 export async function cancellableDownload(
   url: string,
   downloadPath: string,
@@ -104,34 +147,35 @@ export async function cancellableDownload(
   token: CancellationToken
 ): Promise<void> {
   const tempFilePath = `${downloadPath}.part`;
+  const metaFilePath = `${downloadPath}.meta`;
 
   try {
-    const startingBytes =
-      fs.existsSync(tempFilePath) && fs.statSync(tempFilePath).size;
-    const headers =
-      startingBytes
-        ? {
-            Range: `bytes=${startingBytes}-`,
-          }
-        : null;
+    const metadata: DownloadMetadata | false =
+      fs.existsSync(metaFilePath) &&
+      JSON.parse(fs.readFileSync(metaFilePath).toString());
+    let startingBytes =
+      metadata && fs.existsSync(tempFilePath) && fs.statSync(tempFilePath).size;
+    const headers = {
+      Range: startingBytes ? `bytes=${startingBytes}-` : null,
+      "If-Match": metadata ? metadata.etag : null,
+    };
 
     const axiosCts = axios.CancelToken.source();
     token.onCancelled((_) => axiosCts.cancel());
 
-    rax.attach();
-    const res = await axios(url, {
+    const res = await downloadAxios.get(url, {
       cancelToken: axiosCts.token,
-      method: "get",
-      responseType: "stream",
       headers,
-      raxConfig: {
-        retry: 5, // number of retry when facing 400 or 500
-        onRetryAttempt: (err) => {
-          const cfg = rax.getConfig(err);
-          console.log(`Retry attempt #${cfg?.currentRetryAttempt}`); // track current trial
-        },
+      onETagFailed() {
+        // header will be edited by the interceptor
+        startingBytes = false;
+        fs.unlinkSync(tempFilePath);
+        fs.unlinkSync(metaFilePath);
       },
     });
+
+    fs.writeFileSync(metaFilePath, JSON.stringify({ etag: res.headers.etag }));
+
     const totalBytes = parseInt(res.headers["content-length"]);
     let transferredBytes: number = 0;
     res.data.on("data", (chunk: string | any[]) => {
@@ -142,8 +186,13 @@ export async function cancellableDownload(
         transferredBytes,
       });
     });
-    await pipeline(res.data, fs.createWriteStream(tempFilePath, { flags: "a" }));
+
+    await pipeline(
+      res.data,
+      fs.createWriteStream(tempFilePath, { flags: "a" })
+    );
     fs.renameSync(tempFilePath, downloadPath);
+    fs.unlinkSync(metaFilePath);
   } catch (error) {
     throw new CancellableDownloadFailedError(url, downloadPath);
   }
