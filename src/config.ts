@@ -132,6 +132,10 @@ const schema: any = {
   UseRemoteHeadless : {
     type: "boolean",
     default: false
+  },
+  LaunchPlayer: {
+    type: "boolean",
+    default: true,
   }
 }
 
@@ -218,7 +222,7 @@ export function getBlockChainStorePath(): string {
   )
 }
 
-export const REQUIRED_DISK_SPACE = 2 * 1000 * 1000 * 1000;
+export const REQUIRED_DISK_SPACE = 20 * 1000 * 1000 * 1000;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
 export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";

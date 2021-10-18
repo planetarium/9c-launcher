@@ -29,4 +29,5 @@ export interface IConfig {
   RemoteGraphQLServerHost: string;
   RemoteGraphQLServerPort: number;
   UseRemoteHeadless: boolean;
+  LaunchPlayer: boolean;
 }
