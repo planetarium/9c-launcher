@@ -200,7 +200,7 @@ export async function cancellableDownload(
       },
     });
 
-    await fs.promises.writeFile(metaFilePath, JSON.stringify({ etag: res.headers.etag }));
+    if (partial) await fs.promises.writeFile(metaFilePath, JSON.stringify({ etag: res.headers.etag }));
 
     const totalBytes = parseInt(res.headers["content-length"]);
     let transferredBytes: number = 0;
@@ -217,7 +217,7 @@ export async function cancellableDownload(
       res.data,
       fs.createWriteStream(downloadPath, { flags: "a" })
     );
-    await fs.promises.writeFile(metaFilePath, JSON.stringify({ etag: res.headers.etag, complete: true }));
+    if (partial) await fs.promises.writeFile(metaFilePath, JSON.stringify({ etag: res.headers.etag, complete: true }));
     console.log("Complete: ", url);
   } catch (error) {
     console.error("Download failed: ", error);
