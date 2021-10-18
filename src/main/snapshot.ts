@@ -160,7 +160,7 @@ export async function downloadSnapshot(
           const value = Object.values(progressDict);
           const progressSum = value.reduce((a, b) => a + b.transferredBytes, 0);
           const totalSum = value.reduce((a, b) => a + b.totalBytes, 0);
-          status.percent = progressSum * 100 / totalSum;
+          status.percent = progressSum / totalSum;
           onProgress(status);
         },
         token
