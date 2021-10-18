@@ -44,7 +44,7 @@ const PreloadProgressView = observer(() => {
 
   const getCurrentStepStatusMessage = () => {
     if (!(0 < currentStep && currentStep <= statusMessage.length)) {
-      return "Failed to get message for current step";
+      return Array(2).fill("Failed to get message for current step");
     }
 
     return statusMessage[currentStep - 1];
@@ -63,7 +63,7 @@ const PreloadProgressView = observer(() => {
         ? completedMessage
         : noPeerMessage;
     } else {
-      return getCurrentStepStatusMessage().concat(
+      return getCurrentStepStatusMessage()[1].concat(
         ` ... (${currentStep}/${totalStep}) ${Math.floor(progress)}%`
       );
     }
@@ -138,7 +138,7 @@ const PreloadProgressView = observer(() => {
   useEffect(() => {
     ipcRenderer.send(
       "mixpanel-track-event",
-      `Launcher/${getCurrentStepStatusMessage()}`
+      `Launcher/${getCurrentStepStatusMessage()[0]}`
     );
   }, [currentStep]);
 
@@ -160,21 +160,21 @@ const PreloadProgressView = observer(() => {
         break;
       case 0x02:
         console.error("Chain is too low. Automatically relaunch.");
-        ipcRenderer.send("relaunch standalone");
+        ipcRenderer.send("relaunch standalone", {reason: "Tip is low."});
         break;
       case 0x03:
         console.error("Chain's tip is stale. Automatically relaunch.");
-        ipcRenderer.send("relaunch standalone");
+        ipcRenderer.send("relaunch standalone", {reason: "Tip is stale."});
         break;
       case 0x04:
         console.error(
           "Haven't received any messages for some time. Automatically relaunch."
         );
-        ipcRenderer.send("relaunch standalone");
+        ipcRenderer.send("relaunch standalone", {reason: "Haven't received message."});
         break;
       case 0x05:
         console.error("Action Timeout. Automatically relaunch.");
-        ipcRenderer.send("relaunch standalone");
+        ipcRenderer.send("relaunch standalone", {reason: "Action Timeout."});
         break;
     }
   }, [nodeExceptionSubscriptionResult?.nodeException?.code]);
@@ -236,16 +236,16 @@ const PreloadProgressView = observer(() => {
 });
 
 const statusMessage = [
-  t("Validating Snapshot"),
-  t("Downloading Snapshot"),
-  t("Downloading State Snapshot"),
-  t("Extracting Snapshot"),
-  t("Starting Headless"),
-  t("Downloading Block Hashes"),
-  t("Downloading Blocks"),
-  t("Verifying Block Headers"),
-  t("Downloading States"),
-  t("Executing Actions"),
+  ["Validating Snapshot", t("Validating Snapshot")],
+  ["Downloading Snapshot", t("Downloading Snapshot")],
+  ["Downloading State Snapshot", t("Downloading State Snapshot")],
+  ["Extracting Snapshot", t("Extracting Snapshot")],
+  ["Starting Headless", t("Starting Headless")],
+  ["Downloading Block Hashes", t("Downloading Block Hashes")],
+  ["Downloading Blocks", t("Downloading Blocks")],
+  ["Verifying Block Headers", t("Verifying Block Headers")],
+  ["Downloading States", t("Downloading States")],
+  ["Executing Actions", t("Executing Actions")],
 ] as const;
 
 const getProgress = (

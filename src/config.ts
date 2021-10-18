@@ -115,7 +115,7 @@ const schema: any = {
   },
   RemoteRpcServerHost: {
     type: "string",
-    default: "ec2-3-139-54-137.us-east-2.compute.amazonaws.com"
+    default: "ec2-18-190-48-27.us-east-2.compute.amazonaws.com"
   },
   RemoteRpcServerPort: {
     type: "integer",
@@ -123,7 +123,7 @@ const schema: any = {
   },
   RemoteGraphQLServerHost: {
     type: "string",
-    default: "ec2-3-139-54-137.us-east-2.compute.amazonaws.com"
+    default: "ec2-18-190-48-27.us-east-2.compute.amazonaws.com"
   },
   RemoteGraphQLServerPort: {
     type: "integer",
@@ -132,6 +132,10 @@ const schema: any = {
   UseRemoteHeadless : {
     type: "boolean",
     default: false
+  },
+  LaunchPlayer: {
+    type: "boolean",
+    default: true,
   }
 }
 
@@ -150,11 +154,13 @@ const GraphQLServer = (): string => {
 };
 
 const RemoteGraphQLServer = (): string => {
-  return `${RemoteHeadlessUrl}/graphql`;
+  return `${HeadlessUrl}/graphql`;
 }
 
-const RemoteHeadlessUrl = (): string => {
-  return `${get("RemoteGraphQLServerHost")}:${get("RemoteGraphQLServerPort")}`;
+const HeadlessUrl = (): string => {
+  return get("UseRemoteHeadless")
+    ? `${get("RemoteGraphQLServerHost")}:${get("RemoteGraphQLServerPort")}`
+    : LocalServerUrl();
 }
 
 const RpcServerHost = (): { host: string; notDefault: boolean } => {
@@ -218,13 +224,13 @@ export function getBlockChainStorePath(): string {
   )
 }
 
-export const REQUIRED_DISK_SPACE = 2 * 1000 * 1000 * 1000;
+export const REQUIRED_DISK_SPACE = 20 * 1000 * 1000 * 1000;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
 export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
-export const REMOTE_HEADLESS_URL = RemoteHeadlessUrl();
+export const HEADLESS_URL = HeadlessUrl();
 export const REMOTE_GRAPHQL_SERVER_URL = RemoteGraphQLServer();
 export const LOCAL_SERVER_HOST: string = LocalServerHost().host;
 export const LOCAL_SERVER_PORT: number = LocalServerPort().port;
