@@ -154,11 +154,13 @@ const GraphQLServer = (): string => {
 };
 
 const RemoteGraphQLServer = (): string => {
-  return `${RemoteHeadlessUrl}/graphql`;
+  return `${HeadlessUrl}/graphql`;
 }
 
-const RemoteHeadlessUrl = (): string => {
-  return `${get("RemoteGraphQLServerHost")}:${get("RemoteGraphQLServerPort")}`;
+const HeadlessUrl = (): string => {
+  return get("UseRemoteHeadless")
+    ? `${get("RemoteGraphQLServerHost")}:${get("RemoteGraphQLServerPort")}`
+    : LocalServerUrl();
 }
 
 const RpcServerHost = (): { host: string; notDefault: boolean } => {
@@ -228,7 +230,7 @@ export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
-export const REMOTE_HEADLESS_URL = RemoteHeadlessUrl();
+export const HEADLESS_URL = HeadlessUrl();
 export const REMOTE_GRAPHQL_SERVER_URL = RemoteGraphQLServer();
 export const LOCAL_SERVER_HOST: string = LocalServerHost().host;
 export const LOCAL_SERVER_PORT: number = LocalServerPort().port;
