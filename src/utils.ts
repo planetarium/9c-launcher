@@ -103,8 +103,6 @@ export const downloadAxios = axios.create({
     retry: 5, // number of retry when facing 400 or 500
     onRetryAttempt(err) {
       const cfg = rax.getConfig(err);
-      if (err.response?.status === 412) {
-      }
       console.log(`Retry attempt #${cfg?.currentRetryAttempt}`); // track current trial
     },
   },
@@ -165,7 +163,7 @@ export async function cancellableDownload(
     token.onCancelled((_) => axiosCts.cancel());
     
     // Remove invalid or non-partial download fragments.
-    if (!metadata && fs.existsSync(downloadPath)) fs.promises.unlink(downloadPath);
+    if (!metadata && fs.existsSync(downloadPath)) await fs.promises.unlink(downloadPath);
 
     if (metadata && metadata.complete) {
       // Returns 304 if not changed
