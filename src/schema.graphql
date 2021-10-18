@@ -11,7 +11,7 @@ type Action {
 
 type ActionMutation {
     createAvatar(avatarName: String!, avatarIndex: Int!, hairIndex: Int!, lensIndex: Int!, earIndex: Int!, tailIndex: Int!): TxId!
-    hackAndSlash(avatarAddress: Address!, worldId: Int!, stageId: Int!, costumeIds: [Guid], equipmentIds: [Guid], consumableIds: [Guid]): TxId!
+    hackAndSlash(avatarAddress: Address!, worldId: Int!, stageId: Int!, rankingMapAddress: Address!, costumeIds: [Guid], equipmentIds: [Guid], consumableIds: [Guid]): TxId!
     combinationEquipment(avatarAddress: Address!, recipeId: Int!, slotIndex: Int!, subRecipeId: Int): TxId!
     itemEnhancement(avatarAddress: Address!, itemId: Guid!, materialId: Guid!, slotIndex: Int!): TxId!
     dailyReward(avatarAddress: Address!): TxId!
@@ -48,7 +48,9 @@ type AppProtocolVersionType {
 }
 
 type ArenaInfoType {
+    agentAddress: Address!
     avatarAddress: Address!
+    avatarName: String!
     arenaRecord: ArenaRecordType!
     active: Boolean!
     dailyChallengeCount: Int!
@@ -434,6 +436,7 @@ type StandaloneQuery {
     monsterCollectionStatus: MonsterCollectionStatusType
     transaction: TransactionHeadlessQuery!
     activated(invitationCode: String!): Boolean!
+    activationKeyNonce(invitationCode: String!): String!
 }
 
 type StandaloneSubscription {
