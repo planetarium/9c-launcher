@@ -115,8 +115,8 @@ downloadAxios.interceptors.response.use(
   (err: AxiosError) => {
     if (err.response?.status == 412) {
       // Precondition Failed (ETag doesn't match)
-      err.config.headers["Range"] = null;
-      err.config.headers["If-Match"] = null;
+      delete err.config.headers["Range"];
+      delete err.config.headers["If-Match"];
       err.config.onETagFailed?.(err);
       return downloadAxios.request(err.config);
     }
@@ -156,10 +156,10 @@ export async function cancellableDownload(
       JSON.parse(fs.readFileSync(metaFilePath).toString());
     let startingBytes =
       metadata && fs.existsSync(tempFilePath) && fs.statSync(tempFilePath).size;
-    const headers = {
-      Range: startingBytes ? `bytes=${startingBytes}-` : null,
-      "If-Match": metadata ? metadata.etag : null,
-    };
+    const headers = metadata && startingBytes ? {
+      Range: `bytes=${startingBytes}-`,
+      "If-Match": metadata.etag,
+    } : undefined;
 
     const axiosCts = axios.CancelToken.source();
     token.onCancelled((_) => axiosCts.cancel());
@@ -170,7 +170,7 @@ export async function cancellableDownload(
       onETagFailed() {
         // header will be edited by the interceptor
         startingBytes = false;
-        fs.unlinkSync(tempFilePath);
+        if(fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
         fs.unlinkSync(metaFilePath);
       },
     });
