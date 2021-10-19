@@ -476,10 +476,10 @@ function initializeIpc() {
       collectionWin.focus();
       return;
     }
+    console.log(`open collection page address: ${selectedAddress}`);
     collectionWin = await createCollectionWindow();
-    collectionWin.webContents.on("did-finish-load", () => {
-      collectionWin!.webContents.send("set miner address", selectedAddress);
-    });
+    console.log(`call set miner address: ${selectedAddress}`);
+    collectionWin!.webContents.send("set miner address", selectedAddress);
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });

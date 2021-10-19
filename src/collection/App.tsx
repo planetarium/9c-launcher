@@ -5,7 +5,7 @@ import { createHttpLink } from "apollo-link-http";
 import { RetryLink } from "apollo-link-retry";
 import { WebSocketLink } from "apollo-link-ws";
 import React, { useState } from "react";
-import { LOCAL_SERVER_URL, HEADLESS_URL } from "../config";
+import { HEADLESS_URL } from "../config";
 import './App.scss';
 import { getMainDefinition } from "apollo-utilities";
 import Main from "./pages/main/main";
@@ -15,7 +15,7 @@ import path from "path";
 import { ipcRenderer } from "electron";
 
 const wsLink = new WebSocketLink({
-  uri: `ws://${LOCAL_SERVER_URL}/graphql`,
+  uri: `ws://${HEADLESS_URL}/graphql`,
   options: {
     reconnect: true,
   },
