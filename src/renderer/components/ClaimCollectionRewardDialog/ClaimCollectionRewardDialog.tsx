@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import {
   useClaimCollectionRewardMutation,
   useGetNextTxNonceQuery,
-  useStageTxTxIdMutation,
+  useStageTxV2Mutation,
 } from "../../../generated/graphql";
 import { Reward } from "../../../collection/types"
 import CharSelectDialog from "./CharSelectDialog/CharSelectDialog";
@@ -21,7 +21,7 @@ export type Props = {
 const ClaimCollectionRewardDialog: React.FC<Props> = (props: Props) => {
   const {rewards, avatar, tip, onActionTxId, agentAddress} = props;
   const [step, setStep] = useState<number>(0);
-  const [claim] = useStageTxTxIdMutation();
+  const [claim] = useStageTxV2Mutation();
 
   const { refetch: txNonceRefetch } = useGetNextTxNonceQuery({
     variables: {
@@ -40,8 +40,8 @@ const ClaimCollectionRewardDialog: React.FC<Props> = (props: Props) => {
     const result = await claim({variables: {
       encodedTx: tx
     }});
-    console.log(`result: ${result.data?.stageTxTxId}`);
-    onActionTxId(result.data?.stageTxTxId);
+    console.log(`result: ${result.data?.stageTxV2}`);
+    onActionTxId(result.data?.stageTxV2);
   }
 
   switch(step) {

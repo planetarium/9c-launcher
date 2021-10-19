@@ -17,7 +17,7 @@ import {
   useCollectionStateByAgentSubscription,
   useCollectionStatusByAgentSubscription,
   useGetNextTxNonceQuery,
-  useStageTxTxIdMutation,
+  useStageTxV2Mutation,
   MonsterCollectionStatusType,
 } from "../../../generated/graphql";
 import { CollectionItemModel } from "../../models/collection";
@@ -68,7 +68,7 @@ const Main: React.FC<Props> = (props: Props) => {
   });
   const [
     collect,
-  ] = useStageTxTxIdMutation({
+  ] = useStageTxV2Mutation({
     variables: {
       encodedTx: tx
     }
@@ -300,7 +300,7 @@ const Main: React.FC<Props> = (props: Props) => {
       alert("failed monster collect.");
       return;
     }
-    return collectionResult.data.stageTxTxId as string;
+    return collectionResult.data.stageTxV2 as string;
   };
 
   const handleSubmit = () => {
