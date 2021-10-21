@@ -70,12 +70,12 @@ const LoginView = observer(
             routerStore.push("lobby/preload");
             standaloneStore.setPrivateKeyEnded(true);
             accountStore.setMiningConfigStatus(true);
-            ipcRenderer.sendSync("standalone/set-signer-private-key", accountStore.privateKey);
         }
         else
         {
             routerStore.push("/login/mining");
         }
+        ipcRenderer.send("standalone/set-signer-private-key", accountStore.privateKey);
       }
     }, [unprotectedPrivateKey]);
 
