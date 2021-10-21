@@ -471,12 +471,15 @@ function initializeIpc() {
     }
   );
 
-  ipcMain.handle("open collection page", async () => {
+  ipcMain.handle("open collection page", async (_, selectedAddress) => {
     if (collectionWin != null) {
       collectionWin.focus();
       return;
     }
+    console.log(`open collection page address: ${selectedAddress}`);
     collectionWin = await createCollectionWindow();
+    console.log(`call set miner address: ${selectedAddress}`);
+    collectionWin!.webContents.send("set miner address", selectedAddress);
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });

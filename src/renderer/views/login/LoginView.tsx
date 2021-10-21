@@ -70,6 +70,7 @@ const LoginView = observer(
             routerStore.push("lobby/preload");
             standaloneStore.setPrivateKeyEnded(true);
             accountStore.setMiningConfigStatus(true);
+            ipcRenderer.sendSync("standalone/set-signer-private-key", accountStore.privateKey);
         }
         else
         {

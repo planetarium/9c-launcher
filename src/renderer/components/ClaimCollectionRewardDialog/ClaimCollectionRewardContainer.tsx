@@ -12,10 +12,11 @@ type Props = {
   avatarAddressQuery: GetAvatarAddressQuery;
   tip: number;
   onActionTxId: (txId: string) => void;
+  agentAddress: string;
 }
 
 const ClaimCollectionRewardContainer: React.FC<Props> = (props: Props) => {
-  const {open, rewards, onActionTxId, avatarAddressQuery: data, tip} = props;
+  const {open, rewards, onActionTxId, avatarAddressQuery: data, tip, agentAddress} = props;
 
   console.log(`avatarInfo: ${JSON.stringify(data?.stateQuery.agent?.avatarStates)}`)
 
@@ -30,7 +31,9 @@ const ClaimCollectionRewardContainer: React.FC<Props> = (props: Props) => {
         tip={tip}
         rewards={rewards}
         avatar={data!.stateQuery.agent!.avatarStates!.map(x => {return {address: x.address, name: x.name, updatedAt: x.updatedAt}})}
-        onActionTxId={onActionTxId}/>
+        onActionTxId={onActionTxId}
+        agentAddress={agentAddress}
+          />
         : <div>You need create avatar first</div>
       }
 

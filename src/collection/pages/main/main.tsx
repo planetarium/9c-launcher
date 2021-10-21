@@ -11,12 +11,13 @@ import LoadingDialog from "../../components/LoadingDialog/LoadingDialog";
 import {
   useCollectMutation,
   useGetTipQuery,
-  useMinerAddressQuery,
   useCollectionSheetWithStateQuery,
-  useCollectionStatusSubscription,
   useCollectionStatusQueryQuery,
-  useCollectionStateSubscription,
   useStateQueryMonsterCollectionQuery,
+  useCollectionStateByAgentSubscription,
+  useCollectionStatusByAgentSubscription,
+  useGetNextTxNonceQuery,
+  useStageTxV2Mutation,
   MonsterCollectionStatusType,
 } from "../../../generated/graphql";
 import { CollectionItemModel } from "../../models/collection";
@@ -24,6 +25,9 @@ import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedSt
 import CollectionPanel from "../../components/CollectionPanel/CollectionPanel";
 import RemainingDisplay from "../../components/RemainingDisplay/RemainingDisplay";
 import LoadingPage from "./loading";
+import {ipcRenderer} from "electron";
+import {tmpName} from "tmp-promise";
+import useStores from "../../../hooks/useStores";
 
 const getCollectionPhase = (level: number, collectionLevel: number): CollectionPhase => {
   if (level === collectionLevel + 1) return CollectionPhase.CANDIDATE;
@@ -32,8 +36,13 @@ const getCollectionPhase = (level: number, collectionLevel: number): CollectionP
   else return CollectionPhase.COLLECTED;
 };
 
-const Main: React.FC = () => {
-  const [agentAddress, setAgentAddress] = useState<string>("");
+export type Props = {
+  signer: string,
+  addressLoading: boolean,
+}
+
+const Main: React.FC<Props> = (props: Props) => {
+  const {signer, addressLoading} = props;
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
   const [cartList, setCartList] = useState<CollectionItemModel[]>([]);
   const [tempCartList, setTempCartList] = useState<CollectionItemModel[]>([]);
@@ -47,37 +56,59 @@ const Main: React.FC = () => {
   const [isCollecting, setIsCollecting] = useState<boolean>(false);
   const [lockup, setLockup] = useState<boolean>(false);
   const [hasRewards, setHasRewards] = useState<boolean>(false);
+  const [tx, setTx] = useState("");
 
   const {
     loading,
     data: sheetQuery,
   } = useCollectionSheetWithStateQuery({
     variables: {
-      address: agentAddress,
+      address: signer,
     }
   });
-  const { data: minerAddress, loading: minerAddressLoading } = useMinerAddressQuery();
   const [
     collect,
-  ] = useCollectMutation();
+  ] = useStageTxV2Mutation({
+    variables: {
+      encodedTx: tx
+    }
+  });
 
-  const { data: collectionStatus } = useCollectionStatusSubscription();
-  const { data: collectionState } = useCollectionStateSubscription();
+  const { data: collectionStatus } = useCollectionStatusByAgentSubscription({
+    variables: {
+      address: signer
+    }
+  });
+  const { data: collectionState } = useCollectionStateByAgentSubscription({
+    variables: {
+      address: signer
+    }
+  });
   const { data: nodeStatus } = useGetTipQuery({
     pollInterval: 1000 * 5
   });
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
-      agentAddress: agentAddress
+      agentAddress: signer
     },
     pollInterval: 1000 * 5
   });
-  const { data: collectionStatusQuery } = useCollectionStatusQueryQuery();
+  const { data: collectionStatusQuery } = useCollectionStatusQueryQuery({
+    variables: {
+      address: signer
+    }
+  });
+
+  const { refetch: txNonceRefetch } = useGetNextTxNonceQuery({
+    variables: {
+      address: signer
+    }
+  })
 
   useEffect(() => {
     let targetBlock = 0;
-    if (collectionState?.monsterCollectionState != null) {
-      targetBlock = Number(collectionState?.monsterCollectionState.claimableBlockIndex);
+    if (collectionState?.monsterCollectionStateByAgent != null) {
+      targetBlock = Number(collectionState?.monsterCollectionStateByAgent.claimableBlockIndex);
     } else {
       targetBlock = Number(collectionStateQuery?.stateQuery.monsterCollectionState?.claimableBlockIndex);
     }
@@ -100,7 +131,7 @@ const Main: React.FC = () => {
   }
 
   useEffect(() => {
-    applyCollectionLevel(collectionState?.monsterCollectionState?.level ?? 0);
+    applyCollectionLevel(collectionState?.monsterCollectionStateByAgent?.level ?? 0);
   }, [collectionState]);
 
   useEffect(() => {
@@ -108,7 +139,7 @@ const Main: React.FC = () => {
   }, [collectionStateQuery]);
 
   useEffect(() => {
-    applyCollectionStatus(collectionStatus?.monsterCollectionStatus);
+    applyCollectionStatus(collectionStatus?.monsterCollectionStatusByAgent);
   }, [collectionStatus]);
 
   useEffect(() => {
@@ -164,12 +195,6 @@ const Main: React.FC = () => {
   }, [cartList]);
 
   useEffect(() => {
-    if (minerAddress != null) {
-      setAgentAddress(minerAddress.minerAddress!);
-    }
-  }, [minerAddress]);
-
-  useEffect(() => {
     setOpenLoading(false);
 
     if (collectionLevel === 0) {
@@ -192,8 +217,9 @@ const Main: React.FC = () => {
     }
   }, [openLoading]);
 
-  if (loading || minerAddressLoading) return <LoadingPage />;
-  if (minerAddress?.minerAddress == null) {
+  console.log(`loading: ${addressLoading}, signer: ${signer}`);
+  if (loading || addressLoading) return <LoadingPage />;
+  if (signer === "") {
     // FIXME we should translate this message.
     return <div>you need login first</div>
   }
@@ -267,11 +293,14 @@ const Main: React.FC = () => {
     const latestCollectionItem = tempCartList.find(
       (x) => x.collectionPhase === CollectionPhase.LATEST
     );
-    const collectionResult = await collect({
-      variables: { level: latestCollectionItem?.tier ?? 0 },
-    });
-
-    return collectionResult.data!.action!.monsterCollect as string;
+    await makeTx(latestCollectionItem?.tier ?? 0);
+    const collectionResult = await collect();
+    if (collectionResult.data == null)
+    {
+      alert("failed monster collect.");
+      return;
+    }
+    return collectionResult.data.stageTxV2 as string;
   };
 
   const handleSubmit = () => {
@@ -314,6 +343,43 @@ const Main: React.FC = () => {
   const handleConfirmCancel = () => {
     setOpenConfirmation(false);
     setEdit(false);
+  }
+
+  async function makeTx(level: number) {
+    // create action.
+    const fileName = await tmpName();
+    if (!ipcRenderer.sendSync("monster-collect", level, fileName))
+    {
+      return;
+    }
+
+    // get tx nonce.
+    const ended = async () => {
+      return await txNonceRefetch({address: signer});
+    }
+    let txNonce;
+    try {
+      let res = await ended();
+      txNonce = res.data.transaction.nextTxNonce;
+    }
+    catch (e) {
+      alert(e.message);
+      return;
+    }
+
+    // sign tx.
+    const result = ipcRenderer.sendSync("sign-tx", txNonce,
+      new Date().toISOString(), fileName);
+    if (result.stderr != "")
+    {
+      alert(result.stderr);
+      return;
+    }
+    if (result.stdout != "")
+    {
+      setTx(result.stdout);
+    }
+    return;
   }
 
   return (
