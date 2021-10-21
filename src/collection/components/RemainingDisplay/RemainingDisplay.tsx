@@ -14,7 +14,7 @@ const RemainingDisplay: React.FC<Props> = (props: Props) => {
 
   return (<div className="RemainingDisplayContainer">
     <div className="RemainingDisplayTitle">
-      The monsters are playing happlly
+      The monsters are playing happily
     </div>
     <div className="RemainingDisplayLabel">
       <img src={starIcon}/>
