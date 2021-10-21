@@ -1,6 +1,5 @@
 import React from "react";
 import CollectionButton from "../../components/Button/Button";
-import BackgroundImage from "../../common/resources/image-1.png";
 import './landing.scss';
 
 export type Props = {
@@ -14,7 +13,6 @@ const Landing: React.FC<Props> = (props: Props) => {
   return (
     <div
       className={"IntroContainer"}
-      style={{ backgroundImage: `url(${BackgroundImage})` }}
     >
       <div className={'IntroPageBorder'}>
         <div className={"IntroItems"}>
