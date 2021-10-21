@@ -31,10 +31,13 @@ const ClaimCollectionRewardDialog: React.FC<Props> = (props: Props) => {
 
   const handleStep = () => setStep(step + 1);
   const handleSubmit = async (address: string) => {
-    const tx = await makeTx(address);
-    if (tx === "")
+    let tx = "";
+    try {
+      tx = await makeTx(address);
+    }
+    catch (e)
     {
-      console.log(`failed tx`);
+      console.log(`failed tx: ${e.message}`);
       return;
     }
     const result = await claim({variables: {
@@ -62,10 +65,12 @@ const ClaimCollectionRewardDialog: React.FC<Props> = (props: Props) => {
     {
       avatarAddress = avatarAddress.substr(2);
     }
+    let errorMsg;
     if (!ipcRenderer.sendSync("claim-monster-collection-reward", avatarAddress, fileName))
     {
-      console.error(`makeTx: failed action`)
-      return "";
+      errorMsg = "makeTx: failed action";
+      console.error(errorMsg);
+      throw new Error(errorMsg);
     }
 
     // get tx nonce.
@@ -78,23 +83,25 @@ const ClaimCollectionRewardDialog: React.FC<Props> = (props: Props) => {
       txNonce = res.data.transaction.nextTxNonce;
     }
     catch (e) {
-      console.error(`makeTx: failed tx nonce`)
-      return "";
+      errorMsg = "makeTx: failed tx nonce";
+      console.error(errorMsg);
+      throw new Error(errorMsg);
     }
     console.log(`makeTx: nonce: ${txNonce}`)
     // sign tx.
     const result = ipcRenderer.sendSync("sign-tx", txNonce, new Date().toISOString(), fileName);
     if (result.stderr != "")
     {
-      console.error(`makeTx: error: ${result.stderror}`)
-      return "";
+      errorMsg = `makeTx: error: ${result.stderror}`;
+      console.error(errorMsg);
+      throw new Error(errorMsg);
     }
     if (result.stdout != "")
     {
       console.log(`makeTx: tx: ${result.stdout}`)
       return result.stdout;
     }
-    return "";
+    throw new Error("makeTx: failed sign tx with empty result.");
   }
 }
 
