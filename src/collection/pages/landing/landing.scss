@@ -1,9 +1,11 @@
 $filter: url('../../common/resources/UI_staking_frame.png');
+$bg: url('../../common/resources/image-1.png');
 
 .IntroContainer {
   font-family: 'Montserrat', sans-serif;
   width: 100vw;
   height: 100vh;
+  background-image: $bg;
   .Title {
     text-align: center;
     font-size: 28px;
