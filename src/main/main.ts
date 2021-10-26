@@ -769,20 +769,6 @@ async function initializeHeadless(): Promise<void> {
       );
     }
 
-    try {
-      let freeSpace = await utils.getDiskSpace(chainPath);
-      if (freeSpace < REQUIRED_DISK_SPACE) {
-        win?.webContents.send("go to error page", "disk-space");
-        throw new HeadlessInitializeError(
-          `Not enough space. ${chainPath} (${freeSpace} < ${REQUIRED_DISK_SPACE})`
-        );
-      }
-    } catch {
-      await dialog.showMessageBox(win!, {
-        message: `Failed to check free space. Please make sure you have at least ${prettyBytes(REQUIRED_DISK_SPACE)} available on your disk.`,
-        type: "warning",
-      });
-    }
     win?.webContents.send("start bootstrap");
     const snapshot =
       getConfig("StoreType") === "rocksdb"
@@ -807,6 +793,22 @@ async function initializeHeadless(): Promise<void> {
             standalone,
             win,
             initializeHeadlessCts.token,
+            async (size) => {
+              try {
+                let freeSpace = await utils.getDiskSpace(chainPath);
+                if (freeSpace < size) {
+                  win?.webContents.send("go to error page", "disk-space");
+                  throw new HeadlessInitializeError(
+                    `Not enough space. ${chainPath} (${freeSpace} < ${size})`
+                  );
+                }
+              } catch {
+                await dialog.showMessageBox(win!, {
+                  message: `Failed to check free space. Please make sure you have at least ${prettyBytes(size)} available on your disk.`,
+                  type: "warning",
+                });
+              }
+            },
             mixpanel,
           );
 

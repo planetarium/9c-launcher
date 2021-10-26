@@ -10,6 +10,7 @@ import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-fail
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 import { INineChroniclesMixpanel } from "./mixpanel";
+import axios from "axios";
 
 export type Epoch = {
   BlockEpoch: number;
@@ -96,6 +97,24 @@ export const getSnapshotDownloadTarget = async (
 
   return target;
 };
+
+export async function aggregateSize(
+  basePath: string,
+  target: Epoch[],
+  token: CancellationToken,
+  mixpanel?: INineChroniclesMixpanel
+) {
+  const sizes = await Promise.all(
+    target.map(async (v) => {
+      const url = `${basePath}/snapshot-${v.BlockEpoch}-${v.TxEpoch}.zip`;
+      const res = await axios.head(url);
+
+      return Number(res.headers['content-length'])
+    })
+  );
+
+  return sizes.reduce((a, b) => a + b);
+}
 
 export async function downloadMetadata(
   basePath: string,
@@ -286,6 +305,7 @@ export async function processSnapshot(
   standalone: Headless,
   win: Electron.BrowserWindow,
   token: CancellationToken,
+  sizeCallback: (size: number) => void,
   mixpanel?: INineChroniclesMixpanel,
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);
@@ -310,6 +330,7 @@ export async function processSnapshot(
       token,
       mixpanel,
     );
+    await aggregateSize(snapshotDownloadUrl, target, token, mixpanel).then(sizeCallback);
     const snapshotPaths = await downloadSnapshot(
       snapshotDownloadUrl,
       target,
