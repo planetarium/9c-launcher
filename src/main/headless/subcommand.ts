@@ -1,4 +1,4 @@
-import { execFileSync } from "child_process";
+import {ChildProcess, execFileSync, spawnSync, SpawnSyncReturns} from "child_process";
 import { dirname, basename, sep } from "path";
 
 export class StandaloneSubcommand {
@@ -30,4 +30,18 @@ export class StandaloneSubcommand {
       throw e;
     }
   }
+
+  protected spawnSync(...args: string[]): SpawnSyncReturns<string> {
+    // Note that invoking "foo" searches executables named "foo" only in PATH,
+    // not also in CWD on POSIX. (On Windows "foo" search both in PATH and CWD.)
+    // In order to make it searches executables in CWD, it should be prefixed
+    // with "./", that is, "./foo".
+    // As join(".", "foo") returns "foo" instead of "./foo", which is what
+    // we expect, manually concatenate paths here:
+    const cmd = `.${sep}${basename(this._executablePath)}`;
+    const cwd = dirname(this._executablePath);
+    return spawnSync(cmd, args, { encoding: "utf-8", cwd: cwd });
+  }
 }
+
+

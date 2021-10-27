@@ -66,28 +66,28 @@ export const Layout: React.FC = observer(({ children }) => {
     <>
       <main>{children}</main>
       <nav className="hero">
-        { getConfig("UseRemoteHeadless")
-            ? null
-            : <AccountInfoContainer
-                minedBlock={Number(minedBlocks?.length)}
-                onReward={() => { }}
-                onOpenWindow={() => {
-                  ipcRenderer.invoke("open collection page");
-                }}
-            />
-        }
+        <AccountInfoContainer
+          minedBlock={Number(minedBlocks?.length)}
+          onReward={() => { }}
+          onOpenWindow={() => {
+            ipcRenderer.invoke("open collection page", accountStore.selectedAddress);
+          }}
+        />
         <ul className={"LauncherClientOption"}>
-          <li>
-            <Button
-              startIcon={<img src={NCGLogo} />}
-              onClick={() => {
-                ipcRenderer.invoke("open transfer page");
-              }}
-              disabled={!accountStore.isMiningConfigEnded || !standaloneStore.Ready}
-            >
-              <T _str="Send NCG" _tags={transifexTags} />
-            </Button>
-          </li>
+          { getConfig("UseRemoteHeadless")
+              ? null
+              : <li>
+                  <Button
+                      startIcon={<img src={NCGLogo} />}
+                      onClick={() => {
+                        ipcRenderer.invoke("open transfer page");
+                      }}
+                      disabled={!accountStore.isMiningConfigEnded || !standaloneStore.Ready}
+                  >
+                    <T _str="Send NCG" _tags={transifexTags} />
+                  </Button>
+                </li>
+          }
           <li>
             <Button
               startIcon={<img src={patchNoteLogo} />}

@@ -75,6 +75,7 @@ const LoginView = observer(
         {
             routerStore.push("/login/mining");
         }
+        ipcRenderer.send("standalone/set-signer-private-key", accountStore.privateKey);
       }
     }, [unprotectedPrivateKey]);
 

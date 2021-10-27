@@ -6,25 +6,23 @@ import {
   FormHelperText,
   TextField,
 } from "@material-ui/core";
-import { inject, observer } from "mobx-react";
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  ChangeEvent,
-  FormEvent,
-} from "react";
+import {inject, observer} from "mobx-react";
+import React, {ChangeEvent, FormEvent, useCallback, useEffect, useState,} from "react";
 import {
   useActivateMutation,
   useActivationAddressLazyQuery,
+  useActivationKeyNonceQuery,
+  useGetNextTxNonceQuery,
+  useStageTxMutation,
 } from "../../../generated/graphql";
-import { IStoreContainer } from "../../../interfaces/store";
-import { sleep } from "../../../utils";
-import { ipcRenderer } from "electron";
+import {IStoreContainer} from "../../../interfaces/store";
+import {sleep} from "../../../utils";
+import {ipcRenderer} from "electron";
 
-import { T } from "@transifex/react";
+import {T} from "@transifex/react";
 
 import lobbyViewStyle from "./LobbyView.style";
+import {tmpName} from "tmp-promise";
 import { get } from "../../../config";
 
 interface ILobbyViewProps extends IStoreContainer {
@@ -56,7 +54,8 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     accountStore.activationKey
   );
   const [polling, setPollingState] = useState(false);
-  const [hasAutoActivateBegin, setHasAutoActivateBegin] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [tx, setTx] = useState("");
 
   const handleActivationKeyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -65,44 +64,115 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     [event]
   );
 
+  const { refetch: nonceRefetch } = useActivationKeyNonceQuery({
+    variables: {
+      encodedActivationKey: activationKey
+    }
+  });
+
+  const { refetch: txNoceRefetch } = useGetNextTxNonceQuery({
+    variables: {
+      address: accountStore.selectedAddress
+    }
+  })
+
+  const [
+    stage,
+    { data: isStage, error: stageError },
+  ] = useStageTxMutation();
+  
   const handleActivationKeySubmit = async (
     event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
-    await activateMutation();
+    await makeTx();
   };
 
-  const activateMutation = async () => {
-    setPollingState(true);
 
-    const activated = async () => {
-      const result = await activationRefetch();
-      return result.data.activationStatus.addressActivated;
-    };
+  const activateMutation = async() => {
+    if (tx !== "")
+    {
+      setPollingState(true);
+      const stageResult = await stage({
+        variables: {
+          encodedTx: tx
+        }
+      });
 
-    if (await activated()) {
-      setPollingState(false);
-      return;
-    }
-
-    const activateResult = await activate({
-      variables: {
-        encodedActivationKey: activationKey,
-      },
-    });
-
-    if (!activateResult.data?.activationStatus?.activateAccount) {
-      setPollingState(false);
-      return;
-    }
-
-    while (true) {
-      await sleep(1000);
-      if (await activated()) {
-        setPollingState(false);
-        return;
+      if (stageResult.data?.stageTx)
+      {
+        while (true) {
+          await sleep(1000);
+          if (await activated()) {
+            setPollingState(false);
+            return;
+          }
+        }
       }
     }
+  }
+
+  const makeTx = async() => {
+    // get key nonce.
+    setTx("");
+    setErrorMsg("");
+    setPollingState(true);
+    const ended = async () => {
+      return await nonceRefetch();
+    }
+    let nonce;
+    try {
+      let res = await ended();
+      nonce = res.data.activationKeyNonce;
+    }
+    catch (e) {
+      setErrorMsg(e.message);
+      setPollingState(false);
+      return;
+    }
+
+    // create action.
+    const fileName = await tmpName();
+    if (!ipcRenderer.sendSync("activate-account", activationKey, nonce, fileName))
+    {
+      setPollingState(false);
+      setErrorMsg("create activate account action failed.")
+      return;
+    }
+
+    // get tx nonce.
+    const ended2 = async () => {
+      return await txNoceRefetch({address: accountStore.selectedAddress});
+    }
+    let txNonce;
+    try {
+      let res = await ended2();
+      txNonce = res.data.transaction.nextTxNonce;
+    }
+    catch (e) {
+      setErrorMsg(e.message);
+      setPollingState(false);
+      return;
+    }
+
+    // sign tx.
+    const result = ipcRenderer.sendSync("sign-tx", txNonce,
+        new Date().toISOString(), fileName);
+    if (result.stderr != "")
+    {
+      setErrorMsg(result.stderr);
+    }
+    if (result.stdout != "")
+    {
+      setTx(result.stdout);
+    }
+    setPollingState(false);
+    return;
+  }
+
+  const activated = async () => {
+    const result = await activationRefetch();
+    return result.data.activationStatus.addressActivated;
   };
 
   useEffect(() => {
@@ -111,16 +181,8 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     }
   }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
 
-  if (
-    !loading &&
-    !polling &&
-    !status?.activationStatus.addressActivated &&
-    activationKey !== "" &&
-    !hasAutoActivateBegin &&
-    activationRefetch !== undefined
-  ) {
-    // FIXME 플래그(hasAutoActivateBegin) 없이 useEffect 나 타이밍 잡아서 부르게끔 고쳐야 합니다.
-    setHasAutoActivateBegin(true);
+  if (!polling && tx !== "" && !status?.activationStatus.addressActivated)
+  {
     activateMutation();
   }
 
@@ -143,15 +205,15 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     child = (
       <form onSubmit={handleActivationKeySubmit}>
         <TextField
-          error={activatedError?.message !== undefined}
+          error={errorMsg !== ""}
           label={<T _str="Invitation Code" _tags={transifexTags} />}
           onChange={handleActivationKeyChange}
           fullWidth
         />
-        {activatedError?.message !== undefined && (
+        {errorMsg !== "" && (
           <FormHelperText>
             {/* FIXME 예외 타입으로 구분해서 메시지 국제화 할 것 */}
-            {activatedError?.message
+            {errorMsg
               ?.split("\n")
               ?.shift()
               ?.split(":")

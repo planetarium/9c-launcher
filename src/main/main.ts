@@ -64,6 +64,7 @@ import { IConfig } from "src/interfaces/config";
 import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS } from 'electron-devtools-installer';
 import prettyBytes from "pretty-bytes";
 import createTransferWindow from "../transfer/window";
+import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import { createWindow as createV2Window } from "./v2/application";
 
@@ -95,6 +96,9 @@ let initializeHeadlessCts: {
   token: CancellationToken;
 } | null = null;
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
+
+let remoteHeadless : RemoteHeadless;
+let useRemoteHeadless : boolean;
 
 ipv4().then((value) => (ip = value));
 
@@ -147,6 +151,7 @@ if (!app.requestSingleInstanceLock()) {
   cleanUp();
 
   intializeConfig();
+  useRemoteHeadless = configStore.get("UseRemoteHeadless");
   initializeApp();
   initializeIpc();
 }
@@ -187,7 +192,14 @@ function initializeApp() {
     if (app.commandLine.hasSwitch("v2")) win = await createV2Window();
     else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
-    initializeHeadless();
+    if (useRemoteHeadless)
+    {
+      initializeRemoteHeadless()
+    }
+    else
+    {
+      initializeHeadless();
+    }
   });
 
   app.on("quit", (event) => {
@@ -459,12 +471,15 @@ function initializeIpc() {
     }
   );
 
-  ipcMain.handle("open collection page", async () => {
+  ipcMain.handle("open collection page", async (_, selectedAddress) => {
     if (collectionWin != null) {
       collectionWin.focus();
       return;
     }
+    console.log(`open collection page address: ${selectedAddress}`);
     collectionWin = await createCollectionWindow();
+    console.log(`call set miner address: ${selectedAddress}`);
+    collectionWin!.webContents.send("set miner address", selectedAddress);
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
@@ -524,7 +539,16 @@ function initializeIpc() {
       "Launcher/Clear Cache");
     await quitAllProcesses("clear-cache");
     utils.deleteBlockchainStoreSync(getBlockChainStorePath());
-    if (rerun) initializeHeadless();
+    if (rerun) {
+      if (useRemoteHeadless)
+      {
+        initializeRemoteHeadless()
+      }
+      else
+      {
+        initializeHeadless();
+      }
+    }
     event.returnValue = true;
   });
 
@@ -858,6 +882,91 @@ async function initializeHeadless(): Promise<void> {
   }
 }
 
+async function initializeRemoteHeadless(): Promise<void> {
+  /*
+  1. Check APV and update if needed.
+  2. Execute remote headless.
+  */
+  console.log(`Initialize remote headless. (win: ${win?.getTitle})`);
+
+  if (initializeHeadlessCts !== null) {
+    console.error("Cannot initialize remote headless while initializing headless.");
+    return;
+  }
+
+  if (standalone.alive) {
+    console.error("Cannot initialize remote headless while headless is running.");
+    return;
+  }
+
+  if (lockfile.checkSync(lockfilePath)) {
+    console.error(
+        "Cannot initialize remote headless while updater is running.\n",
+        lockfilePath
+    );
+    return;
+  }
+
+  const peerInfos: string[] = getConfig("PeerStrings");
+  if (peerInfos.length > 0) {
+    const peerApvToken = standalone.apv.query(peerInfos[0]);
+    if (peerApvToken !== null) {
+      if (
+          standalone.apv.verify(
+              getConfig("TrustedAppProtocolVersionSigners"),
+              peerApvToken
+          )
+      ) {
+        const peerApv = standalone.apv.analyze(peerApvToken);
+        const localApvToken = getConfig("AppProtocolVersion");
+        const localApv = standalone.apv.analyze(localApvToken);
+
+        await update(
+            localApv.version,
+            peerApv.version,
+            encode(peerApv.extra).toString("hex")
+        );
+      } else {
+        console.log(
+            `Ignore APV[${peerApvToken}] due to failure to validating.`
+        );
+      }
+    }
+  }
+
+  initializeHeadlessCts = CancellationToken.create();
+
+  try {
+    initializeHeadlessCts.token.throwIfCancelled();
+    win?.webContents.send("start remote headless");
+    remoteHeadless = new RemoteHeadless();
+    await remoteHeadless.execute();
+
+    console.log("Register exit handler.");
+    standalone.once("exit", async () => {
+      console.error("remote headless exited by self.");
+      await relaunchHeadless();
+    });
+  } catch (error) {
+    console.error(`Error occurred during initialize remote headless(). ${error}`);
+    if (
+        error instanceof HeadlessInitializeError ||
+        error instanceof CancellationToken.CancellationError
+    ) {
+      console.error(`Initialize remote headless() halted: ${error}`);
+    } else if (error instanceof HeadlessExitedError) {
+      console.error("remote headless exited during initialization:", error);
+      win?.webContents.send("go to error page", "clear-cache");
+    } else {
+      win?.webContents.send("go to error page", "reinstall");
+      throw error;
+    }
+  } finally {
+    console.log("initialize remote headless() finished.");
+    initializeHeadlessCts = null;
+  }
+}
+
 async function createWindow(): Promise<BrowserWindow> {
   let _win = new BrowserWindow({
     width: 800,
@@ -959,7 +1068,14 @@ function loadInstallerMixpanelUUID(): string {
 
 async function relaunchHeadless(reason: string = "default") {
   await stopHeadlessProcess(reason);
-  initializeHeadless();
+  if (useRemoteHeadless)
+  {
+    initializeRemoteHeadless()
+  }
+  else
+  {
+    initializeHeadless();
+  }
 }
 
 async function quitAllProcesses(reason: string = "default") {
