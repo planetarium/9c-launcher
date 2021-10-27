@@ -98,7 +98,7 @@ export async function processSnapshot(
   standalone: Headless,
   win: Electron.BrowserWindow,
   token: CancellationToken,
-  sizeCallback: (size: number) => void,
+  sizeCallback: (size: bigint) => void,
   mixpanelInfo?: INineChroniclesMixpanel
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);
