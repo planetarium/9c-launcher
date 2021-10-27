@@ -12,8 +12,9 @@ import './App.scss';
 import montserrat from "src/renderer/styles/font";
 import SwapPageStore from "./stores/views/swap";
 import {get as getConfig} from "src/config";
+import { HEADLESS_URL } from "../config";
 
-const client = new GraphQLClient(`http://localhost:23061/graphql`);
+const client = new GraphQLClient(`http://${HEADLESS_URL}/graphql`);
 const headlessGraphQLSDK = getSdk(client);
 
 const storeContainer: ITransferStoreContainer = {
