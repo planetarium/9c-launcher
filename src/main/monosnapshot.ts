@@ -12,6 +12,7 @@ import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snaps
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import { INineChroniclesMixpanel } from "./mixpanel";
+import { REQUIRED_DISK_SPACE } from "../config";
 
 export async function downloadMetadata(
   basePath: string,
@@ -97,6 +98,7 @@ export async function processSnapshot(
   standalone: Headless,
   win: Electron.BrowserWindow,
   token: CancellationToken,
+  sizeCallback: (size: number) => void,
   mixpanelInfo?: INineChroniclesMixpanel,
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);
@@ -111,6 +113,7 @@ export async function processSnapshot(
   let needSnapshot =
     localMetadata === null || validateMetadata(localMetadata, snapshotMetadata);
   if (needSnapshot) {
+    await sizeCallback(REQUIRED_DISK_SPACE);
     let snapshotPath = await downloadSnapshot(
       snapshotDownloadUrl,
       (status) => {

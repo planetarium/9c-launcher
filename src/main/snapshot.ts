@@ -10,6 +10,7 @@ import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-fail
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 import { INineChroniclesMixpanel } from "./mixpanel";
+import axios from "axios";
 
 export type Epoch = {
   BlockEpoch: number;
@@ -59,7 +60,7 @@ export const getSnapshotDownloadTarget = async (
   basePath: string,
   userDataPath: string,
   token: CancellationToken,
-  mixpanel?: INineChroniclesMixpanel,
+  mixpanel?: INineChroniclesMixpanel
 ): Promise<Epoch[]> => {
   let localEpoch = getCurrentEpoch(storePath);
   let target: Epoch[] = [];
@@ -97,6 +98,29 @@ export const getSnapshotDownloadTarget = async (
   return target;
 };
 
+export async function aggregateSize(
+  basePath: string,
+  target: Epoch[],
+  token: CancellationToken,
+  mixpanel?: INineChroniclesMixpanel
+) {
+  const stateSize = async () => {
+    const res = await axios.head(`${basePath}/state_latest.zip`)
+    return Number(res.headers["content-length"]);
+  }
+  const sizes = await Promise.all([
+    stateSize(),
+    ...target.map(async (v) => {
+      const url = `${basePath}/snapshot-${v.BlockEpoch}-${v.TxEpoch}.zip`;
+      const res = await axios.head(url);
+
+      return Number(res.headers["content-length"]);
+    }),
+  ]);
+
+  return sizes.reduce((a, b) => a + b);
+}
+
 export async function downloadMetadata(
   basePath: string,
   userDataPath: string,
@@ -108,7 +132,13 @@ export async function downloadMetadata(
   const downloadPath = basePath + "/" + downloadFileName;
 
   try {
-    await cancellableDownload(downloadPath, savingPath, (_) => {}, token, false);
+    await cancellableDownload(
+      downloadPath,
+      savingPath,
+      (_) => {},
+      token,
+      false
+    );
     token.throwIfCancelled();
 
     let meta = await fs.promises.readFile(savingPath, "utf-8");
@@ -137,7 +167,7 @@ export async function downloadSnapshot(
   userDataPath: string,
   onProgress: (status: IDownloadProgress) => void,
   token: CancellationToken,
-  mixpanel?: INineChroniclesMixpanel,
+  mixpanel?: INineChroniclesMixpanel
 ): Promise<string[]> {
   token.throwIfCancelled();
   console.log("Downloading snapshot.");
@@ -188,7 +218,7 @@ export async function downloadStateSnapshot(
   userDataPath: string,
   onProgress: (status: IDownloadProgress) => void,
   token: CancellationToken,
-  mixpanel?: INineChroniclesMixpanel,
+  mixpanel?: INineChroniclesMixpanel
 ): Promise<string> {
   token.throwIfCancelled();
   const downloadTargetName = `state_latest.zip`;
@@ -217,7 +247,7 @@ export async function extractSnapshot(
   blockchainStorePath: string,
   onProgress: (progress: number) => void,
   token: CancellationToken,
-  mixpanel?: INineChroniclesMixpanel,
+  mixpanel?: INineChroniclesMixpanel
 ): Promise<void> {
   snapshotPaths.reverse();
   let index = 0;
@@ -286,7 +316,8 @@ export async function processSnapshot(
   standalone: Headless,
   win: Electron.BrowserWindow,
   token: CancellationToken,
-  mixpanel?: INineChroniclesMixpanel,
+  sizeCallback: (size: number) => void,
+  mixpanel?: INineChroniclesMixpanel
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);
 
@@ -308,7 +339,10 @@ export async function processSnapshot(
       snapshotDownloadUrl,
       userDataPath,
       token,
-      mixpanel,
+      mixpanel
+    );
+    await aggregateSize(snapshotDownloadUrl, target, token, mixpanel).then(
+      sizeCallback
     );
     const snapshotPaths = await downloadSnapshot(
       snapshotDownloadUrl,
@@ -318,7 +352,7 @@ export async function processSnapshot(
         win?.webContents.send("download snapshot progress", status);
       },
       token,
-      mixpanel,
+      mixpanel
     );
     const stateSnapshotPath = await downloadStateSnapshot(
       snapshotDownloadUrl,
@@ -327,7 +361,7 @@ export async function processSnapshot(
         win?.webContents.send("download state snapshot progress", status);
       },
       token,
-      mixpanel,
+      mixpanel
     );
     snapshotPaths.push(stateSnapshotPath);
     removeUselessStore(storePath);
@@ -338,7 +372,7 @@ export async function processSnapshot(
         win?.webContents.send("extract progress", progress);
       },
       token,
-      mixpanel,
+      mixpanel
     );
   } else {
     console.log(
