@@ -11,6 +11,7 @@ import TransferPage from "../transfer/transfer";
 
 const transifexTags = "Transfer/Main";
 export type Props = {
+  agentAddress: string,
   onDetailedView: (tx: string) => void;
 };
 
@@ -47,7 +48,7 @@ const DescriptionTitleMessage = styled(Typography)({
 });
 
 const MainPage: React.FC<Props> = observer((props: Props) => {
-  const { onDetailedView } = props;
+  const { agentAddress, onDetailedView } = props;
   const { menuStore } = useContext(StoreContext);
 
   return (
@@ -63,8 +64,8 @@ const MainPage: React.FC<Props> = observer((props: Props) => {
       <LayoutContainer>
           <TransferMenu />
           {menuStore.currentMenu === MenuItems.TRANSFER 
-          ? <TransferPage onDetailedView={onDetailedView} /> 
-          : <ExchangePage onDetailedView={onDetailedView}/>}
+          ? <TransferPage agentAddress={agentAddress} onDetailedView={onDetailedView} />
+          : <ExchangePage agentAddress={agentAddress} onDetailedView={onDetailedView} />}
       </LayoutContainer>
     </MainPageContainer>
   );
