@@ -9,7 +9,7 @@ export interface IHeadlessStore {
   assertAgentAddress: () => void;
   getBalance: () => Promise<Decimal>;
   getAgentAddress: () => string;
-  trySetAgentAddress: () => Promise<boolean>;
+  trySetAgentAddress: (agentAddress: string) => Promise<boolean>;
   transferGold: (recipient: string, amount: Decimal, memo: string) => Promise<string>;
   swapToWNCG: (recipient: string, amount: Decimal) => Promise<string>;
   confirmTransaction: (
@@ -61,10 +61,9 @@ export default class HeadlessStore implements IHeadlessStore {
   }
 
   @action
-  trySetAgentAddress = async (): Promise<boolean> => {
-    const minerAddress = await this.graphqlSdk.MinerAddress();
-    if (minerAddress.data) {
-      this.agentAddress = minerAddress.data.minerAddress;
+  trySetAgentAddress = async (agentAddress: string): Promise<boolean> => {
+    if (agentAddress) {
+      this.agentAddress = agentAddress;
       return true;
     }
 
