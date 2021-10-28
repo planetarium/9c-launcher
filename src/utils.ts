@@ -111,8 +111,9 @@ export const downloadAxios = axios.create({
 downloadAxios.interceptors.response.use(
   (res) => res,
   (err: AxiosError) => {
-    if (err.response?.status == 412) {
+    if (err.response?.status === 412 || err.response?.status === 416) {
       // Precondition Failed (ETag doesn't match)
+      // Range Not Satisfiable (Range header invalid) -- This happens if done wasn't marked properly or the file is damaged.
       delete err.config.headers["Range"];
       delete err.config.headers["If-Match"];
       err.config.onETagFailed?.(err);
