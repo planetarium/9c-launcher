@@ -247,6 +247,10 @@ function createMainConfig(isDev) {
             options: {},
           },
         },
+        {
+          test: /\.node$/,
+          loader: "node-loader",
+        },
       ],
     },
 
