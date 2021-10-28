@@ -81,6 +81,22 @@ class Headless {
       event.returnValue = this.action.ClaimMonsterCollectionReward(avatarAddress, filePath);
     });
 
+    ipcMain.on("transfer-asset", async (
+      event,
+      sender: string,
+      recipient: string,
+      amount: number,
+      memo: string,
+      filePath: string) => {
+      console.log("transfer-asset")
+      event.returnValue = this.action.TransferAsset(
+        sender,
+        recipient,
+        amount,
+        memo,
+        filePath);
+    });
+
     ipcMain.on("sign-tx", async (event, nonce: number, timeStamp: string, filePath: string) => {
       console.log("sign-tx")
       if (this._signerPrivateKey == undefined || "")
