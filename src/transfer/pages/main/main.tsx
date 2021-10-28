@@ -50,6 +50,10 @@ const DescriptionTitleMessage = styled(Typography)({
 const MainPage: React.FC<Props> = observer((props: Props) => {
   const { agentAddress, onDetailedView } = props;
   const { menuStore } = useContext(StoreContext);
+  const pageProps = {
+    signer: agentAddress,
+    onDetailedView: onDetailedView
+  }
 
   return (
     <MainPageContainer>
@@ -64,8 +68,8 @@ const MainPage: React.FC<Props> = observer((props: Props) => {
       <LayoutContainer>
           <TransferMenu />
           {menuStore.currentMenu === MenuItems.TRANSFER 
-          ? <TransferPage agentAddress={agentAddress} onDetailedView={onDetailedView} />
-          : <ExchangePage agentAddress={agentAddress} onDetailedView={onDetailedView} />}
+          ? <TransferPage {... pageProps} />
+          : <ExchangePage {... pageProps} />}
       </LayoutContainer>
     </MainPageContainer>
   );
