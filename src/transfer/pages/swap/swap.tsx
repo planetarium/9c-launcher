@@ -2,7 +2,7 @@ import { Button, Container, FormControl, InputAdornment, OutlinedInput, styled, 
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
 import { observer } from "mobx-react";
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import FailureDialog from "src/transfer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/transfer/components/SendingDialog/SendingDialog";
 import SuccessDialog from "src/transfer/components/SuccessDialog/SuccessDialog";
@@ -10,10 +10,18 @@ import { StoreContext } from "src/transfer/hooks";
 import { TransactionConfirmationListener } from "src/transfer/stores/headless";
 import { TransferPhase } from "src/transfer/stores/views/transfer";
 import refreshIcon from "../../resources/refreshIcon.png";
+import {ipcRenderer} from "electron";
+import {tmpName} from "tmp-promise";
+import {
+  useGetNextTxNonceQuery,
+  useStageTxV2Mutation
+} from "../../../generated/graphql";
+import {get as getConfig} from "src/config";
 
 const transifexTags = "Transfer/Transfer";
 
 export type Props = {
+  signer: string,
   onDetailedView: (tx: string) => void;
 };
 
@@ -65,7 +73,8 @@ const SwapButton = styled(Button)({
 
 const SwapPage: React.FC<Props> = observer((props: Props) => {
   const { headlessStore, swapPage } = useContext(StoreContext);
-  const { onDetailedView } = props;
+  const { signer, onDetailedView } = props;
+  const [tx, setTx] = useState("");
 
   const listener: TransactionConfirmationListener = {
     onSuccess: (blockIndex, blockHash) => {
@@ -82,6 +91,20 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
     }
   }
 
+  const [
+    swap,
+  ] = useStageTxV2Mutation({
+    variables: {
+      encodedTx: tx
+    }
+  });
+
+  const { refetch: txNonceRefetch } = useGetNextTxNonceQuery({
+    variables: {
+      address: signer
+    }
+  })
+
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     if(!swapPage.validateRecipient || !swapPage.validateAmount) {
@@ -89,10 +112,61 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
     }
     swapPage.startSend();
     const { recipient, amount } = swapPage;
-    const tx = await headlessStore.swapToWNCG(recipient, amount);
-    swapPage.setTx(tx);
+    const bridgeAddress = getConfig("SwapAddress") || "0x9093dd96c4bb6b44A9E0A522e2DE49641F146223";
 
+    await makeTx(signer, bridgeAddress, amount, recipient);
+    const swapResult = await swap();
+    if (swapResult.data == null)
+    {
+      alert("failed ncg swap.");
+      return;
+    }
+
+    const tx = swapResult.data.stageTxV2 as string;
+    swapPage.setTx(tx);
     headlessStore.confirmTransaction(tx, undefined, listener);
+    return tx;
+  }
+
+  async function makeTx(
+    sender: string,
+    recipient: string,
+    amount: Decimal,
+    memo: string) {
+    // create action.
+    const fileName = await tmpName();
+    if (!ipcRenderer.sendSync("transfer-asset", sender, recipient, amount, memo, fileName))
+    {
+      return;
+    }
+
+    // get tx nonce.
+    const ended = async () => {
+      return await txNonceRefetch({address: signer});
+    }
+    let txNonce;
+    try {
+      let res = await ended();
+      txNonce = res.data.transaction.nextTxNonce;
+    }
+    catch (e) {
+      alert(e.message);
+      return;
+    }
+
+    // sign tx.
+    const result = ipcRenderer.sendSync("sign-tx", txNonce,
+      new Date().toISOString(), fileName);
+    if (result.stderr != "")
+    {
+      alert(result.stderr);
+      return;
+    }
+    if (result.stdout != "")
+    {
+      setTx(result.stdout);
+    }
+    return;
   }
 
   return (
