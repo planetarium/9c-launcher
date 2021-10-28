@@ -61,19 +61,20 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
       const extra: string = encode({
         WindowsBinaryUrl: url,
       }).toString("hex");
-      const differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterSubscription = {
-        differentAppProtocolVersionEncounter: {
-          peer: "",
-          localVersion: {
-            version: 10000,
-            extra,
+      const differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterSubscription =
+        {
+          differentAppProtocolVersionEncounter: {
+            peer: "",
+            localVersion: {
+              version: 10000,
+              extra,
+            },
+            peerVersion: {
+              version: 1000008,
+              extra,
+            },
           },
-          peerVersion: {
-            version: 1000008,
-            extra,
-          },
-        },
-      };
+        };
       ipcRenderer.send(
         "encounter different version",
         differentAppProtocolVersionEncounter
@@ -82,10 +83,8 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   }, []);
 
   // FIXME: 구독 로직과 아예 분리할 수 있다면 좋을텐데.
-  const {
-    loading,
-    data,
-  } = useDifferentAppProtocolVersionEncounterSubscription();
+  const { loading, data } =
+    useDifferentAppProtocolVersionEncounterSubscription();
   useEffect(() => {
     if (
       !loading &&
@@ -96,10 +95,13 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
     }
   }, [loading, data]);
 
-  return isDownload || isExtract || isCopying
-    ? (<UpdateView
+  return isDownload || isExtract || isCopying ? (
+    <UpdateView
       state={isDownload ? "download" : isExtract ? "extract" : "copy"}
       variant={variant}
-      progress={progress} />)
-    : (<>{children}</>);
+      progress={progress}
+    />
+  ) : (
+    <>{children}</>
+  );
 };

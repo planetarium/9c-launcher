@@ -105,9 +105,9 @@ export async function aggregateSize(
   mixpanel?: INineChroniclesMixpanel
 ) {
   const stateSize = async () => {
-    const res = await axios.head(`${basePath}/state_latest.zip`)
+    const res = await axios.head(`${basePath}/state_latest.zip`);
     return Number(res.headers["content-length"]);
-  }
+  };
   const sizes = await Promise.all([
     stateSize(),
     ...target.map(async (v) => {

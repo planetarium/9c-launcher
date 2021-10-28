@@ -14,27 +14,33 @@ interface ICopyCreatedPrivateKeyProps {
 
 const transifexTags = "copyPrivateKey";
 
-const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observer(
-  ({ accountStore, routerStore }) => {
+const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> =
+  observer(({ accountStore, routerStore }) => {
     const classes = createAccountViewStyle();
 
     return (
       <div className={classes.root}>
         <Typography variant="h1" className={classes.title}>
           <T
-            _str={"Almost done!\nPlease copy and store\nyour private key in a safe place."}
+            _str={
+              "Almost done!\nPlease copy and store\nyour private key in a safe place."
+            }
             _tags={transifexTags}
           />
         </Typography>
         <article className={classes.description}>
           <T
-            _str={"Nine Chronicles is a fully decentralized game.\nTherefore, there is not a server that stores your password."}
+            _str={
+              "Nine Chronicles is a fully decentralized game.\nTherefore, there is not a server that stores your password."
+            }
             _tags={transifexTags}
           />
         </article>
         <article className={classes.warning}>
           <T
-            _str={"This key is the only means to recover your password.\nNever expose your private key to others.\nAnyone can steal your assets if this key is exposed."}
+            _str={
+              "This key is the only means to recover your password.\nNever expose your private key to others.\nAnyone can steal your assets if this key is exposed."
+            }
             _tags={transifexTags}
           />
         </article>
@@ -81,7 +87,6 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
         </Button>
       </div>
     );
-  }
-);
+  });
 
 export default inject("accountStore", "routerStore")(CopyCreatedPrivateKeyView);

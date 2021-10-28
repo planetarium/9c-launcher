@@ -99,7 +99,7 @@ const schema: any = {
   },
   DataProviderUrl: {
     type: "string",
-    default: undefined
+    default: undefined,
   },
   Network: {
     type: "string",
@@ -111,37 +111,37 @@ const schema: any = {
   },
   ConfigVersion: {
     type: "integer",
-    default: 0
+    default: 0,
   },
   RemoteRpcServerHost: {
     type: "string",
-    default: "ec2-18-190-48-27.us-east-2.compute.amazonaws.com"
+    default: "ec2-18-190-48-27.us-east-2.compute.amazonaws.com",
   },
   RemoteRpcServerPort: {
     type: "integer",
-    default: 31238
+    default: 31238,
   },
   RemoteGraphQLServerHost: {
     type: "string",
-    default: "ec2-18-190-48-27.us-east-2.compute.amazonaws.com"
+    default: "ec2-18-190-48-27.us-east-2.compute.amazonaws.com",
   },
   RemoteGraphQLServerPort: {
     type: "integer",
-    default: 80
+    default: 80,
   },
-  UseRemoteHeadless : {
+  UseRemoteHeadless: {
     type: "boolean",
-    default: false
+    default: false,
   },
   LaunchPlayer: {
     type: "boolean",
     default: true,
-  }
-}
+  },
+};
 
 export const configStore = new Store<IConfig>({
   cwd: app.getAppPath(),
-  schema
+  schema,
 });
 export const userConfigStore = new Store<IConfig>();
 
@@ -155,13 +155,13 @@ const GraphQLServer = (): string => {
 
 const RemoteGraphQLServer = (): string => {
   return `${HeadlessUrl}/graphql`;
-}
+};
 
 const HeadlessUrl = (): string => {
   return get("UseRemoteHeadless")
     ? `${get("RemoteGraphQLServerHost")}:${get("RemoteGraphQLServerPort")}`
     : LocalServerUrl();
-}
+};
 
 const RpcServerHost = (): { host: string; notDefault: boolean } => {
   const host = process.env.NC_RPC_SERVER_HOST;
@@ -209,7 +209,10 @@ export const blockchainStoreDirParent =
     ? path.join(getLocalApplicationDataPath(), "planetarium")
     : get("BlockchainStoreDirParent");
 
-export function get<K extends keyof IConfig>(key: K, defaultValue?: IConfig[K]): IConfig[K] {
+export function get<K extends keyof IConfig>(
+  key: K,
+  defaultValue?: IConfig[K]
+): IConfig[K] {
   if (userConfigStore.has(key)) {
     return userConfigStore.get(key);
   }
@@ -218,10 +221,7 @@ export function get<K extends keyof IConfig>(key: K, defaultValue?: IConfig[K]):
 }
 
 export function getBlockChainStorePath(): string {
-  return path.join(
-    blockchainStoreDirParent,
-    get("BlockchainStoreDirName")
-  )
+  return path.join(blockchainStoreDirParent, get("BlockchainStoreDirName"));
 }
 
 export const REQUIRED_DISK_SPACE = 20 * 1000 * 1000 * 1000;

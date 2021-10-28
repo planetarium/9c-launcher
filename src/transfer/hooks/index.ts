@@ -7,11 +7,12 @@ import TransferPageStore from "../stores/views/transfer";
 import SwapPageStore from "../stores/views/swap";
 
 export interface ITransferStoreContainer {
-    headlessStore: IHeadlessStore
-    menuStore: MenuStore
-    transferPage: TransferPageStore
-    swapPage: SwapPageStore
+  headlessStore: IHeadlessStore;
+  menuStore: MenuStore;
+  transferPage: TransferPageStore;
+  swapPage: SwapPageStore;
 }
 
-export const StoreContext = createContext<ITransferStoreContainer>({} as ITransferStoreContainer);
-
+export const StoreContext = createContext<ITransferStoreContainer>(
+  {} as ITransferStoreContainer
+);

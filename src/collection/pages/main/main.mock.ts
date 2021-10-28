@@ -21,131 +21,131 @@ const getCurrentGold = (level: number) => {
 };
 
 export const tableSheetData = (level: number) => {
-return {
-  data: {
-    stateQuery: {
-      monsterCollectionSheet: {
-        orderedList: [
-          {
-            level: 1,
-            requiredGold: 500,
-            rewards: [
-              {
-                itemId: 400000,
-                quantity: 200,
-                __typename: "CollectionRewardInfoType",
-              },
-            ],
-            __typename: "CollectionRowType",
-          },
-          {
-            level: 2,
-            requiredGold: 1800,
-            rewards: [
-              {
-                itemId: 400000,
-                quantity: 880,
-                __typename: "CollectionRewardInfoType",
-              },
-            ],
-            __typename: "CollectionRowType",
-          },
-          {
-            level: 3,
-            requiredGold: 7200,
-            rewards: [
-              {
-                itemId: 400000,
-                quantity: 600,
-                __typename: "CollectionRewardInfoType",
-              },
-              {
-                itemId: 500000,
-                quantity: 2,
-                __typename: "CollectionRewardInfoType",
-              },
-            ],
-            __typename: "CollectionRowType",
-          },
-          {
-            level: 4,
-            requiredGold: 54000,
-            rewards: [
-              {
-                itemId: 400000,
-                quantity: 13000,
-                __typename: "CollectionRewardInfoType",
-              },
-              {
-                itemId: 500000,
-                quantity: 10,
-                __typename: "CollectionRewardInfoType",
-              },
-            ],
-            __typename: "CollectionRowType",
-          },
-          {
-            level: 5,
-            requiredGold: 270000,
-            rewards: [
-              {
-                itemId: 400000,
-                quantity: 70000,
-                __typename: "CollectionRewardInfoType",
-              },
-              {
-                itemId: 500000,
-                quantity: 50,
-                __typename: "CollectionRewardInfoType",
-              },
-            ],
-            __typename: "CollectionRowType",
-          },
-          {
-            level: 6,
-            requiredGold: 480000,
-            rewards: [
-              {
-                itemId: 400000,
-                quantity: 150000,
-                __typename: "CollectionRewardInfoType",
-              },
-              {
-                itemId: 500000,
-                quantity: 80,
-                __typename: "CollectionRewardInfoType",
-              },
-            ],
-            __typename: "CollectionRowType",
-          },
-          {
-            level: 7,
-            requiredGold: 3000000,
-            rewards: [
-              {
-                itemId: 400000,
-                quantity: 1000000,
-                __typename: "CollectionRewardInfoType",
-              },
-              {
-                itemId: 500000,
-                quantity: 500,
-                __typename: "CollectionRewardInfoType",
-              },
-            ],
-            __typename: "CollectionRowType",
-          },
-        ],
-        __typename: "CollectionSheetType",
+  return {
+    data: {
+      stateQuery: {
+        monsterCollectionSheet: {
+          orderedList: [
+            {
+              level: 1,
+              requiredGold: 500,
+              rewards: [
+                {
+                  itemId: 400000,
+                  quantity: 200,
+                  __typename: "CollectionRewardInfoType",
+                },
+              ],
+              __typename: "CollectionRowType",
+            },
+            {
+              level: 2,
+              requiredGold: 1800,
+              rewards: [
+                {
+                  itemId: 400000,
+                  quantity: 880,
+                  __typename: "CollectionRewardInfoType",
+                },
+              ],
+              __typename: "CollectionRowType",
+            },
+            {
+              level: 3,
+              requiredGold: 7200,
+              rewards: [
+                {
+                  itemId: 400000,
+                  quantity: 600,
+                  __typename: "CollectionRewardInfoType",
+                },
+                {
+                  itemId: 500000,
+                  quantity: 2,
+                  __typename: "CollectionRewardInfoType",
+                },
+              ],
+              __typename: "CollectionRowType",
+            },
+            {
+              level: 4,
+              requiredGold: 54000,
+              rewards: [
+                {
+                  itemId: 400000,
+                  quantity: 13000,
+                  __typename: "CollectionRewardInfoType",
+                },
+                {
+                  itemId: 500000,
+                  quantity: 10,
+                  __typename: "CollectionRewardInfoType",
+                },
+              ],
+              __typename: "CollectionRowType",
+            },
+            {
+              level: 5,
+              requiredGold: 270000,
+              rewards: [
+                {
+                  itemId: 400000,
+                  quantity: 70000,
+                  __typename: "CollectionRewardInfoType",
+                },
+                {
+                  itemId: 500000,
+                  quantity: 50,
+                  __typename: "CollectionRewardInfoType",
+                },
+              ],
+              __typename: "CollectionRowType",
+            },
+            {
+              level: 6,
+              requiredGold: 480000,
+              rewards: [
+                {
+                  itemId: 400000,
+                  quantity: 150000,
+                  __typename: "CollectionRewardInfoType",
+                },
+                {
+                  itemId: 500000,
+                  quantity: 80,
+                  __typename: "CollectionRewardInfoType",
+                },
+              ],
+              __typename: "CollectionRowType",
+            },
+            {
+              level: 7,
+              requiredGold: 3000000,
+              rewards: [
+                {
+                  itemId: 400000,
+                  quantity: 1000000,
+                  __typename: "CollectionRewardInfoType",
+                },
+                {
+                  itemId: 500000,
+                  quantity: 500,
+                  __typename: "CollectionRewardInfoType",
+                },
+              ],
+              __typename: "CollectionRowType",
+            },
+          ],
+          __typename: "CollectionSheetType",
+        },
+        agent: {
+          gold: String(getCurrentGold(level)),
+          monsterCollectionLevel: level,
+          monsterCollectionRound: 0,
+          __typename: "AgentStateType",
+        },
+        __typename: "StateQuery",
       },
-      agent: {
-        gold: String(getCurrentGold(level)),
-        monsterCollectionLevel: level,
-        monsterCollectionRound: 0,
-        __typename: "AgentStateType",
-      },
-      __typename: "StateQuery",
     },
-  },
+  };
 };
-} 

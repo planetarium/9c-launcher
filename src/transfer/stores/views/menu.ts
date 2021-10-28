@@ -11,7 +11,6 @@ export interface IMenuStore {
   currentMenu: MenuItems;
 }
 
-
 export default class MenuStore implements IMenuStore {
   @observable
   public currentMenu: MenuItems = MenuItems.TRANSFER;

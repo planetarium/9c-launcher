@@ -65,17 +65,17 @@ const LoginView = observer(
         accountStore.setLoginStatus(true);
         ipcRenderer.send("mixpanel-alias", accountStore.selectedAddress);
         ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
-        if (get("UseRemoteHeadless"))
-        {
-            routerStore.push("lobby/preload");
-            standaloneStore.setPrivateKeyEnded(true);
-            accountStore.setMiningConfigStatus(true);
+        if (get("UseRemoteHeadless")) {
+          routerStore.push("lobby/preload");
+          standaloneStore.setPrivateKeyEnded(true);
+          accountStore.setMiningConfigStatus(true);
+        } else {
+          routerStore.push("/login/mining");
         }
-        else
-        {
-            routerStore.push("/login/mining");
-        }
-        ipcRenderer.send("standalone/set-signer-private-key", accountStore.privateKey);
+        ipcRenderer.send(
+          "standalone/set-signer-private-key",
+          accountStore.privateKey
+        );
       }
     }, [unprotectedPrivateKey]);
 
@@ -123,7 +123,7 @@ const LoginView = observer(
             <Grid item xs={12}>
               <article className={classes.labelContainer}>
                 <InputLabel className={classes.label}>
-                  <T _str="ID" _tags={transifexTags}/>
+                  <T _str="ID" _tags={transifexTags} />
                   <IconButton
                     size="small"
                     component="span"
@@ -133,14 +133,14 @@ const LoginView = observer(
                   </IconButton>
                 </InputLabel>
                 <ClearCacheButton className={classes.cacheButton}>
-                  <T _str="CLEAR CACHE" _tags={transifexTags}/>
+                  <T _str="CLEAR CACHE" _tags={transifexTags} />
                 </ClearCacheButton>
               </article>
               <Popover
                 {...bindPopover(addressCopiedPopupState)}
                 {...popoverLayout}
               >
-                <T _str="Copied to clipboard!" _tags={transifexTags}/>
+                <T _str="Copied to clipboard!" _tags={transifexTags} />
               </Popover>
               <Select
                 items={accountStore.addresses}
@@ -151,10 +151,12 @@ const LoginView = observer(
             <Grid item xs={12}>
               <article className={classes.labelContainer}>
                 <InputLabel className={classes.label}>
-                  <T _str="Password" _tags={transifexTags}/>
+                  <T _str="Password" _tags={transifexTags} />
                 </InputLabel>
                 <InputLabel error className={classes.label}>
-                  {isInvalid && <T _str="Invalid password" _tags={transifexTags}/>}
+                  {isInvalid && (
+                    <T _str="Invalid password" _tags={transifexTags} />
+                  )}
                 </InputLabel>
               </article>
               <FormControl fullWidth>
@@ -180,13 +182,13 @@ const LoginView = observer(
               variant="contained"
               color="primary"
             >
-              <T _str="Login" _tags={transifexTags}/>
+              <T _str="Login" _tags={transifexTags} />
             </Button>
             <TextButton
               className={classes.resetLink}
               onClick={handleResetPassword}
             >
-              <T _str="Forgot password?" _tags={transifexTags}/>
+              <T _str="Forgot password?" _tags={transifexTags} />
             </TextButton>
           </Box>
         </form>

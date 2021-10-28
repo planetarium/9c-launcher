@@ -6,7 +6,7 @@ import { RetryLink } from "apollo-link-retry";
 import { WebSocketLink } from "apollo-link-ws";
 import React, { useState } from "react";
 import { HEADLESS_URL } from "../config";
-import './App.scss';
+import "./App.scss";
 import { getMainDefinition } from "apollo-utilities";
 import Main from "./pages/main/main";
 import { ApolloProvider } from "react-apollo";
@@ -37,11 +37,14 @@ const apiLink = split(
 );
 
 function getIsFileExsist() {
-  var remote = require('electron').remote;
-  var electronFs = remote.require('fs');
-  const filePath = path.join(remote.app.getAppPath(), "monster-collection-intro");
-  console.log(`path: ${filePath}`)
-  if(electronFs.existsSync(filePath)) {
+  var remote = require("electron").remote;
+  var electronFs = remote.require("fs");
+  const filePath = path.join(
+    remote.app.getAppPath(),
+    "monster-collection-intro"
+  );
+  console.log(`path: ${filePath}`);
+  if (electronFs.existsSync(filePath)) {
     return true;
   } else {
     return false;
@@ -49,10 +52,13 @@ function getIsFileExsist() {
 }
 
 function createFile() {
-  var remote = require('electron').remote;
-  var electronFs = remote.require('fs');
-  const filePath = path.join(remote.app.getAppPath(), "monster-collection-intro");
-  electronFs.openSync(filePath, 'w');
+  var remote = require("electron").remote;
+  var electronFs = remote.require("fs");
+  const filePath = path.join(
+    remote.app.getAppPath(),
+    "monster-collection-intro"
+  );
+  electronFs.openSync(filePath, "w");
 }
 
 const isFileExsist = getIsFileExsist();
@@ -67,14 +73,18 @@ const client = new ApolloClient({
 const App: React.FC = () => {
   const [agentAddress, setAgentAddress] = useState<string>("");
   ipcRenderer.on("set miner address", (_, address) => {
-    console.log("set miner address Main.tsx")
+    console.log("set miner address Main.tsx");
     setAgentAddress(address);
-  })
+  });
   return (
-  <ApolloProvider client={client}>
-    <IntroFacade isFirst={isFileExsist} onCreateFile={createFile} agentAddress={agentAddress}/>
+    <ApolloProvider client={client}>
+      <IntroFacade
+        isFirst={isFileExsist}
+        onCreateFile={createFile}
+        agentAddress={agentAddress}
+      />
     </ApolloProvider>
-  )
+  );
 };
 
 export default App;
