@@ -43,9 +43,9 @@ export class Action extends StandaloneSubcommand {
                 "transfer-asset",
                 sender,
                 recipient,
-                String(amount),
-                memo,
-                path);
+                `${amount}`,
+                path,
+                memo);
             return true;
         } catch (error) {
             console.error(error);
