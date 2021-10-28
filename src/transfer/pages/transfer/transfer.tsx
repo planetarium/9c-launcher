@@ -21,7 +21,7 @@ import {
 const transifexTags = "Transfer/Transfer";
 
 export type Props = {
-  signer: string,
+  signer: string;
   onDetailedView: (tx: string) => void;
 };
 
