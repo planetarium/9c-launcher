@@ -16,7 +16,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     icon: join(app.getAppPath(), logoImage),
   });
 
-  if(isDev) {
+  if (isDev) {
     await win.loadURL("http://localhost:9000/v2.html");
     await win.webContents.openDevTools({ mode: "detach" });
   } else {

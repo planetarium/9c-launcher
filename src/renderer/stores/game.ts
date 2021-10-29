@@ -50,8 +50,7 @@ export default class GameStore {
 
     let rpcHost = RPC_SERVER_HOST;
     let rpcPort = RPC_SERVER_PORT;
-    if (getConfig("UseRemoteHeadless"))
-    {
+    if (getConfig("UseRemoteHeadless")) {
       rpcHost = getConfig("RemoteRpcServerHost");
       rpcPort = getConfig("RemoteRpcServerPort");
     }

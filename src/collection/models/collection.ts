@@ -1,30 +1,30 @@
-import { CollectionItemTier, CollectionPhase } from "../types"
+import { CollectionItemTier, CollectionPhase } from "../types";
 
 export type StakingState = {
-    level: number,
-    startBlockIndex: number,
-    receivedBlockIndex: number,
-    expiredBlockIndex: number,
-    rewardLevel: number,
-    isEnd: boolean,
-}
+  level: number;
+  startBlockIndex: number;
+  receivedBlockIndex: number;
+  expiredBlockIndex: number;
+  rewardLevel: number;
+  isEnd: boolean;
+};
 
 export type AgentState = {
-    address: string,
-    gold: number,
-}
+  address: string;
+  gold: number;
+};
 
 export type AvatarState = {
-    name: string,
-    upadtedAt: number,
-}
+  name: string;
+  upadtedAt: number;
+};
 
 export type ChainState = {
-    tipIndex: number,
-}
+  tipIndex: number;
+};
 
 export type CollectionItemModel = {
-    tier: CollectionItemTier,
-    collectionPhase: CollectionPhase,
-    value: number,
-}
+  tier: CollectionItemTier;
+  collectionPhase: CollectionPhase;
+  value: number;
+};

@@ -67,13 +67,11 @@ export function T<Content = {}>({
 function newlineToLineBreak(node: ReactChild): ReactNode {
   if (typeof node == "number") {
     return node;
-  }
-  else if (typeof node == "string") {
+  } else if (typeof node == "string") {
     const tokens = node.split("\n");
     if (tokens.length === 1) return node;
-    return tokens.flatMap(token => [token, <br />]).slice(0, -1);
-  }
-  else if (Array.isArray(node.props.children)) {
+    return tokens.flatMap((token) => [token, <br />]).slice(0, -1);
+  } else if (Array.isArray(node.props.children)) {
     return node.props.children.map(newlineToLineBreak);
   } else {
     return newlineToLineBreak(node.props.children);

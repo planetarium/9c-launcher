@@ -1,39 +1,45 @@
-import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import React from "react";
+import { Story, Meta } from "@storybook/react";
 
-import AccountInfoContainer, { Props } from './AccountInfoContainer';
-import { Provider } from 'mobx-react';
-import AccountStore from '../../stores/account';
-import { CollectionSheetDocument, CollectionStatusDocument, CollectionStateDocument, NodeStatusSubscriptionDocument } from '../../../generated/graphql';
+import AccountInfoContainer, { Props } from "./AccountInfoContainer";
+import { Provider } from "mobx-react";
+import AccountStore from "../../stores/account";
+import {
+  CollectionSheetDocument,
+  CollectionStatusDocument,
+  CollectionStateDocument,
+  NodeStatusSubscriptionDocument,
+} from "../../../generated/graphql";
 
 export default {
-  title: 'Renderer/Components/AccountInfo',
+  title: "Renderer/Components/AccountInfo",
   component: AccountInfoContainer,
 } as Meta;
 
-
-const accountStore = new AccountStore()
+const accountStore = new AccountStore();
 
 const address = "0x590c887BDac8d957Ca5d3c1770489Cf2aFBd868E";
 accountStore.addAddress(address);
 accountStore.setSelectedAddress(address);
 
-const Template: Story<Props> = (props) => <Provider accountStore={accountStore}>
-  <AccountInfoContainer {...props} />
-</Provider>;
+const Template: Story<Props> = (props) => (
+  <Provider accountStore={accountStore}>
+    <AccountInfoContainer {...props} />
+  </Provider>
+);
 
 export const Primary = Template.bind({});
 Primary.args = {
-  onOpenWindow: () => { },
-  onReward: () => { },
-  minedBlock: 500
-}
+  onOpenWindow: () => {},
+  onReward: () => {},
+  minedBlock: 500,
+};
 Primary.parameters = {
   apolloClient: {
     mocks: [
       {
         request: {
-          query: CollectionSheetDocument
+          query: CollectionSheetDocument,
         },
         result: {
           data: {
@@ -43,44 +49,44 @@ Primary.parameters = {
                   {
                     level: 1,
                     requiredGold: 500,
-                    __typename: "CollectionRowType"
+                    __typename: "CollectionRowType",
                   },
                   {
                     level: 2,
                     requiredGold: 1800,
-                    __typename: "CollectionRowType"
+                    __typename: "CollectionRowType",
                   },
                   {
                     level: 3,
                     requiredGold: 7200,
-                    __typename: "CollectionRowType"
+                    __typename: "CollectionRowType",
                   },
                   {
                     level: 4,
                     requiredGold: 54000,
-                    __typename: "CollectionRowType"
+                    __typename: "CollectionRowType",
                   },
                   {
                     level: 5,
                     requiredGold: 270000,
-                    __typename: "CollectionRowType"
+                    __typename: "CollectionRowType",
                   },
                   {
                     level: 6,
                     requiredGold: 480000,
-                    __typename: "CollectionRowType"
+                    __typename: "CollectionRowType",
                   },
                   {
                     level: 7,
                     requiredGold: 3000000,
-                    __typename: "CollectionRowType"
-                  }
+                    __typename: "CollectionRowType",
+                  },
                 ],
-                __typename: "CollectionSheetType"
+                __typename: "CollectionSheetType",
               },
-              __typename: "StateQuery"
-            }
-          }
+              __typename: "StateQuery",
+            },
+          },
         },
         newData: () => {
           return {
@@ -91,50 +97,50 @@ Primary.parameters = {
                     {
                       level: 1,
                       requiredGold: 500,
-                      __typename: "CollectionRowType"
+                      __typename: "CollectionRowType",
                     },
                     {
                       level: 2,
                       requiredGold: 1800,
-                      __typename: "CollectionRowType"
+                      __typename: "CollectionRowType",
                     },
                     {
                       level: 3,
                       requiredGold: 7200,
-                      __typename: "CollectionRowType"
+                      __typename: "CollectionRowType",
                     },
                     {
                       level: 4,
                       requiredGold: 54000,
-                      __typename: "CollectionRowType"
+                      __typename: "CollectionRowType",
                     },
                     {
                       level: 5,
                       requiredGold: 270000,
-                      __typename: "CollectionRowType"
+                      __typename: "CollectionRowType",
                     },
                     {
                       level: 6,
                       requiredGold: 480000,
-                      __typename: "CollectionRowType"
+                      __typename: "CollectionRowType",
                     },
                     {
                       level: 7,
                       requiredGold: 3000000,
-                      __typename: "CollectionRowType"
-                    }
+                      __typename: "CollectionRowType",
+                    },
                   ],
-                  __typename: "CollectionSheetType"
+                  __typename: "CollectionSheetType",
                 },
-                __typename: "StateQuery"
-              }
-            }
-          }
+                __typename: "StateQuery",
+              },
+            },
+          };
         },
       },
       {
         request: {
-          query: CollectionStateDocument
+          query: CollectionStateDocument,
         },
         result: {
           data: {
@@ -142,9 +148,9 @@ Primary.parameters = {
               agent: {
                 gold: "102720",
                 collectionLevel: 3,
-                __typename: "AgentStateType"
+                __typename: "AgentStateType",
               },
-              __typename: "StateQuery"
+              __typename: "StateQuery",
             },
             monsterCollectionState: {
               address: "",
@@ -155,7 +161,7 @@ Primary.parameters = {
               rewardLevel: "",
               receivedBlockIndex: "",
               startedBlockIndex: "",
-              __typename: "MonsterCollectionStateType"
+              __typename: "MonsterCollectionStateType",
             },
           },
         },
@@ -166,9 +172,9 @@ Primary.parameters = {
                 agent: {
                   gold: "102720",
                   collectionLevel: 3,
-                  __typename: "AgentStateType"
+                  __typename: "AgentStateType",
                 },
-                __typename: "StateQuery"
+                __typename: "StateQuery",
               },
               monsterCollectionState: {
                 address: "",
@@ -179,24 +185,24 @@ Primary.parameters = {
                 rewardLevel: "",
                 receivedBlockIndex: "",
                 startedBlockIndex: "",
-                __typename: "MonsterCollectionStateType"
+                __typename: "MonsterCollectionStateType",
               },
             },
-          }
-        }
+          };
+        },
       },
       {
         request: {
-          query: NodeStatusSubscriptionDocument
+          query: NodeStatusSubscriptionDocument,
         },
         result: {
           data: {
             nodeStatus: {
               bootstrapEnded: true,
               preloadEnded: true,
-              __typename: "NodeStatusType"
-            }
-          }
+              __typename: "NodeStatusType",
+            },
+          },
         },
         newData: () => {
           return {
@@ -204,15 +210,15 @@ Primary.parameters = {
               nodeStatus: {
                 bootstrapEnded: true,
                 preloadEnded: true,
-                __typename: "NodeStatusType"
-              }
-            }
-          }
-        }
+                __typename: "NodeStatusType",
+              },
+            },
+          };
+        },
       },
       {
         request: {
-          query: CollectionStatusDocument
+          query: CollectionStatusDocument,
         },
         result: {
           data: {
@@ -221,9 +227,9 @@ Primary.parameters = {
               __typename: "CollectionStatusType",
               fungibleAssetValue: {
                 quantity: 102740,
-                __typename: "FungibleAssetValueType"
-              }
-            }
+                __typename: "FungibleAssetValueType",
+              },
+            },
           },
         },
         newData: () => {
@@ -234,13 +240,13 @@ Primary.parameters = {
                 __typename: "CollectionStatusType",
                 fungibleAssetValue: {
                   quantity: 102740,
-                  __typename: "FungibleAssetValueType"
-                }
-              }
-            }
-          }
+                  __typename: "FungibleAssetValueType",
+                },
+              },
+            },
+          };
         },
-      }
-    ]
-  }
-}
+      },
+    ],
+  },
+};
