@@ -1,5 +1,4 @@
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
-import { getFreeSpace } from "@planetarium/check-free-space";
 import path from "path";
 import fs from "fs";
 import axios, { AxiosError } from "axios";
@@ -13,10 +12,6 @@ import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-do
 import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
 
 const pipeline = promisify(stream.pipeline);
-
-export async function getDiskSpace(diskpath: string): Promise<BigInt> {
-  return getFreeSpace(diskpath);
-}
 
 export function isDiskPermissionValid(diskpath: string): boolean {
   try {

@@ -70,6 +70,7 @@ import createTransferWindow from "../transfer/window";
 import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import { createWindow as createV2Window } from "./v2/application";
+import { getFreeSpace } from "@planetarium/check-free-space";
 
 initializeSentry();
 
@@ -792,7 +793,7 @@ async function initializeHeadless(): Promise<void> {
             initializeHeadlessCts.token,
             async (size) => {
               try {
-                let freeSpace = await utils.getDiskSpace(chainPath);
+                let freeSpace = await getFreeSpace(chainPath);
                 if (freeSpace < size) {
                   win?.webContents.send("go to error page", "disk-space", {
                     size,
@@ -804,7 +805,7 @@ async function initializeHeadless(): Promise<void> {
               } catch {
                 await dialog.showMessageBox(win!, {
                   message: `Failed to check free space. Please make sure you have at least ${prettyBytes(
-                    size
+                    Number(size)
                   )} available on your disk.`,
                   type: "warning",
                 });
