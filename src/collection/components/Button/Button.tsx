@@ -1,6 +1,6 @@
 import React from "react";
 
-import './Button.scss';
+import "./Button.scss";
 
 export type Props = {
   children: React.ReactNode;
@@ -16,7 +16,9 @@ const CollectionButton: React.FC<Props> = (props: Props) => {
     <div
       onClick={onClick}
       style={{ width: width, height: height }}
-      className={`ButtonContainer ${primary ? "PrimaryButtonContainer" : "CancelButtonContainer"}`}
+      className={`ButtonContainer ${
+        primary ? "PrimaryButtonContainer" : "CancelButtonContainer"
+      }`}
     >
       {children}
     </div>

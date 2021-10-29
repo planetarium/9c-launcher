@@ -1,18 +1,18 @@
-import {ChildProcess, execFileSync} from "child_process";
-import {ipcMain} from "electron";
-import {basename, dirname} from "path";
-import {CUSTOM_SERVER, LOCAL_SERVER_URL, userConfigStore} from "../../config";
-import {retry} from "@lifeomic/attempt";
-import {FetchError, HeadlessExitedError} from "../../errors";
-import {execute, sleep} from "../../utils";
-import fetch, {Response} from "electron-fetch";
-import {EventEmitter} from "ws";
-import {BlockMetadata} from "src/interfaces/block-header";
-import {KeyStore} from "./key-store";
-import {Validation} from "./validation";
-import {Apv} from "./apv";
-import {Tx} from "./tx";
-import {Action} from "./action";
+import { ChildProcess, execFileSync } from "child_process";
+import { ipcMain } from "electron";
+import { basename, dirname } from "path";
+import { CUSTOM_SERVER, LOCAL_SERVER_URL, userConfigStore } from "../../config";
+import { retry } from "@lifeomic/attempt";
+import { FetchError, HeadlessExitedError } from "../../errors";
+import { execute, sleep } from "../../utils";
+import fetch, { Response } from "electron-fetch";
+import { EventEmitter } from "ws";
+import { BlockMetadata } from "src/interfaces/block-header";
+import { KeyStore } from "./key-store";
+import { Validation } from "./validation";
+import { Apv } from "./apv";
+import { Tx } from "./tx";
+import { Action } from "./action";
 
 export const retryOptions = {
   delay: 100,
@@ -66,20 +66,36 @@ class Headless {
       event.returnValue = ret;
     });
 
-    ipcMain.on("activate-account", async (event, activationKey: string, nonce: string, filePath: string) => {
-      console.log("activate-account")
-      event.returnValue = this.action.ActivateAccount(activationKey, nonce, filePath);
-    });
+    ipcMain.on(
+      "activate-account",
+      async (event, activationKey: string, nonce: string, filePath: string) => {
+        console.log("activate-account");
+        event.returnValue = this.action.ActivateAccount(
+          activationKey,
+          nonce,
+          filePath
+        );
+      }
+    );
 
-    ipcMain.on("monster-collect", async (event, level: number, filePath: string) => {
-      console.log("monster-collect")
-      event.returnValue = this.action.MonsterCollect(level, filePath);
-    });
+    ipcMain.on(
+      "monster-collect",
+      async (event, level: number, filePath: string) => {
+        console.log("monster-collect");
+        event.returnValue = this.action.MonsterCollect(level, filePath);
+      }
+    );
 
-    ipcMain.on("claim-monster-collection-reward", async (event, avatarAddress: string, filePath: string) => {
-      console.log("claim-monster-collection-reward")
-      event.returnValue = this.action.ClaimMonsterCollectionReward(avatarAddress, filePath);
-    });
+    ipcMain.on(
+      "claim-monster-collection-reward",
+      async (event, avatarAddress: string, filePath: string) => {
+        console.log("claim-monster-collection-reward");
+        event.returnValue = this.action.ClaimMonsterCollectionReward(
+          avatarAddress,
+          filePath
+        );
+      }
+    );
 
     ipcMain.on("transfer-asset", async (
       event,
@@ -97,14 +113,22 @@ class Headless {
         filePath);
     });
 
-    ipcMain.on("sign-tx", async (event, nonce: number, timeStamp: string, filePath: string) => {
-      console.log("sign-tx")
-      if (this._signerPrivateKey == undefined || "")
-      {
-        throw new Error("set signer private key first.");
+    ipcMain.on(
+      "sign-tx",
+      async (event, nonce: number, timeStamp: string, filePath: string) => {
+        console.log("sign-tx");
+        if (this._signerPrivateKey == undefined || "") {
+          throw new Error("set signer private key first.");
+        }
+        event.returnValue = this.tx.Sign(
+          this._signerPrivateKey,
+          nonce,
+          "4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce",
+          timeStamp,
+          filePath
+        );
       }
-      event.returnValue = this.tx.Sign(this._signerPrivateKey, nonce, "4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce", timeStamp, filePath)
-    });
+    );
   }
 
   private _path: string;
@@ -137,7 +161,7 @@ class Headless {
       console.log("Connecting to the custom headless server...");
       console.log(
         "If the connection is not successful, check if the headless server " +
-        `is executed with the following options:${argsString}`
+          `is executed with the following options:${argsString}`
       );
     } else {
       console.log(
@@ -214,7 +238,7 @@ class Headless {
     return true;
   }
 
-  public async setSignerPrivateKey(privateKey: string) : Promise<boolean> {
+  public async setSignerPrivateKey(privateKey: string): Promise<boolean> {
     this._signerPrivateKey = privateKey;
     return true;
   }
@@ -231,11 +255,11 @@ class Headless {
     return new Apv(this._path);
   }
 
-  public get tx() : Tx {
+  public get tx(): Tx {
     return new Tx(this._path);
   }
 
-  public get action() : Action {
+  public get action(): Action {
     return new Action(this._path);
   }
 
@@ -308,7 +332,8 @@ class Headless {
 
         if (await this.needRetry(response)) {
           console.log(
-            `Failed to fetch standalone (${addr}). Retrying... ${context.attemptNum
+            `Failed to fetch standalone (${addr}). Retrying... ${
+              context.attemptNum
             }/${context.attemptsRemaining + context.attemptNum}`
           );
           throw new Error("Retry required.");

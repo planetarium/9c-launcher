@@ -1,18 +1,17 @@
-import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import React from "react";
+import { Story, Meta } from "@storybook/react";
 
-import SendingDialog, {Props} from './SendingDialog';
+import SendingDialog, { Props } from "./SendingDialog";
 
 export default {
-  title: 'Transfer/SendingDialog',
+  title: "Transfer/SendingDialog",
   component: SendingDialog,
-  parameters: { actions: { argTypesRegex: '^on.*' } },
+  parameters: { actions: { argTypesRegex: "^on.*" } },
 } as Meta;
 
-const Template: Story<Props> = (args) => <SendingDialog {...args}/>;
-
+const Template: Story<Props> = (args) => <SendingDialog {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  open: true
-}
+  open: true,
+};

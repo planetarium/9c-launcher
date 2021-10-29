@@ -113,7 +113,8 @@ jobs:
       # 의존성 설치
       - run: yarn
       # 코드 스타일 린트
-      - run: npx pretty-quick --check --branch "${{ github.base_ref }}"
+      - run: npx prettier --check "src/**/*.{ts,tsx,json}"
+        if: runner.os != 'Windows' # Windows uses CRLF line endings
       # 빌드
       - run: yarn build-prod
       - name: Type Check

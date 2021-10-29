@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import { action, computed, observable } from "mobx";
-import { verify as addressVerify } from 'eip55'
+import { verify as addressVerify } from "eip55";
 
 export enum TransferPhase {
   READY,
@@ -19,7 +19,6 @@ export interface ITransferPageStore {
   amountWarning: boolean;
   currentPhase: TransferPhase;
 }
-
 
 export default class TransferPageStore implements ITransferPageStore {
   @observable public recipient: string;

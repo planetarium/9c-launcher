@@ -3,7 +3,12 @@ import BackgroundImage from "../../common/resources/staking_bg.png";
 
 import CollectionItem from "../../components/CollectionItem/CollectionItem";
 import Cart from "../../components/Cart/Cart";
-import { Reward, CollectionItemTier, CollectionPhase, CollectionSheetItem } from "../../types";
+import {
+  Reward,
+  CollectionItemTier,
+  CollectionPhase,
+  CollectionSheetItem,
+} from "../../types";
 
 import "./main.scss";
 import ConfirmationDialog from "../../components/RenewDialog/RenewDialog";
@@ -25,11 +30,14 @@ import ExpectedStatusBoard from "../../components/ExpectedStatusBoard/ExpectedSt
 import CollectionPanel from "../../components/CollectionPanel/CollectionPanel";
 import RemainingDisplay from "../../components/RemainingDisplay/RemainingDisplay";
 import LoadingPage from "./loading";
-import {ipcRenderer} from "electron";
-import {tmpName} from "tmp-promise";
+import { ipcRenderer } from "electron";
+import { tmpName } from "tmp-promise";
 import useStores from "../../../hooks/useStores";
 
-const getCollectionPhase = (level: number, collectionLevel: number): CollectionPhase => {
+const getCollectionPhase = (
+  level: number,
+  collectionLevel: number
+): CollectionPhase => {
   if (level === collectionLevel + 1) return CollectionPhase.CANDIDATE;
   else if (level > collectionLevel) return CollectionPhase.LOCKED;
   else if (level === collectionLevel) return CollectionPhase.LATEST;
@@ -37,16 +45,18 @@ const getCollectionPhase = (level: number, collectionLevel: number): CollectionP
 };
 
 export type Props = {
-  signer: string,
-  addressLoading: boolean,
-}
+  signer: string;
+  addressLoading: boolean;
+};
 
 const Main: React.FC<Props> = (props: Props) => {
-  const {signer, addressLoading} = props;
+  const { signer, addressLoading } = props;
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
   const [cartList, setCartList] = useState<CollectionItemModel[]>([]);
   const [tempCartList, setTempCartList] = useState<CollectionItemModel[]>([]);
-  const [collectionSheet, setCollectionSheet] = useState<CollectionSheetItem[]>([]);
+  const [collectionSheet, setCollectionSheet] = useState<CollectionSheetItem[]>(
+    []
+  );
   const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
   const [openLoading, setOpenLoading] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
@@ -58,64 +68,64 @@ const Main: React.FC<Props> = (props: Props) => {
   const [hasRewards, setHasRewards] = useState<boolean>(false);
   const [tx, setTx] = useState("");
 
-  const {
-    loading,
-    data: sheetQuery,
-  } = useCollectionSheetWithStateQuery({
+  const { loading, data: sheetQuery } = useCollectionSheetWithStateQuery({
     variables: {
       address: signer,
-    }
+    },
   });
-  const [
-    collect,
-  ] = useStageTxV2Mutation({
+  const [collect] = useStageTxV2Mutation({
     variables: {
-      encodedTx: tx
-    }
+      encodedTx: tx,
+    },
   });
 
   const { data: collectionStatus } = useCollectionStatusByAgentSubscription({
     variables: {
-      address: signer
-    }
+      address: signer,
+    },
   });
   const { data: collectionState } = useCollectionStateByAgentSubscription({
     variables: {
-      address: signer
-    }
+      address: signer,
+    },
   });
   const { data: nodeStatus } = useGetTipQuery({
-    pollInterval: 1000 * 5
+    pollInterval: 1000 * 5,
   });
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
-      agentAddress: signer
+      agentAddress: signer,
     },
-    pollInterval: 1000 * 5
+    pollInterval: 1000 * 5,
   });
   const { data: collectionStatusQuery } = useCollectionStatusQueryQuery({
     variables: {
-      address: signer
-    }
+      address: signer,
+    },
   });
 
   const { refetch: txNonceRefetch } = useGetNextTxNonceQuery({
     variables: {
-      address: signer
-    }
-  })
+      address: signer,
+    },
+  });
 
   useEffect(() => {
     let targetBlock = 0;
     if (collectionState?.monsterCollectionStateByAgent != null) {
-      targetBlock = Number(collectionState?.monsterCollectionStateByAgent.claimableBlockIndex);
+      targetBlock = Number(
+        collectionState?.monsterCollectionStateByAgent.claimableBlockIndex
+      );
     } else {
-      targetBlock = Number(collectionStateQuery?.stateQuery.monsterCollectionState?.claimableBlockIndex);
+      targetBlock = Number(
+        collectionStateQuery?.stateQuery.monsterCollectionState
+          ?.claimableBlockIndex
+      );
     }
     const currentTip = nodeStatus?.nodeStatus.tip.index || 0;
     const delta = targetBlock - currentTip;
-    setRemainTime(Math.round(delta / 5))
-  }, [nodeStatus, collectionState, collectionStateQuery])
+    setRemainTime(Math.round(delta / 5));
+  }, [nodeStatus, collectionState, collectionStateQuery]);
 
   const applyCollectionLevel = (level: number) => {
     if (!edit) {
@@ -125,17 +135,23 @@ const Main: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const applyCollectionStatus = (status: MonsterCollectionStatusType | undefined | null) => {
+  const applyCollectionStatus = (
+    status: MonsterCollectionStatusType | undefined | null
+  ) => {
     setLockup(status?.lockup ?? false);
     setHasRewards((status?.rewardInfos?.length ?? 0) > 0);
-  }
+  };
 
   useEffect(() => {
-    applyCollectionLevel(collectionState?.monsterCollectionStateByAgent?.level ?? 0);
+    applyCollectionLevel(
+      collectionState?.monsterCollectionStateByAgent?.level ?? 0
+    );
   }, [collectionState]);
 
   useEffect(() => {
-    applyCollectionLevel(collectionStateQuery?.stateQuery.monsterCollectionState?.level ?? 0);
+    applyCollectionLevel(
+      collectionStateQuery?.stateQuery.monsterCollectionState?.level ?? 0
+    );
   }, [collectionStateQuery]);
 
   useEffect(() => {
@@ -161,10 +177,7 @@ const Main: React.FC<Props> = (props: Props) => {
       setCartList((state) =>
         state.concat({
           tier: x!.level,
-          collectionPhase: getCollectionPhase(
-            x!.level,
-            collectionLevel
-          ),
+          collectionPhase: getCollectionPhase(x!.level, collectionLevel),
           value: x!.requiredGold,
         } as CollectionItemModel)
       );
@@ -198,11 +211,16 @@ const Main: React.FC<Props> = (props: Props) => {
     setOpenLoading(false);
 
     if (collectionLevel === 0) {
-      setCartList((state) => state.map(x => ({
-        tier: x.tier,
-        value: x.value,
-        collectionPhase: getCollectionPhase(x.tier, 0),
-      } as CollectionItemModel)));
+      setCartList((state) =>
+        state.map(
+          (x) =>
+            ({
+              tier: x.tier,
+              value: x.value,
+              collectionPhase: getCollectionPhase(x.tier, 0),
+            } as CollectionItemModel)
+        )
+      );
       setDepositedGold(0);
     }
   }, [collectionLevel]);
@@ -221,11 +239,11 @@ const Main: React.FC<Props> = (props: Props) => {
   if (loading || addressLoading) return <LoadingPage />;
   if (signer === "") {
     // FIXME we should translate this message.
-    return <div>you need login first</div>
+    return <div>you need login first</div>;
   }
   if (sheetQuery?.stateQuery.agent == null) {
     // FIXME we should translate this message.
-    return <div>you need create avatar first</div>
+    return <div>you need create avatar first</div>;
   }
   if (
     sheetQuery?.stateQuery.monsterCollectionSheet == null ||
@@ -238,21 +256,30 @@ const Main: React.FC<Props> = (props: Props) => {
     setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier - 1
-          ? ({ ...x, collectionPhase: CollectionPhase.COLLECTED } as CollectionItemModel)
+          ? ({
+              ...x,
+              collectionPhase: CollectionPhase.COLLECTED,
+            } as CollectionItemModel)
           : x
       )
     );
     setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier
-          ? ({ ...x, collectionPhase: CollectionPhase.LATEST } as CollectionItemModel)
+          ? ({
+              ...x,
+              collectionPhase: CollectionPhase.LATEST,
+            } as CollectionItemModel)
           : x
       )
     );
     setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier + 1
-          ? ({ ...x, collectionPhase: CollectionPhase.CANDIDATE } as CollectionItemModel)
+          ? ({
+              ...x,
+              collectionPhase: CollectionPhase.CANDIDATE,
+            } as CollectionItemModel)
           : x
       )
     );
@@ -262,28 +289,39 @@ const Main: React.FC<Props> = (props: Props) => {
     if (item.collectionPhase != CollectionPhase.LATEST) return;
 
     if (lockup && item.tier <= collectionLevel) {
-      alert("Locked-up monsters can be removed after about 1 month (201,600 blocks).");
+      alert(
+        "Locked-up monsters can be removed after about 1 month (201,600 blocks)."
+      );
       return;
     }
 
     setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier - 1
-          ? ({ ...x, collectionPhase: CollectionPhase.LATEST } as CollectionItemModel)
+          ? ({
+              ...x,
+              collectionPhase: CollectionPhase.LATEST,
+            } as CollectionItemModel)
           : x
       )
     );
     setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier
-          ? ({ ...x, collectionPhase: CollectionPhase.CANDIDATE } as CollectionItemModel)
+          ? ({
+              ...x,
+              collectionPhase: CollectionPhase.CANDIDATE,
+            } as CollectionItemModel)
           : x
       )
     );
     setTempCartList((state) =>
       state.map((x) =>
         x.tier === item.tier + 1
-          ? ({ ...x, collectionPhase: CollectionPhase.LOCKED } as CollectionItemModel)
+          ? ({
+              ...x,
+              collectionPhase: CollectionPhase.LOCKED,
+            } as CollectionItemModel)
           : x
       )
     );
@@ -295,8 +333,7 @@ const Main: React.FC<Props> = (props: Props) => {
     );
     await makeTx(latestCollectionItem?.tier ?? 0);
     const collectionResult = await collect();
-    if (collectionResult.data == null)
-    {
+    if (collectionResult.data == null) {
       alert("failed monster collect.");
       return;
     }
@@ -305,12 +342,20 @@ const Main: React.FC<Props> = (props: Props) => {
 
   const handleSubmit = () => {
     if (hasRewards) {
-      alert("There are rewards to be received. Please try again after receiving the reward.");
+      alert(
+        "There are rewards to be received. Please try again after receiving the reward."
+      );
       return;
     }
 
-    if (cartList.findIndex(c => c.collectionPhase === CollectionPhase.CANDIDATE) ===
-      tempCartList.findIndex(c => c.collectionPhase === CollectionPhase.CANDIDATE)) {
+    if (
+      cartList.findIndex(
+        (c) => c.collectionPhase === CollectionPhase.CANDIDATE
+      ) ===
+      tempCartList.findIndex(
+        (c) => c.collectionPhase === CollectionPhase.CANDIDATE
+      )
+    ) {
       alert("Please add or remove at least one monster.");
       return;
     }
@@ -320,17 +365,18 @@ const Main: React.FC<Props> = (props: Props) => {
 
   const handleEdit = () => {
     if (hasRewards) {
-      alert("There are rewards to be received. Please try again after receiving the reward.");
-    }
-    else {
+      alert(
+        "There are rewards to be received. Please try again after receiving the reward."
+      );
+    } else {
       setEdit(true);
     }
-  }
+  };
 
   const handleCancel = () => {
-    setEdit(false)
+    setEdit(false);
     setTempCartList(cartList);
-  }
+  };
 
   const handleConfirmSubmit = () => {
     setOpenConfirmation(false);
@@ -338,45 +384,45 @@ const Main: React.FC<Props> = (props: Props) => {
     setOpenLoading(true);
 
     collectionMutation();
-  }
+  };
 
   const handleConfirmCancel = () => {
     setOpenConfirmation(false);
     setEdit(false);
-  }
+  };
 
   async function makeTx(level: number) {
     // create action.
     const fileName = await tmpName();
-    if (!ipcRenderer.sendSync("monster-collect", level, fileName))
-    {
+    if (!ipcRenderer.sendSync("monster-collect", level, fileName)) {
       return;
     }
 
     // get tx nonce.
     const ended = async () => {
-      return await txNonceRefetch({address: signer});
-    }
+      return await txNonceRefetch({ address: signer });
+    };
     let txNonce;
     try {
       let res = await ended();
       txNonce = res.data.transaction.nextTxNonce;
-    }
-    catch (e) {
+    } catch (e) {
       alert(e.message);
       return;
     }
 
     // sign tx.
-    const result = ipcRenderer.sendSync("sign-tx", txNonce,
-      new Date().toISOString(), fileName);
-    if (result.stderr != "")
-    {
+    const result = ipcRenderer.sendSync(
+      "sign-tx",
+      txNonce,
+      new Date().toISOString(),
+      fileName
+    );
+    if (result.stderr != "") {
       alert(result.stderr);
       return;
     }
-    if (result.stdout != "")
-    {
+    if (result.stdout != "") {
       setTx(result.stdout);
     }
     return;
@@ -394,38 +440,51 @@ const Main: React.FC<Props> = (props: Props) => {
               collectionSheet={collectionSheet}
               currentTier={currentTier}
               targetTier={
-                tempCartList.find((x) => x.collectionPhase === CollectionPhase.LATEST)?.tier || CollectionItemTier.TIER0
+                tempCartList.find(
+                  (x) => x.collectionPhase === CollectionPhase.LATEST
+                )?.tier || CollectionItemTier.TIER0
               }
             />
           </div>
-
         ) : (
-          <div className={'MainRemainDisplayPos'}>
-            <RemainingDisplay remainMin={remainTime} isCollected={isCollecting} />
+          <div className={"MainRemainDisplayPos"}>
+            <RemainingDisplay
+              remainMin={remainTime}
+              isCollected={isCollecting}
+            />
           </div>
         )}
         <div className={"CollectionItemList"}>
           {(edit ? tempCartList : cartList).map((x, i) => (
-            <CollectionItem item={x} isEdit={edit} key={i} />))}
+            <CollectionItem item={x} isEdit={edit} key={i} />
+          ))}
         </div>
         {edit ? (
           <div className={"MainCartContainer"}>
             <Cart
               cartList={tempCartList}
-              totalGold={Number(collectionStateQuery?.stateQuery.agent?.gold ?? 0) + depositedGold}
+              totalGold={
+                Number(collectionStateQuery?.stateQuery.agent?.gold ?? 0) +
+                depositedGold
+              }
               onCancel={handleCancel}
               onSubmit={handleSubmit}
               onRemove={removeCart}
               onPush={addCart}
-              warningMessage={lockup ? "During the lockup period, you can only add monsters." : ""}
+              warningMessage={
+                lockup
+                  ? "During the lockup period, you can only add monsters."
+                  : ""
+              }
             />
           </div>
         ) : (
-          <div className={'MainCollectionPanelContainer'}>
+          <div className={"MainCollectionPanelContainer"}>
             <CollectionPanel
               sheet={collectionSheet}
               tier={currentTier}
-              onEdit={handleEdit} />
+              onEdit={handleEdit}
+            />
           </div>
         )}
 
@@ -437,7 +496,6 @@ const Main: React.FC<Props> = (props: Props) => {
 
         <LoadingDialog open={openLoading} />
       </div>
-
     </div>
   );
 };

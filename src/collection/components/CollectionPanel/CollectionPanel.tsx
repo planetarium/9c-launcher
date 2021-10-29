@@ -11,9 +11,9 @@ import {
   getTotalDepositedGold,
 } from "../common/collectionSheet";
 
-import MyCollectionIcon from '../../common/resources/loading.png'
-import ApIcon from '../../common/resources/ui-staking-slot-item-01.png'
-import HourglassIcon from '../../common/resources/ui-staking-slot-item-02.png'
+import MyCollectionIcon from "../../common/resources/loading.png";
+import ApIcon from "../../common/resources/ui-staking-slot-item-01.png";
+import HourglassIcon from "../../common/resources/ui-staking-slot-item-02.png";
 
 import "./CollectionPanel.scss";
 
@@ -32,7 +32,7 @@ const getRewardImage = (item: RewardCategory) => {
     default:
       throw Error(`${item} is not in ${JSON.stringify(RewardCategory)}`);
   }
-}
+};
 
 const CollectionPanel: React.FC<Props> = (props: Props) => {
   const { sheet, tier, onEdit } = props;
@@ -56,25 +56,25 @@ const CollectionPanel: React.FC<Props> = (props: Props) => {
           </ul>
         </div>
         <div className={"balance"}>
-          <div className={'title'} >MY BALANCE</div>
+          <div className={"title"}>MY BALANCE</div>
           <img src={MyCollectionIcon} className={"monster"} />
-          <div className={'deposit'}>{getTotalDepositedGold(sheet, tier)}</div>
+          <div className={"deposit"}>{getTotalDepositedGold(sheet, tier)}</div>
         </div>
         <div className={"reward"}>
-          <div className={'title'}>REWARDS</div>
+          <div className={"title"}>REWARDS</div>
           <div className={"CollectionRewardItemListContainer"}>
             {getRewardCategoryList().map((x, i) => (
               <div className={"CollectionRewardItemContainer"} key={i}>
                 <div className={"CollectionRewardItemBackground"}>
-                  <img className={"CollectionRewardItemImage"} src={getRewardImage(x)} />
+                  <img
+                    className={"CollectionRewardItemImage"}
+                    src={getRewardImage(x)}
+                  />
                 </div>
-                <div className={'label'}>
-                  {currentReward.get(x) || 0}
-                </div>
+                <div className={"label"}>{currentReward.get(x) || 0}</div>
               </div>
             ))}
           </div>
-
         </div>
 
         <div className={"CollectionPanelButton"}>

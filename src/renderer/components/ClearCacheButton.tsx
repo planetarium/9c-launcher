@@ -32,8 +32,7 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
       setConfirmOpen(false);
       const result = ipcRenderer.sendSync("clear cache", true);
       setClearState(result);
-    }
-    else {
+    } else {
       alert(t("Please type correctly"));
     }
   };
@@ -69,14 +68,17 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
                   <T _str="All local chain data will be deleted and re-downloaded again. This process can take up to 30 minutes. Are you sure to continue?" />
                 </p>
                 <p>
-                  <T _str="Please type {clearCache} to confirm." clearCache={<b>Clear Cache</b>} />
+                  <T
+                    _str="Please type {clearCache} to confirm."
+                    clearCache={<b>Clear Cache</b>}
+                  />
                 </p>
               </DialogContentText>
               <TextField
                 margin="dense"
                 id="confirm"
                 placeholder="Clear Cache"
-                onChange={e => setConfirmText(e.target.value)}
+                onChange={(e) => setConfirmText(e.target.value)}
                 type="text"
                 color="primary"
                 fullWidth
@@ -84,11 +86,15 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}><T _str="Cancel" /></Button>
-              <Button type="submit"><T _str="OK" /></Button>
+              <Button onClick={handleClose}>
+                <T _str="Cancel" />
+              </Button>
+              <Button type="submit">
+                <T _str="OK" />
+              </Button>
             </DialogActions>
           </FormControl>
-        </form >
+        </form>
       </Dialog>
     </>
   );

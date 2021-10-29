@@ -27,7 +27,11 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
     }
   }, [protectedPrivateKeys]);
 
-  return <div><T _str="Now Loading..." _tags="intro" /></div>;
+  return (
+    <div>
+      <T _str="Now Loading..." _tags="intro" />
+    </div>
+  );
 });
 
 export default inject("accountStore", "routerStore")(IntroView);
