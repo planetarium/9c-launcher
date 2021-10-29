@@ -116,7 +116,7 @@ const RetypePasswordForm = ({
   };
 
   const handleActivationKeyChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setActivationKey(e.target.value);
+    setActivationKey(e.target.value.trim());
     setActivationKeyAllowsEmpty(false);
   };
 
