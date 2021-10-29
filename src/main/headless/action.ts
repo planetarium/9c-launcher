@@ -48,7 +48,8 @@ export class Action extends StandaloneSubcommand {
     recipient: string,
     amount: number,
     memo: string,
-    path: string): boolean {
+    path: string
+  ): boolean {
     try {
       this.execSync(
         "action",
@@ -57,7 +58,8 @@ export class Action extends StandaloneSubcommand {
         recipient,
         `${amount}`,
         path,
-        memo);
+        memo
+      );
       return true;
     } catch (error) {
       console.error(error);

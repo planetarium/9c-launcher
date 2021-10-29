@@ -4,7 +4,7 @@ import {
   useEventCallback,
 } from "@material-ui/core";
 import { GraphQLClient } from "graphql-request";
-import React, { useMemo, useState} from "react";
+import React, { useMemo, useState } from "react";
 import { useEffect } from "react";
 import { getSdk } from "src/generated/graphql-request";
 import { ITransferStoreContainer, StoreContext } from "./hooks";
@@ -15,7 +15,7 @@ import TransferPageStore from "./stores/views/transfer";
 import "./App.scss";
 import montserrat from "src/renderer/styles/font";
 import SwapPageStore from "./stores/views/swap";
-import {get as getConfig} from "src/config";
+import { get as getConfig } from "src/config";
 import { HEADLESS_URL } from "../config";
 import { ipcRenderer } from "electron";
 
@@ -66,14 +66,16 @@ const App: React.FC = () => {
 
   const [agentAddress, setAgentAddress] = useState<string>("");
   ipcRenderer.on("set miner address", (_, address) => {
-    console.log("set miner address Main.tsx")
+    console.log("set miner address Main.tsx");
     setAgentAddress(address);
   });
 
   useEffect(() => {
     async function main() {
-      const success = await storeContainer.headlessStore.trySetAgentAddress(agentAddress);
-      if(!success) {
+      const success = await storeContainer.headlessStore.trySetAgentAddress(
+        agentAddress
+      );
+      if (!success) {
         //FIXME: make a error page and show it.
         throw new Error("Could not set agent address");
       }
@@ -84,7 +86,10 @@ const App: React.FC = () => {
   return (
     <StoreContext.Provider value={storeContainer}>
       <ThemeProvider theme={theme}>
-        <MainPage agentAddress={agentAddress} onDetailedView={handleDetailView} />
+        <MainPage
+          agentAddress={agentAddress}
+          onDetailedView={handleDetailView}
+        />
       </ThemeProvider>
     </StoreContext.Provider>
   );

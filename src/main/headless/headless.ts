@@ -97,21 +97,26 @@ class Headless {
       }
     );
 
-    ipcMain.on("transfer-asset", async (
-      event,
-      sender: string,
-      recipient: string,
-      amount: number,
-      memo: string,
-      filePath: string) => {
-      console.log("transfer-asset")
-      event.returnValue = this.action.TransferAsset(
-        sender,
-        recipient,
-        amount,
-        memo,
-        filePath);
-    });
+    ipcMain.on(
+      "transfer-asset",
+      async (
+        event,
+        sender: string,
+        recipient: string,
+        amount: number,
+        memo: string,
+        filePath: string
+      ) => {
+        console.log("transfer-asset");
+        event.returnValue = this.action.TransferAsset(
+          sender,
+          recipient,
+          amount,
+          memo,
+          filePath
+        );
+      }
+    );
 
     ipcMain.on(
       "sign-tx",
