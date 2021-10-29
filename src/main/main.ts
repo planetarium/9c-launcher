@@ -802,7 +802,8 @@ async function initializeHeadless(): Promise<void> {
                     `Not enough space. ${chainPath} (${freeSpace} < ${size})`
                   );
                 }
-              } catch {
+              } catch (e) {
+                console.error("Error while checking free space:", e);
                 await dialog.showMessageBox(win!, {
                   message: `Failed to check free space. Please make sure you have at least ${prettyBytes(
                     Number(size)
