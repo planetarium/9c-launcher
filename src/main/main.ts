@@ -151,7 +151,7 @@ if (!app.requestSingleInstanceLock()) {
   cleanUp();
 
   intializeConfig();
-  useRemoteHeadless = configStore.get("UseRemoteHeadless");
+  useRemoteHeadless = getConfig("UseRemoteHeadless");
   initializeApp();
   initializeIpc();
 }
