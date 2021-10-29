@@ -6,11 +6,21 @@ import { getBlockChainStorePath, REQUIRED_DISK_SPACE } from "../../../config";
 import * as Sentry from "@sentry/electron";
 import { T } from "@transifex/react";
 import { ipcRenderer } from "electron";
+import { observer } from "mobx-react";
+import useStores from "src/hooks/useStores";
 
 const transifexTags = "errorDiskSpace";
 
-const ErrorDiskSpaceView = () => {
+const isStateValid = (state: unknown): state is { size: number } => {
+  return typeof state === "object" && state != null && "size" in state;
+};
+
+const ErrorDiskSpaceView = observer(() => {
   const classes = errorViewStyle();
+  const { routerStore } = useStores();
+  const size = isStateValid(routerStore.location.state)
+    ? routerStore.location.state.size
+    : REQUIRED_DISK_SPACE;
 
   useEffect(() => {
     ipcRenderer.send("mixpanel-track-event", "Launcher/ErrorDiskSpace");
@@ -25,7 +35,7 @@ const ErrorDiskSpaceView = () => {
         <T
           _str="Required free space: {space}"
           _tags={transifexTags}
-          space={prettyBytes(REQUIRED_DISK_SPACE)}
+          space={prettyBytes(size)}
         />
       </Typography>
       <Typography>
@@ -37,6 +47,6 @@ const ErrorDiskSpaceView = () => {
       </Typography>
     </div>
   );
-};
+});
 
 export default ErrorDiskSpaceView;
