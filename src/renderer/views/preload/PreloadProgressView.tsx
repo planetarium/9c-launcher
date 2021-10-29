@@ -33,10 +33,10 @@ const PreloadProgressView = observer(() => {
   const [progressMessage, setProgressMessage] = useState<string | string[]>("");
   const [exceptionMessage, setExceptionMessage] = useState<string | null>(null);
 
-  const gotoErrorPage = (page: string) => {
+  const gotoErrorPage = (page: string, meta?: Record<string, any>) => {
     console.log(`Direct to error page: ${page}`);
     standaloneStore.setReady(false);
-    routerStore.push(`/error/${page}`);
+    routerStore.push(`/error/${page}`, meta);
   };
 
   const getCurrentStepStatusMessage = () => {
@@ -69,8 +69,8 @@ const PreloadProgressView = observer(() => {
   useEffect(() => {
     ipcRenderer.on(
       "go to error page",
-      (event: IpcRendererEvent, arg: string) => {
-        gotoErrorPage(arg);
+      (event: IpcRendererEvent, arg: string, meta?: Record<string, any>) => {
+        gotoErrorPage(arg, meta);
       }
     );
 
