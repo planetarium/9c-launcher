@@ -251,6 +251,10 @@ function createMainConfig(isDev) {
           test: /\.node$/,
           loader: "node-loader",
         },
+        {
+          test: require.resolve("@planetarium/check-free-space"),
+          loader: "@basixjs/node-rs-loader",
+        },
       ],
     },
 
