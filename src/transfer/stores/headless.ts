@@ -86,6 +86,10 @@ export default class HeadlessStore implements IHeadlessStore {
 
   @action
   trySetAgentAddress = async (agentAddress: string): Promise<boolean> => {
+    if (agentAddress === "") {
+      throw new Error("Agent address is empty");
+    }
+
     if (agentAddress) {
       this.agentAddress = agentAddress;
       return true;
