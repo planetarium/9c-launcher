@@ -14,6 +14,10 @@ export default class MockedHeadlessStore implements IHeadlessStore {
     return;
   };
 
+  assertAgentAddressV2 = (signer: string) => {
+    return;
+  };
+
   getBalance = async (): Promise<Decimal> => {
     return this.balance;
   };
@@ -27,6 +31,7 @@ export default class MockedHeadlessStore implements IHeadlessStore {
   };
 
   transferGold = async (
+    signer: string,
     recipient: string,
     amount: Decimal,
     memo: string
@@ -34,7 +39,11 @@ export default class MockedHeadlessStore implements IHeadlessStore {
     return "transferGold";
   };
 
-  swapToWNCG = async (recipient: string, amount: Decimal): Promise<string> => {
+  swapToWNCG = async (
+    signer: string,
+    recipient: string,
+    amount: Decimal
+  ): Promise<string> => {
     return "swap ncg";
   };
 
