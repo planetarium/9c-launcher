@@ -151,7 +151,7 @@ if (!app.requestSingleInstanceLock()) {
   cleanUp();
 
   intializeConfig();
-  useRemoteHeadless = configStore.get("UseRemoteHeadless");
+  useRemoteHeadless = getConfig("UseRemoteHeadless");
   initializeApp();
   initializeIpc();
 }
@@ -794,7 +794,9 @@ async function initializeHeadless(): Promise<void> {
               try {
                 let freeSpace = await utils.getDiskSpace(chainPath);
                 if (freeSpace < size) {
-                  win?.webContents.send("go to error page", "disk-space");
+                  win?.webContents.send("go to error page", "disk-space", {
+                    size,
+                  });
                   throw new HeadlessInitializeError(
                     `Not enough space. ${chainPath} (${freeSpace} < ${size})`
                   );

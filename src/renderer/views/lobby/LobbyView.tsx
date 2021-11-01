@@ -63,7 +63,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
   const handleActivationKeyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      setActivationKey(event.target.value);
+      setActivationKey(event.target.value.trim());
     },
     [event]
   );
