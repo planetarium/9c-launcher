@@ -20,12 +20,6 @@ import { TransactionConfirmationListener } from "src/transfer/stores/headless";
 import { TransferPhase } from "src/transfer/stores/views/transfer";
 import refreshIcon from "../../resources/refreshIcon.png";
 import { verify as addressVerify } from "eip55";
-import { ipcRenderer } from "electron";
-import { tmpName } from "tmp-promise";
-import {
-  useGetNextTxNonceQuery,
-  useStageTxV2Mutation,
-} from "../../../generated/graphql";
 
 const transifexTags = "Transfer/Transfer";
 
@@ -71,7 +65,6 @@ const TransferButton = styled(Button)({
 const TransferPage: React.FC<Props> = observer((props: Props) => {
   const { headlessStore, transferPage } = useContext(StoreContext);
   const { signer, onDetailedView } = props;
-  const [tx, setTx] = useState("");
 
   const listener: TransactionConfirmationListener = {
     onSuccess: (blockIndex, blockHash) => {
@@ -88,18 +81,6 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
     },
   };
 
-  const [transfer] = useStageTxV2Mutation({
-    variables: {
-      encodedTx: tx,
-    },
-  });
-
-  const { refetch: txNonceRefetch } = useGetNextTxNonceQuery({
-    variables: {
-      address: signer,
-    },
-  });
-
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     if (!transferPage.validateRecipient || !transferPage.validateAmount) {
@@ -107,70 +88,16 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
     }
     transferPage.startSend();
     const { recipient, amount, memo } = transferPage;
-
-    await makeTx(signer, recipient, amount, memo);
-    const transferResult = await transfer();
-    if (transferResult.data == null) {
-      alert("failed ncg transfer.");
-      return;
-    }
-
-    const tx = transferResult.data.stageTxV2 as string;
-    transferPage.setTx(tx);
-    headlessStore.confirmTransaction(tx, undefined, listener);
-    return tx;
-  };
-
-  async function makeTx(
-    sender: string,
-    recipient: string,
-    amount: Decimal,
-    memo: string
-  ) {
-    // create action.
-    const fileName = await tmpName();
-    if (
-      !ipcRenderer.sendSync(
-        "transfer-asset",
-        sender,
-        recipient,
-        amount,
-        memo,
-        fileName
-      )
-    ) {
-      return;
-    }
-
-    // get tx nonce.
-    const ended = async () => {
-      return await txNonceRefetch({ address: signer });
-    };
-    let txNonce;
-    try {
-      let res = await ended();
-      txNonce = res.data.transaction.nextTxNonce;
-    } catch (e) {
-      alert(e.message);
-      return;
-    }
-
-    // sign tx.
-    const result = ipcRenderer.sendSync(
-      "sign-tx",
-      txNonce,
-      new Date().toISOString(),
-      fileName
+    const tx = await headlessStore.transferGold(
+      signer,
+      recipient,
+      amount,
+      memo
     );
-    if (result.stderr != "") {
-      alert(result.stderr);
-      return;
-    }
-    if (result.stdout != "") {
-      setTx(result.stdout);
-    }
-    return;
-  }
+    transferPage.setTx(tx);
+
+    headlessStore.confirmTransaction(tx, undefined, listener);
+  };
 
   return (
     <TransferContainer>

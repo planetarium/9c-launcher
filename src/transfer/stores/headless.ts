@@ -3,6 +3,12 @@ import { ipcRenderer } from "electron";
 import { observable, action, decorate } from "mobx";
 import { sleep } from "src/utils";
 import headlessGraphQLSDK, { GraphQLSDK } from "../middleware/graphql";
+import { tmpName } from "tmp-promise";
+import {
+  useGetNextTxNonceQuery,
+  useStageTxV2Mutation,
+} from "../../generated/graphql";
+import { useState } from "react";
 
 export interface IHeadlessStore {
   balance: Decimal;
@@ -11,11 +17,16 @@ export interface IHeadlessStore {
   getAgentAddress: () => string;
   trySetAgentAddress: (agentAddress: string) => Promise<boolean>;
   transferGold: (
+    signer: string,
     recipient: string,
     amount: Decimal,
     memo: string
   ) => Promise<string>;
-  swapToWNCG: (recipient: string, amount: Decimal) => Promise<string>;
+  swapToWNCG: (
+    signer: string,
+    recipient: string,
+    amount: Decimal
+  ) => Promise<string>;
   confirmTransaction: (
     txId: TxId,
     timeout: number | undefined,
@@ -51,6 +62,12 @@ export default class HeadlessStore implements IHeadlessStore {
     }
   };
 
+  assertAgentAddressV2 = (signer: string): void => {
+    if (signer === "") {
+      throw new Error("Agent address is empty");
+    }
+  };
+
   getBalance = async (): Promise<Decimal> => {
     this.assertAgentAddress();
     const balance = await this.graphqlSdk.GetNCGBalance({
@@ -79,35 +96,101 @@ export default class HeadlessStore implements IHeadlessStore {
 
   @action
   transferGold = async (
+    signer: string,
     recipient: string,
     amount: Decimal,
     memo: string
   ): Promise<TxId> => {
-    this.assertAgentAddress();
-
-    const nextTxNonceData = await this.graphqlSdk.GetNextTxNonce({
-      address: this.agentAddress,
+    this.assertAgentAddressV2(signer);
+    const [tx, setTx] = useState("");
+    const [transfer] = useStageTxV2Mutation({
+      variables: {
+        encodedTx: tx,
+      },
     });
-    if (!nextTxNonceData.data) {
-      throw new Error("Failed to get next nonce");
-    }
-    const txNonce = nextTxNonceData.data.transaction.nextTxNonce as string;
-    const tx = await this.graphqlSdk.Transfer({
-      recipient,
-      amount: amount.toString(),
-      memo,
-      txNonce,
+
+    const { refetch: txNonceRefetch } = useGetNextTxNonceQuery({
+      variables: {
+        address: signer,
+      },
     });
-    if (!tx.data) {
-      throw new Error(`Failed to create transaction. ${tx.errors}`);
+
+    async function makeTx(
+      signer: string,
+      recipient: string,
+      amount: Decimal,
+      memo: string
+    ) {
+      // create action.
+      const fileName = await tmpName();
+      if (
+        !ipcRenderer.sendSync(
+          "transfer-asset",
+          signer,
+          recipient,
+          amount,
+          memo,
+          fileName
+        )
+      ) {
+        return;
+      }
+
+      // get tx nonce.
+      const ended = async () => {
+        return await txNonceRefetch({ address: signer });
+      };
+      let txNonce;
+      try {
+        let res = await ended();
+        txNonce = res.data.transaction.nextTxNonce;
+      } catch (e) {
+        alert(e.message);
+        return;
+      }
+
+      // sign tx.
+      const result = ipcRenderer.sendSync(
+        "sign-tx",
+        txNonce,
+        new Date().toISOString(),
+        fileName
+      );
+
+      if (result.stderr != "") {
+        alert(result.stderr);
+        return;
+      }
+
+      if (result.stdout != "") {
+        setTx(result.stdout);
+      }
+
+      return;
     }
 
-    return tx.data.transfer;
+    await makeTx(signer, recipient, amount, memo);
+    const transferResult = await transfer();
+    if (transferResult.data == null) {
+      alert("failed ncg transfer.");
+      throw new Error("Failed to create transaction.");
+    }
+
+    return transferResult.data.stageTxV2 as string;
   };
 
   @action
-  swapToWNCG = async (recipient: string, amount: Decimal): Promise<TxId> => {
-    return await this.transferGold(this.bridgeAddress, amount, recipient);
+  swapToWNCG = async (
+    signer: string,
+    recipient: string,
+    amount: Decimal
+  ): Promise<TxId> => {
+    return await this.transferGold(
+      signer,
+      this.bridgeAddress,
+      amount,
+      recipient
+    );
   };
 
   @action
