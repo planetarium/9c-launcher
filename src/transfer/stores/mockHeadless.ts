@@ -18,7 +18,7 @@ export default class MockedHeadlessStore implements IHeadlessStore {
     return;
   };
 
-  getBalance = async (): Promise<Decimal> => {
+  getBalance = async (agentAdress: string): Promise<Decimal> => {
     return this.balance;
   };
 
@@ -72,7 +72,7 @@ export default class MockedHeadlessStore implements IHeadlessStore {
     }
   };
 
-  updateBalance = async (): Promise<Decimal> => {
+  updateBalance = async (agentAdress: string): Promise<Decimal> => {
     this.balance = this.balance.plus(100);
     return this.balance;
   };
