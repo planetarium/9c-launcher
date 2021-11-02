@@ -137,7 +137,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
           </b>
           <Button
             startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={() => headlessStore.updateBalance()}
+            onClick={() => headlessStore.updateBalance(signer)}
           />
         </TransferSecondTitle>
         <TransferInput

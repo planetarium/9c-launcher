@@ -66,7 +66,7 @@ const App: React.FC = () => {
 
   const [agentAddress, setAgentAddress] = useState<string>("");
   ipcRenderer.on("set miner address", (_, address) => {
-    console.log("set miner address Main.tsx");
+    console.log("set miner address Transfer App.tsx");
     setAgentAddress(address);
   });
 
@@ -79,10 +79,10 @@ const App: React.FC = () => {
         //FIXME: make a error page and show it.
         throw new Error("Could not set agent address");
       }
-      await storeContainer.headlessStore.updateBalance();
+      storeContainer.headlessStore.updateBalance(agentAddress);
     }
     main();
-  }, []);
+  }, [agentAddress]);
   return (
     <StoreContext.Provider value={storeContainer}>
       <ThemeProvider theme={theme}>
