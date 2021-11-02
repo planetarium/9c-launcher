@@ -72,6 +72,8 @@ import {
   IUpdateOptions,
   update,
 } from "./update";
+import { send } from "./v2/ipc";
+import { IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
 
 initializeSentry();
 
@@ -95,6 +97,8 @@ let standalone: Headless = new Headless(standaloneExecutablePath);
 let ip: string | null = null;
 let relaunched: boolean = false;
 
+let bootstrapped = false;
+
 let initializeHeadlessCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
@@ -104,6 +108,8 @@ const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
 let remoteNode: NodeInfo;
+
+const isV2 = app.commandLine.hasSwitch("v2");
 
 ipv4().then((value) => (ip = value));
 
@@ -205,7 +211,7 @@ async function initializeApp() {
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
-    if (app.commandLine.hasSwitch("v2")) win = await createV2Window();
+    if (isV2) win = await createV2Window();
     else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
 
@@ -510,6 +516,8 @@ function initializeIpc() {
     }
     return remoteNode;
   });
+
+  ipcMain.handle("is bootstrapped", () => bootstrapped);
 }
 
 async function initializeHeadless(): Promise<void> {
@@ -549,6 +557,7 @@ async function initializeHeadless(): Promise<void> {
     }
 
     win?.webContents.send("start bootstrap");
+    bootstrapped = true;
     const snapshot =
       getConfig("StoreType") === "rocksdb" ? partitionSnapshot : monoSnapshot;
 
@@ -638,6 +647,7 @@ async function initializeHeadless(): Promise<void> {
     }
 
     initializeHeadlessCts.token.throwIfCancelled();
+    send(win!, IPC_PRELOAD_NEXT);
     win?.webContents.send("start headless");
     await standalone.execute(getHeadlessArgs());
 

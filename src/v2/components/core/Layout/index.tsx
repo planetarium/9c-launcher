@@ -9,7 +9,6 @@ import StatusBar from "./StatusBar";
 import SettingsOverlay from "../../../views/SettingsOverlay";
 import StakingOverlay from "../../../views/StakingOverlay";
 import InfoText from "./InfoText";
-import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { CSS, styled } from "src/v2/stitches.config";
 import background from "../../../resources/launcher-png.png";

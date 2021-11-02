@@ -11,6 +11,9 @@ import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 import { INineChroniclesMixpanel } from "./mixpanel";
 import axios from "axios";
+import { send } from "./v2/ipc";
+import { IPC_PRELOAD_NEXT, IPC_SNAPSHOT_PROGRESS } from "../v2/ipcTokens";
+import debounce from "lodash.debounce";
 
 export type Epoch = {
   BlockEpoch: number;
@@ -309,6 +312,13 @@ export function removeUselessStore(blockchainStorePath: string): void {
   });
 }
 
+const updateProgress = debounce(
+  (win: Electron.BrowserWindow, progress: number) => {
+    send(win, IPC_SNAPSHOT_PROGRESS, progress);
+  },
+  100
+);
+
 export async function processSnapshot(
   snapshotDownloadUrl: string,
   storePath: string,
@@ -344,32 +354,40 @@ export async function processSnapshot(
     await aggregateSize(snapshotDownloadUrl, target, token, mixpanel).then(
       sizeCallback
     );
+    send(win, IPC_PRELOAD_NEXT);
     const snapshotPaths = await downloadSnapshot(
       snapshotDownloadUrl,
       target,
       userDataPath,
       (status) => {
         win?.webContents.send("download snapshot progress", status);
+        updateProgress(win, status.percent);
       },
       token,
       mixpanel
     );
+    send(win, IPC_PRELOAD_NEXT);
+    updateProgress.cancel();
     const stateSnapshotPath = await downloadStateSnapshot(
       snapshotDownloadUrl,
       userDataPath,
       (status) => {
         win?.webContents.send("download state snapshot progress", status);
+        updateProgress(win, status.percent);
       },
       token,
       mixpanel
     );
     snapshotPaths.push(stateSnapshotPath);
     removeUselessStore(storePath);
+    send(win, IPC_PRELOAD_NEXT);
+    updateProgress.cancel();
     await extractSnapshot(
       snapshotPaths,
       storePath,
       (progress: number) => {
         win?.webContents.send("extract progress", progress);
+        updateProgress(win, progress);
       },
       token,
       mixpanel
