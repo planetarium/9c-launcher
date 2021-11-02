@@ -4,16 +4,12 @@ import { observable, action, decorate } from "mobx";
 import { sleep } from "src/utils";
 import headlessGraphQLSDK, { GraphQLSDK } from "../middleware/graphql";
 import { tmpName } from "tmp-promise";
-import {
-  useGetNextTxNonceQuery,
-  useStageTxV2Mutation,
-} from "../../generated/graphql";
-import { useState } from "react";
 
 export interface IHeadlessStore {
   balance: Decimal;
   assertAgentAddress: () => void;
-  getBalance: () => Promise<Decimal>;
+  assertAgentAddressV2: (signer: string) => void;
+  getBalance: (agentAdress: string) => Promise<Decimal>;
   getAgentAddress: () => string;
   trySetAgentAddress: (agentAddress: string) => Promise<boolean>;
   transferGold: (
@@ -32,7 +28,7 @@ export interface IHeadlessStore {
     timeout: number | undefined,
     listener: TransactionConfirmationListener
   ) => Promise<void>;
-  updateBalance: () => Promise<Decimal>;
+  updateBalance: (agentAddress: string) => Promise<Decimal>;
 }
 
 type TxExecutionCallback = (blockIndex: number, blockHash: string) => void;
@@ -68,10 +64,10 @@ export default class HeadlessStore implements IHeadlessStore {
     }
   };
 
-  getBalance = async (): Promise<Decimal> => {
-    this.assertAgentAddress();
+  getBalance = async (agentAddress: string): Promise<Decimal> => {
+    this.assertAgentAddressV2(agentAddress);
     const balance = await this.graphqlSdk.GetNCGBalance({
-      address: this.agentAddress,
+      address: agentAddress,
     });
     if (balance.data) {
       return new Decimal(balance.data.goldBalance);
@@ -105,34 +101,36 @@ export default class HeadlessStore implements IHeadlessStore {
     amount: Decimal,
     memo: string
   ): Promise<TxId> => {
-    this.assertAgentAddressV2(signer);
-    const [tx, setTx] = useState("");
-    const [transfer] = useStageTxV2Mutation({
-      variables: {
-        encodedTx: tx,
-      },
-    });
+    if (signer.startsWith("0x")) {
+      signer = signer.substr(2);
+    }
+    if (recipient.startsWith("0x")) {
+      recipient = recipient.substr(2);
+    }
 
-    const { refetch: txNonceRefetch } = useGetNextTxNonceQuery({
-      variables: {
-        address: signer,
-      },
-    });
+    if (signer === recipient){
+      const errorMessage = "You can't transfer NCG to yourself.";
+      alert(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    this.assertAgentAddressV2(signer);
 
     async function makeTx(
       signer: string,
       recipient: string,
       amount: Decimal,
-      memo: string
+      memo: string,
+      fileName: string,
+      graphqlSdk: GraphQLSDK,
     ) {
       // create action.
-      const fileName = await tmpName();
       if (
         !ipcRenderer.sendSync(
           "transfer-asset",
           signer,
           recipient,
-          amount,
+          Number(amount),
           memo,
           fileName
         )
@@ -141,13 +139,16 @@ export default class HeadlessStore implements IHeadlessStore {
       }
 
       // get tx nonce.
-      const ended = async () => {
-        return await txNonceRefetch({ address: signer });
+      const ended = async (signer: string, graphqlSdk: GraphQLSDK,) => {
+        return await graphqlSdk.GetNextTxNonce({
+          address: signer,
+        });
       };
+
       let txNonce;
       try {
-        let res = await ended();
-        txNonce = res.data.transaction.nextTxNonce;
+        let res = await ended(signer, graphqlSdk);
+        txNonce = res.data?.transaction.nextTxNonce;
       } catch (e) {
         alert(e.message);
         return;
@@ -166,18 +167,22 @@ export default class HeadlessStore implements IHeadlessStore {
         return;
       }
 
-      if (result.stdout != "") {
-        setTx(result.stdout);
-      }
-
-      return;
+      return result.stdout as string;
     }
 
-    await makeTx(signer, recipient, amount, memo);
-    const transferResult = await transfer();
+    const fileName = await tmpName();
+    const tx = await makeTx(signer, recipient, amount, memo, fileName, this.graphqlSdk);
+
+    if (tx == undefined){
+      alert("failed tx creation.");
+      throw new Error("Failed to create transaction.");
+    }
+
+    const transferResult = await this.graphqlSdk.StageTxV2({encodedTx: tx});
+
     if (transferResult.data == null) {
       alert("failed ncg transfer.");
-      throw new Error("Failed to create transaction.");
+      throw new Error("Failed to transfer ncg.");
     }
 
     return transferResult.data.stageTxV2 as string;
@@ -246,8 +251,8 @@ export default class HeadlessStore implements IHeadlessStore {
   };
 
   @action
-  updateBalance = async (): Promise<Decimal> => {
-    const balance = await this.getBalance();
+  updateBalance = async (agentAddress: string): Promise<Decimal> => {
+    const balance = await this.getBalance(agentAddress);
     this.balance = balance;
     return balance;
   };
