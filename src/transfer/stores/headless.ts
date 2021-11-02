@@ -108,7 +108,7 @@ export default class HeadlessStore implements IHeadlessStore {
       recipient = recipient.substr(2);
     }
 
-    if (signer === recipient){
+    if (signer === recipient) {
       const errorMessage = "You can't transfer NCG to yourself.";
       alert(errorMessage);
       throw new Error(errorMessage);
@@ -122,7 +122,7 @@ export default class HeadlessStore implements IHeadlessStore {
       amount: Decimal,
       memo: string,
       fileName: string,
-      graphqlSdk: GraphQLSDK,
+      graphqlSdk: GraphQLSDK
     ) {
       // create action.
       if (
@@ -139,7 +139,7 @@ export default class HeadlessStore implements IHeadlessStore {
       }
 
       // get tx nonce.
-      const ended = async (signer: string, graphqlSdk: GraphQLSDK,) => {
+      const ended = async (signer: string, graphqlSdk: GraphQLSDK) => {
         return await graphqlSdk.GetNextTxNonce({
           address: signer,
         });
@@ -171,14 +171,21 @@ export default class HeadlessStore implements IHeadlessStore {
     }
 
     const fileName = await tmpName();
-    const tx = await makeTx(signer, recipient, amount, memo, fileName, this.graphqlSdk);
+    const tx = await makeTx(
+      signer,
+      recipient,
+      amount,
+      memo,
+      fileName,
+      this.graphqlSdk
+    );
 
-    if (tx == undefined){
+    if (tx == undefined) {
       alert("failed tx creation.");
       throw new Error("Failed to create transaction.");
     }
 
-    const transferResult = await this.graphqlSdk.StageTxV2({encodedTx: tx});
+    const transferResult = await this.graphqlSdk.StageTxV2({ encodedTx: tx });
 
     if (transferResult.data == null) {
       alert("failed ncg transfer.");

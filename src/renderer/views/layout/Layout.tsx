@@ -84,7 +84,8 @@ export const Layout: React.FC = observer(({ children }) => {
               onClick={() => {
                 ipcRenderer.invoke(
                   "open transfer page",
-                  accountStore.selectedAddress);
+                  accountStore.selectedAddress
+                );
               }}
               disabled={
                 !accountStore.isMiningConfigEnded || !standaloneStore.Ready
