@@ -108,12 +108,6 @@ export default class HeadlessStore implements IHeadlessStore {
       recipient = recipient.substr(2);
     }
 
-    if (signer === recipient) {
-      const errorMessage = "You can't transfer NCG to yourself.";
-      alert(errorMessage);
-      throw new Error(errorMessage);
-    }
-
     this.assertAgentAddressV2(signer);
 
     async function makeTx(
@@ -135,7 +129,7 @@ export default class HeadlessStore implements IHeadlessStore {
           fileName
         )
       ) {
-        return;
+        throw new Error("Failed to create transfer asset action.");
       }
 
       // get tx nonce.
@@ -150,8 +144,9 @@ export default class HeadlessStore implements IHeadlessStore {
         let res = await ended(signer, graphqlSdk);
         txNonce = res.data?.transaction.nextTxNonce;
       } catch (e) {
-        alert(e.message);
-        return;
+        throw new Error(
+          `Failed to get next tx nonce. Error message: ${e.message}`
+        );
       }
 
       // sign tx.
@@ -162,9 +157,10 @@ export default class HeadlessStore implements IHeadlessStore {
         fileName
       );
 
-      if (result.stderr != "") {
-        alert(result.stderr);
-        return;
+      if (result.stderr !== "") {
+        throw new Error(
+          `Failed to create sign tx action. Error message: ${result.stderr}`
+        );
       }
 
       return result.stdout as string;
@@ -180,15 +176,13 @@ export default class HeadlessStore implements IHeadlessStore {
       this.graphqlSdk
     );
 
-    if (tx == undefined) {
-      alert("failed tx creation.");
+    if (tx === "") {
       throw new Error("Failed to create transaction.");
     }
 
     const transferResult = await this.graphqlSdk.StageTxV2({ encodedTx: tx });
 
     if (transferResult.data == null) {
-      alert("failed ncg transfer.");
       throw new Error("Failed to transfer ncg.");
     }
 
@@ -246,9 +240,8 @@ export default class HeadlessStore implements IHeadlessStore {
               return;
             }
           }
-          txResult = await (
-            await this.graphqlSdk.TransactionResult({ txId })
-          ).data!.transaction.transactionResult;
+          txResult = await (await this.graphqlSdk.TransactionResult({ txId }))
+            .data!.transaction.transactionResult;
           break;
         default:
           throw new Error(`Unknown transaction status: ${txResult.txStatus}`);

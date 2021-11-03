@@ -86,6 +86,13 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
     if (!transferPage.validateRecipient || !transferPage.validateAmount) {
       return;
     }
+
+    if (transferPage.recipient === signer) {
+      const errorMessage = "You can't transfer NCG to yourself.";
+      alert(errorMessage);
+      return;
+    }
+
     transferPage.startSend();
     const { recipient, amount, memo } = transferPage;
     const tx = await headlessStore.transferGold(
