@@ -23,7 +23,7 @@ describe("Validation", function () {
       const validPrivateKeys = [
         "ed5eba446d4c7cb50d7d5eb72c732773d89ee336f1880ee237b07589ed2387fc",
         "243389a88fcb6956aa3fb23acd3b770fb05bcdb993b326c19b1e40918f03155a",
-        "11",
+        "872ea540fe284f18f52221b0422954d864600661e5990f9fd3c6988583fd583f",
       ];
       validPrivateKeys.forEach((validPrivateKey) => {
         it(`It returns true with "${validPrivateKey}"`, function () {
