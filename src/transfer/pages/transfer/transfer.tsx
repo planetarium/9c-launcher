@@ -11,7 +11,7 @@ import {
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
 import { observer } from "mobx-react";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import FailureDialog from "src/transfer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/transfer/components/SendingDialog/SendingDialog";
 import SuccessDialog from "src/transfer/components/SuccessDialog/SuccessDialog";
@@ -24,6 +24,7 @@ import { verify as addressVerify } from "eip55";
 const transifexTags = "Transfer/Transfer";
 
 export type Props = {
+  signer: string;
   onDetailedView: (tx: string) => void;
 };
 
@@ -63,7 +64,7 @@ const TransferButton = styled(Button)({
 
 const TransferPage: React.FC<Props> = observer((props: Props) => {
   const { headlessStore, transferPage } = useContext(StoreContext);
-  const { onDetailedView } = props;
+  const { signer, onDetailedView } = props;
 
   const listener: TransactionConfirmationListener = {
     onSuccess: (blockIndex, blockHash) => {
@@ -85,9 +86,21 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
     if (!transferPage.validateRecipient || !transferPage.validateAmount) {
       return;
     }
+
+    if (transferPage.recipient === signer) {
+      const errorMessage = "You can't transfer NCG to yourself.";
+      alert(errorMessage);
+      return;
+    }
+
     transferPage.startSend();
     const { recipient, amount, memo } = transferPage;
-    const tx = await headlessStore.transferGold(recipient, amount, memo);
+    const tx = await headlessStore.transferGold(
+      signer,
+      recipient,
+      amount,
+      memo
+    );
     transferPage.setTx(tx);
 
     headlessStore.confirmTransaction(tx, undefined, listener);
@@ -131,7 +144,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
           </b>
           <Button
             startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={() => headlessStore.updateBalance()}
+            onClick={() => headlessStore.updateBalance(signer)}
           />
         </TransferSecondTitle>
         <TransferInput

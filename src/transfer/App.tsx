@@ -4,7 +4,7 @@ import {
   useEventCallback,
 } from "@material-ui/core";
 import { GraphQLClient } from "graphql-request";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useEffect } from "react";
 import { getSdk } from "src/generated/graphql-request";
 import { ITransferStoreContainer, StoreContext } from "./hooks";
@@ -16,8 +16,10 @@ import "./App.scss";
 import montserrat from "src/renderer/styles/font";
 import SwapPageStore from "./stores/views/swap";
 import { get as getConfig } from "src/config";
+import { HEADLESS_URL } from "../config";
+import { ipcRenderer } from "electron";
 
-const client = new GraphQLClient(`http://localhost:23061/graphql`);
+const client = new GraphQLClient(`http://${HEADLESS_URL}/graphql`);
 const headlessGraphQLSDK = getSdk(client);
 
 const storeContainer: ITransferStoreContainer = {
@@ -62,21 +64,32 @@ const App: React.FC = () => {
     []
   );
 
+  const [agentAddress, setAgentAddress] = useState<string>("");
+  ipcRenderer.on("set ninechronicles address", (_, address) => {
+    console.log("set ninechronicles address at Transfer App.tsx");
+    setAgentAddress(address);
+  });
+
   useEffect(() => {
     async function main() {
-      const success = await storeContainer.headlessStore.trySetAgentAddress();
+      const success = await storeContainer.headlessStore.trySetAgentAddress(
+        agentAddress
+      );
       if (!success) {
         //FIXME: make a error page and show it.
         throw new Error("Could not set agent address");
       }
-      await storeContainer.headlessStore.updateBalance();
+      storeContainer.headlessStore.updateBalance(agentAddress);
     }
     main();
-  }, []);
+  }, [agentAddress]);
   return (
     <StoreContext.Provider value={storeContainer}>
       <ThemeProvider theme={theme}>
-        <MainPage onDetailedView={handleDetailView} />
+        <MainPage
+          agentAddress={agentAddress}
+          onDetailedView={handleDetailView}
+        />
       </ThemeProvider>
     </StoreContext.Provider>
   );

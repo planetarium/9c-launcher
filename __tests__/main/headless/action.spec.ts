@@ -58,6 +58,29 @@ describe("Action", function () {
     });
   });
 
+  describe("TransferAsset", function () {
+    context("with valid params", function () {
+      const fileName = tmpNameSync();
+      const senderAddress = "FdD1161598BF981d4c350C9d77C0CAd9B82c29c9";
+      const recipientAddress = "643c6e7F37A0CCc87Da562235F2fE36AD93bcE5D";
+      const amount = 10;
+      const memo = "transfer asset test.";
+      it(`It returns true & dump file with
+        "${senderAddress}",
+        "${recipientAddress}",
+        "${amount}",
+        "${memo}"`, function () {
+          assert.isTrue(action.TransferAsset(
+            senderAddress,
+            recipientAddress,
+            amount,
+            memo,
+            fileName));
+          assert_action("TransferAsset", fileName);
+      });
+    });
+  });
+
   function assert_action(actionName: string, fileName: string)
   {
     assert.isTrue(fs.existsSync(fileName));
