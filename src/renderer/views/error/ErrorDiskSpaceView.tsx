@@ -35,7 +35,7 @@ const ErrorDiskSpaceView = observer(() => {
         <T
           _str="Required free space: {space}"
           _tags={transifexTags}
-          space={prettyBytes(size)}
+          space={prettyBytes(Number(size))}
         />
       </Typography>
       <Typography>
