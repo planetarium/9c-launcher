@@ -495,8 +495,11 @@ function initializeIpc() {
     }
     console.log(`open transfer page address: ${selectedAddress}`);
     collectionWin = await createTransferWindow();
-    console.log(`call set miner address: ${selectedAddress}`);
-    collectionWin!.webContents.send("set miner address", selectedAddress);
+    console.log(`call set ninechronicles address: ${selectedAddress}`);
+    collectionWin!.webContents.send(
+      "set ninechronicles address",
+      selectedAddress
+    );
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
@@ -655,8 +658,9 @@ function initializeIpc() {
   );
 
   ipcMain.on("create-private-key", async (event, passphrase: string) => {
-    event.returnValue =
-      standalone.keyStore.createProtectedPrivateKey(passphrase);
+    event.returnValue = standalone.keyStore.createProtectedPrivateKey(
+      passphrase
+    );
   });
 
   ipcMain.on(

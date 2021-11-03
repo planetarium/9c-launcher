@@ -65,8 +65,8 @@ const App: React.FC = () => {
   );
 
   const [agentAddress, setAgentAddress] = useState<string>("");
-  ipcRenderer.on("set miner address", (_, address) => {
-    console.log("set miner address Transfer App.tsx");
+  ipcRenderer.on("set ninechronicles address", (_, address) => {
+    console.log("set ninechronicles address at Transfer App.tsx");
     setAgentAddress(address);
   });
 
