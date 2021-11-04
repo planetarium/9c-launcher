@@ -5,13 +5,16 @@ import {
   split,
   HttpLink,
 } from "@apollo/client";
-import { WebSocketLink } from "../utils/WebSocketLink";
+import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { LOCAL_SERVER_URL } from "../../config";
 import { RetryLink } from "@apollo/client/link/retry";
 
 const wsLink = new WebSocketLink({
-  url: `ws://${LOCAL_SERVER_URL}/graphql`,
+  uri: `ws://${LOCAL_SERVER_URL}/graphql`,
+  options: {
+    reconnect: true,
+  },
 });
 
 const httpLink = new HttpLink({ uri: `http://${LOCAL_SERVER_URL}/graphql` });
