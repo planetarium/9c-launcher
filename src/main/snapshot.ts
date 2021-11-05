@@ -105,16 +105,16 @@ export async function aggregateSize(
   mixpanel?: INineChroniclesMixpanel
 ) {
   const stateSize = async () => {
-    const res = await axios.head(`${basePath}/state_latest.zip`)
-    return Number(res.headers["content-length"]);
-  }
+    const res = await axios.head(`${basePath}/state_latest.zip`);
+    return BigInt(res.headers["content-length"]);
+  };
   const sizes = await Promise.all([
     stateSize(),
     ...target.map(async (v) => {
       const url = `${basePath}/snapshot-${v.BlockEpoch}-${v.TxEpoch}.zip`;
       const res = await axios.head(url);
 
-      return Number(res.headers["content-length"]);
+      return BigInt(res.headers["content-length"]);
     }),
   ]);
 
@@ -316,7 +316,7 @@ export async function processSnapshot(
   standalone: Headless,
   win: Electron.BrowserWindow,
   token: CancellationToken,
-  sizeCallback: (size: number) => void,
+  sizeCallback: (size: bigint) => void,
   mixpanel?: INineChroniclesMixpanel
 ): Promise<boolean> {
   console.log(`Trying snapshot path: ${snapshotDownloadUrl}`);

@@ -1,5 +1,5 @@
 interface IProtectedPrivateKey {
-    protectedPrivateKeys: {
-       address: string 
-    }[]
+  protectedPrivateKeys: {
+    address: string;
+  }[];
 }

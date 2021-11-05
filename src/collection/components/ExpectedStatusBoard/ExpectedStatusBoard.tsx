@@ -14,7 +14,6 @@ import RewardItem from "./RewardItem/RewardItem";
 
 import "./ExpectedStatusBoard.scss";
 
-
 export type Props = {
   collectionSheet: CollectionSheetItem[];
   currentTier: CollectionItemTier;
@@ -45,7 +44,11 @@ const ExpectedStatusBoard: React.FC<Props> = (props: Props) => {
       <div className={"ExpectedStatusBoardContainer"}>
         <div className={"CurrentStakedGoldContainer"}>
           <div className={"ExpectedStatusBoardTitle"}>MY BALANCE</div>
-          <RewardItem left={depositedGold} right={depositedGold} item={"GOLD"} />
+          <RewardItem
+            left={depositedGold}
+            right={depositedGold}
+            item={"GOLD"}
+          />
         </div>
 
         <div className={"CurrentExpectedRewardContainer"}>
@@ -62,7 +65,6 @@ const ExpectedStatusBoard: React.FC<Props> = (props: Props) => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };

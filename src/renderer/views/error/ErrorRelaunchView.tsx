@@ -11,7 +11,9 @@ const transifexTags = "errorRelaunch";
 const ErrorRelaunchView = () => {
   const classes = errorViewStyle();
 
-  const steps = useT("Relaunch “Nine Chronicles”\n" + "Login once again", { _tags: "errorRelaunch" });
+  const steps = useT("Relaunch “Nine Chronicles”\n" + "Login once again", {
+    _tags: "errorRelaunch",
+  });
 
   const handleRelaunch = useCallback(() => {
     remote.app.relaunch();
@@ -25,13 +27,13 @@ const ErrorRelaunchView = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h1" gutterBottom className={classes.title}>
-        <T _str="Something went wrong." _tags={transifexTags}/>
+        <T _str="Something went wrong." _tags={transifexTags} />
       </Typography>
       <Typography variant="subtitle1">
-        <T _str="Please follow the steps below." _tags={transifexTags}/>
+        <T _str="Please follow the steps below." _tags={transifexTags} />
       </Typography>
       <ol>
-        {steps.split('\n').map((step: string) => (
+        {steps.split("\n").map((step: string) => (
           <li key={step}>{step}</li>
         ))}
       </ol>
@@ -42,7 +44,7 @@ const ErrorRelaunchView = () => {
         fullWidth
         onClick={handleRelaunch}
       >
-        <T _str="Relaunch" _tags={transifexTags}/>
+        <T _str="Relaunch" _tags={transifexTags} />
       </Button>
     </div>
   );

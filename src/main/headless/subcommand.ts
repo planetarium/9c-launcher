@@ -1,4 +1,9 @@
-import {ChildProcess, execFileSync, spawnSync, SpawnSyncReturns} from "child_process";
+import {
+  ChildProcess,
+  execFileSync,
+  spawnSync,
+  SpawnSyncReturns,
+} from "child_process";
 import { dirname, basename, sep } from "path";
 
 export class StandaloneSubcommand {
@@ -43,5 +48,3 @@ export class StandaloneSubcommand {
     return spawnSync(cmd, args, { encoding: "utf-8", cwd: cwd });
   }
 }
-
-

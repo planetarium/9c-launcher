@@ -80,13 +80,11 @@ const RetypePasswordForm = ({
 }: RetypePasswordFormProps) => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [passwordConfirmAllowsEmpty, setPasswordConfirmAllowsEmpty] = useState(
-    true
-  );
+  const [passwordConfirmAllowsEmpty, setPasswordConfirmAllowsEmpty] =
+    useState(true);
   const [activationKey, setActivationKey] = useState("");
-  const [activationKeyAllowsEmpty, setActivationKeyAllowsEmpty] = useState(
-    true
-  );
+  const [activationKeyAllowsEmpty, setActivationKeyAllowsEmpty] =
+    useState(true);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
@@ -118,7 +116,7 @@ const RetypePasswordForm = ({
   };
 
   const handleActivationKeyChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setActivationKey(e.target.value);
+    setActivationKey(e.target.value.trim());
     setActivationKeyAllowsEmpty(false);
   };
 
@@ -200,7 +198,7 @@ const RetypePasswordForm = ({
         className={classes.formControl}
       >
         <InputLabel className={classes.label}>
-          <T _str="Password (Confirm)" _tags={transifexTags}/>
+          <T _str="Password (Confirm)" _tags={transifexTags} />
         </InputLabel>
         <OutlinedInput
           id="password-confirm-input"
@@ -224,7 +222,7 @@ const RetypePasswordForm = ({
           className={classes.formControl}
         >
           <InputLabel className={classes.label}>
-            <T _str="Invitation Code" _tags={transifexTags}/>
+            <T _str="Invitation Code" _tags={transifexTags} />
           </InputLabel>
           <OutlinedInput type="text" onChange={handleActivationKeyChange} />
           <FormHelperText className={classes.helperText}>
@@ -239,7 +237,7 @@ const RetypePasswordForm = ({
         className={classes.submit}
         variant="contained"
       >
-        <T _str="Done" _tags={transifexTags}/>
+        <T _str="Done" _tags={transifexTags} />
       </Button>
     </form>
   );

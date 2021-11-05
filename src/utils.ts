@@ -1,5 +1,4 @@
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
-import checkDiskSpace from "check-disk-space";
 import path from "path";
 import fs from "fs";
 import axios, { AxiosError } from "axios";
@@ -13,11 +12,6 @@ import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-do
 import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
 
 const pipeline = promisify(stream.pipeline);
-
-export async function getDiskSpace(diskpath: string): Promise<number> {
-  let diskSpace = await checkDiskSpace(diskpath);
-  return diskSpace.free;
-}
 
 export function isDiskPermissionValid(diskpath: string): boolean {
   try {
@@ -111,8 +105,9 @@ export const downloadAxios = axios.create({
 downloadAxios.interceptors.response.use(
   (res) => res,
   (err: AxiosError) => {
-    if (err.response?.status == 412) {
+    if (err.response?.status === 412 || err.response?.status === 416) {
       // Precondition Failed (ETag doesn't match)
+      // Range Not Satisfiable (Range header invalid) -- This happens if done wasn't marked properly or the file is damaged.
       delete err.config.headers["Range"];
       delete err.config.headers["If-Match"];
       err.config.onETagFailed?.(err);
@@ -144,47 +139,52 @@ export async function cancellableDownload(
   downloadPath: string,
   onProgress: (arg0: IDownloadProgress) => void,
   token: CancellationToken,
-  partial: boolean = true,
+  partial: boolean = true
 ): Promise<void> {
   const metaFilePath = `${downloadPath}.meta`;
 
   try {
     const metadata: DownloadMetadata | false =
-      partial && fs.existsSync(metaFilePath) &&
+      partial &&
+      fs.existsSync(metaFilePath) &&
       JSON.parse(fs.readFileSync(metaFilePath).toString());
     let startingBytes =
       metadata && fs.existsSync(downloadPath) && fs.statSync(downloadPath).size;
-    const headers = metadata && startingBytes ? {
-      Range: `bytes=${startingBytes}-`,
-      "If-Match": metadata.etag,
-    } : undefined;
+    const headers =
+      metadata && startingBytes
+        ? {
+            Range: `bytes=${startingBytes}-`,
+            "If-Match": metadata.etag,
+          }
+        : undefined;
 
     const axiosCts = axios.CancelToken.source();
     token.onCancelled((_) => axiosCts.cancel());
-    
+
     // Remove invalid or non-partial download fragments.
-    if (!metadata && fs.existsSync(downloadPath)) await fs.promises.unlink(downloadPath);
+    if (!metadata && fs.existsSync(downloadPath))
+      await fs.promises.unlink(downloadPath);
 
     if (metadata && metadata.complete) {
       // Returns 304 if not changed
       const res = await downloadAxios.head(url, {
         cancelToken: axiosCts.token,
         headers: {
-          "If-None-Match": metadata.etag
+          "If-None-Match": metadata.etag,
         },
         validateStatus(status) {
-          return status === 304 || status >= 200 && status < 300;
-        }
-      })
+          return status === 304 || (status >= 200 && status < 300);
+        },
+      });
       if (res.status === 304) {
-        console.log("Found a complete copy of ", downloadPath)
+        console.log("Found a complete copy of ", downloadPath);
         return;
       }
 
       // After this, invalidation will happen at onETagFailed below.
     }
 
-    if (metadata) console.log('meta available ', downloadPath);
+    if (metadata) console.log("meta available ", downloadPath);
 
     const res = await downloadAxios.get(url, {
       cancelToken: axiosCts.token,
@@ -192,16 +192,21 @@ export async function cancellableDownload(
       onETagFailed() {
         // header will be edited by the interceptor
         startingBytes = false;
-        if(fs.existsSync(downloadPath)) fs.unlinkSync(downloadPath);
+        if (fs.existsSync(downloadPath)) fs.unlinkSync(downloadPath);
         fs.unlinkSync(metaFilePath);
-        console.log('meta invalidated ', downloadPath);
+        console.log("meta invalidated ", downloadPath);
       },
     });
 
-    if (partial) await fs.promises.writeFile(metaFilePath, JSON.stringify({ etag: res.headers.etag }));
+    if (partial)
+      await fs.promises.writeFile(
+        metaFilePath,
+        JSON.stringify({ etag: res.headers.etag })
+      );
 
     const totalBytes = parseInt(res.headers["content-length"]);
     let transferredBytes: number = 0;
+
     res.data.on("data", (chunk: string | any[]) => {
       transferredBytes += chunk.length;
       onProgress({
@@ -215,7 +220,11 @@ export async function cancellableDownload(
       res.data,
       fs.createWriteStream(downloadPath, { flags: "a" })
     );
-    if (partial) await fs.promises.writeFile(metaFilePath, JSON.stringify({ etag: res.headers.etag, complete: true }));
+    if (partial)
+      await fs.promises.writeFile(
+        metaFilePath,
+        JSON.stringify({ etag: res.headers.etag, complete: true })
+      );
     console.log("Complete: ", url);
   } catch (error) {
     console.error("Download failed: ", error);
@@ -244,8 +253,8 @@ export async function cancellableExtract(
     await fs.promises.unlink(targetDir);
 
     // After extraction, remove meta file to prevent triggering continuous downloading behaviour.
-    const metaFile = targetDir.concat('.meta');
-    if(fs.existsSync(metaFile)) await fs.promises.unlink(metaFile);
+    const metaFile = targetDir.concat(".meta");
+    if (fs.existsSync(metaFile)) await fs.promises.unlink(metaFile);
   } catch (error) {
     console.error(
       `Unexpected error occurred during extracting ${targetDir} to ${outputDir}. ${error}`

@@ -1,17 +1,21 @@
-import React from "react"
+import React from "react";
 
-import './Title.scss'
+import "./Title.scss";
 
 const TitleComponent: React.FC = () => {
+  return (
+    <div className={"TitleContainer"}>
+      <h2 className={"Title"}>
+        The reason why you can get rewards is that you are staking NCG.
+      </h2>
+      <p className={"Subtitle"}>
+        'Collection' is similar to savings. <br />
+        it allows you to leave your NCG to be used for blockchain network
+        operation <br />
+        for a certain period of time and receive compensation in return.
+      </p>
+    </div>
+  );
+};
 
-  return <div className={'TitleContainer'}>
-    <h2 className={'Title'}>The reason why you can get rewards is that you are staking NCG.</h2>
-    <p className={'Subtitle'}>
-      'Collection' is similar to savings. <br/>
-      it allows you to leave your NCG to be used for blockchain network operation <br />
-      for a certain period of time and receive compensation in return.
-    </p>
-  </div>
-}
-
-export default TitleComponent
+export default TitleComponent;

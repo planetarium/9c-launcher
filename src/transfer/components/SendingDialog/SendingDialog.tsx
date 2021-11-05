@@ -2,25 +2,24 @@ import { Button, Dialog, styled, Typography } from "@material-ui/core";
 import { T } from "@transifex/react";
 import React from "react";
 
-
 export type Props = {
   open: boolean;
   onDetailedView: () => void;
 };
 
 const DetailButton = styled(Button)({
-  width: '234px',
-  height: '60px',
-  fontFamily: 'Montserrat'
+  width: "234px",
+  height: "60px",
+  fontFamily: "Montserrat",
 });
 
 const SendingMessage = styled(Typography)({
-  fontFamily: 'Montserrat',
-  textAlign: 'center',
-  padding: '10px',
-  fontWeight: 'bold',
-  fontSize: '32px',
-  color: '#fff'
+  fontFamily: "Montserrat",
+  textAlign: "center",
+  padding: "10px",
+  fontWeight: "bold",
+  fontSize: "32px",
+  color: "#fff",
 });
 
 const transifexTags = "Transfer/Components/SendingDialog";
@@ -36,10 +35,10 @@ const SendingDialog: React.FC<Props> = (props: Props) => {
       open={open}
       PaperProps={{
         style: {
-          backgroundColor: 'transparent',
-          boxShadow: 'none',
-          maxWidth: '770px',
-          height: '150px'
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          maxWidth: "770px",
+          height: "150px",
         },
       }}
     >
@@ -48,16 +47,12 @@ const SendingDialog: React.FC<Props> = (props: Props) => {
           <T _str="Sending..." _tags={transifexTags} />
         </SendingMessage>
         <div>
-          <DetailButton
-            onClick={onDetailedView}
-            variant="contained"
-          >
+          <DetailButton onClick={onDetailedView} variant="contained">
             <T _str="Open Detailed View" _tags={transifexTags} />
           </DetailButton>
         </div>
       </div>
     </Dialog>
-
   );
 };
 

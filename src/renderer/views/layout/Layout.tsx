@@ -46,8 +46,9 @@ export const Layout: React.FC = observer(({ children }) => {
       APV: ${getConfig("AppProtocolVersion") as string} 
       Address: ${accountStore.selectedAddress} 
       Debug: ${accountStore.isLogin} / ${topmostBlocksResult.loading}
-      Mined blocks: ${minedBlocks?.length} (out of recent ${topmostBlocks?.length
-      } blocks)
+      Mined blocks: ${minedBlocks?.length} (out of recent ${
+      topmostBlocks?.length
+    } blocks)
       ${awsSinkCloudwatchGuid !== null && `Client ID: ${awsSinkCloudwatchGuid}`}
     `;
     clipboardElement.value = stringValue;
@@ -68,26 +69,31 @@ export const Layout: React.FC = observer(({ children }) => {
       <nav className="hero">
         <AccountInfoContainer
           minedBlock={Number(minedBlocks?.length)}
-          onReward={() => { }}
+          onReward={() => {}}
           onOpenWindow={() => {
-            ipcRenderer.invoke("open collection page", accountStore.selectedAddress);
+            ipcRenderer.invoke(
+              "open collection page",
+              accountStore.selectedAddress
+            );
           }}
         />
         <ul className={"LauncherClientOption"}>
-          { getConfig("UseRemoteHeadless")
-              ? null
-              : <li>
-                  <Button
-                      startIcon={<img src={NCGLogo} />}
-                      onClick={() => {
-                        ipcRenderer.invoke("open transfer page");
-                      }}
-                      disabled={!accountStore.isMiningConfigEnded || !standaloneStore.Ready}
-                  >
-                    <T _str="Send NCG" _tags={transifexTags} />
-                  </Button>
-                </li>
-          }
+          <li>
+            <Button
+              startIcon={<img src={NCGLogo} />}
+              onClick={() => {
+                ipcRenderer.invoke(
+                  "open transfer page",
+                  accountStore.selectedAddress
+                );
+              }}
+              disabled={
+                !accountStore.isMiningConfigEnded || !standaloneStore.Ready
+              }
+            >
+              <T _str="Send NCG" _tags={transifexTags} />
+            </Button>
+          </li>
           <li>
             <Button
               startIcon={<img src={patchNoteLogo} />}
@@ -133,8 +139,9 @@ export const Layout: React.FC = observer(({ children }) => {
             </Button>
           </li>
         </ul>
-        <div className="LauncherLayoutVersion">{`v${(getConfig("AppProtocolVersion") as string).split("/")[0]
-          }`}</div>
+        <div className="LauncherLayoutVersion">{`v${
+          (getConfig("AppProtocolVersion") as string).split("/")[0]
+        }`}</div>
         <div
           id={"LauncherClientIcon"}
           className={`LauncherClientIcon ${infoButtonState ? "activate" : ""}`}

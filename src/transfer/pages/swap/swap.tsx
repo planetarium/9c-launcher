@@ -1,8 +1,17 @@
-import { Button, Container, FormControl, InputAdornment, OutlinedInput, styled, TextField, Typography } from "@material-ui/core";
+import {
+  Button,
+  Container,
+  FormControl,
+  InputAdornment,
+  OutlinedInput,
+  styled,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
 import { observer } from "mobx-react";
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react";
 import FailureDialog from "src/transfer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/transfer/components/SendingDialog/SendingDialog";
 import SuccessDialog from "src/transfer/components/SuccessDialog/SuccessDialog";
@@ -14,58 +23,60 @@ import refreshIcon from "../../resources/refreshIcon.png";
 const transifexTags = "Transfer/Transfer";
 
 export type Props = {
+  signer: string;
   onDetailedView: (tx: string) => void;
 };
 
 const SwapContainer = styled(Container)({
-  flex: '3',
+  flex: "3",
 });
 
 const SwapTitle = styled(Typography)({
-  fontSize: '18px',
-  color: '#dddddd',
-  fontWeight: 'bold',
+  fontSize: "18px",
+  color: "#dddddd",
+  fontWeight: "bold",
 });
 
 const SwapSecondTitle = styled(Typography)({
-  fontSize: '14px',
-  color: '#dddddd',
+  fontSize: "14px",
+  color: "#dddddd",
 });
 
 const SwapNoticeTitle = styled(Typography)({
-  fontWeight: 'bold',
-  marginTop: '10px',
-  fontSize: '16px',
-  color: '#979797',
+  fontWeight: "bold",
+  marginTop: "10px",
+  fontSize: "16px",
+  color: "#979797",
 });
 
 const SwapNoticeLabel = styled(Typography)({
-  fontSize: '14px',
-  color: '#979797',
+  fontSize: "14px",
+  color: "#979797",
 });
 
 const SwapInput = styled(OutlinedInput)({
-  marginTop: '5px',
-  marginBottom: '10px',
-  height: '50px'
+  marginTop: "5px",
+  marginBottom: "10px",
+  height: "50px",
 });
 
 const SwapButton = styled(Button)({
-  width: '303px',
-  height: '60px',
-  fontFamily: 'Montserrat',
-  fontSize: '18px',
-  fontWeight: 'bold',
-  textTransform: 'none',
-  margin: '10px',
-  borderRadius: '2px',
-  position: 'relative',
-  left: '100px',
+  width: "303px",
+  height: "60px",
+  fontFamily: "Montserrat",
+  fontSize: "18px",
+  fontWeight: "bold",
+  textTransform: "none",
+  margin: "10px",
+  borderRadius: "2px",
+  position: "relative",
+  left: "100px",
 });
 
 const SwapPage: React.FC<Props> = observer((props: Props) => {
   const { headlessStore, swapPage } = useContext(StoreContext);
-  const { onDetailedView } = props;
+  const { signer, onDetailedView } = props;
+  const [tx, setTx] = useState("");
 
   const listener: TransactionConfirmationListener = {
     onSuccess: (blockIndex, blockHash) => {
@@ -79,21 +90,21 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
     onTimeout: (blockIndex, blockHash) => {
       console.log(`Timeout`);
       swapPage.endSend(false);
-    }
-  }
+    },
+  };
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if(!swapPage.validateRecipient || !swapPage.validateAmount) {
-      return; 
+    if (!swapPage.validateRecipient || !swapPage.validateAmount) {
+      return;
     }
     swapPage.startSend();
     const { recipient, amount } = swapPage;
-    const tx = await headlessStore.swapToWNCG(recipient, amount);
+    const tx = await headlessStore.swapToWNCG(signer, recipient, amount);
     swapPage.setTx(tx);
 
     headlessStore.confirmTransaction(tx, undefined, listener);
-  }
+  };
 
   return (
     <SwapContainer>
@@ -108,7 +119,7 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
           type="text"
           name="address"
           error={swapPage.recipientWarning}
-          onChange={e => swapPage.setRecipient(e.target.value)}
+          onChange={(e) => swapPage.setRecipient(e.target.value)}
           onBlur={() => swapPage.setRecipientWarning()}
           onFocus={() => swapPage.resetRecipientWarning()}
         />
@@ -116,31 +127,38 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
           <T _str="NCG Amount" _tags={transifexTags} />
         </SwapTitle>
         <SwapSecondTitle>
-          <T _str="Enter the amount of NCG to send." _tags={transifexTags} />&nbsp;
+          <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
+          &nbsp;
           <b>
-            <T _str="(Your balance: {ncg} NCG)" _tags={transifexTags} ncg={headlessStore.balance} />
+            <T
+              _str="(Your balance: {ncg} NCG)"
+              _tags={transifexTags}
+              ncg={headlessStore.balance}
+            />
           </b>
-        <Button
-          startIcon={<img src={refreshIcon} alt="refresh" />}
-          onClick={() => headlessStore.updateBalance()}
-        />
+          <Button
+            startIcon={<img src={refreshIcon} alt="refresh" />}
+            onClick={() => headlessStore.updateBalance(signer)}
+          />
         </SwapSecondTitle>
         <SwapInput
           type="number"
           name="amount"
-          onChange={e => swapPage.setAmount(new Decimal(e.target.value === '' ? -1 : e.target.value))}
+          onChange={(e) =>
+            swapPage.setAmount(
+              new Decimal(e.target.value === "" ? -1 : e.target.value)
+            )
+          }
           onBlur={() => swapPage.setAmountWarning()}
           onFocus={() => swapPage.resetAmountWarning()}
           error={swapPage.amountWarning}
-          endAdornment={
-            <InputAdornment position="end">NCG</InputAdornment>
-          }
+          endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
           defaultValue={0}
         />
         <SwapNoticeTitle>
           <T _str="Notice" _tags={transifexTags} />
         </SwapNoticeTitle>
-        <ul style={{listStyleType: "none", padding: 0, marginTop: '5px'}}>
+        <ul style={{ listStyleType: "none", padding: 0, marginTop: "5px" }}>
           <li>
             <SwapNoticeLabel>
               <T _str="* Minimum 100 NCG per transfer" _tags={transifexTags} />
@@ -148,12 +166,19 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
           </li>
           <li>
             <SwapNoticeLabel>
-              <T _str="* Maximum {max, number, integer} NCG per day" _tags={transifexTags} max={5000} />
+              <T
+                _str="* Maximum {max, number, integer} NCG per day"
+                _tags={transifexTags}
+                max={5000}
+              />
             </SwapNoticeLabel>
           </li>
           <li>
             <SwapNoticeLabel>
-              <T _str="* 1% fee deducted to operate bridge (ETH gas fee & development cost)" _tags={transifexTags} />
+              <T
+                _str="* 1% fee deducted to operate bridge (ETH gas fee & development cost)"
+                _tags={transifexTags}
+              />
             </SwapNoticeLabel>
           </li>
         </ul>
@@ -162,7 +187,10 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
           color="primary"
           onClick={handleButton}
           disabled={!swapPage.sendButtonActivated}
-        > Send </SwapButton>
+        >
+          {" "}
+          Send{" "}
+        </SwapButton>
       </FormControl>
 
       <SendingDialog
@@ -171,15 +199,22 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
       />
 
       <SuccessDialog
-        open={swapPage.currentPhase === TransferPhase.FINISHED && swapPage.success}
+        open={
+          swapPage.currentPhase === TransferPhase.FINISHED && swapPage.success
+        }
         onDetailedView={() => onDetailedView(swapPage.tx)}
         onClose={() => swapPage.finish()}
       >
-          <T _str="Although the NCG remittance was successful, the WNCG conversion takes about 20 minutes." _tags={transifexTags} />
+        <T
+          _str="Although the NCG remittance was successful, the WNCG conversion takes about 20 minutes."
+          _tags={transifexTags}
+        />
       </SuccessDialog>
 
       <FailureDialog
-        open={swapPage.currentPhase === TransferPhase.FINISHED && !swapPage.success}
+        open={
+          swapPage.currentPhase === TransferPhase.FINISHED && !swapPage.success
+        }
         onDetailedView={() => onDetailedView(swapPage.tx)}
         onClose={() => swapPage.finish()}
       />

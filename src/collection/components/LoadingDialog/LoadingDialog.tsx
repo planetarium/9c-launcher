@@ -19,8 +19,8 @@ const LoadingDialog: React.FC<Props> = (props: Props) => {
       open={open}
       PaperProps={{
         style: {
-          backgroundColor: 'transparent',
-          boxShadow: 'none',
+          backgroundColor: "transparent",
+          boxShadow: "none",
         },
       }}
     >
@@ -31,7 +31,6 @@ const LoadingDialog: React.FC<Props> = (props: Props) => {
         </div>
       </div>
     </Dialog>
-
   );
 };
 
