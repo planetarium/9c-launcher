@@ -4,7 +4,8 @@ import {
   RPC_SERVER_HOST,
   RPC_SERVER_PORT,
   userConfigStore,
-  get as getConfig, REMOTE_NODE,
+  get as getConfig,
+  REMOTE_NODE,
 } from "../../config";
 
 export default class GameStore {

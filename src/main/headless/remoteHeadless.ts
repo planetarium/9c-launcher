@@ -1,7 +1,7 @@
 import { ChildProcess, execFileSync } from "child_process";
 import { ipcMain } from "electron";
 import { dirname, basename } from "path";
-import {userConfigStore, CUSTOM_SERVER, get, REMOTE_NODE} from "../../config";
+import { userConfigStore, CUSTOM_SERVER, get, REMOTE_NODE } from "../../config";
 import { retry } from "@lifeomic/attempt";
 import { FetchError, HeadlessExitedError } from "../../errors";
 import { execute, sleep } from "../../utils";

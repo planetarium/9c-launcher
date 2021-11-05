@@ -123,8 +123,8 @@ const schema: any = {
   },
   RemoteNodeList: {
     type: "array",
-    default: ["ec2-18-190-48-27.us-east-2.compute.amazonaws.com,80,31238"]
-  }
+    default: ["ec2-18-190-48-27.us-east-2.compute.amazonaws.com,80,31238"],
+  },
 };
 
 export const configStore = new Store<IConfig>({
@@ -150,10 +150,10 @@ const HeadlessUrl = (): string => {
   return nodeInfo.HeadlessUrl();
 };
 
-const SelectedNode = () : NodeInfo => {
+const SelectedNode = (): NodeInfo => {
   // TODO select random node.
   return NodeList()[0];
-}
+};
 
 export class NodeInfo {
   constructor(host: string, graphqlPort: number, rpcPort: number) {
@@ -167,7 +167,7 @@ export class NodeInfo {
   readonly rpcPort: number;
 
   public GraphqlServer(): string {
-   return `${this.host}/graphql`;
+    return `${this.host}/graphql`;
   }
 
   public HeadlessUrl(): string {
@@ -179,15 +179,13 @@ export class NodeInfo {
   }
 }
 
-const NodeList = () : NodeInfo[] => {
+const NodeList = (): NodeInfo[] => {
   let list: NodeInfo[] = [];
-  if (get("UseRemoteHeadless"))
-  {
+  if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
-    remoteNodeList.forEach(v => {
+    remoteNodeList.forEach((v) => {
       const rawInfos = v.split(",");
-      if (rawInfos.length != 3)
-      {
+      if (rawInfos.length != 3) {
         throw new Error(`${v} does not contained node info.`);
       }
       const host = rawInfos[0];
@@ -196,10 +194,12 @@ const NodeList = () : NodeInfo[] => {
       const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort);
       list.push(nodeInfo);
     });
-  }
-  else
-  {
-    const nodeInfo = new NodeInfo(LocalServerHost().host, LocalServerPort().port, RpcServerPort().port);
+  } else {
+    const nodeInfo = new NodeInfo(
+      LocalServerHost().host,
+      LocalServerPort().port,
+      RpcServerPort().port
+    );
     list.push(nodeInfo);
   }
   return list;
