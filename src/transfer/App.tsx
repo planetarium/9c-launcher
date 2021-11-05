@@ -86,6 +86,9 @@ const App: React.FC = () => {
     }
     main();
   }, [agentAddress]);
+
+  if (!agentAddress) return null;
+
   return (
     <StoreContext.Provider value={storeContainer}>
       <ThemeProvider theme={theme}>
