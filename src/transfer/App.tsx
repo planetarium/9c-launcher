@@ -65,13 +65,16 @@ const App: React.FC = () => {
   );
 
   const [agentAddress, setAgentAddress] = useState<string>("");
-  ipcRenderer.on("set ninechronicles address", (_, address) => {
-    console.log("set ninechronicles address at Transfer App.tsx");
-    setAgentAddress(address);
-  });
 
   useEffect(() => {
     async function main() {
+      if (!agentAddress) {
+        ipcRenderer.once("set ninechronicles address", (_, address) => {
+          console.log("set ninechronicles address at Transfer App.tsx");
+          setAgentAddress(address);
+        });
+        return;
+      }
       const success = await storeContainer.headlessStore.trySetAgentAddress(
         agentAddress
       );
