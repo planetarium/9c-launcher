@@ -199,7 +199,7 @@ const NodeList = () : NodeInfo[] => {
   }
   else
   {
-    const nodeInfo = new NodeInfo(LOCAL_SERVER_HOST, LOCAL_SERVER_PORT, RPC_SERVER_PORT);
+    const nodeInfo = new NodeInfo(LocalServerHost().host, LocalServerPort().port, RpcServerPort().port);
     list.push(nodeInfo);
   }
   return list;
