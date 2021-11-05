@@ -22,8 +22,7 @@ describe("Tx", function () {
       const actions = [
         "activate_account",
         "monster_collect",
-        "claim_monster_collection_reward",
-        "transfer_asset"
+        "claim_monster_collection_reward"
       ]
       actions.forEach((action) => {
         const actionPath = path.join(__dirname, "..", "..", "fixture", `${action}.txt`);
