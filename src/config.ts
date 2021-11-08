@@ -199,8 +199,7 @@ const NodeList = (): NodeInfo[] => {
     );
     list.push(nodeInfo);
   }
-  if (index === -1)
-  {
+  if (index === -1) {
     index = Math.floor(Math.random() * list.length);
   }
   return list;
