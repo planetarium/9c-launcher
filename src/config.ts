@@ -127,6 +127,8 @@ const schema: any = {
   },
 };
 
+let index = -1;
+
 export const configStore = new Store<IConfig>({
   cwd: app.getAppPath(),
   schema,
@@ -141,18 +143,13 @@ const GraphQLServer = (): string => {
   return `${LocalServerUrl}/graphql`;
 };
 
-const RemoteGraphQLServer = (): string => {
-  return `${HeadlessUrl}/graphql`;
-};
-
 const HeadlessUrl = (): string => {
   const nodeInfo = SelectedNode();
   return nodeInfo.HeadlessUrl();
 };
 
 const SelectedNode = (): NodeInfo => {
-  // TODO select random node.
-  return NodeList()[0];
+  return NodeList()[index];
 };
 
 export class NodeInfo {
@@ -201,6 +198,10 @@ const NodeList = (): NodeInfo[] => {
       RpcServerPort().port
     );
     list.push(nodeInfo);
+  }
+  if (index === -1)
+  {
+    index = Math.floor(Math.random() * list.length);
   }
   return list;
 };
@@ -284,4 +285,4 @@ export const CUSTOM_SERVER: boolean =
   RpcServerPort().notDefault;
 export const MIXPANEL_TOKEN = "80a1e14b57d050536185c7459d45195a";
 export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
-export const REMOTE_NODE = NodeList()[0];
+export const REMOTE_NODE: NodeInfo = SelectedNode();
