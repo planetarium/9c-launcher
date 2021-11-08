@@ -489,18 +489,12 @@ function initializeIpc() {
     });
   });
 
-  ipcMain.handle("open transfer page", async (_, selectedAddress) => {
+  ipcMain.handle("open transfer page", async () => {
     if (collectionWin != null) {
       collectionWin.focus();
       return;
     }
-    console.log(`open transfer page address: ${selectedAddress}`);
     collectionWin = await createTransferWindow();
-    console.log(`call set ninechronicles address: ${selectedAddress}`);
-    collectionWin!.webContents.send(
-      "set ninechronicles address",
-      selectedAddress
-    );
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
