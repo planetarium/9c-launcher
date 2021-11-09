@@ -10,6 +10,7 @@ import CancellationToken from "cancellationtoken";
 import extractZip from "extract-zip";
 import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
 import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
+import destr from "destr";
 
 const pipeline = promisify(stream.pipeline);
 
@@ -147,7 +148,7 @@ export async function cancellableDownload(
     const metadata: DownloadMetadata | false =
       partial &&
       fs.existsSync(metaFilePath) &&
-      JSON.parse(fs.readFileSync(metaFilePath).toString());
+      (destr(fs.readFileSync(metaFilePath).toString()) ?? false);
     let startingBytes =
       metadata && fs.existsSync(downloadPath) && fs.statSync(downloadPath).size;
     const headers =
