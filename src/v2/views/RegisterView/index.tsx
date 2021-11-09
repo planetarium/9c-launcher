@@ -45,6 +45,7 @@ function RegisterView() {
     account.setPrivateKey(privateKey!);
     account.addAddress(address);
     account.setSelectedAddress(address);
+    account.setLoginStatus(true);
     account.setActivationKey(activationKey!);
     history.push("/lobby");
     overlay.open("onboarding");
