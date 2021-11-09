@@ -4,6 +4,7 @@ import { AnimatePresence, motion, Variants } from "framer-motion";
 import { styled } from "src/v2/stitches.config";
 import H1 from "src/v2/components/ui/H1";
 import Button from "src/v2/components/ui/Button";
+import { useStore } from "src/v2/utils/useStore";
 
 const Overlay = styled(motion.div, {
   backgroundColor: "#1d1e1ff2",
@@ -77,9 +78,10 @@ function IntroductionSection({ next }: SectionProps) {
 }
 
 function OnboardingOverlay() {
+  const overlay = useStore("overlay");
   const [section, setState] = React.useState<"mining" | "introduce">("mining");
   const next = () =>
-    setState((prev) => (prev === "introduce" ? "mining" : "introduce"));
+    section === "mining" ? setState("introduce") : overlay.close();
 
   return (
     <Overlay
