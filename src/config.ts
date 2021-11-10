@@ -19,10 +19,6 @@ const schema: any = {
     type: "string",
     default: "",
   },
-  MinimumDifficulty: {
-    type: "integer",
-    default: 5000000,
-  },
   StoreType: {
     type: "string",
     default: "rocksdb",

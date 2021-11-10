@@ -3,7 +3,6 @@
   "UseSnapshot": false,
   "AppProtocolVersion": "2001/019101FEec7ed4f918D396827E1277DEda1e20D4/MEQCIBlLqJk+INI.EHa2EvdUl.7LIZoOXRm3+9GF0fQPakw8AiBE2wbRGSnohWgDHm1gSU+iSpVv7sxKQFHcrfKFTD72dg==/ZHUxNjpXaW5kb3dzQmluYXJ5VXJsdTU0Omh0dHBzOi8vZG93bmxvYWQubmluZS1jaHJvbmljbGVzLmNvbS92MjAwMS9XaW5kb3dzLnppcHUxNDptYWNPU0JpbmFyeVVybHU1NTpodHRwczovL2Rvd25sb2FkLm5pbmUtY2hyb25pY2xlcy5jb20vdjIwMDEvbWFjT1MudGFyLmd6dTk6dGltZXN0YW1wdTIwOjIwMjAtMDYtMzBUMDU6NDg6MTFaZQ==",
   "GenesisBlockPath": "D:\\a\\9c-launcher\\9c-launcher\\__tests__\\fixture\\genesis-block",
-  "MinimumDifficulty": 5000000,
   "StoreType": "rocksdb",
   "NoMiner": true,
   "TrustedAppProtocolVersionSigners": [
