@@ -4,7 +4,7 @@ import Layout from "../../components/core/Layout";
 import { useStore } from "src/v2/utils/useStore";
 import { ipcRenderer } from "electron";
 import { useHistory } from "react-router";
-import { CSS } from "src/v2/stitches.config";
+import { CSS, styled } from "src/v2/stitches.config";
 
 import H1 from "src/v2/components/ui/H1";
 import TextField from "src/v2/components/ui/TextField";
@@ -21,6 +21,10 @@ const LoginStyles: CSS = {
   height: "100%",
   marginBottom: 52,
 };
+
+const Center = styled("div", {
+  textAlign: "center",
+});
 
 function LoginView() {
   const { account } = useStore();
@@ -64,7 +68,7 @@ function LoginView() {
         invalid={invalid}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <div>
+      <Center>
         <Button
           variant="primary"
           onClick={handleLogin}
@@ -72,7 +76,7 @@ function LoginView() {
         >
           LOGIN
         </Button>
-      </div>
+      </Center>
     </Layout>
   );
 }
