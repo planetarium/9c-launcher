@@ -5,6 +5,7 @@ import {
   RPC_SERVER_PORT,
   userConfigStore,
   get as getConfig,
+  REMOTE_NODE,
 } from "../../config";
 
 export default class GameStore {
@@ -51,8 +52,9 @@ export default class GameStore {
     let rpcHost = RPC_SERVER_HOST;
     let rpcPort = RPC_SERVER_PORT;
     if (getConfig("UseRemoteHeadless")) {
-      rpcHost = getConfig("RemoteRpcServerHost");
-      rpcPort = getConfig("RemoteRpcServerPort");
+      const node = REMOTE_NODE;
+      rpcHost = node.host;
+      rpcPort = node.rpcPort;
     }
 
     ipcRenderer.send("launch game", {
