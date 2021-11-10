@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
+import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
 import React, { useContext, useState } from "react";
 import FailureDialog from "src/transfer/components/FailureDialog/FailureDialog";
@@ -95,6 +96,7 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
     if (!swapPage.validateRecipient || !swapPage.validateAmount) {
       return;
     }

@@ -20,6 +20,7 @@ import { TransactionConfirmationListener } from "src/transfer/stores/headless";
 import { TransferPhase } from "src/transfer/stores/views/transfer";
 import refreshIcon from "../../resources/refreshIcon.png";
 import { verify as addressVerify } from "eip55";
+import { ipcRenderer } from "electron";
 
 const transifexTags = "Transfer/Transfer";
 
@@ -83,6 +84,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
     if (!transferPage.validateRecipient || !transferPage.validateAmount) {
       return;
     }
