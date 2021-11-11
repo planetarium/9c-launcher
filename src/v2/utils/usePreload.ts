@@ -98,3 +98,8 @@ export function usePreload() {
     progress,
   ] as const;
 }
+
+export function useIsPreloadDone() {
+  const [state] = useActor(preloadService);
+  return state.matches("done");
+}
