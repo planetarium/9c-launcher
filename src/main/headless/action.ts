@@ -42,4 +42,28 @@ export class Action extends StandaloneSubcommand {
       return false;
     }
   }
+
+  public TransferAsset(
+    sender: string,
+    recipient: string,
+    amount: number,
+    memo: string,
+    path: string
+  ): boolean {
+    try {
+      this.execSync(
+        "action",
+        "transfer-asset",
+        sender,
+        recipient,
+        `${amount}`,
+        path,
+        memo
+      );
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
 }
