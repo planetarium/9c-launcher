@@ -3,7 +3,6 @@ export interface IConfig {
   AppProtocolVersion: string;
   SnapshotPaths: string[];
   GenesisBlockPath: string;
-  MinimumDifficulty: number;
   StoreType: string;
   NoMiner: boolean;
   TrustedAppProtocolVersionSigners: string[];
@@ -24,10 +23,7 @@ export interface IConfig {
   Network: string;
   SwapAddress: string | undefined;
   DataProviderUrl: string | undefined;
-  RemoteRpcServerHost: string;
-  RemoteRpcServerPort: number;
-  RemoteGraphQLServerHost: string;
-  RemoteGraphQLServerPort: number;
   UseRemoteHeadless: boolean;
   LaunchPlayer: boolean;
+  RemoteNodeList: string[];
 }

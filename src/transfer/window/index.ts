@@ -22,7 +22,7 @@ const createTransferWindow = async (): Promise<BrowserWindow> => {
     await _win.loadURL("http://localhost:9000/transfer.html");
     await _win.webContents.openDevTools();
   } else {
-    _win.loadFile("transfer.html");
+    await _win.loadFile("transfer.html");
   }
 
   return _win;

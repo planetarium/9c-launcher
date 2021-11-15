@@ -10,8 +10,9 @@ import {
 } from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
+import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import FailureDialog from "src/transfer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/transfer/components/SendingDialog/SendingDialog";
 import SuccessDialog from "src/transfer/components/SuccessDialog/SuccessDialog";
@@ -23,6 +24,7 @@ import refreshIcon from "../../resources/refreshIcon.png";
 const transifexTags = "Transfer/Transfer";
 
 export type Props = {
+  signer: string;
   onDetailedView: (tx: string) => void;
 };
 
@@ -74,7 +76,8 @@ const SwapButton = styled(Button)({
 
 const SwapPage: React.FC<Props> = observer((props: Props) => {
   const { headlessStore, swapPage } = useContext(StoreContext);
-  const { onDetailedView } = props;
+  const { signer, onDetailedView } = props;
+  const [tx, setTx] = useState("");
 
   const listener: TransactionConfirmationListener = {
     onSuccess: (blockIndex, blockHash) => {
@@ -93,12 +96,13 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
     if (!swapPage.validateRecipient || !swapPage.validateAmount) {
       return;
     }
     swapPage.startSend();
     const { recipient, amount } = swapPage;
-    const tx = await headlessStore.swapToWNCG(recipient, amount);
+    const tx = await headlessStore.swapToWNCG(signer, recipient, amount);
     swapPage.setTx(tx);
 
     headlessStore.confirmTransaction(tx, undefined, listener);
@@ -136,7 +140,7 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
           </b>
           <Button
             startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={() => headlessStore.updateBalance()}
+            onClick={() => headlessStore.updateBalance(signer)}
           />
         </SwapSecondTitle>
         <SwapInput

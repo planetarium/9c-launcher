@@ -489,12 +489,18 @@ function initializeIpc() {
     });
   });
 
-  ipcMain.handle("open transfer page", async () => {
+  ipcMain.handle("open transfer page", async (_, selectedAddress) => {
     if (collectionWin != null) {
       collectionWin.focus();
       return;
     }
+    console.log(`open transfer page address: ${selectedAddress}`);
     collectionWin = await createTransferWindow();
+    console.log(`call set ninechronicles address: ${selectedAddress}`);
+    collectionWin!.webContents.send(
+      "set ninechronicles address",
+      selectedAddress
+    );
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
@@ -1154,7 +1160,6 @@ function getHeadlessArgs(): string[] {
   const args = [
     `-V=${getConfig("AppProtocolVersion")}`,
     `-G=${getConfig("GenesisBlockPath")}`,
-    `-D=${getConfig("MinimumDifficulty")}`,
     `--store-type=${getConfig("StoreType")}`,
     `--store-path=${getBlockChainStorePath()}`,
     ...getConfig("IceServerStrings").map(
