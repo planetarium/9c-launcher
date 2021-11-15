@@ -8,8 +8,6 @@ const { app } =
 const schema: any = {
   AppProtocolVersion: {
     type: "string",
-    default:
-      "2001/019101FEec7ed4f918D396827E1277DEda1e20D4/MEQCIBlLqJk+INI.EHa2EvdUl.7LIZoOXRm3+9GF0fQPakw8AiBE2wbRGSnohWgDHm1gSU+iSpVv7sxKQFHcrfKFTD72dg==/ZHUxNjpXaW5kb3dzQmluYXJ5VXJsdTU0Omh0dHBzOi8vZG93bmxvYWQubmluZS1jaHJvbmljbGVzLmNvbS92MjAwMS9XaW5kb3dzLnppcHUxNDptYWNPU0JpbmFyeVVybHU1NTpodHRwczovL2Rvd25sb2FkLm5pbmUtY2hyb25pY2xlcy5jb20vdjIwMDEvbWFjT1MudGFyLmd6dTk6dGltZXN0YW1wdTIwOjIwMjAtMDYtMzBUMDU6NDg6MTFaZQ==",
   },
   SnapshotPaths: {
     type: "array",
@@ -18,10 +16,6 @@ const schema: any = {
   GenesisBlockPath: {
     type: "string",
     default: "",
-  },
-  MinimumDifficulty: {
-    type: "integer",
-    default: 5000000,
   },
   StoreType: {
     type: "string",

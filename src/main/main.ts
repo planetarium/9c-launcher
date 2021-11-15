@@ -1160,7 +1160,6 @@ function getHeadlessArgs(): string[] {
   const args = [
     `-V=${getConfig("AppProtocolVersion")}`,
     `-G=${getConfig("GenesisBlockPath")}`,
-    `-D=${getConfig("MinimumDifficulty")}`,
     `--store-type=${getConfig("StoreType")}`,
     `--store-path=${getBlockChainStorePath()}`,
     ...getConfig("IceServerStrings").map(
