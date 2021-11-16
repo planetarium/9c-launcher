@@ -45,7 +45,7 @@ class Headless {
     ipcMain.on(
       "standalone/set-private-key",
       async (event, privateKey: string) => {
-        let ret = await this.login(privateKey);
+        let ret = await this.login(privateKey).catch(() => false);
         console.log(`set-private-key: ${ret}`);
         event.returnValue = ret;
       }
@@ -54,14 +54,14 @@ class Headless {
     ipcMain.on(
       "standalone/set-signer-private-key",
       async (event, privateKey: string) => {
-        let ret = await this.setSignerPrivateKey(privateKey);
+        let ret = await this.setSignerPrivateKey(privateKey).catch(() => false);
         console.log(`set-signer-private-key: ${ret}`);
         event.returnValue = ret;
       }
     );
 
     ipcMain.on("standalone/set-mining", async (event, mining: boolean) => {
-      let ret = await this.miningOption(mining);
+      let ret = await this.miningOption(mining).catch(() => false);
       console.log(`set-mining: ${ret}`);
       event.returnValue = ret;
     });
