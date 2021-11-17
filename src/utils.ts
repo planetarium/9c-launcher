@@ -47,11 +47,11 @@ export function execute(
   if (binarypath == "") {
     throw Error("Path is empty.");
   }
-  
+
   const name = path.basename(binarypath);
   const logger = log.create(name);
 
-  logger.transports.file.fileName = `${name}.log`
+  logger.transports.file.fileName = `${name}.log`;
 
   const node = spawn(binarypath, args);
   node.stdout?.on("data", (data) => {

@@ -8030,6 +8030,11 @@ electron-fetch@^1.4.0, electron-fetch@^1.7.1:
   dependencies:
     encoding "^0.1.13"
 
+electron-ipc-log@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/electron-ipc-log/-/electron-ipc-log-3.0.1.tgz#4d97594f99f7bcdbe7ac4230bd20a1cc8121ff92"
+  integrity sha512-S5eWzUjhYkEBbQ94FgDakQH0FCE3BhhErUIy3EoTK8cDAndfXmHXzl8qGhtdyuFYmRjvPacHb7xfDtas9oGN8g==
+
 electron-is-dev@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/electron-is-dev/-/electron-is-dev-1.2.0.tgz#2e5cea0a1b3ccf1c86f577cee77363ef55deb05e"

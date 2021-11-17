@@ -71,11 +71,17 @@ import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import { createWindow as createV2Window } from "./v2/application";
 import { getFreeSpace } from "@planetarium/check-free-space";
+import electronIpcLog from "electron-ipc-log";
 
 initializeSentry();
 
 log.transports.file.maxSize = 1024 * 1024 * 1024 * 1;
 Object.assign(console, log.functions);
+
+const ipcLogger = log.scope("ipc");
+electronIpcLog((ev) => {
+  ipcLogger.verbose(ev.channel, ": ", ev.data);
+});
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 const standaloneExecutablePath = path.join(
