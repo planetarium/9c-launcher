@@ -74,7 +74,7 @@ import { getFreeSpace } from "@planetarium/check-free-space";
 
 initializeSentry();
 
-log.transports.file.maxSize = 1024 * 1024 * 15;
+log.transports.file.maxSize = 1024 * 1024 * 1024 * 1;
 Object.assign(console, log.functions);
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
