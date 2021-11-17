@@ -11,6 +11,7 @@ import extractZip from "extract-zip";
 import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
 import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
 import destr from "destr";
+import log from "electron-log";
 
 const pipeline = promisify(stream.pipeline);
 
@@ -46,13 +47,18 @@ export function execute(
   if (binarypath == "") {
     throw Error("Path is empty.");
   }
+  
+  const name = path.basename(binarypath);
+  const logger = log.create(name);
+
+  logger.transports.file.fileName = `${name}.log`
 
   const node = spawn(binarypath, args);
   node.stdout?.on("data", (data) => {
-    console.log(`${data}`);
+    logger.log(`${data}`);
   });
   node.stderr?.on("data", (data) => {
-    console.log(`${data}`);
+    logger.log(`${data}`);
   });
   return node;
 }
