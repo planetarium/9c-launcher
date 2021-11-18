@@ -15,7 +15,6 @@ import React, {
   useState,
 } from "react";
 import {
-  useActivateMutation,
   useActivationAddressLazyQuery,
   useActivationKeyNonceQuery,
   useGetNextTxNonceQuery,
@@ -46,14 +45,12 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   const { accountStore, standaloneStore } = props;
   const [
     activation,
-    { loading, error: statusError, data: status, refetch: activationRefetch },
+    { loading, data: status, refetch: activationRefetch },
   ] = useActivationAddressLazyQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
   });
-  const [activate, { data: isActivated, error: activatedError }] =
-    useActivateMutation();
   const [activationKey, setActivationKey] = useState(
     accountStore.activationKey
   );
@@ -80,7 +77,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     },
   });
 
-  const [stage, { data: isStage, error: stageError }] = useStageTxMutation();
+  const [stage] = useStageTxMutation();
 
   const handleActivationKeySubmit = async (
     event: FormEvent<HTMLFormElement>
@@ -89,22 +86,24 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     await makeTx();
   };
 
-  const activateMutation = async () => {
-    if (tx !== "") {
-      setPollingState(true);
-      const stageResult = await stage({
-        variables: {
-          encodedTx: tx,
-        },
-      });
+  const stageTx = async () => {
+    if (tx === "") {
+      return;
+    }
 
-      if (stageResult.data?.stageTx) {
-        while (true) {
-          await sleep(1000);
-          if (await activated()) {
-            setPollingState(false);
-            return;
-          }
+    setPollingState(true);
+    const stageResult = await stage({
+      variables: {
+        encodedTx: tx,
+      },
+    });
+
+    if (stageResult.data?.stageTx) {
+      while (true) {
+        await sleep(1000);
+        if (await activated()) {
+          setPollingState(false);
+          return;
         }
       }
     }
@@ -175,18 +174,26 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   };
 
   useEffect(() => {
-    if (standaloneStore.Ready && standaloneStore.IsSetPrivateKeyEnded) {
+    if (standaloneStore.Ready) {
       activation();
     }
-  }, [standaloneStore.Ready, standaloneStore.IsSetPrivateKeyEnded]);
+  }, [standaloneStore.Ready]);
 
-  if (!polling && tx !== "" && !status?.activationStatus.addressActivated) {
-    activateMutation();
-  }
+  useEffect(() => {
+    if (activationKey !== "") {
+      makeTx();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!polling && tx !== "" && !status?.activationStatus.addressActivated) {
+      stageTx();
+    }
+  }, [polling, tx, status]);
 
   let child: JSX.Element;
   // FIXME 활성화에 실패한 경우에도 polling이 풀리지 않는 문제가 있습니다.
-  if ((loading || polling) && activatedError === undefined) {
+  if (loading || polling) {
     child = (
       <div>
         <p className={classes.verifing}>
