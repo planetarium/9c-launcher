@@ -368,6 +368,8 @@ class Headless {
       return false;
     } else if (response.status === 503) {
       throw new FetchError(await response.text(), 503);
+    } else if (response.status === 400) {
+      throw new FetchError(await response.text(), 400);
     }
 
     // Excluding 200 & 503, retry.
