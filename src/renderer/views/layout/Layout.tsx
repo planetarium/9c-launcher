@@ -110,7 +110,7 @@ export const Layout: React.FC = observer(({ children }) => {
             <Button
               startIcon={<img src={explorerLogo} />}
               onClick={() => {
-                shell.openExternal("http://explorer.libplanet.io/9c-main/");
+                shell.openExternal("https://9cscan.com");
               }}
             >
               <T _str="Explorer" _tags={transifexTags} />
