@@ -36,7 +36,8 @@ const handleDetailView = (tx: string) => {
   const network = getConfig("Network", "9c-main");
   if (process.versions["electron"]) {
     import("electron").then(({ shell }) => {
-      shell.openExternal(
+      if (network === "9c-main") shell.openExternal(`https://9cscan.com/tx/${tx}`)
+      else shell.openExternal(
         `https://explorer.libplanet.io/${network}/transaction/?${tx}`
       );
     });
