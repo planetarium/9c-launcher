@@ -127,7 +127,11 @@ export const configStore = new Store<IConfig>({
   cwd: app.getAppPath(),
   schema,
 });
-export const userConfigStore = new Store<IConfig>();
+
+const network = configStore.get("Network");
+export const userConfigStore = new Store<IConfig>({
+  name: network === "9c-main" ? "config" : `config.${network}`,
+});
 
 const LocalServerUrl = (): string => {
   return `${LocalServerHost().host}:${LocalServerPort().port}`;
