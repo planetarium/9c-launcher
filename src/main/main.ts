@@ -211,7 +211,8 @@ async function initializeApp() {
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
-    if (isV2) win = await createV2Window();
+    if (app.commandLine.hasSwitch("v2") || getConfig("UseV2Interface"))
+      win = await createV2Window();
     else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
 
