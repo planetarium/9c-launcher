@@ -86,6 +86,7 @@ jobs:
       - run:
           command: yarn prettier --check "src/**/*.{ts,tsx,json}"
           name: Check Formatting
+      - run: yarn codegen
       - run:
           command: yarn tsc --noEmit
           name: Type Check
