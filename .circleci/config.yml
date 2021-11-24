@@ -8,6 +8,7 @@ commands:
   checkout-update-submodules:
     steps:
       - checkout
+      - run: git submodule sync --recursive
       - run: git submodule update --init --recursive
   yarn-install:
     steps:
@@ -75,8 +76,6 @@ jobs:
       - store_artifacts:
           path: pack-dist/*
           destination: dist-artifacts
-
-      
   styles:
     docker:
       - image: cimg/node:lts
