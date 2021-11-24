@@ -1,0 +1,121 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.7
+  win: circleci/windows@2.4.1
+
+commands:
+  checkout-update-submodules:
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+  yarn-install:
+    steps:
+      - restore_cache:
+          keys:
+            - yarn-{{ checksum "yarn.lock" }}
+      - run: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn
+      - save_cache:
+          key: yarn-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+  
+jobs:
+  build:
+    executor:
+      name: win/default
+      size: medium
+    # macos:
+    #   xcode: "11.3.0"
+    # Let's keep this disabled until we figure out the macOS build.
+    steps:
+      - checkout-update-submodules
+      - yarn-install
+      - run: 
+          command: iwr -useb https://dot.net/v1/dotnet-install.ps1 | iex
+          name: Install .NET Core Latest
+      - run: 
+          command: |
+            [Environment]::SetEnvironmentVariable("APV", (./scripts/make-apv.ps1), "User")
+          name: Generate APV
+      - run: yarn build-prod
+      - run: 
+          command: |
+            set -ex
+            latest_apv_no="$(yarn --silent latest-apv-no)"
+            temp_dir="$(mktemp -d)"
+            pushd "$temp_dir"
+            curl -o tmp.zip "$(printf "$URL_PATTERN" "$latest_apv_no")"
+            7z x tmp.zip resources/app/config.json
+            popd
+            mv "$temp_dir/resources/app/config.json" dist/
+          shell: bash.exe
+          environment:
+            URL_PATTERN: "https://download.nine-chronicles.com/v%d/Windows.zip"
+      - run: yarn sign-apv
+      - store_artifacts:
+          path: dist
+          destination: dist-artifacts
+      - run:
+          command: |
+            pushd NineChronicles.Headless
+              dotnet clean -c Release
+              dotnet nuget locals all --clear
+            popd
+            if ($env:CIRCLE_BRANCH -eq "main") {
+              yarn pack-release
+            } else {
+              yarn pack-all
+            }
+          environment:
+            SKIP_APV_SIGN: "1"
+      - run: 
+          command: 7z a -r ../../pack-dist/Windows.zip *
+          working_directory: pack/Nine Chronicles-win32-x64/
+      - store_artifacts:
+          path: pack-dist/*
+          destination: dist-artifacts
+
+      
+  styles:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - yarn-install
+      - run:
+          command: yarn prettier --check "src/**/*.{ts,tsx,json}"
+          name: Check Formatting
+      - run:
+          command: yarn tsc --noEmit
+          name: Type Check
+  update-translations:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - yarn-install
+      - run:
+          command: yarn update-translations
+          name: Update Translations
+  check-submodule:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - run: yarn global add typescript ts-node
+      - run:
+          command: ts-node scripts/checkSubmodule.ts Lib9c
+          name: Check Lib9c
+      - run:
+          command: ts-node scripts/checkSubmodule.ts NineChronicles.RPC.Shared
+          name: Check NineChronicles.RPC.Shared
+
+
+workflows:
+  build:
+    jobs:
+      - build
+      - styles
+      - update-translations
+      - check-submodule
