@@ -91,8 +91,11 @@ const LoginView = observer(
         ipcRenderer.send("mixpanel-track-event", "Launcher/LoginFailed");
       }
 
-      if (unprotectedPrivateKey !== undefined) {
-        setUnprotectedPrivateKey(unprotectedPrivateKey);
+      if (
+        unprotectedPrivateKey !== undefined &&
+        typeof unprotectedPrivateKey === "string"
+      ) {
+        setUnprotectedPrivateKey(unprotectedPrivateKey.padStart(64, "0"));
       }
     };
 

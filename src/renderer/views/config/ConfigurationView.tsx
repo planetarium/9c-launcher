@@ -63,6 +63,9 @@ const ConfigurationView = observer(() => {
     const isEnableSentry = event.target.sentry.checked;
     userConfigStore.set("Sentry", isEnableSentry);
 
+    const useRemoteHeadlessChecked = event.target.useRemoteHeadless.checked;
+    userConfigStore.set("UseRemoteHeadless", useRemoteHeadlessChecked);
+
     remote.app.relaunch();
     remote.app.exit();
   };
@@ -197,6 +200,25 @@ const ConfigurationView = observer(() => {
                 _tags={transifexTags}
               />
             </FormHelperText>
+          </FormControl>
+
+          <FormControl className={classes.checkboxGroup}>
+            <FormLabel className={classes.newLine}>
+              <T _str="Experimental Features" _tags={transifexTags} />
+            </FormLabel>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    className={classes.checkbox}
+                    defaultChecked={getConfig("UseRemoteHeadless")}
+                    color="default"
+                    name="useRemoteHeadless"
+                  />
+                }
+                label={<T _str="Use Remote Headless" _tags={transifexTags} />}
+              />
+            </FormGroup>
           </FormControl>
         </article>
         <Button
