@@ -225,9 +225,6 @@ const RetypePasswordForm = ({
             <T _str="Invitation Code" _tags={transifexTags} />
           </InputLabel>
           <OutlinedInput type="text" onChange={handleActivationKeyChange} />
-          <FormHelperText className={classes.helperText}>
-            form helper text
-          </FormHelperText>
         </FormControl>
       )}
       <Button

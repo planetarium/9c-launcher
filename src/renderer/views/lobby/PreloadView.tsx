@@ -36,7 +36,7 @@ const PreloadView = observer((props: IStoreContainer) => {
   };
 
   const handleClickBlockExplorer = useCallback(() => {
-    shell.openExternal("https://explorer.libplanet.io/9c-main/");
+    shell.openExternal("https://9cscan.com/");
   }, []);
 
   const handleClickPlayerGuide = useCallback(() => {
