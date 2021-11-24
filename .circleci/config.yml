@@ -104,12 +104,12 @@ jobs:
       - image: cimg/node:lts
     steps:
       - checkout
-      - run: yarn global add typescript ts-node
+      - yarn-install
       - run:
-          command: ts-node scripts/checkSubmodule.ts Lib9c
+          command: yarn ts-node scripts/checkSubmodule.ts Lib9c
           name: Check Lib9c
       - run:
-          command: ts-node scripts/checkSubmodule.ts NineChronicles.RPC.Shared
+          command: yarn ts-node scripts/checkSubmodule.ts NineChronicles.RPC.Shared
           name: Check NineChronicles.RPC.Shared
 
 
