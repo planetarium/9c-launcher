@@ -8,8 +8,10 @@ commands:
   checkout-update-submodules:
     steps:
       - checkout
-      - run: git submodule sync --recursive
-      - run: git submodule update --init --recursive
+      - run: 
+          command: git submodule update --init --recursive
+          environment:
+            GIT_LFS_SKIP_SMUDGE: 1
   yarn-install:
     steps:
       - restore_cache:
