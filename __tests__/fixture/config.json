@@ -19,6 +19,9 @@
   "BlockchainStoreDirParent": "",
   "BlockchainStoreDirName": "9c",
   "Locale": "",
+  "HeadlessArgs": [
+    "--transport-type=netmq"
+  ],
 	"ConfigVersion": 5,
   "MPT": false,
   "Workers": 20,
