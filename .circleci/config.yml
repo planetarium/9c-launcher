@@ -98,7 +98,10 @@ jobs:
       - checkout
       - yarn-install
       - run:
-          command: yarn update-translations
+          command: |
+            if ($env:CIRCLE_BRANCH -eq "development") {
+              yarn update-translations
+            }
           name: Update Translations
   check-submodule:
     docker:
