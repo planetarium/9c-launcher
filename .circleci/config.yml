@@ -50,10 +50,8 @@ jobs:
       - run: 
           command: |
             set -ex
-            temp="$(mktemp)"
-            curl -o "$temp" 'https://download.nine-chronicles.com/9c-launcher-config.json'
             mkdir -p dist
-            mv "$temp" dist/
+            curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
           shell: bash.exe
           name: Copy config.json from the last release
       - run: yarn sign-apv
