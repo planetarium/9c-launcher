@@ -118,6 +118,25 @@ jobs:
       - run:
           command: yarn ts-node scripts/checkSubmodule.ts NineChronicles.RPC.Shared
           name: Check NineChronicles.RPC.Shared
+  e2e-test:
+    executor:
+      name: win/default
+      size: medium
+    steps:
+      - checkout-update-submodules:
+          paths: "NineChronicles.Headless"
+      - yarn-install
+      - run: scripts/create-key.ps1
+      - run: yarn build-headless
+      - run: yarn build-prod
+      - run: scripts/copy-config.ps1
+      - run: yarn test
+      - store_artifacts:
+          path: __tests__/snapshots
+          destination: e2e-snapshots
+      - store_artifacts:
+          path: __tests__/logs
+          destination: e2e-logs
 
 
 workflows:
@@ -136,3 +155,4 @@ workflows:
                 - development
                 - main
                 - /^rc-v\d+$/
+      - e2e-test
