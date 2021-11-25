@@ -121,6 +121,7 @@ jobs:
       name: win/default
       size: medium
     steps:
+      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
       - checkout-update-submodules:
           paths: "NineChronicles.Headless"
       - yarn-install
