@@ -77,7 +77,7 @@ jobs:
           command: 7z a -r ../../pack-dist/Windows.zip *
           working_directory: pack/Nine Chronicles-win32-x64/
       - store_artifacts:
-          path: pack-dist/*
+          path: pack-dist
           destination: dist-artifacts
   styles:
     docker:
