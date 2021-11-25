@@ -33,10 +33,13 @@ function getCurrentPlatform(): Platform {
 }
 
 async function getPlayerCommit(): Promise<Sha> {
-  const { stdout, stderr } = await execWithPromise("git rev-parse HEAD", {
-    cwd: path.join(__dirname, "..", "NineChronicles"),
+  const { stdout, stderr } = await execWithPromise("git submodule status NineChronicles", {
+    cwd: path.join(__dirname, ".."),
   });
-  return stdout.trim();
+  if (stderr) throw new Error(stderr);
+  const match = /^[+-U]?([0-9a-f]{40})\sNineChronicles/.exec(stdout);
+  if (!match || !match[1]) throw new Error(`Failed to get player commit [output: ${stdout}]`);
+  return match[1];
 }
 
 function downloadPlayerBinary(
