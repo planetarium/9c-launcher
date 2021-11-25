@@ -46,17 +46,11 @@ jobs:
       - run: 
           command: |
             set -ex
-            latest_apv_no="$(yarn --silent latest-apv-no)"
-            temp_dir="$(mktemp -d)"
-            pushd "$temp_dir"
-            curl -o tmp.zip "$(printf "$URL_PATTERN" "$latest_apv_no")"
-            7z x tmp.zip resources/app/config.json
-            popd
-            mv "$temp_dir/resources/app/config.json" dist/
+            temp="$(mktemp)"
+            curl -o "$temp" 'https://download.nine-chronicles.com/9c-launcher-config.json'
+            mv "$temp" dist/
           shell: bash.exe
           name: Copy config.json from the last release
-          environment:
-            URL_PATTERN: "https://download.nine-chronicles.com/v%d/Windows.zip"
       - run: yarn sign-apv
       - run:
           command: |
