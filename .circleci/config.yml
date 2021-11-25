@@ -16,13 +16,15 @@ commands:
     steps:
       - restore_cache:
           keys:
+            - yarn-installation-{{ arch }}-{{ checksum "yarn.lock" }}
             - yarn-{{ arch }}-{{ checksum "yarn.lock" }}
             - yarn-{{ checksum "yarn.lock" }}
       - run: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn
       - save_cache:
-          key: yarn-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: yarn-installation-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+            - node_modules
   
 jobs:
   build:
@@ -48,6 +50,7 @@ jobs:
             set -ex
             temp="$(mktemp)"
             curl -o "$temp" 'https://download.nine-chronicles.com/9c-launcher-config.json'
+            mkdir -p dist
             mv "$temp" dist/
           shell: bash.exe
           name: Copy config.json from the last release
