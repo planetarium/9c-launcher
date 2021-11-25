@@ -42,7 +42,6 @@ jobs:
           command: |
             [Environment]::SetEnvironmentVariable("APV", (./scripts/make-apv.ps1), "User")
           name: Generate APV
-      - run: yarn build-prod
       - run: 
           command: |
             set -ex
@@ -54,25 +53,28 @@ jobs:
             popd
             mv "$temp_dir/resources/app/config.json" dist/
           shell: bash.exe
+          name: Copy config.json from the last release
           environment:
             URL_PATTERN: "https://download.nine-chronicles.com/v%d/Windows.zip"
       - run: yarn sign-apv
-      - store_artifacts:
-          path: dist
-          destination: dist-artifacts
       - run:
           command: |
-            pushd NineChronicles.Headless
-              dotnet clean -c Release
-              dotnet nuget locals all --clear
-            popd
+            dotnet clean -c Release
+            dotnet nuget locals all --clear
+          working_directory: NineChronicles.Headless
+          name: Clean Headless
+      - run:
+          command: |
+            yarn build-headless
+            yarn bundle-player
+          name: Setup Software Components
+      - run:
+          command: |
             if ($env:CIRCLE_BRANCH -eq "main") {
-              yarn pack-release
+              yarn release
             } else {
-              yarn pack-all
+              yarn pack
             }
-          environment:
-            SKIP_APV_SIGN: "1"
       - run: 
           command: 7z a -r ../../pack-dist/Windows.zip *
           working_directory: pack/Nine Chronicles-win32-x64/
