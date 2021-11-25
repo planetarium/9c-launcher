@@ -32,6 +32,7 @@ jobs:
     #   xcode: "11.3.0"
     # Let's keep this disabled until we figure out the macOS build.
     steps:
+      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
       - checkout-update-submodules
       - yarn-install
       - run: 
