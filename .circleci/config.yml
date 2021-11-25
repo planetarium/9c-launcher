@@ -99,10 +99,7 @@ jobs:
       - checkout
       - yarn-install
       - run:
-          command: |
-            if [ $CIRCLE_BRANCH = "development" ]; then
-              yarn update-translations
-            fi
+          command: yarn update-translations
           name: Update Translations
   check-submodule:
     docker:
@@ -123,5 +120,14 @@ workflows:
     jobs:
       - build
       - styles
-      - update-translations
-      - check-submodule
+      - update-translations:
+          filters:
+            branches:
+              only: development
+      - check-submodule:
+          filters:
+            branches:
+              ignore:
+                - development
+                - main
+                - /^rc-v\d+$/
