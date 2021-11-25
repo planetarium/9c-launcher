@@ -6,10 +6,14 @@ orbs:
 
 commands:
   checkout-update-submodules:
+    parameters:
+      paths:
+        type: string
+        default: ""
     steps:
       - checkout
       - run: 
-          command: git submodule update --init --recursive
+          command: git submodule update --init --recursive <<parameters.paths>>
           environment:
             GIT_LFS_SKIP_SMUDGE: 1
   yarn-install:
@@ -38,7 +42,8 @@ jobs:
     # Let's keep this disabled until we figure out the macOS build.
     steps:
       - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
-      - checkout-update-submodules
+      - checkout-update-submodules:
+          paths: "NineChronicles.Headless"
       - yarn-install
       - run: 
           command: iwr -useb https://dot.net/v1/dotnet-install.ps1 | iex
