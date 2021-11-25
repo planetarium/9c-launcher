@@ -19,7 +19,9 @@ commands:
             - yarn-installation-{{ arch }}-{{ checksum "yarn.lock" }}
             - yarn-{{ arch }}-{{ checksum "yarn.lock" }}
             - yarn-{{ checksum "yarn.lock" }}
-      - run: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn
+      - run: 
+          command: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn
+          shell: bash
       - save_cache:
           key: yarn-installation-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
