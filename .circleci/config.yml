@@ -31,6 +31,16 @@ commands:
           paths:
             - ~/.cache/yarn
             - node_modules
+  install-dotnet:
+    parameters:
+      version:
+        type: string
+        default: "6.0.100"
+    steps:
+      - run:
+          command: |
+            choco install dotnet-sdk --version <<parameters.version>> -y --no-progress
+          name: Install .NET Core Latest
   
 jobs:
   build:
@@ -45,11 +55,7 @@ jobs:
       - checkout-update-submodules:
           paths: "NineChronicles.Headless"
       - yarn-install
-      - run: 
-          command: |
-            iwr -useb https://dot.net/v1/dotnet-install.ps1 | iex
-            [Environment]::SetEnvironmentVariable("PATH", "$env:PATH", "User")
-          name: Install .NET Core Latest
+      - install-dotnet
       - run: 
           command: |
             [Environment]::SetEnvironmentVariable("APV", (./scripts/make-apv.ps1), "User")
@@ -128,11 +134,7 @@ jobs:
           paths: "NineChronicles.Headless"
       - yarn-install
       - run: scripts/create-key.ps1
-      - run: 
-          command: |
-            iwr -useb https://dot.net/v1/dotnet-install.ps1 | iex
-            [Environment]::SetEnvironmentVariable("PATH", "$env:PATH", "User")
-          name: Install .NET Core Latest
+      - install-dotnet
       - run: yarn build-headless
       - run: yarn build-prod
       - run: scripts/copy-config.ps1
