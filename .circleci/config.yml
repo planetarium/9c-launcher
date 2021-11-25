@@ -16,10 +16,11 @@ commands:
     steps:
       - restore_cache:
           keys:
+            - yarn-{{ arch }}-{{ checksum "yarn.lock" }}
             - yarn-{{ checksum "yarn.lock" }}
       - run: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn
       - save_cache:
-          key: yarn-{{ checksum "yarn.lock" }}
+          key: yarn-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
   
