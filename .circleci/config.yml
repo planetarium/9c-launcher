@@ -104,7 +104,7 @@ jobs:
     docker:
       - image: cimg/node:lts
     steps:
-      - checkout
+      - checkout-update-submodules
       - yarn-install
       - run:
           command: yarn ts-node scripts/checkSubmodule.ts Lib9c
