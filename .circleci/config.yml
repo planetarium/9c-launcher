@@ -126,6 +126,9 @@ jobs:
           paths: "NineChronicles.Headless"
       - yarn-install
       - run: scripts/create-key.ps1
+      - run: 
+          command: iwr -useb https://dot.net/v1/dotnet-install.ps1 | iex
+          name: Install .NET Core Latest
       - run: yarn build-headless
       - run: yarn build-prod
       - run: scripts/copy-config.ps1
