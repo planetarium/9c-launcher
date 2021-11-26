@@ -1,0 +1,166 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.7
+  win: circleci/windows@2.4.1
+
+commands:
+  checkout-update-submodules:
+    parameters:
+      paths:
+        type: string
+        default: ""
+    steps:
+      - checkout
+      - run: 
+          command: git submodule update --init --recursive <<parameters.paths>>
+          environment:
+            GIT_LFS_SKIP_SMUDGE: 1
+  yarn-install:
+    steps:
+      - restore_cache:
+          keys:
+            - yarn-installation-{{ arch }}-{{ checksum "yarn.lock" }}
+            - yarn-{{ arch }}-{{ checksum "yarn.lock" }}
+            - yarn-{{ checksum "yarn.lock" }}
+      - run: 
+          command: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn
+          shell: bash
+      - save_cache:
+          key: yarn-installation-{{ arch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+            - node_modules
+  install-dotnet:
+    parameters:
+      version:
+        type: string
+        default: "6.0.100"
+    steps:
+      - run:
+          command: |
+            choco install dotnet-sdk --version <<parameters.version>> -y --no-progress
+          name: Install .NET Core Latest
+  
+jobs:
+  build:
+    executor:
+      name: win/default
+      size: medium
+    # macos:
+    #   xcode: "11.3.0"
+    # Let's keep this disabled until we figure out the macOS build.
+    steps:
+      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
+      - checkout-update-submodules:
+          paths: "NineChronicles.Headless"
+      - yarn-install
+      - install-dotnet
+      - run: 
+          command: |
+            [Environment]::SetEnvironmentVariable("APV", (./scripts/make-apv.ps1), "User")
+          name: Generate APV
+      - run: 
+          command: |
+            set -ex
+            mkdir -p dist
+            curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
+          shell: bash.exe
+          name: Copy config.json from the last release
+      - run: yarn sign-apv
+      - run:
+          command: |
+            dotnet clean -c Release
+            dotnet nuget locals all --clear
+          working_directory: NineChronicles.Headless
+          name: Clean Headless
+      - run:
+          command: yarn concurrently npm:build-headless npm:bundle-player
+          name: Setup Software Components
+      - run:
+          command: |
+            if ($env:CIRCLE_BRANCH -eq "main") {
+              yarn release
+            } else {
+              yarn run pack
+            }
+      - run: 
+          command: 7z a -r ../../pack-dist/Windows.zip *
+          working_directory: pack/Nine Chronicles-win32-x64/
+      - store_artifacts:
+          path: pack-dist
+          destination: dist-artifacts
+  styles:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - yarn-install
+      - run:
+          command: yarn prettier --check "src/**/*.{ts,tsx,json}"
+          name: Check Formatting
+      - run: yarn codegen
+      - run:
+          command: yarn tsc --noEmit
+          name: Type Check
+  update-translations:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - yarn-install
+      - run:
+          command: yarn update-translations
+          name: Update Translations
+  check-submodule:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout-update-submodules
+      - yarn-install
+      - run:
+          command: yarn ts-node scripts/checkSubmodule.ts Lib9c
+          name: Check Lib9c
+      - run:
+          command: yarn ts-node scripts/checkSubmodule.ts NineChronicles.RPC.Shared
+          name: Check NineChronicles.RPC.Shared
+  e2e-test:
+    executor:
+      name: win/default
+      size: medium
+    steps:
+      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
+      - checkout-update-submodules:
+          paths: "NineChronicles.Headless"
+      - yarn-install
+      - run: scripts/create-key.ps1
+      - install-dotnet
+      - run: yarn build-headless
+      - run: yarn build-prod
+      - run: scripts/copy-config.ps1
+      - run: yarn test
+      - store_artifacts:
+          path: __tests__/snapshots
+          destination: e2e-snapshots
+      - store_artifacts:
+          path: __tests__/logs
+          destination: e2e-logs
+
+
+workflows:
+  build:
+    jobs:
+      - build
+      - styles
+      - update-translations:
+          filters:
+            branches:
+              only: development
+      - check-submodule:
+          filters:
+            branches:
+              ignore:
+                - development
+                - main
+                - /^rc-v\d+$/
+      - e2e-test
