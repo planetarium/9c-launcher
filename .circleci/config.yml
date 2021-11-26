@@ -70,7 +70,7 @@ jobs:
           working_directory: NineChronicles.Headless
           name: Clean Headless
       - run:
-          command: yarn concurrently "./scripts/build-headless-win.sh" npm:bundle-player
+          command: yarn concurrently "./scripts/build-headless-win.sh" "yarn ts-node scripts/downloadPlayer.ts win32"
           name: Setup Software Components
       - run:
           command: |

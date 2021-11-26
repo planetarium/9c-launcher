@@ -22,12 +22,13 @@ const FILENAMES: { [K in Platform]: string } = {
 };
 
 function getCurrentPlatform(): Platform {
+  const platform: NodeJS.Platform = process.argv[2] as NodeJS.Platform || process.platform;
   const error = () => {
-    throw new Error(`Unsupported platform: ${process.platform}`);
-  };
-  return process.platform == "win32"
+    throw new Error(`Unsupported platform: ${platform}`);
+  };;
+  return platform == "win32"
     ? "Windows"
-    : process.platform == "darwin"
+    : platform == "darwin"
     ? "macOS"
     : error();
 }
