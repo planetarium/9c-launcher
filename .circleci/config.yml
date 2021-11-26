@@ -62,7 +62,7 @@ jobs:
             mkdir -p dist
             curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
           name: Copy config.json from the last release
-      - run: yarn sign-apv
+      - run: ./scripts/sign-apv.sh
       - run:
           command: |
             dotnet clean -c Release
