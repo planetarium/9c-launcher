@@ -70,7 +70,7 @@ jobs:
           working_directory: NineChronicles.Headless
           name: Clean Headless
       - run:
-          command: yarn concurrently "./scripts/build-headless-win.sh" "yarn ts-node scripts/downloadPlayer.ts win32"
+          command: yarn concurrently "bash scripts/build-headless-win.sh" "yarn ts-node scripts/downloadPlayer.ts win32"
           name: Setup Software Components
       - run:
           command: |
@@ -79,7 +79,7 @@ jobs:
             } else {
               yarn build-prod
             }
-            ./scripts/electron-pack-win.sh
+            bash scripts/electron-pack-win.sh
       - run: 
           command: 7z a -r ../../pack-dist/Windows.zip *
           working_directory: pack/Nine Chronicles-win32-x64/
