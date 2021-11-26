@@ -24,7 +24,7 @@ commands:
             - yarn-{{ arch }}-{{ checksum "yarn.lock" }}
             - yarn-{{ checksum "yarn.lock" }}
       - run: 
-          command: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn
+          command: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn --ignore-platform
           shell: bash
       - save_cache:
           key: yarn-installation-{{ arch }}-{{ checksum "yarn.lock" }}
@@ -44,28 +44,25 @@ commands:
   
 jobs:
   build:
-    executor:
-      name: win/default
-      size: medium
-    # macos:
-    #   xcode: "11.3.0"
-    # Let's keep this disabled until we figure out the macOS build.
+    docker:
+      - image: electronuserland/builder:wine
     steps:
-      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
       - checkout-update-submodules:
           paths: "NineChronicles.Headless"
       - yarn-install
-      - install-dotnet
       - run: 
           command: |
-            [Environment]::SetEnvironmentVariable("APV", (./scripts/make-apv.ps1), "User")
+            curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version "6.0.100" --no-path
+            echo "export PATH=~/.dotnet:$PATH" >> $BASH_ENV
+          name: Install .NET Core
+      - run: 
+          command: echo "export APV=\"$('./scripts/make-apv.sh')\"" >> $BASH_ENV
           name: Generate APV
       - run: 
           command: |
             set -ex
             mkdir -p dist
             curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
-          shell: bash.exe
           name: Copy config.json from the last release
       - run: yarn sign-apv
       - run:
@@ -75,15 +72,16 @@ jobs:
           working_directory: NineChronicles.Headless
           name: Clean Headless
       - run:
-          command: yarn concurrently npm:build-headless npm:bundle-player
+          command: yarn concurrently "./scripts/build-headless-win.sh" npm:bundle-player
           name: Setup Software Components
       - run:
           command: |
             if ($env:CIRCLE_BRANCH -eq "main") {
-              yarn release
+              yarn build-release
             } else {
-              yarn run pack
+              yarn build-prod
             }
+            ./scripts/electron-pack-win.sh
       - run: 
           command: 7z a -r ../../pack-dist/Windows.zip *
           working_directory: pack/Nine Chronicles-win32-x64/
