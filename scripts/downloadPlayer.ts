@@ -37,7 +37,7 @@ async function getPlayerCommit(): Promise<Sha> {
     cwd: path.join(__dirname, ".."),
   });
   if (stderr) throw new Error(stderr);
-  const match = /^[+-U]?([0-9a-f]{40})\sNineChronicles/.exec(stdout);
+  const match = /^[+-U ]?([0-9a-f]{40})\sNineChronicles/.exec(stdout);
   if (!match || !match[1]) throw new Error(`Failed to get player commit [output: ${stdout}]`);
   return match[1];
 }
