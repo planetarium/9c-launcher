@@ -74,11 +74,11 @@ jobs:
           name: Setup Software Components
       - run:
           command: |
-            if ($env:CIRCLE_BRANCH -eq "main") {
+            if [ $CIRCLE_BRANCH = "main" ]; then
               yarn build-release
-            } else {
+            else
               yarn build-prod
-            }
+            fi
             bash scripts/electron-pack-win.sh
       - run: 
           command: 7z a -r ../../pack-dist/Windows.zip *
