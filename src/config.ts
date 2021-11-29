@@ -109,7 +109,7 @@ const schema: any = {
   },
   UseRemoteHeadless: {
     type: "boolean",
-    default: false,
+    default: true,
   },
   LaunchPlayer: {
     type: "boolean",
