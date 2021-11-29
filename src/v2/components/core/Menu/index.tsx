@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import MenuItem from "./MenuItem";
 import { useStore } from "../../../utils/useStore";
+import { shell } from "electron";
 
 import settings from "../../../resources/icons/settings.png";
 import refresh from "../../../resources/icons/refresh.png";
@@ -34,8 +35,16 @@ function Menu() {
     <MenuContainer>
       <MenuItem icon={staking} text="Staking" onClick={() => void 0} />
       <MenuItem icon={shop} text="Shop" onClick={() => void 0} />
-      <MenuItem icon={logo} text="Explorer" onClick={() => void 0} />
-      <MenuItem icon={discord} text="Discord" onClick={() => void 0} />
+      <MenuItem
+        icon={logo}
+        text="Explorer"
+        onClick={() => shell.openExternal("https://9cscan.com/")}
+      />
+      <MenuItem
+        icon={discord}
+        text="Discord"
+        onClick={() => shell.openExternal("https://bit.ly/planetarium-discord")}
+      />
       <MenuDivider />
       <MenuItem icon={refresh} text="Restart" onClick={() => void 0} />
       <MenuItem
