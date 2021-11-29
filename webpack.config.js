@@ -67,6 +67,13 @@ function createRenderConfig(isDev) {
           ],
         },
         {
+          test: /\.css$/,
+          use: [
+            { loader: "style-loader" },
+            { loader: "css-loader" },
+          ],
+        },
+        {
           test: /\.m?js/,
           resolve: {
             fullySpecified: false, // https://github.com/webpack/webpack/issues/11467
