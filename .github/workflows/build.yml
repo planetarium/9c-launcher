@@ -26,11 +26,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      # dotent 설치
-      - uses: actions/setup-dotnet@v1.7.2
-        name: Set up .NET Core SDK
-        with:
-          dotnet-version: '6.0.*'
       # 의존성 설치
       - run: yarn add @planetarium/cli
       # APV 생성
@@ -110,11 +105,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      # dotent 설치
-      - uses: actions/setup-dotnet@v1.7.2
-        name: Set up .NET Core SDK
-        with:
-          dotnet-version: '6.0.*'
       - name: Pull node_modules cache
         uses: actions/cache@v2
         with:
