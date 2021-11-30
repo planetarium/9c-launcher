@@ -41,6 +41,21 @@ commands:
           command: |
             choco install dotnet-sdk --version <<parameters.version>> -y --no-progress
           name: Install .NET Core Latest
+  setup-node-ramdisk:
+    parameters:
+      ramdisk_size:
+        type: string
+        default: "1G"
+    steps:
+      - run:
+          command: choco install imdisk -y --no-progress
+          name: Install imdisk
+      - run:
+          command: |
+            imdisk -a -s <<parameters.ramdisk_size>> -m X: -p "/fs:ntfs /q /y"
+            mkdir X:\node_modules
+            New-Item -ItemType Junction -Path "node_modules" -Target "X:\node_modules"
+          name: Create and link RAMDisk
   
 jobs:
   build:
@@ -54,6 +69,7 @@ jobs:
       - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
       - checkout-update-submodules:
           paths: "NineChronicles.Headless"
+      - setup-node-ramdisk
       - yarn-install
       - install-dotnet
       - run: 
