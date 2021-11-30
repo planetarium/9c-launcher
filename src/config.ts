@@ -137,7 +137,7 @@ const schema: any = {
       "a2e01f4a7f4ce47efa3097d52fdf56f8-108664089.us-east-2.elb.amazonaws.com,80,31238",
       "a6b8aa8271d6946ea998b110863cbfb9-1918498264.us-east-2.elb.amazonaws.com,80,31238",
       "ae4fa84e10d214209ad600a77371223a-1562070758.us-east-2.elb.amazonaws.com,80,31238",
-      "af7640523846d4152b45b33076a5629d-1374793070.us-east-2.elb.amazonaws.com,80,31238"
+      "af7640523846d4152b45b33076a5629d-1374793070.us-east-2.elb.amazonaws.com,80,31238",
     ],
   },
 };
