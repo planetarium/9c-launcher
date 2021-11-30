@@ -79,6 +79,10 @@ const schema: any = {
     type: "boolean",
     default: false,
   },
+  LogSizeBytes: {
+    type: "integer",
+    default: 1024 * 1024 * 1024 * 1,
+  },
   AwsAccessKey: {
     type: "string",
     default: undefined,
