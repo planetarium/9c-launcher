@@ -25,6 +25,10 @@ function createRenderConfig(isDev) {
         root: __dirname,
         src: path.resolve(__dirname, "src"),
       },
+      fallback: {
+        os: false,
+        fs: false,
+      }
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
@@ -35,7 +39,7 @@ function createRenderConfig(isDev) {
       render: "./renderer/render.tsx",
       collection: "./collection/collection.tsx",
       transfer: "./transfer/transfer.tsx",
-      ...(isDev && { v2: "./v2/render.tsx" }),
+      v2: "./v2/render.tsx",
     },
 
     output: {
@@ -202,10 +206,6 @@ function createMainConfig(isDev) {
 
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
-    },
-
-    stats: {
-      errorDetails: true,
     },
 
     ignoreWarnings: [
