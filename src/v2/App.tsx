@@ -7,18 +7,21 @@ import client from "./utils/apolloClient";
 import APVSubscriptionProvider from "./utils/APVSubscriptionProvider";
 import "./global.scss";
 import { StoreProvider } from "./utils/useStore";
+import { LocaleProvider } from "src/renderer/i18n";
 
 function App() {
   return (
-    <ApolloProvider client={client}>
-      <StoreProvider>
-        <APVSubscriptionProvider>
-          <Router>
-            <Routes />
-          </Router>
-        </APVSubscriptionProvider>
-      </StoreProvider>
-    </ApolloProvider>
+    <LocaleProvider>
+      <ApolloProvider client={client}>
+        <StoreProvider>
+          <APVSubscriptionProvider>
+            <Router>
+              <Routes />
+            </Router>
+          </APVSubscriptionProvider>
+        </StoreProvider>
+      </ApolloProvider>
+    </LocaleProvider>
   );
 }
 

@@ -22,6 +22,11 @@ export const {
     shadows: {
       text: "0px 2px 3px rgba(0, 0, 0, 0.5)",
     },
+    fontWeights: {
+      light: 300,
+      regular: 400,
+      bold: 700,
+    },
   },
   utils: {
     dragable: (v: boolean) => ({
