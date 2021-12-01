@@ -76,7 +76,6 @@ import { getFreeSpace } from "@planetarium/check-free-space";
 
 initializeSentry();
 
-log.transports.file.maxSize = 1024 * 1024 * 1024 * 1;
 Object.assign(console, log.functions);
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
@@ -190,6 +189,8 @@ async function intializeConfig() {
       `An unexpected error occurred during fetching remote config. ${error}`
     );
   }
+
+  log.transports.file.maxSize = getConfig("LogSizeBytes");
 }
 
 async function initializeApp() {

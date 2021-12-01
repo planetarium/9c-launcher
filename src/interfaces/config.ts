@@ -17,6 +17,7 @@ export interface IConfig {
   Mixpanel: boolean;
   Sentry: boolean;
   MuteTeaser: boolean;
+  LogSizeBytes: number;
   AwsAccessKey: string | undefined;
   AwsSecretKey: string | undefined;
   AwsRegion: string | undefined;
