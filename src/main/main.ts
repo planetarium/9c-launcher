@@ -724,6 +724,13 @@ function initializeIpc() {
       relaunch();
     }
   });
+
+  ipcMain.handle("get-node-info", async () => {
+    while (!remoteNode) {
+      await utils.sleep(100);
+    }
+    return remoteNode;
+  });
 }
 
 async function initializeHeadless(): Promise<void> {

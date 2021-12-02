@@ -27,6 +27,20 @@ import { ipcRenderer } from "electron";
 import { LocaleProvider } from "./i18n";
 import { NodeInfo } from "../config";
 
+const Store: IStoreContainer = {
+  accountStore: new AccountStore(),
+  routerStore: new RouterStore(),
+  gameStore: new GameStore(),
+  standaloneStore: new StandaloneStore(),
+};
+
+const history = syncHistoryWithStore(
+  createBrowserHistory({
+    basename: window.location.pathname,
+  }),
+  Store.routerStore
+);
+
 function App() {
   const [nodeInfo, setNodeInfo] = useState<NodeInfo>();
   const theme = useMemo(
@@ -113,20 +127,6 @@ function App() {
     link: link,
     cache: new InMemoryCache(),
   });
-
-  const Store: IStoreContainer = {
-    accountStore: new AccountStore(),
-    routerStore: new RouterStore(),
-    gameStore: new GameStore(nodeInfo),
-    standaloneStore: new StandaloneStore(),
-  };
-
-  const history = syncHistoryWithStore(
-    createBrowserHistory({
-      basename: window.location.pathname,
-    }),
-    Store.routerStore
-  );
 
   return (
     <ApolloProvider client={client}>

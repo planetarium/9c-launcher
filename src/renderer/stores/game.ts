@@ -12,20 +12,21 @@ export default class GameStore {
 
   private _appProtocolVersion: string;
 
-  private _host: string;
+  private _host: string | undefined;
 
-  private _port: number;
+  private _port: number | undefined;
 
-  public constructor(node: NodeInfo) {
+  public constructor() {
     ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
       this._isGameStarted = false;
     });
     this._genesisBlockPath = getConfig("GenesisBlockPath") as string;
     this._language = getConfig("Locale") as string;
     this._appProtocolVersion = getConfig("AppProtocolVersion") as string;
-    this._host = node.host;
-    this._port = node.rpcPort;
-
+    ipcRenderer.invoke("get-node-info").then((node) => {
+      this._port = node.host;
+      this._port = node.rpcPort;
+    });
     userConfigStore.onDidChange(
       "Locale",
       (value) => (this._language = value ?? "en")
