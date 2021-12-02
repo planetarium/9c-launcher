@@ -9,6 +9,7 @@ import LoginView from "./views/LoginView";
 import WelcomeView from "./views/WelcomeView";
 import RegisterView from "./views/RegisterView";
 import LobbyView from "./views/LobbyView";
+import MissingActivationView from "./views/MissingActivationView";
 
 const Redirector = observer(() => {
   const account = useStore("account");
@@ -39,6 +40,10 @@ export default function Routes() {
     <Switch>
       <Route path="/login" component={LoginView} />
       <Route path="/welcome" component={WelcomeView} />
+      <Route
+        path="/register/missing-activation"
+        component={MissingActivationView}
+      />
       <Route path="/register" component={RegisterView} />
       <Route path="/lobby" component={LobbyView} />
       <Route exact path="/" component={Redirector} />
