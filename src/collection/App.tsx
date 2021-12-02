@@ -4,7 +4,7 @@ import { split, ApolloLink } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 import { RetryLink } from "apollo-link-retry";
 import { WebSocketLink } from "apollo-link-ws";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.scss";
 import { getMainDefinition } from "apollo-utilities";
 import { ApolloProvider } from "react-apollo";
@@ -43,43 +43,50 @@ const App: React.FC = () => {
   const [agentAddress, setAgentAddress] = useState<string>("");
   const [client, setClient] = useState<ApolloClient<any>>();
 
-  ipcRenderer.on("initialize collection window", (_, address, headlessUrl) => {
-    console.log(
-      `initialize collection window Main.tsx. address: ${address}, node: ${headlessUrl}`
-    );
-    setAgentAddress(address);
-
-    const wsLink = new WebSocketLink({
-      uri: `ws://${headlessUrl}/graphql`,
-      options: {
-        reconnect: true,
-      },
-    });
-
-    const httpLink = createHttpLink({ uri: `http://${headlessUrl}/graphql` });
-
-    const apiLink = split(
-      // split based on operation type
-      ({ query }) => {
-        const definition = getMainDefinition(query);
-        return (
-          definition.kind === "OperationDefinition" &&
-          definition.operation === "subscription"
+  useEffect(() => {
+    ipcRenderer.on(
+      "initialize collection window",
+      (_, address, headlessUrl) => {
+        console.log(
+          `initialize collection window Main.tsx. address: ${address}, node: ${headlessUrl}`
         );
-      },
-      wsLink,
-      httpLink
+        setAgentAddress(address);
+
+        const wsLink = new WebSocketLink({
+          uri: `ws://${headlessUrl}/graphql`,
+          options: {
+            reconnect: true,
+          },
+        });
+
+        const httpLink = createHttpLink({
+          uri: `http://${headlessUrl}/graphql`,
+        });
+
+        const apiLink = split(
+          // split based on operation type
+          ({ query }) => {
+            const definition = getMainDefinition(query);
+            return (
+              definition.kind === "OperationDefinition" &&
+              definition.operation === "subscription"
+            );
+          },
+          wsLink,
+          httpLink
+        );
+
+        const link = ApolloLink.from([new RetryLink(), apiLink]);
+
+        const client = new ApolloClient({
+          link: link,
+          cache: new InMemoryCache(),
+        });
+
+        setClient(client);
+      }
     );
-
-    const link = ApolloLink.from([new RetryLink(), apiLink]);
-
-    const client = new ApolloClient({
-      link: link,
-      cache: new InMemoryCache(),
-    });
-
-    setClient(client);
-  });
+  }, [agentAddress, client]);
 
   if (!client) return null;
 
