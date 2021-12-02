@@ -206,9 +206,9 @@ async function initializeApp() {
     remoteNode = await initializeNode();
     if (useRemoteHeadless) {
       console.log("main initializeApp call initializeRemoteHeadless");
-      await initializeRemoteHeadless();
+      initializeRemoteHeadless();
     } else {
-      await initializeHeadless();
+      initializeHeadless();
     }
   });
 

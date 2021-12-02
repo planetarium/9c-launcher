@@ -44,7 +44,7 @@ export default class GameStore {
   }
 
   @action
-  startGame = async (privateKey: string) => {
+  startGame = (privateKey: string) => {
     const awsSinkGuid: string = ipcRenderer.sendSync(
       "get-aws-sink-cloudwatch-guid"
     );
