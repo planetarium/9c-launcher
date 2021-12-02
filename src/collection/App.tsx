@@ -41,46 +41,47 @@ const isFileExsist = getIsFileExsist();
 
 const App: React.FC = () => {
   const [agentAddress, setAgentAddress] = useState<string>("");
-  const [headlessUrl, setHeadlessUrl] = useState<string>("");
+  const [client, setClient] = useState<ApolloClient<any>>();
 
-  ipcRenderer.on("initialize collection window", (_, address, node) => {
+  ipcRenderer.on("initialize collection window", (_, address, headlessUrl) => {
     console.log(
-      `initialize collection window Main.tsx. address: ${address}, node: ${node}`
+      `initialize collection window Main.tsx. address: ${address}, node: ${headlessUrl}`
     );
     setAgentAddress(address);
-    setHeadlessUrl(node);
+
+    const wsLink = new WebSocketLink({
+      uri: `ws://${headlessUrl}/graphql`,
+      options: {
+        reconnect: true,
+      },
+    });
+
+    const httpLink = createHttpLink({ uri: `http://${headlessUrl}/graphql` });
+
+    const apiLink = split(
+      // split based on operation type
+      ({ query }) => {
+        const definition = getMainDefinition(query);
+        return (
+          definition.kind === "OperationDefinition" &&
+          definition.operation === "subscription"
+        );
+      },
+      wsLink,
+      httpLink
+    );
+
+    const link = ApolloLink.from([new RetryLink(), apiLink]);
+
+    const client = new ApolloClient({
+      link: link,
+      cache: new InMemoryCache(),
+    });
+
+    setClient(client);
   });
 
-  if (!headlessUrl) return null;
-
-  const wsLink = new WebSocketLink({
-    uri: `ws://${headlessUrl}/graphql`,
-    options: {
-      reconnect: true,
-    },
-  });
-
-  const httpLink = createHttpLink({ uri: `http://${headlessUrl}/graphql` });
-
-  const apiLink = split(
-    // split based on operation type
-    ({ query }) => {
-      const definition = getMainDefinition(query);
-      return (
-        definition.kind === "OperationDefinition" &&
-        definition.operation === "subscription"
-      );
-    },
-    wsLink,
-    httpLink
-  );
-
-  const link = ApolloLink.from([new RetryLink(), apiLink]);
-
-  const client = new ApolloClient({
-    link: link,
-    cache: new InMemoryCache(),
-  });
+  if (!client) return null;
 
   return (
     <ApolloProvider client={client}>

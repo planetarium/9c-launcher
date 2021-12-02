@@ -1,8 +1,8 @@
 import Store from "electron-store";
 import path from "path";
 import { IConfig } from "./interfaces/config";
-import {GraphQLClient} from "graphql-request";
-import {getSdk} from "./generated/graphql-request";
+import { GraphQLClient } from "graphql-request";
+import { getSdk } from "./generated/graphql-request";
 
 const { app } =
   process.type === "browser" ? require("electron") : require("electron").remote;
@@ -194,12 +194,10 @@ export class NodeInfo {
     const headlessGraphQLSDK = getSdk(client);
     try {
       const ended = await headlessGraphQLSDK.PreloadEnded();
-      if (ended.status == 200)
-      {
+      if (ended.status == 200) {
         return ended.data!.nodeStatus.preloadEnded;
       }
-    }
-    catch (e) {
+    } catch (e) {
       console.error(e);
     }
     return false;

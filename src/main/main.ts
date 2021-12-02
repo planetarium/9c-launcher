@@ -490,7 +490,7 @@ function initializeIpc() {
     console.log(`open collection page address: ${selectedAddress}`);
     collectionWin = await createCollectionWindow();
     console.log(
-      `call initialize collection window: ${selectedAddress}, ${remoteNode}`
+      `call initialize collection window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
     );
     collectionWin!.webContents.send(
       "initialize collection window",
@@ -510,7 +510,7 @@ function initializeIpc() {
     console.log(`open transfer page address: ${selectedAddress}`);
     collectionWin = await createTransferWindow();
     console.log(
-      `call initialize transfer window: ${selectedAddress}, ${remoteNode}`
+      `call initialize transfer window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
     );
     collectionWin!.webContents.send(
       "initialize transfer window",

@@ -17,6 +17,7 @@ import montserrat from "src/renderer/styles/font";
 import SwapPageStore from "./stores/views/swap";
 import { get as getConfig } from "src/config";
 import { ipcRenderer } from "electron";
+import ApolloClient from "apollo-client";
 
 // Set dummy url for initialize
 const client = new GraphQLClient("");
@@ -68,24 +69,24 @@ const App: React.FC = () => {
   );
 
   const [agentAddress, setAgentAddress] = useState<string>("");
-  const [headlessUrl, setHeadlessUrl] = useState<string>("");
 
   useEffect(() => {
     async function main() {
       if (!agentAddress) {
-        ipcRenderer.on("initialize transfer window", (_, address, node) => {
-          console.log(
-            `initialize transfer window at Transfer App.tsx. address: ${address}, node: ${node}`
-          );
-          setAgentAddress(address);
-          setHeadlessUrl(node);
-        });
+        ipcRenderer.on(
+          "initialize transfer window",
+          async (_, address, headlessUrl) => {
+            console.log(
+              `initialize transfer window at Transfer App.tsx. address: ${address}, node: ${headlessUrl}`
+            );
+            const client = new GraphQLClient(`http://${headlessUrl}/graphql`);
+            const headlessGraphQLSDK = getSdk(client);
+            storeContainer.headlessStore.updateSdk(headlessGraphQLSDK);
+            setAgentAddress(address);
+          }
+        );
         return;
       }
-
-      const client = new GraphQLClient(`http://${headlessUrl}/graphql`);
-      const headlessGraphQLSDK = getSdk(client);
-      storeContainer.headlessStore.updateSdk(headlessGraphQLSDK);
       const success = await storeContainer.headlessStore.trySetAgentAddress(
         agentAddress
       );
@@ -96,9 +97,9 @@ const App: React.FC = () => {
       await storeContainer.headlessStore.updateBalance(agentAddress);
     }
     main();
-  }, [agentAddress, headlessUrl]);
+  }, [agentAddress]);
 
-  if (!agentAddress || !headlessUrl) return null;
+  if (!agentAddress) return null;
 
   return (
     <StoreContext.Provider value={storeContainer}>

@@ -91,8 +91,7 @@ function App() {
 
   useEffect(() => {
     async function main() {
-      if (!client)
-      {
+      if (!client) {
         const node: NodeInfo = await ipcRenderer.invoke("get-node-info");
         const headlessUrl = `${node.host}:${node.graphqlPort}`;
         const wsLink = new WebSocketLink({
@@ -101,7 +100,9 @@ function App() {
             reconnect: true,
           },
         });
-        const httpLink = createHttpLink({ uri: `http://${headlessUrl}/graphql` });
+        const httpLink = createHttpLink({
+          uri: `http://${headlessUrl}/graphql`,
+        });
 
         const apiLink = split(
           // split based on operation type
