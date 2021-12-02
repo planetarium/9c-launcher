@@ -115,15 +115,6 @@ function SettingsOverlay() {
               </Select>
             )}
           />
-          <Button
-            type="submit"
-            form="form"
-            disabled={!isDirty}
-            centered
-            variant="primary"
-          >
-            <T _str="Save" _tags={transifexTags} />
-          </Button>
         </FormSection>
         <FormSection>
           <GroupTitle>
@@ -150,6 +141,15 @@ function SettingsOverlay() {
           </GroupTitle>
         </FormSection>
       </Form>
+      <Button
+        type="submit"
+        form="form"
+        disabled={!isDirty}
+        centered
+        variant="primary"
+      >
+        <T _str="Save" _tags={transifexTags} />
+      </Button>
     </OverlayBase>
   );
 }
