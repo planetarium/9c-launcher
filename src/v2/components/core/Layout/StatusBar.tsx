@@ -4,6 +4,7 @@ import ProgressBar from "./ProgressBar";
 import { styled } from "src/v2/stitches.config";
 import { usePreload } from "src/v2/utils/usePreload";
 import { useStore } from "src/v2/utils/useStore";
+import Button from "../../ui/Button";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -29,7 +30,14 @@ function StatusBar() {
 
   return (
     <StatusBarStyled>
-      <StatusMessage>{message}</StatusMessage>
+      <StatusMessage>
+        {message}
+        {isDone && account.isLogin && !game.isGameStarted && (
+          <Button onClick={() => game.startGame(account.privateKey)}>
+            Start
+          </Button>
+        )}
+      </StatusMessage>
       {!!progress && <ProgressBar percent={progress} />}
     </StatusBarStyled>
   );
