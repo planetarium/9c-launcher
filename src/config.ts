@@ -1,7 +1,8 @@
 import Store from "electron-store";
 import path from "path";
 import { IConfig } from "./interfaces/config";
-import axios from "axios";
+import {GraphQLClient} from "graphql-request";
+import {getSdk} from "./generated/graphql-request";
 
 const { app } =
   process.type === "browser" ? require("electron") : require("electron").remote;
@@ -185,19 +186,17 @@ export class NodeInfo {
   }
 
   public async PreloadEnded(): Promise<boolean> {
-    const resp = await axios.post(
-      `http://${this.GraphqlServer()}`,
+    const client = new GraphQLClient(`http://${this.GraphqlServer()}`);
+    const headlessGraphQLSDK = getSdk(client);
+    try {
+      const ended = await headlessGraphQLSDK.PreloadEnded();
+      if (ended.status == 200)
       {
-        query: "query{nodeStatus{preloadEnded}}",
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        return ended.data!.nodeStatus.preloadEnded;
       }
-    );
-    if (resp.status == 200) {
-      return resp.data.data.nodeStatus.preloadEnded;
+    }
+    catch (e) {
+      console.error(e);
     }
     return false;
   }
