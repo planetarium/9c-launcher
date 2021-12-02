@@ -210,7 +210,6 @@ async function initializeApp() {
     } else {
       await initializeHeadless();
     }
-    win!.webContents.send("set node info", remoteNode);
   });
 
   app.on("quit", (event) => {

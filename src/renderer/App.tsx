@@ -42,7 +42,7 @@ const history = syncHistoryWithStore(
 );
 
 function App() {
-  const [nodeInfo, setNodeInfo] = useState<NodeInfo>();
+  const [client, setClient] = useState<ApolloClient<any>>();
   const theme = useMemo(
     () =>
       createMuiTheme({
@@ -90,43 +90,46 @@ function App() {
   }, []);
 
   useEffect(() => {
-    ipcRenderer.once("set node info", (_, node: NodeInfo) => {
-      console.log(`set node info renderer App.tsx ${node}`);
-      setNodeInfo(node);
-    });
-  }, [nodeInfo]);
+    async function main() {
+      if (!client)
+      {
+        const node: NodeInfo = await ipcRenderer.invoke("get-node-info");
+        const headlessUrl = `${node.host}:${node.graphqlPort}`;
+        const wsLink = new WebSocketLink({
+          uri: `ws://${headlessUrl}/graphql`,
+          options: {
+            reconnect: true,
+          },
+        });
+        const httpLink = createHttpLink({ uri: `http://${headlessUrl}/graphql` });
 
-  if (!nodeInfo) return null;
+        const apiLink = split(
+          // split based on operation type
+          ({ query }) => {
+            const definition = getMainDefinition(query);
+            return (
+              definition.kind === "OperationDefinition" &&
+              definition.operation === "subscription"
+            );
+          },
+          wsLink,
+          httpLink
+        );
 
-  const headlessUrl = `${nodeInfo.host}:${nodeInfo.graphqlPort}`;
-  const wsLink = new WebSocketLink({
-    uri: `ws://${headlessUrl}/graphql`,
-    options: {
-      reconnect: true,
-    },
-  });
+        const link = ApolloLink.from([new RetryLink(), apiLink]);
 
-  const httpLink = createHttpLink({ uri: `http://${headlessUrl}/graphql` });
+        const client = new ApolloClient({
+          link: link,
+          cache: new InMemoryCache(),
+        });
 
-  const apiLink = split(
-    // split based on operation type
-    ({ query }) => {
-      const definition = getMainDefinition(query);
-      return (
-        definition.kind === "OperationDefinition" &&
-        definition.operation === "subscription"
-      );
-    },
-    wsLink,
-    httpLink
-  );
+        setClient(client);
+      }
+    }
+    main();
+  }, [client]);
 
-  const link = ApolloLink.from([new RetryLink(), apiLink]);
-
-  const client = new ApolloClient({
-    link: link,
-    cache: new InMemoryCache(),
-  });
+  if (!client) return null;
 
   return (
     <ApolloProvider client={client}>
