@@ -9,6 +9,7 @@ import { CSS, styled } from "src/v2/stitches.config";
 import H1 from "src/v2/components/ui/H1";
 import TextField from "src/v2/components/ui/TextField";
 import Button from "src/v2/components/ui/Button";
+import { Select, SelectOption } from "src/v2/components/ui/Select";
 
 const LoginStyles: CSS = {
   padding: 52,
@@ -21,10 +22,6 @@ const LoginStyles: CSS = {
   height: "100%",
   marginBottom: 52,
 };
-
-const Center = styled("div", {
-  textAlign: "center",
-});
 
 function LoginView() {
   const { account } = useStore();
@@ -52,15 +49,20 @@ function LoginView() {
     }
   };
 
-  useEffect(() => {
-    account.setSelectedAddress(account.addresses[0]); // Testing
-  }, [account]);
-
   return (
     <Layout sidebar css={LoginStyles}>
       <H1>Login</H1>
       <p>Welcome back Nine Chronicles!</p>
-      <TextField label="ID" readOnly value={account.selectedAddress} />
+      <Select
+        defaultValue={account.addresses[0]}
+        onChange={(v) => account.setSelectedAddress(v)}
+      >
+        {account.addresses.map((address) => (
+          <SelectOption key={address} value={address}>
+            {address}
+          </SelectOption>
+        ))}
+      </Select>
       <TextField
         label="Password"
         type="password"
@@ -68,15 +70,14 @@ function LoginView() {
         invalid={invalid}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Center>
-        <Button
-          variant="primary"
-          onClick={handleLogin}
-          css={{ width: 280, marginTop: "auto", alignSelf: "center" }}
-        >
-          LOGIN
-        </Button>
-      </Center>
+      <Button
+        variant="primary"
+        centered
+        onClick={handleLogin}
+        css={{ width: 280, marginTop: "auto", marginBottom: 52 }}
+      >
+        LOGIN
+      </Button>
     </Layout>
   );
 }
