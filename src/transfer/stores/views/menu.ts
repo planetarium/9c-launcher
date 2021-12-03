@@ -1,6 +1,4 @@
-import { ipcRenderer } from "electron";
-import { observable, action, decorate } from "mobx";
-import headlessGraphQLSDK, { GraphQLSDK } from "../../middleware/graphql";
+import { observable, action } from "mobx";
 
 export enum MenuItems {
   TRANSFER,

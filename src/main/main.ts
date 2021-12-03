@@ -12,6 +12,8 @@ import {
   RPC_SERVER_PORT,
   REQUIRED_DISK_SPACE,
   MIXPANEL_TOKEN,
+  initializeNode,
+  NodeInfo,
 } from "../config";
 import isDev from "electron-is-dev";
 import {
@@ -103,6 +105,7 @@ const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
 let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
+let remoteNode: NodeInfo;
 
 ipv4().then((value) => (ip = value));
 
@@ -190,7 +193,8 @@ async function intializeConfig() {
   log.transports.file.maxSize = getConfig("LogSizeBytes");
 }
 
-function initializeApp() {
+async function initializeApp() {
+  console.log("initializeApp");
   app.on("ready", async () => {
     if (isDev)
       await installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
@@ -200,7 +204,9 @@ function initializeApp() {
     if (app.commandLine.hasSwitch("v2")) win = await createV2Window();
     else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
+    remoteNode = await initializeNode();
     if (useRemoteHeadless) {
+      console.log("main initializeApp call initializeRemoteHeadless");
       initializeRemoteHeadless();
     } else {
       initializeHeadless();
@@ -211,7 +217,7 @@ function initializeApp() {
     quitAllProcesses();
   });
 
-  app.on("activate", (event) => {
+  app.on("activate", async (event) => {
     event.preventDefault();
     win?.show();
   });
@@ -483,8 +489,14 @@ function initializeIpc() {
     }
     console.log(`open collection page address: ${selectedAddress}`);
     collectionWin = await createCollectionWindow();
-    console.log(`call set miner address: ${selectedAddress}`);
-    collectionWin!.webContents.send("set miner address", selectedAddress);
+    console.log(
+      `call initialize collection window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
+    );
+    collectionWin!.webContents.send(
+      "initialize collection window",
+      selectedAddress,
+      remoteNode!.HeadlessUrl()
+    );
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
     });
@@ -497,10 +509,13 @@ function initializeIpc() {
     }
     console.log(`open transfer page address: ${selectedAddress}`);
     collectionWin = await createTransferWindow();
-    console.log(`call set ninechronicles address: ${selectedAddress}`);
+    console.log(
+      `call initialize transfer window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
+    );
     collectionWin!.webContents.send(
-      "set ninechronicles address",
-      selectedAddress
+      "initialize transfer window",
+      selectedAddress,
+      remoteNode!.HeadlessUrl()
     );
     collectionWin.on("close", function (event: any) {
       collectionWin = null;
@@ -551,9 +566,10 @@ function initializeIpc() {
     utils.deleteBlockchainStoreSync(getBlockChainStorePath());
     if (rerun) {
       if (useRemoteHeadless) {
-        initializeRemoteHeadless();
+        console.log("main clear cache call initializeRemoteHeadless");
+        await initializeRemoteHeadless();
       } else {
-        initializeHeadless();
+        await initializeHeadless();
       }
     }
     event.returnValue = true;
@@ -707,6 +723,13 @@ function initializeIpc() {
     if (status === "offline") {
       relaunch();
     }
+  });
+
+  ipcMain.handle("get-node-info", async () => {
+    while (!remoteNode) {
+      await utils.sleep(100);
+    }
+    return remoteNode;
   });
 }
 
@@ -954,8 +977,9 @@ async function initializeRemoteHeadless(): Promise<void> {
 
   try {
     initializeHeadlessCts.token.throwIfCancelled();
-    win?.webContents.send("start remote headless");
-    remoteHeadless = new RemoteHeadless();
+    // win?.webContents.send("start remote headless");
+    // console.log("main call remote_node");
+    remoteHeadless = new RemoteHeadless(remoteNode!);
     await remoteHeadless.execute();
 
     console.log("Register exit handler.");
@@ -1087,9 +1111,10 @@ function loadInstallerMixpanelUUID(): string {
 async function relaunchHeadless(reason: string = "default") {
   await stopHeadlessProcess(reason);
   if (useRemoteHeadless) {
-    initializeRemoteHeadless();
+    console.log("main relaunchHeadless call initializeRemoteHeadless");
+    await initializeRemoteHeadless();
   } else {
-    initializeHeadless();
+    await initializeHeadless();
   }
 }
 

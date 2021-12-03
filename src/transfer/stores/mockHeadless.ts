@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 import { observable } from "mobx";
 import { IHeadlessStore } from "./headless";
+import { GraphQLSDK } from "../middleware/graphql";
 
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -75,5 +76,9 @@ export default class MockedHeadlessStore implements IHeadlessStore {
   updateBalance = async (agentAdress: string): Promise<Decimal> => {
     this.balance = this.balance.plus(100);
     return this.balance;
+  };
+
+  updateSdk = (sdk: GraphQLSDK) => {
+    return;
   };
 }

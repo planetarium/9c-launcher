@@ -1,6 +1,8 @@
 import Store from "electron-store";
 import path from "path";
 import { IConfig } from "./interfaces/config";
+import { GraphQLClient } from "graphql-request";
+import { getSdk } from "./generated/graphql-request";
 
 const { app } =
   process.type === "browser" ? require("electron") : require("electron").remote;
@@ -146,8 +148,6 @@ const schema: any = {
   },
 };
 
-let index = -1;
-
 export const configStore = new Store<IConfig>({
   cwd: app.getAppPath(),
   schema,
@@ -164,15 +164,6 @@ const LocalServerUrl = (): string => {
 
 const GraphQLServer = (): string => {
   return `${LocalServerUrl}/graphql`;
-};
-
-const HeadlessUrl = (): string => {
-  const nodeInfo = SelectedNode();
-  return nodeInfo.HeadlessUrl();
-};
-
-const SelectedNode = (): NodeInfo => {
-  return NodeList()[index];
 };
 
 export class NodeInfo {
@@ -197,35 +188,54 @@ export class NodeInfo {
   public RpcUrl(): string {
     return `${this.host}:${this.rpcPort}`;
   }
+
+  public async PreloadEnded(): Promise<boolean> {
+    const client = new GraphQLClient(`http://${this.GraphqlServer()}`);
+    const headlessGraphQLSDK = getSdk(client);
+    try {
+      const ended = await headlessGraphQLSDK.PreloadEnded();
+      if (ended.status == 200) {
+        return ended.data!.nodeStatus.preloadEnded;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  }
 }
 
-const NodeList = (): NodeInfo[] => {
-  let list: NodeInfo[] = [];
+const NodeList = async (): Promise<NodeInfo[]> => {
+  let nodeList: NodeInfo[] = [];
   if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
-    remoteNodeList.forEach((v) => {
-      const rawInfos = v.split(",");
-      if (rawInfos.length != 3) {
-        throw new Error(`${v} does not contained node info.`);
-      }
-      const host = rawInfos[0];
-      const graphqlPort = Number.parseInt(rawInfos[1]);
-      const rpcPort = Number.parseInt(rawInfos[2]);
-      const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort);
-      list.push(nodeInfo);
-    });
+    await Promise.all(
+      remoteNodeList.map(async (v) => {
+        const rawInfos = v.split(",");
+        if (rawInfos.length != 3) {
+          console.error(`${v} does not contained node info.`);
+          return;
+        }
+        const host = rawInfos[0];
+        const graphqlPort = Number.parseInt(rawInfos[1]);
+        const rpcPort = Number.parseInt(rawInfos[2]);
+        const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort);
+        try {
+          const preloadEnded = await nodeInfo.PreloadEnded();
+          if (preloadEnded) nodeList.push(nodeInfo);
+        } catch (e) {
+          console.error(e);
+        }
+      })
+    );
   } else {
     const nodeInfo = new NodeInfo(
       LocalServerHost().host,
       LocalServerPort().port,
       RpcServerPort().port
     );
-    list.push(nodeInfo);
+    nodeList.push(nodeInfo);
   }
-  if (index === -1) {
-    index = Math.floor(Math.random() * list.length);
-  }
-  return list;
+  return nodeList;
 };
 
 const RpcServerHost = (): { host: string; notDefault: boolean } => {
@@ -295,7 +305,6 @@ export const MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
 export const WIN_GAME_PATH = "9c.exe";
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
-export const HEADLESS_URL = HeadlessUrl();
 export const LOCAL_SERVER_HOST: string = LocalServerHost().host;
 export const LOCAL_SERVER_PORT: number = LocalServerPort().port;
 export const RPC_SERVER_HOST: string = RpcServerHost().host;
@@ -307,4 +316,10 @@ export const CUSTOM_SERVER: boolean =
   RpcServerPort().notDefault;
 export const MIXPANEL_TOKEN = "80a1e14b57d050536185c7459d45195a";
 export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
-export const REMOTE_NODE: NodeInfo = SelectedNode();
+
+export async function initializeNode(): Promise<NodeInfo> {
+  console.log("config initialize called");
+  const nodeList = await NodeList();
+  console.log("config initialize complete");
+  return nodeList[Math.floor(Math.random() * nodeList.length)];
+}

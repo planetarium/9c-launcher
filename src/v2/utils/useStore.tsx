@@ -6,7 +6,6 @@ import StandaloneStore from "../stores/standaloneStore";
 
 const stores = {
   account: new AccountStore(),
-  game: new GameStore(),
   standalone: new StandaloneStore(),
   overlay: new OverlayStore(),
 } as const;
