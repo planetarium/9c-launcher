@@ -23,13 +23,12 @@ import RewardButton from "../RewardButton/RewardButton";
 import AccountInfo from "./AccountInfo";
 
 export type Props = {
-  minedBlock: number;
   onReward: (address: string) => void;
   onOpenWindow: () => void;
 };
 
 const AccountInfoContainer: React.FC<Props> = (props: Props) => {
-  const { minedBlock, onOpenWindow } = props;
+  const { onOpenWindow } = props;
   const { accountStore } = useStores();
   const [depositedGold, setDepositeGold] = useState<number>(0);
   const [remainMin, setRemainMin] = useState<number>(0);
@@ -190,7 +189,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     return (
       <>
         <AccountInfo
-          minedBlock={minedBlock}
           onOpenWindow={canClaim ? () => {} : onOpenWindow}
           canClaimReward={
             mcStatus?.rewardInfos != null && mcStatus.rewardInfos.length > 0
@@ -232,7 +230,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   return (
     <>
       <AccountInfo
-        minedBlock={0}
         onOpenWindow={() => {}}
         canClaimReward={false}
         goldLabel={"loading..."}
