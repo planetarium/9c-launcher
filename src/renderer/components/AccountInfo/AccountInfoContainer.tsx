@@ -58,7 +58,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     variables: {
       agentAddress: accountStore.selectedAddress,
     },
-    pollInterval: 1000 * 5,
   });
   const { data: collectionStatusQuery } = useCollectionStatusQueryQuery({
     variables: {
@@ -67,14 +66,12 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   });
 
   const { data: tip } = useGetTipQuery({
-    pollInterval: 1000 * 3,
   });
 
   const { data: avatarAddressQuery } = useGetAvatarAddressQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
-    pollInterval: 1000 * 2,
   });
 
   useEffect(() => {

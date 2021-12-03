@@ -25,7 +25,6 @@ export const Layout: React.FC = observer(({ children }) => {
   const [infoButtonState, setInfoButtonState] = useState(false);
 
   const topmostBlocksResult = useTopmostBlocksQuery();
-  topmostBlocksResult.startPolling(1000 * 10); // 10 seconds
   const topmostBlocks = topmostBlocksResult.data?.nodeStatus.topmostBlocks;
   const minedBlocks =
     accountStore.isLogin && topmostBlocks != null

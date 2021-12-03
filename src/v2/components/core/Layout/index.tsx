@@ -17,7 +17,7 @@ interface LayoutProps {
 
 function Layout({ children }: React.PropsWithChildren<LayoutProps>) {
   const accountStore = useStore("account");
-  const { loading, data } = useTopmostBlocksQuery({ pollInterval: 1000 * 10 });
+  const { loading, data } = useTopmostBlocksQuery({ });
   const topmostBlocks = data?.nodeStatus.topmostBlocks;
 
   const minedBlocks = useMemo(
