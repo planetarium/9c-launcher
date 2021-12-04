@@ -10,7 +10,6 @@ import {
   useNodeStatusSubscriptionSubscription,
   useCollectionSheetQuery,
   useStateQueryMonsterCollectionQuery,
-  useGetTipQuery,
   useCollectionStatusQueryQuery,
   useGetAvatarAddressQuery,
   useCollectionStateByAgentSubscription,
@@ -41,6 +40,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   const [canClaim, setCanClaim] = useState<boolean>(false);
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
   const [receivedBlockIndex, setReceivedBlockIndex] = useState<number>(0);
+  const [tip, setTip] = useState<number>(0);
   const { refetch: sheetRefetch } = useCollectionSheetQuery();
   const { data: collectionStatus } = useCollectionStatusByAgentSubscription({
     variables: {
@@ -62,9 +62,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     variables: {
       address: accountStore.selectedAddress,
     },
-  });
-
-  const { data: tip } = useGetTipQuery({
   });
 
   const { data: avatarAddressQuery } = useGetAvatarAddressQuery({
@@ -114,23 +111,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   }, [collectionLevel]);
 
   useEffect(() => {
-    let targetBlock = 0;
-    if (collectionState?.monsterCollectionStateByAgent != null) {
-      targetBlock = Number(
-        collectionState?.monsterCollectionStateByAgent.claimableBlockIndex
-      );
-    } else {
-      targetBlock = Number(
-        collectionStateQuery?.stateQuery.monsterCollectionState
-          ?.claimableBlockIndex
-      );
-    }
-    const currentTip = tip?.nodeStatus.tip.index || 0;
-    const delta = targetBlock - currentTip;
-    setRemainMin(Math.round(delta / 5));
-  }, [collectionStateQuery, collectionState, tip]);
-
-  useEffect(() => {
     setCollectionLevel(
       Number(collectionState?.monsterCollectionStateByAgent?.level ?? 0)
     );
@@ -165,6 +145,21 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     applyCanClaim(
       collectionStatus?.monsterCollectionStatusByAgent?.rewardInfos
     );
+    let targetBlock = 0;
+    if (collectionState?.monsterCollectionStateByAgent != null) {
+      targetBlock = Number(
+        collectionState?.monsterCollectionStateByAgent.claimableBlockIndex
+      );
+    } else {
+      targetBlock = Number(
+        collectionStateQuery?.stateQuery.monsterCollectionState
+          ?.claimableBlockIndex
+      );
+    }
+    const currentTip = collectionStatus?.monsterCollectionStatusByAgent.tipIndex || 0;
+    setTip(currentTip);
+    const delta = targetBlock - currentTip;
+    setRemainMin(Math.round(delta / 5));
   }, [collectionStatus]);
 
   useEffect(() => {
@@ -210,7 +205,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
         {openDialog ? (
           <ClaimCollectionRewardContainer
             avatarAddressQuery={avatarAddressQuery}
-            tip={tip?.nodeStatus.tip.index || 0}
+            tip={tip}
             rewards={[...currentReward].map(
               (x) => ({ itemId: x[0], quantity: x[1] } as Reward)
             )}
