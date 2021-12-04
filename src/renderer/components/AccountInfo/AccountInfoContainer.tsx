@@ -41,10 +41,13 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
   const [receivedBlockIndex, setReceivedBlockIndex] = useState<number>(0);
   const [tip, setTip] = useState<number>(0);
-  const [avatarAddressQueryLazy, { loading: avatarLoading, data: avatars, refetch: avatarRefetch }] = useGetAvatarAddressLazyQuery({
+  const [
+    avatarAddressQueryLazy,
+    { loading: avatarLoading, data: avatars, refetch: avatarRefetch },
+  ] = useGetAvatarAddressLazyQuery({
     variables: {
       address: accountStore.selectedAddress,
-    }
+    },
   });
   const { refetch: sheetRefetch } = useCollectionSheetQuery();
   const { data: collectionStatus } = useCollectionStatusByAgentSubscription({
@@ -155,7 +158,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
           ?.claimableBlockIndex
       );
     }
-    const currentTip = collectionStatus?.monsterCollectionStatusByAgent.tipIndex || 0;
+    const currentTip =
+      collectionStatus?.monsterCollectionStatusByAgent.tipIndex || 0;
     setTip(currentTip);
     const delta = targetBlock - currentTip;
     setRemainMin(Math.round(delta / 5));

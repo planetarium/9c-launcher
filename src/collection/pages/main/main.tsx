@@ -89,8 +89,7 @@ const Main: React.FC<Props> = (props: Props) => {
       address: signer,
     },
   });
-  const { data: nodeStatus } = useGetTipQuery({
-  });
+  const { data: nodeStatus } = useGetTipQuery({});
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
       agentAddress: signer,
