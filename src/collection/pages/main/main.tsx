@@ -90,13 +90,11 @@ const Main: React.FC<Props> = (props: Props) => {
     },
   });
   const { data: nodeStatus } = useGetTipQuery({
-    pollInterval: 1000 * 5,
   });
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
       agentAddress: signer,
     },
-    pollInterval: 1000 * 5,
   });
   const { data: collectionStatusQuery } = useCollectionStatusQueryQuery({
     variables: {
