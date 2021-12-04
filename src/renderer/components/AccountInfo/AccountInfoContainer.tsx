@@ -11,7 +11,7 @@ import {
   useCollectionSheetQuery,
   useStateQueryMonsterCollectionQuery,
   useCollectionStatusQueryQuery,
-  useGetAvatarAddressQuery,
+  useGetAvatarAddressLazyQuery,
   useCollectionStateByAgentSubscription,
   useCollectionStatusByAgentSubscription,
   MonsterCollectionRewardInfoType,
@@ -41,6 +41,11 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
   const [receivedBlockIndex, setReceivedBlockIndex] = useState<number>(0);
   const [tip, setTip] = useState<number>(0);
+  const [avatarAddressQueryLazy, { loading: avatarLoading, data: avatars, refetch: avatarRefetch }] = useGetAvatarAddressLazyQuery({
+    variables: {
+      address: accountStore.selectedAddress,
+    }
+  });
   const { refetch: sheetRefetch } = useCollectionSheetQuery();
   const { data: collectionStatus } = useCollectionStatusByAgentSubscription({
     variables: {
@@ -59,12 +64,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     },
   });
   const { data: collectionStatusQuery } = useCollectionStatusQueryQuery({
-    variables: {
-      address: accountStore.selectedAddress,
-    },
-  });
-
-  const { data: avatarAddressQuery } = useGetAvatarAddressQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
@@ -174,7 +173,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   if (
     accountStore.isLogin &&
     nodeStatus?.nodeStatus?.preloadEnded &&
-    avatarAddressQuery != null &&
     accountStore.isMiningConfigEnded
   ) {
     const mcStatus = collectionStatus?.monsterCollectionStatusByAgent;
@@ -185,7 +183,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
           canClaimReward={
             mcStatus?.rewardInfos != null && mcStatus.rewardInfos.length > 0
           }
-          goldLabel={Number(collectionStateQuery?.stateQuery.agent?.gold)}
+          goldLabel={Number(mcStatus?.fungibleAssetValue.quantity)}
           collectionLabel={depositedGold}
           remainText={getRemain(remainMin)}
           isCollecting={isCollecting}
@@ -195,6 +193,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
             <RewardButton
               loading={claimLoading}
               onClick={() => {
+                avatarAddressQueryLazy();
                 setOpenDialog(true);
               }}
             />
@@ -202,9 +201,9 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
         ) : (
           <></>
         )}
-        {openDialog ? (
+        {openDialog && avatars ? (
           <ClaimCollectionRewardContainer
-            avatarAddressQuery={avatarAddressQuery}
+            avatarAddressQuery={avatars}
             tip={tip}
             rewards={[...currentReward].map(
               (x) => ({ itemId: x[0], quantity: x[1] } as Reward)
