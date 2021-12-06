@@ -32,7 +32,6 @@ export const Primary = Template.bind({});
 Primary.args = {
   onOpenWindow: () => {},
   onReward: () => {},
-  minedBlock: 500,
 };
 Primary.parameters = {
   apolloClient: {

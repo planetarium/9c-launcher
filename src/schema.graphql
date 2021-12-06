@@ -311,6 +311,7 @@ type MonsterCollectionStateType {
 type MonsterCollectionStatusType {
   fungibleAssetValue: FungibleAssetValueType!
   rewardInfos: [MonsterCollectionRewardInfoType]
+  tipIndex: Long!
   lockup: Boolean!
 }
 

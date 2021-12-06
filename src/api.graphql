@@ -288,6 +288,7 @@ subscription CollectionStatus {
       itemId
       quantity
     }
+    tipIndex
   }
 }
 
@@ -302,6 +303,7 @@ query CollectionStatusQuery($address: Address) {
       itemId
       quantity
     }
+    tipIndex
   }
 }
 
@@ -336,6 +338,7 @@ subscription CollectionStatusByAgent($address: Address!) {
       itemId
       quantity
     }
+    tipIndex
   }
 }
 
