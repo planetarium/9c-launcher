@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { observer } from "mobx-react";
 import Layout from "../components/core/Layout";
 import H1 from "../components/ui/H1";
@@ -10,6 +10,7 @@ import { useHistory } from "react-router";
 import { useStore } from "../utils/useStore";
 import { CSS } from "../stitches.config";
 import Button from "../components/ui/Button";
+import { useActivation } from "../utils/useActivation";
 
 const transifexTags = "v2/missing-activation-view";
 
@@ -29,11 +30,19 @@ function MissingActivationView() {
   const { register, handleSubmit } = useForm();
   const history = useHistory();
   const { account, overlay } = useStore();
+
+  const activated = useActivation(account.activationKey);
+
   const onSubmit = ({ activationKey }: { activationKey: string }) => {
     account.setActivationKey(activationKey!);
     history.push("/lobby");
     overlay.open("onboarding");
   };
+
+  useEffect(() => void (activated && history.push("/lobby")), [
+    activated,
+    history,
+  ]);
 
   return (
     <Layout sidebar css={SidebarStyles}>
