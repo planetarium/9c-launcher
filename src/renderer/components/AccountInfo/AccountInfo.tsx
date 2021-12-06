@@ -6,7 +6,6 @@ import exportIcon from "../../resources/export-icon.png";
 import "./AccountInfo.scss";
 
 export type Props = {
-  minedBlock: number;
   remainText: string;
   goldLabel: string | number;
   collectionLabel: string | number;
@@ -16,14 +15,8 @@ export type Props = {
 };
 
 const AccountInfo: React.FC<Props> = (props: Props) => {
-  const {
-    minedBlock,
-    remainText,
-    goldLabel,
-    collectionLabel,
-    isCollecting,
-    onOpenWindow,
-  } = props;
+  const { remainText, goldLabel, collectionLabel, isCollecting, onOpenWindow } =
+    props;
 
   const numberWithComma = (number: string | number) => {
     if (typeof number === "string") return number;
@@ -40,9 +33,6 @@ const AccountInfo: React.FC<Props> = (props: Props) => {
       <div className={"AccountInfoItem"}>
         <img className={"Icon"} src={goldIcon} alt="gold" />
         <div className={"value"}>{numberWithComma(goldLabel)}</div>
-        {typeof goldLabel !== "string" && (
-          <div className={"subText"}>{`(Mined ${minedBlock} blocks)`}</div>
-        )}
       </div>
       <div
         className={"AccountInfoItem Monster"}

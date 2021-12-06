@@ -4,7 +4,6 @@ import Button from "@material-ui/core/Button";
 import DiscordIcon from "../../components/DiscordIcon";
 import SettingsIcon from "@material-ui/icons/Settings";
 import "../../styles/layout/layout.scss";
-import { useTopmostBlocksQuery } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import { observer } from "mobx-react";
 
@@ -24,13 +23,6 @@ export const Layout: React.FC = observer(({ children }) => {
   const [awsSinkCloudwatchGuid, setAwsSinkCloudwatchGuid] = useState<string>();
   const [infoButtonState, setInfoButtonState] = useState(false);
 
-  const topmostBlocksResult = useTopmostBlocksQuery();
-  topmostBlocksResult.startPolling(1000 * 10); // 10 seconds
-  const topmostBlocks = topmostBlocksResult.data?.nodeStatus.topmostBlocks;
-  const minedBlocks =
-    accountStore.isLogin && topmostBlocks != null
-      ? topmostBlocks.filter((b) => b?.miner == accountStore.selectedAddress)
-      : null;
   useEffect(() => {
     const awsSinkGuid: string = ipcRenderer.sendSync(
       "get-aws-sink-cloudwatch-guid"
@@ -45,10 +37,7 @@ export const Layout: React.FC = observer(({ children }) => {
     const stringValue = `
       APV: ${getConfig("AppProtocolVersion") as string} 
       Address: ${accountStore.selectedAddress} 
-      Debug: ${accountStore.isLogin} / ${topmostBlocksResult.loading}
-      Mined blocks: ${minedBlocks?.length} (out of recent ${
-      topmostBlocks?.length
-    } blocks)
+      Debug: ${accountStore.isLogin}
       ${awsSinkCloudwatchGuid !== null && `Client ID: ${awsSinkCloudwatchGuid}`}
     `;
     clipboardElement.value = stringValue;
@@ -68,7 +57,6 @@ export const Layout: React.FC = observer(({ children }) => {
       <main>{children}</main>
       <nav className="hero">
         <AccountInfoContainer
-          minedBlock={Number(minedBlocks?.length)}
           onReward={() => {}}
           onOpenWindow={() => {
             ipcRenderer.invoke(
