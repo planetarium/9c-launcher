@@ -183,6 +183,7 @@ async function intializeConfig() {
     }
 
     // Replace config
+    console.log("Replace config with remote config:", remoteConfig);
     configStore.store = remoteConfig;
   } catch (error) {
     console.error(
