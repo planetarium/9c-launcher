@@ -73,7 +73,7 @@ import {
   update,
 } from "./update";
 import { send } from "./v2/ipc";
-import { IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
+import { IPC_PRELOAD_IDLE, IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
 
 initializeSentry();
 
@@ -655,6 +655,7 @@ async function initializeHeadless(): Promise<void> {
     console.log("Register exit handler.");
     standalone.once("exit", async () => {
       console.error("Headless exited by self.");
+      send(win!, IPC_PRELOAD_IDLE);
       await relaunchHeadless();
     });
   } catch (error) {

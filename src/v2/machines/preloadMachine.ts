@@ -24,7 +24,8 @@ type PreloadMachineEvent =
   | { type: "PROGRESS"; progress: number }
   | { type: "HEADLESS" }
   | { type: "DONE" }
-  | { type: "ERROR"; error: string };
+  | { type: "ERROR"; error: string }
+  | { type: "IDLE" };
 
 type PreloadMachineTypestates =
   | { value: "idle"; context: {} }
@@ -146,10 +147,9 @@ export const preloadMachine = createMachine<
         },
       },
       done: {},
-      error: {},
     },
     on: {
-      ERROR: "error",
+      IDLE: "idle",
     },
   },
   {
