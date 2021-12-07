@@ -41,6 +41,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   const [collectionLevel, setCollectionLevel] = useState<number>(0);
   const [receivedBlockIndex, setReceivedBlockIndex] = useState<number>(0);
   const [tip, setTip] = useState<number>(0);
+  const [gold, setGold] = useState<number>(0);
   const [
     avatarAddressQueryLazy,
     { loading: avatarLoading, data: avatars, refetch: avatarRefetch },
@@ -84,6 +85,13 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
       currentReward.set(x!.itemId, x!.quantity);
     });
     setCurrentReward(currentReward);
+
+    const gold =
+      collectionStatus?.monsterCollectionStatusByAgent.fungibleAssetValue
+        .quantity ??
+      collectionStatusQuery?.monsterCollectionStatus?.fungibleAssetValue
+        .quantity;
+    setGold(Number(gold));
   }, [collectionStatus, collectionStatusQuery]);
 
   useEffect(() => {
@@ -187,7 +195,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
           canClaimReward={
             mcStatus?.rewardInfos != null && mcStatus.rewardInfos.length > 0
           }
-          goldLabel={Number(mcStatus?.fungibleAssetValue.quantity)}
+          goldLabel={gold}
           collectionLabel={depositedGold}
           remainText={getRemain(remainMin)}
           isCollecting={isCollecting}
