@@ -350,4 +350,7 @@ query PreloadEnded {
   nodeStatus {
     preloadEnded
   }
+  rpcInformation {
+    totalCount
+  }
 }

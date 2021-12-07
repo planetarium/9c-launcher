@@ -167,15 +167,23 @@ const GraphQLServer = (): string => {
 };
 
 export class NodeInfo {
-  constructor(host: string, graphqlPort: number, rpcPort: number) {
+  constructor(
+    host: string,
+    graphqlPort: number,
+    rpcPort: number,
+    nodeNumber: number
+  ) {
     this.host = host;
     this.graphqlPort = graphqlPort;
     this.rpcPort = rpcPort;
+    this.nodeNumber = nodeNumber;
   }
 
   readonly host: string;
   readonly graphqlPort: number;
   readonly rpcPort: number;
+  readonly nodeNumber: number;
+  clientCount: number = 0;
 
   public GraphqlServer(): string {
     return `${this.HeadlessUrl()}/graphql`;
@@ -195,6 +203,7 @@ export class NodeInfo {
     try {
       const ended = await headlessGraphQLSDK.PreloadEnded();
       if (ended.status == 200) {
+        this.clientCount = ended.data!.rpcInformation.totalCount;
         return ended.data!.nodeStatus.preloadEnded;
       }
     } catch (e) {
@@ -209,7 +218,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
   if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
     await Promise.all(
-      remoteNodeList.map(async (v) => {
+      remoteNodeList.map(async (v, index) => {
         const rawInfos = v.split(",");
         if (rawInfos.length != 3) {
           console.error(`${v} does not contained node info.`);
@@ -218,7 +227,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
         const host = rawInfos[0];
         const graphqlPort = Number.parseInt(rawInfos[1]);
         const rpcPort = Number.parseInt(rawInfos[2]);
-        const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort);
+        const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort, index + 1);
         try {
           const preloadEnded = await nodeInfo.PreloadEnded();
           if (preloadEnded) nodeList.push(nodeInfo);
@@ -231,7 +240,8 @@ const NodeList = async (): Promise<NodeInfo[]> => {
     const nodeInfo = new NodeInfo(
       LocalServerHost().host,
       LocalServerPort().port,
-      RpcServerPort().port
+      RpcServerPort().port,
+      1
     );
     nodeList.push(nodeInfo);
   }
@@ -320,6 +330,14 @@ export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
 export async function initializeNode(): Promise<NodeInfo> {
   console.log("config initialize called");
   const nodeList = await NodeList();
+  nodeList.sort((a, b) => {
+    return a.clientCount - b.clientCount;
+  });
   console.log("config initialize complete");
-  return nodeList[Math.floor(Math.random() * nodeList.length)];
+  const maxLength = Math.min(3, nodeList.length);
+  const nodeInfo = nodeList[Math.floor(Math.random() * maxLength)];
+  console.log(
+    `selected node: ${nodeInfo.HeadlessUrl()}, clients: ${nodeInfo.clientCount}`
+  );
+  return nodeInfo;
 }
