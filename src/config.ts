@@ -167,15 +167,22 @@ const GraphQLServer = (): string => {
 };
 
 export class NodeInfo {
-  constructor(host: string, graphqlPort: number, rpcPort: number) {
+  constructor(
+    host: string,
+    graphqlPort: number,
+    rpcPort: number,
+    nodeNumber: number
+  ) {
     this.host = host;
     this.graphqlPort = graphqlPort;
     this.rpcPort = rpcPort;
+    this.nodeNumber = nodeNumber;
   }
 
   readonly host: string;
   readonly graphqlPort: number;
   readonly rpcPort: number;
+  readonly nodeNumber: number;
   clientCount: number = 0;
 
   public GraphqlServer(): string {
@@ -211,7 +218,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
   if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
     await Promise.all(
-      remoteNodeList.map(async (v) => {
+      remoteNodeList.map(async (v, index) => {
         const rawInfos = v.split(",");
         if (rawInfos.length != 3) {
           console.error(`${v} does not contained node info.`);
@@ -220,7 +227,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
         const host = rawInfos[0];
         const graphqlPort = Number.parseInt(rawInfos[1]);
         const rpcPort = Number.parseInt(rawInfos[2]);
-        const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort);
+        const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort, index + 1);
         try {
           const preloadEnded = await nodeInfo.PreloadEnded();
           if (preloadEnded) nodeList.push(nodeInfo);
@@ -233,7 +240,8 @@ const NodeList = async (): Promise<NodeInfo[]> => {
     const nodeInfo = new NodeInfo(
       LocalServerHost().host,
       LocalServerPort().port,
-      RpcServerPort().port
+      RpcServerPort().port,
+      1
     );
     nodeList.push(nodeInfo);
   }
