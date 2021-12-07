@@ -178,7 +178,7 @@ export class NodeInfo {
   readonly rpcPort: number;
 
   public GraphqlServer(): string {
-    return `${this.host}/graphql`;
+    return `${this.HeadlessUrl()}/graphql`;
   }
 
   public HeadlessUrl(): string {
