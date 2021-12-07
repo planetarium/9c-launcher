@@ -176,6 +176,7 @@ export class NodeInfo {
   readonly host: string;
   readonly graphqlPort: number;
   readonly rpcPort: number;
+  clientCount: number = 0;
 
   public GraphqlServer(): string {
     return `${this.HeadlessUrl()}/graphql`;
@@ -195,6 +196,7 @@ export class NodeInfo {
     try {
       const ended = await headlessGraphQLSDK.PreloadEnded();
       if (ended.status == 200) {
+        this.clientCount = ended.data!.rpcInformation.totalCount;
         return ended.data!.nodeStatus.preloadEnded;
       }
     } catch (e) {
@@ -320,6 +322,14 @@ export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
 export async function initializeNode(): Promise<NodeInfo> {
   console.log("config initialize called");
   const nodeList = await NodeList();
+  nodeList.sort((a, b) => {
+    return a.clientCount - b.clientCount;
+  });
   console.log("config initialize complete");
-  return nodeList[Math.floor(Math.random() * nodeList.length)];
+  const maxLength = Math.min(3, nodeList.length);
+  const nodeInfo = nodeList[Math.floor(Math.random() * maxLength)];
+  console.log(
+    `selected node: ${nodeInfo.HeadlessUrl()}, clients: ${nodeInfo.clientCount}`
+  );
+  return nodeInfo;
 }
