@@ -179,7 +179,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
       collectionStatus?.monsterCollectionStatusByAgent.fungibleAssetValue
         .quantity ??
       collectionStatusQuery?.monsterCollectionStatus?.fungibleAssetValue
-        .quantity,
+        .quantity ??
+      0,
     [collectionStatus, collectionStatusQuery]
   );
 
