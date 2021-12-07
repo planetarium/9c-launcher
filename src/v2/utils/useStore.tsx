@@ -8,6 +8,7 @@ const stores = {
   account: new AccountStore(),
   standalone: new StandaloneStore(),
   overlay: new OverlayStore(),
+  game: new GameStore(),
 } as const;
 
 export const StoreContext = createContext<typeof stores>(stores);
