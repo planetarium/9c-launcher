@@ -10,6 +10,7 @@ import H1 from "src/v2/components/ui/H1";
 import TextField from "src/v2/components/ui/TextField";
 import Button from "src/v2/components/ui/Button";
 import { Select, SelectOption } from "src/v2/components/ui/Select";
+import { Link } from "src/v2/components/ui/Link";
 
 const LoginStyles: CSS = {
   padding: 52,
@@ -20,7 +21,7 @@ const LoginStyles: CSS = {
     marginTop: 16,
   },
   height: "100%",
-  marginBottom: 52,
+  paddingBottom: 52,
 };
 
 function LoginView() {
@@ -74,10 +75,13 @@ function LoginView() {
         variant="primary"
         centered
         onClick={handleLogin}
-        css={{ width: 280, marginTop: "auto", marginBottom: 52 }}
+        css={{ width: 280, marginTop: "auto" }}
       >
         LOGIN
       </Button>
+      <Link centered to="/recover">
+        Forgot password?
+      </Link>
     </Layout>
   );
 }
