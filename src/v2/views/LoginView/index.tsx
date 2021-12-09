@@ -55,7 +55,7 @@ function LoginView() {
       <H1>Login</H1>
       <p>Welcome back Nine Chronicles!</p>
       <Select
-        defaultValue={account.addresses[0]}
+        defaultValue={account.selectedAddress}
         onChange={(v) => account.setSelectedAddress(v)}
       >
         {account.addresses.map((address) => (
