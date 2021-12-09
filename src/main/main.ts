@@ -706,6 +706,7 @@ async function initializeRemoteHeadless(): Promise<void> {
     return;
   }
 
+  win?.webContents.send("start bootstrap");
   initializeHeadlessCts = CancellationToken.create();
 
   try {
@@ -714,6 +715,7 @@ async function initializeRemoteHeadless(): Promise<void> {
     // console.log("main call remote_node");
     remoteHeadless = new RemoteHeadless(remoteNode!);
     await remoteHeadless.execute();
+    win?.webContents.send("start headless");
 
     console.log("Register exit handler.");
     standalone.once("exit", async () => {

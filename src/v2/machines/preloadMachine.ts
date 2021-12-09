@@ -107,7 +107,6 @@ export const preloadMachine = createMachine<
         on: {
           HEADLESS: {
             target: "headless",
-            actions: ["setHeadlessContext"],
           },
           PROGRESS: {
             actions: ["setProgress"],
