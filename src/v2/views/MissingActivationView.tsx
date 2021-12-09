@@ -27,7 +27,11 @@ const SidebarStyles: CSS = {
 };
 
 function MissingActivationView() {
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const history = useHistory();
   const { account, overlay } = useStore();
 
@@ -58,6 +62,7 @@ function MissingActivationView() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           label={t("Invitation Code", { _tags: transifexTags })}
+          invalid={errors.activationKey}
           {...register("activationKey", {
             required: true,
             pattern: /^[0-9a-f]+\/[0-9a-f]{40}$/,
