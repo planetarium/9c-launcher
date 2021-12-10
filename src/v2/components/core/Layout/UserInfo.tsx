@@ -8,6 +8,9 @@ import {
 import { useStore } from "src/v2/utils/useStore";
 import { useIsPreloadDone } from "src/v2/utils/usePreload";
 
+import AccountBoxIcon from "@material-ui/icons/AccountBox";
+import goldIconUrl from "src/v2/resources/ui-main-icon-gold.png";
+
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
   top: 30,
@@ -21,6 +24,10 @@ const UserInfoStyled = styled(motion.ul, {
 const UserInfoItem = styled(motion.li, {
   display: "flex",
   height: 27,
+  alignItems: "center",
+  "& > svg, & > img": {
+    marginRight: 5,
+  },
 });
 
 export default function UserInfo() {
@@ -37,8 +44,12 @@ export default function UserInfo() {
 
   return (
     <UserInfoStyled>
-      <UserInfoItem>{account.selectedAddress}</UserInfoItem>
       <UserInfoItem>
+        <AccountBoxIcon />
+        {account.selectedAddress}
+      </UserInfoItem>
+      <UserInfoItem>
+        <img src={goldIconUrl} alt="gold" />
         {Number(collectionStateQuery?.stateQuery.agent?.gold)}
       </UserInfoItem>
     </UserInfoStyled>
