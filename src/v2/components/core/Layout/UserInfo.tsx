@@ -31,19 +31,7 @@ export default function UserInfo() {
     variables: {
       agentAddress: account.selectedAddress,
     },
-    pollInterval: 1000 * 5,
   });
-
-  const { data } = useTopmostBlocksQuery({ pollInterval: 1000 * 10 });
-  const topmostBlocks = data?.nodeStatus.topmostBlocks;
-
-  const minedBlocks = useMemo(
-    () =>
-      account.isLogin && topmostBlocks != null
-        ? topmostBlocks.filter((b) => b?.miner == account.selectedAddress)
-        : null,
-    [account.isLogin, topmostBlocks]
-  );
 
   if (!isDone || !account.isLogin) return null;
 
@@ -52,7 +40,6 @@ export default function UserInfo() {
       <UserInfoItem>{account.selectedAddress}</UserInfoItem>
       <UserInfoItem>
         {Number(collectionStateQuery?.stateQuery.agent?.gold)}
-        {minedBlocks?.length ? `(Mined ${minedBlocks} blocks)` : null}
       </UserInfoItem>
     </UserInfoStyled>
   );
