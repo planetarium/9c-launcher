@@ -5,6 +5,7 @@ import { styled } from "src/v2/stitches.config";
 import { usePreload } from "src/v2/utils/usePreload";
 import { useStore } from "src/v2/utils/useStore";
 import Button from "../../ui/Button";
+import { T } from "src/renderer/i18n";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -34,7 +35,7 @@ function StatusBar() {
         {message}
         {isDone && account.isLogin && !game.isGameStarted && (
           <Button onClick={() => game.startGame(account.privateKey)}>
-            Start
+            <T _str="Start" _tags="v2/start-game" />
           </Button>
         )}
       </StatusMessage>

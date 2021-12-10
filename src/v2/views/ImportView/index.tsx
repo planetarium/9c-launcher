@@ -26,8 +26,12 @@ function ImportView() {
       </H1>
       <FileChooser />
       <TextField label={t("keystore", { _tags: transifexTags })} />
-      <Button>Prev</Button>
-      <Button>Next</Button>
+      <Button>
+        <T _str="Prev" _tags={transifexTags} />
+      </Button>
+      <Button>
+        <T _str="Next" _tags={transifexTags} />
+      </Button>
     </Layout>
   );
 }

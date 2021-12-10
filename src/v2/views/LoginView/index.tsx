@@ -11,6 +11,7 @@ import TextField from "src/v2/components/ui/TextField";
 import Button from "src/v2/components/ui/Button";
 import { Select, SelectOption } from "src/v2/components/ui/Select";
 import { Link } from "src/v2/components/ui/Link";
+import { T } from "src/renderer/i18n";
 
 const LoginStyles: CSS = {
   padding: 52,
@@ -23,6 +24,8 @@ const LoginStyles: CSS = {
   height: "100%",
   paddingBottom: 52,
 };
+
+const transifexTags = "v2/login-view";
 
 function LoginView() {
   const { account } = useStore();
@@ -52,8 +55,12 @@ function LoginView() {
 
   return (
     <Layout sidebar css={LoginStyles}>
-      <H1>Login</H1>
-      <p>Welcome back Nine Chronicles!</p>
+      <H1>
+        <T _str="Login" _tags={transifexTags} />
+      </H1>
+      <p>
+        <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
+      </p>
       <Select
         defaultValue={account.selectedAddress}
         onChange={(v) => account.setSelectedAddress(v)}
@@ -77,10 +84,10 @@ function LoginView() {
         onClick={handleLogin}
         css={{ width: 280, marginTop: "auto" }}
       >
-        LOGIN
+        <T _str="LOGIN" _tags={transifexTags} />
       </Button>
       <Link centered to="/recover">
-        Forgot password?
+        <T _str="Forgot password?" _tags={transifexTags} />
       </Link>
     </Layout>
   );
