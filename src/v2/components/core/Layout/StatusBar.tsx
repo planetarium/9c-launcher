@@ -17,6 +17,10 @@ const StatusMessage = styled("span", {
   marginBottom: 8,
   fontWeight: "bold",
   textShadow: "$text",
+  lineHeight: 1,
+  [`& > ${Button}`]: {
+    marginLeft: 8,
+  },
 });
 
 function StatusBar() {
@@ -34,7 +38,10 @@ function StatusBar() {
       <StatusMessage>
         {message}
         {isDone && account.isLogin && !game.isGameStarted && (
-          <Button onClick={() => game.startGame(account.privateKey)}>
+          <Button
+            variant="primary"
+            onClick={() => game.startGame(account.privateKey)}
+          >
             <T _str="Start" _tags="v2/start-game" />
           </Button>
         )}
