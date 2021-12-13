@@ -24,7 +24,7 @@ export default class GameStore {
     this._language = getConfig("Locale") as string;
     this._appProtocolVersion = getConfig("AppProtocolVersion") as string;
     ipcRenderer.invoke("get-node-info").then((node) => {
-      this._port = node.host;
+      this._host = node.host;
       this._port = node.rpcPort;
     });
     userConfigStore.onDidChange(
