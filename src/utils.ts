@@ -178,14 +178,14 @@ export async function cancellableDownload(
         },
       });
       if (res.status === 304) {
-        console.log("Found a complete copy of ", downloadPath);
+        console.log("Found a complete copy of", downloadPath);
         return;
       }
 
       // After this, invalidation will happen at onETagFailed below.
     }
 
-    if (metadata) console.log("meta available ", downloadPath);
+    if (metadata) console.log("meta available", downloadPath, metadata);
 
     const res = await downloadAxios.get(url, {
       cancelToken: axiosCts.token,
