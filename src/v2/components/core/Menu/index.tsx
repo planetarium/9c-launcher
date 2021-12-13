@@ -28,6 +28,8 @@ const MenuDivider = styled("hr", {
   borderTop: "1px solid #979797",
 });
 
+const app = require("electron").remote.app;
+
 function Menu() {
   const overlay = useStore("overlay");
 
@@ -46,7 +48,14 @@ function Menu() {
         onClick={() => shell.openExternal("https://bit.ly/planetarium-discord")}
       />
       <MenuDivider />
-      <MenuItem icon={refresh} text="Restart" onClick={() => void 0} />
+      <MenuItem
+        icon={refresh}
+        text="Restart"
+        onClick={() => {
+          app.relaunch();
+          app.exit();
+        }}
+      />
       <MenuItem
         icon={settings}
         disabled={overlay.page === "settings"}
