@@ -15,6 +15,7 @@ import InfoIcon from "../../components/InfoIcon";
 import explorerLogo from "../../resources/block-explorer-logo.png";
 import patchNoteLogo from "../../resources/wrench.png";
 import NCGLogo from "../../resources/ncgLogo.png";
+import { useCollectionStatusByAgentSubscription } from "../../../generated/graphql";
 
 const transifexTags = "menu";
 
@@ -22,6 +23,14 @@ export const Layout: React.FC = observer(({ children }) => {
   const { accountStore, routerStore, standaloneStore } = useStores();
   const [awsSinkCloudwatchGuid, setAwsSinkCloudwatchGuid] = useState<string>();
   const [infoButtonState, setInfoButtonState] = useState(false);
+  const [tip, setTip] = useState<number>(0);
+  const [node, setNode] = useState<number>(0);
+
+  const { data: collectionStatus } = useCollectionStatusByAgentSubscription({
+    variables: {
+      address: accountStore.selectedAddress,
+    },
+  });
 
   useEffect(() => {
     const awsSinkGuid: string = ipcRenderer.sendSync(
@@ -29,6 +38,22 @@ export const Layout: React.FC = observer(({ children }) => {
     );
     setAwsSinkCloudwatchGuid(awsSinkGuid);
   }, []);
+
+  useEffect(() => {
+    async function main() {
+      if (!tip) {
+        const nodeInfo = await ipcRenderer.invoke("get-node-info");
+        setNode(nodeInfo.nodeNumber);
+      }
+    }
+    main();
+  }, [tip]);
+
+  useEffect(() => {
+    const index =
+      collectionStatus?.monsterCollectionStatusByAgent.tipIndex || 0;
+    setTip(index);
+  }, [collectionStatus]);
 
   function handleInfoClick() {
     const clipboardElement = (document.getElementById(
@@ -127,9 +152,15 @@ export const Layout: React.FC = observer(({ children }) => {
             </Button>
           </li>
         </ul>
-        <div className="LauncherLayoutVersion">{`v${
-          (getConfig("AppProtocolVersion") as string).split("/")[0]
-        }`}</div>
+        <div className="LauncherLayoutVersion">
+          node: {node > 0 ? node : "loading.."}
+          <br />
+          block: {tip > 0 ? `#${tip}` : "loading.."}
+          <br />
+          {`version: v${
+            (getConfig("AppProtocolVersion") as string).split("/")[0]
+          }`}
+        </div>
         <div
           id={"LauncherClientIcon"}
           className={`LauncherClientIcon ${infoButtonState ? "activate" : ""}`}

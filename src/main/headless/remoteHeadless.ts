@@ -1,10 +1,9 @@
-import { ChildProcess, execFileSync } from "child_process";
-import { ipcMain } from "electron";
+import { execFileSync } from "child_process";
 import { dirname, basename } from "path";
-import { userConfigStore, CUSTOM_SERVER, get, REMOTE_NODE } from "../../config";
+import { CUSTOM_SERVER, NodeInfo } from "../../config";
 import { retry } from "@lifeomic/attempt";
 import { FetchError, HeadlessExitedError } from "../../errors";
-import { execute, sleep } from "../../utils";
+import { sleep } from "../../utils";
 import fetch, { Response } from "electron-fetch";
 import { EventEmitter } from "ws";
 import { BlockMetadata } from "src/interfaces/block-header";
@@ -13,8 +12,7 @@ import { NODESTATUS, retryOptions } from "./headless";
 const eventEmitter = new EventEmitter();
 
 class RemoteHeadless {
-  constructor() {
-    const node = REMOTE_NODE;
+  constructor(node: NodeInfo) {
     this._url = `${node.host}/${node.rpcPort}`;
     this._running = false;
   }
