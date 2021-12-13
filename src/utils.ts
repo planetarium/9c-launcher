@@ -152,7 +152,7 @@ export async function cancellableDownload(
     let startingBytes =
       metadata && fs.existsSync(downloadPath) && fs.statSync(downloadPath).size;
     const headers =
-      metadata && startingBytes
+      metadata && metadata.etag && startingBytes
         ? {
             Range: `bytes=${startingBytes}-`,
             "If-Match": metadata.etag,
