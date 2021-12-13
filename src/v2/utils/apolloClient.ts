@@ -13,12 +13,10 @@ import { RetryLink } from "@apollo/client/link/retry";
 import { useEffect, useState } from "react";
 import { NodeInfo } from "src/config";
 
-export default function useApolloClient(): ApolloClient<
-  NormalizedCacheObject
-> | null {
-  const [apolloClient, setApolloClient] = useState<ApolloClient<
-    NormalizedCacheObject
-  > | null>(null);
+type Client = ApolloClient<NormalizedCacheObject>;
+
+export default function useApolloClient(): Client | null {
+  const [apolloClient, setApolloClient] = useState<Client | null>(null);
 
   useEffect(() => {
     (async () => {
