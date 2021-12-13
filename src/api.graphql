@@ -345,12 +345,3 @@ subscription CollectionStatusByAgent($address: Address!) {
 mutation StageTxV2($encodedTx: String!) {
   stageTxV2(payload: $encodedTx)
 }
-
-query PreloadEnded {
-  nodeStatus {
-    preloadEnded
-  }
-  rpcInformation {
-    totalCount
-  }
-}

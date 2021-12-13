@@ -1,6 +1,12 @@
 import { observable, action, computed } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { userConfigStore, get as getConfig, NodeInfo } from "../../config";
+import {
+  RPC_SERVER_HOST,
+  RPC_SERVER_PORT,
+  userConfigStore,
+  get as getConfig,
+  REMOTE_NODE,
+} from "../../config";
 
 export default class GameStore {
   @observable
@@ -12,10 +18,6 @@ export default class GameStore {
 
   private _appProtocolVersion: string;
 
-  private _host: string | undefined;
-
-  private _port: number | undefined;
-
   public constructor() {
     ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
       this._isGameStarted = false;
@@ -23,10 +25,7 @@ export default class GameStore {
     this._genesisBlockPath = getConfig("GenesisBlockPath") as string;
     this._language = getConfig("Locale") as string;
     this._appProtocolVersion = getConfig("AppProtocolVersion") as string;
-    ipcRenderer.invoke("get-node-info").then((node) => {
-      this._host = node.host;
-      this._port = node.rpcPort;
-    });
+
     userConfigStore.onDidChange(
       "Locale",
       (value) => (this._language = value ?? "en")
@@ -50,12 +49,20 @@ export default class GameStore {
     );
     const dataProviderUrl = getConfig("DataProviderUrl");
 
+    let rpcHost = RPC_SERVER_HOST;
+    let rpcPort = RPC_SERVER_PORT;
+    if (getConfig("UseRemoteHeadless")) {
+      const node = REMOTE_NODE;
+      rpcHost = node.host;
+      rpcPort = node.rpcPort;
+    }
+
     ipcRenderer.send("launch game", {
       args: [
         `--private-key=${privateKey}`,
         `--rpc-client=true`,
-        `--rpc-server-host=${this._host}`,
-        `--rpc-server-port=${this._port}`,
+        `--rpc-server-host=${rpcHost}`,
+        `--rpc-server-port=${rpcPort}`,
         `--genesis-block-path=${this._genesisBlockPath}`,
         `--language=${this._language}`,
         `--app-protocol-version=${this._appProtocolVersion}`,

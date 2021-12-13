@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getRemain } from "../../../collection/common/utils";
 import { getTotalDepositedGold } from "../../../collection/components/common/collectionSheet";
 import {
@@ -174,16 +174,6 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     setClaimLoading(true);
   };
 
-  const gold = useMemo(
-    () =>
-      collectionStatus?.monsterCollectionStatusByAgent.fungibleAssetValue
-        .quantity ??
-      collectionStatusQuery?.monsterCollectionStatus?.fungibleAssetValue
-        .quantity ??
-      0,
-    [collectionStatus, collectionStatusQuery]
-  );
-
   if (
     accountStore.isLogin &&
     nodeStatus?.nodeStatus?.preloadEnded &&
@@ -197,7 +187,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
           canClaimReward={
             mcStatus?.rewardInfos != null && mcStatus.rewardInfos.length > 0
           }
-          goldLabel={gold}
+          goldLabel={Number(mcStatus?.fungibleAssetValue.quantity)}
           collectionLabel={depositedGold}
           remainText={getRemain(remainMin)}
           isCollecting={isCollecting}

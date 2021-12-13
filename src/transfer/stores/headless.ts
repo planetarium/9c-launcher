@@ -2,7 +2,7 @@ import Decimal from "decimal.js";
 import { ipcRenderer } from "electron";
 import { observable, action, decorate } from "mobx";
 import { sleep } from "src/utils";
-import { GraphQLSDK } from "../middleware/graphql";
+import headlessGraphQLSDK, { GraphQLSDK } from "../middleware/graphql";
 import { tmpName } from "tmp-promise";
 
 export interface IHeadlessStore {
@@ -29,7 +29,6 @@ export interface IHeadlessStore {
     listener: TransactionConfirmationListener
   ) => Promise<void>;
   updateBalance: (agentAddress: string) => Promise<Decimal>;
-  updateSdk: (sdk: GraphQLSDK) => void;
 }
 
 type TxExecutionCallback = (blockIndex: number, blockHash: string) => void;
@@ -257,10 +256,5 @@ export default class HeadlessStore implements IHeadlessStore {
     const balance = await this.getBalance(agentAddress);
     this.balance = balance;
     return balance;
-  };
-
-  @action
-  updateSdk = (sdk: GraphQLSDK) => {
-    this.graphqlSdk = sdk;
   };
 }

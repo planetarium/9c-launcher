@@ -90,17 +90,6 @@ jobs:
       - store_artifacts:
           path: pack-dist
           destination: dist-artifacts
-      - run:
-          command: |
-            Invoke-WebRequest https://awscli.amazonaws.com/AWSCLIV2.msi -OutFile AWSCLIV2.msi
-            msiexec.exe /i AWSCLIV2.msi /quiet
-            [Environment]::SetEnvironmentVariable("Path", $env:PATH + ";c:\Program Files\Amazon\AWSCLIV2", "Machine")
-
-            aws configure set aws_access_key_id $env:AWS_ACCESS_KEY
-            aws configure set aws_secret_access_key $env:AWS_SECRET_KEY
-
-            aws s3 cp pack-dist/Windows.zip s3://9c-artifacts/$env:CIRCLE_SHA1
-          name: Upload to S3
   styles:
     docker:
       - image: cimg/node:lts

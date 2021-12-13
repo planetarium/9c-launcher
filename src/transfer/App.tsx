@@ -16,11 +16,10 @@ import "./App.scss";
 import montserrat from "src/renderer/styles/font";
 import SwapPageStore from "./stores/views/swap";
 import { get as getConfig } from "src/config";
+import { HEADLESS_URL } from "../config";
 import { ipcRenderer } from "electron";
-import ApolloClient from "apollo-client";
 
-// Set dummy url for initialize
-const client = new GraphQLClient("");
+const client = new GraphQLClient(`http://${HEADLESS_URL}/graphql`);
 const headlessGraphQLSDK = getSdk(client);
 
 const storeContainer: ITransferStoreContainer = {
@@ -73,18 +72,10 @@ const App: React.FC = () => {
   useEffect(() => {
     async function main() {
       if (!agentAddress) {
-        ipcRenderer.on(
-          "initialize transfer window",
-          async (_, address, headlessUrl) => {
-            console.log(
-              `initialize transfer window at Transfer App.tsx. address: ${address}, node: ${headlessUrl}`
-            );
-            const client = new GraphQLClient(`http://${headlessUrl}/graphql`);
-            const headlessGraphQLSDK = getSdk(client);
-            storeContainer.headlessStore.updateSdk(headlessGraphQLSDK);
-            setAgentAddress(address);
-          }
-        );
+        ipcRenderer.once("set ninechronicles address", (_, address) => {
+          console.log("set ninechronicles address at Transfer App.tsx");
+          setAgentAddress(address);
+        });
         return;
       }
       const success = await storeContainer.headlessStore.trySetAgentAddress(
@@ -94,7 +85,7 @@ const App: React.FC = () => {
         //FIXME: make a error page and show it.
         throw new Error("Could not set agent address");
       }
-      await storeContainer.headlessStore.updateBalance(agentAddress);
+      storeContainer.headlessStore.updateBalance(agentAddress);
     }
     main();
   }, [agentAddress]);
