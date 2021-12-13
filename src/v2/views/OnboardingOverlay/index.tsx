@@ -23,6 +23,9 @@ const Section = styled(motion.section, {
 const ButtonBar = styled(motion.div, {
   alignSelf: "center",
   marginTop: "auto",
+  [`& > ${Button}`]: {
+    margin: "0 16px",
+  },
 });
 
 const sectionVariants: Variants = {
