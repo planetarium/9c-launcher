@@ -53,6 +53,12 @@ function LoginView() {
     }
   };
 
+  useEffect(() => {
+    if (!account.selectedAddress && account.addresses.length > 0) {
+      account.setSelectedAddress(account.addresses[0]); // TODO: Persist the last chosen address
+    }
+  }, [account.addresses, account.selectedAddress]);
+
   return (
     <Layout sidebar css={LoginStyles}>
       <H1>
@@ -62,7 +68,7 @@ function LoginView() {
         <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
       </p>
       <Select
-        defaultValue={account.selectedAddress}
+        value={account.selectedAddress}
         onChange={(v) => account.setSelectedAddress(v)}
       >
         {account.addresses.map((address) => (
