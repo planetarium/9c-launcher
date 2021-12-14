@@ -46,7 +46,7 @@ function StatusBar() {
           </Button>
         )}
       </StatusMessage>
-      {!!progress && <ProgressBar percent={progress} />}
+      {!!progress && !isDone && <ProgressBar percent={progress} />}
     </StatusBarStyled>
   );
 }
