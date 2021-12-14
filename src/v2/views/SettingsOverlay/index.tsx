@@ -133,6 +133,7 @@ function SettingsOverlay() {
           </GroupTitle>
           <TextField
             label={t("Chain store directory name")}
+            readOnly
             {...register("BlockchainStoreDirName")}
           />
 
