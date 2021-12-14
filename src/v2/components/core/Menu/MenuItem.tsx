@@ -6,6 +6,7 @@ const MenuItemContainer = styled("div", {
   display: "flex",
   alignItems: "center",
   padding: "10px",
+  pointer: "cursor",
   "& img": {
     paddingRight: "1rem",
   },

@@ -8,7 +8,6 @@ import settings from "../../../resources/icons/settings.png";
 import refresh from "../../../resources/icons/refresh.png";
 import discord from "../../../resources/icons/discord.png";
 import logo from "../../../resources/icons/9c.png";
-import shop from "../../../resources/icons/shop.png";
 import staking from "../../../resources/icons/staking.png";
 import { styled } from "src/v2/stitches.config";
 
@@ -36,7 +35,6 @@ function Menu() {
   return (
     <MenuContainer>
       <MenuItem icon={staking} text="Staking" onClick={() => void 0} />
-      <MenuItem icon={shop} text="Shop" onClick={() => void 0} />
       <MenuItem
         icon={logo}
         text="Explorer"
