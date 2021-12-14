@@ -53,7 +53,6 @@ import {
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel, Mixpanel } from "mixpanel";
-import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
 import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
 import { Address, PrivateKey } from "./headless/key-store";
@@ -94,7 +93,6 @@ let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let standalone: Headless = new Headless(standaloneExecutablePath);
-let ip: string | null = null;
 let relaunched: boolean = false;
 
 let initializeHeadlessCts: {
@@ -106,8 +104,6 @@ const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
 let remoteNode: NodeInfo;
-
-ipv4().then((value) => (ip = value));
 
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: NineChroniclesMixpanel | undefined =
