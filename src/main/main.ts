@@ -471,6 +471,10 @@ function initializeIpc() {
     );
   });
 
+  ipcMain.handle("generate-private-key", async (event) => {
+    return standalone.keyStore.generateRawKey();
+  });
+
   ipcMain.on(
     "import-private-key",
     async (event, privateKey: PrivateKey, passphrase: string) => {

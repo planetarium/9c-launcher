@@ -10,6 +10,7 @@ import { styled } from "../stitches.config";
 interface Props {
   onSubmit: (data: FormData) => void;
   useActivitionKey?: boolean;
+  address?: string;
 }
 
 export interface FormData {
@@ -29,6 +30,7 @@ const Form = styled("form", {
 export default function RetypePasswordForm({
   onSubmit,
   useActivitionKey,
+  address,
 }: Props) {
   const {
     register,
@@ -43,51 +45,48 @@ export default function RetypePasswordForm({
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <AnimateSharedLayout>
+      {address && <TextField label="ID" readOnly value={address} />}
+      <TextField
+        type="password"
+        label="Password"
+        message={errors.password?.type === "password" ? "Too weak" : "Strong"}
+        invalid={errors.password && errors.password?.type !== "confirm"}
+        {...register("password", {
+          required: true,
+          validate: {
+            password: passwordStrengthValidator,
+            confirm: (v) => v === confirmRef.current?.value,
+          },
+        })}
+      />
+      <TextField
+        type="password"
+        label="Verify Password"
+        ref={confirmRef}
+        message={
+          errors.password?.type === "confirm"
+            ? "Passwords doesn't match"
+            : "Correct"
+        }
+        invalid={errors.password?.type === "confirm"}
+        onChange={() => trigger("password")}
+      />
+      {useActivitionKey && (
         <TextField
           motion
-          type="password"
-          label="Password"
-          message={errors.password?.type === "password" ? "Too weak" : "Strong"}
-          invalid={errors.password?.type !== "confirm"}
-          {...register("password", {
+          type="text"
+          label="Invitation Code"
+          message={errors.activationKey ? "Invalid code" : "Correct"}
+          invalid={errors.activationKey != null}
+          {...register("activationKey", {
             required: true,
-            validate: {
-              password: passwordStrengthValidator,
-              confirm: (v) => v === confirmRef.current?.value,
-            },
+            pattern: /^[0-9a-f]+\/[0-9a-f]{40}$/,
           })}
         />
-        <TextField
-          motion
-          type="password"
-          label="Verify Password"
-          ref={confirmRef}
-          message={
-            errors.password?.type === "confirm"
-              ? "Passwords doesn't match"
-              : "Correct"
-          }
-          invalid={errors.password?.type === "confirm"}
-          onChange={() => trigger("password")}
-        />
-        {useActivitionKey && (
-          <TextField
-            motion
-            type="text"
-            label="Invitation Code"
-            message={errors.activationKey ? "Invalid code" : "Correct"}
-            invalid={errors.activationKey != null}
-            {...register("activationKey", {
-              required: true,
-              pattern: /^[0-9a-f]+\/[0-9a-f]{40}$/,
-            })}
-          />
-        )}
-        <Button layout variant="primary" centered css={{ width: 200 }}>
-          NEXT
-        </Button>
-      </AnimateSharedLayout>
+      )}
+      <Button layout variant="primary" centered css={{ width: 200 }}>
+        NEXT
+      </Button>
     </Form>
   );
 }

@@ -12,11 +12,24 @@ const parseProtectedPrivateKeyLine = (line: string): ProtectedPrivateKey => {
   };
 };
 
+function parseRawPrivateKeyLine(line: string): RawPrivateKey {
+  const splited = line.trimRight().split(" ");
+  if (splited.length !== 2) {
+    throw new RangeError();
+  }
+
+  return {
+    privateKey: splited[0],
+    address: splited[1],
+  };
+}
+
 export type KeyId = string;
 export type Address = string;
 export type PrivateKey = string;
 
 export type ProtectedPrivateKey = { keyId: KeyId; address: Address };
+export type RawPrivateKey = { privateKey: string; address: Address };
 
 export class KeyStore extends StandaloneSubcommand {
   list(): ProtectedPrivateKey[] {
@@ -48,6 +61,10 @@ export class KeyStore extends StandaloneSubcommand {
     return parseProtectedPrivateKeyLine(
       this.execSync("key", "create", "--passphrase", passphrase).trimRight()
     );
+  }
+
+  generateRawKey(): RawPrivateKey {
+    return parseRawPrivateKeyLine(this.execSync("key", "generate").trimRight());
   }
 
   importPrivateKey(privateKey: PrivateKey, passphrase: string): void {

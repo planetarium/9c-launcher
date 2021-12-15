@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react";
 import Layout from "src/v2/components/core/Layout";
 import H1 from "src/v2/components/ui/H1";
@@ -7,7 +7,7 @@ import RetypePasswordForm, {
 } from "src/v2/components/RetypePasswordForm";
 import { useStore } from "src/v2/utils/useStore";
 import { ipcRenderer } from "electron";
-import { ProtectedPrivateKey } from "src/main/headless/key-store";
+import type { RawPrivateKey } from "src/main/headless/key-store";
 import { useHistory } from "react-router";
 import { CSS } from "src/v2/stitches.config";
 
@@ -22,19 +22,28 @@ const registerStyles: CSS = {
 function RegisterView() {
   const { account, overlay } = useStore();
   const history = useHistory();
+  const [key, setKey] = useState<RawPrivateKey | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
+  useEffect(
+    () =>
+      void (async () => {
+        if (key) return;
+        setKey(await ipcRenderer.invoke("generate-private-key"));
+      })().catch(setError),
+    [key]
+  );
+
   const onSubmit = ({ password, activationKey }: FormData) => {
+    if (!key) return;
+
     ipcRenderer.send("mixpanel-track-event", "Launcher/CreatePrivateKey");
-    const { address }: ProtectedPrivateKey = ipcRenderer.sendSync(
-      "create-private-key",
-      password
-    );
+    ipcRenderer.sendSync("import-private-key", key.privateKey, password);
     const [privateKey, error]:
       | [string, undefined]
       | [undefined, Error] = ipcRenderer.sendSync(
       "unprotect-private-key",
-      address,
+      key.address,
       password
     );
     if (error !== undefined) {
@@ -43,8 +52,8 @@ function RegisterView() {
     }
 
     account.setPrivateKey(privateKey!);
-    account.addAddress(address);
-    account.setSelectedAddress(address);
+    account.addAddress(key.address);
+    account.setSelectedAddress(key.address);
     account.setLoginStatus(true);
     account.setActivationKey(activationKey!);
     history.push("/lobby");
@@ -55,7 +64,11 @@ function RegisterView() {
     <Layout sidebar css={registerStyles}>
       <H1>Create your account</H1>
       <p style={{ marginBlockEnd: 54 }}>Please set your password only.</p>
-      <RetypePasswordForm onSubmit={onSubmit} useActivitionKey />
+      <RetypePasswordForm
+        address={key?.address}
+        onSubmit={onSubmit}
+        useActivitionKey
+      />
       {error !== null && (
         <p>{`Failed to unprotect private key. ${error.name}: ${error.message}`}</p>
       )}
