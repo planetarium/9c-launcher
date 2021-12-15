@@ -2,13 +2,14 @@ import React from "react";
 import { observer } from "mobx-react";
 import MenuItem from "./MenuItem";
 import { useStore } from "../../../utils/useStore";
-import { shell } from "electron";
+import { ipcRenderer, shell } from "electron";
 
 import settings from "../../../resources/icons/settings.png";
 import refresh from "../../../resources/icons/refresh.png";
 import discord from "../../../resources/icons/discord.png";
 import logo from "../../../resources/icons/9c.png";
 import staking from "../../../resources/icons/staking.png";
+import ncgLogo from "../../../resources/icons/ncgLogo.png";
 import { styled } from "src/v2/stitches.config";
 
 const MenuContainer = styled("div", {
@@ -31,10 +32,24 @@ const app = require("electron").remote.app;
 
 function Menu() {
   const overlay = useStore("overlay");
+  const account = useStore("account");
 
   return (
     <MenuContainer>
-      <MenuItem icon={staking} text="Staking" onClick={() => void 0} />
+      <MenuItem
+        icon={staking}
+        text="Staking"
+        onClick={() =>
+          ipcRenderer.invoke("open collection page", account.selectedAddress)
+        }
+      />
+      <MenuItem
+        icon={ncgLogo}
+        text="Send NCG"
+        onClick={() =>
+          ipcRenderer.invoke("open transfer page", account.selectedAddress)
+        }
+      />
       <MenuItem
         icon={logo}
         text="Explorer"
