@@ -58,6 +58,7 @@ import { IConfig } from "src/interfaces/config";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   MOBX_DEVTOOLS,
+  APOLLO_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
 import bytes from "bytes";
 import createTransferWindow from "../transfer/window";
@@ -207,7 +208,11 @@ async function initializeApp() {
   console.log("initializeApp");
   app.on("ready", async () => {
     if (isDev)
-      await installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
+      await installExtension([
+        REACT_DEVELOPER_TOOLS,
+        MOBX_DEVTOOLS,
+        APOLLO_DEVELOPER_TOOLS,
+      ])
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
