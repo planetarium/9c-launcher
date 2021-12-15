@@ -14,6 +14,7 @@ const Button = styled(motion.button, {
   border: "none",
   color: "White",
   fontWeight: "bold",
+  cursor: "pointer",
   variants: {
     variant: {
       primary: {

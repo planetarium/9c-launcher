@@ -3,6 +3,7 @@ import { styled } from "src/v2/stitches.config";
 
 export const Link = styled(ReactRouterLink, {
   color: "#888888",
+  cursor: "pointer",
   variants: {
     centered: {
       true: {
