@@ -213,7 +213,6 @@ async function initializeApp() {
         type: "error",
       });
 
-      win.webContents.send("go to error page", "initialize-node-failed");
       app.exit();
     }
     if (useRemoteHeadless) {
