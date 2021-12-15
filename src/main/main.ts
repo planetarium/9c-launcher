@@ -208,6 +208,7 @@ async function initializeApp() {
     try {
       remoteNode = await initializeNode();
     } catch (e) {
+      console.error(e);
       await dialog.showMessageBox(win!, {
         message: "Failed to connect remote node. please restart launcher.",
         type: "error",
