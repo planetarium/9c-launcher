@@ -17095,6 +17095,11 @@ remedial@^1.0.7:
   resolved "https://registry.npmjs.org/remedial/-/remedial-1.0.8.tgz"
   integrity sha512-/62tYiOe6DzS5BqVsNpH/nkGlX45C/Sp6V+NtiN6JQNS1Viay7cWkazmRkrQrdFj2eshDe96SIQNIoMxqhzBOg==
 
+remove-focus-outline@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/remove-focus-outline/-/remove-focus-outline-1.2.1.tgz#777ab2e74b5743c75bfd94eb9da3fbe941ebdb76"
+  integrity sha512-M9wWRJiiN+/3Sv+tO7YGiE3q1XhM//WbMhJOMMxm1Ee2wj2EUs1GUcFyR/8tDB1n1DY6mYSqk/Gi0UgvzVDwfQ==
+
 remove-trailing-separator@^1.0.1:
   version "1.1.0"
   resolved "https://registry.npmjs.org/remove-trailing-separator/-/remove-trailing-separator-1.1.0.tgz"
