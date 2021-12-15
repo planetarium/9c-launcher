@@ -25,11 +25,11 @@ export async function createWindow(): Promise<BrowserWindow> {
     _,
     options
   ) {
-    if (url.startsWith("https://stately.ai/viz?inspect"))
-      (options.frame = true),
-        (options.resizable = true),
-        (options.webPreferences!.nodeIntegration = false);
-    else event.preventDefault(), shell.openExternal(url);
+    if (url.startsWith("https://stately.ai/viz?inspect")) {
+      options.frame = true;
+      options.resizable = true;
+      options.webPreferences!.nodeIntegration = false;
+    } else event.preventDefault(), shell.openExternal(url);
   });
 
   if (isDev) {
