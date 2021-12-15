@@ -205,7 +205,17 @@ async function initializeApp() {
     if (app.commandLine.hasSwitch("v2")) win = await createV2Window();
     else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
-    remoteNode = await initializeNode();
+    try {
+      remoteNode = await initializeNode();
+    } catch (e) {
+      await dialog.showMessageBox(win!, {
+        message: "Failed to connect remote node. please restart launcher.",
+        type: "error",
+      });
+
+      win.webContents.send("go to error page", "initialize-node-failed");
+      app.exit();
+    }
     if (useRemoteHeadless) {
       console.log("main initializeApp call initializeRemoteHeadless");
       initializeRemoteHeadless();
