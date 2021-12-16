@@ -83,6 +83,7 @@ function LoginView() {
         value={password}
         invalid={invalid}
         onChange={(e) => setPassword(e.target.value)}
+        autoFocus
       />
       <Button
         variant="primary"
