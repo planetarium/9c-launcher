@@ -39,6 +39,10 @@ const Input = styled("input", {
   marginTop: "1.1rem",
   marginLeft: ".5rem",
   height: "2.5rem",
+  "&:focus": {
+    // This is done because the focus state can be visible in this specific component. It is generally discouraged: https://www.a11yproject.com/posts/never-remove-css-outlines/
+    outline: "none",
+  },
 });
 
 const Label = styled("label", {
