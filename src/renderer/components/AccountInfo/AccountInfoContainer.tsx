@@ -16,11 +16,13 @@ import {
   useCollectionStatusByAgentSubscription,
   MonsterCollectionRewardInfoType,
   useGetNcgBalanceQuery,
+  useBalanceByAgentSubscription,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import ClaimCollectionRewardContainer from "../ClaimCollectionRewardDialog/ClaimCollectionRewardContainer";
 import RewardButton from "../RewardButton/RewardButton";
 import AccountInfo from "./AccountInfo";
+import { variables } from "electron-log";
 
 export type Props = {
   onReward: (address: string) => void;
@@ -73,6 +75,11 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     },
   });
   const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
+    variables: {
+      address: accountStore.selectedAddress,
+    },
+  });
+  const { data: balance } = useBalanceByAgentSubscription({
     variables: {
       address: accountStore.selectedAddress,
     },
@@ -181,14 +188,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
   };
 
   const gold = useMemo(
-    () =>
-      collectionStatus?.monsterCollectionStatusByAgent.fungibleAssetValue
-        .quantity ??
-      collectionStatusQuery?.monsterCollectionStatus?.fungibleAssetValue
-        .quantity ??
-      Number(ncgBalanceQuery?.goldBalance) ??
-      0,
-    [collectionStatus, collectionStatusQuery, ncgBalanceQuery]
+    () => Number(balance?.balanceByAgent ?? ncgBalanceQuery?.goldBalance) ?? 0,
+    [balance, ncgBalanceQuery]
   );
 
   if (
