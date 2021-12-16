@@ -15,6 +15,7 @@ import {
   useCollectionStateByAgentSubscription,
   useCollectionStatusByAgentSubscription,
   MonsterCollectionRewardInfoType,
+  useGetNcgBalanceQuery,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import ClaimCollectionRewardContainer from "../ClaimCollectionRewardDialog/ClaimCollectionRewardContainer";
@@ -71,6 +72,11 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
       address: accountStore.selectedAddress,
     },
   });
+  const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
+    variables: {
+      address: accountStore.selectedAddress,
+    },
+  });
 
   useEffect(() => {
     setCurrentReward(new Map<RewardCategory, number>());
@@ -94,8 +100,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     }
 
     sheetRefetch().then((query) => {
-      const sheet =
-        query.data.stateQuery.monsterCollectionSheet?.orderedList?.map((x) => {
+      const sheet = query.data.stateQuery.monsterCollectionSheet?.orderedList?.map(
+        (x) => {
           return {
             level: x?.level,
             requiredGold: x?.requiredGold,
@@ -106,7 +112,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
               } as Reward;
             }),
           } as CollectionSheetItem;
-        });
+        }
+      );
       if (sheet == null) return;
       setDepositeGold(getTotalDepositedGold(sheet, collectionLevel));
     });
@@ -180,6 +187,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
         .quantity ??
       collectionStatusQuery?.monsterCollectionStatus?.fungibleAssetValue
         .quantity ??
+      Number(ncgBalanceQuery?.goldBalance) ??
       0,
     [collectionStatus, collectionStatusQuery]
   );
