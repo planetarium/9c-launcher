@@ -189,7 +189,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
         .quantity ??
       Number(ncgBalanceQuery?.goldBalance) ??
       0,
-    [collectionStatus, collectionStatusQuery]
+    [collectionStatus, collectionStatusQuery, ncgBalanceQuery]
   );
 
   if (
