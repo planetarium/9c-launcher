@@ -8,6 +8,7 @@ import type * as Stitches from "@stitches/react";
 const Button = styled(motion.button, {
   backgroundColor: "#4f4f4f",
   height: 72,
+  minWidth: 200,
   verticalAlign: "bottom",
   padding: "0 1em",
   fontSize: 32,
