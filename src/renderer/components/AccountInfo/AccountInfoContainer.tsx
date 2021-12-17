@@ -57,32 +57,38 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     variables: {
       address: accountStore.selectedAddress,
     },
+    skip: !accountStore.isLogin,
   });
   const { data: collectionState } = useCollectionStateByAgentSubscription({
     variables: {
       address: accountStore.selectedAddress,
     },
+    skip: !accountStore.isLogin,
   });
   const { data: nodeStatus } = useNodeStatusSubscriptionSubscription();
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: {
       agentAddress: accountStore.selectedAddress,
     },
+    skip: !accountStore.isLogin,
   });
   const { data: collectionStatusQuery } = useCollectionStatusQueryQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
+    skip: !accountStore.isLogin,
   });
   const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
+    skip: !accountStore.isLogin,
   });
   const { data: balance } = useBalanceByAgentSubscription({
     variables: {
       address: accountStore.selectedAddress,
     },
+    skip: !accountStore.isLogin,
   });
 
   useEffect(() => {
