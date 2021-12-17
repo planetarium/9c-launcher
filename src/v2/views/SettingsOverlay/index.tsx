@@ -16,6 +16,7 @@ import FolderChooser from "./FolderChooser";
 import { t } from "@transifex/native";
 import Button from "src/v2/components/ui/Button";
 import OverlayBase from "src/v2/components/core/OverlayBase";
+import Checkbox from "src/v2/components/ui/Checkbox";
 
 const Form = styled("form", {
   display: "flex",
@@ -134,8 +135,14 @@ function SettingsOverlay({ onClose, isOpen }: SettingsOverlayProps) {
           />
 
           <GroupTitle>
-            <T _str="" _tags={transifexTags} />
+            <T _str="Send Information" _tags={transifexTags} />
           </GroupTitle>
+          <Checkbox {...register("Mixpanel")}>
+            <T _str="Send anonymous usage information" _tags={transifexTags} />
+          </Checkbox>
+          <Checkbox {...register("Sentry")}>
+            <T _str="Report errors and bugs" _tags={transifexTags} />
+          </Checkbox>
         </FormSection>
       </Form>
       <Button
