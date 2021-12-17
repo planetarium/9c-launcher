@@ -86,9 +86,17 @@ const LoginView = observer(
         accountStore.selectedAddress,
         event.target.password.value
       );
-      if (error !== undefined) {
+      if (
+        error !== undefined &&
+        error.toString().includes("The passphrase is wrong.")
+      ) {
         setInvalid(true);
         ipcRenderer.send("mixpanel-track-event", "Launcher/LoginFailed");
+      } else if (error !== undefined) {
+        // Unexpected Errors.
+        console.error(error);
+        standaloneStore.setReady(false);
+        routerStore.push("/error/reinstall");
       }
 
       if (
