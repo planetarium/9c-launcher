@@ -33,14 +33,13 @@ function MissingActivationView() {
     formState: { errors },
   } = useForm();
   const history = useHistory();
-  const { account, overlay } = useStore();
+  const account = useStore("account");
 
   const activated = useActivation(account.activationKey);
 
   const onSubmit = ({ activationKey }: { activationKey: string }) => {
     account.setActivationKey(activationKey!);
-    history.push("/lobby");
-    overlay.open("onboarding");
+    history.push("/lobby", { first: true });
   };
 
   useEffect(() => void (activated && history.push("/lobby")), [

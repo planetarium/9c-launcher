@@ -66,21 +66,6 @@ function Layout({
   sidebar,
   css,
 }: React.PropsWithChildren<LayoutProps>) {
-  const overlay = useStore("overlay");
-
-  const page =
-    overlay.page &&
-    {
-      settings: <SettingsOverlay />,
-      staking: <StakingOverlay />,
-      onboarding: <OnboardingOverlay />,
-    }[overlay.page];
-
-  const onOverlayOutsideClicked = (ev: React.MouseEvent<HTMLDivElement>) => {
-    if (ev.target !== ev.currentTarget) return;
-    overlay.close();
-  };
-
   return (
     <Background>
       {sidebar ? <Sidebar css={css}>{children}</Sidebar> : <UserInfo />}
@@ -89,18 +74,6 @@ function Layout({
         <Menu />
       </BottomControls>
       <InfoText />
-      <AnimatePresence>
-        {overlay.isOpen && (
-          <OverlayContainer
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onOverlayOutsideClicked}
-          >
-            {page}
-          </OverlayContainer>
-        )}
-      </AnimatePresence>
       <WindowControls />
     </Background>
   );

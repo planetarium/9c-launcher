@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react";
 import MenuItem from "./MenuItem";
 import { useStore } from "../../../utils/useStore";
 import { ipcRenderer, shell } from "electron";
+import { styled } from "src/v2/stitches.config";
 
 import settings from "../../../resources/icons/settings.png";
 import refresh from "../../../resources/icons/refresh.png";
@@ -10,7 +11,8 @@ import discord from "../../../resources/icons/discord.png";
 import logo from "../../../resources/icons/9c.png";
 import staking from "../../../resources/icons/staking.png";
 import ncgLogo from "../../../resources/icons/ncgLogo.png";
-import { styled } from "src/v2/stitches.config";
+import SettingsOverlay from "src/v2/views/SettingsOverlay";
+import { AnimatePresence } from "framer-motion";
 
 const MenuContainer = styled("div", {
   opacity: 0.9,
@@ -31,8 +33,8 @@ const MenuDivider = styled("hr", {
 const app = require("electron").remote.app;
 
 function Menu() {
-  const overlay = useStore("overlay");
   const account = useStore("account");
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <MenuContainer>
@@ -71,9 +73,13 @@ function Menu() {
       />
       <MenuItem
         icon={settings}
-        disabled={overlay.page === "settings"}
+        disabled={isSettingsOpen}
         text="Settings"
-        onClick={() => overlay.open("settings")}
+        onClick={() => setIsSettingsOpen(true)}
+      />
+      <SettingsOverlay
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </MenuContainer>
   );

@@ -20,7 +20,7 @@ const registerStyles: CSS = {
 };
 
 function RegisterView() {
-  const { account, overlay } = useStore();
+  const account = useStore("account");
   const history = useHistory();
   const [key, setKey] = useState<RawPrivateKey | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -56,8 +56,7 @@ function RegisterView() {
     account.setSelectedAddress(key.address);
     account.setLoginStatus(true);
     account.setActivationKey(activationKey!);
-    history.push("/lobby");
-    overlay.open("onboarding");
+    history.push("/lobby", { first: true });
   };
 
   return (

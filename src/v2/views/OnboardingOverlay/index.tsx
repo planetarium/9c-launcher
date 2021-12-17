@@ -5,15 +5,7 @@ import { styled } from "src/v2/stitches.config";
 import H1 from "src/v2/components/ui/H1";
 import Button from "src/v2/components/ui/Button";
 import { useStore } from "src/v2/utils/useStore";
-
-const Overlay = styled(motion.div, {
-  backgroundColor: "#1d1e1ff2",
-  padding: 36,
-  margin: 88,
-  boxSizing: "border-box",
-  width: "100%",
-  height: 600,
-});
+import OverlayBase from "src/v2/components/core/OverlayBase";
 
 const Section = styled(motion.section, {
   display: "flex",
@@ -80,23 +72,22 @@ function IntroductionSection({ next }: SectionProps) {
   );
 }
 
-function OnboardingOverlay() {
-  const overlay = useStore("overlay");
+interface OnboardingOverlayProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function OnboardingOverlay({ onClose, isOpen }: OnboardingOverlayProps) {
   const [section, setState] = React.useState<"mining" | "introduce">("mining");
-  const next = () =>
-    section === "mining" ? setState("introduce") : overlay.close();
+  const next = () => (section === "mining" ? setState("introduce") : onClose());
 
   return (
-    <Overlay
-      initial={{ translateY: 150 }}
-      animate={{ translateY: 0 }}
-      exit={{ translateY: "50vh" }}
-    >
+    <OverlayBase isOpen={isOpen} onDismiss={onClose}>
       <AnimatePresence exitBeforeEnter>
         {section === "mining" && <MiningSection next={next} />}
         {section === "introduce" && <IntroductionSection next={next} />}
       </AnimatePresence>
-    </Overlay>
+    </OverlayBase>
   );
 }
 

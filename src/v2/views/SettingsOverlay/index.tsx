@@ -15,14 +15,7 @@ import { Select, SelectOption } from "src/v2/components/ui/Select";
 import FolderChooser from "./FolderChooser";
 import { t } from "@transifex/native";
 import Button from "src/v2/components/ui/Button";
-
-const OverlayBase = styled(motion.div, {
-  backgroundColor: "#1d1e1ff2",
-  width: 1124,
-  height: 582,
-  padding: 36,
-  boxSizing: "border-box",
-});
+import OverlayBase from "src/v2/components/core/OverlayBase";
 
 const Form = styled("form", {
   display: "flex",
@@ -48,7 +41,12 @@ type Languages = Array<Record<"code" | "name" | "localized_name", string>>;
 const transifexTags = "v2/configuration";
 const app = require("electron").remote.app;
 
-function SettingsOverlay() {
+interface SettingsOverlayProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function SettingsOverlay({ onClose, isOpen }: SettingsOverlayProps) {
   const {
     register,
     control,
@@ -61,7 +59,6 @@ function SettingsOverlay() {
     },
   });
   const languages: Languages = useLanguages();
-  const overlay = useStore("overlay");
 
   const onSubmit = useCallback(
     (d: IConfig) => {
@@ -78,7 +75,6 @@ function SettingsOverlay() {
 
   const onError = useCallback((errors: FieldErrors<IConfig>) => {
     if (Object.keys(errors).length === 0) return;
-    overlay.open("settings");
   }, []);
 
   useEffect(
@@ -87,7 +83,7 @@ function SettingsOverlay() {
   );
 
   return (
-    <OverlayBase initial={{ translateY: 150 }} animate={{ translateY: 0 }}>
+    <OverlayBase isOpen={isOpen} onDismiss={onClose}>
       <H1 css={{ marginTop: 0 }}>
         <T _str="Settings" _tags={transifexTags} />
       </H1>
