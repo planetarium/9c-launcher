@@ -2,13 +2,19 @@ import React from "react";
 import { styled } from "src/v2/stitches.config";
 import type * as Stitches from "@stitches/react";
 
-const MenuItemContainer = styled("div", {
+const MenuItemContainer = styled("button", {
+  all: "unset",
   display: "flex",
   alignItems: "center",
   padding: "10px",
+  appearence: "none",
   cursor: "pointer",
   "& img": {
     paddingRight: "1rem",
+  },
+  "&:hover, &:focus": {
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    outline: "none",
   },
   variants: {
     disabled: {
