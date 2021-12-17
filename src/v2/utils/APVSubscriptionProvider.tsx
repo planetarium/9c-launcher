@@ -21,7 +21,6 @@ export default function APVSubscriptionProvider({
     if (loading) return;
     if (data?.differentAppProtocolVersionEncounter) {
       ipcRenderer.send("encounter different version", data);
-      send("DOWNLOAD");
     }
   }, [data, loading]);
 
@@ -41,6 +40,7 @@ export default function APVSubscriptionProvider({
     );
 
     // State transitions
+    ipcRenderer.on("update download started", () => send("DOWNLOAD"));
     ipcRenderer.on("update download complete", () => send("EXTRACT"));
     ipcRenderer.on("update extract complete", () => send("COPY"));
     ipcRenderer.on("update copying complete", () => send("DONE"));
