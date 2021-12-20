@@ -1,6 +1,9 @@
 import React from "react";
 import { styled } from "src/v2/stitches.config";
 
+import MinimizeIcon from "@material-ui/icons/Minimize";
+import CloseIcon from "@material-ui/icons/Close";
+
 const currentWindow = require("electron").remote.getCurrentWindow();
 
 const WindowControlsStyled = styled("div", {
@@ -25,10 +28,10 @@ export default function WindowControls() {
   return (
     <WindowControlsStyled>
       <WindowControlButton onClick={() => currentWindow.minimize()}>
-        _
+        <MinimizeIcon fontSize="small" />
       </WindowControlButton>
       <WindowControlButton onClick={() => currentWindow.close()}>
-        ×
+        <CloseIcon fontSize="small" />
       </WindowControlButton>
     </WindowControlsStyled>
   );
