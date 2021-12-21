@@ -217,7 +217,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
   let nodeList: NodeInfo[] = [];
   if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
-    await Promise.all(
+    await Promise.any(
       remoteNodeList.map(async (v, index) => {
         const rawInfos = v.split(",");
         if (rawInfos.length != 3) {
@@ -337,8 +337,7 @@ export async function initializeNode(): Promise<NodeInfo> {
     return a.clientCount - b.clientCount;
   });
   console.log("config initialize complete");
-  const maxLength = Math.min(3, nodeList.length);
-  const nodeInfo = nodeList[Math.floor(Math.random() * maxLength)];
+  const nodeInfo = nodeList[0];
   console.log(
     `selected node: ${nodeInfo.HeadlessUrl()}, clients: ${nodeInfo.clientCount}`
   );
