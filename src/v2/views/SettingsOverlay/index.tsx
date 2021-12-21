@@ -8,6 +8,9 @@ import { configStore, userConfigStore } from "src/config";
 import type { IConfig } from "src/interfaces/config";
 import { useStore } from "src/v2/utils/useStore";
 import { T } from "src/renderer/i18n";
+import path from "path";
+import log from "electron-log";
+import { shell, remote } from "electron";
 
 import H1 from "src/v2/components/ui/H1";
 import TextField from "src/v2/components/ui/TextField";
@@ -17,6 +20,8 @@ import { t } from "@transifex/native";
 import Button from "src/v2/components/ui/Button";
 import OverlayBase from "src/v2/components/core/OverlayBase";
 import Checkbox from "src/v2/components/ui/Checkbox";
+import AdvancedAction from "./AdvancedAction";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const Form = styled("form", {
   display: "flex",
@@ -45,6 +50,22 @@ const app = require("electron").remote.app;
 interface SettingsOverlayProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+function handleOpenKeyStorePath() {
+  const openpath = path.join(
+    remote.app.getPath("appData"),
+    "planetarium",
+    "keystore"
+  );
+  console.log(`Open keystore folder. ${openpath}`);
+  shell.showItemInFolder(openpath);
+}
+
+function handleOpenLogPath() {
+  const openpath = log.transports.file.getFile().path;
+  console.log(`Open log folder. ${openpath}`);
+  shell.showItemInFolder(openpath);
 }
 
 function SettingsOverlay({ onClose, isOpen }: SettingsOverlayProps) {
@@ -111,6 +132,24 @@ function SettingsOverlay({ onClose, isOpen }: SettingsOverlayProps) {
                 ))}
               </Select>
             )}
+          />
+          <GroupTitle>
+            <T _str="Advanced" _tags={transifexTags} />
+          </GroupTitle>
+          <AdvancedAction
+            icon={<DeleteIcon />}
+            onClick={onClose}
+            text={t("Clear Cache")}
+          />
+          <AdvancedAction
+            link
+            onClick={handleOpenLogPath}
+            text={t("Open Log Folder")}
+          />
+          <AdvancedAction
+            link
+            onClick={handleOpenKeyStorePath}
+            text={t("Open keystore Folder")}
           />
         </FormSection>
         <FormSection>
