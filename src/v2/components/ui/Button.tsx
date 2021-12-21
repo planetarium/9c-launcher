@@ -29,6 +29,12 @@ const Button = styled(motion.button, {
         marginRight: "auto",
       },
     },
+    disabled: {
+      true: {
+        backgroundColor: "#4f4f4f",
+        cursor: "not-allowed",
+      },
+    },
   },
 });
 
