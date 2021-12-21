@@ -1,6 +1,10 @@
 .spinner {
-  flex: 1;
+  margin: auto;
+  margin-bottom: 60px;
+}
+
+.spinner-root {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  height: 100%;
 }

@@ -1,17 +1,17 @@
 import React from "react";
 import { observer } from "mobx-react";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import "./RPCSpinner.scss";
 import { shell } from "electron";
-import useStores from "src/hooks/useStores";
 import Button from "@material-ui/core/Button";
 import { T } from "src/renderer/i18n";
+import Typography from "@material-ui/core/Typography";
+import errorViewStyle from "src/renderer/views/error/ErrorView.style";
+import { CircularProgress } from "@material-ui/core";
 
 import explorerLogo from "../../resources/block-explorer-logo.png";
 import patchNoteLogo from "../../resources/wrench.png";
 import DiscordIcon from "../DiscordIcon";
-import Typography from "@material-ui/core/Typography";
-import errorViewStyle from "src/renderer/views/error/ErrorView.style";
+
+import "./RPCSpinner.scss";
 
 // As this component is expected to be load without Apollo Client,
 // you MUST NOT use any Apollo related code here.
@@ -24,7 +24,7 @@ function RPCSpinner() {
   return (
     <>
       <main>
-        <div className={classes.root}>
+        <div className={`${classes.root} spinner-root`}>
           <Typography variant="h1" gutterBottom className={classes.title}>
             <T _str="Searching available RPC nodes..." _tags={transifexTags} />
           </Typography>
@@ -34,10 +34,10 @@ function RPCSpinner() {
               _tags={transifexTags}
             />
           </Typography>
+          <CircularProgress className="spinner" />
         </div>
       </main>
-      <div className="hero spinner">
-        <CircularProgress />
+      <div className="hero">
         <ul className={"LauncherClientOption"}>
           <li>
             <Button
