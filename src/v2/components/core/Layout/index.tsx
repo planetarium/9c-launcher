@@ -1,18 +1,14 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { observer } from "mobx-react";
-import { useStore } from "../../../utils/useStore";
 
 import WindowControls from "./WindowControls";
 import Menu from "../Menu";
 import StatusBar from "./StatusBar";
 
-import SettingsOverlay from "../../../views/SettingsOverlay";
-import StakingOverlay from "../../../views/StakingOverlay";
 import InfoText from "./InfoText";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { CSS, styled } from "src/v2/stitches.config";
 import background from "../../../resources/launcher-png.png";
-import OnboardingOverlay from "src/v2/views/OnboardingOverlay";
 import UserInfo from "./UserInfo";
 
 interface LayoutProps {
