@@ -32,6 +32,10 @@ const Sidebar = styled("main", {
   backgroundColor: "$gray",
   opacity: 0.95,
   dragable: false,
+  boxSizing: "border-box",
+  padding: 52,
+  "& > * + *": { marginTop: 16 },
+  paddingBottom: 104,
 });
 
 const BottomControls = styled("aside", {

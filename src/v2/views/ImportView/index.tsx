@@ -12,14 +12,6 @@ import { styled } from "src/v2/stitches.config";
 
 const transifexTags = "v2/import-view";
 
-const importViewStyles = {
-  boxSizing: "border-box",
-  padding: 52,
-  "& > * + *": { marginTop: 32 },
-  height: "100%",
-  marginBottom: 62,
-};
-
 const ButtonBar = styled("div", {
   display: "flex",
   "& > * + *": { marginLeft: 16 },
@@ -28,7 +20,7 @@ const ButtonBar = styled("div", {
 
 function ImportView() {
   return (
-    <Layout sidebar css={importViewStyles}>
+    <Layout sidebar>
       <H1>
         <T _str="Register Your Key" _tags={transifexTags} />
       </H1>

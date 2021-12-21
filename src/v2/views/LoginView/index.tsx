@@ -14,15 +14,8 @@ import { Link } from "src/v2/components/ui/Link";
 import { T } from "src/renderer/i18n";
 
 const LoginStyles: CSS = {
-  padding: 52,
-  boxSizing: "border-box",
   display: "flex",
   flexDirection: "column",
-  "& > * + *": {
-    marginTop: 16,
-  },
-  height: "100%",
-  paddingBottom: 52,
 };
 
 const transifexTags = "v2/login-view";

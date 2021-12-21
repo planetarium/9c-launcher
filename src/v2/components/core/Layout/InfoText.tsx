@@ -4,7 +4,10 @@ import { observer } from "mobx-react";
 import { useStore } from "../../../utils/useStore";
 import { clipboard, ipcRenderer } from "electron";
 import { get as getConfig } from "../../../../config";
-import { useTopmostBlocksQuery } from "../../../generated/graphql";
+import {
+  useTipSubscription,
+  useTopmostBlocksQuery,
+} from "../../../generated/graphql";
 import { styled } from "src/v2/stitches.config";
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
@@ -56,9 +59,27 @@ function InfoText() {
     setTimeout(() => setCopied(false), 1000);
   }, [copied]);
 
+  const { data: blockTip } = useTipSubscription();
+  const [node, setNode] = useState<number>(0);
+
+  useEffect(
+    () =>
+      void (async () => {
+        if (!node) {
+          const nodeInfo = await ipcRenderer.invoke("get-node-info");
+          setNode(nodeInfo.nodeNumber);
+        }
+      })(),
+    [node]
+  );
+
   return (
     <InfoTextStyled onClick={onClick}>
-      {`v${getConfig("AppProtocolVersion").split("/")[0]}`}
+      node: {node || "loading"}
+      <br />
+      tip: {blockTip?.tipChanged?.index || 0}
+      <br />
+      {`version: v${getConfig("AppProtocolVersion").split("/")[0]}`}
       {copied && " copied!"}
     </InfoTextStyled>
   );
