@@ -26,6 +26,7 @@ import { t } from "@transifex/native";
 import { ipcRenderer } from "electron";
 import { LocaleProvider } from "./i18n";
 import { NodeInfo } from "../config";
+import RPCSpinner from "./components/RPCSpinner/RPCSpinner";
 
 const Store: IStoreContainer = {
   accountStore: new AccountStore(),
@@ -130,7 +131,16 @@ function App() {
     main();
   }, [client]);
 
-  if (!client) return null;
+  if (!client)
+    return (
+      <Provider {...Store}>
+        <ThemeProvider theme={theme}>
+          <LocaleProvider>
+            <RPCSpinner />
+          </LocaleProvider>
+        </ThemeProvider>
+      </Provider>
+    );
 
   return (
     <ApolloProvider client={client}>

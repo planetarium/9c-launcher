@@ -15,6 +15,7 @@ import {
   useCollectionStateByAgentSubscription,
   useCollectionStatusByAgentSubscription,
   MonsterCollectionRewardInfoType,
+  useGetNcgBalanceQuery,
 } from "../../../generated/graphql";
 import useStores from "../../../hooks/useStores";
 import ClaimCollectionRewardContainer from "../ClaimCollectionRewardDialog/ClaimCollectionRewardContainer";
@@ -67,6 +68,11 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     },
   });
   const { data: collectionStatusQuery } = useCollectionStatusQueryQuery({
+    variables: {
+      address: accountStore.selectedAddress,
+    },
+  });
+  const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
@@ -180,8 +186,9 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
         .quantity ??
       collectionStatusQuery?.monsterCollectionStatus?.fungibleAssetValue
         .quantity ??
+      Number(ncgBalanceQuery?.goldBalance) ??
       0,
-    [collectionStatus, collectionStatusQuery]
+    [collectionStatus, collectionStatusQuery, ncgBalanceQuery]
   );
 
   if (

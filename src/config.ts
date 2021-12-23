@@ -217,7 +217,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
   let nodeList: NodeInfo[] = [];
   if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
-    await Promise.all(
+    await Promise.any(
       remoteNodeList.map(async (v, index) => {
         const rawInfos = v.split(",");
         if (rawInfos.length != 3) {
@@ -330,12 +330,14 @@ export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
 export async function initializeNode(): Promise<NodeInfo> {
   console.log("config initialize called");
   const nodeList = await NodeList();
+  if (nodeList.length < 1) {
+    throw Error("can't find available remote node.");
+  }
   nodeList.sort((a, b) => {
     return a.clientCount - b.clientCount;
   });
   console.log("config initialize complete");
-  const maxLength = Math.min(3, nodeList.length);
-  const nodeInfo = nodeList[Math.floor(Math.random() * maxLength)];
+  const nodeInfo = nodeList[0];
   console.log(
     `selected node: ${nodeInfo.HeadlessUrl()}, clients: ${nodeInfo.clientCount}`
   );
