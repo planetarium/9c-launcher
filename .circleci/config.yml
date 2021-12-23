@@ -100,6 +100,7 @@ jobs:
             aws configure set aws_secret_access_key $env:AWS_SECRET_KEY
 
             aws s3 cp pack-dist/Windows.zip s3://9c-artifacts/$env:CIRCLE_SHA1
+            aws s3 cp pack-dist/Windows.zip s3://9c-artifacts/9c-launcher/$env:CIRCLE_SHA1/Windows.zip
           name: Upload to S3
   styles:
     docker:
