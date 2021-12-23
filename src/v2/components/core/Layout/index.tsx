@@ -6,7 +6,6 @@ import Menu from "../Menu";
 import StatusBar from "./StatusBar";
 
 import InfoText from "./InfoText";
-import { motion } from "framer-motion";
 import { CSS, styled } from "src/v2/stitches.config";
 import background from "../../../resources/launcher-png.png";
 import UserInfo from "./UserInfo";
@@ -45,19 +44,6 @@ const BottomControls = styled("aside", {
   bottom: "45px",
   justifyContent: "flex-end",
   alignItems: "flex-end",
-  dragable: false,
-});
-
-const OverlayContainer = styled(motion.div, {
-  position: "fixed",
-  left: 0,
-  top: 0,
-  width: "100%",
-  height: "100%",
-  backgroundColor: "$gray80",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
   dragable: false,
 });
 
