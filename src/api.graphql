@@ -354,3 +354,13 @@ query PreloadEnded {
     totalCount
   }
 }
+
+subscription BalanceByAgent($address: Address!) {
+  balanceByAgent(address: $address)
+}
+
+subscription Tip {
+  tipChanged {
+    index
+  }
+}

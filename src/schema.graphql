@@ -469,6 +469,7 @@ type StandaloneSubscription {
   monsterCollectionStatus: MonsterCollectionStatusType!
   monsterCollectionStatusByAgent(address: Address!): MonsterCollectionStatusType!
   monsterCollectionStateByAgent(address: Address!): MonsterCollectionStateType!
+  balanceByAgent(address: Address!): String!
 }
 
 enum StatType {
