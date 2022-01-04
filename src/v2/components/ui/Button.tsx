@@ -16,6 +16,10 @@ const Button = styled(motion.button, {
   color: "White",
   fontWeight: "bold",
   cursor: "pointer",
+  "&:disabled": {
+    backgroundColor: "#4f4f4f",
+    cursor: "not-allowed",
+  },
   variants: {
     variant: {
       primary: {
@@ -27,12 +31,6 @@ const Button = styled(motion.button, {
         display: "block",
         marginLeft: "auto",
         marginRight: "auto",
-      },
-    },
-    disabled: {
-      true: {
-        backgroundColor: "#4f4f4f",
-        cursor: "not-allowed",
       },
     },
   },
