@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer } from "react";
 import { observer } from "mobx-react";
 import Layout from "src/v2/components/core/Layout";
 import { T } from "src/renderer/i18n";
@@ -9,6 +9,8 @@ import FileChooser from "./FileChooser";
 import Button from "src/v2/components/ui/Button";
 import H2 from "src/v2/components/ui/H2";
 import { styled } from "src/v2/stitches.config";
+import { useStore } from "src/v2/utils/useStore";
+import { useHistory } from "react-router";
 
 const transifexTags = "v2/import-view";
 
@@ -36,6 +38,14 @@ function reducer(_: ImportData, action: Action): ImportData {
 
 function ImportView() {
   const [state, dispatch] = useReducer(reducer, {});
+  const account = useStore("account");
+  const history = useHistory();
+
+  const handleSubmit = () => {
+    if (!state.key) return;
+    account.setPrivateKey(state.key);
+    history.push("/recover");
+  };
 
   return (
     <Layout sidebar>
@@ -58,10 +68,10 @@ function ImportView() {
         label={t("keystore", { _tags: transifexTags })}
       />
       <ButtonBar>
-        <Button>
+        <Button onClick={history.goBack.bind(history)}>
           <T _str="Prev" _tags={transifexTags} />
         </Button>
-        <Button variant="primary" disabled={!state.key}>
+        <Button variant="primary" disabled={!state.key} onClick={handleSubmit}>
           <T _str="Next" _tags={transifexTags} />
         </Button>
       </ButtonBar>

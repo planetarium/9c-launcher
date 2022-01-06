@@ -86,7 +86,7 @@ function LoginView() {
       >
         <T _str="LOGIN" _tags={transifexTags} />
       </Button>
-      <Link centered to="/recover">
+      <Link centered to="/import">
         <T _str="Forgot password?" _tags={transifexTags} />
       </Link>
     </Layout>

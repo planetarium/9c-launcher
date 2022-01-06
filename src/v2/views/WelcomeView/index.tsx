@@ -49,7 +49,7 @@ function WelcomeView() {
       <ButtonLink variant="primary" to="/register">
         <T _str="Create New Account" _tags={transifexTags} />
       </ButtonLink>
-      <Link to="/recover">
+      <Link to="/import">
         <T _str="I already have my account" _tags={transifexTags} />
       </Link>
     </Layout>

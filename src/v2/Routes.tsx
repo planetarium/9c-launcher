@@ -11,6 +11,7 @@ import RegisterView from "./views/RegisterView";
 import LobbyView from "./views/LobbyView";
 import MissingActivationView from "./views/MissingActivationView";
 import ImportView from "./views/ImportView";
+import RecoverView from "./views/RecoverView";
 
 const Redirector = observer(() => {
   const account = useStore("account");
@@ -47,7 +48,8 @@ export default function Routes() {
       />
       <Route path="/register" component={RegisterView} />
       <Route path="/lobby" component={LobbyView} />
-      <Route path="/recover" component={ImportView} />
+      <Route path="/import" component={ImportView} />
+      <Route path="/recover" component={RecoverView} />
       <Route exact path="/" component={Redirector} />
       <Redirect from="*" to="/" />
     </Switch>
