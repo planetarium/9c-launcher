@@ -14,6 +14,7 @@ import {
   MIXPANEL_TOKEN,
   initializeNode,
   NodeInfo,
+  userConfigStore,
 } from "../config";
 import isDev from "electron-is-dev";
 import {
@@ -209,10 +210,12 @@ async function initializeApp() {
       remoteNode = await initializeNode();
     } catch (e) {
       console.error(e);
-      await dialog.showMessageBox(win!, {
+      const { checkboxChecked } = await dialog.showMessageBox(win!, {
         message: "Failed to connect remote node. please restart launcher.",
         type: "error",
-      });
+        checkboxLabel: "Disable RPC mode",
+      }); // TODO Replace with "go to error page" event
+      if (checkboxChecked) userConfigStore.set("UseRemoteHeadless", false);
 
       app.exit();
     }
