@@ -2,8 +2,9 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { styled } from "@stitches/react";
 import {
+  useBalanceByAgentSubscription,
+  useGetNcgBalanceQuery,
   useStateQueryMonsterCollectionQuery,
-  useTopmostBlocksQuery,
 } from "src/v2/generated/graphql";
 import { useStore } from "src/v2/utils/useStore";
 import { useIsPreloadDone } from "src/v2/utils/usePreload";
@@ -39,6 +40,23 @@ export default function UserInfo() {
       agentAddress: account.selectedAddress,
     },
   });
+  const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
+    variables: {
+      address: account.selectedAddress,
+    },
+    skip: !account.isLogin,
+  });
+  const { data: balance } = useBalanceByAgentSubscription({
+    variables: {
+      address: account.selectedAddress,
+    },
+    skip: !account.isLogin,
+  });
+
+  const gold = useMemo(
+    () => Number(balance?.balanceByAgent ?? ncgBalanceQuery?.goldBalance) ?? 0,
+    [balance, ncgBalanceQuery]
+  );
 
   if (!isDone || !account.isLogin) return null;
 
@@ -50,7 +68,7 @@ export default function UserInfo() {
       </UserInfoItem>
       <UserInfoItem>
         <img src={goldIconUrl} alt="gold" />
-        {Number(collectionStateQuery?.stateQuery.agent?.gold)}
+        {Number(gold)}
       </UserInfoItem>
     </UserInfoStyled>
   );
