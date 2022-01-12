@@ -56,7 +56,7 @@ function RegisterView() {
     account.setSelectedAddress(key.address);
     account.setLoginStatus(true);
     account.setActivationKey(activationKey!);
-    history.push("/lobby", { first: true });
+    history.push("/lobby?first");
   };
 
   return (
