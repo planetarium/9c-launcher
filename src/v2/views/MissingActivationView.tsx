@@ -35,7 +35,7 @@ function MissingActivationView() {
   const history = useHistory();
   const account = useStore("account");
 
-  const activated = useActivation(account.activationKey);
+  const { activated } = useActivation(account.activationKey);
 
   const onSubmit = ({ activationKey }: { activationKey: string }) => {
     account.setActivationKey(activationKey!);

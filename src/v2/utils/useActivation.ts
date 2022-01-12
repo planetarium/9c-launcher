@@ -6,16 +6,21 @@ import {
 import { useStore } from "./useStore";
 import { useTx } from "./useTx";
 
-export function useActivation(activationKey: string | undefined): boolean {
+interface ActivationResult {
+  loading: boolean;
+  activated: boolean;
+}
+
+export function useActivation(activationKey: string | undefined): ActivationResult {
   const accountStore = useStore("account");
-  const { data, startPolling, stopPolling } = useActivationAddressQuery({
+  const { loading, data, startPolling, stopPolling } = useActivationAddressQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
     skip: !accountStore.selectedAddress,
   });
 
-  const { data: nonceData } = useActivationKeyNonceQuery({
+  const { loading: nonceLoading, data: nonceData } = useActivationKeyNonceQuery({
     variables: {
       // @ts-expect-error The query will not run if activationKey is undefined due to the skip option.
       encodedActivationKey: activationKey,
@@ -44,5 +49,8 @@ export function useActivation(activationKey: string | undefined): boolean {
     }
   }, [data]);
 
-  return data?.activationStatus.addressActivated ?? false;
+  return {
+    loading: loading || nonceLoading,
+    activated: data?.activationStatus.addressActivated ?? false
+  };
 }
