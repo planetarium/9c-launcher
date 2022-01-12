@@ -15,7 +15,7 @@ import InfoIcon from "../../components/InfoIcon";
 import explorerLogo from "../../resources/block-explorer-logo.png";
 import patchNoteLogo from "../../resources/wrench.png";
 import NCGLogo from "../../resources/ncgLogo.png";
-import { useCollectionStatusByAgentSubscription } from "../../../generated/graphql";
+import { useTipSubscription } from "../../../generated/graphql";
 
 const transifexTags = "menu";
 
@@ -26,11 +26,7 @@ export const Layout: React.FC = observer(({ children }) => {
   const [tip, setTip] = useState<number>(0);
   const [node, setNode] = useState<number>(0);
 
-  const { data: collectionStatus } = useCollectionStatusByAgentSubscription({
-    variables: {
-      address: accountStore.selectedAddress,
-    },
-  });
+  const { data: blockTip } = useTipSubscription();
 
   useEffect(() => {
     const awsSinkGuid: string = ipcRenderer.sendSync(
@@ -50,10 +46,9 @@ export const Layout: React.FC = observer(({ children }) => {
   }, [tip]);
 
   useEffect(() => {
-    const index =
-      collectionStatus?.monsterCollectionStatusByAgent.tipIndex || 0;
+    const index = blockTip?.tipChanged?.index || 0;
     setTip(index);
-  }, [collectionStatus]);
+  }, [blockTip]);
 
   function handleInfoClick() {
     const clipboardElement = (document.getElementById(

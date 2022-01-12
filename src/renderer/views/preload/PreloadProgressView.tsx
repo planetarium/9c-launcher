@@ -133,6 +133,7 @@ const PreloadProgressView = observer(() => {
   }, []);
 
   useEffect(() => {
+    if (standaloneStore.Ready) return; // standalone ready implies the preload has been completed before, and we don't really need events after that
     ipcRenderer.send(
       "mixpanel-track-event",
       `Launcher/${getCurrentStepStatusMessage()[0]}`
