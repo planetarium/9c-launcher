@@ -11,8 +11,8 @@ const transifexTags = "errorClearCache";
 const ErrorClearCacheView = () => {
   const classes = errorViewStyle();
 
-  const handleClearCache = useCallback(() => {
-    ipcRenderer.sendSync("clear cache", false);
+  const handleClearCache = useCallback(async () => {
+    await ipcRenderer.sendSync("clear cache", false);
     remote.app.relaunch();
     remote.app.exit();
   }, []);
