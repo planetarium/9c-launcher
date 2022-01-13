@@ -6,6 +6,7 @@ import { usePreload } from "src/v2/utils/usePreload";
 import { useStore } from "src/v2/utils/useStore";
 import Button from "../../ui/Button";
 import { T } from "src/renderer/i18n";
+import { useActivation } from "src/v2/utils/useActivation";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -26,12 +27,7 @@ const StatusMessage = styled("span", {
 function StatusBar() {
   const [message, isDone, progress] = usePreload();
   const { account, game } = useStore();
-
-  useEffect(() => {
-    if (isDone && account.isLogin) {
-      game.startGame(account.privateKey);
-    }
-  }, [isDone, account.isLogin]);
+  const { loading, activated } = useActivation();
 
   return (
     <StatusBarStyled>
@@ -40,6 +36,7 @@ function StatusBar() {
         {isDone && account.isLogin && !game.isGameStarted && (
           <Button
             variant="primary"
+            disabled={loading || !activated}
             onClick={() => game.startGame(account.privateKey)}
           >
             <T _str="Start" _tags="v2/start-game" />

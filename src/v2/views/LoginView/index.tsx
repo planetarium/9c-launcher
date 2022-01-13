@@ -42,6 +42,7 @@ function LoginView() {
       account.setLoginStatus(true);
       ipcRenderer.send("mixpanel-alias", account.selectedAddress);
       ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
+      ipcRenderer.send("standalone/set-signer-private-key", account.privateKey);
       history.push("/lobby");
     }
   };

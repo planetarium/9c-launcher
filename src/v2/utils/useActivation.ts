@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
   useActivationAddressQuery,
   useActivationKeyNonceQuery,
@@ -11,22 +11,34 @@ interface ActivationResult {
   activated: boolean;
 }
 
-export function useActivation(activationKey: string | undefined): ActivationResult {
+/**
+ * A helper hook which has two jobs to do.
+ * 1. It queries the activation atatus of the current account.
+ * 2. When the activationKey is provided, it will stage a transaction to activate the account.
+ *
+ * @param activationKey An activation key to use for automatic activation. Pass `undefined` to disable automatic activation.
+ * @returns {ActivationResult} A object with two properties: `loading` and `activated`. They are pretty self-explanatory.
+ */
+export function useActivation(activationKey?: string): ActivationResult {
   const accountStore = useStore("account");
-  const { loading, data, startPolling, stopPolling } = useActivationAddressQuery({
+  const [isPolling, setPolling] = useState(false);
+  const { loading, data } = useActivationAddressQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
-    skip: !accountStore.selectedAddress,
+    pollInterval: isPolling ? 1000 : undefined,
+    skip: !accountStore.isLogin,
   });
 
-  const { loading: nonceLoading, data: nonceData } = useActivationKeyNonceQuery({
-    variables: {
-      // @ts-expect-error The query will not run if activationKey is undefined due to the skip option.
-      encodedActivationKey: activationKey,
-    },
-    skip: !activationKey,
-  });
+  const { loading: nonceLoading, data: nonceData } = useActivationKeyNonceQuery(
+    {
+      variables: {
+        // @ts-expect-error The query will not run if activationKey is undefined due to the skip option.
+        encodedActivationKey: activationKey,
+      },
+      skip: !activationKey,
+    }
+  );
   const tx = useTx(
     "activate-account",
     activationKey,
@@ -37,20 +49,20 @@ export function useActivation(activationKey: string | undefined): ActivationResu
     if (
       !data?.activationStatus.addressActivated &&
       activationKey &&
-      nonceData?.activationKeyNonce
+      nonceData?.activationKeyNonce &&
+      !isPolling
     ) {
-      tx().then(() => startPolling(1000));
+      setPolling(true);
+      tx();
     }
   }, [activationKey, tx, nonceData]);
 
   useEffect(() => {
-    if (data?.activationStatus.addressActivated) {
-      stopPolling();
-    }
+    if (data?.activationStatus.addressActivated) setPolling(false);
   }, [data]);
 
   return {
     loading: loading || nonceLoading,
-    activated: data?.activationStatus.addressActivated ?? false
+    activated: data?.activationStatus.addressActivated ?? false,
   };
 }

@@ -5,25 +5,32 @@ import { useStore } from "src/v2/utils/useStore";
 import { useActivation } from "src/v2/utils/useActivation";
 import { useHistory } from "react-router";
 import OnboardingOverlay from "src/v2/views/OnboardingOverlay";
+import { usePreload } from "src/v2/utils/usePreload";
 
 const isFirst = (state: string): boolean => {
   return state.includes("first");
 };
 
 function LobbyView() {
-  const account = useStore("account");
+  const { account, game } = useStore();
+  const [, isDone] = usePreload();
   const { loading, activated } = useActivation(account.activationKey);
   const history = useHistory();
-  const onboardingRequired = useMemo(
-    () => isFirst(history.location.search),
-    [history.location]
-  );
+  const onboardingRequired = useMemo(() => isFirst(history.location.search), [
+    history.location,
+  ]);
   const [showOnboarding, setShowOnboarding] = useState(true);
 
   useEffect(() => {
     if (loading || activated || account.activationKey) return;
     history.push("/register/missing-activation");
-  }, [activated, account.activationKey]);
+  }, [loading, activated, account.activationKey]);
+
+  useEffect(() => {
+    if (isDone && account.isLogin && activated) {
+      game.startGame(account.privateKey);
+    }
+  }, [isDone, account.isLogin, activated]);
 
   return (
     <>

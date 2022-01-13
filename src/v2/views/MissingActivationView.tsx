@@ -39,7 +39,7 @@ function MissingActivationView() {
 
   const onSubmit = ({ activationKey }: { activationKey: string }) => {
     account.setActivationKey(activationKey!);
-    history.push("/lobby", { first: true });
+    history.push("/lobby?first");
   };
 
   useEffect(() => void (activated && history.push("/lobby")), [
