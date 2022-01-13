@@ -53,9 +53,21 @@ export function useActivation(activationKey?: string): ActivationResult {
       !isPolling
     ) {
       setPolling(true);
-      tx();
+      tx()
+        .then((v) => {
+          if (v.data?.stageTxV2) {
+            console.log(v.data?.stageTxV2);
+            return;
+          }
+          setPolling(false);
+          console.error(v);
+        })
+        .catch((e) => {
+          setPolling(false);
+          console.error(e);
+        });
     }
-  }, [activationKey, tx, nonceData]);
+  }, [activationKey, tx, nonceData, isPolling]);
 
   useEffect(() => {
     if (data?.activationStatus.addressActivated) setPolling(false);

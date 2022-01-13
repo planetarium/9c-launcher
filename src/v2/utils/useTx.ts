@@ -3,7 +3,7 @@ import type { Action } from "src/main/headless/action";
 import { tmpName } from "tmp-promise";
 import {
   useGetNextTxNonceQuery,
-  useStageTxMutation,
+  useStageTxV2Mutation,
 } from "../generated/graphql";
 import { useStore } from "./useStore";
 
@@ -22,7 +22,7 @@ type ActionArguemnts = {
   "transfer-asset": CutLast<Parameters<Action["TransferAsset"]>>;
 };
 
-type Result = ReturnType<ReturnType<typeof useStageTxMutation>[0]>;
+type Result = ReturnType<ReturnType<typeof useStageTxV2Mutation>[0]>;
 
 /**
  * A helper hook that creates and stages a transaction.
@@ -42,7 +42,7 @@ export function useTx<K extends keyof ActionArguemnts>(
     },
   });
 
-  const [stage] = useStageTxMutation();
+  const [stage] = useStageTxV2Mutation();
 
   if (args.some((arg) => arg == undefined))
     return () => Promise.reject(new Error("Missing arguments"));
@@ -55,12 +55,14 @@ export function useTx<K extends keyof ActionArguemnts>(
       const { data, error } = await refetch();
       if (error) throw error;
       const nonce = data.transaction.nextTxNonce;
-      const encodedTx = ipcRenderer.sendSync(
+      const { status, stdout: encodedTx, stderr } = ipcRenderer.sendSync(
         "sign-tx",
         nonce,
         new Date().toISOString(),
         txFile
       );
+
+      if (status) throw new Error(stderr);
 
       return await stage({
         variables: {

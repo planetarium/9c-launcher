@@ -56,6 +56,7 @@ function RegisterView() {
     account.setSelectedAddress(key.address);
     account.setLoginStatus(true);
     account.setActivationKey(activationKey!);
+    ipcRenderer.send("standalone/set-signer-private-key", account.privateKey);
     history.push("/lobby?first");
   };
 
