@@ -12,6 +12,7 @@ import { ipcRenderer } from "electron";
 import { RetryLink } from "@apollo/client/link/retry";
 import { useEffect, useState } from "react";
 import { NodeInfo } from "src/config";
+import isDev from "electron-is-dev";
 
 type Client = ApolloClient<NormalizedCacheObject>;
 
@@ -49,6 +50,7 @@ export default function useApolloClient(): Client | null {
       const client = new ApolloClient({
         link: ApolloLink.from([new RetryLink(), splitLink]),
         cache: new InMemoryCache(),
+        connectToDevTools: !isDev,
       });
       setApolloClient(client);
     })().catch(console.error);
