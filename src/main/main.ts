@@ -243,9 +243,6 @@ async function update(
   peerVersionExtra: string
 ) {
   if (peerVersionNumber <= localVersionNumber) {
-    console.log(
-      "Encountered version is not higher than the local version. Abort update."
-    );
     return;
   }
 
