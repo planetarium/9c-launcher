@@ -30,7 +30,7 @@ const ClearCacheButton = (props: IClearCacheButtonProps) => {
 
     if (confirmText.toLowerCase() === "clear cache") {
       setConfirmOpen(false);
-      const result = ipcRenderer.sendSync("clear cache", true);
+      const result = await ipcRenderer.invoke("clear cache", true);
       setClearState(result);
     } else {
       alert(t("Please type correctly"));

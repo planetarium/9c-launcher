@@ -10,13 +10,13 @@ const transifexTags = "errorReinstall";
 const ErrorReinstallView = () => {
   const classes = errorViewStyle();
 
-  const handleExit = useCallback(() => {
+  const handleExit = useCallback(async () => {
     if (
       window.confirm(
         "This will close launcher. Are you sure you want to clear cache and restart?"
       )
     ) {
-      ipcRenderer.sendSync("clear cache", false);
+      await ipcRenderer.sendSync("clear cache", false);
       remote.app.relaunch();
       remote.app.exit();
     }

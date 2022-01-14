@@ -243,9 +243,6 @@ async function update(
   peerVersionExtra: string
 ) {
   if (peerVersionNumber <= localVersionNumber) {
-    console.log(
-      "Encountered version is not higher than the local version. Abort update."
-    );
     return;
   }
 
@@ -573,7 +570,7 @@ function initializeIpc() {
     gameNode = node;
   });
 
-  ipcMain.on("clear cache", async (event, rerun: boolean) => {
+  ipcMain.handle("clear cache", async (event, rerun: boolean) => {
     console.log(`Clear cache is requested. (rerun: ${rerun})`);
     mixpanel?.track("Launcher/Clear Cache");
     await quitAllProcesses("clear-cache");
@@ -586,7 +583,7 @@ function initializeIpc() {
         await initializeHeadless();
       }
     }
-    event.returnValue = true;
+    return true;
   });
 
   ipcMain.on("select-directory", async (event) => {
