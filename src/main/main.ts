@@ -10,7 +10,6 @@ import {
   WIN_GAME_PATH,
   RPC_SERVER_HOST,
   RPC_SERVER_PORT,
-  REQUIRED_DISK_SPACE,
   MIXPANEL_TOKEN,
   initializeNode,
   NodeInfo,
@@ -24,22 +23,17 @@ import {
   Menu,
   nativeImage,
   ipcMain,
-  DownloadItem,
   dialog,
   shell,
 } from "electron";
-import { spawn as spawnPromise } from "child-process-promise";
 import path from "path";
 import fs from "fs";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
 import { initializeSentry } from "../preload/sentry";
 import "core-js";
-import extractZip from "extract-zip";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
-import { BencodexDict, encode, decode } from "bencodex";
-import lockfile from "lockfile";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
@@ -50,11 +44,10 @@ import {
   UndefinedProtectedPrivateKeyError,
 } from "../errors";
 import CancellationToken from "cancellationtoken";
-import { IDownloadProgress, IGameStartOptions } from "../interfaces/ipc";
-import { init as createMixpanel, Mixpanel } from "mixpanel";
+import { IGameStartOptions } from "../interfaces/ipc";
+import { init as createMixpanel } from "mixpanel";
 import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
-import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
 import { Address, PrivateKey } from "./headless/key-store";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
