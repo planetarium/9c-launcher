@@ -218,23 +218,25 @@ const NodeList = async (): Promise<NodeInfo[]> => {
   if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
     await Promise.any(
-      remoteNodeList.map(async (v, index) => {
-        const rawInfos = v.split(",");
-        if (rawInfos.length != 3) {
-          console.error(`${v} does not contained node info.`);
-          return;
-        }
-        const host = rawInfos[0];
-        const graphqlPort = Number.parseInt(rawInfos[1]);
-        const rpcPort = Number.parseInt(rawInfos[2]);
-        const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort, index + 1);
-        try {
-          const preloadEnded = await nodeInfo.PreloadEnded();
-          if (preloadEnded) nodeList.push(nodeInfo);
-        } catch (e) {
-          console.error(e);
-        }
-      })
+      remoteNodeList
+        .sort(() => Math.random() - 0.5)
+        .map(async (v, index) => {
+          const rawInfos = v.split(",");
+          if (rawInfos.length != 3) {
+            console.error(`${v} does not contained node info.`);
+            return;
+          }
+          const host = rawInfos[0];
+          const graphqlPort = Number.parseInt(rawInfos[1]);
+          const rpcPort = Number.parseInt(rawInfos[2]);
+          const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort, index + 1);
+          try {
+            const preloadEnded = await nodeInfo.PreloadEnded();
+            if (preloadEnded) nodeList.push(nodeInfo);
+          } catch (e) {
+            console.error(e);
+          }
+        })
     );
   } else {
     const nodeInfo = new NodeInfo(
