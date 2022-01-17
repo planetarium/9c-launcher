@@ -150,7 +150,6 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
-  checkForUpdates(standalone);
   intializeConfig();
   useRemoteHeadless = getConfig("UseRemoteHeadless");
   initializeApp();
@@ -203,6 +202,10 @@ async function initializeApp() {
     if (app.commandLine.hasSwitch("v2")) win = await createV2Window();
     else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
+
+    const u = await checkForUpdates(standalone);
+    if (u) update(u, updateOptions, win);
+
     try {
       remoteNode = await initializeNode();
     } catch (e) {
