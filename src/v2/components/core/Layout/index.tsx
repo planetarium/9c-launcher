@@ -12,6 +12,7 @@ import UserInfo from "./UserInfo";
 
 interface LayoutProps {
   sidebar?: boolean;
+  flex?: boolean;
   css?: CSS;
 }
 
@@ -35,6 +36,14 @@ const Sidebar = styled("main", {
   padding: 52,
   "& > * + *": { marginTop: 16 },
   paddingBottom: 104,
+  variants: {
+    flex: {
+      true: {
+        display: "flex",
+        flexDirection: "column",
+      },
+    },
+  },
 });
 
 const BottomControls = styled("aside", {
@@ -50,11 +59,11 @@ const BottomControls = styled("aside", {
 function Layout({
   children,
   sidebar,
-  css,
+  ...sidebarProps
 }: React.PropsWithChildren<LayoutProps>) {
   return (
     <Background>
-      {sidebar ? <Sidebar css={css}>{children}</Sidebar> : <UserInfo />}
+      {sidebar ? <Sidebar {...sidebarProps}>{children}</Sidebar> : <UserInfo />}
       <BottomControls>
         <StatusBar />
         <Menu />

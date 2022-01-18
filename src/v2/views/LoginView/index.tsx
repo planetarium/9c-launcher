@@ -13,11 +13,6 @@ import { Select, SelectOption } from "src/v2/components/ui/Select";
 import { Link } from "src/v2/components/ui/Link";
 import { T } from "src/renderer/i18n";
 
-const LoginStyles: CSS = {
-  display: "flex",
-  flexDirection: "column",
-};
-
 const transifexTags = "v2/login-view";
 
 function LoginView() {
@@ -54,7 +49,7 @@ function LoginView() {
   }, [account.addresses, account.selectedAddress]);
 
   return (
-    <Layout sidebar css={LoginStyles}>
+    <Layout sidebar flex>
       <H1>
         <T _str="Login" _tags={transifexTags} />
       </H1>
@@ -87,7 +82,7 @@ function LoginView() {
       >
         <T _str="LOGIN" _tags={transifexTags} />
       </Button>
-      <Link centered to="/import">
+      <Link centered to="/forgot">
         <T _str="Forgot password?" _tags={transifexTags} />
       </Link>
     </Layout>
