@@ -65,7 +65,13 @@ import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import { createWindow as createV2Window } from "./v2/application";
 import { getFreeSpace } from "@planetarium/check-free-space";
-import { checkForUpdates, isUpdating, IUpdateOptions, update } from "./update";
+import {
+  checkForUpdates,
+  cleanUpLockfile,
+  isUpdating,
+  IUpdateOptions,
+  update,
+} from "./update";
 
 initializeSentry();
 
@@ -933,7 +939,4 @@ function getHeadlessArgs(): string[] {
   }
 
   return args;
-}
-function cleanUpLockfile() {
-  throw new Error("Function not implemented.");
 }

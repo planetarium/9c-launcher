@@ -311,7 +311,7 @@ export function isUpdating() {
 /**
  * lockfile lock이 걸려있을 경우 unlock합니다.
  */
-function cleanUpLockfile() {
+export function cleanUpLockfile() {
   if (lockfile.checkSync(lockfilePath)) {
     lockfile.unlockSync(lockfilePath);
   }
