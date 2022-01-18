@@ -1,5 +1,5 @@
 # The Guide for Nine Chronicles Launcher Contributors
-
+Translations: [한국어](./CONTRIBUTING.ko.md).
 
 ## Prerequisites
 * Node.js (v16)
