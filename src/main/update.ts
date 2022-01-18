@@ -39,8 +39,8 @@ export async function checkForUpdates(
         const localApv = standalone.apv.analyze(localApvToken);
 
         return {
-          current: localApv,
-          newer: peerApv,
+          current: localApv.version,
+          newer: peerApv.version,
           extras: encode(peerApv.extra).toString("hex"),
         };
       } else {
