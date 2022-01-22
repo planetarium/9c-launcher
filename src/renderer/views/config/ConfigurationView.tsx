@@ -66,6 +66,9 @@ const ConfigurationView = observer(() => {
     const useRemoteHeadlessChecked = event.target.useRemoteHeadless.checked;
     userConfigStore.set("UseRemoteHeadless", useRemoteHeadlessChecked);
 
+    const logSize = event.target.logsize.value;
+    userConfigStore.set("LogSizeBytes", logSize);
+
     remote.app.relaunch();
     remote.app.exit();
   };
@@ -165,6 +168,16 @@ const ConfigurationView = observer(() => {
           >
             <T _str="Open Path" _tags={transifexTags} />
           </Button>
+
+          <FormLabel className={classes.newLine}>
+            <T _str="Log Size" _tags={transifexTags} />
+          </FormLabel>
+          <TextField
+            fullWidth
+            name="logsize"
+            className={classes.textField}
+            defaultValue={getConfig("LogSizeBytes")}
+          />
 
           <FormControl className={classes.checkboxGroup}>
             <FormLabel className={classes.newLine}>
