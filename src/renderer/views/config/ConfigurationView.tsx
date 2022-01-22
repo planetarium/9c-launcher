@@ -28,6 +28,7 @@ import { T, useLanguages, useLocale } from "@transifex/react";
 import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import log from "electron-log";
+import byteParse from "byte-parser"
 
 const transifexTags = "configuration";
 
@@ -66,8 +67,12 @@ const ConfigurationView = observer(() => {
     const useRemoteHeadlessChecked = event.target.useRemoteHeadless.checked;
     userConfigStore.set("UseRemoteHeadless", useRemoteHeadlessChecked);
 
-    const logSize = event.target.logsize.value;
-    userConfigStore.set("LogSizeBytes", logSize);
+    const logSize = event.target.logsize.value
+    try {
+      userConfigStore.set("LogSizeBytes", byteParse(logSize));
+    } catch (e) {
+      userConfigStore.set("LogSizeBytes", parseInt(logSize.replace(/\D/g, ''), 10));
+    }
 
     remote.app.relaunch();
     remote.app.exit();

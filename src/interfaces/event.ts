@@ -10,7 +10,7 @@ interface SettingsFormElement extends HTMLFormElement {
   select: HTMLInputElement;
   analytic: HTMLInputElement;
   sentry: HTMLInputElement;
-  logSize: HTMLInputElement;
+  logsize: HTMLInputElement;
 }
 
 export interface LoginFormEvent extends FormEvent<LoginFormElement> {
