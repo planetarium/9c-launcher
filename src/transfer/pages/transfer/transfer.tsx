@@ -7,6 +7,7 @@ import {
   styled,
   TextField,
   Typography,
+  CircularProgress as OriginCircularProgress,
 } from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
@@ -63,6 +64,10 @@ const TransferButton = styled(Button)({
   left: "100px",
 });
 
+const CircularProgress = styled(OriginCircularProgress)({
+  marginRight: "1em",
+});
+
 const TransferPage: React.FC<Props> = observer((props: Props) => {
   const { headlessStore, transferPage } = useContext(StoreContext);
   const { signer, onDetailedView } = props;
@@ -107,6 +112,12 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
 
     headlessStore.confirmTransaction(tx, undefined, listener);
   };
+
+  const loading =
+    transferPage.currentPhase === TransferPhase.SENDTX ||
+    transferPage.currentPhase === TransferPhase.SENDING;
+
+  const disabled = !transferPage.sendButtonActivated || loading;
 
   return (
     <TransferContainer>
@@ -178,10 +189,10 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
           variant="contained"
           color="primary"
           onClick={handleButton}
-          disabled={!transferPage.sendButtonActivated}
+          disabled={disabled}
         >
-          {" "}
-          Send{" "}
+          {loading && <CircularProgress />}
+          Send
         </TransferButton>
       </FormControl>
 
