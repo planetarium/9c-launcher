@@ -21,7 +21,6 @@ import { TransferPhase } from "src/transfer/stores/views/transfer";
 import refreshIcon from "../../resources/refreshIcon.png";
 import { verify as addressVerify } from "eip55";
 import { ipcRenderer } from "electron";
-import LoadingButton from "@mui/lab/LoadingButton";
 
 const transifexTags = "Transfer/Transfer";
 
@@ -51,7 +50,7 @@ const TransferInput = styled(OutlinedInput)({
   height: "50px",
 });
 
-const TransferButton = styled(LoadingButton)({
+const TransferButton = styled(Button)({
   width: "303px",
   height: "60px",
   fontFamily: "Montserrat",
@@ -180,10 +179,6 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
           color="primary"
           onClick={handleButton}
           disabled={!transferPage.sendButtonActivated}
-          loading={
-            transferPage.currentPhase === TransferPhase.SENDTX ||
-            transferPage.currentPhase === TransferPhase.SENDING
-          }
         >
           {" "}
           Send{" "}
