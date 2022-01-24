@@ -22,10 +22,14 @@ git clone -c core.symlinks=true <URL>
 클론한 뒤, 필요한 의존성을 설치하기 위해 다음 명령어를 실행해 주세요.
 
 ```sh
-yarn # installs npm dependencies
-yarn build-headless # builds the headless
-yarn bundle-player # downloads the unity player
-yarn codegen # generates the GraphQL glue code
+git submodule update --recursive # 9C Headless 와 Unity Player 빌드 소스 다운로드하기
+
+yarn
+yarn build  # 개발 빌드
+yarn build-headless  # 9C Headless (Standalone) 빌드 (.NET Core SDK 필요)
+yarn bundle-player  # 9C Unity Player 받기. 게임을 테스트하는걸 원하지 않으시면 건너뛰셔도 됩니다.
+APV_SIGN_KEY=... APV_NO=... yarn sign-apv  # APV 서명 (planet 명령 필요)
+yarn build-prod  # 프로덕션 빌드
 ```
 
 ## 실행하기

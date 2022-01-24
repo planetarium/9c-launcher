@@ -22,9 +22,11 @@ git clone -c core.symlinks=true <URL>
 After cloning, you can install the required dependencies by running these commands:
 
 ```sh
+git submodule update --recursive # Download 9C Headless and Unity Player build source
+
 yarn # installs npm dependencies
 yarn build-headless # builds the headless
-yarn bundle-player # downloads the unity player
+yarn bundle-player # downloads the unity player. if you not want to test game, you can skip this step.
 yarn codegen # generates the GraphQL glue code
 ```
 
