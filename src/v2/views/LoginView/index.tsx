@@ -16,6 +16,7 @@ import Form from "src/v2/components/ui/Form";
 import { preloadService } from "src/v2/machines/preloadMachine";
 import { get } from "src/config";
 import toast from "react-hot-toast";
+import _refiner from "refiner-js";
 
 const transifexTags = "v2/login-view";
 
@@ -43,6 +44,14 @@ function LoginView() {
       ipcRenderer.send("mixpanel-alias", account.selectedAddress);
       ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
       ipcRenderer.send("standalone/set-signer-private-key", key);
+
+      _refiner("identifyUser", {
+        id: account.selectedAddress,
+        config: {
+          rpc: get("UseRemoteHeadless"),
+          locale: get("Locale"),
+        },
+      });
 
       if (get("UseRemoteHeadless")) {
         history.push("/lobby");
