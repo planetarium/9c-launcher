@@ -227,7 +227,7 @@ function createMainConfig(isDev) {
             loader: "babel-loader",
             options: {
               presets: ["@babel/preset-typescript", ["@babel/preset-env", {
-                targets: { node: "current" },
+                targets: { electron: "9.0.2" },
                 useBuiltIns: "entry",
                 corejs: 3
               }]],
