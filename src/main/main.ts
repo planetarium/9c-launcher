@@ -59,7 +59,7 @@ import installExtension, {
   REACT_DEVELOPER_TOOLS,
   MOBX_DEVTOOLS,
 } from "electron-devtools-installer";
-import prettyBytes from "pretty-bytes";
+import bytes from "bytes";
 import createTransferWindow from "../transfer/window";
 import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
@@ -454,8 +454,9 @@ function initializeIpc() {
   );
 
   ipcMain.on("create-private-key", async (event, passphrase: string) => {
-    event.returnValue =
-      standalone.keyStore.createProtectedPrivateKey(passphrase);
+    event.returnValue = standalone.keyStore.createProtectedPrivateKey(
+      passphrase
+    );
   });
 
   ipcMain.on(
@@ -583,7 +584,7 @@ async function initializeHeadless(): Promise<void> {
               } catch (e) {
                 console.error("Error while checking free space:", e);
                 await dialog.showMessageBox(win!, {
-                  message: `Failed to check free space. Please make sure you have at least ${prettyBytes(
+                  message: `Failed to check free space. Please make sure you have at least ${bytes(
                     Number(size)
                   )} available on your disk.`,
                   type: "warning",
