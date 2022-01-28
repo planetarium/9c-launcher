@@ -6,6 +6,13 @@ import {
 } from "child_process";
 import { dirname, basename, sep } from "path";
 
+function maskPassphrase(args: string[]): string[] {
+  const passphraseIndex = args.indexOf("--passphrase");
+  if (passphraseIndex === -1) return args;
+
+  return args.map((v, i) => (i === passphraseIndex + 1 ? "******" : v));
+}
+
 export class StandaloneSubcommand {
   private readonly _executablePath: string;
 
@@ -30,7 +37,7 @@ export class StandaloneSubcommand {
         cwd,
         "):\n",
         this._executablePath,
-        ...args
+        ...maskPassphrase(args)
       );
       throw e;
     }
