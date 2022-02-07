@@ -15,6 +15,8 @@ type PreloadMachineContext = {
    * If this field is not present, the meta field of the state should be used.
    */
   step?: number;
+  error?: string;
+  data?: any;
 };
 
 type PreloadMachineEvent =
@@ -24,14 +26,15 @@ type PreloadMachineEvent =
   | { type: "PROGRESS"; progress: number }
   | { type: "HEADLESS" }
   | { type: "DONE" }
-  | { type: "ERROR"; error: string }
+  | { type: "ERROR"; error: string; data?: any }
   | { type: "IDLE" };
 
 type PreloadMachineTypestates =
   | { value: "idle"; context: {} }
   | { value: "snapshot"; context: Pick<PreloadMachineContext, "progress"> }
   | { value: "headless"; context: PreloadMachineContext }
-  | { value: "done"; context: {} };
+  | { value: "done"; context: {} }
+  | { value: "error"; context: { error: string; data?: any; step?: number } };
 
 export const preloadMachine = createMachine<
   PreloadMachineContext,
@@ -146,9 +149,26 @@ export const preloadMachine = createMachine<
         },
       },
       done: {},
+      error: {},
     },
     on: {
       IDLE: "idle",
+      ERROR: {
+        target: "error",
+        actions: ["setError"],
+      },
+    },
+    invoke: {
+      id: "error",
+      src: () =>
+        invokeIpcEvent<PreloadMachineEvent>(
+          "go to error page",
+          (error, data) => ({
+            type: "ERROR",
+            error,
+            data,
+          })
+        ),
     },
   },
   {
@@ -158,6 +178,10 @@ export const preloadMachine = createMachine<
       }),
       setProgress: assign((context, event) => ({
         progress: event.type === "PROGRESS" ? event.progress : context.progress,
+      })),
+      setError: assign((context, event) => ({
+        error: event.type === "ERROR" ? event.error : context.error,
+        data: event.type === "ERROR" ? event.data : context.data,
       })),
     },
   }

@@ -13,6 +13,7 @@ import MissingActivationView from "./views/MissingActivationView";
 import ImportView from "./views/ImportView";
 import RecoverView from "./views/RecoverView";
 import ForgotPasswordView from "./views/ForgotPasswordView";
+import ErrorView from "./views/ErrorView";
 
 const Redirector = observer(() => {
   const account = useStore("account");
@@ -52,6 +53,7 @@ export default function Routes() {
       <Route path="/import" component={ImportView} />
       <Route path="/forgot" component={ForgotPasswordView} />
       <Route path="/recover" component={RecoverView} />
+      <Route path="/error" component={ErrorView} />
       <Route exact path="/" component={Redirector} />
       <Redirect from="*" to="/" />
     </Switch>
