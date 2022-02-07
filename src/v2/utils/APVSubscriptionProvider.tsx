@@ -4,7 +4,7 @@ import { useDifferentAppProtocolVersionEncounterSubscription } from "../generate
 import { useEffect } from "react";
 import { ipcRenderer } from "electron";
 import { IDownloadProgress } from "src/interfaces/ipc";
-import UpdateView from "../components/UpdateView";
+import UpdateView from "../views/UpdateView";
 import machine from "../machines/updateMachine";
 
 export default function APVSubscriptionProvider({

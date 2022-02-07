@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react";
-import ProgressBar from "./ProgressBar";
+import ProgressBar from "../../ProgressBar";
 import { styled } from "src/v2/stitches.config";
 import { usePreload } from "src/v2/utils/usePreload";
 import { useStore } from "src/v2/utils/useStore";
