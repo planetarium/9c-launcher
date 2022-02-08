@@ -8,7 +8,7 @@ import useStores from "../../../hooks/useStores";
 import { observer } from "mobx-react";
 
 import { T } from "@transifex/react";
-import { get as getConfig } from "../../../config";
+import { get as getConfig, NodeInfo } from "../../../config";
 import AccountInfoContainer from "../../components/AccountInfo/AccountInfoContainer";
 import InfoIcon from "../../components/InfoIcon";
 
@@ -24,7 +24,7 @@ export const Layout: React.FC = observer(({ children }) => {
   const [awsSinkCloudwatchGuid, setAwsSinkCloudwatchGuid] = useState<string>();
   const [infoButtonState, setInfoButtonState] = useState(false);
   const [tip, setTip] = useState<number>(0);
-  const [node, setNode] = useState<number>(0);
+  const [node, setNode] = useState<string>("loading...");
 
   const { data: blockTip } = useTipSubscription();
 
@@ -38,8 +38,8 @@ export const Layout: React.FC = observer(({ children }) => {
   useEffect(() => {
     async function main() {
       if (!tip) {
-        const nodeInfo = await ipcRenderer.invoke("get-node-info");
-        setNode(nodeInfo.nodeNumber);
+        const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
+        setNode(nodeInfo.host);
       }
     }
     main();
@@ -148,13 +148,13 @@ export const Layout: React.FC = observer(({ children }) => {
           </li>
         </ul>
         <div className="LauncherLayoutVersion">
-          node: {node > 0 ? node : "loading.."}
-          <br />
           block: {tip > 0 ? `#${tip}` : "loading.."}
           <br />
           {`version: v${
             (getConfig("AppProtocolVersion") as string).split("/")[0]
           }`}
+          <br />
+          node: {node}
         </div>
         <div
           id={"LauncherClientIcon"}
