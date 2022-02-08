@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import errorViewStyle from "./ErrorView.style";
 import { Typography } from "@material-ui/core";
-import prettyBytes from "pretty-bytes";
+import bytes from "bytes";
 import { getBlockChainStorePath, REQUIRED_DISK_SPACE } from "../../../config";
 import * as Sentry from "@sentry/electron";
 import { T } from "@transifex/react";
@@ -35,7 +35,7 @@ const ErrorDiskSpaceView = observer(() => {
         <T
           _str="Required free space: {space}"
           _tags={transifexTags}
-          space={prettyBytes(Number(size))}
+          space={bytes.format(Number(size), { unitSeparator: " " })}
         />
       </Typography>
       <Typography>
