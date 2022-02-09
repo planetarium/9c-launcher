@@ -20,6 +20,7 @@ const UserInfoStyled = styled(motion.ul, {
   left: 50,
   display: "flex",
   flexDirection: "column",
+  alignItems: "flex-start",
   padding: 0,
   margin: 0,
   dragable: false,
@@ -29,6 +30,8 @@ const UserInfoItem = styled(motion.li, {
   display: "flex",
   height: 27,
   alignItems: "center",
+  padding: 5,
+  borderRadius: 5,
   "& > svg, & > img": {
     marginRight: 5,
   },
@@ -78,7 +81,7 @@ export default function UserInfo() {
         {Number(gold)}
       </UserInfoItem>
       <UserInfoItem>
-        <img src={monsterIconUrl} alt="monster collection icon" />
+        <img src={monsterIconUrl} width={28} alt="monster collection icon" />
         {depositedGold || "0"}
       </UserInfoItem>
     </UserInfoStyled>
