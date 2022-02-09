@@ -1,3 +1,4 @@
+import { ipcRenderer } from "electron";
 import { useMemo } from "react";
 import { getTotalDepositedGold } from "src/collection/components/common/collectionSheet";
 import { RewardCategory } from "src/collection/types";
@@ -78,5 +79,10 @@ export function useMonsterCollection() {
           ?.claimableBlockIndex,
       [collectionState, collectionStateQuery]
     ),
+    currentTip: collectionStatus?.monsterCollectionStatusByAgent.tipIndex ?? 0,
   };
+}
+
+export function openMonsterCollection(address: string) {
+  ipcRenderer.invoke("open collection page", address);
 }
