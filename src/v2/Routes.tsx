@@ -1,6 +1,6 @@
 import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, Route, Switch, useHistory } from "react-router";
 import type { ProtectedPrivateKey } from "src/main/headless/key-store";
 import { useStore } from "./utils/useStore";
@@ -18,12 +18,16 @@ import ErrorView from "./views/ErrorView";
 const Redirector = observer(() => {
   const account = useStore("account");
   const history = useHistory();
+  const [protectedPrivateKeys, setProtectedPrivateKeys] = useState<
+    ProtectedPrivateKey[] | null
+  >(null);
 
   useEffect(() => {
-    const protectedPrivateKeys: ProtectedPrivateKey[] = ipcRenderer.sendSync(
-      "get-protected-private-keys"
-    );
-    if (protectedPrivateKeys.length < 1) {
+    if (!protectedPrivateKeys) {
+      ipcRenderer
+        .invoke("get-protected-private-keys")
+        .then(setProtectedPrivateKeys);
+    } else if (protectedPrivateKeys.length < 1) {
       history.replace("/welcome");
     } else {
       protectedPrivateKeys.filter(Boolean).map(({ address }) => {
