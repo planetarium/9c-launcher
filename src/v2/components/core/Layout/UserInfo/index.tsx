@@ -18,6 +18,8 @@ import {
 import goldIconUrl from "src/v2/resources/ui-main-icon-gold.png";
 import monsterIconUrl from "src/v2/resources/monster.png";
 import { getRemain } from "src/collection/common/utils";
+import { ClaimCollectionRewardsOverlay } from "src/v2/views/ClaimCollectionRewardsOverlay";
+import { ClaimButton } from "./ClaimButton";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -65,6 +67,11 @@ export default function UserInfo() {
     return getRemain(minutes);
   }, [claimableBlockIndex, currentTip]);
 
+  const [claimLoading, setClaimLoading] = useState<boolean>(false);
+  useEffect(() => setClaimLoading(false), [receivedBlockIndex]);
+
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+
   const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
     variables: {
       address: account.selectedAddress,
@@ -95,11 +102,23 @@ export default function UserInfo() {
         <img src={goldIconUrl} alt="gold" />
         <strong>{Number(gold)}</strong>
       </UserInfoItem>
-      <UserInfoItem onClick={() => openMonsterCollection(account.selectedAddress)}>
+      <UserInfoItem
+        onClick={() => openMonsterCollection(account.selectedAddress)}
+      >
         <img src={monsterIconUrl} width={28} alt="monster collection icon" />
         <strong>{depositedGold || "0"}</strong>
         {isCollecting ? ` (Remaining ${remainingText})` : " (-)"}
         <LaunchIcon />
+        {canClaim && (
+          <ClaimButton
+            loading={claimLoading}
+            onClick={() => setOpenDialog(true)}
+          />
+        )}
+        <ClaimCollectionRewardsOverlay
+          isOpen={openDialog}
+          onClose={() => setOpenDialog(false)}
+        />
       </UserInfoItem>
     </UserInfoStyled>
   );
