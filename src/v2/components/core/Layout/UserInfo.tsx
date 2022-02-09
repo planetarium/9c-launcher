@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import { styled } from "@stitches/react";
 import {
   useBalanceByAgentSubscription,
+  useCollectionStateByAgentSubscription,
+  useCollectionStatusByAgentSubscription,
+  useCollectionStatusQueryQuery,
   useGetNcgBalanceQuery,
   useStateQueryMonsterCollectionQuery,
 } from "src/v2/generated/graphql";
@@ -11,6 +14,8 @@ import { useIsPreloadDone } from "src/v2/utils/usePreload";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import goldIconUrl from "src/v2/resources/ui-main-icon-gold.png";
+import { RewardCategory } from "src/collection/types";
+import { useMonsterCollection } from "src/v2/utils/monsterCollection";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -34,12 +39,13 @@ const UserInfoItem = styled(motion.li, {
 export default function UserInfo() {
   const account = useStore("account");
   const isDone = useIsPreloadDone();
+  const {
+    currentReward,
+    blockIndex,
+    depositedGold,
+    level,
+  } = useMonsterCollection();
 
-  const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
-    variables: {
-      agentAddress: account.selectedAddress,
-    },
-  });
   const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
     variables: {
       address: account.selectedAddress,
