@@ -117,7 +117,7 @@ export async function update(
     return;
   }
 
-   win?.webContents.send("update download started");
+  win?.webContents.send("update download started");
   // TODO: 이어받기 되면 좋을 듯
   const options: ElectronDLOptions = {
     onStarted: (downloadItem: DownloadItem) => {
