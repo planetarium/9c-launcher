@@ -1,6 +1,12 @@
 overwrite: true
 schema: ./src/schema.graphql
 documents: ./src/api.graphql
+config:
+  withHooks: true
+  withMutationFn: true
+  scalars:
+    Address: ../mappers#Address
+    ByteString: ../mappers#ByteStringHex
 generates:
   src/generated/graphql.tsx:
     plugins:
@@ -12,9 +18,6 @@ generates:
       reactApolloVersion: 2
       withHooks: true
       withMutationFn: true
-      scalars:
-        Address: ../mappers#Address
-        ByteString: ../mappers#ByteStringHex
   src/generated/graphql-request.ts:
     plugins:
       - typescript
@@ -31,10 +34,7 @@ generates:
       - typescript-react-apollo
     config:
       reactApolloVersion: 3
-      withHooks: true
-      withMutationFn: true
       withComponent: false
       withHOC: false
       scalars:
-        Address: ../../mappers#Address
-        ByteString: ../../mappers#ByteStringHex
+        Long: number
