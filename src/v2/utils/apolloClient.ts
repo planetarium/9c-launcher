@@ -4,33 +4,57 @@ import {
   ApolloLink,
   split,
   HttpLink,
+  NormalizedCacheObject,
 } from "@apollo/client";
-import { WebSocketLink } from "../utils/WebSocketLink";
+import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { LOCAL_SERVER_URL } from "../../config";
+import { ipcRenderer } from "electron";
 import { RetryLink } from "@apollo/client/link/retry";
+import { useEffect, useState } from "react";
+import { NodeInfo } from "src/config";
+import isDev from "electron-is-dev";
 
-const wsLink = new WebSocketLink({
-  url: `ws://${LOCAL_SERVER_URL}/graphql`,
-});
+type Client = ApolloClient<NormalizedCacheObject>;
 
-const httpLink = new HttpLink({ uri: `http://${LOCAL_SERVER_URL}/graphql` });
+export default function useApolloClient(): Client | null {
+  const [apolloClient, setApolloClient] = useState<Client | null>(null);
 
-const splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return (
-      definition.kind === "OperationDefinition" &&
-      definition.operation === "subscription"
-    );
-  },
-  wsLink,
-  httpLink
-);
+  useEffect(() => {
+    (async () => {
+      const node: NodeInfo = await ipcRenderer.invoke("get-node-info");
+      const headlessUrl = `${node.host}:${node.graphqlPort}`;
 
-const link = ApolloLink.from([new RetryLink(), splitLink]);
+      const wsLink = new WebSocketLink({
+        uri: `ws://${headlessUrl}/graphql`,
+        options: {
+          reconnect: true,
+        },
+      });
 
-export default new ApolloClient({
-  link,
-  cache: new InMemoryCache(),
-});
+      const httpLink = new HttpLink({
+        uri: `http://${headlessUrl}/graphql`,
+      });
+
+      const splitLink = split(
+        ({ query }) => {
+          const definition = getMainDefinition(query);
+          return (
+            definition.kind === "OperationDefinition" &&
+            definition.operation === "subscription"
+          );
+        },
+        wsLink,
+        httpLink
+      );
+
+      const client = new ApolloClient({
+        link: ApolloLink.from([new RetryLink(), splitLink]),
+        cache: new InMemoryCache(),
+        connectToDevTools: !isDev,
+      });
+      setApolloClient(client);
+    })().catch(console.error);
+  }, []);
+
+  return apolloClient;
+}

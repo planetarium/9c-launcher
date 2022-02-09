@@ -4,7 +4,7 @@ import { useDifferentAppProtocolVersionEncounterSubscription } from "../generate
 import { useEffect } from "react";
 import { ipcRenderer } from "electron";
 import { IDownloadProgress } from "src/interfaces/ipc";
-import UpdateView from "../components/UpdateView";
+import UpdateView from "../views/UpdateView";
 import machine from "../machines/updateMachine";
 
 export default function APVSubscriptionProvider({
@@ -12,14 +12,15 @@ export default function APVSubscriptionProvider({
 }: React.PropsWithChildren<{}>) {
   const [state, send] = useMachine(machine);
   state.value;
-  const { loading, data } =
-    useDifferentAppProtocolVersionEncounterSubscription();
+  const {
+    loading,
+    data,
+  } = useDifferentAppProtocolVersionEncounterSubscription();
 
   useEffect(() => {
     if (loading) return;
     if (data?.differentAppProtocolVersionEncounter) {
       ipcRenderer.send("encounter different version", data);
-      send("DOWNLOAD");
     }
   }, [data, loading]);
 
@@ -39,6 +40,7 @@ export default function APVSubscriptionProvider({
     );
 
     // State transitions
+    ipcRenderer.on("update download started", () => send("DOWNLOAD"));
     ipcRenderer.on("update download complete", () => send("EXTRACT"));
     ipcRenderer.on("update extract complete", () => send("COPY"));
     ipcRenderer.on("update copying complete", () => send("DONE"));

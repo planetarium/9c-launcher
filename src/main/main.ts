@@ -58,6 +58,7 @@ import { IConfig } from "src/interfaces/config";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   MOBX_DEVTOOLS,
+  APOLLO_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
 import bytes from "bytes";
 import createTransferWindow from "../transfer/window";
@@ -72,6 +73,8 @@ import {
   IUpdateOptions,
   update,
 } from "./update";
+import { send } from "./v2/ipc";
+import { IPC_PRELOAD_IDLE, IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
 
 initializeSentry();
 
@@ -95,6 +98,8 @@ let standalone: Headless = new Headless(standaloneExecutablePath);
 let ip: string | null = null;
 let relaunched: boolean = false;
 
+let bootstrapped = false;
+
 let initializeHeadlessCts: {
   cancel: (reason?: any) => void;
   token: CancellationToken;
@@ -104,6 +109,8 @@ const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
 let remoteNode: NodeInfo;
+
+const isV2 = app.commandLine.hasSwitch("v2");
 
 ipv4().then((value) => (ip = value));
 
@@ -201,11 +208,16 @@ async function initializeApp() {
   console.log("initializeApp");
   app.on("ready", async () => {
     if (isDev)
-      await installExtension([REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS])
+      await installExtension([
+        REACT_DEVELOPER_TOOLS,
+        MOBX_DEVTOOLS,
+        APOLLO_DEVELOPER_TOOLS,
+      ])
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
-    if (app.commandLine.hasSwitch("v2")) win = await createV2Window();
+    if (app.commandLine.hasSwitch("v2") || getConfig("UseV2Interface"))
+      win = await createV2Window();
     else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
 
@@ -459,6 +471,10 @@ function initializeIpc() {
     );
   });
 
+  ipcMain.handle("generate-private-key", async (event) => {
+    return standalone.keyStore.generateRawKey();
+  });
+
   ipcMain.on(
     "import-private-key",
     async (event, privateKey: PrivateKey, passphrase: string) => {
@@ -510,6 +526,8 @@ function initializeIpc() {
     }
     return remoteNode;
   });
+
+  ipcMain.handle("is bootstrapped", () => bootstrapped);
 }
 
 async function initializeHeadless(): Promise<void> {
@@ -549,6 +567,7 @@ async function initializeHeadless(): Promise<void> {
     }
 
     win?.webContents.send("start bootstrap");
+    bootstrapped = true;
     const snapshot =
       getConfig("StoreType") === "rocksdb" ? partitionSnapshot : monoSnapshot;
 
@@ -638,12 +657,14 @@ async function initializeHeadless(): Promise<void> {
     }
 
     initializeHeadlessCts.token.throwIfCancelled();
+    send(win!, IPC_PRELOAD_NEXT);
     win?.webContents.send("start headless");
     await standalone.execute(getHeadlessArgs());
 
     console.log("Register exit handler.");
     standalone.once("exit", async () => {
       console.error("Headless exited by self.");
+      send(win!, IPC_PRELOAD_IDLE);
       await relaunchHeadless();
     });
   } catch (error) {
@@ -694,6 +715,7 @@ async function initializeRemoteHeadless(): Promise<void> {
     return;
   }
 
+  win?.webContents.send("start bootstrap");
   initializeHeadlessCts = CancellationToken.create();
 
   try {
@@ -702,6 +724,7 @@ async function initializeRemoteHeadless(): Promise<void> {
     // console.log("main call remote_node");
     remoteHeadless = new RemoteHeadless(remoteNode!);
     await remoteHeadless.execute();
+    win?.webContents.send("start headless");
 
     console.log("Register exit handler.");
     standalone.once("exit", async () => {

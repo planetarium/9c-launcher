@@ -1,27 +1,76 @@
 import React from "react";
 import { observer } from "mobx-react";
-import styles from "./styles.module.scss";
-import { ipcRenderer } from "electron";
+
 import WindowControls from "./WindowControls";
 import Menu from "../Menu";
+import StatusBar from "./StatusBar";
 
-const awsSinkGuid: string = ipcRenderer.sendSync(
-  "get-aws-sink-cloudwatch-guid"
-);
+import InfoText from "./InfoText";
+import { CSS, styled } from "src/v2/stitches.config";
+import background from "../../../resources/launcher-png.png";
+import UserInfo from "./UserInfo";
 
 interface LayoutProps {
   sidebar?: boolean;
+  flex?: boolean;
+  css?: CSS;
 }
 
-function Layout({ children }: React.PropsWithChildren<LayoutProps>) {
+const Background = styled("div", {
+  backgroundImage: `url(${background})`,
+  height: "100%",
+  width: "100%",
+  dragable: true,
+});
+
+const Sidebar = styled("main", {
+  position: "fixed",
+  left: 0,
+  top: 0,
+  width: 560,
+  height: "100%",
+  backgroundColor: "$gray",
+  opacity: 0.95,
+  dragable: false,
+  boxSizing: "border-box",
+  padding: 52,
+  "& > * + *": { marginTop: 16 },
+  paddingBottom: 104,
+  variants: {
+    flex: {
+      true: {
+        display: "flex",
+        flexDirection: "column",
+      },
+    },
+  },
+});
+
+const BottomControls = styled("aside", {
+  display: "flex",
+  position: "fixed",
+  right: "40px",
+  bottom: "45px",
+  justifyContent: "flex-end",
+  alignItems: "flex-end",
+  dragable: false,
+});
+
+function Layout({
+  children,
+  sidebar,
+  ...sidebarProps
+}: React.PropsWithChildren<LayoutProps>) {
   return (
-    <div className={styles.layout}>
-      <WindowControls />
-      <main>{children}</main>
-      <aside className={styles.bottomControls}>
+    <Background>
+      {sidebar ? <Sidebar {...sidebarProps}>{children}</Sidebar> : <UserInfo />}
+      <BottomControls>
+        <StatusBar />
         <Menu />
-      </aside>
-    </div>
+      </BottomControls>
+      <InfoText />
+      <WindowControls />
+    </Background>
   );
 }
 

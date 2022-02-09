@@ -27,4 +27,5 @@ export interface IConfig {
   UseRemoteHeadless: boolean;
   LaunchPlayer: boolean;
   RemoteNodeList: string[];
+  UseV2Interface: boolean;
 }
