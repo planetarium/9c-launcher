@@ -38,7 +38,7 @@ export function useMonsterCollection() {
     collectionState?.monsterCollectionStateByAgent?.level ??
     collectionStateQuery?.stateQuery?.monsterCollectionState?.level ??
     0;
-  const blockIndex =
+  const receivedBlockIndex =
     collectionState?.monsterCollectionStateByAgent?.receivedBlockIndex ??
     collectionStateQuery?.stateQuery?.monsterCollectionState
       ?.receivedBlockIndex ??
@@ -61,7 +61,7 @@ export function useMonsterCollection() {
       return currentReward;
     }, [collectionStatus, collectionStatusQuery]),
     level,
-    blockIndex,
+    receivedBlockIndex,
     depositedGold: useMemo(() => {
       const sheetResponse =
         collectionSheet?.stateQuery.monsterCollectionSheet?.orderedList;
@@ -71,5 +71,12 @@ export function useMonsterCollection() {
         level
       );
     }, [collectionSheet]),
+    claimableBlockIndex: useMemo(
+      () =>
+        collectionState?.monsterCollectionStateByAgent.claimableBlockIndex ??
+        collectionStateQuery?.stateQuery.monsterCollectionState
+          ?.claimableBlockIndex,
+      [collectionState, collectionStateQuery]
+    ),
   };
 }

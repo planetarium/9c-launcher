@@ -1,21 +1,18 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
-import { styled } from "@stitches/react";
+import { styled } from "src/v2/stitches.config";
 import {
   useBalanceByAgentSubscription,
-  useCollectionStateByAgentSubscription,
-  useCollectionStatusByAgentSubscription,
-  useCollectionStatusQueryQuery,
   useGetNcgBalanceQuery,
-  useStateQueryMonsterCollectionQuery,
 } from "src/v2/generated/graphql";
 import { useStore } from "src/v2/utils/useStore";
 import { useIsPreloadDone } from "src/v2/utils/usePreload";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import goldIconUrl from "src/v2/resources/ui-main-icon-gold.png";
-import { RewardCategory } from "src/collection/types";
 import { useMonsterCollection } from "src/v2/utils/monsterCollection";
+
+import goldIconUrl from "src/v2/resources/ui-main-icon-gold.png";
+import monsterIconUrl from "src/v2/resources/monster.png";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -25,6 +22,7 @@ const UserInfoStyled = styled(motion.ul, {
   flexDirection: "column",
   padding: 0,
   margin: 0,
+  dragable: false,
 });
 
 const UserInfoItem = styled(motion.li, {
@@ -34,6 +32,9 @@ const UserInfoItem = styled(motion.li, {
   "& > svg, & > img": {
     marginRight: 5,
   },
+  "&:hover": {
+    backgroundColor: "$gray80",
+  },
 });
 
 export default function UserInfo() {
@@ -41,7 +42,7 @@ export default function UserInfo() {
   const isDone = useIsPreloadDone();
   const {
     currentReward,
-    blockIndex,
+    receivedBlockIndex,
     depositedGold,
     level,
   } = useMonsterCollection();
@@ -75,6 +76,10 @@ export default function UserInfo() {
       <UserInfoItem>
         <img src={goldIconUrl} alt="gold" />
         {Number(gold)}
+      </UserInfoItem>
+      <UserInfoItem>
+        <img src={monsterIconUrl} alt="monster collection icon" />
+        {depositedGold || "0"}
       </UserInfoItem>
     </UserInfoStyled>
   );
