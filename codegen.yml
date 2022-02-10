@@ -38,3 +38,4 @@ generates:
       withHOC: false
       scalars:
         Long: number
+        TxId: string
