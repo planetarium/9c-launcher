@@ -3697,10 +3697,10 @@
     "@planetarium/check-free-space-win32-arm64-msvc" "0.0.1"
     "@planetarium/check-free-space-win32-x64-msvc" "0.0.1"
 
-"@planetarium/cli@^0.9.5":
-  version "0.9.5"
-  resolved "https://registry.npmjs.org/@planetarium/cli/-/cli-0.9.5.tgz"
-  integrity sha512-N5FdWowcULHW8ayJFd6/AqaltSY9/0fL5SjoaYAw5EwEHo4wz4g3IQHLrGyprDXgZRuVyu+au2yggRbC/HtEyw==
+"@planetarium/cli@~0.26.3":
+  version "0.26.3"
+  resolved "https://registry.yarnpkg.com/@planetarium/cli/-/cli-0.26.3.tgz#b3590b5587490b1194dbebb1cca8306062d89a1e"
+  integrity sha512-NMdGUlVd5pySLtZDqYegHjo3LM4R72NuFnitP+BjuUBI5t0jwt4RGzDvRJRiq8nJ9xtME4uPuZ29W7y8WJC+Fg==
   dependencies:
     node-fetch "^2.6.0"
     unzipper "^0.10.11"
