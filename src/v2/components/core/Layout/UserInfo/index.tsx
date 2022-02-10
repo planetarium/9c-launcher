@@ -18,8 +18,9 @@ import {
 import goldIconUrl from "src/v2/resources/ui-main-icon-gold.png";
 import monsterIconUrl from "src/v2/resources/monster.png";
 import { getRemain } from "src/collection/common/utils";
-import { ClaimCollectionRewardsOverlay } from "src/v2/views/ClaimCollectionRewardsOverlay";
+import ClaimCollectionRewardsOverlay from "src/v2/views/ClaimCollectionRewardsOverlay";
 import { ClaimButton } from "./ClaimButton";
+import { Reward } from "src/collection/types";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -66,6 +67,11 @@ export default function UserInfo() {
     const minutes = Math.round((claimableBlockIndex - currentTip) / 5);
     return getRemain(minutes);
   }, [claimableBlockIndex, currentTip]);
+  const rewards = useMemo<Reward[]>(
+    () =>
+      Array.from(currentReward).map((x) => ({ itemId: x[0], quantity: x[1] })),
+    [currentReward]
+  );
 
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
   useEffect(() => setClaimLoading(false), [receivedBlockIndex]);
@@ -118,6 +124,11 @@ export default function UserInfo() {
         <ClaimCollectionRewardsOverlay
           isOpen={openDialog}
           onClose={() => setOpenDialog(false)}
+          tip={currentTip}
+          rewards={rewards}
+          onActionTxId={(_) =>
+            void (setOpenDialog(false), setClaimLoading(true))
+          }
         />
       </UserInfoItem>
     </UserInfoStyled>
