@@ -1,17 +1,47 @@
 import React from "react";
-import styles from "./styles.module.scss";
+import { styled } from "src/v2/stitches.config";
+import type * as Stitches from "@stitches/react";
 
-interface MenuItemProps {
+const MenuItemContainer = styled("button", {
+  all: "unset",
+  display: "flex",
+  alignItems: "center",
+  padding: "10px",
+  appearence: "none",
+  cursor: "pointer",
+  "& img": {
+    paddingRight: "1rem",
+  },
+  "&:hover, &:focus": {
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    outline: "none",
+  },
+  variants: {
+    disabled: {
+      true: {
+        opacity: 0.8,
+      },
+    },
+  },
+});
+
+interface MenuItemProps
+  extends Stitches.VariantProps<typeof MenuItemContainer> {
   onClick: () => void;
   icon: string;
   text: string;
 }
 
-export default function MenuItem({ onClick, icon, text }: MenuItemProps) {
+export default function MenuItem({
+  onClick,
+  icon,
+  text,
+  ...props
+}: MenuItemProps) {
   return (
-    <div className={styles.menuItem} onClick={onClick}>
+    <MenuItemContainer onClick={onClick} {...props}>
       <img alt="" src={icon} />
       <span>{text}</span>
-    </div>
+    </MenuItemContainer>
   );
 }

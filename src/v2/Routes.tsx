@@ -7,6 +7,13 @@ import { useStore } from "./utils/useStore";
 
 import LoginView from "./views/LoginView";
 import WelcomeView from "./views/WelcomeView";
+import RegisterView from "./views/RegisterView";
+import LobbyView from "./views/LobbyView";
+import MissingActivationView from "./views/MissingActivationView";
+import ImportView from "./views/ImportView";
+import RecoverView from "./views/RecoverView";
+import ForgotPasswordView from "./views/ForgotPasswordView";
+import ErrorView from "./views/ErrorView";
 
 const Redirector = observer(() => {
   const account = useStore("account");
@@ -37,6 +44,16 @@ export default function Routes() {
     <Switch>
       <Route path="/login" component={LoginView} />
       <Route path="/welcome" component={WelcomeView} />
+      <Route
+        path="/register/missing-activation"
+        component={MissingActivationView}
+      />
+      <Route path="/register" component={RegisterView} />
+      <Route path="/lobby" component={LobbyView} />
+      <Route path="/import" component={ImportView} />
+      <Route path="/forgot" component={ForgotPasswordView} />
+      <Route path="/recover" component={RecoverView} />
+      <Route path="/error" component={ErrorView} />
       <Route exact path="/" component={Redirector} />
       <Redirect from="*" to="/" />
     </Switch>

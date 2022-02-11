@@ -28,13 +28,16 @@ import { T, useLanguages, useLocale } from "@transifex/react";
 import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
 import log from "electron-log";
+import bytes from "bytes";
 
 const transifexTags = "configuration";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
-  const languages: Array<Record<"code" | "name" | "localized_name", string>> =
-    useLanguages();
+  const languages: Array<Record<
+    "code" | "name" | "localized_name",
+    string
+  >> = useLanguages();
   const selectedLocale: string = useLocale();
   const selectedLanguage = useMemo(
     () => languages.find(({ code }) => code === selectedLocale)?.localized_name,
@@ -65,6 +68,10 @@ const ConfigurationView = observer(() => {
 
     const useRemoteHeadlessChecked = event.target.useRemoteHeadless.checked;
     userConfigStore.set("UseRemoteHeadless", useRemoteHeadlessChecked);
+
+    const logSize = bytes.parse(event.target.logsize.value);
+    if (logSize && logSize !== getConfig("LogSizeBytes"))
+      userConfigStore.set("LogSizeBytes", logSize);
 
     remote.app.relaunch();
     remote.app.exit();
@@ -165,6 +172,16 @@ const ConfigurationView = observer(() => {
           >
             <T _str="Open Path" _tags={transifexTags} />
           </Button>
+
+          <FormLabel className={classes.newLine}>
+            <T _str="Log Size" _tags={transifexTags} />
+          </FormLabel>
+          <TextField
+            fullWidth
+            name="logsize"
+            className={classes.textField}
+            defaultValue={bytes(getConfig("LogSizeBytes"))}
+          />
 
           <FormControl className={classes.checkboxGroup}>
             <FormLabel className={classes.newLine}>

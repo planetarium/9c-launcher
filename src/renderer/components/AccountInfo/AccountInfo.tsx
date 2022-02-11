@@ -15,8 +15,13 @@ export type Props = {
 };
 
 const AccountInfo: React.FC<Props> = (props: Props) => {
-  const { remainText, goldLabel, collectionLabel, isCollecting, onOpenWindow } =
-    props;
+  const {
+    remainText,
+    goldLabel,
+    collectionLabel,
+    isCollecting,
+    onOpenWindow,
+  } = props;
 
   const numberWithComma = (number: string | number) => {
     if (typeof number === "string") return number;

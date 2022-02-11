@@ -8,12 +8,28 @@ export async function createWindow(): Promise<BrowserWindow> {
     width: 1300,
     height: 768,
     webPreferences: {
+      nativeWindowOpen: true,
       nodeIntegration: true,
+      affinity: "v2",
     },
     frame: false,
     resizable: false,
     autoHideMenuBar: true,
     icon: join(app.getAppPath(), logoImage),
+  });
+
+  win.webContents.on("new-window", function (
+    event,
+    url: string,
+    _a,
+    _,
+    options
+  ) {
+    if (url.startsWith("https://stately.ai/viz?inspect")) {
+      options.frame = true;
+      options.resizable = true;
+      options.webPreferences!.nodeIntegration = false;
+    } else event.preventDefault(), shell.openExternal(url);
   });
 
   if (isDev) {
@@ -22,11 +38,6 @@ export async function createWindow(): Promise<BrowserWindow> {
   } else {
     win.loadFile("v2.html");
   }
-
-  win.webContents.on("new-window", function (event: any, url: string) {
-    event.preventDefault();
-    shell.openExternal(url);
-  });
 
   return win;
 }
