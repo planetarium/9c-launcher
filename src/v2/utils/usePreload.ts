@@ -39,7 +39,7 @@ const getStatusMessage = (
   } else if (state.matches("snapshot")) {
     return statusMessage[mergeMeta(state.meta).step];
   } else if (state.matches("headless")) {
-    return statusMessage[5 + data?.preloadProgress?.currentPhase ?? 0];
+    return statusMessage[5 + (data?.preloadProgress?.currentPhase ?? 0)];
   } else if (state.matches("error")) {
     return state.context.error;
   } else {

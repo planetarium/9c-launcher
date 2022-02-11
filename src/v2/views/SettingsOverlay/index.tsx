@@ -22,6 +22,7 @@ import OverlayBase from "src/v2/components/core/OverlayBase";
 import Checkbox from "src/v2/components/ui/Checkbox";
 import AdvancedAction from "./AdvancedAction";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { OverlayProps } from "src/v2/utils/types";
 
 const Form = styled("form", {
   display: "flex",
@@ -47,11 +48,6 @@ type Languages = Array<Record<"code" | "name" | "localized_name", string>>;
 const transifexTags = "v2/configuration";
 const app = require("electron").remote.app;
 
-interface SettingsOverlayProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
 function handleOpenKeyStorePath() {
   const openpath = path.join(
     remote.app.getPath("appData"),
@@ -68,7 +64,7 @@ function handleOpenLogPath() {
   shell.showItemInFolder(openpath);
 }
 
-function SettingsOverlay({ onClose, isOpen }: SettingsOverlayProps) {
+function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
   const {
     register,
     control,
