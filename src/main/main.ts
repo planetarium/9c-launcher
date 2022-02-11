@@ -431,9 +431,9 @@ function initializeIpc() {
     mixpanel?.alias(alias);
   });
 
-  ipcMain.on("get-protected-private-keys", async (event) => {
-    event.returnValue = standalone.keyStore.list();
-  });
+  ipcMain.handle("get-protected-private-keys", async () =>
+    standalone.keyStore.list()
+  );
 
   ipcMain.on(
     "unprotect-private-key",
