@@ -25,6 +25,7 @@ type PreloadMachineEvent =
   | { type: "SKIP_UPDATE" }
   | { type: "PROGRESS"; progress: number }
   | { type: "HEADLESS" }
+  | { type: "REMOTE_HEADLESS" }
   | { type: "DONE" }
   | { type: "ERROR"; error: string; data?: any }
   | { type: "IDLE" };
@@ -50,15 +51,29 @@ export const preloadMachine = createMachine<
       idle: {
         on: {
           BOOTSTRAP: "snapshot",
+          REMOTE_HEADLESS: "headless",
         },
         meta: {
           step: 0,
         },
-        invoke: {
-          id: "bootstrap",
-          src: () =>
-            invokeIpcEvent<PreloadMachineEvent>("start bootstrap", "BOOTSTRAP"),
-        },
+        invoke: [
+          {
+            id: "bootstrap",
+            src: () =>
+              invokeIpcEvent<PreloadMachineEvent>(
+                "start bootstrap",
+                "BOOTSTRAP"
+              ),
+          },
+          {
+            id: "remoteHeadless",
+            src: () =>
+              invokeIpcEvent<PreloadMachineEvent>(
+                "start remote headless",
+                "REMOTE_HEADLESS"
+              ),
+          },
+        ],
       },
       snapshot: {
         initial: "checkUpdates",
