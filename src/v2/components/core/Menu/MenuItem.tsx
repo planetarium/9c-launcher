@@ -14,7 +14,7 @@ const MenuItemContainer = styled("button", {
   "& img": {
     paddingRight: "1rem",
   },
-  "&:hover, &:focus": {
+  "&:hover": {
     backgroundColor: "rgba(255, 255, 255, 0.1)",
     outline: "none",
   },
