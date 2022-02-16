@@ -41,6 +41,7 @@ function Menu() {
       <MenuItem
         icon={staking}
         text="Staking"
+        disabled={!account.isLogin}
         onClick={() =>
           ipcRenderer.invoke("open collection page", account.selectedAddress)
         }
@@ -48,6 +49,7 @@ function Menu() {
       <MenuItem
         icon={ncgLogo}
         text="Send NCG"
+        disabled={!account.isLogin}
         onClick={() =>
           ipcRenderer.invoke("open transfer page", account.selectedAddress)
         }
