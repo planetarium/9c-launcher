@@ -7,7 +7,7 @@ import { useHistory } from "react-router";
 import { CSS, styled } from "src/v2/stitches.config";
 
 import H1 from "src/v2/components/ui/H1";
-import TextField from "src/v2/components/ui/TextField";
+import { PasswordField } from "src/v2/components/ui/TextField";
 import Button from "src/v2/components/ui/Button";
 import { Select, SelectOption } from "src/v2/components/ui/Select";
 import { Link } from "src/v2/components/ui/Link";
@@ -71,9 +71,8 @@ function LoginView() {
             </SelectOption>
           ))}
         </Select>
-        <TextField
+        <PasswordField
           label="Password"
-          type="password"
           value={password}
           invalid={invalid}
           onChange={(e) => setPassword(e.target.value)}

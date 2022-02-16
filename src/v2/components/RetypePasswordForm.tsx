@@ -4,7 +4,7 @@ import { AnimateSharedLayout } from "framer-motion";
 import { useForm } from "react-hook-form";
 import zxcvbn from "zxcvbn";
 import Button from "./ui/Button";
-import TextField from "./ui/TextField";
+import TextField, { PasswordField } from "./ui/TextField";
 import { styled } from "../stitches.config";
 
 interface Props {
@@ -46,8 +46,7 @@ export default function RetypePasswordForm({
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       {address && <TextField label="ID" readOnly value={address} />}
-      <TextField
-        type="password"
+      <PasswordField
         label="Password"
         message={errors.password?.type === "password" ? "Too weak" : "Strong"}
         invalid={errors.password && errors.password?.type !== "confirm"}
@@ -59,8 +58,7 @@ export default function RetypePasswordForm({
           },
         })}
       />
-      <TextField
-        type="password"
+      <PasswordField
         label="Verify Password"
         ref={confirmRef}
         message={
