@@ -12,12 +12,9 @@ import Button from "src/v2/components/ui/Button";
 import { Select, SelectOption } from "src/v2/components/ui/Select";
 import { Link } from "src/v2/components/ui/Link";
 import { T } from "src/renderer/i18n";
+import Form from "src/v2/components/ui/Form";
 
 const transifexTags = "v2/login-view";
-
-const Form = styled("form", {
-  "& > * + *": { marginTop: 16 },
-});
 
 function LoginView() {
   const { account } = useStore();
