@@ -4,18 +4,24 @@ import { DropzoneOptions } from "react-dropzone";
 import FileChooser from "./ui/FileChooser";
 import TextField from "./ui/TextField";
 
-export interface ImportData {
-  key?: string;
-  fromFile?: boolean;
-}
+export type ImportData =
+  | {
+      key: string;
+      fromFile: false;
+    }
+  | {
+      key: File;
+      fromFile: true;
+    }
+  | null;
 
-type Action = React.ChangeEvent<HTMLInputElement> | string;
+type Action = React.ChangeEvent<HTMLInputElement> | File;
 
 function make(action: Action): ImportData {
-  if (typeof action === "string") {
+  if (action instanceof File) {
     return { key: action, fromFile: true };
   } else {
-    if (action.target.value.length === 0) return {};
+    if (action.target.value.length === 0) return null;
     return { key: action.target.value, fromFile: false };
   }
 }
@@ -37,7 +43,9 @@ export default function ImportInput({
     <>
       <FileChooser
         disabled={!fromFile && fromFile != null}
-        onDrop={(files) => files[0]?.text()?.then((v) => onSubmit(make(v))) ?? onSubmit({})}
+        onDrop={(files) =>
+          files[0] ? onSubmit(make(files[0])) : onSubmit(null)
+        }
         validator={fileValidator}
       />
       <TextField
