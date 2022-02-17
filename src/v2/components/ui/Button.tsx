@@ -18,6 +18,7 @@ const Button = styled(motion.button, {
   cursor: "pointer",
   "&:disabled": {
     backgroundColor: "#4f4f4f",
+    color: "$gray",
     cursor: "not-allowed",
   },
   variants: {
