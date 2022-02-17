@@ -37,7 +37,7 @@ export default function ImportInput({
     <>
       <FileChooser
         disabled={!fromFile && fromFile != null}
-        onDrop={(files) => files[0]?.text()?.then((v) => onSubmit(make(v)))}
+        onDrop={(files) => files[0]?.text()?.then((v) => onSubmit(make(v))) ?? onSubmit({})}
         validator={fileValidator}
       />
       <TextField
