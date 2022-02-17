@@ -11,6 +11,14 @@ const ChooserWrapper = styled("div", {
   justifyContent: "center",
   padding: 32,
   border: "2px dashed #979797",
+  variants: {
+    rejected: {
+      true: {
+        border: "2px dashed #ffa8a8",
+        color: "#ff6b6b",
+      },
+    },
+  },
 });
 
 const transifexTags = "v2/FileChooser";
@@ -35,14 +43,17 @@ export default function FileChooser({
     getInputProps,
     isDragActive,
     acceptedFiles,
+    fileRejections,
   } = useDropzone({ onDrop, disabled, multiple: false, validator });
 
   return (
-    <ChooserWrapper {...getRootProps()}>
+    <ChooserWrapper {...getRootProps()} rejected={!!fileRejections[0]}>
       <input {...getInputProps({ onChange, onBlur })} />
       <CloudUploadIcon fontSize="large" />
       {acceptedFiles.length > 0 ? (
         <p>{acceptedFiles[0].name}</p>
+      ) : fileRejections[0] && fileRejections[0].errors[0] ? (
+        <p>{fileRejections[0].errors[0].message}</p>
       ) : isDragActive ? (
         <p>
           <T _str="Drop the files here ..." _tags={transifexTags} />

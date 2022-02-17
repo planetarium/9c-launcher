@@ -9,6 +9,7 @@ import { styled } from "src/v2/stitches.config";
 import { useStore } from "src/v2/utils/useStore";
 import { useHistory } from "react-router";
 import ImportInput, { ImportData } from "src/v2/components/ImportInput";
+import { FileError } from "react-dropzone";
 
 const transifexTags = "v2/import-view";
 
@@ -17,6 +18,18 @@ const ButtonBar = styled("div", {
   "& > * + *": { marginLeft: 16 },
   justifyContent: "center",
 });
+
+// https://github.com/moreal/libplanet/blob/7905c147f9b86938f2fec983dbea3d6a1919fec0/Libplanet/KeyStore/Web3KeyStore.cs#L31
+// FIXME: This should be handled by the headless.
+const keyFilenameRegex = /^UTC--\d{4}-\d\d-\d\dT\d\d-\d\d-\d\dZ--([\da-f]{8}-?(?:[\da-f]{4}-?){3}[\da-f]{12})$/i;
+
+function fileValidator(f: File): FileError | null {
+  if (f.name.match(keyFilenameRegex)) return null;
+  return {
+    message: "Invalid key filename",
+    code: "INVALID_KEY_FILENAME",
+  };
+}
 
 function ImportView() {
   const account = useStore("account");
@@ -41,7 +54,11 @@ function ImportView() {
           _tags={transifexTags}
         />
       </H2>
-      <ImportInput onSubmit={setKey} fromFile={key.fromFile} />
+      <ImportInput
+        onSubmit={setKey}
+        fromFile={key.fromFile}
+        fileValidator={fileValidator}
+      />
       <ButtonBar>
         <Button onClick={history.goBack.bind(history)}>
           <T _str="Prev" _tags={transifexTags} />
