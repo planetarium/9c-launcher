@@ -19,6 +19,7 @@ interface FileChooserProps {
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onBlur?: React.FocusEventHandler<HTMLInputElement>;
   onDrop?: DropzoneOptions["onDrop"];
+  validator?: DropzoneOptions["validator"];
   disabled?: boolean;
 }
 
@@ -26,6 +27,7 @@ export default function FileChooser({
   onChange,
   onBlur,
   onDrop,
+  validator,
   disabled,
 }: FileChooserProps) {
   const {
@@ -33,7 +35,7 @@ export default function FileChooser({
     getInputProps,
     isDragActive,
     acceptedFiles,
-  } = useDropzone({ onDrop, disabled, multiple: false });
+  } = useDropzone({ onDrop, disabled, multiple: false, validator });
 
   return (
     <ChooserWrapper {...getRootProps()}>
