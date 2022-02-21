@@ -7,13 +7,17 @@ import { useHistory } from "react-router";
 import { CSS, styled } from "src/v2/stitches.config";
 
 import H1 from "src/v2/components/ui/H1";
-import TextField from "src/v2/components/ui/TextField";
+import { PasswordField } from "src/v2/components/ui/TextField";
 import Button from "src/v2/components/ui/Button";
 import { Select, SelectOption } from "src/v2/components/ui/Select";
 import { Link } from "src/v2/components/ui/Link";
 import { T } from "src/renderer/i18n";
 
 const transifexTags = "v2/login-view";
+
+const Form = styled("form", {
+  "& > * + *": { marginTop: 16 },
+});
 
 function LoginView() {
   const { account } = useStore();
@@ -56,32 +60,33 @@ function LoginView() {
       <p>
         <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
       </p>
-      <Select
-        value={account.selectedAddress}
-        onChange={(v) => account.setSelectedAddress(v)}
-      >
-        {account.addresses.map((address) => (
-          <SelectOption key={address} value={address}>
-            {address}
-          </SelectOption>
-        ))}
-      </Select>
-      <TextField
-        label="Password"
-        type="password"
-        value={password}
-        invalid={invalid}
-        onChange={(e) => setPassword(e.target.value)}
-        autoFocus
-      />
-      <Button
-        variant="primary"
-        centered
-        onClick={handleLogin}
-        css={{ width: 280, marginTop: "auto" }}
-      >
-        <T _str="LOGIN" _tags={transifexTags} />
-      </Button>
+      <Form onSubmit={(e) => e.preventDefault()}>
+        <Select
+          value={account.selectedAddress}
+          onChange={(v) => account.setSelectedAddress(v)}
+        >
+          {account.addresses.map((address) => (
+            <SelectOption key={address} value={address}>
+              {address}
+            </SelectOption>
+          ))}
+        </Select>
+        <PasswordField
+          label="Password"
+          value={password}
+          invalid={invalid}
+          onChange={(e) => setPassword(e.target.value)}
+          autoFocus
+        />
+        <Button
+          variant="primary"
+          centered
+          onClick={handleLogin}
+          css={{ width: 280 }}
+        >
+          <T _str="LOGIN" _tags={transifexTags} />
+        </Button>
+      </Form>
       <Link centered to="/forgot">
         <T _str="Forgot password?" _tags={transifexTags} />
       </Link>

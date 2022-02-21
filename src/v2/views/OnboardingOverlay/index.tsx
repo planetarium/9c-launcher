@@ -6,6 +6,7 @@ import H1 from "src/v2/components/ui/H1";
 import Button from "src/v2/components/ui/Button";
 import { useStore } from "src/v2/utils/useStore";
 import OverlayBase from "src/v2/components/core/OverlayBase";
+import { OverlayProps } from "src/v2/utils/types";
 
 const Section = styled(motion.section, {
   display: "flex",
@@ -72,12 +73,7 @@ function IntroductionSection({ next }: SectionProps) {
   );
 }
 
-interface OnboardingOverlayProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-function OnboardingOverlay({ onClose, isOpen }: OnboardingOverlayProps) {
+function OnboardingOverlay({ onClose, isOpen }: OverlayProps) {
   const [section, setState] = React.useState<"mining" | "introduce">("mining");
   const next = () => (section === "mining" ? setState("introduce") : onClose());
 

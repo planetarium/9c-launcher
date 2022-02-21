@@ -8,10 +8,32 @@ import TextField from "src/v2/components/ui/TextField";
 import { t } from "@transifex/native";
 import Button from "src/v2/components/ui/Button";
 import { Link } from "src/v2/components/ui/Link";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useStore } from "src/v2/utils/useStore";
+import { ipcRenderer } from "electron";
+import { useHistory } from "react-router";
 
 const transifexTags = "v2/ForgotPasswordView";
 
+interface FormData {
+  privateKey: string;
+}
+
 function ForgotPasswordView() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
+
+  const account = useStore("account");
+  const history = useHistory();
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    account.setPrivateKey(data.privateKey);
+    history.push("/recover");
+  };
+
   return (
     <Layout sidebar flex>
       <div>
@@ -25,12 +47,19 @@ function ForgotPasswordView() {
           />
         </H2>
       </div>
-
-      <TextField label={t("Private key", { _tags: transifexTags })} />
-
-      <Button css={{ marginTop: "auto" }} centered variant="primary">
-        <T _str="OK" _tags={transifexTags} />
-      </Button>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <TextField
+          label={t("Private key", { _tags: transifexTags })}
+          {...register("privateKey", {
+            required: true,
+            validate: (v) => ipcRenderer.sendSync("validate-private-key", v),
+          })}
+          invalid={!!errors.privateKey}
+        />
+        <Button css={{ marginTop: "auto" }} centered variant="primary">
+          <T _str="OK" _tags={transifexTags} />
+        </Button>
+      </form>
       <Link centered to="/revoke">
         <T _str="Got no keys?" _tags={transifexTags} />
       </Link>

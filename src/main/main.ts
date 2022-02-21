@@ -431,9 +431,9 @@ function initializeIpc() {
     mixpanel?.alias(alias);
   });
 
-  ipcMain.on("get-protected-private-keys", async (event) => {
-    event.returnValue = standalone.keyStore.list();
-  });
+  ipcMain.handle("get-protected-private-keys", async () =>
+    standalone.keyStore.list()
+  );
 
   ipcMain.on(
     "unprotect-private-key",
@@ -715,16 +715,14 @@ async function initializeRemoteHeadless(): Promise<void> {
     return;
   }
 
-  // win?.webContents.send("start bootstrap");
   initializeHeadlessCts = CancellationToken.create();
 
   try {
     initializeHeadlessCts.token.throwIfCancelled();
-    // win?.webContents.send("start remote headless");
+    win?.webContents.send("start remote headless");
     // console.log("main call remote_node");
     remoteHeadless = new RemoteHeadless(remoteNode!);
     await remoteHeadless.execute();
-    // win?.webContents.send("start headless");
 
     console.log("Register exit handler.");
     standalone.once("exit", async () => {

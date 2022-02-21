@@ -1,5 +1,6 @@
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useReducer } from "react";
 import { styled } from "src/v2/stitches.config";
 
 export interface TextFieldProps
@@ -78,6 +79,25 @@ const Message = styled("span", {
   },
 });
 
+const Side = styled("span", {
+  position: "absolute",
+  top: "50%",
+  right: 20,
+  transform: "translateY(-50%)",
+  display: "flex",
+  alignItems: "flex-end",
+});
+
+const SideButton = styled("button", {
+  appearance: "none",
+  color: "white",
+  background: "none",
+  border: "none",
+  "& > svg": {
+    verticalAlign: "middle",
+  },
+});
+
 function randomId() {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
 }
@@ -111,3 +131,39 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
 );
 
 export default TextField;
+
+export const PasswordField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+  (
+    {
+      id = randomId(),
+      label,
+      invalid,
+      message,
+      motion: useMotion,
+      ...inputAttrs
+    },
+    ref
+  ) => {
+    const [visible, toggleVisible] = useReducer((v) => !v, false);
+    const Icon = visible ? Visibility : VisibilityOff;
+
+    return (
+      <TextFieldWrapper invalid={invalid} layout={useMotion}>
+        <Input
+          type={visible ? "text" : "password"}
+          id={id}
+          placeholder="&nbsp;"
+          ref={ref}
+          {...inputAttrs}
+        />
+        <Label htmlFor={id}>{label}</Label>
+        {message && <Message invalid={invalid}>{message}</Message>}
+        <Side>
+          <SideButton onClick={toggleVisible}>
+            <Icon />
+          </SideButton>
+        </Side>
+      </TextFieldWrapper>
+    );
+  }
+);
