@@ -166,7 +166,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
           </GroupTitle>
           <TextField
             label={t("Chain store directory name")}
-            readOnly
             {...register("BlockchainStoreDirName")}
           />
 
