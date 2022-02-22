@@ -44,7 +44,7 @@ function RevokeView() {
         onClick={() => {
           ipcRenderer.sendSync(
             "revoke-protected-private-key",
-            account.selectedAddress
+            account.selectedAddress.replace("0x", "")
           );
           account.removeAddress(account.selectedAddress);
           history.push("/");
