@@ -39,13 +39,16 @@ function LoginView() {
       ipcRenderer.send("mixpanel-alias", account.selectedAddress);
       ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
       ipcRenderer.send("standalone/set-signer-private-key", account.privateKey);
+      localStorage.setItem("lastAddress", account.selectedAddress);
       history.push("/lobby");
     }
   };
 
   useEffect(() => {
+    const defaultAddress =
+      localStorage.getItem("lastAddress") ?? account.addresses[0];
     if (!account.selectedAddress && account.addresses.length > 0) {
-      account.setSelectedAddress(account.addresses[0]); // TODO: Persist the last chosen address
+      account.setSelectedAddress(defaultAddress); // TODO: Persist the last chosen address
     }
   }, [account.addresses, account.selectedAddress]);
 
