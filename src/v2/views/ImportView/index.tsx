@@ -9,6 +9,8 @@ import { styled } from "src/v2/stitches.config";
 import { useStore } from "src/v2/utils/useStore";
 import { useHistory } from "react-router";
 import ImportInput, { ImportData } from "src/v2/components/ImportInput";
+import { ipcRenderer } from "electron";
+import { t } from "@transifex/native";
 
 const transifexTags = "v2/import-view";
 
@@ -23,9 +25,14 @@ function ImportView() {
   const history = useHistory();
 
   const [key, setKey] = useState<ImportData>({});
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = () => {
     if (!key.key) return;
+    if (!ipcRenderer.sendSync("validate-private-key", key.key)) {
+      setError(t("Invalid private key"));
+      return;
+    }
     account.setPrivateKey(key.key);
     history.push("/recover");
   };
@@ -41,6 +48,7 @@ function ImportView() {
           _tags={transifexTags}
         />
       </H2>
+      {error && <p>{error}</p>}
       <ImportInput onSubmit={setKey} fromFile={key.fromFile} />
       <ButtonBar>
         <Button onClick={history.goBack.bind(history)}>
