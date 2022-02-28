@@ -1,6 +1,6 @@
 import { t } from "@transifex/native";
 import React from "react";
-import FileChooser from "./ui/FileChooser";
+// import FileChooser from "./ui/FileChooser";
 import TextField from "./ui/TextField";
 
 export interface ImportData {
@@ -29,10 +29,10 @@ export interface ImportInputProps {
 export default function ImportInput({ onSubmit, fromFile }: ImportInputProps) {
   return (
     <>
-      <FileChooser
+      {/* <FileChooser
         disabled={!fromFile && fromFile != null}
         onDrop={(files) => files[0]?.text()?.then((v) => onSubmit(make(v)))}
-      />
+      /> */}
       <TextField
         disabled={!!fromFile}
         onChange={(v) => onSubmit(make(v))}
