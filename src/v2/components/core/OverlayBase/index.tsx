@@ -3,6 +3,7 @@ import { styled } from "src/v2/stitches.config";
 import "@reach/dialog/styles.css";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
+import Close from "@material-ui/icons/Close";
 
 const AnimatedDialogOverlay = styled(motion(DialogOverlay), {
   "&&": {
@@ -12,6 +13,7 @@ const AnimatedDialogOverlay = styled(motion(DialogOverlay), {
 });
 
 const AnimatedDialogContent = styled(motion(DialogContent), {
+  position: "relative",
   padding: 36,
   boxSizing: "border-box",
   height: 600,
@@ -21,6 +23,24 @@ const AnimatedDialogContent = styled(motion(DialogContent), {
     width: 1124,
   },
 });
+
+const CloseButtonStyled = styled("button", {
+  position: "absolute",
+  top: 20,
+  right: 20,
+  backgroundColor: "transparent",
+  border: "none",
+  cursor: "pointer",
+  color: "white",
+});
+
+export function CloseButton({ onClick }: { onClick: () => void }) {
+  return (
+    <CloseButtonStyled onClick={onClick}>
+      <Close />
+    </CloseButtonStyled>
+  );
+}
 
 export default function OverlayBase({
   children,

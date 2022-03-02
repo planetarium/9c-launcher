@@ -12,12 +12,9 @@ import Button from "src/v2/components/ui/Button";
 import { Select, SelectOption } from "src/v2/components/ui/Select";
 import { Link } from "src/v2/components/ui/Link";
 import { T } from "src/renderer/i18n";
+import Form from "src/v2/components/ui/Form";
 
 const transifexTags = "v2/login-view";
-
-const Form = styled("form", {
-  "& > * + *": { marginTop: 16 },
-});
 
 function LoginView() {
   const { account } = useStore();
@@ -42,13 +39,16 @@ function LoginView() {
       ipcRenderer.send("mixpanel-alias", account.selectedAddress);
       ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
       ipcRenderer.send("standalone/set-signer-private-key", account.privateKey);
+      localStorage.setItem("lastAddress", account.selectedAddress);
       history.push("/lobby");
     }
   };
 
   useEffect(() => {
+    const defaultAddress =
+      localStorage.getItem("lastAddress") ?? account.addresses[0];
     if (!account.selectedAddress && account.addresses.length > 0) {
-      account.setSelectedAddress(account.addresses[0]); // TODO: Persist the last chosen address
+      account.setSelectedAddress(defaultAddress); // TODO: Persist the last chosen address
     }
   }, [account.addresses, account.selectedAddress]);
 

@@ -159,7 +159,7 @@ export const PasswordField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         <Label htmlFor={id}>{label}</Label>
         {message && <Message invalid={invalid}>{message}</Message>}
         <Side>
-          <SideButton onClick={toggleVisible}>
+          <SideButton type="button" onClick={toggleVisible}>
             <Icon />
           </SideButton>
         </Side>

@@ -28,7 +28,7 @@ function RecoverView() {
       ipcRenderer.sendSync("revoke-protected-private-key", address);
     } finally {
       ipcRenderer.sendSync("import-private-key", account.privateKey, password);
-      history.push("/login");
+      history.push("/");
     }
   };
 
