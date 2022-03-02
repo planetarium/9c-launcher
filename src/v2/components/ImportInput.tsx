@@ -36,7 +36,7 @@ export default function ImportInput({ onSubmit, fromFile }: ImportInputProps) {
       <TextField
         disabled={!!fromFile}
         onChange={(v) => onSubmit(make(v))}
-        label={t("keystore", { _tags: transifexTags })}
+        label={t("Private key", { _tags: transifexTags })}
       />
     </>
   );
