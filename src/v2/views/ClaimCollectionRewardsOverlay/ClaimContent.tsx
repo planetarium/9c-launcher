@@ -6,11 +6,20 @@ import { useTx } from "src/v2/utils/useTx";
 import type { ClaimCollectionRewardsData } from ".";
 import H1 from "src/v2/components/ui/H1";
 import { Select, SelectOption } from "src/v2/components/ui/Select";
-import Button from "src/v2/components/ui/Button";
+import Button, { ButtonBar } from "src/v2/components/ui/Button";
+import { T } from "src/renderer/i18n";
+import { styled } from "src/v2/stitches.config";
+import { getRemain } from "src/collection/common/utils";
 
 interface ClaimContentProps extends ClaimCollectionRewardsData {
   data: GetAvatarAddressQuery;
 }
+
+const transifexTags = "v2/views/ClaimCollectionRewardsOverlay";
+
+const Title = styled("h2", {
+  textAlign: "center",
+});
 
 function ClaimContent({ data, onActionTxId, rewards, tip }: ClaimContentProps) {
   const avatars = useMemo(
@@ -41,21 +50,36 @@ function ClaimContent({ data, onActionTxId, rewards, tip }: ClaimContentProps) {
 
   return (
     <>
+      <Title>
+        <T
+          _str="Choose a character to receive rewards."
+          _tags={transifexTags}
+        />
+      </Title>
       <Select
         value={String(avatarIndex)}
         onChange={(v) => setAvatarIndex(Number(v))}
       >
         {avatars?.map((avatar, i) => (
-          <SelectOption key={avatar.address} value={String(i)}></SelectOption>
+          <SelectOption key={avatar.address} value={String(i)}>
+            {avatar.name}
+            {getRemain}
+          </SelectOption>
         ))}
       </Select>
-      <Button
-        onClick={() =>
-          tx().then((v) => v.data != null && onActionTxId(v.data.stageTxV2))
-        }
-      >
-        OK
-      </Button>
+      <ButtonBar placement="bottom">
+        <Button onClick={() => onActionTxId(null)}>
+          <T _str="Cancel" _tags={transifexTags} />
+        </Button>
+        <Button
+          variant="primary"
+          onClick={() =>
+            tx().then((v) => v.data != null && onActionTxId(v.data.stageTxV2))
+          }
+        >
+          <T _str="Send" _tags={transifexTags} />
+        </Button>
+      </ButtonBar>
     </>
   );
 }

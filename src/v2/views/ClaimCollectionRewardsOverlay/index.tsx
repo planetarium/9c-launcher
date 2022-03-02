@@ -5,6 +5,7 @@ import { T } from "src/renderer/i18n";
 import OverlayBase from "src/v2/components/core/OverlayBase";
 import H1 from "src/v2/components/ui/H1";
 import { useGetAvatarAddressQuery } from "src/v2/generated/graphql";
+import { styled } from "src/v2/stitches.config";
 import { OverlayProps } from "src/v2/utils/types";
 import { useStore } from "src/v2/utils/useStore";
 import ClaimContent from "./ClaimContent";
@@ -12,7 +13,7 @@ import ClaimContent from "./ClaimContent";
 export interface ClaimCollectionRewardsData {
   rewards: Reward[];
   tip: number;
-  onActionTxId: (txId: string) => void;
+  onActionTxId: (txId: string | null) => void;
 }
 
 interface ClaimCollectionRewardsOverlayProps
@@ -20,6 +21,19 @@ interface ClaimCollectionRewardsOverlayProps
     ClaimCollectionRewardsData {}
 
 const transifexTags = "v2/views/ClaimCollectionRewardsOverlay";
+
+const ClaimCollectionRewardsOverlayBase = styled(OverlayBase, {
+  "&&": {
+    width: 570,
+    height: 460,
+    margin: "20vh auto",
+  },
+  display: "flex",
+  flexDirection: "column",
+  "& > * + *": {
+    marginTop: 16,
+  },
+});
 
 function ClaimCollectionRewardsOverlay({
   isOpen,
@@ -54,9 +68,9 @@ function ClaimCollectionRewardsOverlay({
   }
 
   return (
-    <OverlayBase isOpen={isOpen} onDismiss={onClose}>
+    <ClaimCollectionRewardsOverlayBase isOpen={isOpen} onDismiss={onClose}>
       <ClaimContent {...collectionData} data={data} />
-    </OverlayBase>
+    </ClaimCollectionRewardsOverlayBase>
   );
 }
 
