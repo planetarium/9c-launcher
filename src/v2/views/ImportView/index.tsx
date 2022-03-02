@@ -3,9 +3,8 @@ import { observer } from "mobx-react";
 import Layout from "src/v2/components/core/Layout";
 import { T } from "src/renderer/i18n";
 import H1 from "src/v2/components/ui/H1";
-import Button from "src/v2/components/ui/Button";
+import Button, { ButtonBar } from "src/v2/components/ui/Button";
 import H2 from "src/v2/components/ui/H2";
-import { styled } from "src/v2/stitches.config";
 import { useStore } from "src/v2/utils/useStore";
 import { useHistory } from "react-router";
 import ImportInput, { ImportData } from "src/v2/components/ImportInput";
@@ -13,12 +12,6 @@ import { ipcRenderer } from "electron";
 import { t } from "@transifex/native";
 
 const transifexTags = "v2/import-view";
-
-const ButtonBar = styled("div", {
-  display: "flex",
-  "& > * + *": { marginLeft: 16 },
-  justifyContent: "center",
-});
 
 function ImportView() {
   const account = useStore("account");
