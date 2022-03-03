@@ -37,37 +37,35 @@ export default function RetypePasswordForm({
     handleSubmit,
     formState: { errors },
     trigger,
-  } = useForm<FormData>({
+    watch,
+  } = useForm<FormData & { __confirm: string }>({
     mode: "onChange",
   });
-
-  const confirmRef = useRef<HTMLInputElement>(null);
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       {address && <TextField label="ID" readOnly value={address} />}
       <PasswordField
         label="Password"
-        message={errors.password?.type === "password" ? "Too weak" : "Strong"}
-        invalid={errors.password && errors.password?.type !== "confirm"}
+        message={errors.password ? "Too weak" : "Strong"}
+        invalid={!!errors.password}
         {...register("password", {
           required: true,
-          validate: {
-            password: passwordStrengthValidator,
-            confirm: (v) => v === confirmRef.current?.value,
-          },
+          validate: passwordStrengthValidator,
+          deps: ["__confirm"],
         })}
       />
       <PasswordField
         label="Verify Password"
-        ref={confirmRef}
-        message={
-          errors.password?.type === "confirm"
-            ? "Passwords doesn't match"
-            : "Correct"
-        }
-        invalid={errors.password?.type === "confirm"}
-        onChange={() => trigger("password")}
+        message={errors.__confirm ? "Passwords doesn't match" : "Correct"}
+        invalid={!!errors.__confirm}
+        {...register("__confirm", {
+          required: true,
+          validate(v) {
+            return v === watch("password");
+          },
+          deps: ["password"],
+        })}
       />
       {useActivitionKey && (
         <TextField
