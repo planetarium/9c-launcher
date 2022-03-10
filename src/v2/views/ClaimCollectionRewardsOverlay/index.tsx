@@ -10,30 +10,13 @@ import { OverlayProps } from "src/v2/utils/types";
 import { useStore } from "src/v2/utils/useStore";
 import ClaimContent from "./ClaimContent";
 
-export interface ClaimCollectionRewardsData {
+export interface ClaimCollectionRewardsOverlayProps extends OverlayProps {
   rewards: Reward[];
   tip: number;
   onActionTxId: (txId: string | null) => void;
 }
 
-interface ClaimCollectionRewardsOverlayProps
-  extends OverlayProps,
-    ClaimCollectionRewardsData {}
-
 const transifexTags = "v2/views/ClaimCollectionRewardsOverlay";
-
-const ClaimCollectionRewardsOverlayBase = styled(OverlayBase, {
-  "&&": {
-    width: 570,
-    height: 460,
-    margin: "20vh auto",
-  },
-  display: "flex",
-  flexDirection: "column",
-  "& > * + *": {
-    marginTop: 16,
-  },
-});
 
 function ClaimCollectionRewardsOverlay({
   isOpen,
@@ -68,9 +51,12 @@ function ClaimCollectionRewardsOverlay({
   }
 
   return (
-    <ClaimCollectionRewardsOverlayBase isOpen={isOpen} onDismiss={onClose}>
-      <ClaimContent {...collectionData} data={data} />
-    </ClaimCollectionRewardsOverlayBase>
+    <ClaimContent
+      {...collectionData}
+      data={data}
+      isOpen={isOpen}
+      onClose={onClose}
+    />
   );
 }
 
