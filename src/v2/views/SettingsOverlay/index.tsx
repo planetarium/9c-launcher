@@ -18,7 +18,7 @@ import { Select, SelectOption } from "src/v2/components/ui/Select";
 import FolderChooser from "./FolderChooser";
 import { t } from "@transifex/native";
 import Button from "src/v2/components/ui/Button";
-import OverlayBase from "src/v2/components/core/OverlayBase";
+import OverlayBase, { CloseButton } from "src/v2/components/core/OverlayBase";
 import Checkbox from "src/v2/components/ui/Checkbox";
 import AdvancedAction from "./AdvancedAction";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -102,6 +102,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
 
   return (
     <OverlayBase isOpen={isOpen} onDismiss={onClose}>
+      <CloseButton onClick={onClose} />
       <H1 css={{ marginTop: 0 }}>
         <T _str="Settings" _tags={transifexTags} />
       </H1>
