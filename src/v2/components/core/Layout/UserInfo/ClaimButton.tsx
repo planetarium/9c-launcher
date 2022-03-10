@@ -10,8 +10,11 @@ const Button = styled(motion.button, {
   padding: "5px 1rem",
   "&:disabled": {
     backgroundColor: "$gray",
+    color: "white",
   },
 });
+
+const transifexTags = "v2/ClaimButton";
 
 interface ClaimButtonProps {
   onClick: () => void;
@@ -19,14 +22,21 @@ interface ClaimButtonProps {
 }
 
 export function ClaimButton({ loading, onClick }: ClaimButtonProps) {
-  const eventListener = useCallback<(e: MouseEvent) => void>((e) => {
-    e.stopPropagation();
-    onClick();
-  }, [onClick])
+  const eventListener = useCallback<(e: MouseEvent) => void>(
+    (e) => {
+      e.stopPropagation();
+      onClick();
+    },
+    [onClick]
+  );
 
   return (
     <Button disabled={loading} onClick={eventListener}>
-      <T _str="Get Rewards" _tags="v2/ClaimButton" />
+      {loading ? (
+        <T _str="Loading" _tags={transifexTags} />
+      ) : (
+        <T _str="Get Rewards" _tags={transifexTags} />
+      )}
     </Button>
   );
 }
