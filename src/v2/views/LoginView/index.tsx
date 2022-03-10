@@ -39,6 +39,8 @@ function LoginView() {
       ipcRenderer.send("mixpanel-alias", account.selectedAddress);
       ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
       ipcRenderer.send("standalone/set-signer-private-key", account.privateKey);
+      ipcRenderer.sendSync("standalone/set-private-key", account.privateKey);
+      ipcRenderer.sendSync("standalone/set-mining", true);
       localStorage.setItem("lastAddress", account.selectedAddress);
       history.push("/lobby");
     }
