@@ -64,7 +64,10 @@ import bytes from "bytes";
 import createTransferWindow from "../transfer/window";
 import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
-import { createWindow as createV2Window } from "./v2/application";
+import {
+  createWindow as createV2Window,
+  setQuitting as setV2Quitting,
+} from "./v2/application";
 import { getFreeSpace } from "@planetarium/check-free-space";
 import {
   checkForUpdates,
@@ -892,6 +895,7 @@ function createTray(iconPath: string) {
         label: "Quit Launcher",
         click: function () {
           isQuiting = true;
+          setV2Quitting(true);
           app.quit();
         },
       },

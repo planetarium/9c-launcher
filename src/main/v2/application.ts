@@ -3,6 +3,12 @@ import { join } from "path";
 import logoImage from "../resources/logo.png";
 import isDev from "electron-is-dev";
 
+export let isQuitting = false;
+
+export function setQuitting(value: boolean) {
+  isQuitting = value;
+}
+
 export async function createWindow(): Promise<BrowserWindow> {
   const win = new BrowserWindow({
     width: 1300,
@@ -30,6 +36,13 @@ export async function createWindow(): Promise<BrowserWindow> {
       options.resizable = true;
       options.webPreferences!.nodeIntegration = false;
     } else event.preventDefault(), shell.openExternal(url);
+  });
+
+  win.on("close", function (event: any) {
+    if (!isQuitting) {
+      event.preventDefault();
+      win.hide();
+    }
   });
 
   if (isDev) {
