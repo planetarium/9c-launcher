@@ -1,3 +1,4 @@
+import { ipcRenderer } from "electron";
 import { assign, createMachine } from "xstate";
 import { invokeIpcEvent } from "../utils/ipcEvent";
 
@@ -33,11 +34,20 @@ export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
         on: {
           DOWNLOAD: { target: "download" },
         },
-        invoke: {
-          id: "download",
-          src: () =>
-            invokeIpcEvent<MachineEvent>("update download started", "DOWNLOAD"),
-        },
+        invoke: [
+          {
+            id: "download",
+            src: () =>
+              invokeIpcEvent<MachineEvent>(
+                "update download started",
+                "DOWNLOAD"
+              ),
+          },
+          {
+            id: "triggerUpdate",
+            src: () => ipcRenderer.invoke("start update"),
+          },
+        ],
       },
       download: {
         entry: "resetProgress",
