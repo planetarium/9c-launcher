@@ -10,8 +10,7 @@ import machine from "../machines/updateMachine";
 export default function APVSubscriptionProvider({
   children,
 }: React.PropsWithChildren<{}>) {
-  const [state, send] = useMachine(machine);
-  state.value;
+  const [state, send] = useMachine(machine, { devTools: true });
   const {
     loading,
     data,
@@ -38,12 +37,6 @@ export default function APVSubscriptionProvider({
         send({ type: "UPDATE_PROGRESS", progress: progress.percent * 100 });
       }
     );
-
-    // State transitions
-    ipcRenderer.on("update download started", () => send("DOWNLOAD"));
-    ipcRenderer.on("update download complete", () => send("EXTRACT"));
-    ipcRenderer.on("update extract complete", () => send("COPY"));
-    ipcRenderer.on("update copying complete", () => send("DONE"));
   }, []);
 
   return state.matches("ok") ? (
