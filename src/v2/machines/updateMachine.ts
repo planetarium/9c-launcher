@@ -1,4 +1,5 @@
 import { assign, createMachine } from "xstate";
+import { invokeIpcEvent } from "../utils/ipcEvent";
 
 type MachineEvent =
   | { type: "UPDATE_PROGRESS"; progress: number }
@@ -32,12 +33,22 @@ export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
         on: {
           DOWNLOAD: { target: "download" },
         },
+        invoke: {
+          id: "download",
+          src: () =>
+            invokeIpcEvent<MachineEvent>("update download started", "DOWNLOAD"),
+        },
       },
       download: {
         entry: "resetProgress",
         on: {
           EXTRACT: { target: "extract" },
           UPDATE_PROGRESS: { actions: "updateProgress" },
+        },
+        invoke: {
+          id: "extract",
+          src: () =>
+            invokeIpcEvent<MachineEvent>("update download complete", "EXTRACT"),
         },
       },
       extract: {
@@ -46,11 +57,21 @@ export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
           COPY: { target: "copy" },
           UPDATE_PROGRESS: { actions: "updateProgress" },
         },
+        invoke: {
+          id: "extract",
+          src: () =>
+            invokeIpcEvent<MachineEvent>("update extract complete", "COPY"),
+        },
       },
       copy: {
         entry: "resetProgress",
         on: {
           DONE: { target: "ok" },
+        },
+        invoke: {
+          id: "extract",
+          src: () =>
+            invokeIpcEvent<MachineEvent>("update copy complete", "DONE"),
         },
       },
     },
