@@ -23,11 +23,12 @@ const StatusMessage = styled("span", {
 interface StatusBarProps {
   message: string;
   progress?: number;
+  className?: string;
 }
 
-function StatusBar({ message, progress }: StatusBarProps) {
+function StatusBar({ message, progress, className }: StatusBarProps) {
   return (
-    <StatusBarStyled>
+    <StatusBarStyled className={className}>
       <StatusMessage>{message}</StatusMessage>
       {!!progress && <ProgressBar percent={progress} />}
     </StatusBarStyled>
