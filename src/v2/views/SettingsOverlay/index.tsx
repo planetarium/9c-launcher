@@ -135,7 +135,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
           </GroupTitle>
           <Checkbox {...register("UseRemoteHeadless")}>
             <T _str="Use Remote Headless" _tags={transifexTags} />
-            </Checkbox>
+          </Checkbox>
           <GroupTitle>
             <T _str="Advanced" _tags={transifexTags} />
           </GroupTitle>
