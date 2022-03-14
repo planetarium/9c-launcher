@@ -45,6 +45,7 @@ export function CloseButton({ onClick }: { onClick: () => void }) {
 export default function OverlayBase({
   children,
   isOpen,
+  className,
   ...props
 }: React.ComponentProps<typeof AnimatedDialogOverlay>) {
   return (
@@ -60,6 +61,7 @@ export default function OverlayBase({
             initial={{ translateY: 150 }}
             animate={{ translateY: 0 }}
             exit={{ translateY: 500 }}
+            className={className}
           >
             {children}
           </AnimatedDialogContent>
