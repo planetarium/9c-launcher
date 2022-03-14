@@ -3,29 +3,29 @@ import { observer } from "mobx-react";
 import Layout from "src/v2/components/core/Layout";
 import { T } from "src/renderer/i18n";
 import H1 from "src/v2/components/ui/H1";
-import Button from "src/v2/components/ui/Button";
+import Button, { ButtonBar } from "src/v2/components/ui/Button";
 import H2 from "src/v2/components/ui/H2";
-import { styled } from "src/v2/stitches.config";
 import { useStore } from "src/v2/utils/useStore";
 import { useHistory } from "react-router";
 import ImportInput, { ImportData } from "src/v2/components/ImportInput";
+import { ipcRenderer } from "electron";
+import { t } from "@transifex/native";
 
 const transifexTags = "v2/import-view";
-
-const ButtonBar = styled("div", {
-  display: "flex",
-  "& > * + *": { marginLeft: 16 },
-  justifyContent: "center",
-});
 
 function ImportView() {
   const account = useStore("account");
   const history = useHistory();
 
   const [key, setKey] = useState<ImportData>({});
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = () => {
     if (!key.key) return;
+    if (!ipcRenderer.sendSync("validate-private-key", key.key)) {
+      setError(t("Invalid private key"));
+      return;
+    }
     account.setPrivateKey(key.key);
     history.push("/recover");
   };
@@ -41,6 +41,7 @@ function ImportView() {
           _tags={transifexTags}
         />
       </H2>
+      {error && <p>{error}</p>}
       <ImportInput onSubmit={setKey} fromFile={key.fromFile} />
       <ButtonBar>
         <Button onClick={history.goBack.bind(history)}>
