@@ -52,3 +52,16 @@ export function ButtonLink({
   const onClick = useCallback(() => history.push(to), [history, to]);
   return <Button {...props} onClick={onClick} />;
 }
+
+export const ButtonBar = styled("div", {
+  display: "flex",
+  "& > * + *": { marginLeft: 16 },
+  justifyContent: "center",
+  variants: {
+    placement: {
+      bottom: {
+        marginTop: "auto",
+      },
+    },
+  },
+});
