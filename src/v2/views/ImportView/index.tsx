@@ -36,10 +36,7 @@ function ImportView() {
         <T _str="Register Your Key" _tags={transifexTags} />
       </H1>
       <H2>
-        <T
-          _str="Register your backed up key file or key string."
-          _tags={transifexTags}
-        />
+        <T _str="Register your backed up key string." _tags={transifexTags} />
       </H2>
       {error && <p>{error}</p>}
       <ImportInput onSubmit={setKey} fromFile={key.fromFile} />
