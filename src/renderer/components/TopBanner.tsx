@@ -21,7 +21,9 @@ function TopBanner() {
   const [opened, close] = useReducer(() => false, true);
   const styles = useStyles();
   const learnMoreHandler = () => {
-    shell.openExternal("");
+    shell.openExternal(
+      "https://ninechronicles.medium.com/item-level-requirements-3f5936733007"
+    );
     close();
   };
   return (
