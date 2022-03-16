@@ -85,6 +85,15 @@ export const Layout: React.FC = observer(({ children }) => {
             );
           }}
         />
+        <div className="LauncherLayoutVersion">
+          block: {tip > 0 ? `#${tip}` : "loading.."}
+          <br />
+          {`version: v${
+            (getConfig("AppProtocolVersion") as string).split("/")[0]
+          }`}
+          <br />
+          node: {node}
+        </div>
         <ul className={"LauncherClientOption"}>
           <li>
             <Button
@@ -147,15 +156,6 @@ export const Layout: React.FC = observer(({ children }) => {
             </Button>
           </li>
         </ul>
-        <div className="LauncherLayoutVersion">
-          block: {tip > 0 ? `#${tip}` : "loading.."}
-          <br />
-          {`version: v${
-            (getConfig("AppProtocolVersion") as string).split("/")[0]
-          }`}
-          <br />
-          node: {node}
-        </div>
         <div
           id={"LauncherClientIcon"}
           className={`LauncherClientIcon ${infoButtonState ? "activate" : ""}`}
