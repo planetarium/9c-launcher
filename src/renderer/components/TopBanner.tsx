@@ -31,7 +31,6 @@ function TopBanner() {
       className={styles.topBanner}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
       open={opened}
-      onClose={close}
       message={t("Item level requirement system will be updated.", {
         _tags: "topBanner",
       })}
