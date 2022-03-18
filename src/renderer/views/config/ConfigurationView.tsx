@@ -221,7 +221,7 @@ const ConfigurationView = observer(() => {
 
           <FormControl className={classes.checkboxGroup}>
             <FormLabel className={classes.newLine}>
-              <T _str="Experimental Features" _tags={transifexTags} />
+              <T _str="Connection" _tags={transifexTags} />
             </FormLabel>
             <FormGroup>
               <FormControlLabel
