@@ -113,7 +113,7 @@ let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
 let remoteNode: NodeInfo;
 
-const isV2 = app.commandLine.hasSwitch("v2");
+const isV2 = app.commandLine.hasSwitch("v2") || getConfig("UseV2Interface");
 
 ipv4().then((value) => (ip = value));
 
@@ -219,13 +219,16 @@ async function initializeApp() {
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
-    if (app.commandLine.hasSwitch("v2") || getConfig("UseV2Interface"))
-      win = await createV2Window();
+    if (isV2) win = await createV2Window();
     else win = await createWindow();
     createTray(path.join(app.getAppPath(), logoImage));
 
     const u = await checkForUpdates(standalone);
-    if (u) update(u, updateOptions, win);
+    if (u && !isV2) update(u, updateOptions, win);
+    else if (u && isV2)
+      ipcMain.handle("start update", async () => {
+        await update(u, updateOptions, win!);
+      });
 
     try {
       remoteNode = await initializeNode();

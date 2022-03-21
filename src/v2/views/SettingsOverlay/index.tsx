@@ -10,7 +10,8 @@ import { useStore } from "src/v2/utils/useStore";
 import { T } from "src/renderer/i18n";
 import path from "path";
 import log from "electron-log";
-import { shell, remote } from "electron";
+import { shell, remote, ipcRenderer } from "electron";
+import { preloadService } from "src/v2/machines/preloadMachine";
 
 import H1 from "src/v2/components/ui/H1";
 import TextField from "src/v2/components/ui/TextField";
@@ -62,6 +63,12 @@ function handleOpenLogPath() {
   const openpath = log.transports.file.getFile().path;
   console.log(`Open log folder. ${openpath}`);
   shell.showItemInFolder(openpath);
+}
+
+async function clearCache() {
+  preloadService.send("IDLE");
+  const result = await ipcRenderer.invoke("clear cache", true);
+  return result;
 }
 
 function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
@@ -131,11 +138,17 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
             )}
           />
           <GroupTitle>
+            <T _str="Connection" _tags={transifexTags} />
+          </GroupTitle>
+          <Checkbox {...register("UseRemoteHeadless")}>
+            <T _str="Use Remote Headless" _tags={transifexTags} />
+          </Checkbox>
+          <GroupTitle>
             <T _str="Advanced" _tags={transifexTags} />
           </GroupTitle>
           <AdvancedAction
             icon={<DeleteIcon />}
-            onClick={onClose}
+            onClick={clearCache}
             text={t("Clear Cache")}
           />
           <AdvancedAction

@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 
 import { useStore } from "../../../utils/useStore";
 import { clipboard, ipcRenderer } from "electron";
-import { get as getConfig } from "../../../../config";
+import { get as getConfig, NodeInfo } from "../../../../config";
 import {
   useTipSubscription,
   useTopmostBlocksQuery,
@@ -60,22 +60,21 @@ function InfoText() {
   }, [copied]);
 
   const { data: blockTip } = useTipSubscription();
-  const [node, setNode] = useState<number>(0);
+  const [node, setNode] = useState<string>("loading");
 
   useEffect(
     () =>
       void (async () => {
-        if (!node) {
-          const nodeInfo = await ipcRenderer.invoke("get-node-info");
-          setNode(nodeInfo.nodeNumber);
-        }
+        if (node !== "loading") return;
+        const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
+        setNode(nodeInfo.host);
       })(),
     [node]
   );
 
   return (
     <InfoTextStyled onClick={onClick}>
-      node: {node || "loading"}
+      node: {node}
       <br />
       tip: {blockTip?.tipChanged?.index || 0}
       <br />

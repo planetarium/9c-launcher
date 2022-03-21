@@ -49,7 +49,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     await win.loadURL("http://localhost:9000/v2.html");
     await win.webContents.openDevTools({ mode: "detach" });
   } else {
-    win.loadFile("v2.html");
+    await win.loadFile("v2.html");
   }
 
   return win;

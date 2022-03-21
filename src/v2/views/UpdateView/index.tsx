@@ -20,6 +20,13 @@ const Root = styled("div", {
   width: "100%",
   height: "100%",
   backgroundImage: `url(${background})`,
+  backgroundSize: "cover",
+});
+
+const FixedStatusBar = styled(StatusBar, {
+  position: "fixed",
+  bottom: 50,
+  left: 50,
 });
 
 function getMessage(state: StateFrom<typeof machine>): string {
@@ -38,7 +45,7 @@ export default function UpdateView({ state, progress }: UpdateViewProps) {
   return (
     <Root>
       {!state.matches("ok") && (
-        <StatusBar progress={progress} message={getMessage(state)} />
+        <FixedStatusBar progress={progress} message={getMessage(state)} />
       )}
     </Root>
   );

@@ -11,6 +11,7 @@ import { T } from "@transifex/react";
 import { get as getConfig, NodeInfo } from "../../../config";
 import AccountInfoContainer from "../../components/AccountInfo/AccountInfoContainer";
 import InfoIcon from "../../components/InfoIcon";
+import TopBanner from "../../components/TopBanner";
 
 import explorerLogo from "../../resources/block-explorer-logo.png";
 import patchNoteLogo from "../../resources/wrench.png";
@@ -74,6 +75,7 @@ export const Layout: React.FC = observer(({ children }) => {
 
   return (
     <>
+      <TopBanner />
       <main>{children}</main>
       <nav className="hero">
         <AccountInfoContainer
@@ -85,6 +87,15 @@ export const Layout: React.FC = observer(({ children }) => {
             );
           }}
         />
+        <div className="LauncherLayoutVersion">
+          block: {tip > 0 ? `#${tip}` : "loading.."}
+          <br />
+          {`version: v${
+            (getConfig("AppProtocolVersion") as string).split("/")[0]
+          }`}
+          <br />
+          node: {node}
+        </div>
         <ul className={"LauncherClientOption"}>
           <li>
             <Button
@@ -147,15 +158,6 @@ export const Layout: React.FC = observer(({ children }) => {
             </Button>
           </li>
         </ul>
-        <div className="LauncherLayoutVersion">
-          block: {tip > 0 ? `#${tip}` : "loading.."}
-          <br />
-          {`version: v${
-            (getConfig("AppProtocolVersion") as string).split("/")[0]
-          }`}
-          <br />
-          node: {node}
-        </div>
         <div
           id={"LauncherClientIcon"}
           className={`LauncherClientIcon ${infoButtonState ? "activate" : ""}`}
