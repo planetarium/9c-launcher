@@ -591,7 +591,7 @@ async function initializeHeadless(): Promise<void> {
           isProcessSuccess = await snapshot.processSnapshot(
             snapshotDownloadUrl,
             chainPath,
-            app.getPath("userData"),
+            path.join(getConfig("BlockchainStoreDirParent"), "temp"),
             standalone,
             win,
             initializeHeadlessCts.token,
