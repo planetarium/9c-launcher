@@ -27,6 +27,8 @@ module.exports = {
       path.resolve(__dirname, ".."),
       "node_modules",
     ]
+    config.resolve.alias.electron = require.resolve("../__tests__/ipcMock.ts");
+    config.resolve.alias['tmp-promise'] = require.resolve("../__tests__/tmpMock.ts");
     return { ...config, module: { ...config.module, rules: custom.module.rules } };
   }
 }

@@ -9688,6 +9688,11 @@ electron-log@^4.2.1:
   resolved "https://registry.npmjs.org/electron-log/-/electron-log-4.2.1.tgz"
   integrity sha512-tUI9w3kUP3qhwXJ92RDUPFVZfwtBwKCy/1TsSHndXYLlNCB/7+vkiQG0uxv9D2Leuxc/DJKfYyrdEBpzi/vyZg==
 
+electron-mock-ipc@^0.3.12:
+  version "0.3.12"
+  resolved "https://registry.yarnpkg.com/electron-mock-ipc/-/electron-mock-ipc-0.3.12.tgz#f9a7dca9a23a95dbe5a62f27cca12768d4cb88c0"
+  integrity sha512-/uwZRpbX+k4E+GesmREg6XcQiTLNhi35M/cw8Czr+ij9k+EYTYY3UPkILnsTr5KTEeAx5/uypf/KwjZDQFDyjA==
+
 electron-notarize@^0.2.0:
   version "0.2.1"
   resolved "https://registry.npmjs.org/electron-notarize/-/electron-notarize-0.2.1.tgz"
