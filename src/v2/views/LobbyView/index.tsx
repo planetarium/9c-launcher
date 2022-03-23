@@ -36,7 +36,8 @@ function LobbyView() {
     <>
       <Layout />
       <OnboardingOverlay
-        isOpen={onboardingRequired && showOnboarding}
+        // isOpen={onboardingRequired && showOnboarding}
+        isOpen={false}
         onClose={() => setShowOnboarding(false)}
       />
     </>
