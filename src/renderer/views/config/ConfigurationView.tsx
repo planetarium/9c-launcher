@@ -69,6 +69,9 @@ const ConfigurationView = observer(() => {
     const useRemoteHeadlessChecked = event.target.useRemoteHeadless.checked;
     userConfigStore.set("UseRemoteHeadless", useRemoteHeadlessChecked);
 
+    const useV2Checked = event.target.v2.checked;
+    userConfigStore.set("UseV2Interface", useV2Checked);
+
     const logSize = bytes.parse(event.target.logsize.value);
     if (logSize && logSize !== getConfig("LogSizeBytes"))
       userConfigStore.set("LogSizeBytes", logSize);
@@ -234,6 +237,24 @@ const ConfigurationView = observer(() => {
                   />
                 }
                 label={<T _str="Use Remote Headless" _tags={transifexTags} />}
+              />
+            </FormGroup>
+          </FormControl>
+          <FormControl className={classes.checkboxGroup}>
+            <FormLabel className={classes.newLine}>
+              <T _str="Experimental" _tags={transifexTags} />
+            </FormLabel>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    className={classes.checkbox}
+                    defaultChecked={getConfig("UseV2Interface")}
+                    color="default"
+                    name="v2"
+                  />
+                }
+                label={<T _str="Use V2 Interface" _tags={transifexTags} />}
               />
             </FormGroup>
           </FormControl>
