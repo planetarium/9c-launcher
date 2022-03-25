@@ -12,7 +12,7 @@ import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snaps
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import { INineChroniclesMixpanel } from "./mixpanel";
-import { REQUIRED_DISK_SPACE } from "../config";
+import { get, REQUIRED_DISK_SPACE } from "../config";
 
 export async function downloadMetadata(
   basePath: string,
@@ -37,11 +37,17 @@ export async function downloadMetadata(
   }
 }
 
+/**
+ * Determines if we should download the snapshots.
+ * If this function retruns false, the headless will be launched immidiately.
+ */
 export function validateMetadata(
   localMetadata: BlockMetadata,
   snapshotMetadata: BlockMetadata
 ): boolean {
-  return snapshotMetadata.Index > localMetadata.Index;
+  return (
+    snapshotMetadata.Index > localMetadata.Index + get("SnapshotThreshold")
+  );
 }
 
 export async function downloadSnapshot(
