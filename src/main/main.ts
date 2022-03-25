@@ -594,12 +594,17 @@ async function initializeHeadless(): Promise<void> {
       const snapshotDownloadUrls: string[] = getConfig("SnapshotPaths");
       let isProcessSuccess = false;
       let recentError: Error = Error();
+      const cacheFolder = path.join(
+        getConfig("BlockchainStoreDirParent"),
+        "temp"
+      );
+      if (!fs.existsSync(cacheFolder)) await fs.promises.mkdir(cacheFolder);
       for (const snapshotDownloadUrl of snapshotDownloadUrls) {
         try {
           isProcessSuccess = await snapshot.processSnapshot(
             snapshotDownloadUrl,
             chainPath,
-            path.join(getConfig("BlockchainStoreDirParent"), "temp"),
+            cacheFolder,
             standalone,
             win,
             initializeHeadlessCts.token,
