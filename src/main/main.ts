@@ -69,6 +69,7 @@ import {
   setQuitting as setV2Quitting,
 } from "./v2/application";
 import { getFreeSpace } from "@planetarium/check-free-space";
+import fg from "fast-glob";
 import {
   checkForUpdates,
   cleanUpLockfile,
@@ -243,6 +244,13 @@ async function initializeApp() {
 
       app.exit();
     }
+
+    // Detects and move old snapshot caches as they're unused.
+    // Ignores any failure as they're not critical.
+    fg("snapshot-*", { cwd: app.getPath("userData") }).then((files) =>
+      Promise.allSettled(files.map((file) => fs.promises.unlink(file)))
+    );
+
     if (useRemoteHeadless) {
       console.log("main initializeApp call initializeRemoteHeadless");
       initializeRemoteHeadless();
@@ -591,7 +599,7 @@ async function initializeHeadless(): Promise<void> {
           isProcessSuccess = await snapshot.processSnapshot(
             snapshotDownloadUrl,
             chainPath,
-            app.getPath("userData"),
+            path.join(getConfig("BlockchainStoreDirParent"), "temp"),
             standalone,
             win,
             initializeHeadlessCts.token,
