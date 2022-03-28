@@ -192,6 +192,13 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
           <Checkbox {...register("Sentry")}>
             <T _str="Report errors and bugs" _tags={transifexTags} />
           </Checkbox>
+
+          <GroupTitle>
+            <T _str="Experimental Features" _tags={transifexTags} />
+          </GroupTitle>
+          <Checkbox {...register("UseV2Interface")}>
+            <T _str="Use V2 Interface" _tags={transifexTags} />
+          </Checkbox>
         </FormSection>
       </Form>
       <Button
