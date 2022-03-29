@@ -36,6 +36,16 @@ jobs:
     outputs:
       apv: ${{ steps.make-apv.outputs.apv }}
 
+  # Validate integrity of all recursive submodules
+  check-submodules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          lfs: false
+      - run: scripts/check-submodules.sh
+
   # 론처 빌드
   build-launcher:
     needs: sign-apv
