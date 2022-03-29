@@ -47,13 +47,7 @@ const MiningView = observer(
       }
     }, [requirementEl.current]);
 
-    const requirement: string = useT(
-      "REQUIRE:\n" +
-        "Requires a 64-bit processor and operating system\n" +
-        "Processor: Quad core CPU 3.0 GHz\n" +
-        "Memory: 16 GB RAM",
-      { _tags: transifexTags }
-    );
+    const t = useT();
 
     return (
       <Container className={classes.root}>
@@ -71,7 +65,13 @@ const MiningView = observer(
           />
         </p>
         <p ref={requirementEl} className={classes.requirement}>
-          {requirement
+          {t(
+            "REQUIRE:\n" +
+              "Requires a 64-bit processor and operating system\n" +
+              "Processor: Quad core CPU 3.0 GHz\n" +
+              "Memory: 16 GB RAM",
+            { _tags: transifexTags }
+          )
             .split("\n")
             .flatMap((line, idx) =>
               idx < requirement.length - 1 ? [line, <br />] : line
