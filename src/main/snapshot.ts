@@ -61,7 +61,7 @@ export const getSnapshotDownloadTarget = async (
   metadata: BlockMetadata,
   storePath: string,
   basePath: string,
-  userDataPath: string,
+  downloadPath: string,
   token: CancellationToken,
   mixpanel?: INineChroniclesMixpanel
 ): Promise<Epoch[]> => {
@@ -92,7 +92,7 @@ export const getSnapshotDownloadTarget = async (
     let downloadTargetName = `snapshot-${metadata["PreviousBlockEpoch"]}-${metadata["PreviousTxEpoch"]}.json`;
     metadata = await downloadMetadata(
       basePath,
-      userDataPath,
+      downloadPath,
       downloadTargetName,
       token
     );
@@ -167,7 +167,7 @@ export function validateMetadata(
 export async function downloadSnapshot(
   basePath: string,
   target: Epoch[],
-  userDataPath: string,
+  downloadPath: string,
   onProgress: (status: IDownloadProgress) => void,
   token: CancellationToken,
   mixpanel?: INineChroniclesMixpanel
@@ -183,7 +183,7 @@ export async function downloadSnapshot(
 
     let downloadPromise = target.map(async (x) => {
       let downloadTargetName = `snapshot-${x.BlockEpoch}-${x.TxEpoch}.zip`;
-      let savingPath = path.join(userDataPath, `${downloadTargetName}`);
+      let savingPath = path.join(downloadPath, `${downloadTargetName}`);
       console.log(`download snapshot path: ${basePath}/${downloadTargetName}`);
       await cancellableDownload(
         basePath + `/${downloadTargetName}`,
@@ -212,20 +212,20 @@ export async function downloadSnapshot(
 
   token.throwIfCancelled();
 
-  console.log("Snapshot download complete. Directory: ", userDataPath);
+  console.log("Snapshot download complete. Directory: ", downloadPath);
   return savingPaths;
 }
 
 export async function downloadStateSnapshot(
   basePath: string,
-  userDataPath: string,
+  downloadPath: string,
   onProgress: (status: IDownloadProgress) => void,
   token: CancellationToken,
   mixpanel?: INineChroniclesMixpanel
 ): Promise<string> {
   token.throwIfCancelled();
   const downloadTargetName = `state_latest.zip`;
-  const savingPath = path.join(userDataPath, `${downloadTargetName}`);
+  const savingPath = path.join(downloadPath, `${downloadTargetName}`);
   const downloadUrl = basePath + `/${downloadTargetName}`;
   console.log(`download snapshot path: ${downloadUrl}`);
 
@@ -322,7 +322,7 @@ const updateProgress = debounce(
 export async function processSnapshot(
   snapshotDownloadUrl: string,
   storePath: string,
-  userDataPath: string,
+  downloadPath: string,
   standalone: Headless,
   win: Electron.BrowserWindow,
   token: CancellationToken,
@@ -335,7 +335,7 @@ export async function processSnapshot(
 
   const snapshotMetadata = await downloadMetadata(
     snapshotDownloadUrl,
-    userDataPath,
+    downloadPath,
     "latest.json",
     token
   );
@@ -347,7 +347,7 @@ export async function processSnapshot(
       snapshotMetadata,
       storePath,
       snapshotDownloadUrl,
-      userDataPath,
+      downloadPath,
       token,
       mixpanel
     );
@@ -358,7 +358,7 @@ export async function processSnapshot(
     const snapshotPaths = await downloadSnapshot(
       snapshotDownloadUrl,
       target,
-      userDataPath,
+      downloadPath,
       (status) => {
         win?.webContents.send("download snapshot progress", status);
         updateProgress(win, status.percent);
@@ -370,7 +370,7 @@ export async function processSnapshot(
     updateProgress.cancel();
     const stateSnapshotPath = await downloadStateSnapshot(
       snapshotDownloadUrl,
-      userDataPath,
+      downloadPath,
       (status) => {
         win?.webContents.send("download state snapshot progress", status);
         updateProgress(win, status.percent);

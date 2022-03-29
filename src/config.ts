@@ -27,6 +27,10 @@ const schema: any = {
     type: "boolean",
     default: true,
   },
+  SnapshotThreshold: {
+    type: "number",
+    default: 0,
+  },
   TrustedAppProtocolVersionSigners: {
     type: "array",
     default: [
