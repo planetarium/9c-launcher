@@ -19,13 +19,13 @@ const StatusMessage = styled("span", {
   fontWeight: "bold",
   textShadow: "$text",
   lineHeight: 1,
-  [`& > ${Button}`]: {
+  "& > * + *": {
     marginLeft: 8,
   },
 });
 
 function StatusBar() {
-  const { message, isDone, progress } = usePreload();
+  const { message, isDone, progress, blockCount } = usePreload();
   const { account, game } = useStore();
   const { loading, activated } = useActivation();
 
@@ -33,6 +33,7 @@ function StatusBar() {
     <StatusBarStyled>
       <StatusMessage>
         {message}
+        {blockCount && <small>[{ blockCount }]</small>}
         {isDone && account.isLogin && !game.isGameStarted && (
           <Button
             variant="primary"

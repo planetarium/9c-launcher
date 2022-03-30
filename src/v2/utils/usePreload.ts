@@ -98,6 +98,7 @@ export function usePreload() {
     message: getStatusMessage(state, preloadProgressSubscriptionResult),
     isDone: standalone.Ready,
     progress,
+    blockCount: preloadProgress?.extra.totalCount,
   };
 }
 
