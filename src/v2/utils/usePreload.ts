@@ -94,11 +94,11 @@ export function usePreload() {
     ]
   );
 
-  return [
-    getStatusMessage(state, preloadProgressSubscriptionResult),
-    standalone.Ready,
+  return {
+    message: getStatusMessage(state, preloadProgressSubscriptionResult),
+    isDone: standalone.Ready,
     progress,
-  ] as const;
+  };
 }
 
 export function useIsPreloadDone() {

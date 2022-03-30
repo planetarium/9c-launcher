@@ -25,7 +25,7 @@ const StatusMessage = styled("span", {
 });
 
 function StatusBar() {
-  const [message, isDone, progress] = usePreload();
+  const { message, isDone, progress } = usePreload();
   const { account, game } = useStore();
   const { loading, activated } = useActivation();
 

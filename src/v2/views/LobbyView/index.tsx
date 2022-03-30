@@ -13,7 +13,7 @@ const isFirst = (state: string): boolean => {
 
 function LobbyView() {
   const { account, game } = useStore();
-  const [, isDone] = usePreload();
+  const { isDone } = usePreload();
   const { loading, activated } = useActivation(account.activationKey);
   const history = useHistory();
   const onboardingRequired = useMemo(() => isFirst(history.location.search), [
