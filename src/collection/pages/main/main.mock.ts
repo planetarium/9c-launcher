@@ -33,10 +33,10 @@ export const tableSheetData = (level: number) => {
                 {
                   itemId: 400000,
                   quantity: 200,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
               ],
-              __typename: "CollectionRowType",
+              __typename: "MonsterCollectionRowType",
             },
             {
               level: 2,
@@ -45,10 +45,10 @@ export const tableSheetData = (level: number) => {
                 {
                   itemId: 400000,
                   quantity: 880,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
               ],
-              __typename: "CollectionRowType",
+              __typename: "MonsterCollectionRowType",
             },
             {
               level: 3,
@@ -57,15 +57,15 @@ export const tableSheetData = (level: number) => {
                 {
                   itemId: 400000,
                   quantity: 600,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
                 {
                   itemId: 500000,
                   quantity: 2,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
               ],
-              __typename: "CollectionRowType",
+              __typename: "MonsterCollectionRowType",
             },
             {
               level: 4,
@@ -74,15 +74,15 @@ export const tableSheetData = (level: number) => {
                 {
                   itemId: 400000,
                   quantity: 13000,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
                 {
                   itemId: 500000,
                   quantity: 10,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
               ],
-              __typename: "CollectionRowType",
+              __typename: "MonsterCollectionRowType",
             },
             {
               level: 5,
@@ -91,15 +91,15 @@ export const tableSheetData = (level: number) => {
                 {
                   itemId: 400000,
                   quantity: 70000,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
                 {
                   itemId: 500000,
                   quantity: 50,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
               ],
-              __typename: "CollectionRowType",
+              __typename: "MonsterCollectionRowType",
             },
             {
               level: 6,
@@ -108,15 +108,15 @@ export const tableSheetData = (level: number) => {
                 {
                   itemId: 400000,
                   quantity: 150000,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
                 {
                   itemId: 500000,
                   quantity: 80,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
               ],
-              __typename: "CollectionRowType",
+              __typename: "MonsterCollectionRowType",
             },
             {
               level: 7,
@@ -125,15 +125,15 @@ export const tableSheetData = (level: number) => {
                 {
                   itemId: 400000,
                   quantity: 1000000,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
                 {
                   itemId: 500000,
                   quantity: 500,
-                  __typename: "CollectionRewardInfoType",
+                  __typename: "MonsterCollectionRewardInfoType",
                 },
               ],
-              __typename: "CollectionRowType",
+              __typename: "MonsterCollectionRowType",
             },
           ],
           __typename: "CollectionSheetType",
@@ -143,6 +143,10 @@ export const tableSheetData = (level: number) => {
           monsterCollectionLevel: level,
           monsterCollectionRound: 0,
           __typename: "AgentStateType",
+        },
+        monsterCollectionState: {
+          level,
+          __typename: "MonsterCollectionStateType",
         },
         __typename: "StateQuery",
       },

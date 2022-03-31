@@ -232,7 +232,6 @@ const Main: React.FC<Props> = (props: Props) => {
     }
   }, [openLoading]);
 
-  console.log(`loading: ${addressLoading}, signer: ${signer}`);
   if (loading || addressLoading) return <LoadingPage />;
   if (signer === "") {
     // FIXME we should translate this message.
