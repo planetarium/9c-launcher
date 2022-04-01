@@ -23,6 +23,7 @@ import ClaimCollectionRewardsOverlay from "src/v2/views/ClaimCollectionRewardsOv
 import { ClaimButton } from "./ClaimButton";
 import { Reward } from "src/collection/types";
 import { clipboard } from "electron";
+import { toast } from "react-hot-toast";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -98,13 +99,16 @@ export default function UserInfo() {
     [balance, ncgBalanceQuery]
   );
 
+  const copyAddress = useCallback(() => {
+    clipboard.writeText(account.selectedAddress);
+    toast("Copied!");
+  }, [account.selectedAddress]);
+
   if (!isDone || !account.isLogin) return null;
 
   return (
     <UserInfoStyled>
-      <UserInfoItem
-        onClick={() => clipboard.writeText(account.selectedAddress)}
-      >
+      <UserInfoItem onClick={copyAddress}>
         <AccountBoxIcon />
         <strong>{account.selectedAddress}</strong>
         <FileCopyIcon />
