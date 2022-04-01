@@ -11,10 +11,11 @@ type Action {
 
 type ActionMutation {
   createAvatar(avatarName: String!, avatarIndex: Int!, hairIndex: Int!, lensIndex: Int!, earIndex: Int!, tailIndex: Int!): TxId!
-  hackAndSlash(avatarAddress: Address!, worldId: Int!, stageId: Int!, rankingMapAddress: Address!, costumeIds: [Guid], equipmentIds: [Guid], consumableIds: [Guid]): TxId!
+  hackAndSlash(avatarAddress: Address!, worldId: Int!, stageId: Int!, costumeIds: [Guid], equipmentIds: [Guid], consumableIds: [Guid], playCount: Int = 1): TxId!
   combinationEquipment(avatarAddress: Address!, recipeId: Int!, slotIndex: Int!, subRecipeId: Int): TxId!
   itemEnhancement(avatarAddress: Address!, itemId: Guid!, materialId: Guid!, slotIndex: Int!): TxId!
   dailyReward(avatarAddress: Address!): TxId!
+  chargeActionPoint(avatarAddress: Address!): TxId!
   combinationConsumable(avatarAddress: Address!, recipeId: Int!, slotIndex: Int!): TxId!
   monsterCollect(level: Int!): TxId!
   claimMonsterCollectionReward(avatarAddress: Address!): TxId!
@@ -69,7 +70,6 @@ type AvatarStateType {
   characterId: Int!
   dailyRewardReceivedIndex: Long!
   agentAddress: Address!
-  rankingMapAddress: Address!
   updatedAt: Long!
   name: String!
   exp: Int!
@@ -193,7 +193,7 @@ type ExplorerQuery {
 
 type FungibleAssetValueType {
   currency: String!
-  quantity: Decimal!
+  quantity: String!
 }
 
 scalar Guid
@@ -332,6 +332,7 @@ type NodeStatusType {
   stagedTxIds(address: Address): [TxId]
   genesis: BlockHeader!
   isMining: Boolean!
+  appProtocolVersion: AppProtocolVersionType
 }
 
 enum NotificationEnum {
@@ -346,6 +347,19 @@ enum NotificationEnum {
 type NotificationType {
   type: NotificationEnum!
   message: String
+}
+
+type OrderDigestType {
+  orderId: Guid!
+  tradableId: Guid!
+  startedBlockIndex: Int!
+  expiredBlockIndex: Int!
+  sellerAgentAddress: Address!
+  price: String!
+  combatPoint: Int!
+  level: Int!
+  itemId: Int!
+  itemCount: Int!
 }
 
 type PeerChainStateQuery {
@@ -404,6 +418,11 @@ type RankingMapStateType {
 type RpcInformationQuery {
   totalCount: Int!
   clients: [Address]!
+}
+
+type ShardedShopStateV2Type {
+  address: Address!
+  orderDigestList(id: Int, maximumPrice: Int): [OrderDigestType]!
 }
 
 type ShopItemType {
@@ -486,6 +505,7 @@ type StateQuery {
   avatar(avatarAddress: Address!): AvatarStateType
   rankingMap(index: Int!): RankingMapStateType
   shop: ShopStateType
+  shardedShop(itemSubType: ItemSubType!, nonce: Int!): ShardedShopStateV2Type
   weeklyArena(index: Int!): WeeklyArenaStateType
   agent(address: Address!): AgentStateType
   monsterCollectionState(agentAddress: Address!): MonsterCollectionStateType
@@ -521,7 +541,7 @@ type Transaction {
 type TransactionHeadlessQuery {
   nextTxNonce(address: Address!): Long!
   getTx(txId: TxId!): TransactionType_1
-  createUnsignedTx(publicKey: String!, plainValue: String!): String!
+  createUnsignedTx(publicKey: String!, plainValue: String!, nonce: Long): String!
   attachSignature(unsignedTransaction: String!, signature: String!): String!
   transactionResult(txId: TxId!): TxResultType!
 }
