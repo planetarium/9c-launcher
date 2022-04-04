@@ -11,9 +11,7 @@ const transifexTags = "errorRelaunch";
 const ErrorRelaunchView = () => {
   const classes = errorViewStyle();
 
-  const steps = useT("Relaunch “Nine Chronicles”\n" + "Login once again", {
-    _tags: "errorRelaunch",
-  });
+  const t = useT();
 
   const handleRelaunch = useCallback(() => {
     remote.app.relaunch();
@@ -33,9 +31,13 @@ const ErrorRelaunchView = () => {
         <T _str="Please follow the steps below." _tags={transifexTags} />
       </Typography>
       <ol>
-        {steps.split("\n").map((step: string) => (
-          <li key={step}>{step}</li>
-        ))}
+        {t("Relaunch “Nine Chronicles”\n" + "Login once again", {
+          _tags: "errorRelaunch",
+        })
+          .split("\n")
+          .map((step: string) => (
+            <li key={step}>{step}</li>
+          ))}
       </ol>
       <Button
         className={classes.button}

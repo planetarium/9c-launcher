@@ -20,15 +20,7 @@ const transifexTags = "revokeAccount";
 const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
   ({ accountStore, routerStore }) => {
     const [revokePrivateKey] = useRevokePrivateKeyMutation();
-
-    const description = useT(
-      "Delete all records related to your account.\n" +
-        "Nine Chronicles is a fully decentralized game. Therefore, there is no central server that manages your password.\n" +
-        "If you lose your private key, you must create a new account to play the game from the beginning.\n" +
-        "Private keys can be found in the Settings menu of the in-game, so make sure to copy them separately next time and keep them in a safe place.",
-      { _tags: "revokeAccount" }
-    );
-
+    const t = useT();
     const classes = revokeAccountViewStyle();
     return (
       <div className={classes.root}>
@@ -41,7 +33,15 @@ const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
         <Typography className={classes.title}>
           <T _str="Revoke your account" _tags={transifexTags} />
         </Typography>
-        <Typography>{description}</Typography>
+        <Typography>
+          {t(
+            "Delete all records related to your account.\n" +
+              "Nine Chronicles is a fully decentralized game. Therefore, there is no central server that manages your password.\n" +
+              "If you lose your private key, you must create a new account to play the game from the beginning.\n" +
+              "Private keys can be found in the Settings menu of the in-game, so make sure to copy them separately next time and keep them in a safe place.",
+            { _tags: "revokeAccount" }
+          )}
+        </Typography>
         <Button
           variant="contained"
           color="primary"
