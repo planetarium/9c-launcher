@@ -2,7 +2,9 @@ import Store from "electron-store";
 import path from "path";
 import { IConfig } from "./interfaces/config";
 import { GraphQLClient } from "graphql-request";
-import { getSdk } from "./generated/graphql-request";
+import { getSdk, PreloadEndedQuery } from "./generated/graphql-request";
+import { IUpdateOptions, update } from "./main/update";
+import Headless from "./main/headless/headless";
 
 const { app } =
   process.type === "browser" ? require("electron") : require("electron").remote;
@@ -205,24 +207,25 @@ export class NodeInfo {
     return `${this.host}:${this.rpcPort}`;
   }
 
-  public async PreloadEnded(): Promise<boolean> {
+  public async PreloadEnded(): Promise<PreloadEndedQuery> {
     const client = new GraphQLClient(`http://${this.GraphqlServer()}`);
     const headlessGraphQLSDK = getSdk(client);
-    try {
-      const ended = await headlessGraphQLSDK.PreloadEnded();
-      if (ended.status == 200) {
-        this.clientCount = ended.data!.rpcInformation.totalCount;
-        return ended.data!.nodeStatus.preloadEnded;
-      }
-    } catch (e) {
-      console.error(e);
+    const ended = await headlessGraphQLSDK.PreloadEnded();
+    if (ended.status == 200) {
+      this.clientCount = ended.data!.rpcInformation.totalCount;
+      return ended.data!;
+    } else {
+      throw ended.errors;
     }
-    return false;
   }
 }
 
-const NodeList = async (): Promise<NodeInfo[]> => {
+const NodeList = async (
+  standalone: Headless,
+  updateOptions: IUpdateOptions
+): Promise<NodeInfo[]> => {
   let nodeList: NodeInfo[] = [];
+  const localApv = standalone.apv.analyze(get("AppProtocolVersion"));
   if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
     await Promise.any(
@@ -239,8 +242,24 @@ const NodeList = async (): Promise<NodeInfo[]> => {
           const rpcPort = Number.parseInt(rawInfos[2]);
           const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort, index + 1);
           try {
-            const preloadEnded = await nodeInfo.PreloadEnded();
-            if (preloadEnded) nodeList.push(nodeInfo);
+            const preloadEnded = await nodeInfo
+              .PreloadEnded()
+              .catch(console.error);
+            if (preloadEnded && preloadEnded.nodeStatus.preloadEnded) {
+              const { version, extra } =
+                preloadEnded.nodeStatus.appProtocolVersion ?? {};
+              if (version && extra && version >= localApv.version) {
+                update(
+                  {
+                    current: localApv.version,
+                    newer: version,
+                    extras: extra,
+                  },
+                  updateOptions
+                );
+              }
+              nodeList.push(nodeInfo);
+            }
           } catch (e) {
             console.error(e);
           }
