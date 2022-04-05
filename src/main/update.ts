@@ -56,16 +56,15 @@ export async function checkForUpdates(
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
   relaunchRequired(): void;
+  getWindow(): Electron.BrowserWindow | null;
 }
 
-export async function update(
-  update: Update,
-  listeners: IUpdateOptions,
-  win: Electron.BrowserWindow
-) {
+export async function update(update: Update, listeners: IUpdateOptions) {
   const localVersionNumber: number = update.current;
   const peerVersionNumber: number = update.newer;
   const peerVersionExtra: string = update.extras;
+
+  const win = listeners.getWindow();
 
   if (peerVersionNumber <= localVersionNumber) {
     return;
