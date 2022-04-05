@@ -356,9 +356,11 @@ export const CUSTOM_SERVER: boolean =
 export const MIXPANEL_TOKEN = "80a1e14b57d050536185c7459d45195a";
 export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
 
-export async function initializeNode(): Promise<NodeInfo> {
+export async function initializeNode(
+  updateOptions: [Headless, IUpdateOptions]
+): Promise<NodeInfo> {
   console.log("config initialize called");
-  const nodeList = await NodeList();
+  const nodeList = await NodeList(...updateOptions);
   if (nodeList.length < 1) {
     throw Error("can't find available remote node.");
   }

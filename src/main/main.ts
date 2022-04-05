@@ -233,7 +233,7 @@ async function initializeApp() {
       });
 
     try {
-      remoteNode = await initializeNode();
+      remoteNode = await initializeNode([standalone, updateOptions]);
     } catch (e) {
       console.error(e);
       const { checkboxChecked } = await dialog.showMessageBox(win!, {
