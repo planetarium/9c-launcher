@@ -5,6 +5,7 @@ export interface IConfig {
   GenesisBlockPath: string;
   StoreType: string;
   NoMiner: boolean;
+  SnapshotThreshold: number;
   TrustedAppProtocolVersionSigners: string[];
   IceServerStrings: string[];
   PeerStrings: string[];

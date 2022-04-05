@@ -54,17 +54,19 @@ const PreloadView = observer((props: IStoreContainer) => {
     player.pauseVideo();
   }, [youtubeRef]);
 
-  const welcomeMessage = useT(
-    "Receiving data from other users.\nLet's watch the trailer and new content!",
-    { _tags: transifexTags }
-  );
+  const t = useT();
 
   return (
     <Container className={classes.root}>
       <Typography variant="h1" className={classes.title}>
-        {welcomeMessage.split("\n").map((v: string) => (
-          <p>{v}</p>
-        ))}
+        {t(
+          "Receiving data from other users.\nLet's watch the trailer and new content!",
+          { _tags: transifexTags }
+        )
+          .split("\n")
+          .map((v: string) => (
+            <p>{v}</p>
+          ))}
       </Typography>
       <YouTube videoId="Kf-7NXLVLOE" opts={videoOpts} ref={youtubeRef} />
       <List className={classes.links}>

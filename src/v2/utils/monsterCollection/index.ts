@@ -74,7 +74,7 @@ export function useMonsterCollection() {
     }, [collectionSheet]),
     claimableBlockIndex: useMemo(
       () =>
-        collectionState?.monsterCollectionStateByAgent.claimableBlockIndex ??
+        collectionState?.monsterCollectionStateByAgent?.claimableBlockIndex ??
         collectionStateQuery?.stateQuery.monsterCollectionState
           ?.claimableBlockIndex,
       [collectionState, collectionStateQuery]

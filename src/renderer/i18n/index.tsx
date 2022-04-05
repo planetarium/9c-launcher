@@ -60,7 +60,7 @@ export function T<Content = {}>({
   _str,
   ...props
 }: TransifexProps<Content>): JSX.Element {
-  const node: ReactChild = useT(_str, props);
+  const node: ReactChild = useT()(_str, props);
   return <>{newlineToLineBreak(node)}</>;
 }
 

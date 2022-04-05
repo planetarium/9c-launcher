@@ -380,7 +380,9 @@ const Main: React.FC<Props> = (props: Props) => {
     setEdit(false);
     setOpenLoading(true);
 
-    collectionMutation();
+    collectionMutation().catch((e) => {
+      setOpenLoading(false);
+    });
   };
 
   const handleConfirmCancel = () => {
