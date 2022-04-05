@@ -127,6 +127,7 @@ const mixpanel: NineChroniclesMixpanel | undefined =
 const updateOptions: IUpdateOptions = {
   downloadStarted: quitAllProcesses,
   relaunchRequired: relaunch,
+  getWindow: () => win,
 };
 
 client
@@ -225,10 +226,10 @@ async function initializeApp() {
     createTray(path.join(app.getAppPath(), logoImage));
 
     const u = await checkForUpdates(standalone);
-    if (u && !isV2) update(u, updateOptions, win);
+    if (u && !isV2) update(u, updateOptions);
     else if (u && isV2)
       ipcMain.handle("start update", async () => {
-        await update(u, updateOptions, win!);
+        await update(u, updateOptions);
       });
 
     try {
@@ -282,8 +283,7 @@ function initializeIpc() {
               data.differentAppProtocolVersionEncounter.peerVersion.version,
             extras: data.differentAppProtocolVersionEncounter.peerVersion.extra,
           },
-          updateOptions,
-          win!
+          updateOptions
         );
       }
     }
