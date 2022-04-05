@@ -123,18 +123,6 @@ jobs:
       - run:
           command: yarn update-translations
           name: Update Translations
-  check-submodule:
-    docker:
-      - image: cimg/node:lts
-    steps:
-      - checkout-update-submodules
-      - yarn-install
-      - run:
-          command: yarn ts-node scripts/checkSubmodule.ts Lib9c
-          name: Check Lib9c
-      - run:
-          command: yarn ts-node scripts/checkSubmodule.ts NineChronicles.RPC.Shared
-          name: Check NineChronicles.RPC.Shared
   e2e-test:
     executor:
       name: win/default
@@ -167,11 +155,4 @@ workflows:
           filters:
             branches:
               only: development
-      - check-submodule:
-          filters:
-            branches:
-              ignore:
-                - development
-                - main
-                - /^rc-v\d+$/
       - e2e-test

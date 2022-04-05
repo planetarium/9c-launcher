@@ -50,18 +50,17 @@ const PreloadProgressView = observer(() => {
     return statusMessage[currentStep - 1];
   };
 
-  const completedMessage = useT("Preload Completed.", {
-    _tags: "preloadProgress",
-  });
-  const noPeerMessage = useT("No Peers Were Given.", {
-    _tags: "preloadProgress",
-  });
+  const t = useT();
 
   const makeProgressMessage = () => {
     if (preloadEnded) {
       return getConfig("PeerStrings").length > 0
-        ? completedMessage
-        : noPeerMessage;
+        ? t("Preload Completed.", {
+            _tags: "preloadProgress",
+          })
+        : t("No Peers Were Given.", {
+            _tags: "preloadProgress",
+          });
     } else {
       return getCurrentStepStatusMessage()[1].concat(
         ` ... (${currentStep}/${totalStep}) ${Math.floor(progress)}%`

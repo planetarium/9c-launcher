@@ -5,9 +5,9 @@ import { Button, Container, Box } from "@material-ui/core";
 import { IStoreContainer } from "../../../interfaces/store";
 import miningViewStyle from "./MiningView.style";
 import jade from "../../resources/miningJade.png";
-import { T, useT } from "@transifex/react";
 import textFit from "textfit";
 import { ipcRenderer } from "electron";
+import { T } from "src/renderer/i18n";
 
 const transifexTags = "mining";
 
@@ -47,14 +47,6 @@ const MiningView = observer(
       }
     }, [requirementEl.current]);
 
-    const requirement: string = useT(
-      "REQUIRE:\n" +
-        "Requires a 64-bit processor and operating system\n" +
-        "Processor: Quad core CPU 3.0 GHz\n" +
-        "Memory: 16 GB RAM",
-      { _tags: transifexTags }
-    );
-
     return (
       <Container className={classes.root}>
         <h1 className={classes.title}>
@@ -71,11 +63,15 @@ const MiningView = observer(
           />
         </p>
         <p ref={requirementEl} className={classes.requirement}>
-          {requirement
-            .split("\n")
-            .flatMap((line, idx) =>
-              idx < requirement.length - 1 ? [line, <br />] : line
-            )}
+          <T
+            _str={
+              "REQUIRE:\n" +
+              "Requires a 64-bit processor and operating system\n" +
+              "Processor: Quad core CPU 3.0 GHz\n" +
+              "Memory: 16 GB RAM"
+            }
+            _tags={transifexTags}
+          />
         </p>
         <Box className={classes.buttonContainer}>
           <Button
