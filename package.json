@@ -238,5 +238,6 @@
   },
   "resolutions": {
     "eip55/keccak": "^3.0.2"
-  }
+  },
+  "packageManager": "yarn@3.2.1"
 }
