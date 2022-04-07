@@ -75,6 +75,7 @@ import {
   cleanUpLockfile,
   isUpdating,
   IUpdateOptions,
+  Update,
   update,
 } from "./update";
 import { send } from "./v2/ipc";
@@ -271,23 +272,11 @@ async function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on(
-    "encounter different version",
-    async (_event, data: DifferentAppProtocolVersionEncounterSubscription) => {
-      if (data.differentAppProtocolVersionEncounter.peerVersion.extra) {
-        await update(
-          {
-            current:
-              data.differentAppProtocolVersionEncounter.localVersion.version,
-            newer:
-              data.differentAppProtocolVersionEncounter.peerVersion.version,
-            extras: data.differentAppProtocolVersionEncounter.peerVersion.extra,
-          },
-          updateOptions
-        );
-      }
+  ipcMain.on("encounter different version", async (_event, data: Update) => {
+    if (data.extras) {
+      await update(data, updateOptions);
     }
-  );
+  });
 
   ipcMain.handle("open collection page", async (_, selectedAddress) => {
     if (collectionWin != null) {

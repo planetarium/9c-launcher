@@ -15,7 +15,7 @@ import { spawn as spawnPromise } from "child-process-promise";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
-interface Update {
+export interface Update {
   current: number;
   newer: number;
   extras: string;
