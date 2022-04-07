@@ -22,13 +22,12 @@ commands:
           keys:
             - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
       - run: 
-          command: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn
+          command: yarn install --immutable
           shell: bash
       - save_cache:
           key: yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
-            - ~/.cache/yarn
-            - node_modules
+            - .yarn/cache
   install-dotnet:
     parameters:
       version:
