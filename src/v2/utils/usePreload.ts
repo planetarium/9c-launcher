@@ -88,7 +88,7 @@ export function usePreload() {
             preloadProgress?.extra.totalCount
           ),
     [
-      state.matches("snapshot"),
+      state,
       preloadProgress?.extra.currentCount,
       preloadProgress?.extra.totalCount,
     ]
