@@ -3,6 +3,7 @@ import {
   useActivationAddressQuery,
   useActivationKeyNonceQuery,
 } from "../generated/graphql";
+import { useIsPreloadDone } from "./usePreload";
 import { useStore } from "./useStore";
 import { useTx } from "./useTx";
 
@@ -21,6 +22,7 @@ interface ActivationResult {
  */
 export function useActivation(activationKey?: string): ActivationResult {
   const accountStore = useStore("account");
+  const isDone = useIsPreloadDone();
   const [isPolling, setPolling] = useState(false);
   const { loading, data } = useActivationAddressQuery({
     variables: {
@@ -54,18 +56,8 @@ export function useActivation(activationKey?: string): ActivationResult {
     ) {
       setPolling(true);
       tx()
-        .then((v) => {
-          if (v.data?.stageTxV2) {
-            console.log(v.data?.stageTxV2);
-            return;
-          }
-          setPolling(false);
-          console.error(v);
-        })
-        .catch((e) => {
-          setPolling(false);
-          console.error(e);
-        });
+        .catch((e) => console.error(e))
+        .then(() => setPolling(false));
     }
   }, [activationKey, tx, nonceData, isPolling]);
 
@@ -74,7 +66,7 @@ export function useActivation(activationKey?: string): ActivationResult {
   }, [data]);
 
   return {
-    loading: loading || nonceLoading,
+    loading: loading || nonceLoading || !isDone,
     activated: data?.activationStatus.addressActivated ?? false,
   };
 }
