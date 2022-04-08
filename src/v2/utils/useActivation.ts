@@ -54,18 +54,8 @@ export function useActivation(activationKey?: string): ActivationResult {
     ) {
       setPolling(true);
       tx()
-        .then((v) => {
-          if (v.data?.stageTxV2) {
-            console.log(v.data?.stageTxV2);
-            return;
-          }
-          setPolling(false);
-          console.error(v);
-        })
-        .catch((e) => {
-          setPolling(false);
-          console.error(e);
-        });
+        .catch((e) => console.error(e))
+        .then(() => setPolling(false));
     }
   }, [activationKey, tx, nonceData, isPolling]);
 
