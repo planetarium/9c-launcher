@@ -73,6 +73,7 @@ jobs:
           name: Clean Headless
       - run:
           command: yarn concurrently npm:build-headless npm:bundle-player
+          shell: bash
           name: Setup Software Components
       - run:
           command: |
