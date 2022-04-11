@@ -126,9 +126,6 @@ jobs:
         if: runner.os != 'Windows' # Windows uses CRLF line endings
       # 빌드
       - run: yarn build-prod
-      - name: Type Check
-        run: npx tsc --noEmit
-        if: github.event_name == 'pull_request'
       # 이전 릴리스 버전으로부터 config.json 복사
       - run: |
           set -ex
