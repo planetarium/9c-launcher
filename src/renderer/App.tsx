@@ -25,8 +25,10 @@ import montserrat from "./styles/font";
 import { t } from "@transifex/native";
 import { ipcRenderer } from "electron";
 import { LocaleProvider } from "./i18n";
-import { NodeInfo } from "../config";
+import type { NodeInfo } from "../config";
 import RPCSpinner from "./components/RPCSpinner/RPCSpinner";
+import { PreloadEndedDocument, PreloadEndedQuery } from "src/generated/graphql";
+import { Update } from "src/main/update";
 
 const Store: IStoreContainer = {
   accountStore: new AccountStore(),
@@ -99,6 +101,20 @@ function App() {
           uri: `ws://${headlessUrl}/graphql`,
           options: {
             reconnect: true,
+            connectionCallback() {
+              client
+                .query<PreloadEndedQuery>({
+                  query: PreloadEndedDocument,
+                })
+                .then(({ data }) => {
+                  const apv = data!.nodeStatus.appProtocolVersion;
+                  if (!apv) return;
+                  ipcRenderer.send("encounter different version", {
+                    newer: apv.version,
+                    extras: apv.extra,
+                  } as Update);
+                });
+            },
           },
         });
         const httpLink = createHttpLink({

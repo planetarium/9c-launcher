@@ -349,6 +349,10 @@ mutation StageTxV2($encodedTx: String!) {
 query PreloadEnded {
   nodeStatus {
     preloadEnded
+    appProtocolVersion {
+      version
+      extra
+    }
   }
   rpcInformation {
     totalCount

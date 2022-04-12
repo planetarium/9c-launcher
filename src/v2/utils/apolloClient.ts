@@ -13,6 +13,8 @@ import { RetryLink } from "@apollo/client/link/retry";
 import { useEffect, useState } from "react";
 import { NodeInfo } from "src/config";
 import isDev from "electron-is-dev";
+import { PreloadEndedDocument, PreloadEndedQuery } from "../generated/graphql";
+import type { Update } from "src/main/update";
 
 type Client = ApolloClient<NormalizedCacheObject>;
 
@@ -28,6 +30,20 @@ export default function useApolloClient(): Client | null {
         uri: `ws://${headlessUrl}/graphql`,
         options: {
           reconnect: true,
+          connectionCallback() {
+            client
+              .query<PreloadEndedQuery>({
+                query: PreloadEndedDocument,
+              })
+              .then(({ data }) => {
+                const apv = data!.nodeStatus.appProtocolVersion;
+                if (!apv) return;
+                ipcRenderer.send("encounter different version", {
+                  newer: apv.version,
+                  extras: apv.extra,
+                } as Update);
+              });
+          },
         },
       });
 

@@ -75,6 +75,7 @@ import {
   cleanUpLockfile,
   isUpdating,
   IUpdateOptions,
+  Update,
   update,
 } from "./update";
 import { send } from "./v2/ipc";
@@ -127,6 +128,7 @@ const mixpanel: NineChroniclesMixpanel | undefined =
 const updateOptions: IUpdateOptions = {
   downloadStarted: quitAllProcesses,
   relaunchRequired: relaunch,
+  getWindow: () => win,
 };
 
 client
@@ -225,10 +227,10 @@ async function initializeApp() {
     createTray(path.join(app.getAppPath(), logoImage));
 
     const u = await checkForUpdates(standalone);
-    if (u && !isV2) update(u, updateOptions, win);
+    if (u && !isV2) update(u, updateOptions);
     else if (u && isV2)
       ipcMain.handle("start update", async () => {
-        await update(u, updateOptions, win!);
+        await update(u, updateOptions);
       });
 
     try {
@@ -270,24 +272,11 @@ async function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on(
-    "encounter different version",
-    async (_event, data: DifferentAppProtocolVersionEncounterSubscription) => {
-      if (data.differentAppProtocolVersionEncounter.peerVersion.extra) {
-        await update(
-          {
-            current:
-              data.differentAppProtocolVersionEncounter.localVersion.version,
-            newer:
-              data.differentAppProtocolVersionEncounter.peerVersion.version,
-            extras: data.differentAppProtocolVersionEncounter.peerVersion.extra,
-          },
-          updateOptions,
-          win!
-        );
-      }
+  ipcMain.on("encounter different version", async (_event, data: Update) => {
+    if (data.extras) {
+      await update(data, updateOptions);
     }
-  );
+  });
 
   ipcMain.handle("open collection page", async (_, selectedAddress) => {
     if (collectionWin != null) {
