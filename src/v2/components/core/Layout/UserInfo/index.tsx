@@ -24,6 +24,7 @@ import { ClaimButton } from "./ClaimButton";
 import { Reward } from "src/collection/types";
 import { clipboard } from "electron";
 import { toast } from "react-hot-toast";
+import { useT } from "@transifex/react";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -104,6 +105,8 @@ export default function UserInfo() {
     toast("Copied!");
   }, [account.selectedAddress]);
 
+  const t = useT();
+
   if (!isDone || !account.isLogin) return null;
 
   return (
@@ -135,9 +138,19 @@ export default function UserInfo() {
           onClose={() => setOpenDialog(false)}
           tip={currentTip}
           rewards={rewards}
-          onActionTxId={(_) =>
-            void (setOpenDialog(false), setClaimLoading(true))
-          }
+          onActionTxId={(txId, avatar) => {
+            if (avatar)
+              toast.success(
+                t("Successfully sent rewards to {name} #${address}", {
+                  _tags: "v2/monster-collection",
+                  name: avatar.name,
+                  address: avatar.address.slice(2, 6),
+                })
+              );
+
+            setOpenDialog(false);
+            setClaimLoading(true);
+          }}
         />
       </UserInfoItem>
     </UserInfoStyled>
