@@ -5,6 +5,7 @@ import { styled } from "../../stitches.config";
 import background from "src/v2/resources/bg-character.png";
 import StatusBar from "./StatusBar";
 import { t } from "@transifex/native";
+import WindowControls from "src/v2/components/core/Layout/WindowControls";
 
 // Note that while this is in a views/ folder it isn't a route.
 // This is because it's a view that is rendered by the APVSubscriptionProvider component.
@@ -21,6 +22,7 @@ const Root = styled("div", {
   height: "100%",
   backgroundImage: `url(${background})`,
   backgroundSize: "cover",
+  dragable: true,
 });
 
 const FixedStatusBar = styled(StatusBar, {
@@ -44,6 +46,7 @@ function getMessage(state: StateFrom<typeof machine>): string {
 export default function UpdateView({ state, progress }: UpdateViewProps) {
   return (
     <Root>
+      <WindowControls color="black" />
       {!state.matches("ok") && (
         <FixedStatusBar progress={progress} message={getMessage(state)} />
       )}

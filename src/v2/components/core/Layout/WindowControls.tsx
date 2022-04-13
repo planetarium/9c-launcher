@@ -22,15 +22,27 @@ const WindowControlButton = styled("button", {
   appearance: "none",
   flex: 1,
   marginLeft: "1rem",
+  variants: {
+    color: {
+      black: {
+        "& > svg": {
+          fill: "black",
+        },
+      },
+    },
+  },
 });
 
-export default function WindowControls() {
+export default function WindowControls({ color }: { color?: "black" }) {
   return (
     <WindowControlsStyled>
-      <WindowControlButton onClick={() => currentWindow.minimize()}>
+      <WindowControlButton
+        color={color}
+        onClick={() => currentWindow.minimize()}
+      >
         <MinimizeIcon fontSize="small" />
       </WindowControlButton>
-      <WindowControlButton onClick={() => currentWindow.close()}>
+      <WindowControlButton color={color} onClick={() => currentWindow.close()}>
         <CloseIcon fontSize="small" />
       </WindowControlButton>
     </WindowControlsStyled>
