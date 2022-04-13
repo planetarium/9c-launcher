@@ -21,6 +21,7 @@ const Root = styled("div", {
   height: "100%",
   backgroundImage: `url(${background})`,
   backgroundSize: "cover",
+  dragable: true,
 });
 
 const FixedStatusBar = styled(StatusBar, {
