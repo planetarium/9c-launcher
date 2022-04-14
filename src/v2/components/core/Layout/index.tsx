@@ -32,10 +32,10 @@ const Sidebar = styled("main", {
   height: "100%",
   backgroundColor: "$gray",
   opacity: 0.95,
-  dragable: false,
   boxSizing: "border-box",
   padding: 52,
   "& > * + *": { marginTop: 16 },
+  "& > *": { dragable: false },
   paddingBottom: 104,
   variants: {
     flex: {
