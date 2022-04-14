@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { observer } from "mobx-react";
 import { GetAvatarAddressQuery } from "src/v2/generated/graphql";
 import { useTx } from "src/v2/utils/useTx";
@@ -39,6 +39,12 @@ const LastActivity = styled("span", {
   display: "inline-block",
 });
 
+export interface Avatar {
+  address: string;
+  name: string;
+  updatedAt: number;
+}
+
 function ClaimContent({
   data,
   onActionTxId,
@@ -47,7 +53,7 @@ function ClaimContent({
   onClose,
   isOpen,
 }: ClaimContentProps) {
-  const avatars = useMemo(
+  const avatars = useMemo<Avatar[] | undefined>(
     () =>
       data.stateQuery.agent?.avatarStates?.map((x) => ({
         address: x.address,
@@ -57,19 +63,26 @@ function ClaimContent({
     [data]
   );
 
-  const [currentAvatar, setCurrentAvatar] = useState<string>(
-    avatars?.[0]?.address
+  const [currentAvatarIndex, setCurrentAvatarIndex] = useReducer(
+    (state) => Number(state),
+    0
   );
+  const currentAvatar = useMemo(() => avatars?.[currentAvatarIndex], [
+    avatars,
+    currentAvatarIndex,
+  ]);
   const hasMultipleAvatars = !avatars || avatars.length !== 1;
 
   const tx = useTx(
     "claim-monster-collection-reward",
-    currentAvatar?.replace("0x", "")
+    currentAvatar?.address.replace("0x", "")
   );
 
   useEffect(() => {
     if (hasMultipleAvatars || !isOpen) return;
-    tx().then((v) => v.data != null && onActionTxId(v.data.stageTxV2));
+    tx().then(
+      (v) => v.data != null && onActionTxId(v.data.stageTxV2, currentAvatar)
+    );
   }, [avatars, isOpen]);
 
   if (!hasMultipleAvatars) return null;
@@ -82,9 +95,12 @@ function ClaimContent({
           _tags={transifexTags}
         />
       </Title>
-      <RadioGroup value={currentAvatar} onValueChange={setCurrentAvatar}>
-        {avatars?.map((avatar) => (
-          <RadioItem key={avatar.address} value={avatar.address}>
+      <RadioGroup
+        value={String(currentAvatarIndex)}
+        onValueChange={setCurrentAvatarIndex}
+      >
+        {avatars?.map((avatar, i) => (
+          <RadioItem key={avatar.address} value={String(i)}>
             {/* Ensures the display: block, which makes <br> work */}
             <div>
               {avatar.name} #{avatar.address.substring(2, 6)}
@@ -107,7 +123,10 @@ function ClaimContent({
         <Button
           variant="primary"
           onClick={() =>
-            tx().then((v) => v.data != null && onActionTxId(v.data.stageTxV2))
+            tx().then(
+              (v) =>
+                v.data != null && onActionTxId(v.data.stageTxV2, currentAvatar)
+            )
           }
         >
           <T _str="Send" _tags={transifexTags} />

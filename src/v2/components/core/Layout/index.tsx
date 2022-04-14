@@ -64,7 +64,13 @@ function Layout({
 }: React.PropsWithChildren<LayoutProps>) {
   return (
     <Background>
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          style: {
+            maxWidth: "1000px",
+          },
+        }}
+      />
       {sidebar ? <Sidebar {...sidebarProps}>{children}</Sidebar> : <UserInfo />}
       <BottomControls>
         <StatusBar />
