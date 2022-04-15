@@ -30,6 +30,7 @@ function InfoText() {
         account.isLogin && `Account: ${account.selectedAddress}`,
         `Node: ${node}`,
         awsSinkGuid && `Client ID: ${awsSinkGuid}`,
+        `Commit: ${GIT_HASH}`,
       ]
         .filter(Boolean)
         .join("\n"),

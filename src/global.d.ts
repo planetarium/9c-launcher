@@ -12,3 +12,5 @@ declare module "*.module.scss" {
   const content: { [className: string]: string };
   export default content;
 }
+
+declare const GIT_HASH: string;
