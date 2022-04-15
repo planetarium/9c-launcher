@@ -9,6 +9,7 @@ import {
   useTopmostBlocksQuery,
 } from "../../../generated/graphql";
 import { styled } from "src/v2/stitches.config";
+import toast from "react-hot-toast";
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid"
@@ -49,15 +50,10 @@ function InfoText() {
     [account.isLogin, loading, topmostBlocks, minedBlocks]
   );
 
-  const [copied, setCopied] = useState(false);
   const onClick = () => {
     clipboard.writeText(debugValue);
-    setCopied(true);
+    toast("Copied diagnostic inforomation.");
   };
-  useEffect(() => {
-    if (!copied) return;
-    setTimeout(() => setCopied(false), 1000);
-  }, [copied]);
 
   const { data: blockTip } = useTipSubscription();
   const [node, setNode] = useState<string>("loading");
@@ -79,7 +75,6 @@ function InfoText() {
       tip: {blockTip?.tipChanged?.index || 0}
       <br />
       {`version: v${getConfig("AppProtocolVersion").split("/")[0]}`}
-      {copied && " copied!"}
     </InfoTextStyled>
   );
 }
