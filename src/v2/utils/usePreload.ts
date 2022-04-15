@@ -105,6 +105,7 @@ export function usePreload() {
           : undefined,
       [state, preloadProgress?.extra.totalCount]
     ),
+    error: state.matches("error") ? state.context.error : null,
   };
 }
 
