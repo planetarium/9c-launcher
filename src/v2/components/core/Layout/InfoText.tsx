@@ -7,6 +7,7 @@ import { get as getConfig, NodeInfo } from "../../../../config";
 import { useTipSubscription } from "../../../generated/graphql";
 import { styled } from "src/v2/stitches.config";
 import toast from "react-hot-toast";
+import { T } from "@transifex/react";
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid"
@@ -39,7 +40,7 @@ function InfoText() {
 
   const onClick = () => {
     clipboard.writeText(debugValue);
-    toast("Copied diagnostic inforomation.", {
+    toast(<T _str="Copied diagnostic inforomation." _tags="v2/diagnostics" />, {
       position: "bottom-left",
       id: "diagnostics-copied",
     });
