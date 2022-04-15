@@ -4,10 +4,7 @@ import { observer } from "mobx-react";
 import { useStore } from "../../../utils/useStore";
 import { clipboard, ipcRenderer } from "electron";
 import { get as getConfig, NodeInfo } from "../../../../config";
-import {
-  useTipSubscription,
-  useTopmostBlocksQuery,
-} from "../../../generated/graphql";
+import { useTipSubscription } from "../../../generated/graphql";
 import { styled } from "src/v2/stitches.config";
 import toast from "react-hot-toast";
 
@@ -24,39 +21,30 @@ const InfoTextStyled = styled("div", {
 
 function InfoText() {
   const account = useStore("account");
-  const { loading, data } = useTopmostBlocksQuery({ pollInterval: 1000 * 10 });
-  const topmostBlocks = data?.nodeStatus.topmostBlocks;
-
-  const minedBlocks = useMemo(
-    () =>
-      account.isLogin && topmostBlocks != null
-        ? topmostBlocks.filter((b) => b?.miner == account.selectedAddress)
-        : null,
-    [account.isLogin, topmostBlocks]
-  );
+  const [node, setNode] = useState<string>("loading");
 
   const debugValue = useMemo(
     () =>
       [
         `APV: ${getConfig("AppProtocolVersion")}`,
         account.isLogin && `Account: ${account.selectedAddress}`,
-        `Debug: ${account.isLogin} / ${loading}`,
-        minedBlocks &&
-          `Mined blocks: ${minedBlocks?.length} (out of recent ${topmostBlocks?.length} blocks)`,
+        `Node: ${node}`,
         awsSinkGuid && `Client ID: ${awsSinkGuid}`,
       ]
         .filter(Boolean)
         .join("\n"),
-    [account.isLogin, loading, topmostBlocks, minedBlocks]
+    [account.isLogin, account.selectedAddress, node, awsSinkGuid]
   );
 
   const onClick = () => {
     clipboard.writeText(debugValue);
-    toast("Copied diagnostic inforomation.");
+    toast("Copied diagnostic inforomation.", {
+      position: "bottom-left",
+      id: "diagnostics-copied",
+    });
   };
 
   const { data: blockTip } = useTipSubscription();
-  const [node, setNode] = useState<string>("loading");
 
   useEffect(
     () =>
