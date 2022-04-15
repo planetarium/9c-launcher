@@ -33,7 +33,7 @@ function StatusBar() {
     <StatusBarStyled>
       <StatusMessage>
         <span>{message}</span>
-        {!!blockCount && !isDone && <small>[{blockCount}]</small>}
+        {!!blockCount && <small>[{blockCount}]</small>}
         {isDone && account.isLogin && !game.isGameStarted && (
           <Button
             variant="primary"
