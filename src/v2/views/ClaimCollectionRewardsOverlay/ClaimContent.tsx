@@ -64,7 +64,7 @@ function ClaimContent({
   );
 
   const [currentAvatarIndex, setCurrentAvatarIndex] = useReducer(
-    (state) => Number(state),
+    (_: number, action: string) => Number(action),
     0
   );
   const currentAvatar = useMemo(() => avatars?.[currentAvatarIndex], [
