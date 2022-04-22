@@ -455,6 +455,56 @@ type StandaloneMutation {
   transfer(recipient: Address!, amount: String!, txNonce: Long!, currencyAddress: String! = "000000000000000000000000000000000000000A", memo: String): TxId
   transferGold(recipient: Address!, amount: String!): TxId
 }
+type StakeStateType {
+  address: Address!
+  deposit: Long!
+  startedBlockIndex: Long!
+  receivedBlockIndex: Long!
+  cancellableBlockIndex: Long!
+  claimableBlockIndex: Long!
+}
+
+type StakeRegularRewardInfoType {
+  itemId: Int!
+	# rate가 10이고 100 NCG를 스테이킹하면 10개의 itemId 아이템을 얻습니다.
+  rate: Int!
+}
+
+type StakeRegularRewardRowType {
+	level: Int!
+  requiredGold: Long!
+  rewards: [StakeRegularRewardInfoType]!
+}
+
+type StakeRegularRewardSheetType {
+  orderedList: [StakeRegularRewardRowType]
+  estimatedRewards(gold: Long!): [StakeRegularRewardInfoType]!
+}
+
+type StakeAchievementRewardInfoType {
+  itemId: Int!
+  quantity: Int!
+}
+
+type StakeAchievementRewardRowType {
+	level: Int!
+  requiredGold: Long!
+  requiredBlockIndex: Int!
+  rewards: [StakeAchievementRewardInfoType]!
+}
+
+type StakeAchievementRewardSheetType {
+  orderedList: [StakeAchievementRewardRowType]
+}
+
+type StakeAchievementState {
+  # 10 NCG를 스테이킹한 직후에는 [true]
+  # 10 NCG를 스테이킹하고 3달 후에는 [true, true]
+	# 10 NCG를 스테이킹하고 6달 후에는 [true, true, true]
+	# 10 NCG를 스테이킹하고 1년 후에는 [true, true, true, true]
+	# 만약 3년 보상 같은게 생기게 된다면 [true, true, true, true, true]로 같은 값을 기대합니다.
+  achievementsByLevel(level: Int!): [Boolean]!
+}
 
 type StandaloneQuery {
   stateQuery(hash: ByteString): StateQuery!
@@ -475,6 +525,12 @@ type StandaloneQuery {
   activated(invitationCode: String!): Boolean!
   activationKeyNonce(invitationCode: String!): String!
   rpcInformation: RpcInformationQuery!
+
+  # MonsterCollection V2
+  stakeState(agentAddress: Address!): StakeStateType
+  stakeAchievementState(agentAddress: Address!): StakeAchievementState
+  stakeRegularRewardSheet: StakeRegularRewardSheetType
+  stakeAchievementRewardSheet: StakeAchievementRewardSheetType
 }
 
 type StandaloneSubscription {
