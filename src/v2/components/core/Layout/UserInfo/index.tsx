@@ -149,7 +149,7 @@ export default function UserInfo() {
               );
 
             setOpenDialog(false);
-            setClaimLoading(true);
+            if (txId) setClaimLoading(true);
           }}
         />
       </UserInfoItem>
