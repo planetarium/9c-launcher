@@ -9,6 +9,7 @@ import InfoText from "./InfoText";
 import { CSS, styled } from "src/v2/stitches.config";
 import background from "../../../resources/launcher-png.png";
 import UserInfo from "./UserInfo";
+import { Toaster } from "react-hot-toast";
 
 interface LayoutProps {
   sidebar?: boolean;
@@ -31,10 +32,10 @@ const Sidebar = styled("main", {
   height: "100%",
   backgroundColor: "$gray",
   opacity: 0.95,
-  dragable: false,
   boxSizing: "border-box",
   padding: 52,
   "& > * + *": { marginTop: 16 },
+  "& > *": { dragable: false },
   paddingBottom: 104,
   variants: {
     flex: {
@@ -63,6 +64,13 @@ function Layout({
 }: React.PropsWithChildren<LayoutProps>) {
   return (
     <Background>
+      <Toaster
+        toastOptions={{
+          style: {
+            maxWidth: "1000px",
+          },
+        }}
+      />
       {sidebar ? <Sidebar {...sidebarProps}>{children}</Sidebar> : <UserInfo />}
       <BottomControls>
         <StatusBar />

@@ -8,9 +8,15 @@ const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
 const TerserPlugin = require("terser-webpack-plugin");
 
+const child_process = require("child_process");
+
 // const to avoid typos
 const DEVELOPMENT = "development";
 const PRODUCTION = "production";
+
+const gitHash = child_process.execSync("git rev-parse HEAD", {
+  encoding: "utf8",
+});
 
 /** @returns {import('webpack').Configuration} */
 function createRenderConfig(isDev) {
@@ -28,7 +34,7 @@ function createRenderConfig(isDev) {
       fallback: {
         os: false,
         fs: false,
-      }
+      },
     },
 
     mode: isDev ? DEVELOPMENT : PRODUCTION,
@@ -72,10 +78,7 @@ function createRenderConfig(isDev) {
         },
         {
           test: /\.css$/,
-          use: [
-            { loader: "style-loader" },
-            { loader: "css-loader" },
-          ],
+          use: [{ loader: "style-loader" }, { loader: "css-loader" }],
         },
         {
           test: /\.m?js/,
@@ -105,7 +108,10 @@ function createRenderConfig(isDev) {
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 ["@babel/plugin-proposal-private-methods", { loose: true }],
-                ["@babel/plugin-proposal-private-property-in-object", { loose: true }],
+                [
+                  "@babel/plugin-proposal-private-property-in-object",
+                  { loose: true },
+                ],
                 "react-hot-loader/babel",
               ],
               sourceMaps: isDev,
@@ -124,6 +130,10 @@ function createRenderConfig(isDev) {
     plugins: [
       new MiniCssExtractPlugin({
         filename: "main.css",
+      }),
+
+      new DefinePlugin({
+        GIT_HASH: JSON.stringify(gitHash),
       }),
 
       new HtmlPlugin({
@@ -153,11 +163,11 @@ function createRenderConfig(isDev) {
 
     devServer: isDev
       ? {
-        contentBase: path.join(__dirname, "dist"),
-        compress: true,
-        port: 9000,
-        historyApiFallback: true,
-      }
+          contentBase: path.join(__dirname, "dist"),
+          compress: true,
+          port: 9000,
+          historyApiFallback: true,
+        }
       : undefined,
 
     optimization: {
@@ -250,7 +260,10 @@ function createMainConfig(isDev) {
               plugins: [
                 ["@babel/plugin-proposal-class-properties", { loose: true }],
                 ["@babel/plugin-proposal-private-methods", { loose: true }],
-                ["@babel/plugin-proposal-private-property-in-object", { loose: true }]
+                [
+                  "@babel/plugin-proposal-private-property-in-object",
+                  { loose: true },
+                ],
               ],
             },
           },
@@ -326,8 +339,10 @@ module.exports = (env) => {
   }
 
   console.log(
-    `\n##\n## BUILDING BUNDLE FOR: ${target === "main" ? "main process" : "render process"
-    }\n## CONFIGURATION: ${isDev ? DEVELOPMENT : PRODUCTION
+    `\n##\n## BUILDING BUNDLE FOR: ${
+      target === "main" ? "main process" : "render process"
+    }\n## CONFIGURATION: ${
+      isDev ? DEVELOPMENT : PRODUCTION
     }\n## VERSION: ${version}\n##\n`
   );
 

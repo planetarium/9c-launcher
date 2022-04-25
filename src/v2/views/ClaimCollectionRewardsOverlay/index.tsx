@@ -8,12 +8,12 @@ import { useGetAvatarAddressQuery } from "src/v2/generated/graphql";
 import { styled } from "src/v2/stitches.config";
 import { OverlayProps } from "src/v2/utils/types";
 import { useStore } from "src/v2/utils/useStore";
-import ClaimContent from "./ClaimContent";
+import ClaimContent, { Avatar } from "./ClaimContent";
 
 export interface ClaimCollectionRewardsOverlayProps extends OverlayProps {
   rewards: Reward[];
   tip: number;
-  onActionTxId: (txId: string | null) => void;
+  onActionTxId: (txId: string | null, avatar?: Avatar) => void;
 }
 
 const transifexTags = "v2/views/ClaimCollectionRewardsOverlay";
