@@ -10,14 +10,16 @@ import {
   theme,
   Title,
 } from "./base";
-import { ItemGroup, RewardSheet } from "./reward";
+import { Item, ItemGroup, RewardSheet } from "./reward";
 import { observer } from "mobx-react";
 import { OverlayProps } from "src/v2/utils/types";
+
 import titleImg from "src/v2/resources/monster-collection-title.png";
+import ncgImg from "src/v2/resources/collection/items/ncg.png";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   return (
-    <MonsterCollectionOverlayBase isOpen={isOpen} className={theme}>
+    <MonsterCollectionOverlayBase isOpen={isOpen}>
       <Title src={titleImg} />
       <DepositHolder>
         <DepositForm>
@@ -33,7 +35,38 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         </DepositDescription>
       </DepositHolder>
       <RewardSheet>
-        <ItemGroup title="Items">{"something".repeat(50)}</ItemGroup>
+        {Array(20)
+          .fill(0)
+          .map((_, i) => (
+            <ItemGroup key={i} title="One-time">
+              <Item
+                key="a"
+                title={
+                  <>
+                    First
+                    <br />
+                    Reward
+                  </>
+                }
+                amount={10}
+              >
+                <img src={ncgImg} />
+              </Item>
+              <Item
+                key="b"
+                title={
+                  <>
+                    Second
+                    <br />
+                    Reward
+                  </>
+                }
+                amount={10}
+              >
+                <img src={ncgImg} />
+              </Item>
+            </ItemGroup>
+          ))}
       </RewardSheet>
     </MonsterCollectionOverlayBase>
   );

@@ -23,6 +23,7 @@ const Viewport = styled(ScrollAreaPrimitive.Viewport, {
     "-webkit-linear-gradient(0deg, transparent 0%, black 5%, black 95%, transparent 100%)",
   "> div[style]": {
     display: "flex !important",
+    alignItems: "strech",
   },
   "& > * + *": {
     marginLeft: 20,
@@ -65,7 +66,12 @@ export const RewardSheet = ({ children }: { children: React.ReactNode }) => (
 const ItemGroupStyled = styled("section", {
   display: "flex",
   flexDirection: "column",
-  height: 180,
+  "& + section::before": {
+    display: "block",
+    height: "100%",
+    border: "2px solid #9f6b4b",
+    margin: 20,
+  },
 });
 
 const Title = styled("h1", {
@@ -78,6 +84,7 @@ const Title = styled("h1", {
     marginRight: 5,
   },
   fontSize: "1rem",
+  marginTop: 5,
   color: theme.colors.title,
 });
 
@@ -87,7 +94,7 @@ const ItemContainer = styled("div", {
   padding: 10,
   backgroundColor: "#321a13",
   boxShadow: "inset 0px 3px 7px 0 rgba(0, 0, 0, 0.7)",
-  borderRadius: 5,
+  borderRadius: 10,
 });
 
 interface ItemGroupProps {
@@ -100,4 +107,66 @@ export const ItemGroup = ({ children, title }: ItemGroupProps) => (
     <Title>{title}</Title>
     <ItemContainer>{children}</ItemContainer>
   </ItemGroupStyled>
+);
+
+const ItemFrame = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  width: 94,
+  height: 94,
+  backgroundImage: theme.images.itemBg,
+  "> img": {
+    display: "block",
+  },
+  variants: {
+    received: {
+      true: {
+        opacity: 0.5,
+      },
+    },
+  },
+});
+
+const ItemTitle = styled("h2", {
+  color: "#9f6b4b",
+  fontSize: "1rem",
+  lineHeight: 1,
+  textAlign: "center",
+  border: "none",
+  margin: 10,
+  variants: {
+    received: {
+      true: {
+        opacity: 0.5,
+      },
+    },
+  },
+});
+
+const ItemAmount = styled("div", {
+  color: "#fff5e3",
+  textShadow: theme.shadows.standard,
+  WebKitTextStroke: "1px solid black",
+});
+
+const ItemDivider = styled("div");
+
+interface ItemProps {
+  children: React.ReactNode;
+  title: React.ReactNode;
+  amount: string | number;
+  received?: boolean;
+  tooltip?: React.ReactNode;
+}
+
+export const Item = ({ children, title, amount, tooltip }: ItemProps) => (
+  <div>
+    <ItemFrame>
+      {children}
+      <ItemAmount>{amount}</ItemAmount>
+    </ItemFrame>
+    <ItemTitle>{title}</ItemTitle>
+  </div>
 );

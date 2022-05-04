@@ -7,8 +7,9 @@ import buttonImg from "src/v2/resources/collection/button-activation.png";
 import rewardImg from "src/v2/resources/collection/reward-bg.png";
 import dotImg from "src/v2/resources/collection/dot.png";
 import darkTextBg from "src/v2/resources/collection/dark-text-bg.png";
+import itemBg from "src/v2/resources/collection/item-bg.png";
 
-export const theme = createTheme({
+export const theme = {
   colors: {
     primary: "#73452e",
     depositTitle: "#e3ad67",
@@ -26,12 +27,13 @@ export const theme = createTheme({
     reward: `url(${rewardImg})`,
     dot: `url(${dotImg})`,
     darkTextBg: `url(${darkTextBg})`,
+    itemBg: `url(${itemBg})`,
   },
   shadows: {
     embossed: "0.5px 0.9px 0 #fdd6a0",
     standard: "0px 2px 2px rgba(0, 0, 0, 0.5)",
   },
-});
+} as const;
 
 export const MonsterCollectionOverlayBase = styled(OverlayBase, {
   "&&": {
@@ -55,8 +57,10 @@ export const Title = styled("img", {
 
 export const DepositHolder = styled("div", {
   width: 966,
-  height: 192,
   backgroundImage: theme.images.darkTextBg,
+  backgroundSize: "contain",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "bottom center",
 });
 
 export const DepositDescription = styled("p", {
@@ -64,6 +68,17 @@ export const DepositDescription = styled("p", {
   textShadow: theme.shadows.standard,
   fontSize: 18,
   lineHeight: 1.5,
+  textAlign: "center",
+  "::last-child": {
+    marginBottom: 20,
+  },
+  variants: {
+    warning: {
+      true: {
+        color: "#ff4343",
+      },
+    },
+  },
 });
 
 export const DepositForm = styled("form", {
