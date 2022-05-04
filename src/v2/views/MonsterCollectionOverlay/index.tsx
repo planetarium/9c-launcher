@@ -16,6 +16,7 @@ import { OverlayProps } from "src/v2/utils/types";
 
 import titleImg from "src/v2/resources/monster-collection-title.png";
 import ncgImg from "src/v2/resources/collection/items/ncg.png";
+import { Level, Levels } from "./level";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   return (
@@ -34,6 +35,12 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
           treasure.
         </DepositDescription>
       </DepositHolder>
+      <Levels>
+        <Level amount={10} />
+        <Level amount={10} />
+        <Level amount={10} />
+        <Level amount={10} />
+      </Levels>
       <RewardSheet>
         {Array(20)
           .fill(0)

@@ -46,6 +46,7 @@ export const MonsterCollectionOverlayBase = styled(OverlayBase, {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    zIndex: -2,
   },
 });
 
