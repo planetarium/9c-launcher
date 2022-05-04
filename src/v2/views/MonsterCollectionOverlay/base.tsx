@@ -4,6 +4,9 @@ import { createTheme, styled } from "src/v2/stitches.config";
 import background from "src/v2/resources/collection/bg.png";
 import formImg from "src/v2/resources/collection/deposit-bg.png";
 import buttonImg from "src/v2/resources/collection/button-activation.png";
+import rewardImg from "src/v2/resources/collection/reward-bg.png";
+import dotImg from "src/v2/resources/collection/dot.png";
+import darkTextBg from "src/v2/resources/collection/dark-text-bg.png";
 
 export const theme = createTheme({
   colors: {
@@ -11,6 +14,7 @@ export const theme = createTheme({
     depositTitle: "#e3ad67",
     depositContent: "#fff6b9",
     depositButton: "#38261a",
+    title: "#fbdeb8",
   },
   gradients: {
     background: "linear-gradient(to top, #9e6a37, #d7a55e, #a36e3a)",
@@ -19,6 +23,9 @@ export const theme = createTheme({
     background: `url(${background})`,
     deposit: `url(${formImg})`,
     depositButton: `url(${buttonImg})`,
+    reward: `url(${rewardImg})`,
+    dot: `url(${dotImg})`,
+    darkTextBg: `url(${darkTextBg})`,
   },
   shadows: {
     embossed: "0.5px 0.9px 0 #fdd6a0",
@@ -32,29 +39,31 @@ export const MonsterCollectionOverlayBase = styled(OverlayBase, {
     height: "708px",
     backgroundImage: theme.images.background,
     padding: 36,
+    paddingBottom: 0,
     marginTop: "30px", // (768 - 708) / 2
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
-});
-
-export const RewardSheetContent = styled("section", {
-  display: "grid",
-  gridAutoColumns: "auto",
-  gridAutoFlow: "column",
-  gridTemplateRows: "1rem 1fr",
-  gridRowGap: "9px",
-
-  borderStyle: "solid",
-  borderWidth: "5px",
-  borderImageSource: theme.gradients.background,
-  borderImageSlice: "1",
-
-  backgroundColor: theme.colors.primary,
 });
 
 export const Title = styled("img", {
   display: "block",
   marginLeft: "auto",
   marginRight: "auto",
+});
+
+export const DepositHolder = styled("div", {
+  width: 966,
+  height: 192,
+  backgroundImage: theme.images.darkTextBg,
+});
+
+export const DepositDescription = styled("p", {
+  color: "White",
+  textShadow: theme.shadows.standard,
+  fontSize: 18,
+  lineHeight: 1.5,
 });
 
 export const DepositForm = styled("form", {
