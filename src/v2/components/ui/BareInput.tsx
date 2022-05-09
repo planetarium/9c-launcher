@@ -31,7 +31,7 @@ function BareInput(
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       props.onChange?.(e);
-      setValue(e.target.value);
+      setValue(e.target.value.slice(0, props.maxLength));
     },
     [props.onChange]
   );
