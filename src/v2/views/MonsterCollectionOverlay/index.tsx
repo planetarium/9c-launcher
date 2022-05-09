@@ -31,7 +31,10 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
           <DepositTitle>Deposit</DepositTitle>
           {isEditing ? (
             <>
-              <DepositContent onClick={() => inputRef.current?.focus()}>
+              <DepositContent
+                editable
+                onClick={() => inputRef.current?.focus()}
+              >
                 <BareInput ref={inputRef} defaultValue={50} type="number" />
                 <sub>/500</sub>
               </DepositContent>

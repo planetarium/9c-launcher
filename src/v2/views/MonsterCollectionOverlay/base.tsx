@@ -114,9 +114,26 @@ export const DepositContent = styled("div", {
   fontSize: 60,
   fontWeight: "$bold",
   color: theme.colors.depositContent,
+  lineHeight: 1,
+  placeSelf: "center stretch",
+  textAlign: "center",
+  margin: "0 10px",
   "& > sub": {
     fontSize: 30,
     bottom: 0,
+  },
+  variants: {
+    editable: {
+      true: {
+        backgroundColor: "white",
+        borderRadius: 5,
+        border: "1px solid #ccc",
+        color: "#44271c",
+        "> sub": {
+          color: "#b6aeab",
+        },
+      },
+    },
   },
 });
 

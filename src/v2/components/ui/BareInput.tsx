@@ -3,6 +3,7 @@ import { styled } from "src/v2/stitches.config";
 
 const BareInputWrapper = styled("span", {
   position: "relative",
+  display: "inline-block",
 });
 
 const LayoutCalculator = styled("span", {
@@ -14,6 +15,7 @@ const BareInputStyled = styled("input", {
   all: "unset",
   position: "absolute",
   width: "100%",
+  top: 0,
   left: 0,
   "&::-webkit-inner-spin-button": {
     display: "none",
