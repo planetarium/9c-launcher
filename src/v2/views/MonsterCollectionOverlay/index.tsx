@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   DepositButton2,
   DepositContent,
@@ -21,6 +21,7 @@ import BareInput from "src/v2/components/ui/BareInput";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen}>
@@ -30,8 +31,8 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
           <DepositTitle>Deposit</DepositTitle>
           {isEditing ? (
             <>
-              <DepositContent>
-                <BareInput />
+              <DepositContent onClick={() => inputRef.current?.focus()}>
+                <BareInput ref={inputRef} defaultValue={50} type="number" />
                 <sub>/500</sub>
               </DepositContent>
               <DepositButton2>Save</DepositButton2>

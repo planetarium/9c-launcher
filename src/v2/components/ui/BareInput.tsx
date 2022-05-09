@@ -5,12 +5,19 @@ const BareInputWrapper = styled("span", {
   position: "relative",
 });
 
+const LayoutCalculator = styled("span", {
+  visibility: "hidden",
+});
+
 const BareInputStyled = styled("input", {
   appearance: "none",
   all: "unset",
   position: "absolute",
   width: "100%",
   left: 0,
+  "&::-webkit-inner-spin-button": {
+    display: "none",
+  },
 });
 
 function BareInput(
@@ -28,7 +35,7 @@ function BareInput(
 
   return (
     <BareInputWrapper>
-      <span aria-hidden>{value}</span>
+      <LayoutCalculator aria-hidden>{value}</LayoutCalculator>
       <BareInputStyled ref={ref} value={value} {...props} onChange={onChange} />
     </BareInputWrapper>
   );
