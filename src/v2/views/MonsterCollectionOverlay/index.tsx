@@ -19,12 +19,12 @@ import ncgImg from "src/v2/resources/collection/items/ncg.png";
 import { Level, Levels } from "./level";
 import BareInput from "src/v2/components/ui/BareInput";
 
-function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
+export function MonsterCollectionContent() {
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <MonsterCollectionOverlayBase isOpen={isOpen}>
+    <>
       <Title src={titleImg} />
       <DepositHolder>
         <DepositForm>
@@ -50,7 +50,13 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
               <DepositContent>
                 0<sub>/500</sub>
               </DepositContent>
-              <DepositButton2 type="button" onClick={() => setIsEditing(true)}>
+              <DepositButton2
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsEditing(true);
+                }}
+              >
                 Edit
               </DepositButton2>
             </>
@@ -102,6 +108,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             </ItemGroup>
           ))}
       </RewardSheet>
+    </>
+  );
+}
+
+function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
+  return (
+    <MonsterCollectionOverlayBase isOpen={isOpen} onClose={onClose}>
+      <MonsterCollectionContent />
     </MonsterCollectionOverlayBase>
   );
 }

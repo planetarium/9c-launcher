@@ -40,13 +40,13 @@ export const MonsterCollectionOverlayBase = styled(OverlayBase, {
     width: "1166px",
     height: "708px",
     backgroundImage: theme.images.background,
+    backgroundSize: "cover",
     padding: 36,
     paddingBottom: 0,
     marginTop: "30px", // (768 - 708) / 2
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    zIndex: -2,
   },
 });
 

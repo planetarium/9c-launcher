@@ -14,7 +14,6 @@ const LevelsLine = styled("div", {
   top: 16,
   left: "50%",
   transform: "translateX(-50%)",
-  zIndex: -1,
 });
 
 const LevelContainer = styled("ol", {
@@ -30,6 +29,7 @@ const LevelItem = styled("li", {
   all: "unset",
   display: "block",
   position: "relative",
+  zIndex: 1,
 });
 
 const LevelCaption = styled("div", {
