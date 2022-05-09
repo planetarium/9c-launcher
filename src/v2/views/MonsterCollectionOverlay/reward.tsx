@@ -64,13 +64,21 @@ export const RewardSheet = ({ children }: { children: React.ReactNode }) => (
 );
 
 const ItemGroupStyled = styled("section", {
+  position: "relative",
   display: "flex",
   flexDirection: "column",
-  "& + section::before": {
+  "& + &": {
+    marginLeft: 40,
+  },
+  "& + &::before": {
+    position: "absolute",
+    left: -40,
     display: "block",
+    content: "''",
+    boxSizing: "border-box",
     height: "100%",
-    border: "2px solid #9f6b4b",
-    margin: 20,
+    border: "2px groove #9f6b4b",
+    margin: "0 20px",
   },
 });
 
@@ -150,8 +158,6 @@ const ItemAmount = styled("div", {
   textShadow: theme.shadows.standard,
   WebKitTextStroke: "1px solid black",
 });
-
-const ItemDivider = styled("div");
 
 interface ItemProps {
   children: React.ReactNode;
