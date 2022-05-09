@@ -23,11 +23,13 @@ const LevelContainer = styled("ol", {
   display: "flex",
   justifyContent: "space-between",
   width: 820,
+  marginTop: "auto",
 });
 
 const LevelItem = styled("li", {
   all: "unset",
   display: "block",
+  position: "relative",
 });
 
 const LevelCaption = styled("div", {
@@ -35,6 +37,13 @@ const LevelCaption = styled("div", {
   borderRadius: "1em",
   backgroundColor: "rgba(0, 0, 0, 0.2)",
   color: "#fff",
+
+  position: "absolute",
+  top: "100%",
+  left: "50%",
+  transform: "translateX(-50%)",
+  width: "max-content",
+
   "> img": {
     height: "1em",
     verticalAlign: "middle",

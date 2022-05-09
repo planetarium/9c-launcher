@@ -37,9 +37,10 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
       </DepositHolder>
       <Levels>
         <Level amount={10} />
-        <Level amount={10} />
-        <Level amount={10} />
-        <Level amount={10} />
+        <Level amount={100} />
+        <Level amount={1000} />
+        <Level amount={10000} />
+        <Level amount={100000} />
       </Levels>
       <RewardSheet>
         {Array(20)
