@@ -17,6 +17,7 @@ import { OverlayProps } from "src/v2/utils/types";
 
 import titleImg from "src/v2/resources/monster-collection-title.png";
 import ncgImg from "src/v2/resources/collection/items/ncg.png";
+import monsterImg from "src/v2/resources/collection/monster-2.png";
 import { Level, Levels } from "./level";
 import BareInput from "src/v2/components/ui/BareInput";
 
@@ -79,7 +80,7 @@ export function MonsterCollectionContent() {
       </DepositHolder>
       <Levels>
         <Level amount={10} />
-        <Level amount={100} />
+        <Level amount={100} expandedImage={monsterImg} />
         <Level amount={1000} />
         <Level amount={10000} />
         <Level amount={100000} />
