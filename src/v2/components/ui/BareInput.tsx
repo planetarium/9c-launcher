@@ -15,8 +15,9 @@ const BareInputStyled = styled("input", {
   all: "unset",
   position: "absolute",
   width: "100%",
-  top: 0,
   left: 0,
+  top: "50%",
+  transform: "translateY(-50%)",
   "&::-webkit-inner-spin-button": {
     display: "none",
   },
