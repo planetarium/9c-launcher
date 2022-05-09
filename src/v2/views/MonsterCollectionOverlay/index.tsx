@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import {
   DepositButton2,
+  DepositCancelButton,
   DepositContent,
   DepositDescription,
   DepositForm,
@@ -43,6 +44,15 @@ export function MonsterCollectionContent() {
                 />
                 <sub>/500</sub>
               </DepositContent>
+              <DepositCancelButton
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsEditing(false);
+                }}
+              >
+                Cancel
+              </DepositCancelButton>
               <DepositButton2>Save</DepositButton2>
             </>
           ) : (

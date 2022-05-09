@@ -3,7 +3,10 @@ import { createTheme, styled } from "src/v2/stitches.config";
 
 import background from "src/v2/resources/collection/bg.png";
 import formImg from "src/v2/resources/collection/deposit-bg.png";
-import buttonImg from "src/v2/resources/collection/button-activation.png";
+import activationButtonImg from "src/v2/resources/collection/button-activation.png";
+import activationButtonHoverImg from "src/v2/resources/collection/button-activation-over.png";
+import cancelButtonImg from "src/v2/resources/collection/button-cancel.png";
+import cancelButtonHoverImg from "src/v2/resources/collection/button-cancel-over.png";
 import rewardImg from "src/v2/resources/collection/reward-bg.png";
 import dotImg from "src/v2/resources/collection/dot.png";
 import darkTextBg from "src/v2/resources/collection/dark-text-bg.png";
@@ -15,6 +18,7 @@ export const theme = {
     depositTitle: "#e3ad67",
     depositContent: "#fff6b9",
     depositButton: "#38261a",
+    cancelButton: "#e3ad67",
     title: "#fbdeb8",
   },
   gradients: {
@@ -23,7 +27,10 @@ export const theme = {
   images: {
     background: `url(${background})`,
     deposit: `url(${formImg})`,
-    depositButton: `url(${buttonImg})`,
+    depositButton: `url(${activationButtonImg})`,
+    depositButtonHover: `url(${activationButtonHoverImg})`,
+    cancelButton: `url(${cancelButtonImg})`,
+    cancelButtonHover: `url(${cancelButtonHoverImg})`,
     reward: `url(${rewardImg})`,
     dot: `url(${dotImg})`,
     darkTextBg: `url(${darkTextBg})`,
@@ -145,6 +152,7 @@ export const DepositButton2 = styled("button", {
   backgroundImage: theme.images.depositButton,
   borderRadius: "50%",
   color: theme.colors.depositButton,
+  transition: "all 0.2s ease",
 
   gridColumn: 3,
   gridRow: "1 / span 2",
@@ -160,4 +168,39 @@ export const DepositButton2 = styled("button", {
   position: "relative",
   top: -3,
   right: 3,
+
+  "&:hover": {
+    backgroundImage: theme.images.depositButtonHover,
+    transform: "scale(1.1)",
+  },
+});
+
+export const DepositCancelButton = styled("button", {
+  appearance: "none",
+  border: "none",
+  backgroundColor: "transparent",
+
+  backgroundImage: theme.images.cancelButton,
+  borderRadius: "50%",
+  color: theme.colors.cancelButton,
+  transition: "all 0.2s ease",
+
+  gridColumn: 1,
+  gridRow: "1 / span 2",
+  justifySelf: "center",
+  alignSelf: "center",
+
+  width: 118,
+  height: 118,
+  fontWeight: "$bold",
+  fontSize: 20,
+
+  position: "relative",
+  top: -3,
+  left: 3,
+
+  "&:hover": {
+    backgroundImage: theme.images.cancelButtonHover,
+    transform: "scale(1.1)",
+  },
 });
