@@ -3,6 +3,9 @@ import { AnimatePresence, LayoutGroup, Variants, motion } from "framer-motion";
 import { styled } from "src/v2/stitches.config";
 
 import stepIcon from "src/v2/resources/collection/icon-step.png";
+import currentBackground from "src/v2/resources/collection/current-status-round.png";
+import currentLeaf from "src/v2/resources/collection/current-status-leaf.png";
+import selectArrow from "src/v2/resources/collection/select-arrow.png";
 import ncgIcon from "src/v2/resources/ui-main-icon-gold.png";
 
 const LevelsLine = styled("div", {
@@ -26,11 +29,19 @@ const LevelContainer = styled("ol", {
   marginTop: "auto",
 });
 
-const LevelItem = styled("li", {
+const LevelItem = styled(motion.li, {
   all: "unset",
   display: "block",
   position: "relative",
   zIndex: 1,
+  variants: {
+    current: {
+      true: {
+        backgroundImage: `url(${currentBackground})`,
+        backgroundSize: "contain",
+      },
+    },
+  },
 });
 
 const LevelCaption = styled(motion.div, {
@@ -72,6 +83,26 @@ const LevelIcon = styled(motion.img, {
   height: 118,
 });
 
+const CurrentMarker = styled(motion.div, {
+  width: 80,
+  height: 40,
+  backgroundImage: `url(${currentLeaf})`,
+  backgroundSize: "contain",
+  position: "absolute",
+  top: -20,
+  left: "calc(50% - 40px)",
+});
+
+const SelectionMarker = styled(motion.div, {
+  width: 42,
+  height: 45,
+  backgroundImage: `url(${selectArrow})`,
+  backgroundSize: "contain",
+  position: "absolute",
+  top: -20,
+  left: "calc(50% - 21px)",
+});
+
 interface LevelProps {
   amount: number;
   /**
@@ -87,16 +118,21 @@ interface LevelProps {
    * Whether if this is the user's chosen level or not.
    * It is meant to be used on editing.
    */
-  chosen?: boolean;
+  selected?: boolean;
 }
 
-export const Level = ({ amount, expandedImage }: LevelProps) => (
-  <LevelItem>
+export const Level = ({
+  amount,
+  expandedImage,
+  current,
+  selected,
+}: LevelProps) => (
+  <LevelItem layout current={!!expandedImage && current}>
     <LayoutGroup id={String(amount)}>
       {expandedImage ? (
         <LevelIcon layoutId="icon" src={expandedImage} />
       ) : (
-        <motion.img layoutId="icon" src={stepIcon} />
+        <motion.img layoutId="icon" alt="" src={stepIcon} />
       )}
     </LayoutGroup>
     <LevelCaption
@@ -104,8 +140,14 @@ export const Level = ({ amount, expandedImage }: LevelProps) => (
       transformTemplate={(_, transform) => `translateX(-50%) ${transform}`}
       expanded={!!expandedImage}
     >
-      <img src={ncgIcon} /> {amount}
+      <img src={ncgIcon} alt="NCG" /> {amount}
     </LevelCaption>
+    {current && expandedImage && (
+      <CurrentMarker layout="position" layoutId="current-marker" />
+    )}
+    {selected && expandedImage && (
+      <SelectionMarker layout="position" layoutId="selection-marker" />
+    )}
   </LevelItem>
 );
 

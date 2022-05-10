@@ -83,8 +83,13 @@ export function MonsterCollectionContent() {
         <Level
           amount={100}
           expandedImage={isEditing ? monsterImg : undefined}
+          current
         />
-        <Level amount={1000} />
+        <Level
+          amount={1000}
+          expandedImage={isEditing ? monsterImg : undefined}
+          selected
+        />
         <Level amount={10000} />
         <Level amount={100000} />
       </Levels>
