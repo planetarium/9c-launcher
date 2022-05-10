@@ -1,5 +1,5 @@
 import React from "react";
-import { theme } from "./base";
+import { AnimatePresence, LayoutGroup, Variants, motion } from "framer-motion";
 import { styled } from "src/v2/stitches.config";
 
 import stepIcon from "src/v2/resources/collection/icon-step.png";
@@ -33,7 +33,7 @@ const LevelItem = styled("li", {
   zIndex: 1,
 });
 
-const LevelCaption = styled("div", {
+const LevelCaption = styled(motion.div, {
   boxShadow: "0px 0px 3px 3px rgba(0, 0, 0, 0.2)",
   borderRadius: "1em",
   backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -42,8 +42,9 @@ const LevelCaption = styled("div", {
   position: "absolute",
   top: "100%",
   left: "50%",
-  transform: "translateX(-50%)",
+  // transform: "translateX(-50%)",
   width: "max-content",
+  transition: "background-color 0.2s ease-in-out, font-size 0.2s ease-in-out",
 
   "> img": {
     height: "1em",
@@ -66,7 +67,7 @@ const LevelCaption = styled("div", {
   },
 });
 
-const LevelIcon = styled("img", {
+const LevelIcon = styled(motion.img, {
   width: 118,
   height: 118,
 });
@@ -91,8 +92,18 @@ interface LevelProps {
 
 export const Level = ({ amount, expandedImage }: LevelProps) => (
   <LevelItem>
-    {expandedImage ? <LevelIcon src={expandedImage} /> : <img src={stepIcon} />}
-    <LevelCaption expanded={!!expandedImage}>
+    <LayoutGroup id={String(amount)}>
+      {expandedImage ? (
+        <LevelIcon layoutId="icon" src={expandedImage} />
+      ) : (
+        <motion.img layoutId="icon" src={stepIcon} />
+      )}
+    </LayoutGroup>
+    <LevelCaption
+      layout="position"
+      transformTemplate={(_, transform) => `translateX(-50%) ${transform}`}
+      expanded={!!expandedImage}
+    >
       <img src={ncgIcon} /> {amount}
     </LevelCaption>
   </LevelItem>

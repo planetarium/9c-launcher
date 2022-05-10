@@ -103,7 +103,7 @@
     "extract-zip": "^2.0.1",
     "fast-glob": "^3.2.11",
     "file-loader": "^6.0.0",
-    "framer-motion": "^4.1.17",
+    "framer-motion": "^6.3.3",
     "graphql": "^15.4.0",
     "graphql-request": "^3.4.0",
     "graphql-tag": "^2.10.3",

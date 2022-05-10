@@ -80,7 +80,10 @@ export function MonsterCollectionContent() {
       </DepositHolder>
       <Levels>
         <Level amount={10} />
-        <Level amount={100} expandedImage={monsterImg} />
+        <Level
+          amount={100}
+          expandedImage={isEditing ? monsterImg : undefined}
+        />
         <Level amount={1000} />
         <Level amount={10000} />
         <Level amount={100000} />
