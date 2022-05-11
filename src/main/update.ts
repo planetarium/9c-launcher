@@ -15,8 +15,8 @@ import { spawn as spawnPromise } from "child-process-promise";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
-interface Update {
-  current: number;
+export interface Update {
+  current?: number;
   newer: number;
   extras: string;
 }
@@ -56,16 +56,21 @@ export async function checkForUpdates(
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
   relaunchRequired(): void;
+  getWindow(): Electron.BrowserWindow | null;
 }
 
-export async function update(
-  update: Update,
-  listeners: IUpdateOptions,
-  win: Electron.BrowserWindow
-) {
-  const localVersionNumber: number = update.current;
+function getVersionNumberFromAPV(apv: string): number {
+  const [version] = apv.split("/");
+  return parseInt(version, 10);
+}
+
+export async function update(update: Update, listeners: IUpdateOptions) {
+  const localVersionNumber: number =
+    update.current ?? getVersionNumberFromAPV(getConfig("AppProtocolVersion"));
   const peerVersionNumber: number = update.newer;
   const peerVersionExtra: string = update.extras;
+
+  const win = listeners.getWindow();
 
   if (peerVersionNumber <= localVersionNumber) {
     return;

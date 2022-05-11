@@ -4,11 +4,10 @@ import { observer } from "mobx-react";
 import { useStore } from "../../../utils/useStore";
 import { clipboard, ipcRenderer } from "electron";
 import { get as getConfig, NodeInfo } from "../../../../config";
-import {
-  useTipSubscription,
-  useTopmostBlocksQuery,
-} from "../../../generated/graphql";
+import { useTipSubscription } from "../../../generated/graphql";
 import { styled } from "src/v2/stitches.config";
+import toast from "react-hot-toast";
+import { T } from "@transifex/react";
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid"
@@ -23,44 +22,31 @@ const InfoTextStyled = styled("div", {
 
 function InfoText() {
   const account = useStore("account");
-  const { loading, data } = useTopmostBlocksQuery({ pollInterval: 1000 * 10 });
-  const topmostBlocks = data?.nodeStatus.topmostBlocks;
-
-  const minedBlocks = useMemo(
-    () =>
-      account.isLogin && topmostBlocks != null
-        ? topmostBlocks.filter((b) => b?.miner == account.selectedAddress)
-        : null,
-    [account.isLogin, topmostBlocks]
-  );
+  const [node, setNode] = useState<string>("loading");
 
   const debugValue = useMemo(
     () =>
       [
         `APV: ${getConfig("AppProtocolVersion")}`,
         account.isLogin && `Account: ${account.selectedAddress}`,
-        `Debug: ${account.isLogin} / ${loading}`,
-        minedBlocks &&
-          `Mined blocks: ${minedBlocks?.length} (out of recent ${topmostBlocks?.length} blocks)`,
+        `Node: ${node}`,
         awsSinkGuid && `Client ID: ${awsSinkGuid}`,
+        `Commit: ${GIT_HASH}`,
       ]
         .filter(Boolean)
         .join("\n"),
-    [account.isLogin, loading, topmostBlocks, minedBlocks]
+    [account.isLogin, account.selectedAddress, node, awsSinkGuid]
   );
 
-  const [copied, setCopied] = useState(false);
   const onClick = () => {
     clipboard.writeText(debugValue);
-    setCopied(true);
+    toast(<T _str="Copied diagnostic inforomation." _tags="v2/diagnostics" />, {
+      position: "bottom-left",
+      id: "diagnostics-copied",
+    });
   };
-  useEffect(() => {
-    if (!copied) return;
-    setTimeout(() => setCopied(false), 1000);
-  }, [copied]);
 
   const { data: blockTip } = useTipSubscription();
-  const [node, setNode] = useState<string>("loading");
 
   useEffect(
     () =>
@@ -79,7 +65,6 @@ function InfoText() {
       tip: {blockTip?.tipChanged?.index || 0}
       <br />
       {`version: v${getConfig("AppProtocolVersion").split("/")[0]}`}
-      {copied && " copied!"}
     </InfoTextStyled>
   );
 }

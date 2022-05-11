@@ -6,9 +6,9 @@ import {
   MinerAddressDocument,
   StagedTxDocument,
   CollectionSheetWithStateDocument,
-  CollectionStateDocument,
-  CollectionStatusDocument,
   GetTipDocument,
+  CollectionStatusByAgentDocument,
+  CollectionStateByAgentDocument,
 } from "../../../generated/graphql";
 import { tableSheetData } from "./main.mock";
 
@@ -45,35 +45,45 @@ Primary.parameters = {
         result: () => tableSheetData(primaryLevel),
         newData: () => tableSheetData(primaryLevel),
       },
+      // {
+      //   request: {
+      //     query: CollectionStateDocument,
+      //     variables: {
+      //       level: 0,
+      //     },
+      //   },
+      //   result: {
+      //     data: {
+      //       action: {
+      //         cancelCollection:
+      //           "21112b24473d3d4e3cbc141255d62cbba124e8f0be25740429e35d77796d10ca",
+      //         __typename: "ActionMutation",
+      //       },
+      //     },
+      //   },
+      // },
       {
         request: {
-          query: CollectionStateDocument,
-          variables: {
-            level: 0,
-          },
+          query: CollectionStatusByAgentDocument,
+          variables: { address },
         },
         result: {
           data: {
-            action: {
-              cancelCollection:
-                "21112b24473d3d4e3cbc141255d62cbba124e8f0be25740429e35d77796d10ca",
-              __typename: "ActionMutation",
-            },
-          },
-        },
-      },
-      {
-        request: {
-          query: CollectionStatusDocument,
-        },
-        result: {
-          data: {
-            monsterCollectionStatus: {
-              canReceive: true,
+            monsterCollectionStatusByAgent: {
+              lockup: true,
               fungibleAssetValue: {
                 quantity: 1000000,
+                currency: "NCG",
                 __typename: "FungibleAssetValueType",
               },
+              rewardInfos: [
+                {
+                  itemId: 0,
+                  quantity: 0,
+                  __typename: "MonsterCollectionRewardInfoType",
+                },
+              ],
+              tipIndex: 0,
               __typename: "CollectionStatusType",
             },
           },
@@ -81,12 +91,21 @@ Primary.parameters = {
         newData: () => {
           return {
             data: {
-              monsterCollectionStatus: {
-                canReceive: true,
+              monsterCollectionStatusByAgent: {
+                lockup: true,
                 fungibleAssetValue: {
                   quantity: 1000000,
+                  currency: "NCG",
                   __typename: "FungibleAssetValueType",
                 },
+                rewardInfos: [
+                  {
+                    itemId: 0,
+                    quantity: 0,
+                    __typename: "MonsterCollectionRewardInfoType",
+                  },
+                ],
+                tipIndex: 0,
                 __typename: "CollectionStatusType",
               },
             },
@@ -95,18 +114,19 @@ Primary.parameters = {
       },
       {
         request: {
-          query: CollectionStateDocument,
+          query: CollectionStateByAgentDocument,
+          variables: { address },
         },
         result: {
           data: {
-            monsterCollectionState: {
-              address: "",
-              expiredBlockIndex: "",
+            monsterCollectionStateByAgent: {
+              address,
+              expiredBlockIndex: 10,
               claimableBlockIndex: 100,
               level: primaryLevel,
-              rewardLevel: "",
-              receivedBlockIndex: "",
-              startedBlockIndex: "",
+              rewardLevel: 10,
+              receivedBlockIndex: 100,
+              startedBlockIndex: 10,
               __typename: "MonsterCollectionStateType",
             },
           },
@@ -114,15 +134,14 @@ Primary.parameters = {
         newData: () => {
           return {
             data: {
-              monsterCollectionState: {
-                address: "",
-                end: "",
-                expiredBlockIndex: "",
-                level: primaryLevel,
-                rewardLevel: "",
-                receivedBlockIndex: "",
+              monsterCollectionStateByAgent: {
+                address,
+                expiredBlockIndex: 10,
                 claimableBlockIndex: 100,
-                startedBlockIndex: "",
+                level: primaryLevel,
+                rewardLevel: 10,
+                receivedBlockIndex: 100,
+                startedBlockIndex: 10,
                 __typename: "MonsterCollectionStateType",
               },
             },

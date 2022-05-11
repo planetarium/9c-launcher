@@ -10,6 +10,7 @@ import { useIsPreloadDone } from "src/v2/utils/usePreload";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LaunchIcon from "@material-ui/icons/Launch";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import {
   openMonsterCollection,
   useMonsterCollection,
@@ -21,6 +22,9 @@ import { getRemain } from "src/collection/common/utils";
 import ClaimCollectionRewardsOverlay from "src/v2/views/ClaimCollectionRewardsOverlay";
 import { ClaimButton } from "./ClaimButton";
 import { Reward } from "src/collection/types";
+import { clipboard } from "electron";
+import { toast } from "react-hot-toast";
+import { useT } from "@transifex/react";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -96,13 +100,21 @@ export default function UserInfo() {
     [balance, ncgBalanceQuery]
   );
 
+  const copyAddress = useCallback(() => {
+    clipboard.writeText(account.selectedAddress);
+    toast("Copied!");
+  }, [account.selectedAddress]);
+
+  const t = useT();
+
   if (!isDone || !account.isLogin) return null;
 
   return (
     <UserInfoStyled>
-      <UserInfoItem>
+      <UserInfoItem onClick={copyAddress}>
         <AccountBoxIcon />
         <strong>{account.selectedAddress}</strong>
+        <FileCopyIcon />
       </UserInfoItem>
       <UserInfoItem>
         <img src={goldIconUrl} alt="gold" />
@@ -126,9 +138,19 @@ export default function UserInfo() {
           onClose={() => setOpenDialog(false)}
           tip={currentTip}
           rewards={rewards}
-          onActionTxId={(_) =>
-            void (setOpenDialog(false), setClaimLoading(true))
-          }
+          onActionTxId={(txId, avatar) => {
+            if (avatar)
+              toast.success(
+                t("Successfully sent rewards to {name} #${address}", {
+                  _tags: "v2/monster-collection",
+                  name: avatar.name,
+                  address: avatar.address.slice(2, 6),
+                })
+              );
+
+            setOpenDialog(false);
+            if (txId) setClaimLoading(true);
+          }}
         />
       </UserInfoItem>
     </UserInfoStyled>

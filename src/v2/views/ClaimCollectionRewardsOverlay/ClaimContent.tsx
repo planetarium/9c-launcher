@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { observer } from "mobx-react";
 import { GetAvatarAddressQuery } from "src/v2/generated/graphql";
 import { useTx } from "src/v2/utils/useTx";
 
 import type { ClaimCollectionRewardsOverlayProps } from ".";
-import { Select, SelectOption } from "src/v2/components/ui/Select";
+import { RadioItem, RadioGroup } from "src/v2/components/ui/RadioGroup";
 import Button, { ButtonBar } from "src/v2/components/ui/Button";
 import { T } from "src/renderer/i18n";
 import { styled } from "src/v2/stitches.config";
@@ -34,6 +34,17 @@ const ClaimCollectionRewardsOverlayBase = styled(OverlayBase, {
   },
 });
 
+const LastActivity = styled("span", {
+  opacity: ".8",
+  display: "inline-block",
+});
+
+export interface Avatar {
+  address: string;
+  name: string;
+  updatedAt: number;
+}
+
 function ClaimContent({
   data,
   onActionTxId,
@@ -42,7 +53,7 @@ function ClaimContent({
   onClose,
   isOpen,
 }: ClaimContentProps) {
-  const avatars = useMemo(
+  const avatars = useMemo<Avatar[] | undefined>(
     () =>
       data.stateQuery.agent?.avatarStates?.map((x) => ({
         address: x.address,
@@ -52,8 +63,14 @@ function ClaimContent({
     [data]
   );
 
-  const [avatarIndex, setAvatarIndex] = useState(0);
-  const currentAvatar = avatars?.[avatarIndex];
+  const [currentAvatarIndex, setCurrentAvatarIndex] = useReducer(
+    (_: number, action: string) => Number(action),
+    0
+  );
+  const currentAvatar = useMemo(() => avatars?.[currentAvatarIndex], [
+    avatars,
+    currentAvatarIndex,
+  ]);
   const hasMultipleAvatars = !avatars || avatars.length !== 1;
 
   const tx = useTx(
@@ -63,7 +80,9 @@ function ClaimContent({
 
   useEffect(() => {
     if (hasMultipleAvatars || !isOpen) return;
-    tx().then((v) => v.data != null && onActionTxId(v.data.stageTxV2));
+    tx().then(
+      (v) => v.data != null && onActionTxId(v.data.stageTxV2, currentAvatar)
+    );
   }, [avatars, isOpen]);
 
   if (!hasMultipleAvatars) return null;
@@ -76,17 +95,27 @@ function ClaimContent({
           _tags={transifexTags}
         />
       </Title>
-      <Select
-        value={String(avatarIndex)}
-        onChange={(v) => setAvatarIndex(Number(v))}
+      <RadioGroup
+        value={String(currentAvatarIndex)}
+        onValueChange={setCurrentAvatarIndex}
       >
         {avatars?.map((avatar, i) => (
-          <SelectOption key={avatar.address} value={String(i)}>
-            {avatar.name}
-            {getRemain}
-          </SelectOption>
+          <RadioItem key={avatar.address} value={String(i)}>
+            {/* Ensures the display: block, which makes <br> work */}
+            <div>
+              {avatar.name} #{avatar.address.substring(2, 6)}
+              <br />
+              <LastActivity>
+                <T
+                  _str="Last login at: {remain}"
+                  _tags={transifexTags}
+                  remain={getRemain(tip - avatar.updatedAt)}
+                />
+              </LastActivity>
+            </div>
+          </RadioItem>
         ))}
-      </Select>
+      </RadioGroup>
       <ButtonBar placement="bottom">
         <Button onClick={() => onActionTxId(null)}>
           <T _str="Cancel" _tags={transifexTags} />
@@ -94,7 +123,10 @@ function ClaimContent({
         <Button
           variant="primary"
           onClick={() =>
-            tx().then((v) => v.data != null && onActionTxId(v.data.stageTxV2))
+            tx().then(
+              (v) =>
+                v.data != null && onActionTxId(v.data.stageTxV2, currentAvatar)
+            )
           }
         >
           <T _str="Send" _tags={transifexTags} />
