@@ -17,9 +17,14 @@ import { OverlayProps } from "src/v2/utils/types";
 
 import titleImg from "src/v2/resources/monster-collection-title.png";
 import ncgImg from "src/v2/resources/collection/items/ncg.png";
-import monsterImg from "src/v2/resources/collection/monster-2.png";
 import { Level, Levels } from "./level";
 import BareInput from "src/v2/components/ui/BareInput";
+
+import monster1Img from "src/v2/resources/collection/monster-1.png";
+import monster2Img from "src/v2/resources/collection/monster-2.png";
+import monster3Img from "src/v2/resources/collection/monster-3.png";
+import monster4Img from "src/v2/resources/collection/monster-4.png";
+import monster5Img from "src/v2/resources/collection/monster-5.png";
 
 export function MonsterCollectionContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -79,19 +84,28 @@ export function MonsterCollectionContent() {
         </DepositDescription>
       </DepositHolder>
       <Levels>
-        <Level amount={10} />
+        <Level
+          amount={10}
+          expandedImage={isEditing ? monster1Img : undefined}
+        />
         <Level
           amount={100}
-          expandedImage={isEditing ? monsterImg : undefined}
+          expandedImage={isEditing ? monster2Img : undefined}
           current
         />
         <Level
           amount={1000}
-          expandedImage={isEditing ? monsterImg : undefined}
+          expandedImage={isEditing ? monster3Img : undefined}
           selected
         />
-        <Level amount={10000} />
-        <Level amount={100000} />
+        <Level
+          amount={10000}
+          expandedImage={isEditing ? monster4Img : undefined}
+        />
+        <Level
+          amount={100000}
+          expandedImage={isEditing ? monster5Img : undefined}
+        />
       </Levels>
       <RewardSheet>
         {Array(20)
