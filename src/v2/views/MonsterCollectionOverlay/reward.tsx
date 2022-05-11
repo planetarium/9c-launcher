@@ -33,16 +33,18 @@ const Viewport = styled(ScrollAreaPrimitive.Viewport, {
 const Scrollbar = styled(ScrollAreaPrimitive.Scrollbar, {
   display: "flex",
   flexDirection: "column",
-  height: 8,
+  height: 4,
   backgroundColor: "#42291f",
-  marginBottom: 10,
-  marginLeft: 40,
-  marginRight: 40,
+  margin: "4px 10px",
+  justifyContent: "center",
 });
 
 const Thumb = styled(ScrollAreaPrimitive.Thumb, {
   flex: 1,
+  minHeight: 8,
   backgroundColor: "#bf8f53",
+  borderTop: "1px solid #f3b36b",
+  borderRadius: 4,
 });
 
 const Spacer = styled("div", {
@@ -92,7 +94,7 @@ const Title = styled("h1", {
     marginRight: 5,
   },
   fontSize: "1rem",
-  marginTop: 5,
+  marginTop: 2,
   color: theme.colors.title,
 });
 
