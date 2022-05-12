@@ -5,6 +5,7 @@ import background from "src/v2/resources/collection/bg.png";
 import formImg from "src/v2/resources/collection/deposit-bg.png";
 import activationButtonImg from "src/v2/resources/collection/button-activation.png";
 import activationButtonHoverImg from "src/v2/resources/collection/button-activation-over.png";
+import disabledButtonImg from "src/v2/resources/collection/button-inactive.png";
 import cancelButtonImg from "src/v2/resources/collection/button-cancel.png";
 import cancelButtonHoverImg from "src/v2/resources/collection/button-cancel-over.png";
 import rewardImg from "src/v2/resources/collection/reward-bg.png";
@@ -29,6 +30,7 @@ export const theme = {
     deposit: `url(${formImg})`,
     depositButton: `url(${activationButtonImg})`,
     depositButtonHover: `url(${activationButtonHoverImg})`,
+    depositButtonDisabled: `url(${disabledButtonImg})`,
     cancelButton: `url(${cancelButtonImg})`,
     cancelButtonHover: `url(${cancelButtonHoverImg})`,
     reward: `url(${rewardImg})`,
@@ -48,7 +50,7 @@ export const MonsterCollectionOverlayBase = styled(OverlayBase, {
     height: "708px",
     backgroundImage: theme.images.background,
     backgroundSize: "cover",
-    padding: 36,
+    padding: 16,
     paddingBottom: 0,
     marginTop: "30px", // (768 - 708) / 2
     display: "flex",
@@ -77,7 +79,8 @@ export const DepositDescription = styled("p", {
   fontSize: 18,
   lineHeight: 1.5,
   textAlign: "center",
-  "::last-child": {
+  margin: 0,
+  "&:last-of-type": {
     marginBottom: 20,
   },
   variants: {
@@ -172,6 +175,11 @@ export const DepositButton2 = styled("button", {
   "&:hover": {
     backgroundImage: theme.images.depositButtonHover,
     transform: "scale(1.1)",
+  },
+
+  "&:disabled": {
+    backgroundImage: theme.images.depositButtonDisabled,
+    cursor: "not-allowed",
   },
 });
 
