@@ -29,6 +29,7 @@ import monster5Img from "src/v2/resources/collection/monster-5.png";
 export function MonsterCollectionContent() {
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [amount, setAmount] = useState(0);
 
   return (
     <>
@@ -45,7 +46,8 @@ export function MonsterCollectionContent() {
                 <BareInput
                   maxLength={6}
                   ref={inputRef}
-                  defaultValue={50}
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.valueAsNumber)}
                   type="number"
                 />
                 <sub>/500</sub>
@@ -87,24 +89,28 @@ export function MonsterCollectionContent() {
         <Level
           amount={10}
           expandedImage={isEditing ? monster1Img : undefined}
+          selected={amount >= 10 && amount < 100}
         />
         <Level
           amount={100}
           expandedImage={isEditing ? monster2Img : undefined}
           current
+          selected={amount >= 100 && amount < 1000}
         />
         <Level
           amount={1000}
           expandedImage={isEditing ? monster3Img : undefined}
-          selected
+          selected={amount >= 1000 && amount < 10000}
         />
         <Level
           amount={10000}
           expandedImage={isEditing ? monster4Img : undefined}
+          selected={amount >= 10000 && amount < 100000}
         />
         <Level
           amount={100000}
           expandedImage={isEditing ? monster5Img : undefined}
+          selected={amount >= 100000}
         />
       </Levels>
       <RewardSheet>
