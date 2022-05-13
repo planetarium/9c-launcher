@@ -370,34 +370,27 @@ subscription Tip {
 }
 
 query CurrentStaking($address: Address!) {
-  stakeState(address: $address) {
-    deposit
-    startedBlockIndex
-    receivedBlockIndex
-    cancellableBlockIndex
-    claimableBlockIndex
+  stateQuery {
+    stakeState(agentAddress: $address) {
+      deposit
+      startedBlockIndex
+      receivedBlockIndex
+      cancellableBlockIndex
+      claimableBlockIndex
+    }
   }
 }
 
-query StakingSheet {
-  stakeRegularRewardSheet {
-    orderedList {
-      level
-      requiredGold
-      rewards {
-        itemId
-        rate
-      }
-    }
-  }
-  stakeAchievementRewardSheet {
-    orderedList {
-      level
-      requiredGold
-      requiredBlockIndex
-      rewards {
-        itemId
-        quantity
+query StakingSheet { 
+  stateQuery {
+    stakeRegularRewardSheet {
+      orderedList {
+        level
+        requiredGold
+        rewards {
+          itemId
+          rate
+        }
       }
     }
   }

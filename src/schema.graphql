@@ -473,12 +473,12 @@ type StakeRegularRewardInfoType {
 type StakeRegularRewardRowType {
 	level: Int!
   requiredGold: Long!
-  rewards: [StakeRegularRewardInfoType]!
+  rewards: [StakeRegularRewardInfoType!]!
 }
 
 type StakeRegularRewardSheetType {
-  orderedList: [StakeRegularRewardRowType]
-  estimatedRewards(gold: Long!): [StakeRegularRewardInfoType]!
+  orderedList: [StakeRegularRewardRowType!]!
+  estimatedRewards(gold: Long!): [StakeRegularRewardInfoType!]!
 }
 
 type StakeAchievementRewardInfoType {
@@ -490,11 +490,11 @@ type StakeAchievementRewardRowType {
 	level: Int!
   requiredGold: Long!
   requiredBlockIndex: Int!
-  rewards: [StakeAchievementRewardInfoType]!
+  rewards: [StakeAchievementRewardInfoType!]!
 }
 
 type StakeAchievementRewardSheetType {
-  orderedList: [StakeAchievementRewardRowType]
+  orderedList: [StakeAchievementRewardRowType!]!
 }
 
 type StakeAchievementState {
@@ -525,12 +525,6 @@ type StandaloneQuery {
   activated(invitationCode: String!): Boolean!
   activationKeyNonce(invitationCode: String!): String!
   rpcInformation: RpcInformationQuery!
-
-  # MonsterCollection V2
-  stakeState(agentAddress: Address!): StakeStateType
-  stakeAchievementState(agentAddress: Address!): StakeAchievementState
-  stakeRegularRewardSheet: StakeRegularRewardSheetType
-  stakeAchievementRewardSheet: StakeAchievementRewardSheetType
 }
 
 type StandaloneSubscription {
@@ -566,6 +560,12 @@ type StateQuery {
   agent(address: Address!): AgentStateType
   monsterCollectionState(agentAddress: Address!): MonsterCollectionStateType
   monsterCollectionSheet: MonsterCollectionSheetType
+
+  # MonsterCollection V2
+  stakeState(agentAddress: Address!): StakeStateType
+  stakeAchievementState(agentAddress: Address!): StakeAchievementState
+  stakeRegularRewardSheet: StakeRegularRewardSheetType
+  stakeAchievementRewardSheet: StakeAchievementRewardSheetType
 }
 
 type StatsMapType {
