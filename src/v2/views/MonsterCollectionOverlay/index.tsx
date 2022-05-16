@@ -29,6 +29,7 @@ import monster5Img from "src/v2/resources/collection/monster-5.png";
 import {
   CurrentStakingQuery,
   StakingSheetQuery,
+  useStakingSheetQuery,
   useCurrentStakingQuery,
 } from "src/v2/generated/graphql";
 import { T } from "src/renderer/i18n";
@@ -148,7 +149,7 @@ export function MonsterCollectionContent({
           {rewards.map((item) => (
             <Item
               key={item.itemId}
-              amount={currentAmount / item.rate}
+              amount={Math.floor(currentAmount / item.rate)}
               title={"bruh"}
             >
               <img src={ncgImg} />
@@ -161,7 +162,7 @@ export function MonsterCollectionContent({
 }
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
-  const { data: sheet } = useCurrentStakingQuery();
+  const { data: sheet } = useStakingSheetQuery();
   const { data: current } = useCurrentStakingQuery();
 
   if (!sheet || !current) return null;
