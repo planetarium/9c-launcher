@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   DepositButton2,
   DepositCancelButton,
@@ -26,10 +26,57 @@ import monster3Img from "src/v2/resources/collection/monster-3.png";
 import monster4Img from "src/v2/resources/collection/monster-4.png";
 import monster5Img from "src/v2/resources/collection/monster-5.png";
 
-export function MonsterCollectionContent() {
+import {
+  CurrentStakingQuery,
+  StakingSheetQuery,
+  useCurrentStakingQuery,
+} from "src/v2/generated/graphql";
+import { T } from "src/renderer/i18n";
+
+interface MonsterCollectionOverlayProps {
+  sheet: StakingSheetQuery;
+  current: CurrentStakingQuery;
+}
+
+const images = [
+  monster1Img,
+  monster2Img,
+  monster3Img,
+  monster4Img,
+  monster5Img,
+];
+
+export function MonsterCollectionContent({
+  sheet: {
+    stateQuery: { stakeRegularRewardSheet: sheet },
+  },
+  current: {
+    stateQuery: { stakeState },
+  },
+}: MonsterCollectionOverlayProps) {
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [amount, setAmount] = useState(0);
+
+  // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
+  const currentIndex = useMemo(
+    () =>
+      stakeState &&
+      sheet?.orderedList?.findIndex(
+        (v) => stakeState?.deposit >= v.requiredGold
+      ),
+    [stakeState, sheet]
+  );
+  const selectedIndex = useMemo(
+    () => sheet?.orderedList?.findIndex((v) => amount >= v.requiredGold),
+    [sheet, amount]
+  );
+
+  if (!sheet || !sheet?.orderedList || !stakeState) return null;
+  const rewards = isEditing
+    ? sheet.orderedList[selectedIndex!].rewards
+    : sheet.orderedList[currentIndex!].rewards;
+  const currentAmount = isEditing ? amount : stakeState.deposit;
 
   return (
     <>
@@ -86,75 +133,42 @@ export function MonsterCollectionContent() {
         </DepositDescription>
       </DepositHolder>
       <Levels>
-        <Level
-          amount={10}
-          expandedImage={isEditing ? monster1Img : undefined}
-          selected={amount >= 10 && amount < 100}
-        />
-        <Level
-          amount={100}
-          expandedImage={isEditing ? monster2Img : undefined}
-          current
-          selected={amount >= 100 && amount < 1000}
-        />
-        <Level
-          amount={1000}
-          expandedImage={isEditing ? monster3Img : undefined}
-          selected={amount >= 1000 && amount < 10000}
-        />
-        <Level
-          amount={10000}
-          expandedImage={isEditing ? monster4Img : undefined}
-          selected={amount >= 10000 && amount < 100000}
-        />
-        <Level
-          amount={100000}
-          expandedImage={isEditing ? monster5Img : undefined}
-          selected={amount >= 100000}
-        />
+        {sheet.orderedList?.map((item, index) => (
+          <Level
+            key={item.level}
+            amount={item.requiredGold}
+            expandedImage={isEditing ? images[item.level] : undefined}
+            current={currentIndex === index}
+            selected={selectedIndex === index}
+          />
+        ))}
       </Levels>
       <RewardSheet>
-        {Array(20)
-          .fill(0)
-          .map((_, i) => (
-            <ItemGroup key={i} title="One-time">
-              <Item
-                key="a"
-                title={
-                  <>
-                    First
-                    <br />
-                    Reward
-                  </>
-                }
-                amount={10}
-              >
-                <img src={ncgImg} />
-              </Item>
-              <Item
-                key="b"
-                title={
-                  <>
-                    Second
-                    <br />
-                    Reward
-                  </>
-                }
-                amount={10}
-              >
-                <img src={ncgImg} />
-              </Item>
-            </ItemGroup>
+        <ItemGroup key="recurring" title="Recurring Rewards">
+          {rewards.map((item) => (
+            <Item
+              key={item.itemId}
+              amount={currentAmount / item.rate}
+              title={"bruh"}
+            >
+              <img src={ncgImg} />
+            </Item>
           ))}
+        </ItemGroup>
       </RewardSheet>
     </>
   );
 }
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
+  const { data: sheet } = useCurrentStakingQuery();
+  const { data: current } = useCurrentStakingQuery();
+
+  if (!sheet || !current) return null;
+
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onClose={onClose}>
-      <MonsterCollectionContent />
+      <MonsterCollectionContent sheet={sheet} current={current} />
     </MonsterCollectionOverlayBase>
   );
 }
