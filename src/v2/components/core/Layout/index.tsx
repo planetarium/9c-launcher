@@ -77,7 +77,7 @@ function Layout({
         <Menu />
       </BottomControls>
       <InfoText />
-      <WindowControls />
+      {process.platform === "win32" && <WindowControls />}
     </Background>
   );
 }

@@ -21,6 +21,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     frame: false,
     resizable: false,
     autoHideMenuBar: true,
+    titleBarStyle: process.platform === "darwin" ? "hidden" : undefined,
     icon: join(app.getAppPath(), logoImage),
   });
 
