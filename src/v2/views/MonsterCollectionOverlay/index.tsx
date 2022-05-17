@@ -69,14 +69,18 @@ export function MonsterCollectionContent({
     [stakeState, sheet]
   );
   const selectedIndex = useMemo(
-    () => sheet?.orderedList?.findIndex((v) => amount >= v.requiredGold),
+    () =>
+      Math.max(
+        sheet?.orderedList?.findIndex((v) => amount >= v.requiredGold) || 0,
+        0
+      ),
     [sheet, amount]
   );
 
   if (!sheet || !sheet?.orderedList || !stakeState) return null;
   const rewards = isEditing
-    ? sheet.orderedList[selectedIndex!].rewards
-    : sheet.orderedList[currentIndex!].rewards;
+    ? sheet.orderedList[selectedIndex!]?.rewards
+    : sheet.orderedList[currentIndex!]?.rewards;
   const currentAmount = isEditing ? amount : stakeState.deposit;
 
   return (
@@ -146,7 +150,7 @@ export function MonsterCollectionContent({
       </Levels>
       <RewardSheet>
         <ItemGroup key="recurring" title="Recurring Rewards">
-          {rewards.map((item) => (
+          {rewards?.map((item) => (
             <Item
               key={item.itemId}
               amount={Math.floor(currentAmount / item.rate)}
