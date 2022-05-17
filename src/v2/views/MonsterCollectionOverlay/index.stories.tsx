@@ -33,7 +33,49 @@ function MonsterCollectionOverlay() {
   );
 }
 
-const mocks: [
+const result = {
+  data: {
+    stateQuery: {
+      stakeRegularRewardSheet: {
+        orderedList: [
+          // FIXME Change the value to something realistic
+          {
+            level: 1,
+            requiredGold: 10,
+            rewards: [
+              {
+                itemId: 191,
+                rate: 20,
+              },
+            ],
+          },
+          {
+            level: 2,
+            requiredGold: 100,
+            rewards: [
+              {
+                itemId: 191,
+                rate: 20,
+              },
+            ],
+          },
+          {
+            level: 3,
+            requiredGold: 1000,
+            rewards: [
+              {
+                itemId: 191,
+                rate: 20,
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
+};
+
+export const mocks: [
   MockedResponse<CurrentStakingQuery>,
   MockedResponse<StakingSheetQuery>
 ] = [
@@ -55,32 +97,15 @@ const mocks: [
   },
   {
     request: { query: StakingSheetDocument },
-    result: {
-      data: {
-        stateQuery: {
-          stakeRegularRewardSheet: {
-            orderedList: [
-              // FIXME Change the value to something realistic
-              {
-                level: 1,
-                requiredGold: 10,
-                rewards: [
-                  {
-                    itemId: 191,
-                    rate: 20,
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      },
+    newData() {
+      return result;
     },
+    result,
   },
 ];
 
 export const FirstPage = () => (
-  <MockedProvider mocks={mocks}>
+  <MockedProvider mocks={mocks} addTypename={false}>
     <MonsterCollectionOverlay />
   </MockedProvider>
 );
