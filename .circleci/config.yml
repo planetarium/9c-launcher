@@ -120,6 +120,7 @@ jobs:
     steps:
       - checkout
       - yarn-install
+      - run: yarn codegen
       - run: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN} --exit-zero-on-changes
   update-translations:
     docker:
