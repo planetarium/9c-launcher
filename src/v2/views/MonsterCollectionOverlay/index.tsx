@@ -34,6 +34,12 @@ import {
 } from "src/v2/generated/graphql";
 import { T } from "src/renderer/i18n";
 
+declare global {
+  interface Array<T> {
+    findLastIndex: Array<T>["findIndex"];
+  }
+}
+
 interface MonsterCollectionOverlayProps {
   sheet: StakingSheetQuery;
   current: CurrentStakingQuery;
@@ -63,7 +69,7 @@ export function MonsterCollectionContent({
   const currentIndex = useMemo(
     () =>
       stakeState &&
-      sheet?.orderedList?.findIndex(
+      sheet?.orderedList?.findLastIndex(
         (v) => stakeState?.deposit >= v.requiredGold
       ),
     [stakeState, sheet]
@@ -71,7 +77,7 @@ export function MonsterCollectionContent({
   const selectedIndex = useMemo(
     () =>
       Math.max(
-        sheet?.orderedList?.findIndex((v) => amount >= v.requiredGold) || 0,
+        sheet?.orderedList?.findLastIndex((v) => amount >= v.requiredGold) || 0,
         0
       ),
     [sheet, amount]
@@ -154,7 +160,7 @@ export function MonsterCollectionContent({
             <Item
               key={item.itemId}
               amount={Math.floor(currentAmount / item.rate)}
-              title={"bruh"}
+              title={"NCG"}
             >
               <img src={ncgImg} />
             </Item>

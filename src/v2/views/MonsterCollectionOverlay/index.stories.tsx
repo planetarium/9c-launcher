@@ -14,6 +14,7 @@ import {
 } from "src/v2/generated/graphql";
 
 import "normalize.css";
+import "core-js/proposals/array-find-from-last";
 
 export default {
   title: "MonsterCollection/MonsterCollectionContent",
