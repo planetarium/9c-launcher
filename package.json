@@ -67,6 +67,7 @@
     "@planetarium/check-free-space": "^0.0.1",
     "@radix-ui/react-radio-group": "^0.1.5",
     "@radix-ui/react-scroll-area": "^0.1.4",
+    "@reach/alert-dialog": "^0.17.0",
     "@reach/dialog": "^0.16.2",
     "@reach/listbox": "^0.16.2",
     "@sentry/electron": "^1.3.0",

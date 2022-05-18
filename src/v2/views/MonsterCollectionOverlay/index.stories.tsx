@@ -76,7 +76,7 @@ const result = {
   },
 };
 
-export const mocks: [
+const mocks: [
   MockedResponse<CurrentStakingQuery>,
   MockedResponse<StakingSheetQuery>
 ] = [
