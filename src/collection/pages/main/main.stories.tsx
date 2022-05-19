@@ -15,6 +15,9 @@ import { tableSheetData } from "./main.mock";
 export default {
   title: "Collection/Pages/Main",
   component: Main,
+  parameters: {
+    chromatic: { disableSnapshot: false },
+  },
 } as Meta;
 
 const Template: Story = () => <Main signer={address} addressLoading={false} />;

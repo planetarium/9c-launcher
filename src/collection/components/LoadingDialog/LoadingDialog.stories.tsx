@@ -6,7 +6,10 @@ import LoadingDialog, { Props } from "./LoadingDialog";
 export default {
   title: "Collection/ConfirmationDialog",
   component: LoadingDialog,
-  parameters: { actions: { argTypesRegex: "^on.*" } },
+  parameters: {
+    actions: { argTypesRegex: "^on.*" },
+    chromatic: { disableSnapshot: false },
+  },
 } as Meta;
 
 const Template: Story<Props> = (args) => <LoadingDialog {...args} />;
