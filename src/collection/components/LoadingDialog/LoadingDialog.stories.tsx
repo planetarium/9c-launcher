@@ -8,7 +8,7 @@ export default {
   component: LoadingDialog,
   parameters: {
     actions: { argTypesRegex: "^on.*" },
-    chromatic: { disableSnapshot: false },
+    chromatic: { disableSnapshot: true },
   },
 } as Meta;
 

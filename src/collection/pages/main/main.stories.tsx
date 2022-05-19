@@ -16,7 +16,7 @@ export default {
   title: "Collection/Pages/Main",
   component: Main,
   parameters: {
-    chromatic: { disableSnapshot: false },
+    chromatic: { disableSnapshot: true },
   },
 } as Meta;
 

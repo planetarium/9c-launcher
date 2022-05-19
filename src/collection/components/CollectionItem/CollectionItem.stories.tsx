@@ -8,7 +8,7 @@ export default {
   title: "Collection/CollectionItem",
   component: CollectionItem,
   parameters: {
-    chromatic: { disableSnapshot: false },
+    chromatic: { disableSnapshot: true },
   },
   argTypes: {
     clickItem: {
