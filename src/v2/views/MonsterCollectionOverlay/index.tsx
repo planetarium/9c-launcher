@@ -43,6 +43,7 @@ declare global {
 interface MonsterCollectionOverlayProps {
   sheet: StakingSheetQuery;
   current: CurrentStakingQuery;
+  isEditing?: boolean;
 }
 
 const images = [
@@ -60,8 +61,9 @@ export function MonsterCollectionContent({
   current: {
     stateQuery: { stakeState },
   },
+  isEditing: initalEditing,
 }: MonsterCollectionOverlayProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(initalEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [amount, setAmount] = useState(0);
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentPropsWithRef } from "react";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 
 import { MonsterCollectionContent } from ".";
@@ -21,7 +21,9 @@ export default {
   component: MonsterCollectionContent,
 };
 
-function MonsterCollectionOverlay() {
+function MonsterCollectionOverlay(
+  props: Partial<ComponentPropsWithRef<typeof MonsterCollectionContent>>
+) {
   const { data: sheet } = useStakingSheetQuery();
   const { data: current } = useCurrentStakingQuery();
 
@@ -29,7 +31,7 @@ function MonsterCollectionOverlay() {
 
   return (
     <MonsterCollectionOverlayBase as="main">
-      <MonsterCollectionContent sheet={sheet} current={current} />
+      <MonsterCollectionContent sheet={sheet} current={current} {...props} />
     </MonsterCollectionOverlayBase>
   );
 }
@@ -108,5 +110,11 @@ const mocks: [
 export const FirstPage = () => (
   <MockedProvider mocks={mocks} addTypename={false}>
     <MonsterCollectionOverlay />
+  </MockedProvider>
+);
+
+export const EditPage = () => (
+  <MockedProvider mocks={mocks} addTypename={false}>
+    <MonsterCollectionOverlay isEditing />
   </MockedProvider>
 );
