@@ -25,6 +25,7 @@ import { Reward } from "src/collection/types";
 import { clipboard } from "electron";
 import { toast } from "react-hot-toast";
 import { useT } from "@transifex/react";
+import { useBalance } from "src/v2/utils/useBalance";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -82,23 +83,7 @@ export default function UserInfo() {
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
-  const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
-    variables: {
-      address: account.selectedAddress,
-    },
-    skip: !account.isLogin,
-  });
-  const { data: balance } = useBalanceByAgentSubscription({
-    variables: {
-      address: account.selectedAddress,
-    },
-    skip: !account.isLogin,
-  });
-
-  const gold = useMemo(
-    () => Number(balance?.balanceByAgent ?? ncgBalanceQuery?.goldBalance) ?? 0,
-    [balance, ncgBalanceQuery]
-  );
+  const gold = useBalance();
 
   const copyAddress = useCallback(() => {
     clipboard.writeText(account.selectedAddress);
