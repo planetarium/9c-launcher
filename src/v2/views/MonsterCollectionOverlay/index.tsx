@@ -131,7 +131,11 @@ export function MonsterCollectionContent({
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
-                  setIsAlertOpen(true);
+                  if (stakeState.deposit > amount) setIsAlertOpen(true);
+                  else {
+                    onChangeAmount(amount);
+                    setIsEditing(false);
+                  }
                 }}
               >
                 Save
@@ -190,6 +194,7 @@ export function MonsterCollectionContent({
         onConfirm={() => {
           onChangeAmount(amount);
           setIsAlertOpen(false);
+          setIsEditing(false);
         }}
         isOpen={isAlertOpen}
       >
@@ -205,13 +210,18 @@ export function MonsterCollectionContent({
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const { data: sheet } = useStakingSheetQuery();
   const { data: current } = useCurrentStakingQuery();
-  const balance = useBalance();
+  // const balance = useBalance();
 
   if (!sheet || !current) return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onClose={onClose}>
-      <MonsterCollectionContent sheet={sheet} current={current} />
+      <MonsterCollectionContent
+        sheet={sheet}
+        current={current}
+        currentNCG={200}
+        onChangeAmount={() => Promise.resolve()}
+      />
     </MonsterCollectionOverlayBase>
   );
 }
