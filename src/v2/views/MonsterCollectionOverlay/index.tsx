@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   DepositButton2,
   DepositCancelButton,
@@ -94,6 +94,8 @@ export function MonsterCollectionContent({
     ? sheet.orderedList[selectedIndex!]?.rewards
     : sheet.orderedList[currentIndex!]?.rewards;
   const currentAmount = isEditing ? amount : stakeState.deposit;
+
+  useEffect(() => stakeState && setAmount(stakeState.deposit), [stakeState]);
 
   return (
     <>
