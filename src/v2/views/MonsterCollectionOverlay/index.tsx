@@ -82,14 +82,12 @@ export function MonsterCollectionContent({
     );
     return index != null && index !== -1 ? index : null;
   }, [stakeState, sheet]);
-  const selectedIndex = useMemo(
-    () =>
-      Math.max(
-        sheet?.orderedList?.findLastIndex((v) => amount >= v.requiredGold) || 0,
-        0
-      ),
-    [sheet, amount]
-  );
+  const selectedIndex = useMemo(() => {
+    const index = sheet?.orderedList?.findLastIndex(
+      (v) => amount >= v.requiredGold
+    );
+    return index != null && index !== -1 ? index : null;
+  }, [sheet, amount]);
 
   if (!sheet || !sheet?.orderedList || !stakeState) return null;
   const rewards = isEditing
