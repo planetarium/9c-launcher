@@ -16,44 +16,6 @@ import {
 import "normalize.css";
 import "core-js/proposals/array-find-from-last";
 
-export default {
-  title: "MonsterCollection/MonsterCollectionContent",
-  component: MonsterCollectionContent,
-};
-
-function MonsterCollectionOverlay(
-  props: Partial<ComponentPropsWithRef<typeof MonsterCollectionContent>>
-) {
-  const { data: sheet } = useStakingSheetQuery();
-  const { data: current, client } = useCurrentStakingQuery();
-
-  if (!sheet || !current) return null;
-
-  return (
-    <MonsterCollectionOverlayBase as="main">
-      <MonsterCollectionContent
-        sheet={sheet}
-        current={current}
-        currentNCG={500}
-        onChangeAmount={async (amount) =>
-          void client.writeQuery({
-            query: CurrentStakingDocument,
-            data: {
-              stateQuery: {
-                stakeState: {
-                  ...current.stateQuery.stakeState,
-                  deposit: amount,
-                },
-              },
-            },
-          })
-        }
-        {...props}
-      />
-    </MonsterCollectionOverlayBase>
-  );
-}
-
 const result = {
   data: {
     stateQuery: {
@@ -125,14 +87,57 @@ const mocks: [
   },
 ];
 
-export const FirstPage = () => (
-  <MockedProvider mocks={mocks} addTypename={false}>
-    <MonsterCollectionOverlay />
-  </MockedProvider>
-);
+export default {
+  title: "MonsterCollection/MonsterCollectionContent",
+  component: MonsterCollectionContent,
+  parameters: {
+    apolloClient: { MockedProvider, mocks },
+  },
+  args: {
+    currentNCG: 500,
+  },
+};
 
-export const EditPage = () => (
-  <MockedProvider mocks={mocks} addTypename={false}>
-    <MonsterCollectionOverlay isEditing />
-  </MockedProvider>
+interface Args {
+  currentNCG?: number;
+}
+
+function MonsterCollectionOverlay(
+  props: Partial<ComponentPropsWithRef<typeof MonsterCollectionContent>> & Args
+) {
+  const { data: sheet } = useStakingSheetQuery();
+  const { data: current, client } = useCurrentStakingQuery();
+
+  if (!sheet || !current) return null;
+
+  return (
+    <MonsterCollectionOverlayBase as="main">
+      <MonsterCollectionContent
+        sheet={sheet}
+        current={current}
+        currentNCG={500}
+        {...props}
+        onChangeAmount={async (amount) => {
+          await props.onChangeAmount?.(amount);
+          client.writeQuery({
+            query: CurrentStakingDocument,
+            data: {
+              stateQuery: {
+                stakeState: {
+                  ...current.stateQuery.stakeState,
+                  deposit: amount,
+                },
+              },
+            },
+          });
+        }}
+      />
+    </MonsterCollectionOverlayBase>
+  );
+}
+
+export const FirstPage = (args: Args) => <MonsterCollectionOverlay {...args} />;
+
+export const EditPage = (args: Args) => (
+  <MonsterCollectionOverlay isEditing {...args} />
 );
