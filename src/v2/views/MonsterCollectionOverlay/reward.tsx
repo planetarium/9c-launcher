@@ -79,6 +79,7 @@ const ItemGroupStyled = styled("section", {
   position: "relative",
   display: "flex",
   flexDirection: "column",
+  alignItems: "flex-start",
   "& + &": {
     marginLeft: 40,
   },
