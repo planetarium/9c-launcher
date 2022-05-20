@@ -75,14 +75,13 @@ export function MonsterCollectionContent({
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
-  const currentIndex = useMemo(
-    () =>
-      stakeState &&
-      sheet?.orderedList?.findLastIndex(
-        (v) => stakeState?.deposit >= v.requiredGold
-      ),
-    [stakeState, sheet]
-  );
+  const currentIndex = useMemo(() => {
+    if (!stakeState) return null;
+    const index = sheet?.orderedList?.findLastIndex(
+      (v) => stakeState?.deposit >= v.requiredGold
+    );
+    return index != null && index !== -1 ? index : null;
+  }, [stakeState, sheet]);
   const selectedIndex = useMemo(
     () =>
       Math.max(
@@ -170,9 +169,13 @@ export function MonsterCollectionContent({
           <Level
             key={item.level}
             amount={item.requiredGold}
-            expandedImage={isEditing ? images[item.level] : undefined}
+            expandedImage={
+              isEditing || currentIndex === index
+                ? images[item.level]
+                : undefined
+            }
             current={currentIndex === index}
-            selected={selectedIndex === index}
+            selected={isEditing && selectedIndex === index}
           />
         ))}
       </Levels>
