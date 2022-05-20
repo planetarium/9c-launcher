@@ -101,7 +101,16 @@ export function MonsterCollectionContent({
     <>
       <Title src={titleImg} />
       <DepositHolder>
-        <DepositForm>
+        <DepositForm
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (stakeState.deposit > amount) setIsAlertOpen(true);
+            else {
+              onChangeAmount(amount);
+              setIsEditing(false);
+            }
+          }}
+        >
           <DepositTitle>Deposit</DepositTitle>
           {isEditing ? (
             <>
@@ -127,19 +136,7 @@ export function MonsterCollectionContent({
               >
                 Cancel
               </DepositCancelButton>
-              <DepositButton2
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (stakeState.deposit > amount) setIsAlertOpen(true);
-                  else {
-                    onChangeAmount(amount);
-                    setIsEditing(false);
-                  }
-                }}
-              >
-                Save
-              </DepositButton2>
+              <DepositButton2>Save</DepositButton2>
             </>
           ) : (
             <>
@@ -225,7 +222,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   if (!sheet || !current) return null;
 
   return (
-    <MonsterCollectionOverlayBase isOpen={isOpen} onClose={onClose}>
+    <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
       <MonsterCollectionContent
         sheet={sheet}
         current={current}
