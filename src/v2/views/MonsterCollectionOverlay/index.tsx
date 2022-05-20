@@ -33,6 +33,7 @@ import {
   useCurrentStakingQuery,
 } from "src/v2/generated/graphql";
 import { useBalance } from "src/v2/utils/useBalance";
+import { Alert } from "./dialog";
 
 declare global {
   interface Array<T> {
@@ -70,6 +71,7 @@ export function MonsterCollectionContent({
   const [isEditing, setIsEditing] = useState(initalEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [amount, setAmount] = useState(0);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
   const currentIndex = useMemo(
@@ -125,7 +127,15 @@ export function MonsterCollectionContent({
               >
                 Cancel
               </DepositCancelButton>
-              <DepositButton2>Save</DepositButton2>
+              <DepositButton2
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsAlertOpen(true);
+                }}
+              >
+                Save
+              </DepositButton2>
             </>
           ) : (
             <>
@@ -174,6 +184,20 @@ export function MonsterCollectionContent({
           ))}
         </ItemGroup>
       </RewardSheet>
+      <Alert
+        title="Information"
+        onCancel={() => setIsAlertOpen(false)}
+        onConfirm={() => {
+          onChangeAmount(amount);
+          setIsAlertOpen(false);
+        }}
+        isOpen={isAlertOpen}
+      >
+        Do you really want to reduce your deposit?
+        <br />
+        The rewards will be lowered, and all the deposit periods for long-term
+        compensation will be reset.
+      </Alert>
     </>
   );
 }

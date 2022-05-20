@@ -25,13 +25,31 @@ function MonsterCollectionOverlay(
   props: Partial<ComponentPropsWithRef<typeof MonsterCollectionContent>>
 ) {
   const { data: sheet } = useStakingSheetQuery();
-  const { data: current } = useCurrentStakingQuery();
+  const { data: current, client } = useCurrentStakingQuery();
 
   if (!sheet || !current) return null;
 
   return (
     <MonsterCollectionOverlayBase as="main">
-      <MonsterCollectionContent sheet={sheet} current={current} {...props} />
+      <MonsterCollectionContent
+        sheet={sheet}
+        current={current}
+        currentNCG={500}
+        onChangeAmount={async (amount) =>
+          void client.writeQuery({
+            query: CurrentStakingDocument,
+            data: {
+              stateQuery: {
+                stakeState: {
+                  ...current.stateQuery.stakeState,
+                  deposit: amount,
+                },
+              },
+            },
+          })
+        }
+        {...props}
+      />
     </MonsterCollectionOverlayBase>
   );
 }
