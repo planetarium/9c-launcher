@@ -32,7 +32,7 @@ import {
   useStakingSheetQuery,
   useCurrentStakingQuery,
 } from "src/v2/generated/graphql";
-import { T } from "src/renderer/i18n";
+import { useBalance } from "src/v2/utils/useBalance";
 
 declare global {
   interface Array<T> {
@@ -44,6 +44,8 @@ interface MonsterCollectionOverlayProps {
   sheet: StakingSheetQuery;
   current: CurrentStakingQuery;
   isEditing?: boolean;
+  currentNCG: number;
+  onChangeAmount(amount: number): Promise<void>;
 }
 
 const images = [
@@ -62,6 +64,8 @@ export function MonsterCollectionContent({
     stateQuery: { stakeState },
   },
   isEditing: initalEditing,
+  currentNCG,
+  onChangeAmount,
 }: MonsterCollectionOverlayProps) {
   const [isEditing, setIsEditing] = useState(initalEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -110,7 +114,7 @@ export function MonsterCollectionContent({
                   onChange={(e) => setAmount(e.target.valueAsNumber)}
                   type="number"
                 />
-                <sub>/500</sub>
+                <sub>/{currentNCG}</sub>
               </DepositContent>
               <DepositCancelButton
                 type="button"
@@ -126,7 +130,8 @@ export function MonsterCollectionContent({
           ) : (
             <>
               <DepositContent>
-                0<sub>/500</sub>
+                {stakeState.deposit}
+                <sub>/{currentNCG}</sub>
               </DepositContent>
               <DepositButton2
                 type="button"
@@ -176,6 +181,7 @@ export function MonsterCollectionContent({
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const { data: sheet } = useStakingSheetQuery();
   const { data: current } = useCurrentStakingQuery();
+  const balance = useBalance();
 
   if (!sheet || !current) return null;
 
