@@ -2,8 +2,9 @@ import React from "react";
 import { theme } from "./base";
 import { styled } from "src/v2/stitches.config";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
+import { motion } from "framer-motion";
 
-const ScrollArea = styled(ScrollAreaPrimitive.ScrollArea, {
+const ScrollArea = styled(motion(ScrollAreaPrimitive.ScrollArea), {
   backgroundImage: theme.images.reward,
   backgroundSize: "cover",
   backgroundOrigin: "border-box",
@@ -53,7 +54,11 @@ const Spacer = styled("div", {
 });
 
 export const RewardSheet = ({ children }: { children: React.ReactNode }) => (
-  <ScrollArea>
+  <ScrollArea
+    initial={{ opacity: 0, y: "100%" }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: "100%" }}
+  >
     <Viewport>
       <Spacer />
       {children}
@@ -64,6 +69,11 @@ export const RewardSheet = ({ children }: { children: React.ReactNode }) => (
     </Scrollbar>
   </ScrollArea>
 );
+
+export const RewardSheetPlaceholder = styled(motion.div, {
+  height: 250,
+  marginTop: "auto",
+});
 
 const ItemGroupStyled = styled("section", {
   position: "relative",

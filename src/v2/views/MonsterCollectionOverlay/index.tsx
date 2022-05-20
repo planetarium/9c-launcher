@@ -11,7 +11,7 @@ import {
   theme,
   Title,
 } from "./base";
-import { Item, ItemGroup, RewardSheet } from "./reward";
+import { Item, ItemGroup, RewardSheet, RewardSheetPlaceholder } from "./reward";
 import { observer } from "mobx-react";
 import { OverlayProps } from "src/v2/utils/types";
 
@@ -34,6 +34,7 @@ import {
 } from "src/v2/generated/graphql";
 import { useBalance } from "src/v2/utils/useBalance";
 import { Alert } from "./dialog";
+import { AnimatePresence } from "framer-motion";
 
 declare global {
   interface Array<T> {
@@ -175,19 +176,25 @@ export function MonsterCollectionContent({
           />
         ))}
       </Levels>
-      <RewardSheet>
-        <ItemGroup key="recurring" title="Recurring Rewards">
-          {rewards?.map((item) => (
-            <Item
-              key={item.itemId}
-              amount={Math.floor(currentAmount / item.rate)}
-              title={"NCG"}
-            >
-              <img src={ncgImg} />
-            </Item>
-          ))}
-        </ItemGroup>
-      </RewardSheet>
+      <AnimatePresence exitBeforeEnter>
+        {rewards ? (
+          <RewardSheet>
+            <ItemGroup key="recurring" title="Recurring Rewards">
+              {rewards?.map((item) => (
+                <Item
+                  key={item.itemId}
+                  amount={Math.floor(currentAmount / item.rate)}
+                  title={"NCG"}
+                >
+                  <img src={ncgImg} />
+                </Item>
+              ))}
+            </ItemGroup>
+          </RewardSheet>
+        ) : (
+          <RewardSheetPlaceholder />
+        )}
+      </AnimatePresence>
       <Alert
         title="Information"
         onCancel={() => setIsAlertOpen(false)}
