@@ -27,7 +27,7 @@ function BareInput(
   props: React.InputHTMLAttributes<HTMLInputElement>,
   ref: React.Ref<HTMLInputElement>
 ) {
-  const [value, setValue] = useState(props.value || "");
+  const [value, setValue] = useState(String(props.value) ?? "");
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       props.onChange?.(e);
@@ -38,7 +38,7 @@ function BareInput(
 
   return (
     <BareInputWrapper>
-      <LayoutCalculator aria-hidden>{value}</LayoutCalculator>
+      <LayoutCalculator aria-hidden>{String(value)}</LayoutCalculator>
       <BareInputStyled ref={ref} value={value} {...props} onChange={onChange} />
     </BareInputWrapper>
   );
