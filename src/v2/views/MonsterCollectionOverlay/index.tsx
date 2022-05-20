@@ -15,7 +15,7 @@ import { Item, ItemGroup, RewardSheet, RewardSheetPlaceholder } from "./reward";
 import { observer } from "mobx-react";
 import { OverlayProps } from "src/v2/utils/types";
 
-import titleImg from "src/v2/resources/monster-collection-title.png";
+import titleImg from "src/v2/resources/collection/title.png";
 import ncgImg from "src/v2/resources/collection/items/ncg.png";
 import { Level, Levels } from "./level";
 import BareInput from "src/v2/components/ui/BareInput";
