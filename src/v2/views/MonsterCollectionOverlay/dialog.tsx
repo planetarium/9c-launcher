@@ -1,7 +1,8 @@
 import {
-  AlertDialog,
+  AlertDialogContent,
   AlertDialogDescription,
   AlertDialogLabel,
+  AlertDialogOverlay,
 } from "@reach/alert-dialog";
 import { styled } from "src/v2/stitches.config";
 
@@ -10,8 +11,15 @@ import primaryButton from "src/v2/resources/collection/button-ok.png";
 import primaryButtonHover from "src/v2/resources/collection/button-ok-over.png";
 import secondaryButton from "src/v2/resources/collection/button-cancel-2.png";
 import secondaryButtonHover from "src/v2/resources/collection/button-cancel-2-over.png";
+import infoIcon from "src/v2/resources/collection/mark-information.png";
+import React, { useRef } from "react";
+import { T } from "@transifex/react";
 
-export const Alert = styled(AlertDialog, {
+export const AlertBackdrop = styled(AlertDialogOverlay, {
+  zIndex: 3,
+});
+
+export const AlertBase = styled(AlertDialogContent, {
   "&&": {
     width: 528,
     height: 333,
@@ -83,3 +91,45 @@ export const AlertButton = styled("button", {
     },
   },
 });
+
+interface AlertProps {
+  onCancel(): void;
+  onConfirm(): void;
+  children: React.ReactNode;
+  title: React.ReactNode;
+  isOpen?: boolean;
+}
+
+export function Alert({
+  onCancel,
+  onConfirm,
+  children,
+  title,
+  isOpen,
+}: AlertProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  return (
+    <AlertBackdrop
+      leastDestructiveRef={ref}
+      onDismiss={onCancel}
+      isOpen={isOpen}
+    >
+      <AlertBase>
+        <AlertHeader>
+          <img src={infoIcon} />
+          <AlertTitle>{title}</AlertTitle>
+        </AlertHeader>
+        <AlertDescription>{children}</AlertDescription>
+        <AlertButtonBar>
+          <AlertButton onClick={onCancel} ref={ref}>
+            <T _str="Cancel" _tags="v2/collection/alert" />
+          </AlertButton>
+          <AlertButton onClick={onConfirm} variant="primary">
+            <T _str="OK" _tags="v2/collection/alert" />
+          </AlertButton>
+        </AlertButtonBar>
+      </AlertBase>
+    </AlertBackdrop>
+  );
+}

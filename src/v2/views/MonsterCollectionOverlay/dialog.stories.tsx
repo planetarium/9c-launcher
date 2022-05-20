@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Alert,
+  AlertBase,
   AlertButton,
   AlertButtonBar,
   AlertDescription,
@@ -12,11 +12,11 @@ import infoIcon from "src/v2/resources/collection/mark-information.png";
 
 export default {
   title: "MonsterCollection/Alert",
-  component: Alert,
+  component: AlertBase,
 };
 
 export const Confirmation = () => (
-  <Alert as="main">
+  <AlertBase as="main">
     <AlertHeader>
       <img src={infoIcon} />
       <AlertTitle as="div">Information</AlertTitle>
@@ -31,5 +31,5 @@ export const Confirmation = () => (
       <AlertButton>Cancel</AlertButton>
       <AlertButton variant="primary">OK</AlertButton>
     </AlertButtonBar>
-  </Alert>
+  </AlertBase>
 );
