@@ -371,7 +371,7 @@ subscription Tip {
 
 query CurrentStaking($address: Address!) {
   stateQuery {
-    stakeState(agentAddress: $address) {
+    stakeState(address: $address) {
       deposit
       startedBlockIndex
       receivedBlockIndex
