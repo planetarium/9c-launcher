@@ -37,6 +37,7 @@ import { useBalance } from "src/v2/utils/useBalance";
 import { Alert } from "./dialog";
 import { AnimatePresence } from "framer-motion";
 import { useStore } from "src/v2/utils/useStore";
+import { placeholder, useTx } from "src/v2/utils/useTx";
 
 declare global {
   interface Array<T> {
@@ -228,6 +229,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     variables: { address: account.selectedAddress },
   });
   const balance = useBalance();
+  const tx = useTx("stake", placeholder);
 
   if (!sheet || !current) return null;
 
@@ -237,7 +239,11 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         sheet={sheet}
         current={current}
         currentNCG={balance}
-        onChangeAmount={() => Promise.resolve()}
+        onChangeAmount={(amount) =>
+          tx(amount.toString())
+            .catch(console.error)
+            .then(() => undefined)
+        }
       />
     </MonsterCollectionOverlayBase>
   );
