@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import Decimal from "decimal.js";
 import {
   DepositButton2,
   DepositCancelButton,
@@ -48,7 +49,7 @@ interface MonsterCollectionOverlayProps {
   current: CurrentStakingQuery;
   isEditing?: boolean;
   currentNCG: number;
-  onChangeAmount(amount: number): Promise<void>;
+  onChangeAmount(amount: Decimal): Promise<void>;
 }
 
 const images = [
@@ -72,20 +73,25 @@ export function MonsterCollectionContent({
 }: MonsterCollectionOverlayProps) {
   const [isEditing, setIsEditing] = useState(initalEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("0");
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const deposit = useMemo(() => stakeState && new Decimal(stakeState.deposit), [
+    stakeState,
+  ]);
+  const amountDecimal = useMemo(() => new Decimal(amount), [amount]);
 
   // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
   const currentIndex = useMemo(() => {
     if (!stakeState) return null;
-    const index = sheet?.orderedList?.findLastIndex(
-      (v) => stakeState?.deposit >= v.requiredGold
+    const index = sheet?.orderedList?.findLastIndex((v) =>
+      deposit?.gte(v.requiredGold)
     );
     return index != null && index !== -1 ? index : null;
   }, [stakeState, sheet]);
   const selectedIndex = useMemo(() => {
-    const index = sheet?.orderedList?.findLastIndex(
-      (v) => amount >= v.requiredGold
+    const index = sheet?.orderedList?.findLastIndex((v) =>
+      amountDecimal.gte(v.requiredGold)
     );
     return index != null && index !== -1 ? index : null;
   }, [sheet, amount]);
@@ -94,7 +100,7 @@ export function MonsterCollectionContent({
   const rewards = isEditing
     ? sheet.orderedList[selectedIndex!]?.rewards
     : sheet.orderedList[currentIndex!]?.rewards;
-  const currentAmount = isEditing ? amount : stakeState.deposit;
+  const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
   useEffect(() => stakeState && setAmount(stakeState.deposit), [stakeState]);
 
@@ -105,9 +111,9 @@ export function MonsterCollectionContent({
         <DepositForm
           onSubmit={(e) => {
             e.preventDefault();
-            if (stakeState.deposit > amount) setIsAlertOpen(true);
+            if (amountDecimal.lt(stakeState.deposit)) setIsAlertOpen(true);
             else {
-              onChangeAmount(amount);
+              onChangeAmount(amountDecimal);
               setIsEditing(false);
             }
           }}
@@ -123,7 +129,7 @@ export function MonsterCollectionContent({
                   maxLength={6}
                   ref={inputRef}
                   value={amount}
-                  onChange={(e) => setAmount(e.target.valueAsNumber)}
+                  onChange={(e) => setAmount(e.target.value)}
                   type="number"
                 />
                 <sub>/{currentNCG}</sub>
@@ -184,7 +190,7 @@ export function MonsterCollectionContent({
               {rewards?.map((item) => (
                 <Item
                   key={item.itemId}
-                  amount={Math.floor(currentAmount / item.rate)}
+                  amount={currentAmount.divToInt(item.rate).toString()}
                   title={"NCG"}
                 >
                   <img src={ncgImg} />
@@ -200,7 +206,7 @@ export function MonsterCollectionContent({
         title="Information"
         onCancel={() => setIsAlertOpen(false)}
         onConfirm={() => {
-          onChangeAmount(amount);
+          onChangeAmount(new Decimal(amount));
           setIsAlertOpen(false);
           setIsEditing(false);
         }}

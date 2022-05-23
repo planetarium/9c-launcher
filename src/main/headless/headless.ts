@@ -97,7 +97,7 @@ class Headless {
       }
     );
 
-    ipcMain.on("stake", async (event, amount: number, filePath: string) => {
+    ipcMain.on("stake", async (event, amount: string, filePath: string) => {
       console.log("stake");
       event.returnValue = this.action.Stake(amount, filePath);
     });
