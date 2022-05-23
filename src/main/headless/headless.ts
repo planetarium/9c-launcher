@@ -97,6 +97,22 @@ class Headless {
       }
     );
 
+    ipcMain.on("stake", async (event, amount: number, filePath: string) => {
+      console.log("stake");
+      event.returnValue = this.action.Stake(amount, filePath);
+    });
+
+    ipcMain.on(
+      "claim-stake-reward",
+      async (event, avatarAddress: string, filePath: string) => {
+        console.log("claim-stake-reward");
+        event.returnValue = this.action.ClaimStakeReward(
+          avatarAddress,
+          filePath
+        );
+      }
+    );
+
     ipcMain.on(
       "transfer-asset",
       async (
