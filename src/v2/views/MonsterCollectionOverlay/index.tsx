@@ -35,6 +35,7 @@ import {
 import { useBalance } from "src/v2/utils/useBalance";
 import { Alert } from "./dialog";
 import { AnimatePresence } from "framer-motion";
+import { useStore } from "src/v2/utils/useStore";
 
 declare global {
   interface Array<T> {
@@ -215,9 +216,12 @@ export function MonsterCollectionContent({
 }
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
+  const account = useStore("account");
   const { data: sheet } = useStakingSheetQuery();
-  const { data: current } = useCurrentStakingQuery();
-  // const balance = useBalance();
+  const { data: current } = useCurrentStakingQuery({
+    variables: { address: account.selectedAddress },
+  });
+  const balance = useBalance();
 
   if (!sheet || !current) return null;
 
@@ -226,7 +230,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
       <MonsterCollectionContent
         sheet={sheet}
         current={current}
-        currentNCG={200}
+        currentNCG={balance}
         onChangeAmount={() => Promise.resolve()}
       />
     </MonsterCollectionOverlayBase>
