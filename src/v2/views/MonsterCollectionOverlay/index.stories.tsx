@@ -1,7 +1,7 @@
 import React, { ComponentPropsWithRef } from "react";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 
-import { MonsterCollectionContent } from ".";
+import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { MonsterCollectionOverlayBase } from "./base";
 
 import {
@@ -27,7 +27,7 @@ const result = {
             requiredGold: 10,
             rewards: [
               {
-                itemId: 191,
+                itemId: 10121000,
                 rate: 20,
               },
             ],
@@ -37,7 +37,7 @@ const result = {
             requiredGold: 100,
             rewards: [
               {
-                itemId: 191,
+                itemId: 10121000,
                 rate: 20,
               },
             ],
@@ -47,7 +47,7 @@ const result = {
             requiredGold: 1000,
             rewards: [
               {
-                itemId: 191,
+                itemId: 10121000,
                 rate: 20,
               },
             ],
@@ -125,7 +125,7 @@ function MonsterCollectionOverlay(
               stateQuery: {
                 stakeState: {
                   ...current.stateQuery.stakeState,
-                  deposit: amount,
+                  deposit: amount.toString(),
                 },
               },
             },
