@@ -80,7 +80,7 @@ export function MonsterCollectionContent({
   const deposit = useMemo(() => stakeState && new Decimal(stakeState.deposit), [
     stakeState,
   ]);
-  const amountDecimal = useMemo(() => new Decimal(amount), [amount]);
+  const amountDecimal = useMemo(() => new Decimal(amount || 0), [amount]);
 
   // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
   const currentIndex = useMemo(() => {
