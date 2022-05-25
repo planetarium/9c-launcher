@@ -74,7 +74,7 @@ function ClaimContent({
   const hasMultipleAvatars = !avatars || avatars.length !== 1;
 
   const tx = useTx(
-    "claim-monster-collection-reward",
+    "claim-stake-reward",
     currentAvatar?.address.replace("0x", "")
   );
 
