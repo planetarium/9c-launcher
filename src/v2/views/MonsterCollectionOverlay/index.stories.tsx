@@ -68,7 +68,7 @@ const mocks: [
       data: {
         stateQuery: {
           stakeState: {
-            deposit: 500,
+            deposit: "500",
             cancellableBlockIndex: 0,
             claimableBlockIndex: 50400,
             receivedBlockIndex: 0,

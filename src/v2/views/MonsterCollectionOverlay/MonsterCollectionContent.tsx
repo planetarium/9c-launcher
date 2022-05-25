@@ -161,19 +161,22 @@ export function MonsterCollectionContent({
         </DepositDescription>
       </DepositHolder>
       <Levels>
-        {sheet.orderedList?.map((item, index) => (
-          <Level
-            key={item.level}
-            amount={item.requiredGold}
-            expandedImage={
-              isEditing || currentIndex === index
-                ? images[item.level]
-                : undefined
-            }
-            current={currentIndex === index}
-            selected={isEditing && selectedIndex === index}
-          />
-        ))}
+        {sheet.orderedList?.map(
+          (item, index) =>
+            item && (
+              <Level
+                key={item.level}
+                amount={item.requiredGold}
+                expandedImage={
+                  isEditing || currentIndex === index
+                    ? images[item.level]
+                    : undefined
+                }
+                current={currentIndex === index}
+                selected={isEditing && selectedIndex === index}
+              />
+            )
+        )}
       </Levels>
       <AnimatePresence exitBeforeEnter>
         {rewards ? (
