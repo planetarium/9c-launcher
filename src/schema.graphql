@@ -462,7 +462,7 @@ type StakeRegularRewardRowType {
 }
 
 type StakeRegularRewardSheetType {
-  orderedList: [StakeRegularRewardRowType]
+  orderedList: [StakeRegularRewardRowType!]!
 }
 
 type StakeStateType {
