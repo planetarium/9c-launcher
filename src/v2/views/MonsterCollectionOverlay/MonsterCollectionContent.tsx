@@ -91,13 +91,15 @@ export function MonsterCollectionContent({
     return index != null && index !== -1 ? index : null;
   }, [sheet, amount]);
 
-  if (!sheet || !sheet?.orderedList || !stakeState) return null;
+  if (!sheet || !sheet?.orderedList) return null;
   const rewards = isEditing
     ? sheet.orderedList[selectedIndex!]?.rewards
     : sheet.orderedList[currentIndex!]?.rewards;
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
-  useEffect(() => stakeState && setAmount(stakeState.deposit), [stakeState]);
+  useEffect(() => {
+    if (stakeState && stakeState.deposit) setAmount(stakeState.deposit);
+  }, [stakeState]);
 
   return (
     <>
@@ -146,7 +148,7 @@ export function MonsterCollectionContent({
           ) : (
             <>
               <DepositContent>
-                {stakeState.deposit}
+                {stakeState?.deposit ?? 0}
                 <sub>/{currentNCG}</sub>
               </DepositContent>
               <DepositButton2
