@@ -32,8 +32,8 @@ describe("Tx", function () {
           let sign = tx.Sign(privateKey, 1, genesisHash, new Date(timeStamp).toISOString(), actionPath);
           assert.isNotEmpty(sign.stdout);
           assert.isEmpty(sign.stderr)
-          let result = sign.stdout;
-          const expected = fs.readFileSync(txPath, "utf-8").replace("\r\n", "\n");
+          let result = sign.stdout.split("\r\n")[3] + "\r\n";
+          const expected = fs.readFileSync(txPath, "utf-8");
           assert.equal(result, expected);
         });
       })
