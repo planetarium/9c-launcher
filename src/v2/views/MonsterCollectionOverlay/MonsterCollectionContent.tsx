@@ -21,7 +21,8 @@ import monster2Img from "src/v2/resources/collection/monster-2.png";
 import monster3Img from "src/v2/resources/collection/monster-3.png";
 import monster4Img from "src/v2/resources/collection/monster-4.png";
 import monster5Img from "src/v2/resources/collection/monster-5.png";
-import ncgImg from "src/v2/resources/collection/items/ncg.png";
+
+import itemMetadata from "src/v2/utils/monsterCollection/items";
 
 import {
   CurrentStakingQuery,
@@ -41,7 +42,7 @@ interface MonsterCollectionOverlayProps {
   current: CurrentStakingQuery;
   isEditing?: boolean;
   currentNCG: number;
-  onChangeAmount(amount: Decimal): Promise<void>;
+  onChangeAmount(amount: Decimal): Promise<unknown>;
 }
 
 const images = [
@@ -51,6 +52,8 @@ const images = [
   monster4Img,
   monster5Img,
 ];
+
+type Alerts = "lower-deposit";
 
 export function MonsterCollectionContent({
   sheet: {
@@ -66,7 +69,7 @@ export function MonsterCollectionContent({
   const [isEditing, setIsEditing] = useState(initalEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [amount, setAmount] = useState("0");
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [openedAlert, setIsAlertOpen] = useState<Alerts | null>(null);
 
   const deposit = useMemo(() => stakeState && new Decimal(stakeState.deposit), [
     stakeState,
@@ -105,8 +108,8 @@ export function MonsterCollectionContent({
         <DepositForm
           onSubmit={(e) => {
             e.preventDefault();
-            if (amountDecimal.lt(stakeState?.deposit ?? 0))
-              setIsAlertOpen(true);
+            if (amountDecimal.lt(stakeState.deposit))
+              setIsAlertOpen("lower-deposit");
             else {
               onChangeAmount(amountDecimal);
               setIsEditing(false);
@@ -138,7 +141,9 @@ export function MonsterCollectionContent({
               >
                 Cancel
               </DepositCancelButton>
-              <DepositButton2>Save</DepositButton2>
+              <DepositButton2 disabled={amountDecimal.gt(currentNCG)}>
+                Save
+              </DepositButton2>
             </>
           ) : (
             <>
@@ -185,15 +190,20 @@ export function MonsterCollectionContent({
         {rewards ? (
           <RewardSheet>
             <ItemGroup key="recurring" title="Recurring Rewards">
-              {rewards?.map((item) => (
-                <Item
-                  key={item.itemId}
-                  amount={currentAmount.divToInt(item.rate).toString()}
-                  title={"NCG"}
-                >
-                  <img src={ncgImg} />
-                </Item>
-              ))}
+              {rewards?.map((item) => {
+                const itemMeta = itemMetadata[item.itemId] ?? {
+                  name: "Unknown",
+                };
+                return (
+                  <Item
+                    key={item.itemId}
+                    amount={currentAmount.divToInt(item.rate).toString()}
+                    title={itemMeta.name}
+                  >
+                    <img src={itemMeta.img} />
+                  </Item>
+                );
+              })}
             </ItemGroup>
           </RewardSheet>
         ) : (
@@ -202,13 +212,13 @@ export function MonsterCollectionContent({
       </AnimatePresence>
       <Alert
         title="Information"
-        onCancel={() => setIsAlertOpen(false)}
+        onCancel={() => setIsAlertOpen(null)}
         onConfirm={() => {
           onChangeAmount(new Decimal(amount));
-          setIsAlertOpen(false);
+          setIsAlertOpen(null);
           setIsEditing(false);
         }}
-        isOpen={isAlertOpen}
+        isOpen={openedAlert === "lower-deposit"}
       >
         Do you really want to reduce your deposit?
         <br />

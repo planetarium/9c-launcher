@@ -107,6 +107,7 @@ const Title = styled("h1", {
   fontSize: "1rem",
   marginTop: 2,
   color: theme.colors.title,
+  fontWeight: "normal",
 });
 
 const ItemContainer = styled("div", {
