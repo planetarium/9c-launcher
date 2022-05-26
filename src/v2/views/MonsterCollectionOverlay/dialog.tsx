@@ -93,7 +93,7 @@ export const AlertButton = styled("button", {
 });
 
 interface AlertProps {
-  onCancel(): void;
+  onCancel?(): void;
   onConfirm(): void;
   children: React.ReactNode;
   title: React.ReactNode;
@@ -122,9 +122,11 @@ export function Alert({
         </AlertHeader>
         <AlertDescription>{children}</AlertDescription>
         <AlertButtonBar>
-          <AlertButton onClick={onCancel} ref={ref}>
-            <T _str="Cancel" _tags="v2/collection/alert" />
-          </AlertButton>
+          {onCancel && (
+            <AlertButton onClick={onCancel} ref={ref}>
+              <T _str="Cancel" _tags="v2/collection/alert" />
+            </AlertButton>
+          )}
           <AlertButton onClick={onConfirm} variant="primary">
             <T _str="OK" _tags="v2/collection/alert" />
           </AlertButton>
