@@ -21,7 +21,8 @@ import monster2Img from "src/v2/resources/collection/monster-2.png";
 import monster3Img from "src/v2/resources/collection/monster-3.png";
 import monster4Img from "src/v2/resources/collection/monster-4.png";
 import monster5Img from "src/v2/resources/collection/monster-5.png";
-import ncgImg from "src/v2/resources/collection/items/ncg.png";
+
+import itemMetadata from "src/v2/utils/monsterCollection/items";
 
 import {
   CurrentStakingQuery,
@@ -187,15 +188,20 @@ export function MonsterCollectionContent({
         {rewards ? (
           <RewardSheet>
             <ItemGroup key="recurring" title="Recurring Rewards">
-              {rewards?.map((item) => (
-                <Item
-                  key={item.itemId}
-                  amount={currentAmount.divToInt(item.rate).toString()}
-                  title={"NCG"}
-                >
-                  <img src={ncgImg} />
-                </Item>
-              ))}
+              {rewards?.map((item) => {
+                const itemMeta = itemMetadata[item.itemId] ?? {
+                  name: "Unknown",
+                };
+                return (
+                  <Item
+                    key={item.itemId}
+                    amount={currentAmount.divToInt(item.rate).toString()}
+                    title={itemMeta.name}
+                  >
+                    <img src={itemMeta.img} />
+                  </Item>
+                );
+              })}
             </ItemGroup>
           </RewardSheet>
         ) : (
