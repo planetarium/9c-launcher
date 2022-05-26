@@ -177,9 +177,7 @@ export function MonsterCollectionContent({
             key={item.level}
             amount={item.requiredGold}
             expandedImage={
-              isEditing || currentIndex === index
-                ? images[item.level]
-                : undefined
+              isEditing || currentIndex === index ? images[index] : undefined
             }
             current={currentIndex === index}
             selected={isEditing && selectedIndex === index}
