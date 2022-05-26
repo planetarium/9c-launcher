@@ -33,7 +33,7 @@ describe("Tx", function () {
           assert.isNotEmpty(sign.stdout);
           assert.isEmpty(sign.stderr)
           let result = sign.stdout;
-          const expected = fs.readFileSync(txPath, "utf-8");
+          const expected = fs.readFileSync(txPath, "utf-8").Replace("\n", "\r\n");
           assert.equal(result, expected);
         });
       })
