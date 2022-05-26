@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { observer } from "mobx-react";
 import { MonsterCollectionOverlayBase } from "./base";
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
@@ -8,18 +8,29 @@ import { useBalance } from "src/v2/utils/useBalance";
 import { useStore } from "src/v2/utils/useStore";
 import { placeholder, useTx } from "src/v2/utils/useTx";
 import {
+  TxStatus,
   useCurrentStakingQuery,
   useStakingSheetQuery,
+  useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
   const { data: sheet } = useStakingSheetQuery();
-  const { data: current } = useCurrentStakingQuery({
+  const { data: current, refetch } = useCurrentStakingQuery({
     variables: { address: account.selectedAddress },
   });
   const balance = useBalance();
+
   const tx = useTx("stake", placeholder);
+  const [fetchStatus, { data: txStatus }] = useTransactionResultLazyQuery({
+    pollInterval: 1000,
+  });
+
+  useEffect(() => {
+    if (txStatus?.transaction.transactionResult.txStatus === TxStatus.Success)
+      refetch();
+  }, [txStatus]);
 
   if (!sheet || !current) return null;
 
@@ -31,8 +42,11 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         currentNCG={balance}
         onChangeAmount={(amount) =>
           tx(amount.toString())
+            .then(
+              (v) =>
+                v.data && fetchStatus({ variables: { txId: v.data.stageTxV2 } })
+            )
             .catch(console.error)
-            .then(() => undefined)
         }
       />
     </MonsterCollectionOverlayBase>
