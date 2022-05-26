@@ -15,7 +15,7 @@ import {
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
   const { data: sheet } = useStakingSheetQuery();
-  const { data: current } = useCurrentStakingQuery({
+  const { data: current, refetch } = useCurrentStakingQuery({
     variables: { address: account.selectedAddress },
   });
   const balance = useBalance();
@@ -32,7 +32,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         onChangeAmount={(amount) =>
           tx(amount.toString())
             .catch(console.error)
-            .then(() => undefined)
+            .then(() => refetch())
         }
       />
     </MonsterCollectionOverlayBase>

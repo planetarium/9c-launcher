@@ -42,7 +42,7 @@ interface MonsterCollectionOverlayProps {
   current: CurrentStakingQuery;
   isEditing?: boolean;
   currentNCG: number;
-  onChangeAmount(amount: Decimal): Promise<void>;
+  onChangeAmount(amount: Decimal): Promise<unknown>;
 }
 
 const images = [
