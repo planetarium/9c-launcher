@@ -88,13 +88,15 @@ export function MonsterCollectionContent({
     return index != null && index !== -1 ? index : null;
   }, [sheet, amount]);
 
-  if (!sheet || !sheet?.orderedList || !stakeState) return null;
+  if (!sheet || !sheet?.orderedList) return null;
   const rewards = isEditing
     ? sheet.orderedList[selectedIndex!]?.rewards
     : sheet.orderedList[currentIndex!]?.rewards;
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
-  useEffect(() => stakeState && setAmount(stakeState.deposit), [stakeState]);
+  useEffect(() => {
+    if (stakeState && stakeState.deposit) setAmount(stakeState.deposit);
+  }, [stakeState]);
 
   return (
     <>
@@ -103,7 +105,8 @@ export function MonsterCollectionContent({
         <DepositForm
           onSubmit={(e) => {
             e.preventDefault();
-            if (amountDecimal.lt(stakeState.deposit)) setIsAlertOpen(true);
+            if (amountDecimal.lt(stakeState?.deposit ?? 0))
+              setIsAlertOpen(true);
             else {
               onChangeAmount(amountDecimal);
               setIsEditing(false);
@@ -140,7 +143,7 @@ export function MonsterCollectionContent({
           ) : (
             <>
               <DepositContent>
-                {stakeState.deposit}
+                {stakeState?.deposit ?? 0}
                 <sub>/{currentNCG}</sub>
               </DepositContent>
               <DepositButton2
