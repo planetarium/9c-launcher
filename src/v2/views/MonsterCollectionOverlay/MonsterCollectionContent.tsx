@@ -75,31 +75,34 @@ export function MonsterCollectionContent({
     stakeState,
   ]);
   const amountDecimal = useMemo(() => new Decimal(amount || 0), [amount]);
+  const levels = useMemo(
+    () => sheet?.orderedList.filter((v) => v.level !== 0),
+    [sheet]
+  );
 
   // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
   const currentIndex = useMemo(() => {
     if (!stakeState) return null;
-    const index = sheet?.orderedList?.findLastIndex((v) =>
-      deposit?.gte(v.requiredGold)
-    );
+    const index = levels?.findLastIndex((v) => deposit?.gte(v.requiredGold));
     return index != null && index !== -1 ? index : null;
-  }, [stakeState, sheet]);
+  }, [stakeState, levels]);
   const selectedIndex = useMemo(() => {
-    const index = sheet?.orderedList?.findLastIndex((v) =>
+    const index = levels?.findLastIndex((v) =>
       amountDecimal.gte(v.requiredGold)
     );
     return index != null && index !== -1 ? index : null;
-  }, [sheet, amount]);
-
-  if (!sheet || !sheet?.orderedList) return null;
-  const rewards = isEditing
-    ? sheet.orderedList[selectedIndex!]?.rewards
-    : sheet.orderedList[currentIndex!]?.rewards;
-  const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
+  }, [sheet, levels]);
 
   useEffect(() => {
     if (stakeState && stakeState.deposit) setAmount(stakeState.deposit);
   }, [stakeState]);
+
+  if (!levels) return null;
+
+  const rewards = isEditing
+    ? levels[selectedIndex!]?.rewards
+    : levels[currentIndex!]?.rewards;
+  const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
   return (
     <>
@@ -169,22 +172,19 @@ export function MonsterCollectionContent({
         </DepositDescription>
       </DepositHolder>
       <Levels>
-        {sheet.orderedList?.map(
-          (item, index) =>
-            item && (
-              <Level
-                key={item.level}
-                amount={item.requiredGold}
-                expandedImage={
-                  isEditing || currentIndex === index
-                    ? images[item.level]
-                    : undefined
-                }
-                current={currentIndex === index}
-                selected={isEditing && selectedIndex === index}
-              />
-            )
-        )}
+        {levels?.map((item, index) => (
+          <Level
+            key={item.level}
+            amount={item.requiredGold}
+            expandedImage={
+              isEditing || currentIndex === index
+                ? images[item.level]
+                : undefined
+            }
+            current={currentIndex === index}
+            selected={isEditing && selectedIndex === index}
+          />
+        ))}
       </Levels>
       <AnimatePresence exitBeforeEnter>
         {rewards ? (
