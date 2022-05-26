@@ -111,7 +111,7 @@ export function MonsterCollectionContent({
         <DepositForm
           onSubmit={(e) => {
             e.preventDefault();
-            if (amountDecimal.lt(stakeState.deposit))
+            if (stakeState && amountDecimal.lt(stakeState.deposit))
               setIsAlertOpen("lower-deposit");
             else {
               onChangeAmount(amountDecimal);
