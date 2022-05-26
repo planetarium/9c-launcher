@@ -37,7 +37,7 @@ type Overlay = "settings" | "staking";
 
 function Menu() {
   const account = useStore("account");
-  const [currentOverlay, openOverlay] = useState<Overlay | null>(false);
+  const [currentOverlay, openOverlay] = useState<Overlay | null>(null);
 
   return (
     <MenuContainer>
