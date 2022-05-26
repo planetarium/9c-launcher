@@ -13,6 +13,7 @@ import staking from "../../../resources/icons/staking.png";
 import ncgLogo from "../../../resources/icons/ncgLogo.png";
 import SettingsOverlay from "src/v2/views/SettingsOverlay";
 import { AnimatePresence } from "framer-motion";
+import MonsterCollectionOverlay from "src/v2/views/MonsterCollectionOverlay";
 
 const MenuContainer = styled("div", {
   opacity: 0.9,
@@ -32,19 +33,19 @@ const MenuDivider = styled("hr", {
 
 const app = require("electron").remote.app;
 
+type Overlay = "settings" | "staking";
+
 function Menu() {
   const account = useStore("account");
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [currentOverlay, openOverlay] = useState<Overlay | null>(false);
 
   return (
     <MenuContainer>
       <MenuItem
         icon={staking}
         text="Staking"
-        disabled={!account.isLogin}
-        onClick={() =>
-          ipcRenderer.invoke("open collection page", account.selectedAddress)
-        }
+        disabled={!account.isLogin || currentOverlay === "staking"}
+        onClick={() => openOverlay("staking")}
       />
       <MenuItem
         icon={ncgLogo}
@@ -75,13 +76,17 @@ function Menu() {
       />
       <MenuItem
         icon={settings}
-        disabled={isSettingsOpen}
+        disabled={currentOverlay === "settings"}
         text="Settings"
-        onClick={() => setIsSettingsOpen(true)}
+        onClick={() => openOverlay("settings")}
       />
       <SettingsOverlay
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+        isOpen={currentOverlay === "settings"}
+        onClose={() => openOverlay(null)}
+      />
+      <MonsterCollectionOverlay
+        isOpen={currentOverlay === "staking"}
+        onClose={() => openOverlay(null)}
       />
     </MenuContainer>
   );
