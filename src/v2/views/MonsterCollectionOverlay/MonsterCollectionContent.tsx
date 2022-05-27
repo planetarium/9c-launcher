@@ -43,6 +43,7 @@ interface MonsterCollectionOverlayProps {
   isEditing?: boolean;
   currentNCG: number;
   onChangeAmount(amount: Decimal): Promise<unknown>;
+  tip?: number;
 }
 
 const images = [
@@ -65,6 +66,7 @@ export function MonsterCollectionContent({
   isEditing: initalEditing,
   currentNCG,
   onChangeAmount,
+  tip,
 }: MonsterCollectionOverlayProps) {
   const [isEditing, setIsEditing] = useState(initalEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -92,6 +94,9 @@ export function MonsterCollectionContent({
     );
     return index != null && index !== -1 ? index : null;
   }, [sheet, levels]);
+
+  const isLockedUp =
+    tip != null && !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
   useEffect(() => {
     if (stakeState && stakeState.deposit) setAmount(stakeState.deposit);
@@ -144,7 +149,9 @@ export function MonsterCollectionContent({
               >
                 Cancel
               </DepositCancelButton>
-              <DepositButton2 disabled={amountDecimal.gt(currentNCG)}>
+              <DepositButton2
+                disabled={amountDecimal.gt(currentNCG) || isLockedUp}
+              >
                 Save
               </DepositButton2>
             </>
@@ -166,6 +173,11 @@ export function MonsterCollectionContent({
             </>
           )}
         </DepositForm>
+        {isEditing && isLockedUp && (
+          <DepositDescription warning>
+            Deposits cannot be modified within 28 days.
+          </DepositDescription>
+        )}
         <DepositDescription>
           When you deposit NCG, the monsters go on an expedition to get the
           treasure.
