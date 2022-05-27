@@ -77,7 +77,7 @@ export const DepositDescription = styled("p", {
   color: "White",
   textShadow: theme.shadows.standard,
   fontSize: 18,
-  lineHeight: 1.5,
+  lineHeight: 1.2,
   textAlign: "center",
   margin: 0,
   "&:last-of-type": {

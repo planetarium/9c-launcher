@@ -91,10 +91,11 @@ export function useTx<K extends keyof ActionArguemnts>(
       );
 
       if (status) throw new Error(stderr);
+      const trimmed: string = encodedTx.trim().replace(/.+\r?\n/g, "");
 
       return await stage({
         variables: {
-          encodedTx,
+          encodedTx: trimmed,
         },
       });
     };
