@@ -144,7 +144,7 @@ class Headless {
         event.returnValue = this.tx.Sign(
           this._signerPrivateKey,
           nonce,
-          "4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce",
+          "9e36cda9226c9f47a54f39e3db021e8e4287b2d163edff898dd54618f4125860",
           timeStamp,
           filePath
         );
