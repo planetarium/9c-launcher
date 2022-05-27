@@ -23,11 +23,16 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const balance = useBalance();
 
   const tx = useTx("stake", placeholder);
-  const [fetchStatus, { data: txStatus }] = useTransactionResultLazyQuery({
+  const [
+    fetchStatus,
+    { data: txStatus, stopPolling },
+  ] = useTransactionResultLazyQuery({
     pollInterval: 1000,
   });
 
   useEffect(() => {
+    if (txStatus?.transaction.transactionResult.txStatus !== TxStatus.Staging)
+      stopPolling?.();
     if (txStatus?.transaction.transactionResult.txStatus === TxStatus.Success)
       refetch();
   }, [txStatus]);

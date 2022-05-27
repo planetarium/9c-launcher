@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { styled } from "src/v2/stitches.config";
-import { useTipSubscription } from "src/v2/generated/graphql";
+import {
+  TxStatus,
+  useTipSubscription,
+  useTransactionResultLazyQuery,
+} from "src/v2/generated/graphql";
 import { useStore } from "src/v2/utils/useStore";
 import { useIsPreloadDone } from "src/v2/utils/usePreload";
 
@@ -57,7 +61,21 @@ export default function UserInfo() {
     receivedBlockIndex,
     claimableBlockIndex,
     deposit,
+    refetch,
   } = useStaking();
+  const [
+    fetchResult,
+    { data: result, stopPolling },
+  ] = useTransactionResultLazyQuery({
+    pollInterval: 1000,
+  });
+
+  useEffect(() => {
+    if (result?.transaction.transactionResult.txStatus !== TxStatus.Staging)
+      stopPolling?.();
+    if (result?.transaction.transactionResult.txStatus === TxStatus.Success)
+      refetch();
+  });
 
   const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
   const remainingText = useMemo(() => {
@@ -122,7 +140,14 @@ export default function UserInfo() {
               );
 
             setOpenDialog(false);
-            if (txId) setClaimLoading(true);
+            if (txId) {
+              setClaimLoading(true);
+              fetchResult({
+                variables: {
+                  txId,
+                },
+              });
+            }
           }}
         />
       </UserInfoItem>

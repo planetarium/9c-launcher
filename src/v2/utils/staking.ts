@@ -13,7 +13,7 @@ export function useStaking() {
     skip: !account.isLogin,
   };
 
-  const { data: current } = useCurrentStakingQuery(commonQuery);
+  const { data: current, refetch } = useCurrentStakingQuery(commonQuery);
   const { data: tip } = useTipSubscription();
 
   return {
@@ -23,5 +23,6 @@ export function useStaking() {
       !!tip?.tipChanged &&
       !!current?.stateQuery.stakeState?.claimableBlockIndex &&
       current.stateQuery.stakeState.claimableBlockIndex >= tip.tipChanged.index,
+    refetch,
   };
 }
