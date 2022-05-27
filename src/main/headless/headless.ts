@@ -144,6 +144,11 @@ class Headless {
         event.returnValue = this.tx.Sign(
           this._signerPrivateKey,
           nonce,
+          /**
+           * This is a hash of genesis block of the network we should be using.
+           *
+           * FIXME: THIS IS CURRENTLY A HASH OF PREVIEWNET GENESIS BLOCK. MUST BE REVERTED BACK TO MAINNET BEFORE RELEASE.
+           */
           "9e36cda9226c9f47a54f39e3db021e8e4287b2d163edff898dd54618f4125860",
           timeStamp,
           filePath
