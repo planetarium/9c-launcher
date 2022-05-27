@@ -22,7 +22,7 @@ export function useStaking() {
     canClaim:
       !!tip?.tipChanged &&
       !!current?.stateQuery.stakeState?.claimableBlockIndex &&
-      current.stateQuery.stakeState.claimableBlockIndex >= tip.tipChanged.index,
+      current.stateQuery.stakeState.claimableBlockIndex <= tip.tipChanged.index,
     refetch,
   };
 }
