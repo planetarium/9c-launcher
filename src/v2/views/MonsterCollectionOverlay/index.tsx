@@ -11,6 +11,7 @@ import {
   TxStatus,
   useCurrentStakingQuery,
   useStakingSheetQuery,
+  useTipSubscription,
   useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
 
@@ -21,6 +22,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     variables: { address: account.selectedAddress },
   });
   const balance = useBalance();
+  const { data: tip } = useTipSubscription();
 
   const tx = useTx("stake", placeholder);
   const [
@@ -53,6 +55,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             )
             .catch(console.error)
         }
+        tip={tip?.tipChanged?.index}
       />
     </MonsterCollectionOverlayBase>
   );
