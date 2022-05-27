@@ -69,7 +69,7 @@ export class Action extends StandaloneSubcommand {
 
   public Stake(amount: string, path: string): boolean {
     try {
-      this.execSync("action", "stake", amount, path);
+      this.execSync("action", "stake", "--amount", amount, path);
       return true;
     } catch (error) {
       console.error(error);
