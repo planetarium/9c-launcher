@@ -162,7 +162,7 @@ export function MonsterCollectionContent({
           ) : (
             <>
               <DepositContent>
-                {stakeState?.deposit ?? 0}
+                {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
                 <sub>/{currentNCG}</sub>
               </DepositContent>
               <DepositButton2
