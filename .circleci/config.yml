@@ -114,6 +114,14 @@ jobs:
       - run:
           command: yarn tsc --noEmit
           name: Type Check
+  chromatic:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - yarn-install
+      - run: yarn codegen
+      - run: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN} --exit-zero-on-changes
   update-translations:
     docker:
       - image: cimg/node:lts
@@ -156,3 +164,4 @@ workflows:
             branches:
               only: development
       - e2e-test
+      - chromatic
