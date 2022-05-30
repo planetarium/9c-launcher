@@ -98,7 +98,7 @@ export function MonsterCollectionContent({
       amountDecimal.gte(v.requiredGold)
     );
     return index != null && index !== -1 ? index : null;
-  }, [sheet, levels]);
+  }, [amountDecimal, levels]);
 
   const isLockedUp =
     tip != null && !!stakeState && tip <= stakeState.cancellableBlockIndex;
