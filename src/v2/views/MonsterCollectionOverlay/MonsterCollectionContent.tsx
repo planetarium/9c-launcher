@@ -82,6 +82,11 @@ export function MonsterCollectionContent({
     [sheet]
   );
 
+  const availableNCG = useMemo(
+    () => deposit?.add(currentNCG) ?? new Decimal(currentNCG),
+    [deposit, currentNCG]
+  );
+
   // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
   const currentIndex = useMemo(() => {
     if (!stakeState) return null;
@@ -93,13 +98,14 @@ export function MonsterCollectionContent({
       amountDecimal.gte(v.requiredGold)
     );
     return index != null && index !== -1 ? index : null;
-  }, [sheet, levels]);
+  }, [amountDecimal, levels]);
 
   const isLockedUp =
     tip != null && !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
   useEffect(() => {
-    if (stakeState && stakeState.deposit) setAmount(stakeState.deposit);
+    if (stakeState && stakeState.deposit)
+      setAmount(stakeState.deposit.replace(/\.0+$/, ""));
   }, [stakeState]);
 
   if (!levels) return null;
@@ -138,7 +144,7 @@ export function MonsterCollectionContent({
                   onChange={(e) => setAmount(e.target.value)}
                   type="number"
                 />
-                <sub>/{currentNCG}</sub>
+                <sub>/{availableNCG.toString()}</sub>
               </DepositContent>
               <DepositCancelButton
                 type="button"
@@ -150,7 +156,10 @@ export function MonsterCollectionContent({
                 Cancel
               </DepositCancelButton>
               <DepositButton2
-                disabled={amountDecimal.gt(currentNCG) || isLockedUp}
+                disabled={
+                  amountDecimal.gt(availableNCG) ||
+                  (isLockedUp && amountDecimal.lt(stakeState.deposit))
+                }
               >
                 Save
               </DepositButton2>
@@ -158,8 +167,8 @@ export function MonsterCollectionContent({
           ) : (
             <>
               <DepositContent>
-                {stakeState?.deposit ?? 0}
-                <sub>/{currentNCG}</sub>
+                {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
+                <sub>/{availableNCG.toString()}</sub>
               </DepositContent>
               <DepositButton2
                 type="button"
@@ -173,9 +182,9 @@ export function MonsterCollectionContent({
             </>
           )}
         </DepositForm>
-        {isEditing && isLockedUp && (
+        {isEditing && isLockedUp && amountDecimal.lt(stakeState.deposit) && (
           <DepositDescription warning>
-            Deposits cannot be modified within 28 days.
+            Deposits cannot be withdrawn within 28 days.
           </DepositDescription>
         )}
         <DepositDescription>

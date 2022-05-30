@@ -1,7 +1,4 @@
-import {
-  useCurrentStakingQuery,
-  useTipSubscription,
-} from "../generated/graphql";
+import { useCurrentStakingQuery, useGetTipQuery } from "../generated/graphql";
 import { useStore } from "./useStore";
 
 export function useStaking() {
@@ -14,15 +11,18 @@ export function useStaking() {
   };
 
   const { data: current, refetch } = useCurrentStakingQuery(commonQuery);
-  const { data: tip } = useTipSubscription();
+  const { data: tip } = useGetTipQuery({
+    pollInterval: 1000,
+  });
 
   return {
     ...current?.stateQuery.stakeState,
-    tip: tip?.tipChanged?.index ?? 0,
+    tip: tip?.nodeStatus.tip.index ?? 0,
     canClaim:
-      !!tip?.tipChanged &&
+      !!tip &&
       !!current?.stateQuery.stakeState?.claimableBlockIndex &&
-      current.stateQuery.stakeState.claimableBlockIndex >= tip.tipChanged.index,
+      current.stateQuery.stakeState.claimableBlockIndex <=
+        tip.nodeStatus.tip.index,
     refetch,
   };
 }

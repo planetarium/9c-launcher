@@ -114,6 +114,17 @@ class Headless {
     );
 
     ipcMain.on(
+      "migrate-monster-collection",
+      async (event, avatarAddress: string, filePath: string) => {
+        console.log("migrate-monster-collection");
+        event.returnValue = this.action.MigrateMonsterCollection(
+          avatarAddress,
+          filePath
+        );
+      }
+    );
+
+    ipcMain.on(
       "transfer-asset",
       async (
         event,
