@@ -150,7 +150,10 @@ export function MonsterCollectionContent({
                 Cancel
               </DepositCancelButton>
               <DepositButton2
-                disabled={amountDecimal.gt(currentNCG) || isLockedUp}
+                disabled={
+                  amountDecimal.gt(currentNCG) ||
+                  (isLockedUp && amountDecimal.lt(stakeState.deposit))
+                }
               >
                 Save
               </DepositButton2>
@@ -173,9 +176,9 @@ export function MonsterCollectionContent({
             </>
           )}
         </DepositForm>
-        {isEditing && isLockedUp && (
+        {isEditing && isLockedUp && amountDecimal.lt(stakeState.deposit) && (
           <DepositDescription warning>
-            Deposits cannot be modified within 28 days.
+            Deposits cannot be withdrawn within 28 days.
           </DepositDescription>
         )}
         <DepositDescription>
