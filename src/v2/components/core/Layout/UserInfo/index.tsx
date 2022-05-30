@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { styled } from "src/v2/stitches.config";
 import {
   TxStatus,
-  useTipSubscription,
   useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
 import { useStore } from "src/v2/utils/useStore";

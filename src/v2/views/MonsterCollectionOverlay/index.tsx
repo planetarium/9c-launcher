@@ -10,6 +10,7 @@ import { placeholder, useTx } from "src/v2/utils/useTx";
 import {
   TxStatus,
   useCurrentStakingQuery,
+  useGetTipQuery,
   useStakingSheetQuery,
   useTipSubscription,
   useTransactionResultLazyQuery,
@@ -22,7 +23,9 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     variables: { address: account.selectedAddress },
   });
   const balance = useBalance();
-  const { data: tip } = useTipSubscription();
+  const { data: tip } = useGetTipQuery({
+    pollInterval: 1000,
+  });
 
   const tx = useTx("stake", placeholder);
   const [
@@ -55,7 +58,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             )
             .catch(console.error)
         }
-        tip={tip?.tipChanged?.index}
+        tip={tip?.nodeStatus.tip.index}
       />
     </MonsterCollectionOverlayBase>
   );
