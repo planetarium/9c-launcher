@@ -99,7 +99,8 @@ export function MonsterCollectionContent({
     tip != null && !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
   useEffect(() => {
-    if (stakeState && stakeState.deposit) setAmount(stakeState.deposit);
+    if (stakeState && stakeState.deposit)
+      setAmount(stakeState.deposit.replace(/\.0+$/, ""));
   }, [stakeState]);
 
   if (!levels) return null;
