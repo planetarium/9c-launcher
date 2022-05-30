@@ -82,6 +82,11 @@ export function MonsterCollectionContent({
     [sheet]
   );
 
+  const availableNCG = useMemo(
+    () => deposit?.add(currentNCG) ?? new Decimal(currentNCG),
+    [deposit, currentNCG]
+  );
+
   // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
   const currentIndex = useMemo(() => {
     if (!stakeState) return null;
@@ -139,7 +144,7 @@ export function MonsterCollectionContent({
                   onChange={(e) => setAmount(e.target.value)}
                   type="number"
                 />
-                <sub>/{currentNCG}</sub>
+                <sub>/{availableNCG.toString()}</sub>
               </DepositContent>
               <DepositCancelButton
                 type="button"
@@ -152,7 +157,7 @@ export function MonsterCollectionContent({
               </DepositCancelButton>
               <DepositButton2
                 disabled={
-                  amountDecimal.gt(currentNCG) ||
+                  amountDecimal.gt(availableNCG) ||
                   (isLockedUp && amountDecimal.lt(stakeState.deposit))
                 }
               >
@@ -163,7 +168,7 @@ export function MonsterCollectionContent({
             <>
               <DepositContent>
                 {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
-                <sub>/{currentNCG}</sub>
+                <sub>/{availableNCG.toString()}</sub>
               </DepositContent>
               <DepositButton2
                 type="button"
