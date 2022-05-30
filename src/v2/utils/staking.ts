@@ -17,7 +17,7 @@ export function useStaking() {
 
   return {
     ...current?.stateQuery.stakeState,
-    tip: tip?.nodeStatus.tip ?? 0,
+    tip: tip?.nodeStatus.tip.index ?? 0,
     canClaim:
       !!tip &&
       !!current?.stateQuery.stakeState?.claimableBlockIndex &&
