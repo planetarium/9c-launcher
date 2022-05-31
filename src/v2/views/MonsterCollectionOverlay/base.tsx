@@ -1,5 +1,6 @@
 import OverlayBase from "src/v2/components/core/OverlayBase";
-import { createTheme, keyframes, styled } from "src/v2/stitches.config";
+import { keyframes, styled } from "src/v2/stitches.config";
+import { motion } from "framer-motion";
 
 import background from "src/v2/resources/collection/bg.png";
 import formImg from "src/v2/resources/collection/deposit-bg.png";
@@ -213,7 +214,7 @@ export const DepositCancelButton = styled("button", {
   },
 });
 
-export const LoadingBackdrop = styled("div", {
+export const LoadingBackdrop = styled(motion.div, {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",

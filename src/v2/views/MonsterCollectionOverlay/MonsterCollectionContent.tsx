@@ -138,12 +138,18 @@ export function MonsterCollectionContent({
   return (
     <>
       <Title src={titleImg} />
-      {isLoading && (
-        <LoadingBackdrop>
-          <LoadingImage src={loadingImg} />
-          <LoadingDescription>Processing Staking...</LoadingDescription>
-        </LoadingBackdrop>
-      )}
+      <AnimatePresence>
+        {isLoading && (
+          <LoadingBackdrop
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <LoadingImage src={loadingImg} />
+            <LoadingDescription>Processing Staking...</LoadingDescription>
+          </LoadingBackdrop>
+        )}
+      </AnimatePresence>
       <DepositHolder>
         <DepositForm
           onSubmit={(e) => {
