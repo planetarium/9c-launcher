@@ -14,6 +14,9 @@ import {
   DepositForm,
   DepositHolder,
   DepositTitle,
+  LoadingBackdrop,
+  LoadingDescription,
+  LoadingImage,
   Title,
 } from "./base";
 import { Item, ItemGroup, RewardSheet, RewardSheetPlaceholder } from "./reward";
@@ -22,12 +25,13 @@ import titleImg from "src/v2/resources/collection/title.png";
 import { Level, Levels } from "./level";
 import BareInput from "src/v2/components/ui/BareInput";
 
+import loadingImg from "src/v2/resources/collection/loading.png";
+
 import monster1Img from "src/v2/resources/collection/monster-1.png";
 import monster2Img from "src/v2/resources/collection/monster-2.png";
 import monster3Img from "src/v2/resources/collection/monster-3.png";
 import monster4Img from "src/v2/resources/collection/monster-4.png";
 import monster5Img from "src/v2/resources/collection/monster-5.png";
-
 import itemMetadata from "src/v2/utils/monsterCollection/items";
 
 import {
@@ -37,6 +41,7 @@ import {
 import { Alert } from "./dialog";
 import { AnimatePresence } from "framer-motion";
 import { useEvent } from "src/v2/utils/useEvent";
+import { CloseButton } from "src/v2/components/core/OverlayBase";
 
 declare global {
   interface Array<T> {
@@ -133,6 +138,12 @@ export function MonsterCollectionContent({
   return (
     <>
       <Title src={titleImg} />
+      {isLoading && (
+        <LoadingBackdrop>
+          <LoadingImage src={loadingImg} />
+          <LoadingDescription>Processing Staking...</LoadingDescription>
+        </LoadingBackdrop>
+      )}
       <DepositHolder>
         <DepositForm
           onSubmit={(e) => {
