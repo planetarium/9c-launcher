@@ -97,6 +97,9 @@ export function useTx<K extends keyof ActionArguemnts>(
         variables: {
           encodedTx: trimmed,
         },
+      }).then((res) => {
+        if (res.data) console.log(event, parameters, res.data.stageTxV2);
+        return res;
       });
     };
 }
