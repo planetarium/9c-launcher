@@ -51,6 +51,7 @@ interface MonsterCollectionOverlayProps {
   currentNCG: number;
   onChangeAmount(amount: Decimal): Promise<unknown>;
   tip?: number;
+  isLoading: boolean;
 }
 
 const images = [
@@ -74,6 +75,7 @@ export function MonsterCollectionContent({
   currentNCG,
   onChangeAmount,
   tip,
+  isLoading,
 }: MonsterCollectionOverlayProps) {
   const [isEditing, setIsEditing] = useState(initalEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
