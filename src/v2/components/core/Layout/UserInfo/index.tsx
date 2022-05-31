@@ -74,7 +74,7 @@ export default function UserInfo() {
       stopPolling?.();
     if (result?.transaction.transactionResult.txStatus === TxStatus.Success)
       refetch();
-  });
+  }, [result]);
 
   const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
   const remainingText = useMemo(() => {
