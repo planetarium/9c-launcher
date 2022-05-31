@@ -53,15 +53,15 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         sheet={sheet}
         current={current}
         currentNCG={balance}
-        onChangeAmount={(amount) =>
-          tx(amount.toString())
+        onChangeAmount={(amount) => {
+          setLoading(true);
+          return tx(amount.toString())
             .then(
               (v) =>
                 v.data && fetchStatus({ variables: { txId: v.data.stageTxV2 } })
             )
-            .then(() => setLoading(true))
-            .catch(console.error)
-        }
+            .catch(console.error);
+        }}
         tip={tip?.nodeStatus.tip.index}
         isLoading={isLoading}
       />
