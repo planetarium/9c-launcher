@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Decimal from "decimal.js";
 import {
   DepositButton2,
@@ -30,6 +36,7 @@ import {
 } from "src/v2/generated/graphql";
 import { Alert } from "./dialog";
 import { AnimatePresence } from "framer-motion";
+import { useEvent } from "src/v2/utils/useEvent";
 
 declare global {
   interface Array<T> {
@@ -54,7 +61,7 @@ const images = [
   monster5Img,
 ];
 
-type Alerts = "lower-deposit";
+type Alerts = "lower-deposit" | "confirm-changes";
 
 export function MonsterCollectionContent({
   sheet: {
@@ -108,6 +115,12 @@ export function MonsterCollectionContent({
       setAmount(stakeState.deposit.replace(/\.0+$/, ""));
   }, [stakeState]);
 
+  const changeAmount = useEvent(() => {
+    onChangeAmount(amountDecimal);
+    setIsAlertOpen(null);
+    setIsEditing(false);
+  });
+
   if (!levels) return null;
 
   const rewards = isEditing
@@ -124,10 +137,8 @@ export function MonsterCollectionContent({
             e.preventDefault();
             if (stakeState && amountDecimal.lt(stakeState.deposit))
               setIsAlertOpen("lower-deposit");
-            else {
-              onChangeAmount(amountDecimal);
-              setIsEditing(false);
-            }
+            else if (stakeState) setIsAlertOpen("confirm-changes");
+            else changeAmount();
           }}
         >
           <DepositTitle>Deposit</DepositTitle>
@@ -232,17 +243,26 @@ export function MonsterCollectionContent({
       <Alert
         title="Information"
         onCancel={() => setIsAlertOpen(null)}
-        onConfirm={() => {
-          onChangeAmount(new Decimal(amount));
-          setIsAlertOpen(null);
-          setIsEditing(false);
-        }}
+        onConfirm={changeAmount}
         isOpen={openedAlert === "lower-deposit"}
       >
         Do you really want to reduce your deposit?
         <br />
         The rewards will be lowered, and all the deposit periods for long-term
         compensation will be reset.
+      </Alert>
+      <Alert
+        title="Confirmation"
+        onCancel={() => setIsAlertOpen(null)}
+        onConfirm={changeAmount}
+        isOpen={openedAlert === "confirm-changes"}
+      >
+        When the deposit amount is modified, the daily count is initialized to
+        0. <br />
+        The reward is given every week and cannot be changed to a small amount
+        within 28 days.
+        <br />
+        Do you want to proceed?
       </Alert>
     </>
   );
