@@ -60,7 +60,10 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
               (v) =>
                 v.data && fetchStatus({ variables: { txId: v.data.stageTxV2 } })
             )
-            .catch(console.error);
+            .catch((e) => {
+              console.error(e);
+              setLoading(false);
+            });
         }}
         tip={tip?.nodeStatus.tip.index}
         isLoading={isLoading}
