@@ -29,6 +29,10 @@ import type { NodeInfo } from "../config";
 import RPCSpinner from "./components/RPCSpinner/RPCSpinner";
 import { PreloadEndedDocument, PreloadEndedQuery } from "src/generated/graphql";
 import { Update } from "src/main/update";
+import {
+  GenesisHashDocument,
+  GenesisHashQuery,
+} from "src/v2/generated/graphql";
 
 const Store: IStoreContainer = {
   accountStore: new AccountStore(),
@@ -140,6 +144,18 @@ function App() {
           link: link,
           cache: new InMemoryCache(),
         });
+
+        client
+          .query<GenesisHashQuery>({
+            query: GenesisHashDocument,
+          })
+          .then((result) => {
+            if (!result.data) return;
+            ipcRenderer.send(
+              "set-genesis-hash",
+              result.data.nodeStatus.genesis.hash
+            );
+          });
 
         setClient(client);
       }

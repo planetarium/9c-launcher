@@ -395,3 +395,11 @@ query StakingSheet {
     }
   }
 }
+
+query GenesisHash {
+  nodeStatus {
+    genesis {
+      hash
+    }
+  }
+}
