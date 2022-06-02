@@ -66,7 +66,7 @@ function App() {
     []
   );
 
-  function listenOnlineStatus() {
+  useEffect(() => {
     const updateOnlineStatus = () => {
       if (!navigator.onLine) {
         window.alert(
@@ -85,11 +85,11 @@ function App() {
 
     window.addEventListener("online", updateOnlineStatus);
     window.addEventListener("offline", updateOnlineStatus);
-  }
 
-  useEffect(() => {
-    ipcRenderer.send("mixpanel-track-event", "Launcher/Start");
-    listenOnlineStatus();
+    return () => {
+      window.removeEventListener("online", updateOnlineStatus);
+      window.removeEventListener("offline", updateOnlineStatus);
+    };
   }, []);
 
   useEffect(() => {
