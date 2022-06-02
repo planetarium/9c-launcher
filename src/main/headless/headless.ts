@@ -41,6 +41,7 @@ class Headless {
   constructor(path: string) {
     this._path = path;
     this._running = false;
+    this._genesisHash = undefined;
 
     ipcMain.on(
       "standalone/set-private-key",
@@ -145,22 +146,21 @@ class Headless {
       }
     );
 
+    ipcMain.on("set-genesis-hash", (event, hash: string) => {
+      this._genesisHash = hash;
+    });
+
     ipcMain.on(
       "sign-tx",
       async (event, nonce: number, timeStamp: string, filePath: string) => {
         console.log("sign-tx");
-        if (this._signerPrivateKey == undefined || "") {
-          throw new Error("set signer private key first.");
+        if (!this._signerPrivateKey || !this._genesisHash) {
+          throw new Error("set signer private key and genesis hash first.");
         }
         event.returnValue = this.tx.Sign(
           this._signerPrivateKey,
           nonce,
-          /**
-           * This is a hash of genesis block of the network we should be using.
-           *
-           * FIXME: THIS IS CURRENTLY A HASH OF PREVIEWNET GENESIS BLOCK. MUST BE REVERTED BACK TO MAINNET BEFORE RELEASE.
-           */
-          "9e36cda9226c9f47a54f39e3db021e8e4287b2d163edff898dd54618f4125860",
+          this._genesisHash,
           timeStamp,
           filePath
         );
@@ -173,6 +173,7 @@ class Headless {
   private _privateKey: string | undefined;
   private _mining: boolean | undefined;
   private _signerPrivateKey: string | undefined;
+  private _genesisHash: string | undefined;
 
   // execute-kill
   public get alive(): boolean {
