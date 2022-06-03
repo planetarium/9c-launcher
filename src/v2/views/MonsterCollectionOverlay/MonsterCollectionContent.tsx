@@ -139,6 +139,7 @@ export function MonsterCollectionContent({
 
   return (
     <>
+      <CloseButton onClick={() => onClose()} />
       <Title src={titleImg} />
       <AnimatePresence>
         {isLoading && (
