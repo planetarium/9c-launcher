@@ -172,6 +172,7 @@ export function MonsterCollectionContent({
                   ref={inputRef}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  max={availableNCG.toString()}
                   type="number"
                 />
                 <sub>/{availableNCG.toString()}</sub>
