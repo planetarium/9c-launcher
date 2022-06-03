@@ -102,6 +102,8 @@ interface Args {
   currentNCG?: number;
 }
 
+const noop = () => {};
+
 function MonsterCollectionOverlay(
   props: Partial<ComponentPropsWithRef<typeof MonsterCollectionContent>> & Args
 ) {
@@ -118,6 +120,7 @@ function MonsterCollectionOverlay(
         current={current}
         currentNCG={500}
         isLoading={loading}
+        onClose={noop}
         {...props}
         onChangeAmount={async (amount) => {
           setLoading(true);
