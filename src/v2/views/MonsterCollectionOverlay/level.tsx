@@ -125,7 +125,7 @@ interface LevelProps {
    */
   selected?: boolean;
   /**
-   * Whether if it's avauilable to be chosen or not.
+   * Whether if it's available to be chosen or not.
    * When it's unavailable, it's grayed out.
    */
   disabled?: boolean;
