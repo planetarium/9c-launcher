@@ -1,5 +1,6 @@
 import OverlayBase from "src/v2/components/core/OverlayBase";
-import { createTheme, styled } from "src/v2/stitches.config";
+import { keyframes, styled } from "src/v2/stitches.config";
+import { motion } from "framer-motion";
 
 import background from "src/v2/resources/collection/bg.png";
 import formImg from "src/v2/resources/collection/deposit-bg.png";
@@ -211,4 +212,42 @@ export const DepositCancelButton = styled("button", {
     backgroundImage: theme.images.cancelButtonHover,
     transform: "scale(1.1)",
   },
+});
+
+export const LoadingBackdrop = styled(motion.div, {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "column",
+
+  position: "absolute",
+  inset: 0,
+  width: "100%",
+  height: "100%",
+  zIndex: 3,
+  marginTop: -16,
+
+  backgroundColor: "rgba(0, 0, 0, 0.8)",
+});
+
+const rotating = keyframes({
+  from: {
+    transform: "rotate(0deg)",
+  },
+  to: {
+    transform: "rotate(360deg)",
+  },
+});
+
+export const LoadingImage = styled("img", {
+  display: "block",
+  animation: `${rotating} 1s linear infinite`,
+});
+
+export const LoadingDescription = styled("p", {
+  textShadow: "0px 2px 2px rgba(0, 0, 0, 0.5)",
+  color: "#ebceb1",
+  fontSize: 18,
+  textAlign: "center",
+  margin: 9,
 });

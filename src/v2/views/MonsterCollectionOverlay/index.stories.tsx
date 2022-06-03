@@ -1,4 +1,4 @@
-import React, { ComponentPropsWithRef } from "react";
+import React, { ComponentPropsWithRef, useState } from "react";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
@@ -107,6 +107,7 @@ function MonsterCollectionOverlay(
 ) {
   const { data: sheet } = useStakingSheetQuery();
   const { data: current, client } = useCurrentStakingQuery();
+  const [loading, setLoading] = useState(false);
 
   if (!sheet || !current) return null;
 
@@ -116,9 +117,12 @@ function MonsterCollectionOverlay(
         sheet={sheet}
         current={current}
         currentNCG={500}
+        isLoading={loading}
         {...props}
         onChangeAmount={async (amount) => {
+          setLoading(true);
           await props.onChangeAmount?.(amount);
+          await new Promise((res) => setTimeout(res, 1000));
           client.writeQuery({
             query: CurrentStakingDocument,
             data: {
@@ -130,6 +134,7 @@ function MonsterCollectionOverlay(
               },
             },
           });
+          setLoading(false);
         }}
       />
     </MonsterCollectionOverlayBase>

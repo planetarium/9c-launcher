@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Decimal from "decimal.js";
 import {
   DepositButton2,
@@ -8,6 +14,9 @@ import {
   DepositForm,
   DepositHolder,
   DepositTitle,
+  LoadingBackdrop,
+  LoadingDescription,
+  LoadingImage,
   Title,
 } from "./base";
 import { Item, ItemGroup, RewardSheet, RewardSheetPlaceholder } from "./reward";
@@ -16,12 +25,13 @@ import titleImg from "src/v2/resources/collection/title.png";
 import { Level, Levels } from "./level";
 import BareInput from "src/v2/components/ui/BareInput";
 
+import loadingImg from "src/v2/resources/collection/loading.png";
+
 import monster1Img from "src/v2/resources/collection/monster-1.png";
 import monster2Img from "src/v2/resources/collection/monster-2.png";
 import monster3Img from "src/v2/resources/collection/monster-3.png";
 import monster4Img from "src/v2/resources/collection/monster-4.png";
 import monster5Img from "src/v2/resources/collection/monster-5.png";
-
 import itemMetadata from "src/v2/utils/monsterCollection/items";
 
 import {
@@ -30,6 +40,8 @@ import {
 } from "src/v2/generated/graphql";
 import { Alert } from "./dialog";
 import { AnimatePresence } from "framer-motion";
+import { useEvent } from "src/v2/utils/useEvent";
+import { CloseButton } from "src/v2/components/core/OverlayBase";
 
 declare global {
   interface Array<T> {
@@ -44,6 +56,7 @@ interface MonsterCollectionOverlayProps {
   currentNCG: number;
   onChangeAmount(amount: Decimal): Promise<unknown>;
   tip?: number;
+  isLoading: boolean;
 }
 
 const images = [
@@ -54,7 +67,7 @@ const images = [
   monster5Img,
 ];
 
-type Alerts = "lower-deposit";
+type Alerts = "lower-deposit" | "confirm-changes";
 
 export function MonsterCollectionContent({
   sheet: {
@@ -67,6 +80,7 @@ export function MonsterCollectionContent({
   currentNCG,
   onChangeAmount,
   tip,
+  isLoading,
 }: MonsterCollectionOverlayProps) {
   const [isEditing, setIsEditing] = useState(initalEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -108,6 +122,12 @@ export function MonsterCollectionContent({
       setAmount(stakeState.deposit.replace(/\.0+$/, ""));
   }, [stakeState]);
 
+  const changeAmount = useEvent(() => {
+    onChangeAmount(amountDecimal);
+    setIsAlertOpen(null);
+    setIsEditing(false);
+  });
+
   if (!levels) return null;
 
   const rewards = isEditing
@@ -118,16 +138,26 @@ export function MonsterCollectionContent({
   return (
     <>
       <Title src={titleImg} />
+      <AnimatePresence>
+        {isLoading && (
+          <LoadingBackdrop
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <LoadingImage src={loadingImg} />
+            <LoadingDescription>Processing Staking...</LoadingDescription>
+          </LoadingBackdrop>
+        )}
+      </AnimatePresence>
       <DepositHolder>
         <DepositForm
           onSubmit={(e) => {
             e.preventDefault();
             if (stakeState && amountDecimal.lt(stakeState.deposit))
               setIsAlertOpen("lower-deposit");
-            else {
-              onChangeAmount(amountDecimal);
-              setIsEditing(false);
-            }
+            else if (stakeState) setIsAlertOpen("confirm-changes");
+            else changeAmount();
           }}
         >
           <DepositTitle>Deposit</DepositTitle>
@@ -232,17 +262,26 @@ export function MonsterCollectionContent({
       <Alert
         title="Information"
         onCancel={() => setIsAlertOpen(null)}
-        onConfirm={() => {
-          onChangeAmount(new Decimal(amount));
-          setIsAlertOpen(null);
-          setIsEditing(false);
-        }}
+        onConfirm={changeAmount}
         isOpen={openedAlert === "lower-deposit"}
       >
         Do you really want to reduce your deposit?
         <br />
         The rewards will be lowered, and all the deposit periods for long-term
         compensation will be reset.
+      </Alert>
+      <Alert
+        title="Confirmation"
+        onCancel={() => setIsAlertOpen(null)}
+        onConfirm={changeAmount}
+        isOpen={openedAlert === "confirm-changes"}
+      >
+        When the deposit amount is modified, the daily count is initialized to
+        0. <br />
+        The reward is given every week and cannot be changed to a small amount
+        within 28 days.
+        <br />
+        Do you want to proceed?
       </Alert>
     </>
   );

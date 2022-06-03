@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { MonsterCollectionOverlayBase } from "./base";
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
@@ -28,6 +28,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   });
 
   const tx = useTx("stake", placeholder);
+  const [isLoading, setLoading] = useState(false);
   const [
     fetchStatus,
     { data: txStatus, stopPolling },
@@ -36,8 +37,10 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   });
 
   useEffect(() => {
-    if (txStatus?.transaction.transactionResult.txStatus !== TxStatus.Staging)
+    if (txStatus?.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
+      setLoading(false);
+    }
     if (txStatus?.transaction.transactionResult.txStatus === TxStatus.Success)
       refetch();
   }, [txStatus]);
@@ -50,15 +53,20 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         sheet={sheet}
         current={current}
         currentNCG={balance}
-        onChangeAmount={(amount) =>
-          tx(amount.toString())
+        onChangeAmount={(amount) => {
+          setLoading(true);
+          return tx(amount.toString())
             .then(
               (v) =>
                 v.data && fetchStatus({ variables: { txId: v.data.stageTxV2 } })
             )
-            .catch(console.error)
-        }
+            .catch((e) => {
+              console.error(e);
+              setLoading(false);
+            });
+        }}
         tip={tip?.nodeStatus.tip.index}
+        isLoading={isLoading}
       />
     </MonsterCollectionOverlayBase>
   );
