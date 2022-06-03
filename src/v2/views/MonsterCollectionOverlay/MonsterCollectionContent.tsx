@@ -55,6 +55,7 @@ interface MonsterCollectionOverlayProps {
   isEditing?: boolean;
   currentNCG: number;
   onChangeAmount(amount: Decimal): Promise<unknown>;
+  onClose(): void;
   tip?: number;
   isLoading: boolean;
 }
@@ -79,6 +80,7 @@ export function MonsterCollectionContent({
   isEditing: initalEditing,
   currentNCG,
   onChangeAmount,
+  onClose,
   tip,
   isLoading,
 }: MonsterCollectionOverlayProps) {
@@ -137,6 +139,7 @@ export function MonsterCollectionContent({
 
   return (
     <>
+      <CloseButton onClick={() => onClose()} />
       <Title src={titleImg} />
       <AnimatePresence>
         {isLoading && (

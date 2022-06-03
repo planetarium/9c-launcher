@@ -65,6 +65,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
               setLoading(false);
             });
         }}
+        onClose={onClose}
         tip={tip?.nodeStatus.tip.index}
         isLoading={isLoading}
       />
