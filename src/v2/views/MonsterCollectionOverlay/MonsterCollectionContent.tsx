@@ -223,7 +223,7 @@ export function MonsterCollectionContent({
         </DepositDescription>
       </DepositHolder>
       <Levels>
-        {levels?.map((item, index) => (
+        {levels.map((item, index) => (
           <Level
             key={item.level}
             amount={item.requiredGold}
@@ -232,6 +232,7 @@ export function MonsterCollectionContent({
             }
             current={currentIndex === index}
             selected={isEditing && selectedIndex === index}
+            disabled={isEditing && availableNCG.lt(item.requiredGold)}
           />
         ))}
       </Levels>
