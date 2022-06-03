@@ -42,6 +42,7 @@ import { Alert } from "./dialog";
 import { AnimatePresence } from "framer-motion";
 import { useEvent } from "src/v2/utils/useEvent";
 import { CloseButton } from "src/v2/components/core/OverlayBase";
+import { getRemain } from "src/collection/common/utils";
 
 declare global {
   interface Array<T> {
@@ -221,6 +222,12 @@ export function MonsterCollectionContent({
           When you deposit NCG, the monsters go on an expedition to get the
           treasure.
         </DepositDescription>
+        {!isEditing && stakeState && tip && (
+          <DepositDescription>
+            About {getRemain(stakeState.claimableBlockIndex - tip)} of deposit
+            days!
+          </DepositDescription>
+        )}
       </DepositHolder>
       <Levels>
         {levels?.map((item, index) => (
