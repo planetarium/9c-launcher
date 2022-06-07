@@ -368,3 +368,38 @@ subscription Tip {
     index
   }
 }
+
+query CurrentStaking($address: Address!) {
+  stateQuery {
+    stakeState(address: $address) {
+      deposit
+      startedBlockIndex
+      receivedBlockIndex
+      cancellableBlockIndex
+      claimableBlockIndex
+    }
+  }
+}
+
+query StakingSheet { 
+  stateQuery {
+    stakeRegularRewardSheet {
+      orderedList {
+        level
+        requiredGold
+        rewards {
+          itemId
+          rate
+        }
+      }
+    }
+  }
+}
+
+query GenesisHash {
+  nodeStatus {
+    genesis {
+      hash
+    }
+  }
+}

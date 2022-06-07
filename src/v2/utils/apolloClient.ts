@@ -13,7 +13,12 @@ import { RetryLink } from "@apollo/client/link/retry";
 import { useEffect, useState } from "react";
 import { NodeInfo } from "src/config";
 import isDev from "electron-is-dev";
-import { PreloadEndedDocument, PreloadEndedQuery } from "../generated/graphql";
+import {
+  GenesisHashDocument,
+  GenesisHashQuery,
+  PreloadEndedDocument,
+  PreloadEndedQuery,
+} from "../generated/graphql";
 import type { Update } from "src/main/update";
 
 type Client = ApolloClient<NormalizedCacheObject>;
@@ -68,6 +73,19 @@ export default function useApolloClient(): Client | null {
         cache: new InMemoryCache(),
         connectToDevTools: !isDev,
       });
+
+      client
+        .query<GenesisHashQuery>({
+          query: GenesisHashDocument,
+        })
+        .then((result) => {
+          if (!result.data) return;
+          ipcRenderer.send(
+            "set-genesis-hash",
+            result.data.nodeStatus.genesis.hash
+          );
+        });
+
       setApolloClient(client);
     })().catch(console.error);
   }, []);
