@@ -7,16 +7,13 @@ import {
   AlertHeader,
   AlertTitle,
   MigrationAlert,
-  MigrationAlertBase,
-  MigrationAlertHeader,
   MigrationAlertItem,
-  MigrationAlertItemDetails,
-  MigrationAlertItemTitle,
 } from "./dialog";
 
 import infoIcon from "src/v2/resources/collection/mark-information.png";
 import ncgIcon from "src/v2/resources/collection/items/ncg.png";
 import { T } from "@transifex/react";
+import { noop } from "lodash";
 
 export default {
   title: "MonsterCollection/Alert",
@@ -43,30 +40,23 @@ export const Confirmation = () => (
 );
 
 export const Migration = () => (
-  <MigrationAlertBase as="main">
-    <MigrationAlertHeader>
-      <MigrationAlertItemTitle>Deposit amount</MigrationAlertItemTitle>
-      <MigrationAlertItemDetails>
-        <strong>
-          <img src={ncgIcon} />
-          500
-        </strong>
-      </MigrationAlertItemDetails>
-      <MigrationAlertItemTitle>Duration of progress</MigrationAlertItemTitle>
-      <MigrationAlertItemDetails>
-        <span>
-          <strong>365</strong> days <br />
-          123456789 blocks
-        </span>
-      </MigrationAlertItemDetails>
-    </MigrationAlertHeader>
-    <AlertDescription as="div">
+  <MigrationAlert isOpen={true} onConfirm={noop} isClaimable={true}>
+    <MigrationAlertItem title="Deposit amount">
+      <strong>
+        <img src={ncgIcon} />
+        500
+      </strong>
+    </MigrationAlertItem>
+    <MigrationAlertItem title="Duration of progress">
+      <span>
+        <strong>365</strong> days <br />
+        123456789 blocks
+      </span>
+    </MigrationAlertItem>
+    <p>
       Monster collection has been improved to be more convenient and softer.
       Receive the previously accumulated rewards and return them to the same
       form as before. Moving on to the new monster collection?
-    </AlertDescription>
-    <AlertButtonBar>
-      <AlertButton variant="primary">Claim & Migrate</AlertButton>
-    </AlertButtonBar>
-  </MigrationAlertBase>
+    </p>
+  </MigrationAlert>
 );

@@ -15,6 +15,7 @@ import secondaryButtonHover from "src/v2/resources/collection/button-cancel-2-ov
 import infoIcon from "src/v2/resources/collection/mark-information.png";
 import React, { useRef } from "react";
 import { T } from "@transifex/react";
+import VisuallyHidden from "@reach/visually-hidden";
 
 export const AlertBackdrop = styled(AlertDialogOverlay, {
   zIndex: 3,
@@ -189,7 +190,7 @@ export const MigrationAlertItemDetails = styled("div", {
   },
   "& strong": {
     fontSize: 30,
-  }
+  },
 });
 
 interface MigrationAlertItemProps {
@@ -220,10 +221,18 @@ export function MigrationAlert({
   isOpen,
 }: MigrationAlertProps) {
   const childs = React.Children.toArray(children);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <AlertBackdrop onDismiss={onCancel} isOpen={isOpen}>
+    <AlertBackdrop
+      leastDestructiveRef={buttonRef}
+      onDismiss={onCancel}
+      isOpen={isOpen}
+    >
       <MigrationAlertBase>
+        <VisuallyHidden>
+          <AlertDialogLabel>Migration</AlertDialogLabel>
+        </VisuallyHidden>
         <MigrationAlertHeader>
           {childs.filter(
             (c) =>
@@ -241,7 +250,7 @@ export function MigrationAlert({
           )}
         </AlertDescription>
         <AlertButtonBar>
-          <AlertButton onClick={onConfirm} variant="primary">
+          <AlertButton ref={buttonRef} onClick={onConfirm} variant="primary">
             {isClaimable ? (
               <T _str="Claim & Migrate" _tags="v2/collection/migration" />
             ) : (
