@@ -7,6 +7,7 @@ import {
 import { styled } from "src/v2/stitches.config";
 
 import dialogBackground from "src/v2/resources/collection/popup.png";
+import migrationBackground from "src/v2/resources/collection/popup-m.png";
 import primaryButton from "src/v2/resources/collection/button-ok.png";
 import primaryButtonHover from "src/v2/resources/collection/button-ok-over.png";
 import secondaryButton from "src/v2/resources/collection/button-cancel-2.png";
@@ -132,6 +133,123 @@ export function Alert({
           </AlertButton>
         </AlertButtonBar>
       </AlertBase>
+    </AlertBackdrop>
+  );
+}
+
+export const MigrationAlertBase = styled(AlertDialogContent, {
+  "&&": {
+    width: 728,
+    height: 433,
+    padding: "2rem",
+    boxSizing: "border-box",
+    backgroundImage: `url(${migrationBackground})`,
+    backgroundColor: "transparent",
+    fontFamily: "Montserrat",
+
+    display: "flex",
+    flexDirection: "column",
+  },
+});
+
+export const MigrationAlertHeader = styled("header", {
+  height: 110,
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gridTemplateRows: "36px 1fr",
+  gridAutoFlow: "column",
+  columnGap: "1rem",
+  rowGap: 5,
+  padding: "0 50px",
+  marginTop: -10,
+});
+
+export const MigrationAlertItemTitle = styled("h2", {
+  fontSize: 16,
+  color: "#e3ad67",
+  fontWeight: "bold",
+  textAlign: "center",
+});
+
+export const MigrationAlertItemDetails = styled("div", {
+  boxShadow: "inset 0px 4px 7px 0 rgba(39, 21, 12, 0.8)",
+  backgroundColor: "rgba(39, 21, 12, 0.8)",
+  borderRadius: 10,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  textAlign: "center",
+  color: "#fff6b9",
+  fontSize: 18,
+  fontWeight: "bold",
+  "& img": {
+    height: "1em",
+    marginRight: "0.5em",
+    verticalAlign: "sub",
+  },
+  "& strong": {
+    fontSize: 30,
+  }
+});
+
+interface MigrationAlertItemProps {
+  title: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function MigrationAlertItem({
+  title,
+  children,
+}: MigrationAlertItemProps) {
+  return (
+    <>
+      <MigrationAlertItemTitle>{title}</MigrationAlertItemTitle>
+      <MigrationAlertItemDetails>{children}</MigrationAlertItemDetails>
+    </>
+  );
+}
+interface MigrationAlertProps extends Omit<AlertProps, "title"> {
+  isClaimable: boolean;
+}
+
+export function MigrationAlert({
+  onCancel,
+  onConfirm,
+  children,
+  isClaimable,
+  isOpen,
+}: MigrationAlertProps) {
+  const childs = React.Children.toArray(children);
+
+  return (
+    <AlertBackdrop onDismiss={onCancel} isOpen={isOpen}>
+      <MigrationAlertBase>
+        <MigrationAlertHeader>
+          {childs.filter(
+            (c) =>
+              typeof c === "object" &&
+              "type" in c &&
+              c.type === MigrationAlertItem
+          )}
+        </MigrationAlertHeader>
+        <AlertDescription>
+          {childs.filter(
+            (c) =>
+              typeof c !== "object" ||
+              !("type" in c) ||
+              c.type !== MigrationAlertItem
+          )}
+        </AlertDescription>
+        <AlertButtonBar>
+          <AlertButton onClick={onConfirm} variant="primary">
+            {isClaimable ? (
+              <T _str="Claim & Migrate" _tags="v2/collection/migration" />
+            ) : (
+              <T _str="Migrate" _tags="v2/collection/migration" />
+            )}
+          </AlertButton>
+        </AlertButtonBar>
+      </MigrationAlertBase>
     </AlertBackdrop>
   );
 }
