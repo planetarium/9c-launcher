@@ -7,6 +7,9 @@ import { CollectionItemTier, CollectionPhase } from "../../types";
 export default {
   title: "Collection/CollectionItem",
   component: CollectionItem,
+  parameters: {
+    chromatic: { disableSnapshot: true },
+  },
   argTypes: {
     clickItem: {
       action: "click",
