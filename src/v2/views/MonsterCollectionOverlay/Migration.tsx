@@ -41,7 +41,7 @@ export default function Migration({
     () =>
       collectionSheet?.orderedList?.find(
         (v) => v?.level === collectionState.level
-      ),
+      )?.requiredGold,
     [collectionState, collectionSheet]
   );
   const elapsedBlocks = tip - collectionState.startedBlockIndex;
