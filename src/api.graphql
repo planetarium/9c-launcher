@@ -405,6 +405,7 @@ query LegacyCollectionState($address: Address!) {
       }
     }
     monsterCollectionState(agentAddress: $address) {
+      startedBlockIndex
       claimableBlockIndex
       level
     }
