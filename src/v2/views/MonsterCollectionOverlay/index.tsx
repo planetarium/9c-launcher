@@ -88,6 +88,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
               setLoading(true);
               fetchStatus({ variables: { txId } });
             }}
+            onClose={onClose}
           />
         )}
       </MonsterCollectionContent>
