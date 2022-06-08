@@ -48,7 +48,6 @@ export interface Avatar {
 function ClaimContent({
   data,
   onConfirm,
-  rewards,
   tip,
   onClose,
   isOpen,

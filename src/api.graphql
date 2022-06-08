@@ -396,6 +396,22 @@ query StakingSheet {
   }
 }
 
+query LegacyCollectionState($address: Address!) {
+  stateQuery {
+    monsterCollectionSheet {
+      orderedList {
+        level
+        requiredGold
+      }
+    }
+    monsterCollectionState(agentAddress: $address) {
+      startedBlockIndex
+      claimableBlockIndex
+      level
+    }
+  }
+}
+
 query GenesisHash {
   nodeStatus {
     genesis {
