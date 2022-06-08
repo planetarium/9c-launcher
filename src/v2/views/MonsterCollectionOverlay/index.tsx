@@ -21,10 +21,13 @@ import Migration from "./Migration";
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
   const { data: sheet } = useStakingSheetQuery();
-  const { data: current, refetch } = useCurrentStakingQuery({
+  const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
     variables: { address: account.selectedAddress },
   });
-  const { data: collection } = useLegacyCollectionStateQuery({
+  const {
+    data: collection,
+    refetch: refetchCollection,
+  } = useLegacyCollectionStateQuery({
     variables: { address: account.selectedAddress },
   });
   const balance = useBalance();
@@ -42,12 +45,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   });
 
   useEffect(() => {
+    if (txStatus?.transaction.transactionResult.txStatus === TxStatus.Success) {
+      refetchStaking();
+      refetchCollection();
+    }
     if (txStatus?.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
       setLoading(false);
     }
-    if (txStatus?.transaction.transactionResult.txStatus === TxStatus.Success)
-      refetch();
   }, [txStatus]);
 
   if (!sheet || !current || !collection || !tip) return null;
