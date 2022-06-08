@@ -18,8 +18,8 @@ const noop = () => {};
 
 // Slight modification of src\collection\common\utils.ts:16
 function getRemain(blocks: number) {
-  const hour = blocks / 60;
-  const days = hour / 24;
+  const hour = Math.round(blocks / 60);
+  const days = Math.round(hour / 24);
 
   if (days >= 1) return { number: days, unit: "days" } as const;
   if (hour >= 1) return { number: hour, unit: "hours" } as const;
