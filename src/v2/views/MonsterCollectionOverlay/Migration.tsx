@@ -48,24 +48,32 @@ export default function Migration({
   const elapsed = getRemain(elapsedBlocks);
 
   return (
-    <MigrationAlert isOpen={true} onConfirm={open} isClaimable={isClaimable}>
-      <MigrationAlertItem title="Deposit amount">
-        <strong>
-          <img src={ncgIcon} />
-          {deposit}
-        </strong>
-      </MigrationAlertItem>
-      <MigrationAlertItem title="Duration of progress">
-        <span>
-          <strong>{elapsed.number}</strong> {elapsed.unit}
-          {elapsed.unit !== "blocks" && (
-            <>
-              <br />
-              {elapsedBlocks} blocks
-            </>
-          )}
-        </span>
-      </MigrationAlertItem>
+    <MigrationAlert
+      isOpen={true}
+      onConfirm={open}
+      isClaimable={isClaimable}
+      items={
+        <>
+          <MigrationAlertItem title="Deposit amount">
+            <strong>
+              <img src={ncgIcon} />
+              {deposit}
+            </strong>
+          </MigrationAlertItem>
+          <MigrationAlertItem title="Duration of progress">
+            <span>
+              <strong>{elapsed.number}</strong> {elapsed.unit}
+              {elapsed.unit !== "blocks" && (
+                <>
+                  <br />
+                  {elapsedBlocks} blocks
+                </>
+              )}
+            </span>
+          </MigrationAlertItem>
+        </>
+      }
+    >
       <p>
         Monster collection has been improved to be more convenient and softer.
         Receive the previously accumulated rewards and return them to the same

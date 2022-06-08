@@ -42,19 +42,28 @@ export const Confirmation = () => (
 export const Migration = ({
   isClaimable,
 }: Pick<ComponentPropsWithoutRef<typeof MigrationAlert>, "isClaimable">) => (
-  <MigrationAlert isOpen={true} onConfirm={noop} isClaimable={isClaimable}>
-    <MigrationAlertItem title="Deposit amount">
-      <strong>
-        <img src={ncgIcon} />
-        500
-      </strong>
-    </MigrationAlertItem>
-    <MigrationAlertItem title="Duration of progress">
-      <span>
-        <strong>365</strong> days <br />
-        123456789 blocks
-      </span>
-    </MigrationAlertItem>
+  <MigrationAlert
+    isOpen={true}
+    onConfirm={noop}
+    isClaimable={isClaimable}
+    items={
+      <>
+        {" "}
+        <MigrationAlertItem title="Deposit amount">
+          <strong>
+            <img src={ncgIcon} />
+            500
+          </strong>
+        </MigrationAlertItem>
+        <MigrationAlertItem title="Duration of progress">
+          <span>
+            <strong>365</strong> days <br />
+            123456789 blocks
+          </span>
+        </MigrationAlertItem>
+      </>
+    }
+  >
     <p>
       Monster collection has been improved to be more convenient and softer.
       Receive the previously accumulated rewards and return them to the same
