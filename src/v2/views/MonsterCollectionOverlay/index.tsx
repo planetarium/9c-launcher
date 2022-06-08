@@ -74,7 +74,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         tip={tip.nodeStatus.tip.index}
         isLoading={isLoading}
       >
-        {collection.stateQuery.monsterCollectionState && (
+        {collection.stateQuery.monsterCollectionState && !isLoading && (
           <Migration
             tip={tip.nodeStatus.tip.index}
             collectionState={collection.stateQuery.monsterCollectionState}
