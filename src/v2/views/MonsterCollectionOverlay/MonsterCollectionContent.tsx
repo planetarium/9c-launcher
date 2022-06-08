@@ -59,6 +59,7 @@ interface MonsterCollectionOverlayProps {
   onClose(): void;
   tip?: number;
   isLoading: boolean;
+  children?: React.ReactNode;
 }
 
 const images = [
@@ -81,6 +82,7 @@ export function MonsterCollectionContent({
   isEditing: initalEditing,
   currentNCG,
   onChangeAmount,
+  children,
   onClose,
   tip,
   isLoading,
@@ -295,6 +297,7 @@ export function MonsterCollectionContent({
         <br />
         Do you want to proceed?
       </Alert>
+      {children}
     </>
   );
 }
