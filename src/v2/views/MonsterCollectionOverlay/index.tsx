@@ -11,15 +11,20 @@ import {
   TxStatus,
   useCurrentStakingQuery,
   useGetTipQuery,
+  useLegacyCollectionStateQuery,
   useStakingSheetQuery,
   useTipSubscription,
   useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
+import Migration from "./Migration";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
   const { data: sheet } = useStakingSheetQuery();
   const { data: current, refetch } = useCurrentStakingQuery({
+    variables: { address: account.selectedAddress },
+  });
+  const { data: collection } = useLegacyCollectionStateQuery({
     variables: { address: account.selectedAddress },
   });
   const balance = useBalance();
@@ -45,7 +50,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
       refetch();
   }, [txStatus]);
 
-  if (!sheet || !current) return null;
+  if (!sheet || !current || !collection || !tip) return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
@@ -66,9 +71,17 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             });
         }}
         onClose={onClose}
-        tip={tip?.nodeStatus.tip.index}
+        tip={tip.nodeStatus.tip.index}
         isLoading={isLoading}
-      />
+      >
+        {collection.stateQuery.monsterCollectionState && (
+          <Migration
+            tip={tip.nodeStatus.tip.index}
+            collectionState={collection.stateQuery.monsterCollectionState}
+            onConfirm={refetch}
+          />
+        )}
+      </MonsterCollectionContent>
     </MonsterCollectionOverlayBase>
   );
 }
