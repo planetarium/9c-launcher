@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import {
   AlertBase,
   AlertButton,
@@ -39,8 +39,10 @@ export const Confirmation = () => (
   </AlertBase>
 );
 
-export const Migration = () => (
-  <MigrationAlert isOpen={true} onConfirm={noop} isClaimable={true}>
+export const Migration = ({
+  isClaimable,
+}: Pick<ComponentPropsWithoutRef<typeof MigrationAlert>, "isClaimable">) => (
+  <MigrationAlert isOpen={true} onConfirm={noop} isClaimable={isClaimable}>
     <MigrationAlertItem title="Deposit amount">
       <strong>
         <img src={ncgIcon} />
@@ -60,3 +62,6 @@ export const Migration = () => (
     </p>
   </MigrationAlert>
 );
+Migration.args = {
+  isClaimable: true,
+};
