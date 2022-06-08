@@ -130,7 +130,6 @@ export default function UserInfo() {
           isOpen={openDialog}
           onClose={() => setOpenDialog(false)}
           tip={tip}
-          rewards={[]} // FIXME: Unused. Should be removed.
           onConfirm={(avatar) => {
             tx(avatar.address.replace(/^0x/, ""))
               .then((v) => v.data?.stageTxV2)
