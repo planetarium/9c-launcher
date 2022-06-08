@@ -78,7 +78,11 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
           <Migration
             tip={tip.nodeStatus.tip.index}
             collectionState={collection.stateQuery.monsterCollectionState}
-            onConfirm={refetch}
+            collectionSheet={collection.stateQuery.monsterCollectionSheet}
+            onActionTxId={(txId) => {
+              setLoading(true);
+              fetchStatus({ variables: { txId } });
+            }}
           />
         )}
       </MonsterCollectionContent>
