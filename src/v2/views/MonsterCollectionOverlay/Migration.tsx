@@ -16,6 +16,17 @@ interface MigrationProps {
 
 const noop = () => {};
 
+// Slight modification of src\collection\common\utils.ts:16
+function getRemain(blocks: number) {
+  const hour = blocks / 60;
+  const days = hour / 24;
+
+  if (days >= 1) return { number: days, unit: "days" } as const;
+  if (hour >= 1) return { number: hour, unit: "hours" } as const;
+
+  return { number: blocks, unit: "blocks" } as const;
+}
+
 export default function Migration({
   tip,
   collectionState,
@@ -33,6 +44,8 @@ export default function Migration({
       ),
     [collectionState, collectionSheet]
   );
+  const elapsedBlocks = tip - collectionState.startedBlockIndex;
+  const elapsed = getRemain(elapsedBlocks);
 
   return (
     <MigrationAlert isOpen={true} onConfirm={open} isClaimable={isClaimable}>
@@ -44,9 +57,13 @@ export default function Migration({
       </MigrationAlertItem>
       <MigrationAlertItem title="Duration of progress">
         <span>
-          {/* <strong>365</strong> days
-          <br /> */}
-          {collectionState.claimableBlockIndex} blocks
+          <strong>{elapsed.number}</strong> {elapsed.unit}
+          {elapsed.unit !== "blocks" && (
+            <>
+              <br />
+              {elapsedBlocks} blocks
+            </>
+          )}
         </span>
       </MigrationAlertItem>
       <p>
