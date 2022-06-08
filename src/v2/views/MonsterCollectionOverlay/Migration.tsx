@@ -18,11 +18,13 @@ const noop = () => {};
 
 // Slight modification of src\collection\common\utils.ts:16
 function getRemain(blocks: number) {
-  const hour = blocks / 60;
-  const days = hour / 24;
+  const miniutes = Math.floor(blocks / 60);
+  const hour = Math.round(miniutes / 60);
+  const days = Math.round(hour / 24);
 
   if (days >= 1) return { number: days, unit: "days" } as const;
   if (hour >= 1) return { number: hour, unit: "hours" } as const;
+  if (miniutes >= 1) return { number: miniutes, unit: "minutes" } as const;
 
   return { number: blocks, unit: "blocks" } as const;
 }
@@ -41,31 +43,39 @@ export default function Migration({
     () =>
       collectionSheet?.orderedList?.find(
         (v) => v?.level === collectionState.level
-      ),
+      )?.requiredGold,
     [collectionState, collectionSheet]
   );
   const elapsedBlocks = tip - collectionState.startedBlockIndex;
   const elapsed = getRemain(elapsedBlocks);
 
   return (
-    <MigrationAlert isOpen={true} onConfirm={open} isClaimable={isClaimable}>
-      <MigrationAlertItem title="Deposit amount">
-        <strong>
-          <img src={ncgIcon} />
-          {deposit}
-        </strong>
-      </MigrationAlertItem>
-      <MigrationAlertItem title="Duration of progress">
-        <span>
-          <strong>{elapsed.number}</strong> {elapsed.unit}
-          {elapsed.unit !== "blocks" && (
-            <>
-              <br />
-              {elapsedBlocks} blocks
-            </>
-          )}
-        </span>
-      </MigrationAlertItem>
+    <MigrationAlert
+      isOpen={true}
+      onConfirm={open}
+      isClaimable={isClaimable}
+      items={
+        <>
+          <MigrationAlertItem title="Deposit amount">
+            <strong>
+              <img src={ncgIcon} />
+              {deposit}
+            </strong>
+          </MigrationAlertItem>
+          <MigrationAlertItem title="Duration of progress">
+            <span>
+              <strong>{elapsed.number}</strong> {elapsed.unit}
+              {elapsed.unit !== "blocks" && (
+                <>
+                  <br />
+                  {elapsedBlocks} blocks
+                </>
+              )}
+            </span>
+          </MigrationAlertItem>
+        </>
+      }
+    >
       <p>
         Monster collection has been improved to be more convenient and softer.
         Receive the previously accumulated rewards and return them to the same

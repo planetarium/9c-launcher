@@ -217,16 +217,17 @@ export function MigrationAlertItem({
 }
 interface MigrationAlertProps extends Omit<AlertProps, "title"> {
   isClaimable: boolean;
+  items: React.ReactNode | React.ReactNode[];
 }
 
 export function MigrationAlert({
   onCancel,
   onConfirm,
   children,
+  items,
   isClaimable,
   isOpen,
 }: MigrationAlertProps) {
-  const childs = React.Children.toArray(children);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -239,22 +240,8 @@ export function MigrationAlert({
         <VisuallyHidden>
           <AlertDialogLabel>Migration</AlertDialogLabel>
         </VisuallyHidden>
-        <MigrationAlertHeader>
-          {childs.filter(
-            (c) =>
-              typeof c === "object" &&
-              "type" in c &&
-              c.type === MigrationAlertItem
-          )}
-        </MigrationAlertHeader>
-        <AlertDescription>
-          {childs.filter(
-            (c) =>
-              typeof c !== "object" ||
-              !("type" in c) ||
-              c.type !== MigrationAlertItem
-          )}
-        </AlertDescription>
+        <MigrationAlertHeader>{items}</MigrationAlertHeader>
+        <AlertDescription>{children}</AlertDescription>
         <AlertButtonBar>
           <AlertButton
             ref={buttonRef}
