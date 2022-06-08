@@ -91,6 +91,12 @@ export const AlertButton = styled("button", {
         },
       },
     },
+    wide: {
+      true: {
+        width: 333,
+        backgroundSize: "333px 100%",
+      },
+    },
   },
 });
 
@@ -250,7 +256,12 @@ export function MigrationAlert({
           )}
         </AlertDescription>
         <AlertButtonBar>
-          <AlertButton ref={buttonRef} onClick={onConfirm} variant="primary">
+          <AlertButton
+            ref={buttonRef}
+            onClick={onConfirm}
+            variant="primary"
+            wide={isClaimable}
+          >
             {isClaimable ? (
               <T _str="Claim & Migrate" _tags="v2/collection/migration" />
             ) : (
