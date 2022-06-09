@@ -12,6 +12,7 @@ interface MigrationProps {
   >;
   collectionSheet: LegacyCollectionStateQuery["stateQuery"]["monsterCollectionSheet"];
   onActionTxId(txId: string): void;
+  onClose?(): void;
 }
 
 const noop = () => {};
@@ -34,6 +35,7 @@ export default function Migration({
   collectionState,
   collectionSheet,
   onActionTxId,
+  onClose,
 }: MigrationProps) {
   const [isOpen, open] = useReducer(() => true, false);
   const isClaimable = tip >= collectionState.claimableBlockIndex;
@@ -53,6 +55,7 @@ export default function Migration({
     <MigrationAlert
       isOpen={true}
       onConfirm={open}
+      onCancel={onClose}
       isClaimable={isClaimable}
       items={
         <>
