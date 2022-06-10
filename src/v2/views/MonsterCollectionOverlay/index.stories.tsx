@@ -31,7 +31,7 @@ const result = {
                 rate: 20,
               },
             ],
-            bonusRewards: null,
+            bonusRewards: [],
           },
           {
             level: 2,
@@ -42,7 +42,7 @@ const result = {
                 rate: 20,
               },
             ],
-            bonusRewards: null,
+            bonusRewards: [],
           },
           {
             level: 3,
@@ -53,7 +53,7 @@ const result = {
                 rate: 20,
               },
             ],
-            bonusRewards: null,
+            bonusRewards: [],
           },
         ],
       },
