@@ -74,7 +74,7 @@ type Alerts = "lower-deposit" | "confirm-changes";
 
 export function MonsterCollectionContent({
   sheet: {
-    stateQuery: { stakeRegularRewardSheet: sheet },
+    stateQuery: { stakeRewards: sheet },
   },
   current: {
     stateQuery: { stakeState },

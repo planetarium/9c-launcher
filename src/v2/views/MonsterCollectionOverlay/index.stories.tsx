@@ -19,7 +19,7 @@ import "core-js/proposals/array-find-from-last";
 const result = {
   data: {
     stateQuery: {
-      stakeRegularRewardSheet: {
+      stakeRewards: {
         orderedList: [
           // FIXME Change the value to something realistic
           {
