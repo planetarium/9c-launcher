@@ -455,10 +455,16 @@ type StakeRegularRewardInfoType {
   rate: Int!
 }
 
+type StakeRegularFixedRewardInfoType {
+  itemId: Int!
+  count: Int!
+}
+
 type StakeRegularRewardRowType {
   level: Int!
   requiredGold: Long!
   rewards: [StakeRegularRewardInfoType!]!
+  bonusRewards: [StakeRegularFixedRewardInfoType!]
 }
 
 type StakeRegularRewardSheetType {

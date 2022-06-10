@@ -391,6 +391,10 @@ query StakingSheet {
           itemId
           rate
         }
+        bonusRewards {
+          itemId
+          count
+        }
       }
     }
   }

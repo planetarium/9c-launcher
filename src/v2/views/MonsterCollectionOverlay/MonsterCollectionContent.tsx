@@ -138,6 +138,15 @@ export function MonsterCollectionContent({
   const rewards = isEditing
     ? levels[selectedIndex!]?.rewards
     : levels[currentIndex!]?.rewards;
+  const bonusRewards = isEditing
+    ? levels[selectedIndex!]?.bonusRewards
+    : levels[currentIndex!]?.bonusRewards;
+  const bonusRewardMap = useMemo(
+    () =>
+      bonusRewards &&
+      new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
+    [levels]
+  );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
   return (
@@ -260,10 +269,14 @@ export function MonsterCollectionContent({
                 const itemMeta = itemMetadata[item.itemId] ?? {
                   name: "Unknown",
                 };
+                const bonusCount = bonusRewardMap?.get(item.itemId) ?? 0;
                 return (
                   <Item
                     key={item.itemId}
-                    amount={currentAmount.divToInt(item.rate).toString()}
+                    amount={currentAmount
+                      .divToInt(item.rate)
+                      .add(bonusCount)
+                      .toString()}
                     title={itemMeta.name}
                   >
                     <img src={itemMeta.img} />
