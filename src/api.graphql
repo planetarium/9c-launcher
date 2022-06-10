@@ -383,7 +383,7 @@ query CurrentStaking($address: Address!) {
 
 query StakingSheet { 
   stateQuery {
-    stakeRegularRewardSheet {
+    stakeRewards {
       orderedList {
         level
         requiredGold
