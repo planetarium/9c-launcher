@@ -21,6 +21,9 @@ const BareInputStyled = styled("input", {
   "&::-webkit-inner-spin-button": {
     display: "none",
   },
+  "&:invalid": {
+    color: "#ff4343",
+  },
 });
 
 function BareInput(

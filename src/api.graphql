@@ -383,7 +383,7 @@ query CurrentStaking($address: Address!) {
 
 query StakingSheet { 
   stateQuery {
-    stakeRegularRewardSheet {
+    stakeRewards {
       orderedList {
         level
         requiredGold
@@ -391,7 +391,27 @@ query StakingSheet {
           itemId
           rate
         }
+        bonusRewards {
+          itemId
+          count
+        }
       }
+    }
+  }
+}
+
+query LegacyCollectionState($address: Address!) {
+  stateQuery {
+    monsterCollectionSheet {
+      orderedList {
+        level
+        requiredGold
+      }
+    }
+    monsterCollectionState(agentAddress: $address) {
+      startedBlockIndex
+      claimableBlockIndex
+      level
     }
   }
 }

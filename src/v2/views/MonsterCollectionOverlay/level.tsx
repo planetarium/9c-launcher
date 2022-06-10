@@ -41,6 +41,11 @@ const LevelItem = styled(motion.li, {
         backgroundSize: "contain",
       },
     },
+    disabled: {
+      true: {
+        filter: "brightness(0.5)",
+      },
+    },
   },
 });
 
@@ -119,6 +124,11 @@ interface LevelProps {
    * It is meant to be used on editing.
    */
   selected?: boolean;
+  /**
+   * Whether if it's available to be chosen or not.
+   * When it's unavailable, it's grayed out.
+   */
+  disabled?: boolean;
 }
 
 export const Level = ({
@@ -126,8 +136,9 @@ export const Level = ({
   expandedImage,
   current,
   selected,
+  disabled,
 }: LevelProps) => (
-  <LevelItem layout current={!!expandedImage && current}>
+  <LevelItem layout disabled={disabled} current={!!expandedImage && current}>
     <LayoutGroup id={String(amount)}>
       {expandedImage ? (
         <LevelIcon layoutId="icon" src={expandedImage} />

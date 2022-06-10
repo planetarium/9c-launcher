@@ -19,7 +19,7 @@ import "core-js/proposals/array-find-from-last";
 const result = {
   data: {
     stateQuery: {
-      stakeRegularRewardSheet: {
+      stakeRewards: {
         orderedList: [
           // FIXME Change the value to something realistic
           {
@@ -31,6 +31,7 @@ const result = {
                 rate: 20,
               },
             ],
+            bonusRewards: [],
           },
           {
             level: 2,
@@ -41,6 +42,7 @@ const result = {
                 rate: 20,
               },
             ],
+            bonusRewards: [],
           },
           {
             level: 3,
@@ -51,6 +53,7 @@ const result = {
                 rate: 20,
               },
             ],
+            bonusRewards: [],
           },
         ],
       },
@@ -102,6 +105,8 @@ interface Args {
   currentNCG?: number;
 }
 
+const noop = () => {};
+
 function MonsterCollectionOverlay(
   props: Partial<ComponentPropsWithRef<typeof MonsterCollectionContent>> & Args
 ) {
@@ -118,6 +123,7 @@ function MonsterCollectionOverlay(
         current={current}
         currentNCG={500}
         isLoading={loading}
+        onClose={noop}
         {...props}
         onChangeAmount={async (amount) => {
           setLoading(true);

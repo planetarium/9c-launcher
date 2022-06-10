@@ -4,212 +4,249 @@ schema {
   subscription: StandaloneSubscription
 }
 
-type Action {
-  raw(encode: String = "hex"): String!
-  inspection: String!
+type StandaloneQuery {
+  stateQuery(
+    # Offset block hash for query.
+    hash: ByteString
+  ): StateQuery!
+  actionQuery: ActionQuery!
+  state(
+    # The address of state to fetch from the chain.
+    address: Address!
+
+    # The hash of the block used to fetch state from chain.
+    hash: ByteString
+  ): ByteString
+  transferNCGHistories(
+    blockHash: ByteString!
+    recipient: Address
+  ): [TransferNCGHistoryType!]!
+  keyStore: KeyStoreType
+  nodeStatus: NodeStatusType!
+  chainQuery: ExplorerQuery!
+
+  # The validation method provider for Libplanet types.
+  validation: ValidationQuery!
+
+  # Check if the provided address is activated.
+  activationStatus: ActivationStatusQuery!
+
+  # Get the peer's block chain state
+  peerChainState: PeerChainStateQuery!
+  goldBalance(
+    # Target address to query
+    address: Address!
+
+    # Offset block hash for query.
+    hash: ByteString
+  ): String!
+  nextTxNonce(
+    # Target address to query
+    address: Address!
+  ): Long!
+    @deprecated(
+      reason: "The root query is not the best place for nextTxNonce so it was moved. Use transaction.nextTxNonce()"
+    )
+  getTx(
+    # transaction id.
+    txId: TxId!
+  ): TransactionType_1
+    @deprecated(
+      reason: "The root query is not the best place for getTx so it was moved. Use transaction.getTx()"
+    )
+
+  # Address of current node.
+  minerAddress: Address
+
+  # Get monster collection status by address.
+  monsterCollectionStatus(
+    # agent address.
+    address: Address
+  ): MonsterCollectionStatusType
+
+  # Query for transaction.
+  transaction: TransactionHeadlessQuery!
+  activated(invitationCode: String!): Boolean!
+  activationKeyNonce(invitationCode: String!): String!
+
+  # Query for rpc mode information.
+  rpcInformation: RpcInformationQuery!
 }
 
-type ActionMutation {
-  createAvatar(avatarName: String!, avatarIndex: Int!, hairIndex: Int!, lensIndex: Int!, earIndex: Int!, tailIndex: Int!): TxId!
-  hackAndSlash(avatarAddress: Address!, worldId: Int!, stageId: Int!, costumeIds: [Guid], equipmentIds: [Guid], consumableIds: [Guid]): TxId!
-  combinationEquipment(avatarAddress: Address!, recipeId: Int!, slotIndex: Int!, subRecipeId: Int): TxId!
-  itemEnhancement(avatarAddress: Address!, itemId: Guid!, materialId: Guid!, slotIndex: Int!): TxId!
-  dailyReward(avatarAddress: Address!): TxId!
-  chargeActionPoint(avatarAddress: Address!): TxId!
-  combinationConsumable(avatarAddress: Address!, recipeId: Int!, slotIndex: Int!): TxId!
-  monsterCollect(level: Int!): TxId!
-  claimMonsterCollectionReward(avatarAddress: Address!): TxId!
+type StateQuery {
+  # State for avatar.
+  avatar(
+    # Address of avatar.
+    avatarAddress: Address!
+  ): AvatarStateType
+
+  # State for avatar EXP record.
+  rankingMap(
+    # RankingMapState index. 0 ~ 99
+    index: Int!
+  ): RankingMapStateType
+
+  # State for shop.
+  shop: ShopStateType
+    @deprecated(
+      reason: "Shop is migrated to ShardedShop and not using now. Use shardedShop() instead."
+    )
+
+  # State for sharded shop.
+  shardedShop(
+    # ItemSubType for shard. see from https://github.com/planetarium/lib9c/blob/main/Lib9c/Model/Item/ItemType.cs#L13
+    itemSubType: ItemSubType!
+
+    # Nonce for shard. It's not considered if itemSubtype is kind of costume or title. 0 ~ 15
+    nonce: Int!
+  ): ShardedShopStateV2Type
+
+  # State for weekly arena.
+  weeklyArena(
+    # WeeklyArenaState index. It increases every 56,000 blocks.
+    index: Int!
+  ): WeeklyArenaStateType
+
+  # State for agent.
+  agent(
+    # Address of agent.
+    address: Address!
+  ): AgentStateType
+
+  # State for staking.
+  stakeState(
+    # Address of agent who staked.
+    address: Address!
+  ): StakeStateType
+
+  # State for monster collection.
+  monsterCollectionState(
+    # Address of agent.
+    agentAddress: Address!
+  ): MonsterCollectionStateType
+  monsterCollectionSheet: MonsterCollectionSheetType
+  stakeRewards: StakeRewardsType
 }
 
-type ActivationStatusMutation {
-  activateAccount(encodedActivationKey: String!): Boolean!
-}
+type AvatarStateType {
+  # Address of avatar.
+  address: Address!
 
-type ActivationStatusQuery {
-  activated: Boolean!
-  addressActivated(address: Address!): Boolean!
+  # Block index at the latest executed action.
+  blockIndex: Int!
+
+  # Character ID from CharacterSheet.
+  characterId: Int!
+
+  # Block index at the DailyReward execution.
+  dailyRewardReceivedIndex: Long!
+
+  # Address of agent.
+  agentAddress: Address!
+
+  # Block index at the latest executed action.
+  updatedAt: Long!
+
+  # Avatar name.
+  name: String!
+
+  # Avatar total EXP.
+  exp: Int!
+
+  # Avatar Level.
+  level: Int!
+
+  # Current ActionPoint.
+  actionPoint: Int!
+
+  # Index of ear color.
+  ear: Int!
+
+  # Index of hair color.
+  hair: Int!
+
+  # Index of eye color.
+  lens: Int!
+
+  # Index of tail color.
+  tail: Int!
+
+  # Avatar inventory.
+  inventory: InventoryType!
+
+  # Address list of combination slot.
+  combinationSlotAddresses: [Address!]!
+
+  # List of acquired item ID.
+  itemMap: CollectionMapType!
+
+  # List of quest event ID.
+  eventMap: CollectionMapType!
+
+  # List of defeated monster ID.
+  monsterMap: CollectionMapType!
+
+  # List of cleared stage ID.
+  stageMap: CollectionMapType!
+
+  # List of quest.
+  questList: QuestListType!
+
+  # List of mail.
+  mailBox: MailBoxType!
+
+  # World & Stage information.
+  worldInformation: WorldInformationType!
 }
 
 scalar Address
 
-type AgentStateType {
-  address: Address!
-  avatarStates: [AvatarStateType!]
-  gold: String!
-  monsterCollectionRound: Long!
-  monsterCollectionLevel: Long!
-  hasTradedItem: Boolean!
-}
+scalar Long
 
-type AppProtocolVersionType {
-  version: Int!
-  signer: Address!
-  signature: ByteString!
-  extra: ByteString
-}
+type InventoryType {
+  # List of Consumables.
+  consumables: [ConsumableType!]!
 
-type ArenaInfoType {
-  agentAddress: Address!
-  avatarAddress: Address!
-  avatarName: String!
-  arenaRecord: ArenaRecordType!
-  active: Boolean!
-  dailyChallengeCount: Int!
-  score: Int!
-}
+  # List of Materials.
+  materials: [MaterialType!]!
 
-type ArenaRecordType {
-  win: Int
-  lose: Int
-  draw: Int
-}
+  # List of Equipments.
+  equipments: [EquipmentType!]!
 
-type AvatarStateType {
-  address: Address!
-  blockIndex: Int!
-  characterId: Int!
-  dailyRewardReceivedIndex: Long!
-  agentAddress: Address!
-  updatedAt: Long!
-  name: String!
-  exp: Int!
-  level: Int!
-  actionPoint: Int!
-  ear: Int!
-  hair: Int!
-  lens: Int!
-  tail: Int!
-  inventory: InventoryType!
-  combinationSlotAddresses: [Address!]!
-  itemMap: CollectionMapType!
-  eventMap: CollectionMapType!
-  monsterMap: CollectionMapType!
-  stageMap: CollectionMapType!
-  questList: QuestListType!
-  mailBox: MailBoxType!
-  worldInformation: WorldInformationType!
-}
+  # List of Costumes.
+  costumes: [CostumeType!]!
 
-scalar BigInt
-
-type Block {
-  hash: ID!
-  index: Long!
-  difficulty: Long!
-  totalDifficulty: BigInt!
-  nonce: ByteString!
-  miner: Address!
-  publicKey: PublicKey
-  previousBlock: Block
-  timestamp: DateTimeOffset!
-  stateRootHash: ByteString!
-  signature: ByteString
-  transactions: [Transaction!]!
-}
-
-type BlockHeader {
-  index: Int!
-  id: ID!
-  hash: String!
-  miner: Address
-}
-
-type BlockQuery {
-  blocks(desc: Boolean = false, offset: Int = 0, limit: Int, excludeEmptyTxs: Boolean = false, miner: Address): [Block!]!
-  block(hash: ID, index: ID): Block
-}
-
-scalar ByteString
-
-type CollectionMapType {
-  count: Int!
-  pairs: [[Int]!]!
+  # List of Inventory Item.
+  items(
+    # An Id to find Inventory Item
+    inventoryItemId: Int!
+  ): [InventoryItemType!]!
 }
 
 type ConsumableType {
+  # Grade from ItemSheet.
   grade: Int!
+
+  # ID from ItemSheet.
   id: Int!
+
+  # Item category.
   itemType: ItemType!
+
+  # Item subcategory.
   itemSubType: ItemSubType!
+
+  # Item elemental.
   elementalType: ElementalType!
   itemId: Guid!
   mainStat: StatType!
 }
 
-type CostumeType {
-  grade: Int!
-  id: Int!
-  itemType: ItemType!
-  itemSubType: ItemSubType!
-  elementalType: ElementalType!
-  itemId: Guid!
-  equipped: Boolean!
-}
-
-scalar DateTimeOffset
-
-scalar Decimal
-
-type DecimalStatType {
-  type: StatType!
-  value: Decimal!
-}
-
-type DifferentAppProtocolVersionEncounterType {
-  peer: String!
-  peerVersion: AppProtocolVersionType!
-  localVersion: AppProtocolVersionType!
-}
-
-enum ElementalType {
-  NORMAL
-  FIRE
-  WATER
-  LAND
-  WIND
-}
-
-type EquipmentType {
-  grade: Int!
-  id: Int!
-  itemType: ItemType!
-  itemSubType: ItemSubType!
-  elementalType: ElementalType!
-  setId: Int!
-  stat: DecimalStatType!
-  equipped: Boolean!
-  itemId: Guid!
-  level: Int!
-  skills: [SkillType]
-  buffSkills: [SkillType]
-  statsMap: StatsMapType!
-}
-
-type ExplorerQuery {
-  blockQuery: BlockQuery
-  transactionQuery: TransactionQuery
-  nodeState: NodeState!
-}
-
-type FungibleAssetValueType {
-  currency: String!
-  quantity: String!
-}
-
-scalar Guid
-
-type InventoryItemType {
-  count: Int!
-  id: Int!
-  itemType: ItemType!
-}
-
-type InventoryType {
-  consumables: [ConsumableType!]!
-  materials: [MaterialType!]!
-  equipments: [EquipmentType!]!
-  costumes: [CostumeType!]!
-  items(inventoryItemId: Int!): [InventoryItemType!]!
+enum ItemType {
+  CONSUMABLE
+  COSTUME
+  EQUIPMENT
+  MATERIAL
 }
 
 enum ItemSubType {
@@ -231,294 +268,21 @@ enum ItemSubType {
   HOURGLASS
   AP_STONE
   CHEST
+    @deprecated(
+      reason: "ItemSubType.Chest has never been used outside the MaterialItemSheet. And we won't use it in the future until we have a specific reason."
+    )
   TITLE
 }
 
-enum ItemType {
-  CONSUMABLE
-  COSTUME
-  EQUIPMENT
-  MATERIAL
+enum ElementalType {
+  NORMAL
+  FIRE
+  WATER
+  LAND
+  WIND
 }
 
-type ItemUsableType {
-  grade: Int!
-  id: Int!
-  itemType: ItemType!
-  itemSubType: ItemSubType!
-  elementalType: ElementalType!
-  itemId: Guid!
-}
-
-type KeyStoreMutation {
-  createPrivateKey(passphrase: String!, privateKey: ByteString): PrivateKeyType!
-  revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
-}
-
-type KeyStoreType {
-  protectedPrivateKeys: [ProtectedPrivateKeyType!]!
-  decryptedPrivateKey(address: Address!, passphrase: String!): ByteString!
-  privateKey(hex: ByteString!): PrivateKeyType!
-}
-
-scalar Long
-
-type MailBoxType {
-  count: Int!
-  mails: [MailType!]!
-}
-
-type MailType {
-  id: Guid!
-  requiredBlockIndex: Long!
-  blockIndex: Long!
-}
-
-type MaterialType {
-  grade: Int!
-  id: Int!
-  itemType: ItemType!
-  itemSubType: ItemSubType!
-  elementalType: ElementalType!
-  itemId: ByteString!
-}
-
-type MonsterCollectionRewardInfoType {
-  itemId: Int!
-  quantity: Int!
-}
-
-type MonsterCollectionRowType {
-  level: Int!
-  requiredGold: Int!
-  rewards: [MonsterCollectionRewardInfoType]!
-}
-
-type MonsterCollectionSheetType {
-  orderedList: [MonsterCollectionRowType]
-}
-
-type MonsterCollectionStateType {
-  address: Address!
-  level: Long!
-  expiredBlockIndex: Long!
-  startedBlockIndex: Long!
-  receivedBlockIndex: Long!
-  rewardLevel: Long!
-  claimableBlockIndex: Long!
-}
-
-type MonsterCollectionStatusType {
-  fungibleAssetValue: FungibleAssetValueType!
-  rewardInfos: [MonsterCollectionRewardInfoType]
-  tipIndex: Long!
-  lockup: Boolean!
-}
-
-type NodeExceptionType {
-  code: Int!
-  message: String!
-}
-
-type NodeState {
-  preloaded: Boolean!
-}
-
-type NodeStatusType {
-  bootstrapEnded: Boolean!
-  preloadEnded: Boolean!
-  tip: BlockHeader!
-  topmostBlocks(limit: Int!, offset: Int = 0, miner: Address): [BlockHeader]!
-  stagedTxIds(address: Address): [TxId]
-  genesis: BlockHeader!
-  isMining: Boolean!
-  appProtocolVersion: AppProtocolVersionType
-}
-
-enum NotificationEnum {
-  REFILL
-  HAS
-  COMBINATION_EQUIPMENT
-  COMBINATION_CONSUMABLE
-  BUYER
-  SELLER
-}
-
-type NotificationType {
-  type: NotificationEnum!
-  message: String
-}
-
-type OrderDigestType {
-  orderId: Guid!
-  tradableId: Guid!
-  startedBlockIndex: Int!
-  expiredBlockIndex: Int!
-  sellerAgentAddress: Address!
-  price: String!
-  combatPoint: Int!
-  level: Int!
-  itemId: Int!
-  itemCount: Int!
-}
-
-type PeerChainStateQuery {
-  state: [String]!
-}
-
-type PreloadStateExtraType {
-  type: String!
-  currentCount: Long!
-  totalCount: Long!
-}
-
-type PreloadStateType {
-  currentPhase: Long!
-  totalPhase: Long!
-  extra: PreloadStateExtraType!
-}
-
-type PrivateKeyType {
-  hex: ByteString!
-  publicKey: PublicKeyType!
-}
-
-type ProtectedPrivateKeyType {
-  address: Address!
-}
-
-scalar PublicKey
-
-type PublicKeyType {
-  hex(compress: Boolean): ByteString!
-  address: Address!
-}
-
-type QuestListType {
-  completedQuestIds: [Int!]!
-}
-
-type RankingInfoType {
-  exp: Long!
-  level: Int!
-  armorId: Int!
-  updatedAt: Long!
-  stageClearedBlockIndex: Long!
-  agentAddress: Address!
-  avatarAddress: Address!
-  avatarName: String!
-}
-
-type RankingMapStateType {
-  address: Address!
-  capacity: Int!
-  rankingInfos: [RankingInfoType!]!
-}
-
-type RpcInformationQuery {
-  totalCount: Int!
-  clients: [Address]!
-}
-
-type ShardedShopStateV2Type {
-  address: Address!
-  orderDigestList(id: Int, maximumPrice: Int): [OrderDigestType]!
-}
-
-type ShopItemType {
-  sellerAgentAddress: Address!
-  sellerAvatarAddress: Address!
-  productId: Guid!
-  price: String!
-  itemUsable: ItemUsableType
-  costume: CostumeType
-}
-
-type ShopStateType {
-  address: Address!
-  products(id: Int, itemSubType: ItemSubType, maximumPrice: Int): [ShopItemType]!
-}
-
-type SkillType {
-  id: Int!
-  elementalType: ElementalType!
-  power: Int!
-  chance: Int!
-}
-
-type StakeAchievementsType {
-  achievementsByLevel(level: Int!): Int!
-}
-
-type StakeRegularRewardInfoType {
-  itemId: Int!
-  rate: Int!
-}
-
-type StakeRegularRewardRowType {
-  level: Int!
-  requiredGold: Long!
-  rewards: [StakeRegularRewardInfoType!]!
-}
-
-type StakeRegularRewardSheetType {
-  orderedList: [StakeRegularRewardRowType!]!
-}
-
-type StakeStateType {
-  address: Address!
-  deposit: String!
-  startedBlockIndex: Int!
-  receivedBlockIndex: Int!
-  cancellableBlockIndex: Long!
-  claimableBlockIndex: Long!
-  achievements: StakeAchievementsType!
-}
-
-type StandaloneMutation {
-  keyStore: KeyStoreMutation
-  activationStatus: ActivationStatusMutation
-  action: ActionMutation
-  stageTx(payload: String!): Boolean!
-  stageTxV2(payload: String!): TxId!
-  transfer(recipient: Address!, amount: String!, txNonce: Long!, currencyAddress: String! = "000000000000000000000000000000000000000A", memo: String): TxId
-  transferGold(recipient: Address!, amount: String!): TxId
-}
-
-type StandaloneQuery {
-  stateQuery(hash: ByteString): StateQuery!
-  state(address: Address!, hash: ByteString): ByteString
-  transferNCGHistories(blockHash: ByteString!, recipient: Address): [TransferNCGHistoryType!]!
-  keyStore: KeyStoreType
-  nodeStatus: NodeStatusType!
-  chainQuery: ExplorerQuery!
-  validation: ValidationQuery!
-  activationStatus: ActivationStatusQuery!
-  peerChainState: PeerChainStateQuery!
-  goldBalance(address: Address!, hash: ByteString): String!
-  nextTxNonce(address: Address!): Long!
-  getTx(txId: TxId!): TransactionType_1
-  minerAddress: Address
-  monsterCollectionStatus(address: Address): MonsterCollectionStatusType
-  transaction: TransactionHeadlessQuery!
-  activated(invitationCode: String!): Boolean!
-  activationKeyNonce(invitationCode: String!): String!
-  rpcInformation: RpcInformationQuery!
-}
-
-type StandaloneSubscription {
-  tipChanged: TipChanged
-  preloadProgress: PreloadStateType
-  nodeStatus: NodeStatusType
-  differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
-  notification: NotificationType!
-  nodeException: NodeExceptionType!
-  monsterCollectionState: MonsterCollectionStateType!
-  monsterCollectionStatus: MonsterCollectionStatusType!
-  monsterCollectionStatusByAgent(address: Address!): MonsterCollectionStatusType!
-  monsterCollectionStateByAgent(address: Address!): MonsterCollectionStateType!
-  balanceByAgent(address: Address!): String!
-}
+scalar Guid
 
 enum StatType {
   NONE
@@ -530,17 +294,63 @@ enum StatType {
   SPD
 }
 
-type StateQuery {
-  avatar(avatarAddress: Address!): AvatarStateType
-  rankingMap(index: Int!): RankingMapStateType
-  shop: ShopStateType
-  shardedShop(itemSubType: ItemSubType!, nonce: Int!): ShardedShopStateV2Type
-  weeklyArena(index: Int!): WeeklyArenaStateType
-  agent(address: Address!): AgentStateType
-  stakeState(address: Address!): StakeStateType
-  monsterCollectionState(agentAddress: Address!): MonsterCollectionStateType
-  monsterCollectionSheet: MonsterCollectionSheetType
-  stakeRegularRewardSheet: StakeRegularRewardSheetType
+type MaterialType {
+  # Grade from ItemSheet.
+  grade: Int!
+
+  # ID from ItemSheet.
+  id: Int!
+
+  # Item category.
+  itemType: ItemType!
+
+  # Item subcategory.
+  itemSubType: ItemSubType!
+
+  # Item elemental.
+  elementalType: ElementalType!
+  itemId: ByteString!
+}
+
+scalar ByteString
+
+type EquipmentType {
+  # Grade from ItemSheet.
+  grade: Int!
+
+  # ID from ItemSheet.
+  id: Int!
+
+  # Item category.
+  itemType: ItemType!
+
+  # Item subcategory.
+  itemSubType: ItemSubType!
+
+  # Item elemental.
+  elementalType: ElementalType!
+  setId: Int!
+  stat: DecimalStatType!
+  equipped: Boolean!
+  itemId: Guid!
+  level: Int!
+  skills: [SkillType]
+  buffSkills: [SkillType]
+  statsMap: StatsMapType!
+}
+
+type DecimalStatType {
+  type: StatType!
+  value: Decimal!
+}
+
+scalar Decimal
+
+type SkillType {
+  id: Int!
+  elementalType: ElementalType!
+  power: Int!
+  chance: Int!
 }
 
 type StatsMapType {
@@ -552,82 +362,58 @@ type StatsMapType {
   sPD: Int!
 }
 
-type TipChanged {
-  index: Long!
-  hash: ByteString
+type CostumeType {
+  # Grade from ItemSheet.
+  grade: Int!
+
+  # ID from ItemSheet.
+  id: Int!
+
+  # Item category.
+  itemType: ItemType!
+
+  # Item subcategory.
+  itemSubType: ItemSubType!
+
+  # Item elemental.
+  elementalType: ElementalType!
+
+  # Guid of costume.
+  itemId: Guid!
+
+  # Status of Avatar equipped.
+  equipped: Boolean!
 }
 
-type Transaction {
-  id: ID!
-  nonce: Long!
-  signer: Address!
-  publicKey: ByteString!
-  updatedAddresses: [Address!]!
-  signature: ByteString!
-  timestamp: DateTimeOffset!
-  actions: [Action!]!
-  blockRef: [Block!]
+type InventoryItemType {
+  # A count of item
+  count: Int!
+
+  # An Id of item
+  id: Int!
+
+  # An ItemType of item
+  itemType: ItemType!
 }
 
-type TransactionHeadlessQuery {
-  nextTxNonce(address: Address!): Long!
-  getTx(txId: TxId!): TransactionType_1
-  createUnsignedTx(publicKey: String!, plainValue: String!, nonce: Long): String!
-  attachSignature(unsignedTransaction: String!, signature: String!): String!
-  transactionResult(txId: TxId!): TxResultType!
+type CollectionMapType {
+  count: Int!
+  pairs: [[Int]!]!
 }
 
-type TransactionQuery {
-  transactions(signer: Address, involvedAddress: Address, desc: Boolean = false, offset: Int = 0, limit: Int): [Transaction!]!
-  stagedTransactions(signer: Address, involvedAddress: Address, desc: Boolean = false, offset: Int = 0, limit: Int): [Transaction!]!
-  transaction(id: ID): Transaction
+type QuestListType {
+  completedQuestIds: [Int!]!
 }
 
-type TransactionType_1 {
-  id: TxId!
-  nonce: Long!
-  publicKey: PublicKeyType!
-  signature: ByteString!
-  signer: Address!
-  timestamp: String!
-  updatedAddresses: [Address]!
-  actions: [Action]!
+type MailBoxType {
+  count: Int!
+  mails: [MailType!]!
 }
 
-type TransferNCGHistoryType {
-  blockHash: ByteString!
-  txId: ByteString!
-  sender: Address!
-  recipient: Address!
-  amount: String!
-  memo: String
-}
-
-scalar TxId
-
-type TxResultType {
-  txStatus: TxStatus!
-  blockIndex: Long
-  blockHash: String
-}
-
-enum TxStatus {
-  INVALID
-  STAGING
-  SUCCESS
-  FAILURE
-}
-
-type ValidationQuery {
-  metadata(raw: String!): Boolean!
-  privateKey(hex: ByteString!): Boolean!
-  publicKey(hex: ByteString!): Boolean!
-}
-
-type WeeklyArenaStateType {
-  address: Address!
-  ended: Boolean!
-  orderedArenaInfos: [ArenaInfoType]!
+type MailType {
+  id: Guid!
+  requiredBlockIndex: Long!
+  blockIndex: Long!
 }
 
 type WorldInformationType {
@@ -646,4 +432,799 @@ type WorldType {
   stageBegin: Int!
   stageEnd: Int!
   stageClearedId: Int!
+}
+
+type RankingMapStateType {
+  # Address of RankingMapState.
+  address: Address!
+
+  # RankingMapState Capacity.
+  capacity: Int!
+
+  # List of RankingInfo.
+  rankingInfos: [RankingInfoType!]!
+}
+
+type RankingInfoType {
+  # Avatar total EXP.
+  exp: Long!
+
+  # Avatar Level.
+  level: Int!
+
+  # Equipped Armor ID from EquipmentItemSheet.
+  armorId: Int!
+
+  # Block index at RankingInfo update.
+  updatedAt: Long!
+
+  # Block index at Latest stage cleared.
+  stageClearedBlockIndex: Long!
+
+  # Address of agent.
+  agentAddress: Address!
+
+  # Address of avatar.
+  avatarAddress: Address!
+
+  # Avatar name.
+  avatarName: String!
+}
+
+type ShopStateType {
+  # Address of shop.
+  address: Address!
+
+  # List of ShopItem.
+  products(
+    # Filter for item id.
+    id: Int
+
+    # Filter for ItemSubType. see from https://github.com/planetarium/lib9c/blob/main/Lib9c/Model/Item/ItemType.cs#L13
+    itemSubType: ItemSubType
+
+    # Filter for item maximum price.
+    maximumPrice: Int
+  ): [ShopItemType]!
+}
+
+type ShopItemType {
+  # Address of seller agent.
+  sellerAgentAddress: Address!
+
+  # Address of seller avatar.
+  sellerAvatarAddress: Address!
+
+  # Guid of product registered.
+  productId: Guid!
+
+  # Item price.
+  price: String!
+
+  # Equipment / Consumable information.
+  itemUsable: ItemUsableType
+
+  # Costume information.
+  costume: CostumeType
+}
+
+type ItemUsableType {
+  # Grade from ItemSheet.
+  grade: Int!
+
+  # ID from ItemSheet.
+  id: Int!
+
+  # Item category.
+  itemType: ItemType!
+
+  # Item subcategory.
+  itemSubType: ItemSubType!
+
+  # Item elemental.
+  elementalType: ElementalType!
+
+  # Guid of item.
+  itemId: Guid!
+}
+
+type ShardedShopStateV2Type {
+  # Address of sharded shop.
+  address: Address!
+
+  # List of OrderDigest.
+  orderDigestList(
+    # Filter for item id.
+    id: Int
+
+    # Filter for item maximum price.
+    maximumPrice: Int
+  ): [OrderDigestType]!
+}
+
+type OrderDigestType {
+  # Guid of order.
+  orderId: Guid!
+
+  # Tradable guid of order.
+  tradableId: Guid!
+
+  # Block index order started.
+  startedBlockIndex: Int!
+
+  # Block index order expired.
+  expiredBlockIndex: Int!
+
+  # Address of seller agent.
+  sellerAgentAddress: Address!
+
+  # Order price.
+  price: String!
+  combatPoint: Int!
+  level: Int!
+
+  # Id of item.
+  itemId: Int!
+
+  # Count of item.
+  itemCount: Int!
+}
+
+type WeeklyArenaStateType {
+  address: Address!
+  ended: Boolean!
+  orderedArenaInfos: [ArenaInfoType]!
+}
+
+type ArenaInfoType {
+  agentAddress: Address!
+  avatarAddress: Address!
+  avatarName: String!
+  arenaRecord: ArenaRecordType!
+  active: Boolean!
+  dailyChallengeCount: Int!
+  score: Int!
+}
+
+type ArenaRecordType {
+  win: Int
+  lose: Int
+  draw: Int
+}
+
+type AgentStateType {
+  # Address of agent.
+  address: Address!
+
+  # List of avatar.
+  avatarStates: [AvatarStateType!]
+
+  # Current NCG.
+  gold: String!
+
+  # Monster collection round of agent.
+  monsterCollectionRound: Long!
+
+  # Current monster collection level.
+  monsterCollectionLevel: Long!
+  hasTradedItem: Boolean!
+}
+
+type StakeStateType {
+  # The address of current state.
+  address: Address!
+
+  # The staked amount.
+  deposit: String!
+
+  # The block index the user started to stake.
+  startedBlockIndex: Int!
+
+  # The block index the user received rewards.
+  receivedBlockIndex: Int!
+
+  # The block index the user can cancel the staking.
+  cancellableBlockIndex: Long!
+
+  # The block index the user can claim rewards.
+  claimableBlockIndex: Long!
+
+  # The staking achievements.
+  achievements: StakeAchievementsType!
+}
+
+type StakeAchievementsType {
+  # The address of current state.
+  achievementsByLevel(level: Int!): Int!
+}
+
+type MonsterCollectionStateType {
+  address: Address!
+  level: Long!
+  expiredBlockIndex: Long!
+  startedBlockIndex: Long!
+  receivedBlockIndex: Long!
+  rewardLevel: Long!
+  claimableBlockIndex: Long!
+}
+
+type MonsterCollectionSheetType {
+  orderedList: [MonsterCollectionRowType]
+}
+
+type MonsterCollectionRowType {
+  level: Int!
+  requiredGold: Int!
+  rewards: [MonsterCollectionRewardInfoType]!
+}
+
+type MonsterCollectionRewardInfoType {
+  itemId: Int!
+  quantity: Int!
+}
+
+type StakeRewardsType {
+  orderedList: [StakeRegularRewardsType!]!
+}
+
+type StakeRegularRewardsType {
+  level: Int!
+  requiredGold: Long!
+  rewards: [StakeRegularRewardInfoType!]!
+  bonusRewards: [StakeRegularFixedRewardInfoType!]!
+}
+
+type StakeRegularRewardInfoType {
+  itemId: Int!
+  rate: Int!
+}
+
+type StakeRegularFixedRewardInfoType {
+  itemId: Int!
+  count: Int!
+}
+
+type ActionQuery {
+  stake(
+    # An amount to stake.
+    amount: BigInt
+  ): ByteString
+  claimStakeReward(
+    # The avatar address to receive staking rewards.
+    avatarAddress: Address
+  ): ByteString
+  migrateMonsterCollection(
+    # The avatar address to receive monster collection rewards.
+    avatarAddress: Address
+  ): ByteString!
+}
+
+scalar BigInt
+
+type TransferNCGHistoryType {
+  blockHash: ByteString!
+  txId: ByteString!
+  sender: Address!
+  recipient: Address!
+  amount: String!
+  memo: String
+}
+
+type KeyStoreType {
+  protectedPrivateKeys: [ProtectedPrivateKeyType!]!
+  decryptedPrivateKey(address: Address!, passphrase: String!): ByteString!
+
+  # An API to provide conversion to public-key, address.
+  privateKey(
+    # A representation of public-key with hexadecimal format.
+    hex: ByteString!
+  ): PrivateKeyType!
+}
+
+type ProtectedPrivateKeyType {
+  address: Address!
+}
+
+type PrivateKeyType {
+  # A representation of private-key with hexadecimal format.
+  hex: ByteString!
+
+  # A public-key derived from the private-key.
+  publicKey: PublicKeyType!
+}
+
+type PublicKeyType {
+  # A representation of public-key with hexadecimal format.
+  hex(
+    # A flag to determine whether to compress public-key.
+    compress: Boolean
+  ): ByteString!
+
+  # An address derived from the public-key.
+  address: Address!
+}
+
+type NodeStatusType {
+  # Whether the current libplanet node has ended bootstrapping.
+  bootstrapEnded: Boolean!
+
+  # Whether the current libplanet node has ended preloading.
+  preloadEnded: Boolean!
+
+  # Block header of the tip block from the current canonical chain.
+  tip: BlockHeader!
+
+  # The topmost blocks from the current node.
+  topmostBlocks(
+    # The number of blocks to get.
+    limit: Int!
+
+    # The number of blocks to skip from tip.
+    offset: Int = 0
+
+    # List only blocks mined by the given address.  (List everything if omitted.)
+    miner: Address
+  ): [BlockHeader]!
+
+  # Ids of staged transactions from the current node.
+  stagedTxIds(
+    # Target address to query
+    address: Address
+  ): [TxId]
+
+  # Block header of the genesis block from the current chain.
+  genesis: BlockHeader!
+
+  # Whether the current node is mining.
+  isMining: Boolean!
+  appProtocolVersion: AppProtocolVersionType
+}
+
+type BlockHeader {
+  index: Int!
+  id: ID!
+  hash: String!
+  miner: Address
+}
+
+scalar TxId
+
+type AppProtocolVersionType {
+  version: Int!
+  signer: Address!
+  signature: ByteString!
+  extra: ByteString
+}
+
+type ExplorerQuery {
+  blockQuery: BlockQuery
+  transactionQuery: TransactionQuery
+  nodeState: NodeState!
+}
+
+type BlockQuery {
+  blocks(
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int
+    excludeEmptyTxs: Boolean = false
+    miner: Address
+  ): [Block!]!
+  block(hash: ID, index: ID): Block
+}
+
+type Block {
+  hash: ID!
+  index: Long!
+  difficulty: Long!
+  totalDifficulty: BigInt!
+  nonce: ByteString!
+  miner: Address!
+  publicKey: PublicKey
+  previousBlock: Block
+  timestamp: DateTimeOffset!
+  stateRootHash: ByteString!
+  signature: ByteString
+  transactions: [Transaction!]!
+}
+
+scalar PublicKey
+
+# The `DateTimeOffset` scalar type represents a date, time and offset from UTC. `DateTimeOffset` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar DateTimeOffset
+
+type Transaction {
+  id: ID!
+  nonce: Long!
+  signer: Address!
+  publicKey: ByteString!
+  updatedAddresses: [Address!]!
+  signature: ByteString!
+  timestamp: DateTimeOffset!
+  actions: [Action!]!
+  blockRef: [Block!]
+}
+
+type Action {
+  raw(encode: String = "hex"): String!
+  inspection: String!
+}
+
+type TransactionQuery {
+  transactions(
+    signer: Address
+    involvedAddress: Address
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int
+  ): [Transaction!]!
+  stagedTransactions(
+    signer: Address
+    involvedAddress: Address
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int
+  ): [Transaction!]!
+  transaction(id: ID): Transaction
+}
+
+type NodeState {
+  preloaded: Boolean!
+}
+
+type ValidationQuery {
+  metadata(
+    # The raw value of json metadata.
+    raw: String!
+  ): Boolean!
+  privateKey(
+    # The raw value of private-key, presented as hexadecimal.
+    hex: ByteString!
+  ): Boolean!
+  publicKey(
+    # The raw value of public-key, presented as hexadecimal.
+    hex: ByteString!
+  ): Boolean!
+}
+
+type ActivationStatusQuery {
+  activated: Boolean!
+  addressActivated(address: Address!): Boolean!
+}
+
+type PeerChainStateQuery {
+  # Summary of other peers connected to this node. It consists of address, chain height, and total difficulty.
+  state: [String]!
+}
+
+type TransactionType_1 {
+  # A unique identifier derived from this transaction content.
+  id: TxId!
+
+  # The number of previous transactions committed by the signer of this transaction.
+  nonce: Long!
+
+  # A PublicKey of the account who signed this transaction.
+  publicKey: PublicKeyType!
+
+  # A digital signature of the content of this transaction.
+  signature: ByteString!
+
+  # An address of the account who signed this transaction.
+  signer: Address!
+
+  # The time this transaction was created and signed.
+  timestamp: String!
+
+  # Addresses whose states were affected by Actions.
+  updatedAddresses: [Address]!
+
+  # A list of actions in this transaction.
+  actions: [Action]!
+}
+
+type MonsterCollectionStatusType {
+  fungibleAssetValue: FungibleAssetValueType!
+  rewardInfos: [MonsterCollectionRewardInfoType]
+  tipIndex: Long!
+  lockup: Boolean!
+}
+
+type FungibleAssetValueType {
+  currency: String!
+  quantity: String!
+}
+
+type TransactionHeadlessQuery {
+  nextTxNonce(
+    # Target address to query
+    address: Address!
+  ): Long!
+  getTx(
+    # transaction id.
+    txId: TxId!
+  ): TransactionType_1
+  createUnsignedTx(
+    # The base64-encoded public key for Transaction.
+    publicKey: String!
+
+    # The base64-encoded plain value of action for Transaction.
+    plainValue: String!
+
+    # The nonce for Transaction.
+    nonce: Long
+  ): String!
+  attachSignature(
+    # The base64-encoded unsigned transaction to attach the given signature.
+    unsignedTransaction: String!
+
+    # The base64-encoded signature of the given unsigned transaction.
+    signature: String!
+  ): String!
+  transactionResult(
+    # transaction id.
+    txId: TxId!
+  ): TxResultType!
+}
+
+type TxResultType {
+  # The transaction status.
+  txStatus: TxStatus!
+
+  # The block index which the target transaction executed.
+  blockIndex: Long
+
+  # The block hash which the target transaction executed.
+  blockHash: String
+}
+
+# The result of querying transaction.
+enum TxStatus {
+  # The Transaction doesn't staged or invalid.
+  INVALID
+
+  # The Transaction do not executed yet.
+  STAGING
+
+  # The Transaction is success.
+  SUCCESS
+
+  # The Transaction is failure.
+  FAILURE
+}
+
+type RpcInformationQuery {
+  # total count by connected to this node.
+  totalCount: Int!
+
+  # List of address connected to this node.
+  clients: [Address]!
+}
+
+type StandaloneMutation {
+  keyStore: KeyStoreMutation
+  activationStatus: ActivationStatusMutation
+  action: ActionMutation
+
+  # Add a new transaction to staging
+  stageTx(
+    # The base64-encoded bytes for new transaction.
+    payload: String!
+  ): Boolean!
+
+  # Add a new transaction to staging and return TxId
+  stageTxV2(
+    # The base64-encoded bytes for new transaction.
+    payload: String!
+  ): TxId!
+  transfer(
+    # A hex-encoded value for address of recipient.
+    recipient: Address!
+
+    # A string value of the value to be transferred.
+    amount: String!
+
+    # A sender's transaction counter. You can get it through nextTxNonce().
+    txNonce: Long!
+
+    # A hex-encoded value for address of currency to be transferred. The default is the NCG's address.
+    currencyAddress: String! = "000000000000000000000000000000000000000A"
+
+    # A 80-max length string to note.
+    memo: String
+  ): TxId
+  transferGold(recipient: Address!, amount: String!): TxId
+    @deprecated(
+      reason: "Incorrect remittance may occur when using transferGold() to the same address consecutively. Use transfer() instead."
+    )
+}
+
+type KeyStoreMutation {
+  createPrivateKey(passphrase: String!, privateKey: ByteString): PrivateKeyType!
+  revokePrivateKey(address: Address!): ProtectedPrivateKeyType!
+}
+
+type ActivationStatusMutation {
+  activateAccount(encodedActivationKey: String!): Boolean!
+}
+
+type ActionMutation {
+  # Create new avatar.
+  createAvatar(
+    # Avatar name.
+    avatarName: String!
+
+    # The index of character slot. 0 ~ 2
+    avatarIndex: Int!
+
+    # The index of character hair color. 0 ~ 8
+    hairIndex: Int!
+
+    # The index of character eye color. 0 ~ 8
+    lensIndex: Int!
+
+    # The index of character ear color. 0 ~ 8
+    earIndex: Int!
+
+    # The index of character tail color. 0 ~ 8
+    tailIndex: Int!
+  ): TxId!
+
+  # Start stage to get material.
+  hackAndSlash(
+    # Avatar address.
+    avatarAddress: Address!
+
+    # World ID containing the stage ID.
+    worldId: Int!
+
+    # Stage ID.
+    stageId: Int!
+
+    # List of costume id for equip.
+    costumeIds: [Guid]
+
+    # List of equipment id for equip.
+    equipmentIds: [Guid]
+
+    # List of consumable id for use.
+    consumableIds: [Guid]
+  ): TxId!
+
+  # Combine new equipment.
+  combinationEquipment(
+    # Avatar address to create equipment.
+    avatarAddress: Address!
+
+    # EquipmentRecipe ID from EquipmentRecipeSheet.
+    recipeId: Int!
+
+    # The empty combination slot index to combine equipment. 0 ~ 3
+    slotIndex: Int!
+
+    # EquipmentSubRecipe ID from EquipmentSubRecipeSheet.
+    subRecipeId: Int
+  ): TxId!
+
+  # Upgrade equipment.
+  itemEnhancement(
+    # Avatar address to upgrade equipment.
+    avatarAddress: Address!
+
+    # Equipment Guid for upgrade.
+    itemId: Guid!
+
+    # Material Guid for equipment upgrade.
+    materialId: Guid!
+
+    # The empty combination slot index to upgrade equipment. 0 ~ 3
+    slotIndex: Int!
+  ): TxId!
+
+  # Get daily reward.
+  dailyReward(
+    # Avatar address to receive reward.
+    avatarAddress: Address!
+  ): TxId!
+
+  # Charge Action Points using Material.
+  chargeActionPoint(
+    # Avatar to use potion.
+    avatarAddress: Address!
+  ): TxId!
+
+  # Combine new Consumable.
+  combinationConsumable(
+    # Avatar address to combine consumable.
+    avatarAddress: Address!
+
+    # ConsumableRecipe ID from ConsumableRecipeSheet.
+    recipeId: Int!
+
+    # The empty combination slot index to combine consumable. 0 ~ 3
+    slotIndex: Int!
+  ): TxId!
+
+  # Start monster collect.
+  monsterCollect(
+    # The monster collection level.(1 ~ 7)
+    level: Int!
+  ): TxId!
+
+  # Get monster collection reward.
+  claimMonsterCollectionReward(
+    # Address of avatar for get reward.
+    avatarAddress: Address!
+  ): TxId!
+}
+
+type StandaloneSubscription {
+  tipChanged: TipChanged
+  preloadProgress: PreloadStateType
+  nodeStatus: NodeStatusType
+  differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
+  notification: NotificationType!
+  nodeException: NodeExceptionType!
+  monsterCollectionState: MonsterCollectionStateType!
+  monsterCollectionStatus: MonsterCollectionStatusType!
+  monsterCollectionStatusByAgent(
+    # A hex-encoded address of agent.
+    address: Address!
+  ): MonsterCollectionStatusType!
+  monsterCollectionStateByAgent(
+    # A hex-encoded address of agent.
+    address: Address!
+  ): MonsterCollectionStateType!
+  balanceByAgent(
+    # A hex-encoded address of agent.
+    address: Address!
+  ): String!
+}
+
+type TipChanged {
+  index: Long!
+  hash: ByteString
+}
+
+type PreloadStateType {
+  currentPhase: Long!
+  totalPhase: Long!
+  extra: PreloadStateExtraType!
+}
+
+type PreloadStateExtraType {
+  type: String!
+  currentCount: Long!
+  totalCount: Long!
+}
+
+type DifferentAppProtocolVersionEncounterType {
+  peer: String!
+  peerVersion: AppProtocolVersionType!
+  localVersion: AppProtocolVersionType!
+}
+
+type NotificationType {
+  # The type of Notification.
+  type: NotificationEnum!
+
+  # The message of Notification.
+  message: String
+}
+
+enum NotificationEnum {
+  REFILL
+  HAS
+  COMBINATION_EQUIPMENT
+  COMBINATION_CONSUMABLE
+  BUYER
+  SELLER
+}
+
+type NodeExceptionType {
+  # The code of NodeException.
+  code: Int!
+
+  # The message of NodeException.
+  message: String!
 }

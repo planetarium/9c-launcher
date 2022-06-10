@@ -47,8 +47,7 @@ export interface Avatar {
 
 function ClaimContent({
   data,
-  onActionTxId,
-  rewards,
+  onConfirm,
   tip,
   onClose,
   isOpen,
@@ -73,16 +72,9 @@ function ClaimContent({
   ]);
   const hasMultipleAvatars = !avatars || avatars.length !== 1;
 
-  const tx = useTx(
-    "claim-stake-reward",
-    currentAvatar?.address.replace("0x", "")
-  );
-
   useEffect(() => {
-    if (hasMultipleAvatars || !isOpen) return;
-    tx().then(
-      (v) => v.data != null && onActionTxId(v.data.stageTxV2, currentAvatar)
-    );
+    if (hasMultipleAvatars || !isOpen || !currentAvatar) return;
+    onConfirm(currentAvatar);
   }, [avatars, isOpen]);
 
   if (!hasMultipleAvatars) return null;
@@ -117,17 +109,13 @@ function ClaimContent({
         ))}
       </RadioGroup>
       <ButtonBar placement="bottom">
-        <Button onClick={() => onActionTxId(null)}>
+        <Button onClick={() => onClose()}>
           <T _str="Cancel" _tags={transifexTags} />
         </Button>
         <Button
           variant="primary"
-          onClick={() =>
-            tx().then(
-              (v) =>
-                v.data != null && onActionTxId(v.data.stageTxV2, currentAvatar)
-            )
-          }
+          disabled={!currentAvatar}
+          onClick={() => currentAvatar && onConfirm(currentAvatar)}
         >
           <T _str="Send" _tags={transifexTags} />
         </Button>

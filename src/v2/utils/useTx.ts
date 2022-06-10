@@ -34,6 +34,9 @@ type ActionArguemnts = {
   "transfer-asset": CutLast<Parameters<Action["TransferAsset"]>>;
   stake: CutLast<Parameters<Action["Stake"]>>;
   "claim-stake-reward": CutLast<Parameters<Action["ClaimStakeReward"]>>;
+  "migrate-monster-collection": CutLast<
+    Parameters<Action["MigrateMonsterCollection"]>
+  >;
 };
 
 type Result = ReturnType<ReturnType<typeof useStageTxV2Mutation>[0]>;

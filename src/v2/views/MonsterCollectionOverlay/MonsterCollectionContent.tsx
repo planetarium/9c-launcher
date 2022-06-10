@@ -42,6 +42,7 @@ import { Alert } from "./dialog";
 import { AnimatePresence } from "framer-motion";
 import { useEvent } from "src/v2/utils/useEvent";
 import { CloseButton } from "src/v2/components/core/OverlayBase";
+import { getRemain } from "src/collection/common/utils";
 
 declare global {
   interface Array<T> {
@@ -55,8 +56,10 @@ interface MonsterCollectionOverlayProps {
   isEditing?: boolean;
   currentNCG: number;
   onChangeAmount(amount: Decimal): Promise<unknown>;
+  onClose(): void;
   tip?: number;
   isLoading: boolean;
+  children?: React.ReactNode;
 }
 
 const images = [
@@ -71,7 +74,7 @@ type Alerts = "lower-deposit" | "confirm-changes";
 
 export function MonsterCollectionContent({
   sheet: {
-    stateQuery: { stakeRegularRewardSheet: sheet },
+    stateQuery: { stakeRewards: sheet },
   },
   current: {
     stateQuery: { stakeState },
@@ -79,6 +82,8 @@ export function MonsterCollectionContent({
   isEditing: initalEditing,
   currentNCG,
   onChangeAmount,
+  children,
+  onClose,
   tip,
   isLoading,
 }: MonsterCollectionOverlayProps) {
@@ -133,10 +138,20 @@ export function MonsterCollectionContent({
   const rewards = isEditing
     ? levels[selectedIndex!]?.rewards
     : levels[currentIndex!]?.rewards;
+  const bonusRewards = isEditing
+    ? levels[selectedIndex!]?.bonusRewards
+    : levels[currentIndex!]?.bonusRewards;
+  const bonusRewardMap = useMemo(
+    () =>
+      bonusRewards &&
+      new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
+    [levels]
+  );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
   return (
     <>
+      <CloseButton onClick={() => onClose()} />
       <Title src={titleImg} />
       <AnimatePresence>
         {isLoading && (
@@ -172,6 +187,7 @@ export function MonsterCollectionContent({
                   ref={inputRef}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  max={availableNCG.toString()}
                   type="number"
                 />
                 <sub>/{availableNCG.toString()}</sub>
@@ -221,9 +237,18 @@ export function MonsterCollectionContent({
           When you deposit NCG, the monsters go on an expedition to get the
           treasure.
         </DepositDescription>
+        {!isEditing &&
+          stakeState &&
+          tip &&
+          tip < stakeState.claimableBlockIndex && (
+            <DepositDescription>
+              About {getRemain(stakeState.claimableBlockIndex - tip)} of deposit
+              days!
+            </DepositDescription>
+          )}
       </DepositHolder>
       <Levels>
-        {levels?.map((item, index) => (
+        {levels.map((item, index) => (
           <Level
             key={item.level}
             amount={item.requiredGold}
@@ -232,6 +257,7 @@ export function MonsterCollectionContent({
             }
             current={currentIndex === index}
             selected={isEditing && selectedIndex === index}
+            disabled={isEditing && availableNCG.lt(item.requiredGold)}
           />
         ))}
       </Levels>
@@ -243,10 +269,14 @@ export function MonsterCollectionContent({
                 const itemMeta = itemMetadata[item.itemId] ?? {
                   name: "Unknown",
                 };
+                const bonusCount = bonusRewardMap?.get(item.itemId) ?? 0;
                 return (
                   <Item
                     key={item.itemId}
-                    amount={currentAmount.divToInt(item.rate).toString()}
+                    amount={currentAmount
+                      .divToInt(item.rate)
+                      .add(bonusCount)
+                      .toString()}
                     title={itemMeta.name}
                   >
                     <img src={itemMeta.img} />
@@ -283,6 +313,7 @@ export function MonsterCollectionContent({
         <br />
         Do you want to proceed?
       </Alert>
+      {children}
     </>
   );
 }

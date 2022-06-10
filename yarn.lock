@@ -4079,6 +4079,14 @@
     tiny-warning "^1.0.3"
     tslib "^2.3.0"
 
+"@reach/visually-hidden@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@reach/visually-hidden/-/visually-hidden-0.17.0.tgz#033adba10b5ec419649da8d6bd8e46db06d4c3a1"
+  integrity sha512-T6xF3Nv8vVnjVkGU6cm0+kWtvliLqPAo8PcZ+WxkKacZsaHTjaZb4v1PaCcyQHmuTNT/vtTVNOJLG0SjQOIb7g==
+  dependencies:
+    prop-types "^15.7.2"
+    tslib "^2.3.0"
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.npmjs.org/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz"
@@ -8168,6 +8176,11 @@ chownr@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/chownr/-/chownr-2.0.0.tgz"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
+
+chromatic@^6.5.4:
+  version "6.5.4"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-6.5.4.tgz#2e1beb7a8f6b84e7575456fe484201a3b4327ee1"
+  integrity sha512-/yunI/+rdc56C6x0IhpPmdfK/DRMOvQ2hoNyAe6uuU9rdWRoAH72lYatr2NcpdsOdHGOcV5DKgIaKgVdPfUk1w==
 
 chrome-launcher@^0.13.1:
   version "0.13.4"

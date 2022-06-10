@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import {
   AlertBase,
   AlertButton,
@@ -6,9 +6,14 @@ import {
   AlertDescription,
   AlertHeader,
   AlertTitle,
+  MigrationAlert,
+  MigrationAlertItem,
 } from "./dialog";
 
 import infoIcon from "src/v2/resources/collection/mark-information.png";
+import ncgIcon from "src/v2/resources/collection/items/ncg.png";
+import { T } from "@transifex/react";
+import { noop } from "lodash";
 
 export default {
   title: "MonsterCollection/Alert",
@@ -33,3 +38,39 @@ export const Confirmation = () => (
     </AlertButtonBar>
   </AlertBase>
 );
+
+export const Migration = ({
+  isClaimable,
+}: Pick<ComponentPropsWithoutRef<typeof MigrationAlert>, "isClaimable">) => (
+  <MigrationAlert
+    isOpen={true}
+    onConfirm={noop}
+    isClaimable={isClaimable}
+    items={
+      <>
+        {" "}
+        <MigrationAlertItem title="Deposit amount">
+          <strong>
+            <img src={ncgIcon} />
+            500
+          </strong>
+        </MigrationAlertItem>
+        <MigrationAlertItem title="Duration of progress">
+          <span>
+            <strong>365</strong> days <br />
+            123456789 blocks
+          </span>
+        </MigrationAlertItem>
+      </>
+    }
+  >
+    <p>
+      Monster collection has been improved to be more convenient and softer.
+      Receive the previously accumulated rewards and return them to the same
+      form as before. Moving on to the new monster collection?
+    </p>
+  </MigrationAlert>
+);
+Migration.args = {
+  isClaimable: true,
+};

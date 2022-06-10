@@ -23,6 +23,7 @@ import { useT } from "@transifex/react";
 import { useBalance } from "src/v2/utils/useBalance";
 import MonsterCollectionOverlay from "src/v2/views/MonsterCollectionOverlay";
 import { useStaking } from "src/v2/utils/staking";
+import { useTx, placeholder } from "src/v2/utils/useTx";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -83,6 +84,8 @@ export default function UserInfo() {
     return getRemain(minutes);
   }, [claimableBlockIndex, tip]);
 
+  const tx = useTx("claim-stake-reward", placeholder);
+
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
   useEffect(() => setClaimLoading(false), [receivedBlockIndex]);
 
@@ -127,26 +130,23 @@ export default function UserInfo() {
           isOpen={openDialog}
           onClose={() => setOpenDialog(false)}
           tip={tip}
-          rewards={[]} // FIXME: Unused. Should be removed.
-          onActionTxId={(txId, avatar) => {
-            if (avatar)
-              toast.success(
-                t("Successfully sent rewards to {name} #{address}", {
-                  _tags: "v2/monster-collection",
-                  name: avatar.name,
-                  address: avatar.address.slice(2, 6),
-                })
-              );
-
+          onConfirm={(avatar) => {
+            tx(avatar.address.replace(/^0x/, ""))
+              .then((v) => v.data?.stageTxV2)
+              .then((txId) => {
+                if (!txId) return;
+                fetchResult({ variables: { txId } });
+                toast.success(
+                  t("Successfully sent rewards to {name} #{address}", {
+                    _tags: "v2/monster-collection",
+                    name: avatar.name,
+                    address: avatar.address.slice(2, 6),
+                  })
+                );
+                setClaimLoading(true);
+              })
+              .catch((e) => console.error(e));
             setOpenDialog(false);
-            if (txId) {
-              setClaimLoading(true);
-              fetchResult({
-                variables: {
-                  txId,
-                },
-              });
-            }
           }}
         />
       </UserInfoItem>

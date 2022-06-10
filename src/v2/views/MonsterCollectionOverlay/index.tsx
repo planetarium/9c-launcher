@@ -11,15 +11,23 @@ import {
   TxStatus,
   useCurrentStakingQuery,
   useGetTipQuery,
+  useLegacyCollectionStateQuery,
   useStakingSheetQuery,
   useTipSubscription,
   useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
+import Migration from "./Migration";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
   const { data: sheet } = useStakingSheetQuery();
-  const { data: current, refetch } = useCurrentStakingQuery({
+  const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
+    variables: { address: account.selectedAddress },
+  });
+  const {
+    data: collection,
+    refetch: refetchCollection,
+  } = useLegacyCollectionStateQuery({
     variables: { address: account.selectedAddress },
   });
   const balance = useBalance();
@@ -37,15 +45,17 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   });
 
   useEffect(() => {
+    if (txStatus?.transaction.transactionResult.txStatus === TxStatus.Success) {
+      refetchStaking();
+      refetchCollection();
+    }
     if (txStatus?.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
       setLoading(false);
     }
-    if (txStatus?.transaction.transactionResult.txStatus === TxStatus.Success)
-      refetch();
   }, [txStatus]);
 
-  if (!sheet || !current) return null;
+  if (!sheet || !current || !collection || !tip) return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
@@ -65,9 +75,23 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
               setLoading(false);
             });
         }}
-        tip={tip?.nodeStatus.tip.index}
+        onClose={onClose}
+        tip={tip.nodeStatus.tip.index}
         isLoading={isLoading}
-      />
+      >
+        {collection.stateQuery.monsterCollectionState && !isLoading && (
+          <Migration
+            tip={tip.nodeStatus.tip.index}
+            collectionState={collection.stateQuery.monsterCollectionState}
+            collectionSheet={collection.stateQuery.monsterCollectionSheet}
+            onActionTxId={(txId) => {
+              setLoading(true);
+              fetchStatus({ variables: { txId } });
+            }}
+            onClose={onClose}
+          />
+        )}
+      </MonsterCollectionContent>
     </MonsterCollectionOverlayBase>
   );
 }
