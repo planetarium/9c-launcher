@@ -124,6 +124,7 @@ function MonsterCollectionOverlay(
         currentNCG={500}
         isLoading={loading}
         onClose={noop}
+        tip={100}
         {...props}
         onChangeAmount={async (amount) => {
           setLoading(true);
