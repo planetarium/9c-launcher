@@ -258,6 +258,7 @@ export function MonsterCollectionContent({
             current={currentIndex === index}
             selected={isEditing && selectedIndex === index}
             disabled={isEditing && availableNCG.lt(item.requiredGold)}
+            onClick={() => setAmount(String(item.requiredGold))}
           />
         ))}
       </Levels>
