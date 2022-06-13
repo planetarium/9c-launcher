@@ -27,22 +27,13 @@ const BareInputStyled = styled("input", {
 });
 
 function BareInput(
-  props: React.InputHTMLAttributes<HTMLInputElement>,
+  { value, ...props }: React.InputHTMLAttributes<HTMLInputElement>,
   ref: React.Ref<HTMLInputElement>
 ) {
-  const [value, setValue] = useState(String(props.value) ?? "");
-  const onChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      props.onChange?.(e);
-      setValue(e.target.value.slice(0, props.maxLength));
-    },
-    [props.onChange]
-  );
-
   return (
     <BareInputWrapper>
       <LayoutCalculator aria-hidden>{String(value)}</LayoutCalculator>
-      <BareInputStyled ref={ref} value={value} {...props} onChange={onChange} />
+      <BareInputStyled ref={ref} value={value} {...props} />
     </BareInputWrapper>
   );
 }
