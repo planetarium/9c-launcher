@@ -57,7 +57,7 @@ interface MonsterCollectionOverlayProps {
   currentNCG: number;
   onChangeAmount(amount: Decimal): Promise<unknown>;
   onClose(): void;
-  tip?: number;
+  tip: number;
   isLoading: boolean;
   children?: React.ReactNode;
 }
@@ -119,8 +119,7 @@ export function MonsterCollectionContent({
     return index != null && index !== -1 ? index : null;
   }, [amountDecimal, levels]);
 
-  const isLockedUp =
-    tip != null && !!stakeState && tip <= stakeState.cancellableBlockIndex;
+  const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
   useEffect(() => {
     if (stakeState && stakeState.deposit)
@@ -237,15 +236,12 @@ export function MonsterCollectionContent({
           When you deposit NCG, the monsters go on an expedition to get the
           treasure.
         </DepositDescription>
-        {!isEditing &&
-          stakeState &&
-          tip &&
-          tip < stakeState.claimableBlockIndex && (
-            <DepositDescription>
-              About {getRemain(stakeState.claimableBlockIndex - tip)} of deposit
-              days!
-            </DepositDescription>
-          )}
+        {!isEditing && stakeState && tip < stakeState.claimableBlockIndex && (
+          <DepositDescription>
+            About {getRemain(stakeState.claimableBlockIndex - tip)} of deposit
+            days!
+          </DepositDescription>
+        )}
       </DepositHolder>
       <Levels>
         {levels.map((item, index) => (
