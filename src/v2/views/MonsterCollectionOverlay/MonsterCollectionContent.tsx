@@ -70,7 +70,7 @@ const images = [
   monster5Img,
 ];
 
-type Alerts = "lower-deposit" | "confirm-changes";
+type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed";
 
 export function MonsterCollectionContent({
   sheet: {
@@ -313,6 +313,15 @@ export function MonsterCollectionContent({
         within 28 days.
         <br />
         Do you want to proceed?
+      </Alert>
+      <Alert
+        title="Error"
+        onCancel={() => setIsAlertOpen(null)}
+        onConfirm={() => setIsAlertOpen(null)}
+        isOpen={openedAlert === "unclaimed"}
+      >
+        You can't modify it because there is a reward that you didn't receive.
+        Please make a claim and try again.
       </Alert>
       {children}
     </>
