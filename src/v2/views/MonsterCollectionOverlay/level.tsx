@@ -129,6 +129,7 @@ interface LevelProps {
    * When it's unavailable, it's grayed out.
    */
   disabled?: boolean;
+  onClick?(): void;
 }
 
 export const Level = ({
@@ -137,8 +138,14 @@ export const Level = ({
   current,
   selected,
   disabled,
+  onClick,
 }: LevelProps) => (
-  <LevelItem layout disabled={disabled} current={!!expandedImage && current}>
+  <LevelItem
+    layout
+    disabled={disabled}
+    current={!!expandedImage && current}
+    onClick={onClick}
+  >
     <LayoutGroup id={String(amount)}>
       {expandedImage ? (
         <LevelIcon layoutId="icon" src={expandedImage} />
