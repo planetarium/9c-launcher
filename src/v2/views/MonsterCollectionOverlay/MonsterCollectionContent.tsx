@@ -170,6 +170,8 @@ export function MonsterCollectionContent({
             e.preventDefault();
             if (stakeState && amountDecimal.lt(stakeState.deposit))
               setIsAlertOpen("lower-deposit");
+            else if (stakeState && tip >= stakeState.claimableBlockIndex)
+              setIsAlertOpen("unclaimed");
             else if (stakeState) setIsAlertOpen("confirm-changes");
             else changeAmount();
           }}
