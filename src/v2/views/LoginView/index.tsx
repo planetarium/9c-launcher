@@ -13,11 +13,14 @@ import { Select, SelectOption } from "src/v2/components/ui/Select";
 import { Link } from "src/v2/components/ui/Link";
 import { T } from "src/renderer/i18n";
 import Form from "src/v2/components/ui/Form";
+import { preloadService } from "src/v2/machines/preloadMachine";
+import { get } from "src/config";
+import toast from "react-hot-toast";
 
 const transifexTags = "v2/login-view";
 
 function LoginView() {
-  const { account } = useStore();
+  const { account, standalone } = useStore();
   const [password, setPassword] = useState("");
   const [invalid, setInvalid] = useState(false);
   const history = useHistory();
@@ -39,6 +42,34 @@ function LoginView() {
       ipcRenderer.send("mixpanel-alias", account.selectedAddress);
       ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
       ipcRenderer.send("standalone/set-signer-private-key", account.privateKey);
+
+      if (get("UseRemoteHeadless")) {
+        history.push("/lobby");
+        standalone.setPrivateKeyEnded(true);
+        account.setMiningConfigStatus(true);
+        return;
+      }
+
+      if (
+        ipcRenderer.sendSync("standalone/set-private-key", account.privateKey)
+      ) {
+        standalone.setPrivateKeyEnded(true);
+        account.setMiningConfigStatus(true);
+        ipcRenderer.send("set mining");
+      } else {
+        preloadService.send({ type: "ERROR", error: "relaunch" });
+      }
+      if (ipcRenderer.sendSync("standalone/set-mining", !get("NoMiner"))) {
+        toast(
+          <T
+            _str="Mining is enabled. You may disable this in settings."
+            _tags={transifexTags}
+          />,
+          { icon: "⚠️" }
+        );
+      } else {
+        preloadService.send({ type: "ERROR", error: "relaunch" });
+      }
       localStorage.setItem("lastAddress", account.selectedAddress);
       history.push("/lobby");
     }

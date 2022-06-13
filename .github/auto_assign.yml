@@ -2,13 +2,9 @@ addReviewers: true
 addAssignees: author
 
 reviewers:
-  - dahlia
+  - Namyujeong
   - longfin
-  - limebell
-  - riemannulus
-  - moreal
-  - area363
-  - boscohyun
   - BasixKOR
+  - rohjs
 
 numberOfReviewers: 0
