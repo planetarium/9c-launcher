@@ -57,7 +57,7 @@ interface MonsterCollectionOverlayProps {
   currentNCG: number;
   onChangeAmount(amount: Decimal): Promise<unknown>;
   onClose(): void;
-  tip?: number;
+  tip: number;
   isLoading: boolean;
   children?: React.ReactNode;
 }
@@ -70,7 +70,7 @@ const images = [
   monster5Img,
 ];
 
-type Alerts = "lower-deposit" | "confirm-changes";
+type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed";
 
 export function MonsterCollectionContent({
   sheet: {
@@ -119,8 +119,7 @@ export function MonsterCollectionContent({
     return index != null && index !== -1 ? index : null;
   }, [amountDecimal, levels]);
 
-  const isLockedUp =
-    tip != null && !!stakeState && tip <= stakeState.cancellableBlockIndex;
+  const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
   useEffect(() => {
     if (stakeState && stakeState.deposit)
@@ -171,6 +170,8 @@ export function MonsterCollectionContent({
             e.preventDefault();
             if (stakeState && amountDecimal.lt(stakeState.deposit))
               setIsAlertOpen("lower-deposit");
+            else if (stakeState && tip >= stakeState.claimableBlockIndex)
+              setIsAlertOpen("unclaimed");
             else if (stakeState) setIsAlertOpen("confirm-changes");
             else changeAmount();
           }}
@@ -237,15 +238,12 @@ export function MonsterCollectionContent({
           When you deposit NCG, the monsters go on an expedition to get the
           treasure.
         </DepositDescription>
-        {!isEditing &&
-          stakeState &&
-          tip &&
-          tip < stakeState.claimableBlockIndex && (
-            <DepositDescription>
-              About {getRemain(stakeState.claimableBlockIndex - tip)} of deposit
-              days!
-            </DepositDescription>
-          )}
+        {!isEditing && stakeState && tip < stakeState.claimableBlockIndex && (
+          <DepositDescription>
+            About {getRemain(stakeState.claimableBlockIndex - tip)} of deposit
+            days!
+          </DepositDescription>
+        )}
       </DepositHolder>
       <Levels>
         {levels.map((item, index) => (
@@ -313,6 +311,15 @@ export function MonsterCollectionContent({
         within 28 days.
         <br />
         Do you want to proceed?
+      </Alert>
+      <Alert
+        title="Error"
+        onCancel={() => setIsAlertOpen(null)}
+        onConfirm={() => setIsAlertOpen(null)}
+        isOpen={openedAlert === "unclaimed"}
+      >
+        You can't modify it because there is a reward that you didn't receive.
+        Please make a claim and try again.
       </Alert>
       {children}
     </>
