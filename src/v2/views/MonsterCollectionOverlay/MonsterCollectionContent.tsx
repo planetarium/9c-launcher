@@ -144,7 +144,7 @@ export function MonsterCollectionContent({
     () =>
       bonusRewards &&
       new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
-    [levels]
+    [bonusRewards]
   );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
