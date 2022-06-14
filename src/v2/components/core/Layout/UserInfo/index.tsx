@@ -73,7 +73,7 @@ export default function UserInfo() {
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
   useEffect(() => {
     const txStatus = result?.transaction.transactionResult.txStatus;
-    if (txStatus === TxStatus.Staging) return;
+    if (!txStatus || txStatus === TxStatus.Staging) return;
     stopPolling?.();
     setClaimLoading(false);
 
