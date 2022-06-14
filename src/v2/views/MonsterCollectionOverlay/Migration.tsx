@@ -65,7 +65,7 @@ export default function Migration({
               {deposit}
             </strong>
           </MigrationAlertItem>
-          <MigrationAlertItem title="Duration of progress">
+          <MigrationAlertItem title="Last updated">
             <span>
               <strong>{elapsed.number}</strong> {elapsed.unit}
               {elapsed.unit !== "blocks" && (
