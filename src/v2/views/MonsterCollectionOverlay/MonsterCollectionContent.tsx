@@ -134,17 +134,14 @@ export function MonsterCollectionContent({
 
   if (!levels) return null;
 
-  const rewards = isEditing
-    ? levels[selectedIndex!]?.rewards
-    : levels[currentIndex!]?.rewards;
-  const bonusRewards = isEditing
-    ? levels[selectedIndex!]?.bonusRewards
-    : levels[currentIndex!]?.bonusRewards;
+  const index = isEditing ? selectedIndex : currentIndex;
+  const rewards = levels[index!]?.rewards;
+  const bonusRewards = levels[index!]?.bonusRewards;
   const bonusRewardMap = useMemo(
     () =>
       bonusRewards &&
       new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
-    [bonusRewards]
+    [levels, index]
   );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
