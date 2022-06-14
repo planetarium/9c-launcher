@@ -7,6 +7,7 @@ import {
   NormalizedCacheObject,
 } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
+import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { ipcRenderer } from "electron";
 import { RetryLink } from "@apollo/client/link/retry";
@@ -20,8 +21,18 @@ import {
   PreloadEndedQuery,
 } from "../generated/graphql";
 import type { Update } from "src/main/update";
+import { captureException } from "@sentry/electron";
 
 type Client = ApolloClient<NormalizedCacheObject>;
+
+const onErrorLink = onError(({ graphQLErrors, networkError, operation }) => {
+  if (networkError) return;
+  if (graphQLErrors)
+    for (const error of graphQLErrors) {
+      console.error("GraphQL Error by", operation.operationName, error);
+      captureException(error);
+    }
+});
 
 export default function useApolloClient(): Client | null {
   const [apolloClient, setApolloClient] = useState<Client | null>(null);
@@ -69,7 +80,7 @@ export default function useApolloClient(): Client | null {
       );
 
       const client = new ApolloClient({
-        link: ApolloLink.from([new RetryLink(), splitLink]),
+        link: ApolloLink.from([new RetryLink(), onErrorLink, splitLink]),
         cache: new InMemoryCache(),
         connectToDevTools: !isDev,
       });
