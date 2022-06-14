@@ -70,11 +70,15 @@ export default function UserInfo() {
     pollInterval: 1000,
   });
 
+  const [claimLoading, setClaimLoading] = useState<boolean>(false);
   useEffect(() => {
-    if (result?.transaction.transactionResult.txStatus !== TxStatus.Staging)
-      stopPolling?.();
-    if (result?.transaction.transactionResult.txStatus === TxStatus.Success)
-      refetch();
+    const txStatus = result?.transaction.transactionResult.txStatus;
+    if (txStatus === TxStatus.Staging) return;
+    stopPolling?.();
+    setClaimLoading(false);
+
+    if (txStatus === TxStatus.Success) refetch();
+    else console.error("Claim transaction failed: ", result);
   }, [result]);
 
   const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
@@ -85,9 +89,6 @@ export default function UserInfo() {
   }, [claimableBlockIndex, tip]);
 
   const tx = useTx("claim-stake-reward", placeholder);
-
-  const [claimLoading, setClaimLoading] = useState<boolean>(false);
-  useEffect(() => setClaimLoading(false), [receivedBlockIndex]);
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
