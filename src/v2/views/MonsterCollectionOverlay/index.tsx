@@ -17,6 +17,7 @@ import {
   useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
 import Migration from "./Migration";
+import { ipcRenderer } from "electron";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
@@ -66,6 +67,10 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         currentNCG={balance}
         onChangeAmount={(amount) => {
           setLoading(true);
+          ipcRenderer.send("mixpanel-track-event", "Staking/AmountChange", {
+            amount,
+            previousAmount: current.stateQuery.stakeState?.deposit,
+          });
           return tx(amount.toString())
             .then(
               (v) =>
