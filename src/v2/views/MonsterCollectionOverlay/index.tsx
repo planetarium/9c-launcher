@@ -45,11 +45,12 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   });
 
   useEffect(() => {
-    if (txStatus?.transaction.transactionResult.txStatus === TxStatus.Success) {
+    if (!txStatus) return;
+    if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
       refetchStaking();
       refetchCollection();
     }
-    if (txStatus?.transaction.transactionResult.txStatus !== TxStatus.Staging) {
+    if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
       setLoading(false);
     }
