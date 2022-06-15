@@ -17,7 +17,7 @@ import monsterIconUrl from "src/v2/resources/monster.png";
 import { getRemain } from "src/collection/common/utils";
 import ClaimCollectionRewardsOverlay from "src/v2/views/ClaimCollectionRewardsOverlay";
 import { ClaimButton } from "./ClaimButton";
-import { clipboard } from "electron";
+import { clipboard, ipcRenderer } from "electron";
 import { toast } from "react-hot-toast";
 import { useT } from "@transifex/react";
 import { useBalance } from "src/v2/utils/useBalance";
@@ -70,11 +70,15 @@ export default function UserInfo() {
     pollInterval: 1000,
   });
 
+  const [claimLoading, setClaimLoading] = useState<boolean>(false);
   useEffect(() => {
-    if (result?.transaction.transactionResult.txStatus !== TxStatus.Staging)
-      stopPolling?.();
-    if (result?.transaction.transactionResult.txStatus === TxStatus.Success)
-      refetch();
+    const txStatus = result?.transaction.transactionResult.txStatus;
+    if (!txStatus || txStatus === TxStatus.Staging) return;
+    stopPolling?.();
+    setClaimLoading(false);
+
+    if (txStatus === TxStatus.Success) refetch();
+    else console.error("Claim transaction failed: ", result);
   }, [result]);
 
   const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
@@ -85,9 +89,6 @@ export default function UserInfo() {
   }, [claimableBlockIndex, tip]);
 
   const tx = useTx("claim-stake-reward", placeholder);
-
-  const [claimLoading, setClaimLoading] = useState<boolean>(false);
-  useEffect(() => setClaimLoading(false), [receivedBlockIndex]);
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -136,6 +137,10 @@ export default function UserInfo() {
               .then((txId) => {
                 if (!txId) return;
                 fetchResult({ variables: { txId } });
+                ipcRenderer.send("mixpanel-track-event", "Staking/Claim", {
+                  txId,
+                  avatar: avatar.address,
+                });
                 toast.success(
                   t("Successfully sent rewards to {name} #{address}", {
                     _tags: "v2/monster-collection",

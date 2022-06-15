@@ -17,6 +17,7 @@ import {
   useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
 import Migration from "./Migration";
+import { ipcRenderer } from "electron";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
@@ -45,11 +46,12 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   });
 
   useEffect(() => {
-    if (txStatus?.transaction.transactionResult.txStatus === TxStatus.Success) {
+    if (!txStatus) return;
+    if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
       refetchStaking();
       refetchCollection();
     }
-    if (txStatus?.transaction.transactionResult.txStatus !== TxStatus.Staging) {
+    if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
       setLoading(false);
     }
@@ -65,6 +67,10 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         currentNCG={balance}
         onChangeAmount={(amount) => {
           setLoading(true);
+          ipcRenderer.send("mixpanel-track-event", "Staking/AmountChange", {
+            amount,
+            previousAmount: current.stateQuery.stakeState?.deposit,
+          });
           return tx(amount.toString())
             .then(
               (v) =>
@@ -86,6 +92,11 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             collectionSheet={collection.stateQuery.monsterCollectionSheet}
             onActionTxId={(txId) => {
               setLoading(true);
+              ipcRenderer.send("mixpanel-track-event", "Staking/Migration", {
+                txId,
+                tip: tip.nodeStatus.tip.index,
+                level: collection.stateQuery.monsterCollectionState?.level,
+              });
               fetchStatus({ variables: { txId } });
             }}
             onClose={onClose}

@@ -59,14 +59,17 @@ function LoginView() {
       } else {
         preloadService.send({ type: "ERROR", error: "relaunch" });
       }
-      if (ipcRenderer.sendSync("standalone/set-mining", !get("NoMiner"))) {
-        toast(
-          <T
-            _str="Mining is enabled. You may disable this in settings."
-            _tags={transifexTags}
-          />,
-          { icon: "⚠️" }
-        );
+
+      const isMining = !get("NoMiner");
+      if (ipcRenderer.sendSync("standalone/set-mining", isMining)) {
+        if (isMining)
+          toast(
+            <T
+              _str="Mining is enabled. You may disable this in settings."
+              _tags={transifexTags}
+            />,
+            { icon: "⚠️" }
+          );
       } else {
         preloadService.send({ type: "ERROR", error: "relaunch" });
       }

@@ -70,7 +70,7 @@ const images = [
   monster5Img,
 ];
 
-type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed";
+type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
 
 export function MonsterCollectionContent({
   sheet: {
@@ -134,17 +134,14 @@ export function MonsterCollectionContent({
 
   if (!levels) return null;
 
-  const rewards = isEditing
-    ? levels[selectedIndex!]?.rewards
-    : levels[currentIndex!]?.rewards;
-  const bonusRewards = isEditing
-    ? levels[selectedIndex!]?.bonusRewards
-    : levels[currentIndex!]?.bonusRewards;
+  const index = isEditing ? selectedIndex : currentIndex;
+  const rewards = levels[index!]?.rewards;
+  const bonusRewards = levels[index!]?.bonusRewards;
   const bonusRewardMap = useMemo(
     () =>
       bonusRewards &&
       new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
-    [levels]
+    [levels, index]
   );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
@@ -172,6 +169,8 @@ export function MonsterCollectionContent({
               setIsAlertOpen("lower-deposit");
             else if (stakeState && tip >= stakeState.claimableBlockIndex)
               setIsAlertOpen("unclaimed");
+            else if (amountDecimal.lt(levels[0].requiredGold))
+              setIsAlertOpen("minimum");
             else if (stakeState) setIsAlertOpen("confirm-changes");
             else changeAmount();
           }}
@@ -314,12 +313,18 @@ export function MonsterCollectionContent({
       </Alert>
       <Alert
         title="Error"
-        onCancel={() => setIsAlertOpen(null)}
         onConfirm={() => setIsAlertOpen(null)}
         isOpen={openedAlert === "unclaimed"}
       >
         You can't modify it because there is a reward that you didn't receive.
         Please make a claim and try again.
+      </Alert>
+      <Alert
+        title="Error"
+        onConfirm={() => setIsAlertOpen(null)}
+        isOpen={openedAlert === "minimum"}
+      >
+        You can't stake less than {levels[0].requiredGold} NCG.
       </Alert>
       {children}
     </>
