@@ -95,7 +95,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
               ipcRenderer.send("mixpanel-track-event", "Staking/Migration", {
                 txId,
                 tip: tip.nodeStatus.tip.index,
-                amount: collection.stateQuery.monsterCollectionState?.level,
+                level: collection.stateQuery.monsterCollectionState?.level,
               });
               fetchStatus({ variables: { txId } });
             }}
