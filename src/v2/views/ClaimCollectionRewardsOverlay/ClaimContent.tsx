@@ -80,7 +80,7 @@ function ClaimContent({
   if (!hasMultipleAvatars) return null;
 
   return (
-    <ClaimCollectionRewardsOverlayBase isOpen={isOpen} onDismiss={onClose}>
+    <ClaimCollectionRewardsOverlayBase high isOpen={isOpen} onDismiss={onClose}>
       <Title>
         <T
           _str="Choose a character to receive rewards."
