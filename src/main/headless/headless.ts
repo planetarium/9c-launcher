@@ -41,6 +41,7 @@ class Headless {
   constructor(path: string) {
     this._path = path;
     this._running = false;
+    this._genesisHash = undefined;
 
     ipcMain.on(
       "standalone/set-private-key",
@@ -97,6 +98,33 @@ class Headless {
       }
     );
 
+    ipcMain.on("stake", async (event, amount: string, filePath: string) => {
+      console.log("stake");
+      event.returnValue = this.action.Stake(amount, filePath);
+    });
+
+    ipcMain.on(
+      "claim-stake-reward",
+      async (event, avatarAddress: string, filePath: string) => {
+        console.log("claim-stake-reward");
+        event.returnValue = this.action.ClaimStakeReward(
+          avatarAddress,
+          filePath
+        );
+      }
+    );
+
+    ipcMain.on(
+      "migrate-monster-collection",
+      async (event, avatarAddress: string, filePath: string) => {
+        console.log("migrate-monster-collection");
+        event.returnValue = this.action.MigrateMonsterCollection(
+          avatarAddress,
+          filePath
+        );
+      }
+    );
+
     ipcMain.on(
       "transfer-asset",
       async (
@@ -118,17 +146,21 @@ class Headless {
       }
     );
 
+    ipcMain.on("set-genesis-hash", (event, hash: string) => {
+      this._genesisHash = hash;
+    });
+
     ipcMain.on(
       "sign-tx",
       async (event, nonce: number, timeStamp: string, filePath: string) => {
         console.log("sign-tx");
-        if (this._signerPrivateKey == undefined || "") {
-          throw new Error("set signer private key first.");
+        if (!this._signerPrivateKey || !this._genesisHash) {
+          throw new Error("set signer private key and genesis hash first.");
         }
         event.returnValue = this.tx.Sign(
           this._signerPrivateKey,
           nonce,
-          "4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce",
+          this._genesisHash,
           timeStamp,
           filePath
         );
@@ -141,6 +173,7 @@ class Headless {
   private _privateKey: string | undefined;
   private _mining: boolean | undefined;
   private _signerPrivateKey: string | undefined;
+  private _genesisHash: string | undefined;
 
   // execute-kill
   public get alive(): boolean {

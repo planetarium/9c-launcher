@@ -11,9 +11,8 @@ import { useStore } from "src/v2/utils/useStore";
 import ClaimContent, { Avatar } from "./ClaimContent";
 
 export interface ClaimCollectionRewardsOverlayProps extends OverlayProps {
-  rewards: Reward[];
   tip: number;
-  onActionTxId: (txId: string | null, avatar?: Avatar) => void;
+  onConfirm(avatar: Avatar): void;
 }
 
 const transifexTags = "v2/views/ClaimCollectionRewardsOverlay";

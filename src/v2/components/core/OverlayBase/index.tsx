@@ -10,6 +10,13 @@ const AnimatedDialogOverlay = styled(motion(DialogOverlay), {
     overflow: "hidden",
     dragable: false,
   },
+  variants: {
+    high: {
+      true: {
+        zIndex: 3,
+      },
+    },
+  },
 });
 
 const AnimatedDialogContent = styled(motion(DialogContent), {

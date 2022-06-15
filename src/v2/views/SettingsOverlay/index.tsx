@@ -76,6 +76,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
     register,
     control,
     handleSubmit,
+    watch,
     formState: { isDirty, dirtyFields },
   } = useForm({
     defaultValues: {
@@ -106,6 +107,8 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
     () => () => void handleSubmit(onSubmit, onError)(), // Submit a form when exits.
     []
   );
+
+  const useRemoteHeadless = watch("UseRemoteHeadless");
 
   return (
     <OverlayBase isOpen={isOpen} onDismiss={onClose}>
@@ -146,6 +149,11 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
           <GroupTitle>
             <T _str="Advanced" _tags={transifexTags} />
           </GroupTitle>
+          {!useRemoteHeadless && (
+            <Checkbox {...register("NoMiner")}>
+              <T _str="Disable Mining" _tags={transifexTags} />
+            </Checkbox>
+          )}
           <AdvancedAction
             icon={<DeleteIcon />}
             onClick={clearCache}

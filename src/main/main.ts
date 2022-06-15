@@ -233,6 +233,12 @@ async function initializeApp() {
         await update(u, updateOptions);
       });
 
+    mixpanel?.track("Launcher/Start", {
+      isV2,
+      useRemoteHeadless,
+      updateAvailable: !!u,
+    });
+
     try {
       remoteNode = await initializeNode();
     } catch (e) {

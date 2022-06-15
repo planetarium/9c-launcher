@@ -66,4 +66,42 @@ export class Action extends StandaloneSubcommand {
       return false;
     }
   }
+
+  public Stake(amount: string, path: string): boolean {
+    try {
+      this.execSync("action", "stake", "--amount", amount, path);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  public ClaimStakeReward(avatarAddress: string, path: string): boolean {
+    try {
+      this.execSync("action", "claim-stake-reward", avatarAddress, path);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  public MigrateMonsterCollection(
+    avatarAddress: string,
+    path: string
+  ): boolean {
+    try {
+      this.execSync(
+        "action",
+        "migrate-monster-collection",
+        avatarAddress,
+        path
+      );
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
 }
