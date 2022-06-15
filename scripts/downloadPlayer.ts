@@ -233,9 +233,10 @@ async function main(): Promise<void> {
     if (e.code !== "ENOENT") throw e;
   }
 
-  await new Promise<void>(function retry(resolve, reject) {
+  await new Promise<void>(function retry(resolve, reject, count = 0) {
+    if (count > 10) resolve(); // Nah, should be done at this point.
     checkPublishIsDone(platform, commit).then((isDone) =>
-      isDone ? resolve() : setTimeout(retry, 1000, resolve, reject)
+      isDone ? resolve() : setTimeout(retry, 1000, resolve, reject, count + 1)
     );
   });
 
