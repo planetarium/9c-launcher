@@ -92,6 +92,11 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             collectionSheet={collection.stateQuery.monsterCollectionSheet}
             onActionTxId={(txId) => {
               setLoading(true);
+              ipcRenderer.send("mixpanel-track-event", "Staking/Migration", {
+                txId,
+                tip: tip.nodeStatus.tip.index,
+                amount: collection.stateQuery.monsterCollectionState?.level,
+              });
               fetchStatus({ variables: { txId } });
             }}
             onClose={onClose}
