@@ -8,6 +8,7 @@ export function useTip() {
   const [tip, setTip] = useState<number>(0);
 
   useEffect(() => {
+    let offset = Date.now() + 5000;
     const subscription = client
       .subscribe<TipSubscription>({
         query: TipDocument,
@@ -17,7 +18,13 @@ export function useTip() {
           if (!result.data || !result.data.tipChanged) return;
           const tip = result.data.tipChanged.index;
           if (lastId.current) cancelIdleCallback(lastId.current);
-          lastId.current = requestIdleCallback(() => setTip(tip));
+          lastId.current = requestIdleCallback(
+            () => {
+              offset = Date.now() + 5000;
+              setTip(tip);
+            },
+            { timeout: offset - Date.now() }
+          );
         },
         error(error) {
           console.error(error);
