@@ -6,6 +6,7 @@ import os from "os";
 import path from "path";
 import stream from "stream";
 import { promisify } from "util";
+import axios from "axios";
 
 type Sha = string;
 type Platform = "macOS" | "Windows";
@@ -33,13 +34,34 @@ function getCurrentPlatform(): Platform {
 }
 
 async function getPlayerCommit(): Promise<Sha> {
-  const { stdout, stderr } = await execWithPromise("git submodule status NineChronicles", {
-    cwd: path.join(__dirname, ".."),
-  });
+  const { stdout, stderr } = await execWithPromise(
+    "git submodule status NineChronicles",
+    {
+      cwd: path.join(__dirname, ".."),
+    }
+  );
   if (stderr) throw new Error(stderr);
   const match = /^[+-U ]?([0-9a-f]{40})\sNineChronicles/.exec(stdout);
-  if (!match || !match[1]) throw new Error(`Failed to get player commit [output: ${stdout}]`);
+  if (!match || !match[1])
+    throw new Error(`Failed to get player commit [output: ${stdout}]`);
   return match[1];
+}
+
+async function checkPublishIsDone(
+  platform: Platform,
+  commit: Sha
+): Promise<boolean> {
+  const url =
+    "https://api.github.com/repos/planetarium/NineChronicles/check-runs";
+  const res = await axios.post(url, {
+    name: `Publish Unity Player for ${platform}`,
+    head_sha: commit,
+  });
+
+  if (res.data.status !== "completed") return false;
+  if (res.data.conclusion !== "success")
+    throw new Error("9C build looks failed.");
+  return true;
 }
 
 function downloadPlayerBinary(
@@ -210,6 +232,13 @@ async function main(): Promise<void> {
   } catch (e) {
     if (e.code !== "ENOENT") throw e;
   }
+
+  await new Promise<void>(function retry(resolve, reject) {
+    checkPublishIsDone(platform, commit).then((isDone) =>
+      isDone ? resolve() : setTimeout(retry, 1000, resolve, reject)
+    );
+  });
+
   let percent: number | null = null;
   await bundlePlayerBinary(platform, commit, distPath, {
     downloadProgress: async (got, total) => {
