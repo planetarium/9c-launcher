@@ -46,7 +46,7 @@ jobs:
   build:
     executor:
       name: win/default
-      size: xlarge
+      size: 2xlarge
     # macos:
     #   xcode: "11.3.0"
     # Let's keep this disabled until we figure out the macOS build.
@@ -134,7 +134,7 @@ jobs:
   e2e-test:
     executor:
       name: win/default
-      size: xlarge
+      size: 2xlarge
     steps:
       - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
       - checkout-update-submodules:
