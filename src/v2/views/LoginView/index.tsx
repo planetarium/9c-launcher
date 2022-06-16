@@ -37,11 +37,12 @@ function LoginView() {
     }
 
     if (unprotectedPrivateKey !== undefined) {
-      account.setPrivateKey(unprotectedPrivateKey);
+      const key = unprotectedPrivateKey.padStart(64, "0");
+      account.setPrivateKey(key);
       account.setLoginStatus(true);
       ipcRenderer.send("mixpanel-alias", account.selectedAddress);
       ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
-      ipcRenderer.send("standalone/set-signer-private-key", account.privateKey);
+      ipcRenderer.send("standalone/set-signer-private-key", key);
 
       if (get("UseRemoteHeadless")) {
         history.push("/lobby");
@@ -50,9 +51,7 @@ function LoginView() {
         return;
       }
 
-      if (
-        ipcRenderer.sendSync("standalone/set-private-key", account.privateKey)
-      ) {
+      if (ipcRenderer.sendSync("standalone/set-private-key", key)) {
         standalone.setPrivateKeyEnded(true);
         account.setMiningConfigStatus(true);
         ipcRenderer.send("set mining");
