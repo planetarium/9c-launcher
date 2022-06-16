@@ -43,9 +43,10 @@ export default function Migration({
 
   const deposit = useMemo(
     () =>
-      collectionSheet?.orderedList?.find(
-        (v) => v?.level === collectionState.level
-      )?.requiredGold,
+      collectionSheet?.orderedList
+        ?.filter((v) => v?.level <= collectionState.level)
+        .map((v) => v.requiredGold)
+        .reduce((a, b) => a + b, 0),
     [collectionState, collectionSheet]
   );
   const elapsedBlocks = tip - collectionState.startedBlockIndex;
