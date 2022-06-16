@@ -67,10 +67,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         currentNCG={balance}
         onChangeAmount={(amount) => {
           setLoading(true);
-          ipcRenderer.send("mixpanel-track-event", "Staking/AmountChange", {
-            amount,
-            previousAmount: current.stateQuery.stakeState?.deposit,
-          });
+          try {
+            ipcRenderer.send("mixpanel-track-event", "Staking/AmountChange", {
+              amount: amount.toString(),
+              previousAmount: current.stateQuery.stakeState?.deposit,
+            });
+          } catch (e) {
+            console.error(e);
+          }
           return tx(amount.toString())
             .then(
               (v) =>
