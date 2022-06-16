@@ -24,12 +24,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const { data: sheet } = useStakingSheetQuery();
   const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
     variables: { address: account.selectedAddress },
+    skip: !account.isLogin,
   });
   const {
     data: collection,
     refetch: refetchCollection,
   } = useLegacyCollectionStateQuery({
     variables: { address: account.selectedAddress },
+    skip: !account.isLogin,
   });
   const balance = useBalance();
   const { data: tip } = useGetTipQuery({
