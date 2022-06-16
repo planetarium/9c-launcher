@@ -24,6 +24,7 @@ import { useBalance } from "src/v2/utils/useBalance";
 import MonsterCollectionOverlay from "src/v2/views/MonsterCollectionOverlay";
 import { useStaking } from "src/v2/utils/staking";
 import { useTx, placeholder } from "src/v2/utils/useTx";
+import { trackEvent } from "src/v2/utils/mixpanel";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -137,7 +138,7 @@ export default function UserInfo() {
               .then((txId) => {
                 if (!txId) return;
                 fetchResult({ variables: { txId } });
-                ipcRenderer.send("mixpanel-track-event", "Staking/Claim", {
+                trackEvent("Staking/Claim", {
                   txId,
                   avatar: avatar.address,
                 });

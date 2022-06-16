@@ -10,6 +10,7 @@ import {
 import { useStore } from "src/v2/utils/useStore";
 import { ipcRenderer } from "electron";
 import { useEffect, useMemo } from "react";
+import { trackEvent } from "./mixpanel";
 
 const statusMessage = [
   t("Idling"),
@@ -75,7 +76,7 @@ export function usePreload() {
     if (isEnded) {
       standalone.setReady(true);
       send("DONE");
-      ipcRenderer.send("mixpanel-track-event", `Launcher/Preload Completed`);
+      trackEvent(`Launcher/Preload Completed`);
     }
   }, [nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded]);
 
