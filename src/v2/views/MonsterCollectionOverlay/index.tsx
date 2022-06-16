@@ -24,12 +24,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const { data: sheet } = useStakingSheetQuery();
   const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
     variables: { address: account.selectedAddress },
+    skip: !account.isLogin,
   });
   const {
     data: collection,
     refetch: refetchCollection,
   } = useLegacyCollectionStateQuery({
     variables: { address: account.selectedAddress },
+    skip: !account.isLogin,
   });
   const balance = useBalance();
   const { data: tip } = useGetTipQuery({
@@ -67,10 +69,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         currentNCG={balance}
         onChangeAmount={(amount) => {
           setLoading(true);
-          ipcRenderer.send("mixpanel-track-event", "Staking/AmountChange", {
-            amount,
-            previousAmount: current.stateQuery.stakeState?.deposit,
-          });
+          try {
+            ipcRenderer.send("mixpanel-track-event", "Staking/AmountChange", {
+              amount: amount.toString(),
+              previousAmount: current.stateQuery.stakeState?.deposit,
+            });
+          } catch (e) {
+            console.error(e);
+          }
           return tx(amount.toString())
             .then(
               (v) =>
