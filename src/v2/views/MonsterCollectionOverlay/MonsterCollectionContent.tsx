@@ -34,6 +34,10 @@ import monster4Img from "src/v2/resources/collection/monster-4.png";
 import monster5Img from "src/v2/resources/collection/monster-5.png";
 import itemMetadata from "src/v2/utils/monsterCollection/items";
 
+import crystalImg from "src/v2/resources/collection/icon-grinding-crystal.png";
+import arenaImg from "src/v2/resources/collection/icon-arena-reward.png";
+import systemRewards from "src/v2/utils/monsterCollection/systemRewards";
+
 import {
   CurrentStakingQuery,
   StakingSheetQuery,
@@ -281,6 +285,28 @@ export function MonsterCollectionContent({
                   </Item>
                 );
               })}
+            </ItemGroup>
+            <ItemGroup key="system" title="System Rewards">
+              <Item
+                key="crystal"
+                amount={systemRewards[index!].crystal}
+                title={
+                  <>
+                    Grinding
+                    <br />
+                    +Staking
+                  </>
+                }
+              >
+                <img src={crystalImg} />
+              </Item>
+              <Item
+                key="arena"
+                amount={systemRewards[index!].arena}
+                title="Arena"
+              >
+                <img src={arenaImg} />
+              </Item>
             </ItemGroup>
           </RewardSheet>
         ) : (
