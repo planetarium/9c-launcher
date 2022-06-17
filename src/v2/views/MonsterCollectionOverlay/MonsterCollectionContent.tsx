@@ -237,9 +237,9 @@ export function MonsterCollectionContent({
           When you deposit NCG, the monsters go on an expedition to get the
           treasure.
         </DepositDescription>
-        {!isEditing && stakeState && tip < stakeState.claimableBlockIndex && (
+        {!isEditing && stakeState && tip >= stakeState.startedBlockIndex && (
           <DepositDescription>
-            About {getRemain(stakeState.claimableBlockIndex - tip)} of deposit
+            About {getRemain(tip - stakeState.startedBlockIndex)} of deposit
             days!
           </DepositDescription>
         )}
