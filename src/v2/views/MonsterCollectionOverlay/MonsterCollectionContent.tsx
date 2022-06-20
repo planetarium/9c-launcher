@@ -75,6 +75,36 @@ const images = [
   monster5Img,
 ];
 
+type Levels =
+  | NonNullable<StakingSheetQuery["stateQuery"]["stakeRewards"]>["orderedList"]
+  | null
+  | undefined;
+
+function useRewardIndex(levels: Levels, amount: Decimal = new Decimal(0)) {
+  return useMemo(() => {
+    const index = levels?.findLastIndex((v) => amount?.gte(v.requiredGold));
+    return index != null && index !== -1 ? index : null;
+  }, [amount, levels]);
+}
+
+function useRewards(levels: Levels, index: number = 0) {
+  const rewards = levels?.[index!]?.rewards;
+  const bonusRewards = levels?.[index!]?.bonusRewards;
+  const bonusRewardMap = useMemo(
+    () =>
+      bonusRewards &&
+      new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
+    [levels, index]
+  );
+
+  return rewards?.map((v) => ({
+    ...v,
+    count(amount: Decimal) {
+      return amount.divToInt(v.rate).add(bonusRewardMap?.get(v.itemId) || 0);
+    },
+  }));
+}
+
 type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
 
 export function MonsterCollectionContent({
@@ -112,19 +142,8 @@ export function MonsterCollectionContent({
     [deposit, currentNCG]
   );
 
-  // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
-  const currentIndex = useMemo(() => {
-    if (!stakeState) return null;
-    const index = levels?.findLastIndex((v) => deposit?.gte(v.requiredGold));
-    return index != null && index !== -1 ? index : null;
-  }, [stakeState, levels, deposit]);
-  const selectedIndex = useMemo(() => {
-    const index = levels?.findLastIndex((v) =>
-      amountDecimal.gte(v.requiredGold)
-    );
-    return index != null && index !== -1 ? index : null;
-  }, [amountDecimal, levels]);
-
+  const currentIndex = useRewardIndex(levels, deposit ?? new Decimal(0));
+  const selectedIndex = useRewardIndex(levels, amountDecimal);
   const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
   useEffect(() => {
@@ -138,16 +157,10 @@ export function MonsterCollectionContent({
     setIsEditing(false);
   });
 
-  const index = isEditing ? selectedIndex : currentIndex;
-  const rewards = levels?.[index!]?.rewards;
-  const bonusRewards = levels?.[index!]?.bonusRewards;
-  const bonusRewardMap = useMemo(
-    () =>
-      bonusRewards &&
-      new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
-    [bonusRewards]
-  );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
+  const currentRewards = useRewards(levels, currentIndex ?? 0);
+  const selectedRewards = useRewards(levels, selectedIndex ?? 0);
+  if (!levels) return null;
 
   if (!levels) return null;
 
@@ -267,21 +280,17 @@ export function MonsterCollectionContent({
         ))}
       </Levels>
       <AnimatePresence exitBeforeEnter>
-        {rewards ? (
+        {currentRewards ? (
           <RewardSheet>
             <ItemGroup key="recurring" title="Recurring Rewards">
-              {rewards?.map((item) => {
+              {currentRewards.map((item, index) => {
                 const itemMeta = itemMetadata[item.itemId] ?? {
                   name: "Unknown",
                 };
-                const bonusCount = bonusRewardMap?.get(item.itemId) ?? 0;
                 return (
                   <Item
                     key={item.itemId}
-                    amount={currentAmount
-                      .divToInt(item.rate)
-                      .add(bonusCount)
-                      .toString()}
+                    amount={item.count(currentAmount).toString()}
                     title={itemMeta.name}
                   >
                     <img src={itemMeta.img} />
