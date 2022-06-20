@@ -13,8 +13,8 @@ import path from "path";
 import { ipcRenderer } from "electron";
 
 function getIsFileExsist() {
-  var remote = require("electron").remote;
-  var electronFs = remote.require("fs");
+  const remote = require("electron").remote;
+  const electronFs = remote.require("fs");
   const filePath = path.join(
     remote.app.getAppPath(),
     "monster-collection-intro"
@@ -28,8 +28,8 @@ function getIsFileExsist() {
 }
 
 function createFile() {
-  var remote = require("electron").remote;
-  var electronFs = remote.require("fs");
+  const remote = require("electron").remote;
+  const electronFs = remote.require("fs");
   const filePath = path.join(
     remote.app.getAppPath(),
     "monster-collection-intro"

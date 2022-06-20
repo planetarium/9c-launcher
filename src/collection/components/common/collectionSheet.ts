@@ -6,7 +6,7 @@ import {
 
 export const getRewardCategoryList = (): number[] => {
   const result: number[] = [];
-  for (let category in RewardCategory) {
+  for (const category in RewardCategory) {
     const value = Number(category);
     if (!isNaN(value)) result.push(value);
   }
