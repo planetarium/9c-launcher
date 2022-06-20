@@ -1,12 +1,12 @@
-$bg-img: url('../../common/resources/bg-staking-popup-01.png');
-$label-img: url('../../common/resources/bg-staking-popup-02.png');
+$bg-img: url("../../common/resources/bg-staking-popup-01.png");
+$label-img: url("../../common/resources/bg-staking-popup-02.png");
 
 .RemainingDisplayContainer {
   width: 449px;
   height: 107px;
-      background: $bg-img;
-    background-size: 100%;
-    background-repeat: no-repeat;
+  background: $bg-img;
+  background-size: 100%;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -31,9 +31,9 @@ $label-img: url('../../common/resources/bg-staking-popup-02.png');
   width: 397px;
   height: 39px;
   bottom: 7px;
-    background: $label-img;
-    background-size: 100%;
-    background-repeat: no-repeat;
+  background: $label-img;
+  background-size: 100%;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

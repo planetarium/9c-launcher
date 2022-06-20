@@ -1,38 +1,38 @@
-$filter: url('../../common/resources/UI_staking_frame.png');
-$bg-img: url('../../common/resources/staking_bg.png');
+$filter: url("../../common/resources/UI_staking_frame.png");
+$bg-img: url("../../common/resources/staking_bg.png");
 
 .MainBorder {
-    background: $filter;
-    background-size: 100%;
-    width: 100.5vw;
-    height: 100.5vh;
-    position: relative;
-    left: -3px;
-    top: -3px;
+  background: $filter;
+  background-size: 100%;
+  width: 100.5vw;
+  height: 100.5vh;
+  position: relative;
+  left: -3px;
+  top: -3px;
 }
 
 .MainContainer {
-    font-family: 'Montserrat', sans-serif;
-    background: $bg-img;
-    width: 100vw;
-    height: 100vh;
-    background-size: cover;
-    color: white;
+  font-family: "Montserrat", sans-serif;
+  background: $bg-img;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  color: white;
 }
 
 .CollectionItemList {
-    display: flex;
-    position: absolute;
-    top: 25%;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  position: absolute;
+  top: 25%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .MainCartContainer {
-    position: relative;
-    top: 440px;
-    left: -36px;
+  position: relative;
+  top: 440px;
+  left: -36px;
 }
 
 .MainRemainDisplayPos {
