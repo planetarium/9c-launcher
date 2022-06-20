@@ -5,17 +5,16 @@
     "react-app",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
+    "prettier"
   ],
   "rules": {
     "jsx-a11y/alt-text": 0,
     "react/prop-types": 0,
     "no-underscore-dangle": 0,
-    "import/imports-first": ["error", "absolute-first"],
+    "import/first": "error",
     "import/newline-after-import": "error",
     "import/prefer-default-export": 0,
-    "semi": "error",
-    "require-await": "error"
+    "@typescript-eslint/no-inferrable-types": 0
   },
   "globals": {
     "window": true,
