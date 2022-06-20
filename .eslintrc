@@ -2,13 +2,13 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "extends": [
-    "airbnb",
-    "airbnb/hooks",
+    "react-app",
+    "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "plugin:react/recommended"
+    "plugin:prettier/recommended"
   ],
   "rules": {
+    "jsx-a11y/alt-text": 0,
     "react/prop-types": 0,
     "no-underscore-dangle": 0,
     "import/imports-first": ["error", "absolute-first"],
