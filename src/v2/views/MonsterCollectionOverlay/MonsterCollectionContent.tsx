@@ -287,11 +287,17 @@ export function MonsterCollectionContent({
                 const itemMeta = itemMetadata[item.itemId] ?? {
                   name: "Unknown",
                 };
+                const selectedAmount = isEditing
+                  ? selectedRewards?.[index].count(amountDecimal)
+                  : null;
+                const itemAmount = item.count(deposit ?? new Decimal(0));
                 return (
                   <Item
                     key={item.itemId}
-                    amount={item.count(currentAmount).toString()}
+                    amount={itemAmount.toString()}
                     title={itemMeta.name}
+                    isUpgrade={selectedAmount?.gte(itemAmount)}
+                    updatedAmount={selectedAmount?.toString()}
                   >
                     <img src={itemMeta.img} />
                   </Item>
