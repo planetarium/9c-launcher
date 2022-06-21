@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from "react";
+import electron from "electron";
 import { observer } from "mobx-react";
 import { motion } from "framer-motion";
 import { styled } from "src/v2/stitches.config";
@@ -47,7 +48,7 @@ const GroupTitle = styled("h2", {
 type Languages = Array<Record<"code" | "name" | "localized_name", string>>;
 
 const transifexTags = "v2/configuration";
-const app = require("electron").remote.app;
+const app = electron.remote.app;
 
 function handleOpenKeyStorePath() {
   const openpath = path.join(
