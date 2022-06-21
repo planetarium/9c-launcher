@@ -1,5 +1,6 @@
 import React, { ComponentPropsWithRef, useState } from "react";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+import { noop } from "lodash";
 
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { MonsterCollectionOverlayBase } from "./base";
@@ -104,8 +105,6 @@ export default {
 interface Args {
   currentNCG?: number;
 }
-
-const noop = () => {};
 
 function MonsterCollectionOverlay(
   props: Partial<ComponentPropsWithRef<typeof MonsterCollectionContent>> & Args

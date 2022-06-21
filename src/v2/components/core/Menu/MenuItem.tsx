@@ -2,8 +2,6 @@ import React from "react";
 import { styled } from "src/v2/stitches.config";
 import type * as Stitches from "@stitches/react";
 
-const noop = () => {};
-
 const MenuItemContainer = styled("button", {
   all: "unset",
   display: "flex",
