@@ -15,3 +15,12 @@ __tests__/fixture/store/integration
 
 # Webpack bundle analyzer
 report.html
+
+# Yarn 3
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

@@ -132,7 +132,7 @@ jobs:
       # 이전 릴리스 버전으로부터 config.json 복사
       - run: |
           set -ex
-          latest_apv_no="$(yarn --silent latest-apv-no)"
+          latest_apv_no="$(yarn latest-apv-no)"
           temp_dir="$(mktemp -d)"
           pushd "$temp_dir"
           curl -o tmp.zip "$(printf "$URL_PATTERN" "$latest_apv_no")"
