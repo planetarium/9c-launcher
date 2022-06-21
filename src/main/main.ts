@@ -99,7 +99,7 @@ let collectionWin: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
-let standalone: Headless = new Headless(standaloneExecutablePath);
+const standalone: Headless = new Headless(standaloneExecutablePath);
 let ip: string | null = null;
 let relaunched: boolean = false;
 
@@ -605,7 +605,7 @@ async function initializeHeadless(): Promise<void> {
             initializeHeadlessCts.token,
             async (size) => {
               try {
-                let freeSpace = await getFreeSpace(chainPath);
+                const freeSpace = await getFreeSpace(chainPath);
                 if (freeSpace < size) {
                   win?.webContents.send("go to error page", "disk-space", {
                     size,
@@ -766,7 +766,7 @@ async function initializeRemoteHeadless(): Promise<void> {
 }
 
 async function createWindow(): Promise<BrowserWindow> {
-  let _win = new BrowserWindow({
+  const _win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -840,7 +840,7 @@ function loadInstallerMixpanelUUID(): string {
     });
   }
 
-  let guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
+  const guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
 
   if (!fs.existsSync(guidPath)) {
     const newUUID = uuidv4();
@@ -868,7 +868,7 @@ async function relaunchHeadless(reason: string = "default") {
 async function quitAllProcesses(reason: string = "default") {
   await stopHeadlessProcess(reason);
   if (gameNode === null) return;
-  let pid = gameNode.pid;
+  const pid = gameNode.pid;
   process.kill(pid, "SIGINT");
   gameNode = null;
 }

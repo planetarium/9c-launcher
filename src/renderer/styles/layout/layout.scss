@@ -24,14 +24,14 @@ main {
     padding-left: 0;
     list-style: none;
   }
-  .LauncherClientOption{
-    background-color: rgba(26, 26, 26,0.95);
-    padding:8px 12px;
+  .LauncherClientOption {
+    background-color: rgba(26, 26, 26, 0.95);
+    padding: 8px 12px;
     position: absolute;
-    right:16px;
-    bottom:24px;
+    right: 16px;
+    bottom: 24px;
   }
-  
+
   .LauncherLayoutVersion {
     position: absolute;
     bottom: 15px;
@@ -40,14 +40,14 @@ main {
   }
 
   .LauncherClientInfo {
-    background-color: rgba(26, 26, 26,0.95);
+    background-color: rgba(26, 26, 26, 0.95);
     position: absolute;
     font-size: 9px;
     color: antiquewhite;
     left: 400px;
     bottom: 0px;
     padding: -5px;
-    width:calc(100% - 400px);
+    width: calc(100% - 400px);
     visibility: hidden;
     ul {
       margin: 0px;
@@ -62,35 +62,35 @@ main {
     }
   }
 }
-.clipboard{
-  position:absolute;
-  width:100px;
-  height:10px;
-  left:-99999px;
+.clipboard {
+  position: absolute;
+  width: 100px;
+  height: 10px;
+  left: -99999px;
 }
-.LauncherClientIcon{
-  display:inline-flex;
-  padding:3px;
-  padding-right:8px;
+.LauncherClientIcon {
+  display: inline-flex;
+  padding: 3px;
+  padding-right: 8px;
   justify-content: flex-start;
-  align-items: center;;
-  background-color: rgba(26, 26, 26,0.95);
-  position:absolute;
-  color:white;
+  align-items: center;
+  background-color: rgba(26, 26, 26, 0.95);
+  position: absolute;
+  color: white;
   border-radius: 30px;
-  font-size:12px;
-  right:16px;
-  bottom:15px;
+  font-size: 12px;
+  right: 16px;
+  bottom: 15px;
   cursor: pointer;
-  width:42px;
-  transition: width 0.5s cubic-bezier(.2,0.8,0,1);
-  svg{
-    width:14px;
-    height:14px;
-    margin-right:4px;
+  width: 42px;
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0, 1);
+  svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
   }
-  &.activate{
-    width:64px;
+  &.activate {
+    width: 64px;
   }
 }
 

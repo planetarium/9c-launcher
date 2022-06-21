@@ -10,11 +10,11 @@ import { getMainDefinition } from "apollo-utilities";
 import { ApolloProvider } from "react-apollo";
 import IntroFacade from "./pages/facade/IntroFacade";
 import path from "path";
-import { ipcRenderer } from "electron";
+import electron, { ipcRenderer } from "electron";
 
 function getIsFileExsist() {
-  var remote = require("electron").remote;
-  var electronFs = remote.require("fs");
+  const remote = electron.remote;
+  const electronFs = remote.require("fs");
   const filePath = path.join(
     remote.app.getAppPath(),
     "monster-collection-intro"
@@ -28,8 +28,8 @@ function getIsFileExsist() {
 }
 
 function createFile() {
-  var remote = require("electron").remote;
-  var electronFs = remote.require("fs");
+  const remote = electron.remote;
+  const electronFs = remote.require("fs");
   const filePath = path.join(
     remote.app.getAppPath(),
     "monster-collection-intro"

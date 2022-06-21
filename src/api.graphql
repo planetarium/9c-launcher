@@ -24,7 +24,11 @@ query NodeStatus {
   }
 }
 
-query TopmostBlocks($limit: Int = 500, $offset: Int = 50, $miner: Address = null) {
+query TopmostBlocks(
+  $limit: Int = 500
+  $offset: Int = 50
+  $miner: Address = null
+) {
   nodeStatus {
     topmostBlocks(limit: $limit, offset: $offset, miner: $miner) {
       id
@@ -217,8 +221,7 @@ query GetNextTxNonce($address: Address!) {
 }
 
 query StateQueryMonsterCollection($agentAddress: Address!) {
-  stateQuery{
-
+  stateQuery {
     agent(address: $agentAddress) {
       gold
     }
@@ -246,8 +249,18 @@ mutation ClaimCollectionReward($address: Address!) {
   }
 }
 
-mutation Transfer($recipient: Address! $amount: String! $txNonce: Long! $memo: String!) {
-  transfer(recipient: $recipient, amount: $amount, txNonce: $txNonce, memo: $memo)
+mutation Transfer(
+  $recipient: Address!
+  $amount: String!
+  $txNonce: Long!
+  $memo: String!
+) {
+  transfer(
+    recipient: $recipient
+    amount: $amount
+    txNonce: $txNonce
+    memo: $memo
+  )
 }
 
 subscription CollectionState {
@@ -381,7 +394,7 @@ query CurrentStaking($address: Address!) {
   }
 }
 
-query StakingSheet { 
+query StakingSheet {
   stateQuery {
     stakeRewards {
       orderedList {

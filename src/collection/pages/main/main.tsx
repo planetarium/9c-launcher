@@ -402,7 +402,7 @@ const Main: React.FC<Props> = (props: Props) => {
     };
     let txNonce;
     try {
-      let res = await ended();
+      const res = await ended();
       txNonce = res.data.transaction.nextTxNonce;
     } catch (e) {
       alert(e.message);

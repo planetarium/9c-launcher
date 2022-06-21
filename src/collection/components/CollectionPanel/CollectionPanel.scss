@@ -1,99 +1,99 @@
-$bg-img: url('../../common/resources/bg-staking-bottom-bg.png');
-$info-bg-img: url('../../common/resources/ui-staking-top-bg-03.png');
-$title-bg: url('../../common/resources/ui-staking-top-bg-04.png');
-$item-bg: url('../../common/resources/ui-staking-slot-bg.png');
+$bg-img: url("../../common/resources/bg-staking-bottom-bg.png");
+$info-bg-img: url("../../common/resources/ui-staking-top-bg-03.png");
+$title-bg: url("../../common/resources/ui-staking-top-bg-04.png");
+$item-bg: url("../../common/resources/ui-staking-slot-bg.png");
 
 .CollectionPanelContainer {
   width: 105vw;
 }
 
 .CollectionPanelBackground {
-    background: $bg-img;
-    background-size: 100%;
-    background-repeat: no-repeat;
+  background: $bg-img;
+  background-size: 100%;
+  background-repeat: no-repeat;
 
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 180px;
+
+  .reward {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
-    height: 180px;
-
-    .reward {
+    flex-direction: column;
+    position: relative;
+    right: 22px;
+    .title {
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      position: relative;
-      right: 22px;
-      .title {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: $title-bg;
-        background-size: 100%;
-        background-repeat: no-repeat;
-        width: 144px;
-        height: 37px;
-        object-fit: contain;
-        text-shadow: 0px 1px 0.5px rgba(204, 155, 98, 0.55);
-        font-size: 16px;
-        font-weight: bold;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 0.56;
-        letter-spacing: -0.48px;
-        text-align: left;
-        color: #140d08;
-      }
+      background: $title-bg;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      width: 144px;
+      height: 37px;
+      object-fit: contain;
+      text-shadow: 0px 1px 0.5px rgba(204, 155, 98, 0.55);
+      font-size: 16px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 0.56;
+      letter-spacing: -0.48px;
+      text-align: left;
+      color: #140d08;
     }
-    .balance {
+  }
+  .balance {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+
+    .title {
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
+      background: $title-bg;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      width: 144px;
+      height: 37px;
       position: relative;
-
-      .title {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: $title-bg;
-        background-size: 100%;
-        background-repeat: no-repeat;
-        width: 144px;
-        height: 37px;
-        position: relative;
-        top: 50px;
-        object-fit: contain;
-        text-shadow: 0px 1px 0.5px rgba(204, 155, 98, 0.55);
-        font-size: 16px;
-        font-weight: bold;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 0.56;
-        letter-spacing: -0.48px;
-        text-align: left;
-        color: #140d08;
-      }
-
-      .deposit {
-        position: relative;
-        bottom: 47px;
-        text-shadow: 0px 2px 0.2px rgba(0, 0, 0, 0.91);
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 0.64;
-        letter-spacing: 0.7px;
-        color: #fff5e3;
-      }
-
-      .monster {
-        width: 200px;
-        position: relative;
-        bottom: 10px;
-        right: 10px;
-      }
+      top: 50px;
+      object-fit: contain;
+      text-shadow: 0px 1px 0.5px rgba(204, 155, 98, 0.55);
+      font-size: 16px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 0.56;
+      letter-spacing: -0.48px;
+      text-align: left;
+      color: #140d08;
     }
+
+    .deposit {
+      position: relative;
+      bottom: 47px;
+      text-shadow: 0px 2px 0.2px rgba(0, 0, 0, 0.91);
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 0.64;
+      letter-spacing: 0.7px;
+      color: #fff5e3;
+    }
+
+    .monster {
+      width: 200px;
+      position: relative;
+      bottom: 10px;
+      right: 10px;
+    }
+  }
 }
 
 .CollectionRewardItemBackground {
@@ -117,8 +117,7 @@ $item-bg: url('../../common/resources/ui-staking-slot-bg.png');
   flex-direction: column;
 
   .label {
-    text-shadow: 0px 2
-    px 0.2px rgba(0, 0, 0, 0.91);
+    text-shadow: 0px 2 px 0.2px rgba(0, 0, 0, 0.91);
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -188,6 +187,6 @@ $item-bg: url('../../common/resources/ui-staking-slot-bg.png');
   }
 
   li::marker {
-      content: '- ';
+    content: "- ";
   }
 }

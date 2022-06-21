@@ -29,7 +29,7 @@ export async function downloadMetadata(
     await cancellableDownload(downloadPath, savingPath, (_) => {}, token);
     token.throwIfCancelled();
 
-    let meta = await fs.promises.readFile(savingPath, "utf-8");
+    const meta = await fs.promises.readFile(savingPath, "utf-8");
     console.log("Metadata download complete: ", meta);
     return JSON.parse(meta) as BlockMetadata;
   } catch (error) {
@@ -111,16 +111,16 @@ export async function processSnapshot(
 
   const localMetadata = standalone.getTip("monorocksdb", storePath);
 
-  let snapshotMetadata = await downloadMetadata(
+  const snapshotMetadata = await downloadMetadata(
     snapshotDownloadUrl,
     win,
     token
   );
-  let needSnapshot =
+  const needSnapshot =
     localMetadata === null || validateMetadata(localMetadata, snapshotMetadata);
   if (needSnapshot) {
     await sizeCallback(REQUIRED_DISK_SPACE);
-    let snapshotPath = await downloadSnapshot(
+    const snapshotPath = await downloadSnapshot(
       snapshotDownloadUrl,
       (status) => {
         win?.webContents.send("download snapshot progress", status);

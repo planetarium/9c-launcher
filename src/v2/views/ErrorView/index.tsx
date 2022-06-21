@@ -31,7 +31,7 @@ function handleRestart() {
 }
 
 function ErrorView() {
-  let { path } = useRouteMatch();
+  const { path } = useRouteMatch();
   const [state] = useActor(preloadService);
 
   return (

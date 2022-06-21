@@ -25,7 +25,7 @@ export const retryOptions = {
 
 interface NodeStatus {
   Node: ChildProcess | null;
-  QuitRequested: Boolean;
+  QuitRequested: boolean;
   ExitCode: number | null;
 }
 
@@ -46,7 +46,7 @@ class Headless {
     ipcMain.on(
       "standalone/set-private-key",
       async (event, privateKey: string) => {
-        let ret = await this.login(privateKey).catch(() => false);
+        const ret = await this.login(privateKey).catch(() => false);
         console.log(`set-private-key: ${ret}`);
         event.returnValue = ret;
       }
@@ -55,14 +55,16 @@ class Headless {
     ipcMain.on(
       "standalone/set-signer-private-key",
       async (event, privateKey: string) => {
-        let ret = await this.setSignerPrivateKey(privateKey).catch(() => false);
+        const ret = await this.setSignerPrivateKey(privateKey).catch(
+          () => false
+        );
         console.log(`set-signer-private-key: ${ret}`);
         event.returnValue = ret;
       }
     );
 
     ipcMain.on("standalone/set-mining", async (event, mining: boolean) => {
-      let ret = await this.miningOption(mining).catch(() => false);
+      const ret = await this.miningOption(mining).catch(() => false);
       console.log(`set-mining: ${ret}`);
       event.returnValue = ret;
     });
@@ -211,7 +213,7 @@ class Headless {
         );
       }
 
-      let node = execute(this._path, args);
+      const node = execute(this._path, args);
       node.addListener("exit", this.exitedHandler);
       NODESTATUS.Node = node;
     }
@@ -252,7 +254,7 @@ class Headless {
 
     NODESTATUS.QuitRequested = true;
 
-    let pid: number = NODESTATUS.Node.pid;
+    const pid: number = NODESTATUS.Node.pid;
     process.kill(pid, "SIGINT");
 
     console.log("Wait for standalone quit...");
@@ -360,7 +362,7 @@ class Headless {
       }
 
       try {
-        let response = await fetch(`http://${LOCAL_SERVER_URL}/${addr}`, {
+        const response = await fetch(`http://${LOCAL_SERVER_URL}/${addr}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

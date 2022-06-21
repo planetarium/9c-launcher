@@ -1,14 +1,13 @@
-$primary-img: url('../../common/resources/ui-staking-button-apply.png');
-$cancel-img: url('../../common/resources/ui-staking-button-cancel.png');
+$primary-img: url("../../common/resources/ui-staking-button-apply.png");
+$cancel-img: url("../../common/resources/ui-staking-button-cancel.png");
 
 .ButtonContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-    cursor:pointer;
-    transition: background 0.5s cubic-bezier(.2,0.8,0,1);
-    background:transparent;
-
+  cursor: pointer;
+  transition: background 0.5s cubic-bezier(0.2, 0.8, 0, 1);
+  background: transparent;
 }
 
 .PrimaryButtonContainer {

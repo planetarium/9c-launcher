@@ -1,33 +1,32 @@
-$slot-img: url('../../../common/resources/ui-staking-slot-bg.png');
-$select-img: url('../../../common/resources/ui-staking-slot-select-02.png');
-$selected-img: url('../../../common/resources/ui-staking-slot-select-01.png');
-
+$slot-img: url("../../../common/resources/ui-staking-slot-bg.png");
+$select-img: url("../../../common/resources/ui-staking-slot-select-02.png");
+$selected-img: url("../../../common/resources/ui-staking-slot-select-01.png");
 
 .RemoveButton {
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    top: 0;
-    right: -2px;
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: 0;
+  right: -2px;
 }
 
 .CartIconContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px;
 }
 
 .CartItemContainer {
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    top: 15px;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  top: 15px;
 }
 
 .CollectionImageBackground {
@@ -39,8 +38,8 @@ $selected-img: url('../../../common/resources/ui-staking-slot-select-01.png');
 }
 
 .GoldIcon {
-    width: 21px;
-    height: 21px;
+  width: 21px;
+  height: 21px;
 }
 
 .CartValue {
@@ -58,7 +57,7 @@ $selected-img: url('../../../common/resources/ui-staking-slot-select-01.png');
 }
 
 .RedFontColor {
-    color: red;
+  color: red;
 }
 
 .AddItem {

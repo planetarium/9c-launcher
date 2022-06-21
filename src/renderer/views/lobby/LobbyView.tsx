@@ -119,7 +119,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     };
     let nonce;
     try {
-      let res = await ended();
+      const res = await ended();
       nonce = res.data.activationKeyNonce;
     } catch (e) {
       setErrorMsg(e.message);
@@ -143,7 +143,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     };
     let txNonce;
     try {
-      let res = await ended2();
+      const res = await ended2();
       txNonce = res.data.transaction.nextTxNonce;
     } catch (e) {
       setErrorMsg(e.message);
