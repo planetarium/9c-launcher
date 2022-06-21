@@ -222,7 +222,7 @@
     "prettier": "^2.0.5",
     "react-hot-loader": "^4.12.21",
     "react-test-renderer": "^16.13.1",
-    "run-script-os": "^1.1.1",
+    "run-script-os": "^1.1.6",
     "sass": "^1.35.1",
     "sass-loader": "^12.1.0",
     "spectron": "^11.1.0",

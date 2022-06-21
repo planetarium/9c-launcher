@@ -8659,7 +8659,7 @@ __metadata:
     react-youtube: ^7.11.3
     remove-focus-outline: ^1.2.1
     retry-axios: ^2.4.0
-    run-script-os: ^1.1.1
+    run-script-os: ^1.1.6
     sass: ^1.35.1
     sass-loader: ^12.1.0
     spectron: ^11.1.0
@@ -24174,13 +24174,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"run-script-os@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "run-script-os@npm:1.1.1"
+"run-script-os@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "run-script-os@npm:1.1.6"
   bin:
     run-os: index.js
     run-script-os: index.js
-  checksum: 4570eda4b974d574e8a1e2cd695b1e360148cf57ef31f22f97ed423bc20d97335da299c0f9652cc8d9214bbaa5624cc46d2bc0d95c68273d18996e751f3af106
+  checksum: 395c9576c1645867897901bb7f16406a7da06de8962b23e9879c91790248f6b3fb0b2a9dff6821cd77f3a9fb284e956118e39a57aa40280f71b12119555dad84
   languageName: node
   linkType: hard
 
