@@ -2,13 +2,15 @@ import { useApolloClient } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
 import { TipDocument, TipSubscription } from "../generated/graphql";
 
+const TIMEOUT = 1000;
+
 export function useTip() {
   const client = useApolloClient();
   const lastId = useRef<number | null>(null);
   const [tip, setTip] = useState<number>(0);
 
   useEffect(() => {
-    let offset = Date.now() + 5000;
+    let offset = Date.now() + TIMEOUT;
     const subscription = client
       .subscribe<TipSubscription>({
         query: TipDocument,
@@ -20,7 +22,7 @@ export function useTip() {
           if (lastId.current) cancelIdleCallback(lastId.current);
           lastId.current = requestIdleCallback(
             () => {
-              offset = Date.now() + 5000;
+              offset = Date.now() + TIMEOUT;
               setTip(tip);
             },
             { timeout: offset - Date.now() }
