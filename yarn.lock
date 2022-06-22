@@ -10071,6 +10071,7 @@ __metadata:
     react-router-dom: ^5.2.0
     react-test-renderer: ^16.13.1
     react-youtube: ^7.11.3
+    refiner-js: ^1.0.2
     remove-focus-outline: ^1.2.1
     retry-axios: ^2.4.0
     run-script-os: ^1.1.6
@@ -25268,6 +25269,13 @@ __metadata:
   dependencies:
     esprima: ~4.0.0
   checksum: 39a1426e377727cfb47a0e24e95c1cf78d969fbc388dc1e0fa1e2ef8a8756450cefb8b0c2598f63b85f1a331986fca7604c0db798427a5775a1dbdb9c1291979
+  languageName: node
+  linkType: hard
+
+"refiner-js@npm:^1.0.2":
+  version: 1.0.3
+  resolution: "refiner-js@npm:1.0.3"
+  checksum: 4eefffcc1b15410685b632d9d95dd8665ba8eebf657a68031994b2bed8c3514e50fddbb7f459dd90ab9697ff0ea3054f825f9fd4ca7a5beeac0fada58c27025c
   languageName: node
   linkType: hard
 
