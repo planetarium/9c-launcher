@@ -66,6 +66,7 @@ const LoginView = observer(
         accountStore.setLoginStatus(true);
         ipcRenderer.send("mixpanel-alias", accountStore.selectedAddress);
         ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
+        _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
         _refiner("identifyUser", {
           id: accountStore.selectedAddress,
           config: {
