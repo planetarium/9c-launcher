@@ -1,6 +1,6 @@
 export default [
   {
-    crystal: 20,
+    crystal: 0,
     arena: 0,
     stage: 6,
   },
