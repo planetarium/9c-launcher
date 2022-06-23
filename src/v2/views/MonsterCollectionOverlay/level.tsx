@@ -4,8 +4,8 @@ import { styled } from "src/v2/stitches.config";
 
 import stepIcon from "src/v2/resources/collection/icon-step.png";
 import currentBackground from "src/v2/resources/collection/current-status-round.png";
-import currentLeaf from "src/v2/resources/collection/current-status-leaf.png";
-import selectArrow from "src/v2/resources/collection/select-arrow.png";
+import currentLeaf from "src/v2/resources/collection/current-status-leaf.gif";
+import selectArrow from "src/v2/resources/collection/select-arrow.gif";
 import ncgIcon from "src/v2/resources/ui-main-icon-gold.png";
 
 const LevelsLine = styled("div", {
