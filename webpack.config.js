@@ -120,7 +120,7 @@ function createRenderConfig(isDev) {
         },
 
         {
-          test: /\.(svg|jpg|png|ttf)$/,
+          test: /\.(svg|jpg|png|ttf|webp|gif)$/,
           exclude: /node_modules/,
           type: "asset",
         },
