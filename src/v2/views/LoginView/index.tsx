@@ -45,6 +45,7 @@ function LoginView() {
       ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
       ipcRenderer.send("standalone/set-signer-private-key", key);
 
+      _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
       _refiner("identifyUser", {
         id: account.selectedAddress,
         config: {

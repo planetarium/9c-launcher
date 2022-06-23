@@ -46,8 +46,6 @@ const history = syncHistoryWithStore(
   Store.routerStore
 );
 
-_refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
-
 _refiner("onShow", () => {
   if (
     remote.getCurrentWindow().isVisible() &&
