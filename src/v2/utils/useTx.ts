@@ -1,4 +1,5 @@
 import { ipcRenderer } from "electron";
+import { useRef } from "react";
 import type { Action } from "src/main/headless/action";
 import { tmpName } from "tmp-promise";
 import {
@@ -63,6 +64,7 @@ export function useTx<K extends keyof ActionArguemnts>(
   event: K,
   ...args: PartialTuple<ActionArguemnts[K]>
 ): (...replacers: Replacers<ActionArguemnts[K], typeof args>) => Result {
+  const inProgress = useRef(false);
   const accountStore = useStore("account");
   const { refetch } = useGetNextTxNonceQuery({
     variables: {
@@ -76,32 +78,41 @@ export function useTx<K extends keyof ActionArguemnts>(
     return () => Promise.reject(new Error("Missing arguments"));
   else
     return async (...replacers) => {
-      const txFile = await tmpName();
-      const parameters = args
-        .map((v) => (v === placeholder ? replacers.shift() : v))
-        .concat(txFile);
-      const txSuccess = ipcRenderer.sendSync(event, ...parameters);
-      if (!txSuccess) throw new Error("Transaction failed");
+      if (inProgress.current) throw new Error("Already in progress.");
+      else inProgress.current = true;
 
-      const { data, error } = await refetch();
-      if (error) throw error;
-      const nonce = data.transaction.nextTxNonce;
-      const { status, stdout: encodedTx, stderr } = ipcRenderer.sendSync(
-        "sign-tx",
-        nonce,
-        new Date().toISOString(),
-        txFile
-      );
+      try {
+        const txFile = await tmpName();
+        const parameters = args
+          .map((v) => (v === placeholder ? replacers.shift() : v))
+          .concat(txFile);
+        const txSuccess = ipcRenderer.sendSync(event, ...parameters);
+        if (!txSuccess) throw new Error("Transaction failed");
 
-      if (status) throw new Error(stderr);
+        const { data, error } = await refetch();
+        if (error) throw error;
+        const nonce = data.transaction.nextTxNonce;
+        const { status, stdout: encodedTx, stderr } = ipcRenderer.sendSync(
+          "sign-tx",
+          nonce,
+          new Date().toISOString(),
+          txFile
+        );
 
-      return await stage({
-        variables: {
-          encodedTx,
-        },
-      }).then((res) => {
-        if (res.data) console.log(event, parameters, res.data.stageTxV2);
-        return res;
-      });
+        if (status) throw new Error(stderr);
+
+        return await stage({
+          variables: {
+            encodedTx,
+          },
+        }).then((res) => {
+          if (res.data) console.log(event, parameters, res.data.stageTxV2);
+          return res;
+        });
+      } catch (e) {
+        throw e;
+      } finally {
+        inProgress.current = false;
+      }
     };
 }
