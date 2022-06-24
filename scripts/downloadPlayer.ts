@@ -8,7 +8,7 @@ import stream from "stream";
 import { promisify } from "util";
 
 type Sha = string;
-type Platform = "macOS" | "Windows | Linux";
+type Platform = "macOS" | "Windows" | "Linux";
 
 const execWithPromise = promisify(exec);
 
