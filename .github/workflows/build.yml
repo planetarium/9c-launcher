@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "14"
       # 의존성 설치
-      - run: yarn add @planetarium/cli
+      - run: npm i -g @planetarium/cli
       # APV 생성
       - id: make-apv
         run: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
@@ -118,12 +118,14 @@ jobs:
           node-version: "14"
       - uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: "6.0"
-      - name: Pull node_modules cache
-        uses: actions/cache@v2
+          dotnet-version: '6.0'
+      - name: Pull Yarn cache
+        uses: actions/cache@v3
         with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}-build
+          path: '.yarn/cache'
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       # 의존성 설치
       - run: yarn
       # 코드 스타일 린트
