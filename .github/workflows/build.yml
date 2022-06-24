@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "14"
       # 의존성 설치
-      - run: npm i -g @planetarium/cli
+      - run: yarn add @planetarium/cli
       # APV 생성
       - id: make-apv
         run: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
@@ -187,10 +187,10 @@ jobs:
       - if: runner.os == 'Windows'
         run: 7z a -r ../../pack-dist/Windows.zip *
         working-directory: pack/Nine Chronicles-win32-x64/
-      - if: runner.os != 'Darwin'
+      - if: runner.os == 'Darwin'
         run: tar cvfz ../../pack-dist/macOS.tar.gz *
         working-directory: pack/Nine Chronicles-darwin-x64/
-      - if: runner.os != 'Linux'
+      - if: runner.os == 'Linux'
         run: tar cvfz ../../pack-dist/Linux.tar.gz *
         working-directory: pack/Nine Chronicles-linux-x64/
       - if: github.event_name != 'pull_request'
