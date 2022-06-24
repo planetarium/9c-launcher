@@ -8,7 +8,7 @@ import stream from "stream";
 import { promisify } from "util";
 
 type Sha = string;
-type Platform = "macOS" | "Windows" | "Linux";
+type Platform = "macOS" | "Windows";
 
 const execWithPromise = promisify(exec);
 
@@ -17,7 +17,6 @@ const execWithPromise = promisify(exec);
 // 참고: https://github.com/planetarium/nekoyume-unity/pull/2446
 const DOWNLOAD_URL_BASE: string = "https://d3rgdei88xmq6p.cloudfront.net";
 const FILENAMES: { [K in Platform]: string } = {
-  Linux: "Linux.tar.gz",
   macOS: "macOS.tar.gz",
   Windows: "Windows.zip",
 };
@@ -30,22 +29,16 @@ function getCurrentPlatform(): Platform {
     ? "Windows"
     : process.platform == "darwin"
     ? "macOS"
-    : process.platform == "linux"
-    ? "Linux"
     : error();
 }
 
 async function getPlayerCommit(): Promise<Sha> {
-  const { stdout, stderr } = await execWithPromise(
-    "git submodule status NineChronicles",
-    {
-      cwd: path.join(__dirname, ".."),
-    }
-  );
+  const { stdout, stderr } = await execWithPromise("git submodule status NineChronicles", {
+    cwd: path.join(__dirname, ".."),
+  });
   if (stderr) throw new Error(stderr);
   const match = /^[+-U ]?([0-9a-f]{40})\sNineChronicles/.exec(stdout);
-  if (!match || !match[1])
-    throw new Error(`Failed to get player commit [output: ${stdout}]`);
+  if (!match || !match[1]) throw new Error(`Failed to get player commit [output: ${stdout}]`);
   return match[1];
 }
 
@@ -143,7 +136,6 @@ async function untar(tarPath: string, extractTo: string): Promise<void> {
 const DECOMPRESSOR: {
   [K in Platform]: (path: string, extractTo: string) => Promise<void>;
 } = {
-  Linux: unzip,
   macOS: untar,
   Windows: unzip,
 };
@@ -200,11 +192,7 @@ async function main(): Promise<void> {
   }
   const appPath = path.join(
     distPath,
-    platform == "Windows"
-      ? "Nine Chronicles.exe"
-      : platform == "Linux"
-      ? "Nine Chronicles"
-      : "Nine Chronicles.app"
+    platform == "Windows" ? "Nine Chronicles.exe" : "Nine Chronicles.app"
   );
   const fingerprintPath = path.join(distPath, ".9cfp");
   try {
