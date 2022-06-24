@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "14"
       # 의존성 설치
-      - run: yarn add @planetarium/cli
+      - run: npm i -g @planetarium/cli
       # APV 생성
       - id: make-apv
         run: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
