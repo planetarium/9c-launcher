@@ -29,6 +29,7 @@
     "start:v2": "yarn webpack --env NODE_ENV=development --env target=main && electron ./dist/. --v2",
     "pack": "run-script-os",
     "pack:windows": "yarn build-prod && pwsh -nop -ex bypass -noni -f scripts/electron-pack.ps1",
+    "pack:linux": "yarn build-prod && scripts/electron-pack.sh",
     "pack:darwin": "yarn build-prod && scripts/electron-pack.sh",
     "dev": "concurrently --kill-others \"yarn server\" \"yarn start\"",
     "dev:v2": "concurrently --kill-others \"yarn server\" \"yarn start:v2\"",
