@@ -200,11 +200,11 @@ async function main(): Promise<void> {
   }
   const appPath = path.join(
     distPath,
-    platform == "Windows"
-      ? "Nine Chronicles.exe"
-      : platform == "Linux"
-      ? "Nine Chronicles"
-      : "Nine Chronicles.app"
+    {
+      Windows: "Nine Chronicles.exe",
+      macOS: "Nine Chronicles.app",
+      Linux: "Nine Chronicles"
+    }[platform]
   );
   const fingerprintPath = path.join(distPath, ".9cfp");
   try {
