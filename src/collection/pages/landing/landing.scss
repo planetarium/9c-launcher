@@ -1,8 +1,8 @@
-$filter: url('../../common/resources/UI_staking_frame.png');
-$bg: url('../../common/resources/image-1.png');
+$filter: url("../../common/resources/UI_staking_frame.png");
+$bg: url("../../common/resources/image-1.png");
 
 .IntroContainer {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   width: 100vw;
   height: 100vh;
   background-image: $bg;
@@ -19,7 +19,7 @@ $bg: url('../../common/resources/image-1.png');
     font-weight: normal;
     color: white;
     margin-bottom: 15px;
-  }  
+  }
 }
 
 .IntroPageBorder {
@@ -32,7 +32,6 @@ $bg: url('../../common/resources/image-1.png');
   left: -3px;
   top: -3px;
 }
-
 
 .IntroItems {
   display: flex;

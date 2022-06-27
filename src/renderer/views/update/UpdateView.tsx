@@ -38,7 +38,7 @@ const UpdateView = ({ state, variant, progress }: UpdateViewProps) => {
   const progressToString =
     variant === "determinate" ? ` ${Math.round(progress)}%` : "";
 
-  var progressMessage;
+  let progressMessage;
   switch (state) {
     case "copy":
       progressMessage = "Copying files...";
@@ -59,7 +59,11 @@ const UpdateView = ({ state, variant, progress }: UpdateViewProps) => {
         className={styles.nineChroniclesLogo}
       />
       <div className={styles.menu}>
-        <a href="https://forum.nine-chronicles.com/" target="_blank">
+        <a
+          href="https://forum.nine-chronicles.com/"
+          target="_blank"
+          rel="noreferrer"
+        >
           <div className={styles.menuItem}>
             <img
               src={NineChroniclesLogoIconImage}
@@ -67,7 +71,11 @@ const UpdateView = ({ state, variant, progress }: UpdateViewProps) => {
             />
           </div>
         </a>
-        <a href="https://bit.ly/planetarium-discord" target="_blank">
+        <a
+          href="https://bit.ly/planetarium-discord"
+          target="_blank"
+          rel="noreferrer"
+        >
           <div className={styles.menuItem} style={{ marginTop: 10 }}>
             <img src={DiscordIconImage} style={{ width: 32, height: 32 }} />
           </div>

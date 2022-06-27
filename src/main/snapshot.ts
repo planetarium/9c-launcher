@@ -33,11 +33,11 @@ export const getCurrentEpoch = (storePath: string): Epoch => {
       .filter((epoch) => !isNaN(epoch));
 
   try {
-    let currentBlockEpoch = Math.max.apply(
+    const currentBlockEpoch = Math.max.apply(
       null,
       getEpochList(path.join(storePath, "block"))
     );
-    let currentTxEpoch = Math.max.apply(
+    const currentTxEpoch = Math.max.apply(
       null,
       getEpochList(path.join(storePath, "tx"))
     );
@@ -65,15 +65,15 @@ export const getSnapshotDownloadTarget = async (
   token: CancellationToken,
   mixpanel?: INineChroniclesMixpanel
 ): Promise<Epoch[]> => {
-  let localEpoch = getCurrentEpoch(storePath);
-  let target: Epoch[] = [];
+  const localEpoch = getCurrentEpoch(storePath);
+  const target: Epoch[] = [];
 
   mixpanel?.track(`Launcher/Downloading Snapshot/metadata`);
 
   while (true) {
     token.throwIfCancelled();
 
-    let checkEpochRange =
+    const checkEpochRange =
       localEpoch["BlockEpoch"] > metadata["BlockEpoch"] &&
       localEpoch["TxEpoch"] > metadata["TxEpoch"];
 
@@ -84,12 +84,12 @@ export const getSnapshotDownloadTarget = async (
       TxEpoch: metadata["TxEpoch"],
     });
 
-    let checkSnapshotIsGenesis =
+    const checkSnapshotIsGenesis =
       metadata["PreviousBlockEpoch"] === 0 && metadata["PreviousTxEpoch"] === 0;
 
     if (checkSnapshotIsGenesis) break;
 
-    let downloadTargetName = `snapshot-${metadata["PreviousBlockEpoch"]}-${metadata["PreviousTxEpoch"]}.json`;
+    const downloadTargetName = `snapshot-${metadata["PreviousBlockEpoch"]}-${metadata["PreviousTxEpoch"]}.json`;
     metadata = await downloadMetadata(
       basePath,
       downloadPath,
@@ -144,7 +144,7 @@ export async function downloadMetadata(
     );
     token.throwIfCancelled();
 
-    let meta = await fs.promises.readFile(savingPath, "utf-8");
+    const meta = await fs.promises.readFile(savingPath, "utf-8");
     console.log("Metadata download complete: ", meta);
     return JSON.parse(meta) as BlockMetadata;
   } catch (error) {
@@ -176,14 +176,14 @@ export async function downloadSnapshot(
   console.log("Downloading snapshot.");
   console.log(target);
   let savingPaths: string[] = [];
-  let progressDict: DownloadStatus = {};
+  const progressDict: DownloadStatus = {};
 
   try {
     mixpanel?.track(`Launcher/Downloading Snapshot/snapshot`);
 
-    let downloadPromise = target.map(async (x) => {
-      let downloadTargetName = `snapshot-${x.BlockEpoch}-${x.TxEpoch}.zip`;
-      let savingPath = path.join(downloadPath, `${downloadTargetName}`);
+    const downloadPromise = target.map(async (x) => {
+      const downloadTargetName = `snapshot-${x.BlockEpoch}-${x.TxEpoch}.zip`;
+      const savingPath = path.join(downloadPath, `${downloadTargetName}`);
       console.log(`download snapshot path: ${basePath}/${downloadTargetName}`);
       await cancellableDownload(
         basePath + `/${downloadTargetName}`,
@@ -295,7 +295,7 @@ export async function extractSnapshot(
 }
 
 export function removeUselessStore(blockchainStorePath: string): void {
-  let listOfUselessDb = [
+  const listOfUselessDb = [
     "9c-main",
     "chain",
     "stagedtx",

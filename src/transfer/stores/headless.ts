@@ -142,7 +142,7 @@ export default class HeadlessStore implements IHeadlessStore {
 
       let txNonce;
       try {
-        let res = await ended(signer, graphqlSdk);
+        const res = await ended(signer, graphqlSdk);
         txNonce = res.data?.transaction.nextTxNonce;
       } catch (e) {
         throw new Error(

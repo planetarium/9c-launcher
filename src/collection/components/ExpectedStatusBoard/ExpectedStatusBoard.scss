@@ -1,13 +1,12 @@
-$bg-img: url('../../common/resources/bg-staking-top-bg.png');
+$bg-img: url("../../common/resources/bg-staking-top-bg.png");
 
 .ExpectedStatusBoardBackground {
   background: $bg-img;
-    background-size: 100%;
-    background-repeat: no-repeat;
+  background-size: 100%;
+  background-repeat: no-repeat;
 
-    width: 855px;
-    height: 86px;
-
+  width: 855px;
+  height: 86px;
 }
 
 .ExpectedStatusBoardContainer {

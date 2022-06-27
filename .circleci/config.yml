@@ -20,17 +20,14 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - yarn-installation-{{ arch }}-{{ checksum "yarn.lock" }}
-            - yarn-{{ arch }}-{{ checksum "yarn.lock" }}
-            - yarn-{{ checksum "yarn.lock" }}
+            - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
       - run: 
-          command: yarn install --frozen-lockfile  --cache-folder ~/.cache/yarn
+          command: yarn install --immutable
           shell: bash
       - save_cache:
-          key: yarn-installation-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
-            - ~/.cache/yarn
-            - node_modules
+            - .yarn/cache
   install-dotnet:
     parameters:
       version:
@@ -76,6 +73,7 @@ jobs:
           name: Clean Headless
       - run:
           command: yarn concurrently npm:build-headless npm:bundle-player
+          shell: bash
           name: Setup Software Components
       - run:
           command: |

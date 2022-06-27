@@ -1,4 +1,5 @@
 import React, { useMemo, useReducer } from "react";
+import { noop } from "lodash";
 import { LegacyCollectionStateQuery } from "src/v2/generated/graphql";
 import { MigrationAlert, MigrationAlertItem } from "./dialog";
 import ncgIcon from "src/v2/resources/collection/items/ncg.png";
@@ -14,8 +15,6 @@ interface MigrationProps {
   onActionTxId(txId: string): void;
   onClose?(): void;
 }
-
-const noop = () => {};
 
 // Slight modification of src\collection\common\utils.ts:16
 function getRemain(blocks: number) {

@@ -54,7 +54,7 @@ class RemoteHeadless {
 
     NODESTATUS.QuitRequested = true;
 
-    let pid: number = NODESTATUS.Node.pid;
+    const pid: number = NODESTATUS.Node.pid;
     process.kill(pid, "SIGINT");
 
     console.log("Wait for standalone quit...");
@@ -125,7 +125,7 @@ class RemoteHeadless {
       }
 
       try {
-        let response = await fetch(`http://${this._url}/${addr}`, {
+        const response = await fetch(`http://${this._url}/${addr}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
