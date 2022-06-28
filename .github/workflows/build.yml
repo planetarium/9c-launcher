@@ -55,7 +55,7 @@ jobs:
       matrix:
         os:
           - macos-10.15
-          - linux
+          - ubuntu-20.04
     runs-on: ${{ matrix.os }}
     steps:
       # 클론
@@ -152,7 +152,7 @@ jobs:
       - if: runner.os == 'Windows'
         run: 7z a -r "../9c-launcher-dist-${{ matrix.os }}.7z" *
         working-directory: dist/
-      - if: runner.os == 'Darwin'
+      - if: runner.os == 'macOS'
         run: tar cvfj "../9c-launcher-dist-${{ matrix.os }}.tar.bz2" *
       - if: runner.os == 'Linux'
         run: tar cvfj "../9c-launcher-dist-${{ matrix.os }}.tar.bz2" *
@@ -187,10 +187,10 @@ jobs:
       - if: runner.os == 'Windows'
         run: 7z a -r ../../pack-dist/Windows.zip *
         working-directory: pack/Nine Chronicles-win32-x64/
-      - if: runner.os != 'Darwin'
+      - if: runner.os == 'macOS'
         run: tar cvfz ../../pack-dist/macOS.tar.gz *
         working-directory: pack/Nine Chronicles-darwin-x64/
-      - if: runner.os != 'Linux'
+      - if: runner.os == 'Linux'
         run: tar cvfz ../../pack-dist/Linux.tar.gz *
         working-directory: pack/Nine Chronicles-linux-x64/
       - if: github.event_name != 'pull_request'
