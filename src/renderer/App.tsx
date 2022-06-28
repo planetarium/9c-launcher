@@ -23,13 +23,14 @@ import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppP
 import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
 import montserrat from "./styles/font";
 import { t } from "@transifex/native";
-import { ipcRenderer } from "electron";
+import { ipcRenderer, remote } from "electron";
 import { LocaleProvider } from "./i18n";
 import type { NodeInfo } from "../config";
 import RPCSpinner from "./components/RPCSpinner/RPCSpinner";
 import { PreloadEndedDocument, PreloadEndedQuery } from "src/generated/graphql";
 import { Update } from "src/main/update";
 import { GenesisHashDocument, GenesisHashQuery } from "src/generated/graphql";
+import _refiner from "refiner-js";
 
 const Store: IStoreContainer = {
   accountStore: new AccountStore(),
@@ -44,6 +45,22 @@ const history = syncHistoryWithStore(
   }),
   Store.routerStore
 );
+
+_refiner("onShow", () => {
+  if (
+    remote.getCurrentWindow().isVisible() &&
+    remote.getCurrentWindow().isFocused()
+  )
+    return;
+  _refiner("addToResponse", {
+    notification: true,
+  });
+  new Notification(t("We'd welcome your feedback!"), {
+    body: t(
+      "Let us know how 'Nine Chronicles' can improve your game experience."
+    ),
+  });
+});
 
 function App() {
   const [client, setClient] = useState<ApolloClient<any>>();

@@ -31,6 +31,7 @@ import VisibilityAdornment from "../../components/VisibilityAdornment";
 import loginViewStyle from "./LoginView.style";
 import { T } from "@transifex/react";
 import TextButton from "../../components/TextButton";
+import _refiner from "refiner-js";
 
 const popoverLayout: Pick<PopoverProps, "anchorOrigin" | "transformOrigin"> = {
   anchorOrigin: {
@@ -65,6 +66,14 @@ const LoginView = observer(
         accountStore.setLoginStatus(true);
         ipcRenderer.send("mixpanel-alias", accountStore.selectedAddress);
         ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
+        _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
+        _refiner("identifyUser", {
+          id: accountStore.selectedAddress,
+          config: {
+            rpc: get("UseRemoteHeadless"),
+            locale: get("Locale"),
+          },
+        });
         if (get("UseRemoteHeadless")) {
           routerStore.push("lobby/preload");
           standaloneStore.setPrivateKeyEnded(true);

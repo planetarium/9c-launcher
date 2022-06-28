@@ -25,3 +25,7 @@ body {
 :focus {
   outline: thin dotted;
 }
+
+#refiner-widget-wrapper {
+  -webkit-app-region: no-drag;
+}
