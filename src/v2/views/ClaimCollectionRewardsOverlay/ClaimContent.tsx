@@ -1,15 +1,20 @@
-import React, { useEffect, useMemo, useReducer, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { GetAvatarAddressQuery } from "src/v2/generated/graphql";
 import { useTx } from "src/v2/utils/useTx";
 
 import type { ClaimCollectionRewardsOverlayProps } from ".";
 import { RadioItem, RadioGroup } from "src/v2/components/ui/RadioGroup";
-import Button, { ButtonBar } from "src/v2/components/ui/Button";
 import { T } from "src/renderer/i18n";
 import { styled } from "src/v2/stitches.config";
 import { getRemain } from "src/collection/common/utils";
-import OverlayBase from "src/v2/components/core/OverlayBase";
+import { AlertDialog, AlertDialogLabel } from "@reach/alert-dialog";
+import {
+  AlertButton,
+  AlertDescription,
+} from "../MonsterCollectionOverlay/dialog";
+
+import claimBg from "src/v2/resources/collection/popup-account-selection.png";
 
 interface ClaimContentProps extends ClaimCollectionRewardsOverlayProps {
   data: GetAvatarAddressQuery;
@@ -17,21 +22,24 @@ interface ClaimContentProps extends ClaimCollectionRewardsOverlayProps {
 
 const transifexTags = "v2/views/ClaimCollectionRewardsOverlay";
 
-const Title = styled("h2", {
-  textAlign: "center",
-});
-
-const ClaimCollectionRewardsOverlayBase = styled(OverlayBase, {
+const ClaimCollectionRewardsOverlayBase = styled(AlertDialog, {
   "&&": {
-    width: 570,
-    height: 460,
-    margin: "20vh auto",
+    width: 728,
+    height: 493,
+    backgroundImage: `url(${claimBg})`,
+    backgroundColor: "transparent",
   },
-  display: "flex",
-  flexDirection: "column",
   "& > * + *": {
     marginTop: 16,
   },
+  boxSizing: "border-box",
+  display: "flex",
+  flexDirection: "column",
+  dragable: false,
+});
+
+const ButtonBar = styled("div", {
+  alignSelf: "center",
 });
 
 const LastActivity = styled("span", {
@@ -77,16 +85,16 @@ function ClaimContent({
     onConfirm(currentAvatar);
   }, [avatars, isOpen]);
 
+  const leastDestructiveRef = useRef<HTMLButtonElement>(null);
+
   if (!hasMultipleAvatars) return null;
 
   return (
-    <ClaimCollectionRewardsOverlayBase high isOpen={isOpen} onDismiss={onClose}>
-      <Title>
-        <T
-          _str="Choose a character to receive rewards."
-          _tags={transifexTags}
-        />
-      </Title>
+    <ClaimCollectionRewardsOverlayBase
+      leastDestructiveRef={leastDestructiveRef}
+      isOpen={isOpen}
+      onDismiss={onClose}
+    >
       <RadioGroup
         value={String(currentAvatarIndex)}
         onValueChange={setCurrentAvatarIndex}
@@ -108,17 +116,20 @@ function ClaimContent({
           </RadioItem>
         ))}
       </RadioGroup>
-      <ButtonBar placement="bottom">
-        <Button onClick={() => onClose()}>
+      <AlertDescription as={AlertDialogLabel}>
+        Please select an account to send staking rewards to.
+      </AlertDescription>
+      <ButtonBar>
+        <AlertButton ref={leastDestructiveRef} onClick={onClose}>
           <T _str="Cancel" _tags={transifexTags} />
-        </Button>
-        <Button
+        </AlertButton>
+        <AlertButton
           variant="primary"
           disabled={!currentAvatar}
           onClick={() => currentAvatar && onConfirm(currentAvatar)}
         >
           <T _str="Send" _tags={transifexTags} />
-        </Button>
+        </AlertButton>
       </ButtonBar>
     </ClaimCollectionRewardsOverlayBase>
   );
