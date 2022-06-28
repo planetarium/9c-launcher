@@ -154,6 +154,7 @@ jobs:
         working-directory: dist/
       - if: runner.os == 'macOS'
         run: tar cvfj "../9c-launcher-dist-${{ matrix.os }}.tar.bz2" *
+        working-directory: dist/
       - if: runner.os == 'Linux'
         run: tar cvfj "../9c-launcher-dist-${{ matrix.os }}.tar.bz2" *
         working-directory: dist/
