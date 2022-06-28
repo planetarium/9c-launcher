@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "14"
       # 의존성 설치
-      - run: yarn add @planetarium/cli
+      - run: npm i -g @planetarium/cli
       # APV 생성
       - id: make-apv
         run: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
@@ -55,6 +55,7 @@ jobs:
       matrix:
         os:
           - macos-10.15
+          - ubuntu-20.04
     runs-on: ${{ matrix.os }}
     steps:
       # 클론
@@ -108,6 +109,7 @@ jobs:
             <!-- 9c-launcher-version-warning -->
           GITHUB_DELETE_COMMENT_REGEX: '.*<!-- +9c-launcher-version-warning +-->[ \n\t]*'
           MACOS_URL: https://github.com/cloudposse/github-commenter/releases/download/0.6.1/github-commenter_darwin_amd64
+          LINUX_URL: https://github.com/cloudposse/github-commenter/releases/download/0.10.1/github-commenter_linux_amd64
           WINDOWS_URL: https://github.com/cloudposse/github-commenter/releases/download/0.6.1/github-commenter_windows_amd64.exe
         shell: bash
       # Node.js 설치
@@ -117,11 +119,13 @@ jobs:
       - uses: actions/setup-dotnet@v2
         with:
           dotnet-version: '6.0'
-      - name: Pull node_modules cache
-        uses: actions/cache@v2
+      - name: Pull Yarn cache
+        uses: actions/cache@v3
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}-build
+          path: '.yarn/cache'
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       # 의존성 설치
       - run: yarn
       # 코드 스타일 린트
@@ -148,7 +152,10 @@ jobs:
       - if: runner.os == 'Windows'
         run: 7z a -r "../9c-launcher-dist-${{ matrix.os }}.7z" *
         working-directory: dist/
-      - if: runner.os != 'Windows'
+      - if: runner.os == 'macOS'
+        run: tar cvfj "../9c-launcher-dist-${{ matrix.os }}.tar.bz2" *
+        working-directory: dist/
+      - if: runner.os == 'Linux'
         run: tar cvfj "../9c-launcher-dist-${{ matrix.os }}.tar.bz2" *
         working-directory: dist/
       - uses: actions/upload-artifact@v2
@@ -181,9 +188,12 @@ jobs:
       - if: runner.os == 'Windows'
         run: 7z a -r ../../pack-dist/Windows.zip *
         working-directory: pack/Nine Chronicles-win32-x64/
-      - if: runner.os != 'Windows'
+      - if: runner.os == 'macOS'
         run: tar cvfz ../../pack-dist/macOS.tar.gz *
         working-directory: pack/Nine Chronicles-darwin-x64/
+      - if: runner.os == 'Linux'
+        run: tar cvfz ../../pack-dist/Linux.tar.gz *
+        working-directory: pack/Nine Chronicles-linux-x64/
       - if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v2
         with:

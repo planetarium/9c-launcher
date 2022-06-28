@@ -31,6 +31,7 @@ fi
 
 default_url_base=https://download.nine-chronicles.com/v
 macos_url="${APV_MACOS_URL:-$default_url_base$APV_NO/macOS.tar.gz}"
+linux_url="${APV_LINUX_URL:-$default_url_base$APV_NO/Linux.tar.gz}"
 windows_url="${APV_WINDOWS_URL:-$default_url_base$APV_NO/Windows.zip}"
 
 if command -v node > /dev/null; then
@@ -44,6 +45,7 @@ apv="$( \
   planet apv sign \
     --passphrase="$passphrase" \
     --extra macOSBinaryUrl="$macos_url" \
+    --extra LinuxBinaryUrl="$linux_url" \
     --extra WindowsBinaryUrl="$windows_url" \
     --extra timestamp="$(date --iso-8601=sec)" \
     "$key_id" \

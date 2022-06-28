@@ -4,10 +4,10 @@ import { observer } from "mobx-react";
 import { useStore } from "../../../utils/useStore";
 import { clipboard, ipcRenderer } from "electron";
 import { get as getConfig, NodeInfo } from "../../../../config";
-import { useGetTipQuery } from "../../../generated/graphql";
 import { styled } from "src/v2/stitches.config";
 import toast from "react-hot-toast";
 import { T } from "@transifex/react";
+import { useTip } from "src/v2/utils/useTip";
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid"
@@ -46,9 +46,7 @@ function InfoText() {
     });
   };
 
-  const { data: blockTip } = useGetTipQuery({
-    pollInterval: 1000,
-  });
+  const blockTip = useTip();
 
   useEffect(
     () =>
@@ -64,7 +62,7 @@ function InfoText() {
     <InfoTextStyled onClick={onClick}>
       node: {node}
       <br />
-      tip: {blockTip?.nodeStatus.tip.index || 0}
+      tip: {blockTip}
       <br />
       {`version: v${getConfig("AppProtocolVersion").split("/")[0]}`}
     </InfoTextStyled>
