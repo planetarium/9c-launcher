@@ -10,7 +10,7 @@ import App from "./App";
 
 import { remote } from "electron";
 import _refiner from "refiner-js";
-import { t } from "xstate";
+import { t } from "@transifex/native";
 
 initializeSentry();
 
