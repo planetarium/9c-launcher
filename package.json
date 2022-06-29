@@ -45,7 +45,7 @@
     "sign-apv:darwin": "scripts/sign-apv.sh || true",
     "latest-apv-no": "yarn ts-node scripts/latestApvNo.ts",
     "configure-apv": "yarn ts-node scripts/configureApv.ts",
-    "before-pack": "npm install && yarn build-headless && yarn bundle-player && yarn sign-apv",
+    "before-pack": "yarn install && yarn build-headless && yarn bundle-player && yarn sign-apv",
     "pack-all": "yarn before-pack && yarn run pack",
     "pack-all:electron-builder": "run-script-os",
     "pack-all:electron-builder:windows": "yarn before-pack && electron-builder --windows",
