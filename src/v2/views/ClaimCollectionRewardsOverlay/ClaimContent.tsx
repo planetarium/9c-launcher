@@ -5,7 +5,7 @@ import { useTx } from "src/v2/utils/useTx";
 
 import type { ClaimCollectionRewardsOverlayProps } from ".";
 import { RadioItem, RadioGroup } from "src/v2/components/ui/RadioGroup";
-import { T } from "src/renderer/i18n";
+import { T } from "src/renderer/i18n/react";
 import { styled } from "src/v2/stitches.config";
 import { getRemain } from "src/collection/common/utils";
 import { AlertDialog, AlertDialogLabel } from "@reach/alert-dialog";
