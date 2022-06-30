@@ -183,11 +183,12 @@ jobs:
         working-directory: pack/Nine Chronicles-win32-x64/
       - if: runner.os == 'macOS'
         run: |
+          chmod +x "Nine Chronicles.app/Contents/Resources/app/9c.app/Contents/MacOS/9c"
           tar cvfz ../../pack-dist/macOS.tar.gz *
         working-directory: pack/Nine Chronicles-darwin-x64/
       - if: runner.os == 'Linux'
         run: |
-          chmod a+x resources/app/9c
+          chmod +x resources/app/9c
           tar cvfz ../../pack-dist/Linux.tar.gz *
         working-directory: pack/Nine Chronicles-linux-x64/
       - if: github.event_name != 'pull_request'
