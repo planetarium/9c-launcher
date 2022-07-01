@@ -203,10 +203,10 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
           </Checkbox>
 
           <GroupTitle>
-            <T _str="Experimental Features" _tags={transifexTags} />
+            <T _str="Debugging" _tags={transifexTags} />
           </GroupTitle>
-          <Checkbox {...register("UseV2Interface")}>
-            <T _str="Use V2 Interface" _tags={transifexTags} />
+          <Checkbox {...register("PreferLegacyInterface")}>
+            <T _str="Use Legacy Interface" _tags={transifexTags} />
           </Checkbox>
         </FormSection>
       </Form>

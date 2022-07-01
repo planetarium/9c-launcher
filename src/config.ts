@@ -150,7 +150,7 @@ const schema: any = {
       "af7640523846d4152b45b33076a5629d-1374793070.us-east-2.elb.amazonaws.com,80,31238",
     ],
   },
-  UseV2Interface: {
+  PreferLegacyInterface: {
     type: "boolean",
     default: false,
   },

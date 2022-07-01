@@ -116,7 +116,8 @@ let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
 let remoteNode: NodeInfo;
 
-const isV2 = app.commandLine.hasSwitch("v2") || getConfig("UseV2Interface");
+const isV2 =
+  !getConfig("PreferLegacyInterface") || app.commandLine.hasSwitch("v2");
 
 ipv4().then((value) => (ip = value));
 

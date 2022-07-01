@@ -242,19 +242,21 @@ const ConfigurationView = observer(() => {
           </FormControl>
           <FormControl className={classes.checkboxGroup}>
             <FormLabel className={classes.newLine}>
-              <T _str="Experimental" _tags={transifexTags} />
+              <T _str="Debugging" _tags={transifexTags} />
             </FormLabel>
             <FormGroup>
               <FormControlLabel
                 control={
                   <Checkbox
                     className={classes.checkbox}
-                    defaultChecked={getConfig("UseV2Interface")}
+                    defaultChecked={getConfig("PreferLegacyInterface")}
                     color="default"
                     name="v2"
                   />
                 }
-                label={<T _str="Use V2 Interface" _tags={transifexTags} />}
+                label={
+                  <T _str="Prefer Legacy Interface" _tags={transifexTags} />
+                }
               />
             </FormGroup>
           </FormControl>
