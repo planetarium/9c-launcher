@@ -4,7 +4,7 @@ import { GetAvatarAddressQuery } from "src/v2/generated/graphql";
 import { useTx } from "src/v2/utils/useTx";
 
 import type { ClaimCollectionRewardsOverlayProps } from ".";
-import { Avatar, AvatarGroup, LastActivity } from "./avatar";
+import { Avatar, AvatarGroup, AvatarName, LastActivity } from "./avatar";
 import { T } from "src/renderer/i18n/react";
 import { styled } from "src/v2/stitches.config";
 import { getRemain } from "src/collection/common/utils";
@@ -98,9 +98,11 @@ function ClaimContent({
           <Avatar key={avatar.address} value={String(i)}>
             {/* Ensures the display: block, which makes <br> work */}
             <div>
-              {avatar.name} #{avatar.address.substring(2, 6)}
-              <br />
-              <LastActivity>{getRemain(tip - avatar.updatedAt)}</LastActivity>
+              <AvatarName>
+                {avatar.name}
+                <br />#{avatar.address.substring(2, 6)}
+              </AvatarName>
+              <LastActivity>{getRemain(tip - avatar.updatedAt)} ago</LastActivity>
             </div>
           </Avatar>
         ))}

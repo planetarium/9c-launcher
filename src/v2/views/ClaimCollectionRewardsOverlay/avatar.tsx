@@ -44,10 +44,18 @@ const RadioIndicator = styled(RadioGroupPrimitive.Indicator, {
   },
 });
 
-export const LastActivity = styled("span", {
-  opacity: ".8",
+export const LastActivity = styled("div", {
+  opacity: ".6",
   display: "inline-block",
-  marginBottom: 32,
+  marginBottom: 16,
+  fontSize: 16,
+  minHeight: "1em",
+});
+
+export const AvatarName = styled("div", {
+  fontSize: 18,
+  lineHeight: 1,
+  marginBottom: 10,
 });
 
 export function Avatar({
