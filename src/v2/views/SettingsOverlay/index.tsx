@@ -25,6 +25,7 @@ import Checkbox from "src/v2/components/ui/Checkbox";
 import AdvancedAction from "./AdvancedAction";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { OverlayProps } from "src/v2/utils/types";
+import toast from "react-hot-toast";
 
 const Form = styled("form", {
   display: "flex",
@@ -108,6 +109,13 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
     () => () => void handleSubmit(onSubmit, onError)(), // Submit a form when exits.
     []
   );
+
+  const preferLegacyInterface = watch("PreferLegacyInterface");
+
+  useEffect(() => {
+    if (preferLegacyInterface)
+      toast("Please let us know what issue you've had on Discord!");
+  }, [preferLegacyInterface]);
 
   const useRemoteHeadless = watch("UseRemoteHeadless");
 

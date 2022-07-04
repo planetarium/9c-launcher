@@ -69,8 +69,10 @@ const ConfigurationView = observer(() => {
     const useRemoteHeadlessChecked = event.target.useRemoteHeadless.checked;
     userConfigStore.set("UseRemoteHeadless", useRemoteHeadlessChecked);
 
-    const useV2Checked = event.target.v2.checked;
-    userConfigStore.set("UseV2Interface", useV2Checked);
+    const useLegacyChecked = event.target.v2.checked;
+    if (useLegacyChecked)
+      userConfigStore.set("PreferLegacyInterface", useLegacyChecked);
+    else userConfigStore.delete("PreferLegacyInterface");
 
     const logSize = bytes.parse(event.target.logsize.value);
     if (logSize && logSize !== getConfig("LogSizeBytes"))
@@ -259,6 +261,12 @@ const ConfigurationView = observer(() => {
                 }
               />
             </FormGroup>
+            <FormHelperText className={classes.checkboxHelper}>
+              <T
+                _str="If you have time to do so please report your issues on Discord so we can work on it!"
+                _tags={transifexTags}
+              />
+            </FormHelperText>
           </FormControl>
         </article>
         <Button
