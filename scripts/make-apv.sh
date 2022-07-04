@@ -34,11 +34,7 @@ macos_url="${APV_MACOS_URL:-$default_url_base$APV_NO/macOS.tar.gz}"
 linux_url="${APV_LINUX_URL:-$default_url_base$APV_NO/Linux.tar.gz}"
 windows_url="${APV_WINDOWS_URL:-$default_url_base$APV_NO/Windows.zip}"
 
-if command -v node > /dev/null; then
-  passphrase="$(node -e 'console.log(Math.random())')"
-else
-  passphrase="$(tr -dc 'a-zA-Z0-9' < /dev/random | fold -w 32 | head -n 1)"
-fi
+passphrase="$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 32 | head -n 1)"
 key_id="$(planet key import --passphrase="$passphrase" "${APV_SIGN_KEY%%*( )}" \
           | awk '{print $1}')"
 apv="$( \
