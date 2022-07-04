@@ -20,6 +20,11 @@ const AvatarLabel = styled("label", {
 
 const AvatarItem = styled(RadioGroupPrimitive.Item, {
   all: "unset",
+  width: 32,
+  height: 32,
+  borderRadius: "50%",
+  border: "2px solid #ffffff80",
+  marginBottom: 10,
 });
 
 const RadioIndicator = styled(RadioGroupPrimitive.Indicator, {
@@ -32,11 +37,17 @@ const RadioIndicator = styled(RadioGroupPrimitive.Indicator, {
   "&::after": {
     content: '""', // It looks wrong, but it's right.
     display: "block",
-    width: 11,
-    height: 11,
+    width: 18,
+    height: 18,
     borderRadius: "50%",
-    backgroundColor: "$primary",
+    backgroundColor: "white",
   },
+});
+
+export const LastActivity = styled("span", {
+  opacity: ".8",
+  display: "inline-block",
+  marginBottom: 32,
 });
 
 export function Avatar({

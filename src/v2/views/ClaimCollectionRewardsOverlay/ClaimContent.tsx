@@ -4,7 +4,7 @@ import { GetAvatarAddressQuery } from "src/v2/generated/graphql";
 import { useTx } from "src/v2/utils/useTx";
 
 import type { ClaimCollectionRewardsOverlayProps } from ".";
-import { Avatar, AvatarGroup } from "./avatar";
+import { Avatar, AvatarGroup, LastActivity } from "./avatar";
 import { T } from "src/renderer/i18n/react";
 import { styled } from "src/v2/stitches.config";
 import { getRemain } from "src/collection/common/utils";
@@ -40,11 +40,6 @@ const ClaimCollectionRewardsOverlayBase = styled(AlertDialog, {
 
 const ButtonBar = styled("div", {
   alignSelf: "center",
-});
-
-const LastActivity = styled("span", {
-  opacity: ".8",
-  display: "inline-block",
 });
 
 export interface Avatar {
