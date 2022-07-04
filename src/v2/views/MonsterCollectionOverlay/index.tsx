@@ -10,14 +10,13 @@ import { placeholder, useTx } from "src/v2/utils/useTx";
 import {
   TxStatus,
   useCurrentStakingQuery,
-  useGetTipQuery,
   useLegacyCollectionStateQuery,
   useStakingSheetQuery,
-  useTipSubscription,
   useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
 import Migration from "./Migration";
 import { ipcRenderer } from "electron";
+import { useTip } from "src/v2/utils/useTip";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
@@ -34,9 +33,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     skip: !account.isLogin,
   });
   const balance = useBalance();
-  const { data: tip } = useGetTipQuery({
-    pollInterval: 1000,
-  });
+  const tip = useTip();
 
   const tx = useTx("stake", placeholder);
   const [isLoading, setLoading] = useState(false);
@@ -88,19 +85,19 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             });
         }}
         onClose={onClose}
-        tip={tip.nodeStatus.tip.index}
+        tip={tip}
         isLoading={isLoading}
       >
         {collection.stateQuery.monsterCollectionState && !isLoading && (
           <Migration
-            tip={tip.nodeStatus.tip.index}
+            tip={tip}
             collectionState={collection.stateQuery.monsterCollectionState}
             collectionSheet={collection.stateQuery.monsterCollectionSheet}
             onActionTxId={(txId) => {
               setLoading(true);
               ipcRenderer.send("mixpanel-track-event", "Staking/Migration", {
                 txId,
-                tip: tip.nodeStatus.tip.index,
+                tip,
                 level: collection.stateQuery.monsterCollectionState?.level,
               });
               fetchStatus({ variables: { txId } });

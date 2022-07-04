@@ -30,6 +30,12 @@ if ("$env:APV_MACOS_URL" -eq "") {
   $macOSBinaryUrl = $env:APV_MACOS_URL;
 }
 
+if ("$env:APV_LINUX_URL" -eq "") {
+  $LinuxBinaryUrl = "$DefaultUrlBase$env:APV_NO/Linux.tar.gz"
+} else {
+  $LinuxBinaryUrl = $env:APV_MACOS_URL;
+}
+
 if ("$env:APV_WINDOWS_URL" -eq "") {
   $windowsBinaryUrl = "$DefaultUrlBase$env:APV_NO/Windows.zip"
 } else {
@@ -44,6 +50,7 @@ $apv = "$(`
   planet apv sign `
     --passphrase="$passphrase" `
     --extra macOSBinaryUrl="$macOSBinaryUrl" `
+    --extra LinuxBinaryUrl="$linux_url" `
     --extra WindowsBinaryUrl="$windowsBinaryUrl" `
     --extra timestamp="$([DateTimeOffset]::UtcNow.ToString("o"))" `
     "$keyId" `
