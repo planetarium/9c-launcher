@@ -208,6 +208,7 @@ export function MonsterCollectionContent({
               <DepositButton2
                 disabled={
                   amountDecimal.gt(availableNCG) ||
+                  (deposit && amountDecimal.eq(deposit)) ||
                   (isLockedUp && amountDecimal.lt(stakeState.deposit))
                 }
               >

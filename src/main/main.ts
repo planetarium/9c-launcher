@@ -6,6 +6,7 @@ import {
   configStore,
   get as getConfig,
   getBlockChainStorePath,
+  LINUX_GAME_PATH,
   MAC_GAME_PATH,
   WIN_GAME_PATH,
   RPC_SERVER_HOST,
@@ -338,7 +339,11 @@ function initializeIpc() {
     const node = utils.execute(
       path.join(
         app.getAppPath(),
-        process.platform === "darwin" ? MAC_GAME_PATH : WIN_GAME_PATH
+        process.platform === "darwin"
+          ? MAC_GAME_PATH
+          : process.platform === "linux"
+          ? LINUX_GAME_PATH
+          : WIN_GAME_PATH
       ),
       info.args
     );
