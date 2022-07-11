@@ -148,31 +148,17 @@ jobs:
       - store_artifacts:
           path: pack-dist
           destination: dist-artifacts
-      - when:
-          condition: 
-            equal: [ *windows, << parameters.os >>]
-          steps:
-            - run:
-                command: |
-                  aws configure set aws_access_key_id $env:AWS_ACCESS_KEY
-                  aws configure set aws_secret_access_key $env:AWS_SECRET_KEY
-                name: Set S3
-      - when:
-          condition:
-            not:
-              equal: [ *windows, << parameters.os >>]
-          steps:
-            - run: 
-                command: |
-                  aws configure set aws_access_key_id $AWS_ACCESS_KEY
-                  aws configure set aws_secret_access_key $AWS_SECRET_KEY
-                name: Set S3
+      - run: 
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY
+            aws configure set aws_secret_access_key $AWS_SECRET_KEY
+          name: Set S3
       - when:
           condition: 
             equal: [ *windows, << parameters.os >>]
           steps:
             - run: 
-                command: aws s3 cp pack-dist/Windows.zip s3://9c-artifacts/9c-launcher/$env:CIRCLE_SHA1/Windows.zip
+                command: aws s3 cp pack-dist/Windows.zip s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/Windows.zip
       - when:
           condition:
             equal: [ *macos, << parameters.os >>]
