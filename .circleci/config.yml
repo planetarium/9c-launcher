@@ -65,9 +65,9 @@ jobs:
             - run:
                 command: |
                   git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
-                  export NODE_OPTIONS=--openssl-legacy-provider # https://stackoverflow.com/a/69699772
                   nvm install lts
-                  nvm use lts
+                  rm "/c/Program Files/nodejs" -rf
+                  nvm use 16.16.0
       - checkout-update-submodules:
           paths: "NineChronicles.Headless"
       - yarn-install
@@ -112,15 +112,9 @@ jobs:
             curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
           name: Copy config.json from the last release
       - run: yarn sign-apv
-      - run:
-          command: |
-            dotnet clean -c Release
-            dotnet nuget locals all --clear
-          working_directory: NineChronicles.Headless
-          name: Clean Headless
       - run: 
           command: |
-            if ["$CIRCLE_BRANCH" -eq "main"]
+            if [[ "$CIRCLE_BRANCH" == "main" ]]
             then
               yarn release
             else
