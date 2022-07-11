@@ -26,7 +26,7 @@ if [[ "$APV_NO" = "" ]]; then
   {
     echo "The last published APV number: $latest_apv_no; APV_NO will be:"
     echo "  APV_NO=$APV_NO"
-  } > /dev/stderr
+  } >&2
 fi
 
 default_url_base=https://download.nine-chronicles.com/v
