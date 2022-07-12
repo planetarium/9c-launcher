@@ -1,3 +1,4 @@
+import { app } from '@electron/remote';
 import { assign, createMachine, interpret } from "xstate";
 import { IPC_PRELOAD_NEXT, IPC_SNAPSHOT_PROGRESS } from "../ipcTokens";
 import { invokeIpcEvent } from "../utils/ipcEvent";

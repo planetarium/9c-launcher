@@ -81,6 +81,7 @@ import {
 } from "./update";
 import { send } from "./v2/ipc";
 import { IPC_PRELOAD_IDLE, IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
+import { initialize as remoteInitialize } from "@electron/remote/main"
 
 initializeSentry();
 
@@ -215,6 +216,7 @@ async function intializeConfig() {
 async function initializeApp() {
   console.log("initializeApp");
   app.on("ready", async () => {
+    remoteInitialize()
     if (isDev)
       await installExtension([
         REACT_DEVELOPER_TOOLS,

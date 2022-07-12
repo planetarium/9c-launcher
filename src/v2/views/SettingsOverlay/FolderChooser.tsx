@@ -4,7 +4,7 @@ import {
   useController,
   UseControllerProps,
 } from "react-hook-form";
-import { remote } from "electron";
+import remote from "@electron/remote"
 import {
   ActionableTextBoxWrapper,
   TextBox,
