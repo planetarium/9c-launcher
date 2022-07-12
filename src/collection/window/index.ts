@@ -11,6 +11,7 @@ const createCollectionWindow = async (): Promise<BrowserWindow> => {
     height: 738,
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule: true,
     },
     frame: true,
     resizable: false,

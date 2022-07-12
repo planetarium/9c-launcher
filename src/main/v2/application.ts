@@ -14,6 +14,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     width: 1300,
     height: 768,
     webPreferences: {
+      enableRemoteModule: true,
       nativeWindowOpen: true,
       nodeIntegration: true,
       affinity: "v2",
