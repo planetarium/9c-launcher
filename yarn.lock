@@ -8975,17 +8975,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^12.0.12":
-  version: 12.20.55
-  resolution: "@types/node@npm:12.20.55"
-  checksum: e4f86785f4092706e0d3b0edff8dca5a13b45627e4b36700acd8dfe6ad53db71928c8dee914d4276c7fd3b6ccd829aa919811c9eb708a2c8e4c6eb3701178c37
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^14.0.10":
   version: 14.14.39
   resolution: "@types/node@npm:14.14.39"
   checksum: 57e56ceb7b8747cb8c2d83dad04f3435c8286063f58f6ebaa531e3f5dfb3c3ed6d1abbb31ec2e9d268047a68a7c45eb6d692664e059af7ebeb03519ce99f07e4
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^14.6.2":
+  version: 14.18.21
+  resolution: "@types/node@npm:14.18.21"
+  checksum: 4ed35b76609647a4e36a194702e31cdda9ed42174ddaf7937bc5498984e98a99e8a42ea895ea17dd9c5ec18080112c29ab670c34f90eb9f7a4703b85b31e34fa
   languageName: node
   linkType: hard
 
@@ -10048,7 +10048,7 @@ __metadata:
     destr: ^1.1.0
     dotenv: ^8.2.0
     eip55: ^2.1.0
-    electron: 10.4.7
+    electron: 12.2.3
     electron-builder: ^22.7.0
     electron-devtools-installer: ^3.2.0
     electron-dl: ^3.0.2
@@ -15164,16 +15164,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:10.4.7":
-  version: 10.4.7
-  resolution: "electron@npm:10.4.7"
+"electron@npm:12.2.3":
+  version: 12.2.3
+  resolution: "electron@npm:12.2.3"
   dependencies:
     "@electron/get": ^1.0.1
-    "@types/node": ^12.0.12
+    "@types/node": ^14.6.2
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: 95f3d590aaf3727a6c036bfddd747bb9126543dc014f64d4b449db3c2aeaa52f0be3786486977a29b595ca8d72b1d9ed61b7f31fc20c0c9f7ef474e95d744bcb
+  checksum: fba741639ce53397c916a91c192b819c745adfee3559b1ffccf74f0631b9cf14ab313ed755a5972c4f845e1b220eeba54a2e941d83569798753081bf0325537b
   languageName: node
   linkType: hard
 
