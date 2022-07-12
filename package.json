@@ -76,7 +76,7 @@
     "@reach/dialog": "^0.16.2",
     "@reach/listbox": "^0.16.2",
     "@reach/visually-hidden": "^0.17.0",
-    "@sentry/electron": "^1.3.0",
+    "@sentry/electron": "^2.0.2",
     "@stitches/react": "^1.0.0",
     "@transifex/native": "^3.0.0",
     "@transifex/react": "^3.0.0",
