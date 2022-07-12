@@ -11,7 +11,8 @@ import { useStore } from "src/v2/utils/useStore";
 import { T } from "src/renderer/i18n";
 import path from "path";
 import log from "electron-log";
-import { shell, remote, ipcRenderer } from "electron";
+import { shell, ipcRenderer } from "electron";
+import remote from "@electron/remote"
 import { preloadService } from "src/v2/machines/preloadMachine";
 
 import H1 from "src/v2/components/ui/H1";
@@ -49,7 +50,7 @@ const GroupTitle = styled("h2", {
 type Languages = Array<Record<"code" | "name" | "localized_name", string>>;
 
 const transifexTags = "v2/configuration";
-const app = electron.remote.app;
+const app = remote.app;
 
 function handleOpenKeyStorePath() {
   const openpath = path.join(

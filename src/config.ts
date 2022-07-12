@@ -5,7 +5,7 @@ import { GraphQLClient } from "graphql-request";
 import { getSdk } from "./generated/graphql-request";
 
 const { app } =
-  process.type === "browser" ? require("electron") : require("electron").remote;
+  process.type === "browser" ? require("electron") : require("@electron/remote");
 
 const schema: any = {
   AppProtocolVersion: {
