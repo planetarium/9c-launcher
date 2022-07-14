@@ -4,7 +4,7 @@ import { IConfig } from "./interfaces/config";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "./generated/graphql-request";
 
-const { app } =
+export const { app } =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   process.type === "browser" ? require("electron") : require("@electron/remote");
 
