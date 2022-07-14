@@ -1,4 +1,5 @@
 import { app, BrowserWindow, shell } from "electron";
+import { enable as remoteEnable } from "@electron/remote/main";
 import { join } from "path";
 import logoImage from "../resources/logo.png";
 
@@ -25,7 +26,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     titleBarStyle: process.platform === "darwin" ? "hidden" : undefined,
     icon: join(app.getAppPath(), logoImage),
   });
-
+  remoteEnable(win.webContents);
   win.webContents.on("new-window", function (
     event,
     url: string,
