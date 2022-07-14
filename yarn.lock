@@ -5022,28 +5022,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/get@npm:^1.0.1":
-  version: 1.14.1
-  resolution: "@electron/get@npm:1.14.1"
-  dependencies:
-    debug: ^4.1.1
-    env-paths: ^2.2.0
-    fs-extra: ^8.1.0
-    global-agent: ^3.0.0
-    global-tunnel-ng: ^2.7.1
-    got: ^9.6.0
-    progress: ^2.0.3
-    semver: ^6.2.0
-    sumchecker: ^3.0.1
-  dependenciesMeta:
-    global-agent:
-      optional: true
-    global-tunnel-ng:
-      optional: true
-  checksum: 21fec5e82bbee8f9fa183b46e05675b137c3130c7999d3b2b34a0047d1a06ec3c76347b9bbdb9911ba9b2123697804e360a15dda9db614c0226d5d4dcc4d6d15
-  languageName: node
-  linkType: hard
-
 "@electron/get@npm:^1.12.2, @electron/get@npm:^1.6.0":
   version: 1.12.2
   resolution: "@electron/get@npm:1.12.2"
@@ -5063,6 +5041,28 @@ __metadata:
     global-tunnel-ng:
       optional: true
   checksum: 447a08021d6fabc437dcf02b2a2edac718802f3b5dd1ff86c3a8aa7b35de03b39c7abc0a817ca58ea68c295cf64365935156191fa5b5a3d00263c8b4a8439ef1
+  languageName: node
+  linkType: hard
+
+"@electron/get@npm:^1.13.0":
+  version: 1.14.1
+  resolution: "@electron/get@npm:1.14.1"
+  dependencies:
+    debug: ^4.1.1
+    env-paths: ^2.2.0
+    fs-extra: ^8.1.0
+    global-agent: ^3.0.0
+    global-tunnel-ng: ^2.7.1
+    got: ^9.6.0
+    progress: ^2.0.3
+    semver: ^6.2.0
+    sumchecker: ^3.0.1
+  dependenciesMeta:
+    global-agent:
+      optional: true
+    global-tunnel-ng:
+      optional: true
+  checksum: 21fec5e82bbee8f9fa183b46e05675b137c3130c7999d3b2b34a0047d1a06ec3c76347b9bbdb9911ba9b2123697804e360a15dda9db614c0226d5d4dcc4d6d15
   languageName: node
   linkType: hard
 
@@ -10055,7 +10055,7 @@ __metadata:
     destr: ^1.1.0
     dotenv: ^8.2.0
     eip55: ^2.1.0
-    electron: 12.2.3
+    electron: 15.5.7
     electron-builder: ^22.7.0
     electron-devtools-installer: ^3.2.0
     electron-dl: ^3.0.2
@@ -15171,16 +15171,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:12.2.3":
-  version: 12.2.3
-  resolution: "electron@npm:12.2.3"
+"electron@npm:15.5.7":
+  version: 15.5.7
+  resolution: "electron@npm:15.5.7"
   dependencies:
-    "@electron/get": ^1.0.1
+    "@electron/get": ^1.13.0
     "@types/node": ^14.6.2
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: fba741639ce53397c916a91c192b819c745adfee3559b1ffccf74f0631b9cf14ab313ed755a5972c4f845e1b220eeba54a2e941d83569798753081bf0325537b
+  checksum: c30dfee91744a0254d6f3ee433ab11080d28bcb76509182eac030a686ba6606b354c377632149dc687e4c8d4d7aedf1a5191fd7c86035eba81d652a5e875cf0d
   languageName: node
   linkType: hard
 

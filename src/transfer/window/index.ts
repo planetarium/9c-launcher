@@ -19,7 +19,7 @@ const createTransferWindow = async (): Promise<BrowserWindow> => {
     icon: path.join(app.getAppPath(), logoImage),
   });
 
-  if (app.isPackaged) {
+  if (!app.isPackaged) {
     await _win.loadURL("http://localhost:9000/transfer.html");
     await _win.webContents.openDevTools();
   } else {

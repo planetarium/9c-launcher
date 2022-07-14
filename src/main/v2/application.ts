@@ -48,7 +48,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     }
   });
 
-  if (app.isPackaged) {
+  if (!app.isPackaged) {
     await win.loadURL("http://localhost:9000/v2.html");
     await win.webContents.openDevTools({ mode: "detach" });
   } else {
