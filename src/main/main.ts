@@ -16,7 +16,6 @@ import {
   NodeInfo,
   userConfigStore,
 } from "../config";
-import isDev from "electron-is-dev";
 import {
   app,
   BrowserWindow,
@@ -124,7 +123,7 @@ ipv4().then((value) => (ip = value));
 
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: NineChroniclesMixpanel | undefined =
-  getConfig("Mixpanel") && !isDev
+  getConfig("Mixpanel") && !app.isPackaged
     ? new NineChroniclesMixpanel(createMixpanel(MIXPANEL_TOKEN), mixpanelUUID)
     : undefined;
 
@@ -217,7 +216,7 @@ async function initializeApp() {
   console.log("initializeApp");
   app.on("ready", async () => {
     remoteInitialize()
-    if (isDev)
+    if (app.isPackaged)
       await installExtension([
         REACT_DEVELOPER_TOOLS,
         MOBX_DEVTOOLS,
@@ -791,7 +790,7 @@ async function createWindow(): Promise<BrowserWindow> {
 
   console.log(app.getAppPath());
 
-  if (isDev) {
+  if (app.isPackaged) {
     await _win.loadURL("http://localhost:9000");
     await _win.webContents.openDevTools();
   } else {
@@ -963,7 +962,7 @@ function getHeadlessArgs(): string[] {
     `--workers=${getConfig("Workers")}`,
     `--confirmations=${getConfig("Confirmations")}`,
     ...getConfig("HeadlessArgs", []),
-    ...(isDev ? ["--no-cors"] : []),
+    ...(app.isPackaged ? ["--no-cors"] : []),
   ];
 
   {

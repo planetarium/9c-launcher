@@ -1,4 +1,4 @@
-import isDev from "electron-is-dev";
+import { app } from "electron";
 import electronLog from "electron-log";
 import React from "react";
 import * as DOM from "react-dom";
