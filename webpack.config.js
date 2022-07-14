@@ -134,6 +134,7 @@ function createRenderConfig(isDev) {
 
       new DefinePlugin({
         GIT_HASH: JSON.stringify(gitHash),
+        "process.type": JSON.stringify("renderer"),
       }),
 
       new HtmlPlugin({
@@ -295,6 +296,7 @@ function createMainConfig(isDev) {
       // inject this becaus the main process uses different logic for prod and dev.
       new DefinePlugin({
         ENVIRONMENT: JSON.stringify(isDev ? DEVELOPMENT : PRODUCTION), // this variable name must match the one declared in the main process file.
+        "process.type": JSON.stringify("browser"),
       }),
 
       // electron-packager needs the package.json file. the "../" is because context is set to the ./src folder
