@@ -8,6 +8,8 @@ export const app = process.type === "browser"
     ? require("electron").app
     : require("@electron/remote").app;
 
+if (process.type === "browser") Store.initRenderer();
+
 const schema: any = {
   AppProtocolVersion: {
     type: "string",
