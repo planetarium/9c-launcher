@@ -778,6 +778,7 @@ async function createWindow(): Promise<BrowserWindow> {
     width: 800,
     height: 600,
     webPreferences: {
+      contextIsolation: false,
       nodeIntegration: true,
       preload: path.join(app.getAppPath(), "preload.js"),
     },
