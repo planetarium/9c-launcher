@@ -9,7 +9,8 @@ import {
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { ipcRenderer, app } from "electron";
+import { ipcRenderer } from "electron";
+import { app } from "@electron/remote";
 import { RetryLink } from "@apollo/client/link/retry";
 import { useEffect, useState } from "react";
 import { NodeInfo } from "src/config";

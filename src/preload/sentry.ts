@@ -1,7 +1,5 @@
-import { app } from "electron";
-import { get } from "../config";
+import { get, app } from "../config";
 import { version } from "../../package.json";
-import { electron } from "process";
 
 const { init } =
   process.type === "browser"
