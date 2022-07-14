@@ -8,7 +8,7 @@ import "remove-focus-outline";
 import { initializeSentry } from "../preload/sentry";
 import App from "./App";
 
-import { remote } from "electron";
+import remote from "@electron/remote"
 import _refiner from "refiner-js";
 import { t } from "@transifex/native";
 
