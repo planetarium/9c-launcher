@@ -105,7 +105,6 @@
     "eip55": "^2.1.0",
     "electron-dl": "^3.0.2",
     "electron-fetch": "^1.7.1",
-    "electron-is-dev": "^1.2.0",
     "electron-log": "^4.2.1",
     "electron-store": "^5.2.0",
     "extract-zip": "^2.0.1",

@@ -10061,7 +10061,6 @@ __metadata:
     electron-dl: ^3.0.2
     electron-download: ^4.1.1
     electron-fetch: ^1.7.1
-    electron-is-dev: ^1.2.0
     electron-log: ^4.2.1
     electron-mock-ipc: ^0.3.12
     electron-packager: ^14.2.1
@@ -15037,13 +15036,6 @@ __metadata:
   dependencies:
     encoding: ^0.1.13
   checksum: 6ea1b7e76fd14ed008f185ab3b3a7903caaf04ebed3956a7b5ffc17e231f5a83d1d35fd0c92bb7a241f38d15016388b4e13cf64408e0f92c1a8b60ca01c2e484
-  languageName: node
-  linkType: hard
-
-"electron-is-dev@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "electron-is-dev@npm:1.2.0"
-  checksum: 73eee7aa7ce90a387bf224ec26aa808237164572641ca41cdca34a046adb72406d4414c3cc5b0b5e335a6d6010886474e1325c0b0af40c9fac95210b00195fdb
   languageName: node
   linkType: hard
 
