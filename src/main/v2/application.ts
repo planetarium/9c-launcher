@@ -17,6 +17,7 @@ export async function createWindow(): Promise<BrowserWindow> {
       enableRemoteModule: true,
       nativeWindowOpen: true,
       contextIsolation: false,
+      nodeIntegration: true,
       affinity: "v2",
     },
     frame: false,
