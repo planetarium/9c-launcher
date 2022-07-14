@@ -5044,7 +5044,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/get@npm:^1.13.0":
+"@electron/get@npm:^1.14.1":
   version: 1.14.1
   resolution: "@electron/get@npm:1.14.1"
   dependencies:
@@ -8988,10 +8988,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.6.2":
-  version: 14.18.22
-  resolution: "@types/node@npm:14.18.22"
-  checksum: 5cec8276b834b8988f0af69655423e816729a5757d2015a3199156bdc98ea55206338fad752b26236c55d431dce24eb973b4f5a8918f8e6b17056ffcc12edc08
+"@types/node@npm:^16.11.26":
+  version: 16.11.44
+  resolution: "@types/node@npm:16.11.44"
+  checksum: 6fc2214bab40bbab1d76e02bd2fbcc1b5ed0ae383b4c892bcde6c231734582fca8a45185eb1b0283bae434600d3e44bdacbbdc05725661910e6372778e1881c1
   languageName: node
   linkType: hard
 
@@ -10055,7 +10055,7 @@ __metadata:
     destr: ^1.1.0
     dotenv: ^8.2.0
     eip55: ^2.1.0
-    electron: 15.5.7
+    electron: 19.0.0
     electron-builder: ^22.7.0
     electron-devtools-installer: ^3.2.0
     electron-dl: ^3.0.2
@@ -15163,16 +15163,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:15.5.7":
-  version: 15.5.7
-  resolution: "electron@npm:15.5.7"
+"electron@npm:19.0.0":
+  version: 19.0.0
+  resolution: "electron@npm:19.0.0"
   dependencies:
-    "@electron/get": ^1.13.0
-    "@types/node": ^14.6.2
+    "@electron/get": ^1.14.1
+    "@types/node": ^16.11.26
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: c30dfee91744a0254d6f3ee433ab11080d28bcb76509182eac030a686ba6606b354c377632149dc687e4c8d4d7aedf1a5191fd7c86035eba81d652a5e875cf0d
+  checksum: e72a56fa347593802ad76aa1f34c533f114dacf2d4dcd20a74505402ce6011df3188865123f9f15aa17ab84d3c3a22cd957e87c3c94459705cf37ea27a4717c3
   languageName: node
   linkType: hard
 
