@@ -1,18 +1,15 @@
 import React, { useCallback, useEffect } from "react";
-import electron from "electron";
 import { observer } from "mobx-react";
-import { motion } from "framer-motion";
 import { styled } from "src/v2/stitches.config";
 import { useLanguages } from "@transifex/react";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { configStore, userConfigStore } from "src/config";
 import type { IConfig } from "src/interfaces/config";
-import { useStore } from "src/v2/utils/useStore";
 import { T } from "src/renderer/i18n";
 import path from "path";
 import log from "electron-log";
 import { shell, ipcRenderer } from "electron";
-import remote from "@electron/remote"
+import { app } from "@electron/remote"
 import { preloadService } from "src/v2/machines/preloadMachine";
 
 import H1 from "src/v2/components/ui/H1";
@@ -50,11 +47,10 @@ const GroupTitle = styled("h2", {
 type Languages = Array<Record<"code" | "name" | "localized_name", string>>;
 
 const transifexTags = "v2/configuration";
-const app = remote.app;
 
 function handleOpenKeyStorePath() {
   const openpath = path.join(
-    remote.app.getPath("appData"),
+    app.getPath("appData"),
     "planetarium",
     "keystore"
   );

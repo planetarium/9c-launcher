@@ -1,11 +1,11 @@
 import React from "react";
-import remote from "@electron/remote"
+import { getCurrentWindow } from "@electron/remote"
 import { styled } from "src/v2/stitches.config";
 
 import MinimizeIcon from "@material-ui/icons/Minimize";
 import CloseIcon from "@material-ui/icons/Close";
 
-const currentWindow = remote.getCurrentWindow();
+const currentWindow = getCurrentWindow();
 
 const WindowControlsStyled = styled("div", {
   display: "flex",
