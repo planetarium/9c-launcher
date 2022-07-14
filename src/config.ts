@@ -8,6 +8,8 @@ export const { app } =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   process.type === "browser" ? require("electron") : require("@electron/remote");
 
+if (process.type === "browser") Store.initRenderer();
+
 const schema: any = {
   AppProtocolVersion: {
     type: "string",

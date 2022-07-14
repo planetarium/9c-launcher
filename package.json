@@ -106,7 +106,7 @@
     "electron-dl": "^3.0.2",
     "electron-fetch": "^1.7.1",
     "electron-log": "^4.2.1",
-    "electron-store": "^5.2.0",
+    "electron-store": "8.0.2",
     "extract-zip": "^2.0.1",
     "fast-glob": "^3.2.11",
     "file-loader": "^6.0.0",
