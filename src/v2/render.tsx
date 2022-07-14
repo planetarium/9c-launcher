@@ -8,7 +8,7 @@ import "remove-focus-outline";
 import { initializeSentry } from "../preload/sentry";
 import App from "./App";
 
-import remote from "@electron/remote"
+import { getCurrentWindow } from "@electron/remote";
 import _refiner from "refiner-js";
 import { t } from "@transifex/native";
 
@@ -17,11 +17,7 @@ initializeSentry();
 Object.assign(console, electronLog.functions);
 
 _refiner("onShow", () => {
-  if (
-    remote.getCurrentWindow().isVisible() &&
-    remote.getCurrentWindow().isFocused()
-  )
-    return;
+  if (getCurrentWindow().isVisible() && getCurrentWindow().isFocused()) return;
   _refiner("addToResponse", {
     notification: true,
   });

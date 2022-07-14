@@ -11,14 +11,11 @@ import { ApolloProvider } from "react-apollo";
 import IntroFacade from "./pages/facade/IntroFacade";
 import path from "path";
 import { ipcRenderer } from "electron";
-import remote from '@electron/remote';
+import { require as remoteRequire, app } from "@electron/remote";
 
 function getIsFileExsist() {
-  const electronFs = remote.require("fs");
-  const filePath = path.join(
-    remote.app.getAppPath(),
-    "monster-collection-intro"
-  );
+  const electronFs = remoteRequire("fs");
+  const filePath = path.join(app.getAppPath(), "monster-collection-intro");
   console.log(`path: ${filePath}`);
   if (electronFs.existsSync(filePath)) {
     return true;
@@ -28,11 +25,8 @@ function getIsFileExsist() {
 }
 
 function createFile() {
-  const electronFs = remote.require("fs");
-  const filePath = path.join(
-    remote.app.getAppPath(),
-    "monster-collection-intro"
-  );
+  const electronFs = remoteRequire("fs");
+  const filePath = path.join(app.getAppPath(), "monster-collection-intro");
   electronFs.openSync(filePath, "w");
 }
 
