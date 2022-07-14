@@ -26,6 +26,7 @@ import {
   dialog,
   shell,
 } from "electron";
+import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import fs from "fs";
 import { ChildProcessWithoutNullStreams } from "child_process";
@@ -80,7 +81,10 @@ import {
 } from "./update";
 import { send } from "./v2/ipc";
 import { IPC_PRELOAD_IDLE, IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
-import { initialize as remoteInitialize } from "@electron/remote/main"
+import {
+  initialize as remoteInitialize,
+  enable as webEnable,
+} from "@electron/remote/main";
 
 initializeSentry();
 
@@ -215,17 +219,15 @@ async function intializeConfig() {
 async function initializeApp() {
   console.log("initializeApp");
   app.on("ready", async () => {
-    remoteInitialize()
+    remoteInitialize();
     if (!app.isPackaged)
-      await installExtension([
-        MOBX_DEVTOOLS,
-        APOLLO_DEVELOPER_TOOLS,
-      ])
+      await installExtension([MOBX_DEVTOOLS, APOLLO_DEVELOPER_TOOLS])
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
-    if (isV2) win = await createV2Window();
-    else win = await createWindow();
+        if (isV2) win = await createV2Window();
+        else win = await createWindow();
+        webEnable(win.webContents); 
     createTray(path.join(app.getAppPath(), logoImage));
 
     const u = await checkForUpdates(standalone);
@@ -784,6 +786,7 @@ async function createWindow(): Promise<BrowserWindow> {
     autoHideMenuBar: true,
     icon: path.join(app.getAppPath(), logoImage),
   });
+  remoteEnable(_win.webContents);
 
   _win.setResizable(false); // see: https://github.com/electron/electron/issues/19565#issuecomment-867283465
 

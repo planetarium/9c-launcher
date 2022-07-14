@@ -3,9 +3,11 @@ import path from "path";
 import { IConfig } from "./interfaces/config";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "./generated/graphql-request";
+import { app as electronApp } from "electron";
+import { app as remoteApp } from "@electron/remote";
 
-const { app } =
-  process.type === "browser" ? require("electron") : require("@electron/remote");
+const app =
+  process.type === "browser" ? electronApp : remoteApp;
 
 const schema: any = {
   AppProtocolVersion: {

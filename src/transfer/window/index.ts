@@ -1,4 +1,5 @@
 import { BrowserWindow, app, shell, ipcMain } from "electron";
+import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import logoImage from "./resources/logo.png";
 
@@ -11,13 +12,13 @@ const createTransferWindow = async (): Promise<BrowserWindow> => {
     height: 650,
     webPreferences: {
       contextIsolation: false,
-      enableRemoteModule: true,
     },
     frame: true,
     resizable: false,
     autoHideMenuBar: true,
     icon: path.join(app.getAppPath(), logoImage),
   });
+  remoteEnable(_win.webContents);
 
   if (!app.isPackaged) {
     await _win.loadURL("http://localhost:9000/transfer.html");
