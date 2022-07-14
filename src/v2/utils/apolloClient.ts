@@ -9,11 +9,10 @@ import {
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { ipcRenderer } from "electron";
+import { ipcRenderer, app } from "electron";
 import { RetryLink } from "@apollo/client/link/retry";
 import { useEffect, useState } from "react";
 import { NodeInfo } from "src/config";
-import isDev from "electron-is-dev";
 import {
   GenesisHashDocument,
   GenesisHashQuery,
@@ -82,7 +81,7 @@ export default function useApolloClient(): Client | null {
       const client = new ApolloClient({
         link: ApolloLink.from([new RetryLink(), onErrorLink, splitLink]),
         cache: new InMemoryCache(),
-        connectToDevTools: !isDev,
+        connectToDevTools: !app.isPackaged,
       });
 
       client

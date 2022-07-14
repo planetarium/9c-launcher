@@ -1,7 +1,7 @@
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "path";
 import logoImage from "../resources/logo.png";
-import isDev from "electron-is-dev";
+
 
 export let isQuitting = false;
 
@@ -50,7 +50,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     }
   });
 
-  if (isDev) {
+  if (!app.isPackaged) {
     await win.loadURL("http://localhost:9000/v2.html");
     await win.webContents.openDevTools({ mode: "detach" });
   } else {
