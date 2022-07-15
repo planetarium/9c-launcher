@@ -14,10 +14,8 @@ export async function createWindow(): Promise<BrowserWindow> {
     width: 1300,
     height: 768,
     webPreferences: {
-      nativeWindowOpen: true,
       contextIsolation: false,
       nodeIntegration: true,
-      affinity: "v2",
     },
     frame: false,
     resizable: false,

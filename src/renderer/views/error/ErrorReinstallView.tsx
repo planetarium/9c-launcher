@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react";
-import { shell, remote, ipcRenderer } from "electron";
+import { shell, ipcRenderer } from "electron";
+import * as remote from "@electron/remote";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";

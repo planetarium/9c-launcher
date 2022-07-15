@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
 import {
   Button,
   ButtonProps,

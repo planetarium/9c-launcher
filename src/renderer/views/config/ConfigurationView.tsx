@@ -1,6 +1,7 @@
 import path from "path";
 
-import { ipcRenderer, remote, shell } from "electron";
+import { ipcRenderer, shell } from "electron";
+import { app } from "@electron/remote";
 import React, { useMemo } from "react";
 import { observer } from "mobx-react";
 import {
@@ -78,8 +79,8 @@ const ConfigurationView = observer(() => {
     if (logSize && logSize !== getConfig("LogSizeBytes"))
       userConfigStore.set("LogSizeBytes", logSize);
 
-    remote.app.relaunch();
-    remote.app.exit();
+    app.relaunch();
+    app.exit();
   };
 
   const handleChangeDir = () => {
@@ -289,11 +290,7 @@ const ConfigurationView = observer(() => {
 });
 
 function handleOpenKeyStorePath() {
-  const openpath = path.join(
-    remote.app.getPath("appData"),
-    "planetarium",
-    "keystore"
-  );
+  const openpath = path.join(app.getPath("appData"), "planetarium", "keystore");
   console.log(`Open keystore folder. ${openpath}`);
   shell.showItemInFolder(openpath);
 }
