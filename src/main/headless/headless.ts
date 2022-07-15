@@ -6,7 +6,6 @@ import { retry } from "@lifeomic/attempt";
 import { FetchError, HeadlessExitedError } from "../../errors";
 import { execute, sleep } from "../../utils";
 import fetch, { Response } from "electron-fetch";
-import { EventEmitter } from "ws";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { KeyStore } from "./key-store";
 import { Validation } from "./validation";
@@ -35,13 +34,12 @@ export const NODESTATUS: NodeStatus = {
   ExitCode: null,
 };
 
-const eventEmitter = new EventEmitter();
-
 class Headless {
   constructor(path: string) {
     this._path = path;
     this._running = false;
     this._genesisHash = undefined;
+    this._exitListeners = [];
 
     ipcMain.on(
       "standalone/set-private-key",
@@ -176,6 +174,7 @@ class Headless {
   private _mining: boolean | undefined;
   private _signerPrivateKey: string | undefined;
   private _genesisHash: string | undefined;
+  private _exitListeners: (() => void)[];
 
   // execute-kill
   public get alive(): boolean {
@@ -326,7 +325,7 @@ class Headless {
       // FIXME: define a new interface or research the type exists.
       if (
         error instanceof Object &&
-        (error as Object).hasOwnProperty("status") &&
+        Object.prototype.hasOwnProperty.call(error, "status") &&
         error.status !== 0
       ) {
         return null;
@@ -337,7 +336,9 @@ class Headless {
   }
 
   public once(event: string | symbol, listener: (...args: any[]) => void) {
-    eventEmitter.once(event, listener);
+    if (event !== "exit")
+      console.log("not supported event: " + event.toString());
+    this._exitListeners.push(listener);
   }
 
   private exitedHandler(code: number | null): void {
@@ -348,7 +349,8 @@ class Headless {
 
     if (!NODESTATUS.QuitRequested) {
       console.error("Headless exited unexpectedly.");
-      eventEmitter.emit("exit");
+      this._exitListeners.forEach((listener) => listener());
+      this._exitListeners = [];
     }
   }
 
