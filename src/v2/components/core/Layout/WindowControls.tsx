@@ -1,5 +1,5 @@
 import React from "react";
-import { getCurrentWindow } from "@electron/remote"
+import { getCurrentWindow } from "@electron/remote";
 import { styled } from "src/v2/stitches.config";
 
 import MinimizeIcon from "@material-ui/icons/Minimize";

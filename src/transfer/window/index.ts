@@ -3,7 +3,6 @@ import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import logoImage from "./resources/logo.png";
 
-
 let _win: BrowserWindow | null = null;
 
 const createTransferWindow = async (): Promise<BrowserWindow> => {
