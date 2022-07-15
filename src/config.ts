@@ -168,6 +168,7 @@ export const configStore = new Store<IConfig>({
 const network = configStore.get("Network");
 export const userConfigStore = new Store<IConfig>({
   name: network === "9c-main" ? "config" : `config.${network}`,
+  schema,
 });
 
 const LocalServerUrl = (): string => {
@@ -310,12 +311,13 @@ export const blockchainStoreDirParent =
 
 export function get<K extends keyof IConfig>(
   key: K,
-  defaultValue?: IConfig[K]
+  defaultValue?: Required<IConfig>[K]
 ): IConfig[K] {
   if (userConfigStore.has(key)) {
     return userConfigStore.get(key);
   }
 
+  // @ts-expect-error - The overload doesn't work well with optional arguments.
   return configStore.get(key, defaultValue);
 }
 
