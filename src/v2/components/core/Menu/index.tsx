@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import MenuItem from "./MenuItem";
 import { useStore } from "../../../utils/useStore";
 import { ipcRenderer, shell } from "electron";
-import { app } from "@electron/remote"
+import { app } from "@electron/remote";
 import { styled } from "src/v2/stitches.config";
 
 import settings from "../../../resources/icons/settings.png";

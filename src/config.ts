@@ -4,7 +4,8 @@ import { IConfig } from "./interfaces/config";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "./generated/graphql-request";
 
-export const app = process.type === "browser"
+export const app =
+  process.type === "browser"
     ? require("electron").app
     : require("@electron/remote").app;
 

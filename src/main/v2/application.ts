@@ -3,7 +3,6 @@ import { enable as remoteEnable } from "@electron/remote/main";
 import { join } from "path";
 import logoImage from "../resources/logo.png";
 
-
 export let isQuitting = false;
 
 export function setQuitting(value: boolean) {

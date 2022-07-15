@@ -225,9 +225,9 @@ async function initializeApp() {
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
-        if (isV2) win = await createV2Window();
-        else win = await createWindow();
-        webEnable(win.webContents); 
+    if (isV2) win = await createV2Window();
+    else win = await createWindow();
+    webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
     const u = await checkForUpdates(standalone);

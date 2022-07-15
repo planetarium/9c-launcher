@@ -9,7 +9,7 @@ import { T } from "src/renderer/i18n";
 import path from "path";
 import log from "electron-log";
 import { shell, ipcRenderer } from "electron";
-import { app } from "@electron/remote"
+import { app } from "@electron/remote";
 import { preloadService } from "src/v2/machines/preloadMachine";
 
 import H1 from "src/v2/components/ui/H1";
@@ -49,11 +49,7 @@ type Languages = Array<Record<"code" | "name" | "localized_name", string>>;
 const transifexTags = "v2/configuration";
 
 function handleOpenKeyStorePath() {
-  const openpath = path.join(
-    app.getPath("appData"),
-    "planetarium",
-    "keystore"
-  );
+  const openpath = path.join(app.getPath("appData"), "planetarium", "keystore");
   console.log(`Open keystore folder. ${openpath}`);
   shell.showItemInFolder(openpath);
 }
