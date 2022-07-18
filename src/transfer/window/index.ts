@@ -11,6 +11,7 @@ const createTransferWindow = async (): Promise<BrowserWindow> => {
     height: 650,
     webPreferences: {
       contextIsolation: false,
+      nodeIntegration: true,
     },
     frame: true,
     resizable: false,
