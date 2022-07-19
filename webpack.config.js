@@ -21,6 +21,10 @@ function createRenderConfig(isDev) {
 
     target: "electron-renderer", // any other target value makes react-hot-loader stop working
 
+    entry: {
+      render: "./render.tsx",
+    },
+
     resolve: {
       extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
       alias: {
