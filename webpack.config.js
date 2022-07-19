@@ -98,7 +98,7 @@ function createRenderConfig(isDev) {
                 [
                   "@babel/preset-env",
                   {
-                    targets: { electron: "9.0.2" },
+                    targets: { electron: "19.0.8" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
