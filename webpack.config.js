@@ -171,7 +171,7 @@ function createMainConfig(isDev) {
     mode: isDev ? DEVELOPMENT : PRODUCTION,
 
     entry: {
-      main: "./main/main.ts",
+      main: "./main.ts",
     },
 
     resolve: {
