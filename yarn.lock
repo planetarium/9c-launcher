@@ -10055,7 +10055,7 @@ __metadata:
     destr: ^1.1.0
     dotenv: ^8.2.0
     eip55: ^2.1.0
-    electron: 19.0.0
+    electron: ^19.0.8
     electron-builder: ^22.7.0
     electron-devtools-installer: ^3.2.0
     electron-dl: ^3.0.2
@@ -15205,16 +15205,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:19.0.0":
-  version: 19.0.0
-  resolution: "electron@npm:19.0.0"
+"electron@npm:^19.0.8":
+  version: 19.0.8
+  resolution: "electron@npm:19.0.8"
   dependencies:
     "@electron/get": ^1.14.1
     "@types/node": ^16.11.26
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: e72a56fa347593802ad76aa1f34c533f114dacf2d4dcd20a74505402ce6011df3188865123f9f15aa17ab84d3c3a22cd957e87c3c94459705cf37ea27a4717c3
+  checksum: cbd4c11058eb3c656c4f589cd7b3a58b6ce2f9ac773b369c453a690bfca7e3b8c96939555b0cfce9a2afcd1af9b8d05fffaa3c45375bf3f2eb0c09735ccd5525
   languageName: node
   linkType: hard
 
