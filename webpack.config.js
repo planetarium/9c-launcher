@@ -14,10 +14,6 @@ const child_process = require("child_process");
 const DEVELOPMENT = "development";
 const PRODUCTION = "production";
 
-const gitHash = child_process.execSync("git rev-parse HEAD", {
-  encoding: "utf8",
-});
-
 /** @returns {import('webpack').Configuration} */
 function createRenderConfig(isDev) {
   return {
@@ -40,14 +36,7 @@ function createRenderConfig(isDev) {
     mode: isDev ? DEVELOPMENT : PRODUCTION,
 
     devtool: isDev && "eval-cheap-module-source-map",
-
-    entry: {
-      render: "./renderer/render.tsx",
-      collection: "./collection/collection.tsx",
-      transfer: "./transfer/transfer.tsx",
-      v2: "./v2/render.tsx",
-    },
-
+  
     output: {
       filename: isDev ? "[name].js" : "[name].[contenthash].js",
       assetModuleFilename: "assets/[hash][ext][query]",
@@ -132,32 +121,10 @@ function createRenderConfig(isDev) {
         filename: "main.css",
       }),
 
-      new DefinePlugin({
-        GIT_HASH: JSON.stringify(gitHash),
-      }),
-
       new HtmlPlugin({
         filename: "index.html",
         template: "index.html",
-        chunks: ["render"], // respective JS files
-      }),
-
-      new HtmlPlugin({
-        template: "collection.html", // relative path to the HTML files
-        filename: "collection.html", // output HTML files
-        chunks: ["collection"], // respective JS files
-      }),
-
-      new HtmlPlugin({
-        template: `index.html`, // relative path to the HTML files
-        filename: `transfer.html`, // output HTML files
-        chunks: ["transfer"], // respective JS files
-      }),
-
-      new HtmlPlugin({
-        template: "v2.html", // relative path to the HTML files
-        filename: "v2.html", // output HTML files
-        chunks: ["v2"], // respective JS files
+        chunks: "all", // respective JS files
       }),
     ],
 
@@ -183,12 +150,6 @@ function createRenderConfig(isDev) {
             name: "vendors",
             reuseExistingChunk: true,
           },
-          graphql: {
-            test: /[\\/]src[\\/]generated[\\/]/,
-            priority: -11,
-            name: "graphql",
-            reuseExistingChunk: true,
-          },
           default: {
             minChunks: 2,
             priority: -20,
@@ -211,7 +172,6 @@ function createMainConfig(isDev) {
 
     entry: {
       main: "./main/main.ts",
-      preload: "./preload/preload.ts",
     },
 
     resolve: {
@@ -322,21 +282,6 @@ module.exports = (env) => {
   const configFactory =
     target === "main" ? createMainConfig : createRenderConfig;
   const config = configFactory(isDev);
-  if (release) {
-    config.plugins.push(
-      new SentryWebpackPlugin({
-        // sentry-cli configuration
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: "planetariumhq",
-        project: "9c-launcher",
-        // webpack specific configuration
-        include: ".",
-        ignore: ["node_modules", "webpack.config.js"],
-        release: version,
-        debug: true,
-      })
-    );
-  }
 
   console.log(
     `\n##\n## BUILDING BUNDLE FOR: ${
