@@ -7,7 +7,7 @@ executors:
   windows: &windows
     machine:
       image: windows-server-2022-gui:edge
-    resource_class: windows.medium
+    resource_class: windows.large
   linux: &linux
     machine:
       image: ubuntu-2204:2022.04.1
