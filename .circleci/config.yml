@@ -1,8 +1,19 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@4.7
-  win: circleci/windows@2.4.1
+  win: circleci/windows@4.1.1
+
+executors:
+  windows: &windows
+    machine:
+      image: windows-server-2022-gui:current
+    resource_class: windows.large
+  linux: &linux
+    machine:
+      image: ubuntu-2204:2022.04.1
+  macos: &macos
+    macos:
+      xcode: 14.0.0
 
 commands:
   checkout-update-submodules:
@@ -22,8 +33,9 @@ commands:
           keys:
             - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
       - run: 
-          command: yarn install --immutable
-          shell: bash
+          command: |
+            corepack enable
+            yarn install --immutable
       - save_cache:
           key: yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
@@ -38,33 +50,49 @@ commands:
           command: |
             choco install dotnet-sdk --version <<parameters.version>> -y --no-progress
           name: Install .NET Core Latest
-  
+
 jobs:
   build:
-    executor:
-      name: win/default
-      size: medium
-    # macos:
-    #   xcode: "11.3.0"
-    # Let's keep this disabled until we figure out the macOS build.
+    parameters:
+      os:
+        type: executor
+    executor: << parameters.os >>
     steps:
-      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
+      - when:
+          condition: 
+            equal: [ *windows, << parameters.os >>]
+          steps:
+            - run:
+                command: |
+                  git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
+                  nvm install lts
+                  rm "/c/Program Files/nodejs" -rf
+                  nvm use 16.16.0
       - checkout-update-submodules:
           paths: "NineChronicles.Headless"
       - yarn-install
-      - install-dotnet
-      - run: 
-          command: |
-            [Environment]::SetEnvironmentVariable("APV", (./scripts/make-apv.ps1), "User")
-          name: Generate APV
-      - run: 
-          command: |
-            set -ex
-            mkdir -p dist
-            curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
-          shell: bash.exe
-          name: Copy config.json from the last release
-      - run: yarn sign-apv
+      - when:
+          condition:
+            equal: [ *macos, << parameters.os >>]
+          steps:
+            - run: 
+                command: |
+                  brew install --cask dotnet-sdk
+                  curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+                  sudo installer -pkg AWSCLIV2.pkg -target /
+                name: Install .NET Core, AWS
+      - when:
+          condition:
+            equal: [ *linux, << parameters.os >>]
+          steps:
+            - run: 
+                command: |
+                  wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+                  sudo dpkg -i packages-microsoft-prod.deb
+                  rm packages-microsoft-prod.deb
+                  sudo apt update
+                  sudo apt install -y dotnet-sdk-6.0
+                name: Install .NET Core
       - run:
           command: |
             dotnet clean -c Release
@@ -72,33 +100,80 @@ jobs:
           working_directory: NineChronicles.Headless
           name: Clean Headless
       - run:
-          command: yarn concurrently npm:build-headless npm:bundle-player
-          shell: bash
+          command: yarn concurrently yarn:build-headless yarn:bundle-player
           name: Setup Software Components
-      - run:
-          command: |
-            if ($env:CIRCLE_BRANCH -eq "main") {
-              yarn release
-            } else {
-              yarn run pack
-            }
       - run: 
-          command: 7z a -r ../../pack-dist/Windows.zip *
-          working_directory: pack/Nine Chronicles-win32-x64/
+          command: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
+          name: Make APV
+      - run: 
+          command: |
+            mkdir pack-dist
+            set -ex
+            mkdir -p dist
+            curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
+          name: Copy config.json from the last release
+      - run: 
+          command: yarn sign-apv
+          name: Sign APV
+      - run: 
+          command: |
+            if [[ "$CIRCLE_BRANCH" == "main" ]]
+            then
+              yarn release
+            else
+              yarn run pack
+            fi
+      - when:
+          condition: 
+            equal: [ *windows, << parameters.os >>]
+          steps:
+          - run: 
+              command: 7z a -r ../../pack-dist/Windows.zip *
+              working_directory: pack/Nine Chronicles-win32-x64/
+      - when:
+          condition:
+            equal: [ *macos, << parameters.os >>]
+          steps:
+            - run:
+                command: |
+                  chmod +x "Nine Chronicles.app/Contents/Resources/app/9c.app/Contents/MacOS/9c"
+                  tar cvfz ../../pack-dist/macOS.tar.gz *
+                working_directory: pack/Nine Chronicles-darwin-x64/
+      - when:
+          condition:
+            equal: [ *linux, << parameters.os >>]
+          steps:
+            - run: 
+                command: |
+                  chmod +x resources/app/9c
+                  tar cvfz ../../pack-dist/Linux.tar.gz *
+                working_directory: pack/Nine Chronicles-linux-x64/
       - store_artifacts:
           path: pack-dist
           destination: dist-artifacts
-      - run:
+      - run: 
           command: |
-            Invoke-WebRequest https://awscli.amazonaws.com/AWSCLIV2.msi -OutFile AWSCLIV2.msi
-            msiexec.exe /i AWSCLIV2.msi /quiet
-            [Environment]::SetEnvironmentVariable("Path", $env:PATH + ";c:\Program Files\Amazon\AWSCLIV2", "Machine")
-
-            aws configure set aws_access_key_id $env:AWS_ACCESS_KEY
-            aws configure set aws_secret_access_key $env:AWS_SECRET_KEY
-
-            aws s3 cp pack-dist/Windows.zip s3://9c-artifacts/9c-launcher/$env:CIRCLE_SHA1/Windows.zip
-          name: Upload to S3
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY
+            aws configure set aws_secret_access_key $AWS_SECRET_KEY
+          name: Set S3
+      - when:
+          condition: 
+            equal: [ *windows, << parameters.os >>]
+          steps:
+            - run: 
+                command: aws s3 cp pack-dist/Windows.zip s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/Windows.zip
+      - when:
+          condition:
+            equal: [ *macos, << parameters.os >>]
+          steps:
+            - run: 
+                command: aws s3 cp pack-dist/macOS.tar.gz s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/macOS.tar.gz
+      - when:
+          condition:
+            equal: [ *linux, << parameters.os >>]
+          steps:
+            - run: 
+                command: aws s3 cp pack-dist/Linux.tar.gz s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/Linux.tar.gz
   styles:
     docker:
       - image: cimg/node:lts
@@ -155,7 +230,10 @@ jobs:
 workflows:
   build:
     jobs:
-      - build
+      - build:
+          matrix:
+            parameters:
+              os: ["linux", "macos", "windows"]
       - styles
       - update-translations:
           filters:
