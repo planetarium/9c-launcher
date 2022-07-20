@@ -147,10 +147,11 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     if (win) {
       const { checkboxChecked } = await dialog.showMessageBox(win, {
         type: "error",
-        message: "This update needs reinstallation due to techincal issues.",
+        message:
+          "Nine Chronicles has been updated but the update needs reinstallation due to techincal issues. Sorry for inconvenience.",
         title: "Reinstallation required",
         checkboxChecked: true,
-        checkboxLabel: "Open the update page in browser",
+        checkboxLabel: "Open the installer page in browser",
       });
       if (checkboxChecked)
         shell.openExternal("https://bit.ly/9c-manual-update");
