@@ -64,6 +64,15 @@ function getVersionNumberFromAPV(apv: string): number {
   return parseInt(version, 10);
 }
 
+function decodeLocalAPV(): BencodexDict | undefined {
+  const localApvToken = getConfig("AppProtocolVersion");
+  const extra = Buffer.from(localApvToken.split("/")[1], "hex");
+
+  if (!extra.length) return;
+
+  return decode(extra) as BencodexDict | undefined;
+}
+
 export async function update(update: Update, listeners: IUpdateOptions) {
   const localVersionNumber: number =
     update.current ?? getVersionNumberFromAPV(getConfig("AppProtocolVersion"));
@@ -119,6 +128,21 @@ export async function update(update: Update, listeners: IUpdateOptions) {
 
   if (downloadUrl == null) {
     console.log(`Stop update process. Not support ${process.platform}.`);
+    return;
+  }
+
+  const compatVersion = BigInt(
+    (extra.get("CompatiblityVersion") as string | number) ?? 0
+  );
+  const currentCompatVersion = BigInt(
+    (decodeLocalAPV()?.get("CompatiblityVersion") as string | number) ?? 0
+  );
+
+  if (compatVersion > currentCompatVersion) {
+    console.log(
+      `Stop update process. CompatiblityVersion is higher than current.`
+    );
+    win?.webContents.send("compatiblity-version-higher-than-current");
     return;
   }
 
