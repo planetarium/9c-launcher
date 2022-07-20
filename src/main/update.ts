@@ -147,14 +147,10 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     if (win) {
       const { checkboxChecked } = await dialog.showMessageBox(win, {
         type: "error",
-        message: t(
-          "This update needs reinstallation due to techincal issues.",
-          { _tags: "update" }
-        ),
+        message: "This update needs reinstallation due to techincal issues.",
+        title: "Reinstallation required",
         checkboxChecked: true,
-        checkboxLabel: t("Open the update page in browser", {
-          _tags: "update",
-        }),
+        checkboxLabel: "Open the update page in browser",
       });
       if (checkboxChecked)
         shell.openExternal("https://bit.ly/9c-manual-update");
