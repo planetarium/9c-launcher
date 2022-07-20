@@ -32,7 +32,7 @@ commands:
       - restore_cache:
           keys:
             - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
-            - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
+            - yarn3-installation-{{ arch }}
       - run: 
           command: |
             corepack enable
