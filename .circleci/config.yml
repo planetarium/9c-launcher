@@ -36,7 +36,7 @@ commands:
       - run: 
           command: |
             corepack enable
-            yarn install 
+            yarn install --immutable
       - save_cache:
           key: yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
