@@ -1,5 +1,5 @@
 import { encode, decode, BencodexDict } from "bencodex";
-import { DownloadItem, app } from "electron";
+import { DownloadItem, app, dialog, shell } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import extractZip from "extract-zip";
 import * as utils from "../utils";
@@ -12,6 +12,7 @@ import fs from "fs";
 import Headless from "./headless/headless";
 import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
+import { t } from "@transifex/native";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -143,6 +144,22 @@ export async function update(update: Update, listeners: IUpdateOptions) {
       `Stop update process. CompatiblityVersion is higher than current.`
     );
     win?.webContents.send("compatiblity-version-higher-than-current");
+    if (win) {
+      const { checkboxChecked } = await dialog.showMessageBox(win, {
+        type: "error",
+        message: t(
+          "This update needs reinstallation due to techincal issues.",
+          { _tags: "update" }
+        ),
+        checkboxChecked: true,
+        checkboxLabel: t("Open the update page in browser", {
+          _tags: "update",
+        }),
+      });
+      if (checkboxChecked)
+        shell.openExternal("https://bit.ly/9c-manual-update");
+      app.exit(0);
+    }
     return;
   }
 
