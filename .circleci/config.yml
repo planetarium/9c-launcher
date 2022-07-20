@@ -31,14 +31,13 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
-            - yarn3-installation-{{ arch }}
+            - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}-1
       - run: 
           command: |
             corepack enable
             yarn install --immutable
       - save_cache:
-          key: yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}-1
           paths:
             - .yarn/cache
   install-dotnet:
