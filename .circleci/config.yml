@@ -6,7 +6,7 @@ orbs:
 executors:
   windows: &windows
     machine:
-      image: windows-server-2022-gui:edge
+      image: windows-server-2022-gui:current
     resource_class: windows.large
   linux: &linux
     machine:
@@ -241,5 +241,3 @@ workflows:
               only: development
       - e2e-test
       - chromatic
-
-      
