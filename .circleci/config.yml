@@ -27,6 +27,17 @@ commands:
           command: git submodule update --init --recursive <<parameters.paths>>
           environment:
             GIT_LFS_SKIP_SMUDGE: 1
+  build-headless:
+    steps:
+      - run: git -C NineChronicles.Headless log --pretty="%T" -n 1 > tree-hash
+      - restore_cache:
+          keys:
+            - headless-build-{{ arch }}-{{ checksum "tree-hash" }}
+      - run: yarn build-headless
+      - save_cache:
+          key: headless-build-{{ arch }}-{{ checksum "tree-hash" }}
+          paths:
+            - dist/publish
   yarn-install:
     steps:
       - restore_cache:
@@ -99,9 +110,7 @@ jobs:
             dotnet nuget locals all --clear
           working_directory: NineChronicles.Headless
           name: Clean Headless
-      - run:
-          command: yarn concurrently yarn:build-headless yarn:bundle-player
-          name: Setup Software Components
+      - build-headless
       - run: 
           command: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
           name: Make APV
