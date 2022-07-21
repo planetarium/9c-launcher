@@ -10,7 +10,7 @@ const dsn =
   "https://5bd08f483a254487b7540c04898c8c8f@o195672.ingest.sentry.io/5289089";
 
 export function initializeSentry() {
-  if (!app.isPackaged) {
+  if (process.env.NODE_ENV !== "production") {
     console.debug("Sentry is disabled in development mode.");
     return;
   }

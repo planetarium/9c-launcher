@@ -82,7 +82,7 @@ export default function useApolloClient(): Client | null {
       const client = new ApolloClient({
         link: ApolloLink.from([new RetryLink(), onErrorLink, splitLink]),
         cache: new InMemoryCache(),
-        connectToDevTools: !app.isPackaged,
+        connectToDevTools: process.env.NODE_ENV !== "production",
       });
 
       client
