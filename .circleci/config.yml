@@ -100,7 +100,8 @@ jobs:
                 command: |
                   wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
                   chmod +x dotnet-install.sh
-                  sudo ./dotnet-install.sh --channel LTS --runtime dotnet
+                  ./dotnet-install.sh --channel LTS --runtime dotnet
+                  echo 'export PATH="$PATH:/home/circleci/.dotnet"' >> ~/.profile
                 name: Install .NET Core
       - run:
           command: |
