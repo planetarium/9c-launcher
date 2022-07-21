@@ -127,7 +127,7 @@ ipv4().then((value) => (ip = value));
 
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: NineChroniclesMixpanel | undefined =
-  getConfig("Mixpanel") && app.isPackaged
+  getConfig("Mixpanel") && process.env.NODE_ENV === "production"
     ? new NineChroniclesMixpanel(createMixpanel(MIXPANEL_TOKEN), mixpanelUUID)
     : undefined;
 
@@ -220,7 +220,7 @@ async function initializeApp() {
   console.log("initializeApp");
   app.on("ready", async () => {
     remoteInitialize();
-    if (!app.isPackaged)
+    if (process.env.NODE_ENV !== "production")
       await installExtension([MOBX_DEVTOOLS, APOLLO_DEVELOPER_TOOLS])
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
@@ -792,7 +792,7 @@ async function createWindow(): Promise<BrowserWindow> {
 
   console.log(app.getAppPath());
 
-  if (!app.isPackaged) {
+  if (process.env.NODE_ENV !== "production") {
     await _win.loadURL("http://localhost:9000");
     await _win.webContents.openDevTools();
   } else {
@@ -964,7 +964,7 @@ function getHeadlessArgs(): string[] {
     `--workers=${getConfig("Workers")}`,
     `--confirmations=${getConfig("Confirmations")}`,
     ...getConfig("HeadlessArgs", []),
-    ...(!app.isPackaged ? ["--no-cors"] : []),
+    ...(process.env.NODE_ENV !== "production" ? ["--no-cors"] : []),
   ];
 
   {

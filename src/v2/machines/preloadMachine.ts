@@ -4,7 +4,7 @@ import { IPC_PRELOAD_NEXT, IPC_SNAPSHOT_PROGRESS } from "../ipcTokens";
 import { invokeIpcEvent } from "../utils/ipcEvent";
 import { inspect } from "@xstate/inspect";
 
-if (!app.isPackaged)
+if (process.env.NODE_ENV !== "production")
   inspect({ iframe: false, url: "https://stately.ai/viz?inspect" });
 
 type PreloadMachineContext = {
@@ -204,5 +204,5 @@ export const preloadMachine = createMachine<
 );
 
 export const preloadService = interpret(preloadMachine, {
-  devTools: !app.isPackaged,
+  devTools: process.env.NODE_ENV !== "production",
 }).start();

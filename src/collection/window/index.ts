@@ -19,7 +19,7 @@ const createCollectionWindow = async (): Promise<BrowserWindow> => {
   });
   remoteEnable(_win.webContents);
 
-  if (!app.isPackaged) {
+  if (process.env.NODE_ENV !== "production") {
     await _win.loadURL("http://localhost:9000/collection.html");
     await _win.webContents.openDevTools();
   } else {

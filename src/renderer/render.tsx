@@ -12,7 +12,7 @@ initializeSentry();
 
 Object.assign(console, electronLog.functions);
 
-if (!app.isPackaged) {
+if (process.env.NODE_ENV !== "production") {
   const mobxDevTools = document.createElement("script");
   mobxDevTools.setAttribute("src", "//localhost:8098");
   document.head.appendChild(mobxDevTools);
