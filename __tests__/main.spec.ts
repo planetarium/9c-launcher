@@ -1,9 +1,7 @@
 import path from "path";
 import fs from "fs";
 
-import { Application } from "spectron";
-import electron from "electron";
-
+import { ElectronApplication, Page, _electron as electron } from "playwright"
 import "dotenv/config";
 import { expect } from "chai";
 
@@ -15,7 +13,7 @@ const logsDir = path.join(__dirname, "logs");
 if (!fs.existsSync(snapshotDir)) fs.mkdirSync(snapshotDir);
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
 
-// @ts-ignore
+// @ts-expect-error - override
 process.env.ELECTRON_IS_DEV = 0;
 
 const { PASSWORD } = process.env;
@@ -25,19 +23,20 @@ if (PASSWORD === undefined) throw Error("failed to load password from .env");
 describe("test", function () {
   this.timeout(30 * 1000);
 
-  let app: Application;
+  let app: ElectronApplication;
+  let page: Page;
   const history: string[] = [];
 
-  before(function () {
-    app = new Application({
-      path: (electron as unknown) as string,
-      args: [path.join(__dirname, "..", "dist")],
-    });
-    return app.start();
+  before(async function () {
+    app = await electron.launch({
+      args: ['../dist']
+    })
+
+    page = await app.firstWindow();
   });
 
   afterEach(async function () {
-    const pathname = await app.webContents.executeJavaScript(
+    const pathname = await page.evaluate(
       "location.pathname"
     );
     if (typeof pathname !== "string")
@@ -68,59 +67,55 @@ describe("test", function () {
   });
 
   it("로그인 하기", async function () {
-    await app.client.saveScreenshot(path.join(snapshotDir, `login.png`));
-
-    const inputPassword = await app.client.$('input[type="password"]');
-    await inputPassword.setValue(PASSWORD);
-
-    const submitButton = await app.client.$('button[type="submit"]');
-    await submitButton.click();
+    await page.screenshot({ path: path.join(snapshotDir, `login.png`)});
+    await page.fill("input[type=password]", PASSWORD);
+    await page.click("button[type=submit]");
   });
 
   it("마이닝 끄기", async function () {
-    const miningOffButton = await app.client.$("#mining-off");
-
-    await app.client.saveScreenshot(path.join(snapshotDir, `mining.png`));
-    await miningOffButton.click();
+    await page.screenshot({ path: path.join(snapshotDir, `mining.png`)});
+    await page.click("#mining-off");
   });
 
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
-    await app.client.saveScreenshot(path.join(snapshotDir, `lobby.png`));
+    await page.screenshot({ path: path.join(snapshotDir, `login.png`)});
 
-    const submitButton = await app.client.$("#start-game");
-    const text = await submitButton.getText();
+    const submitButton = await page.waitForSelector("#start-game");
+    const text = await submitButton.textContent();
     expect(text).to.equal("NOW RUNNING...");
   });
 
-  after(async function () {
-    if (app?.isRunning()) {
-      const mainLogFile = await fs.promises.open(
-        path.join(logsDir, "main.log"),
-        "w"
-      );
-      const rendererLogFile = await fs.promises.open(
-        path.join(logsDir, "render.log"),
-        "w"
-      );
+  // after(async function () {
+  //   if (app?.isRunning()) {
+  //     const mainLogFile = await fs.promises.open(
+  //       path.join(logsDir, "main.log"),
+  //       "w"
+  //     );
+  //     const rendererLogFile = await fs.promises.open(
+  //       path.join(logsDir, "render.log"),
+  //       "w"
+  //     );
 
-      for (const log of await app.client.getMainProcessLogs()) {
-        mainLogFile.write(log);
-        mainLogFile.write("\n");
-      }
+  //     for (const log of await app.client.getMainProcessLogs()) {
+  //       mainLogFile.write(log);
+  //       mainLogFile.write("\n");
+  //     }
 
-      type Log = {
-        level: unknown;
-        message: string;
-        source: string;
-        timestamp: unknown;
-      };
+  //     type Log = {
+  //       level: unknown;
+  //       message: string;
+  //       source: string;
+  //       timestamp: unknown;
+  //     };
 
-      for (const log of (await app.client.getRenderProcessLogs()) as Log[]) {
-        rendererLogFile.write(`[${log.level}] ${log.message}`);
-        rendererLogFile.write("\n");
-      }
+  //     for (const log of (await app.client.getRenderProcessLogs()) as Log[]) {
+  //       rendererLogFile.write(`[${log.level}] ${log.message}`);
+  //       rendererLogFile.write("\n");
+  //     }
 
-      return app.mainProcess.exit(0);
-    }
-  });
+  //     return app.evaluate(({ app }) => {
+  //       app.exit(0);
+  //     });
+  //   }
+  // });
 });
