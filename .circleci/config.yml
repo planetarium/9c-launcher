@@ -32,10 +32,17 @@ commands:
       - run: git -C NineChronicles.Headless log --pretty="%T" -n 1 > tree-hash
       - restore_cache:
           keys:
-            - headless-build-{{ arch }}-{{ checksum "tree-hash" }}
-      - run: yarn build-headless
+            - headless-{{ arch }}-{{ checksum "tree-hash" }}
+      - run: 
+          command: |
+            mkdir dist/publish
+            if [ -z "$(ls -A dist/publish)" ]; then
+            yarn build-headless
+            else
+            echo "Cache Loaded"
+            fi
       - save_cache:
-          key: headless-build-{{ arch }}-{{ checksum "tree-hash" }}
+          key: headless-{{ arch }}-{{ checksum "tree-hash" }}
           paths:
             - dist/publish
   yarn-install:
