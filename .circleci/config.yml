@@ -35,6 +35,7 @@ commands:
             - headless-{{ arch }}-{{ checksum "tree-hash" }}
       - run: 
           command: |
+            mkdir dist
             mkdir dist/publish
             if [ -z "$(ls -A dist/publish)" ]; then
             yarn build-headless
