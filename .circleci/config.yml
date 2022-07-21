@@ -35,7 +35,6 @@ commands:
             - headless-{{ arch }}-{{ checksum "tree-hash" }}
       - run: 
           command: |
-            mkdir dist
             mkdir dist/publish
             if [ -z "$(ls -A dist/publish)" ]; then
             yarn build-headless
@@ -117,8 +116,8 @@ jobs:
             dotnet nuget locals all --clear
           working_directory: NineChronicles.Headless
           name: Clean Headless
-      - build-headless
       - run: yarn bundle-player
+      - build-headless
       - run: 
           command: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
           name: Make APV
