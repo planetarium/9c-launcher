@@ -1,5 +1,5 @@
 import { encode, decode, BencodexDict } from "bencodex";
-import { DownloadItem, app } from "electron";
+import { DownloadItem, app, dialog, shell } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import extractZip from "extract-zip";
 import * as utils from "../utils";
@@ -12,6 +12,7 @@ import fs from "fs";
 import Headless from "./headless/headless";
 import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
+import { t } from "@transifex/native";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -62,6 +63,15 @@ export interface IUpdateOptions {
 function getVersionNumberFromAPV(apv: string): number {
   const [version] = apv.split("/");
   return parseInt(version, 10);
+}
+
+function decodeLocalAPV(): BencodexDict | undefined {
+  const localApvToken = getConfig("AppProtocolVersion");
+  const extra = Buffer.from(localApvToken.split("/")[1], "hex");
+
+  if (!extra.length) return;
+
+  return decode(extra) as BencodexDict | undefined;
 }
 
 export async function update(update: Update, listeners: IUpdateOptions) {
@@ -119,6 +129,34 @@ export async function update(update: Update, listeners: IUpdateOptions) {
 
   if (downloadUrl == null) {
     console.log(`Stop update process. Not support ${process.platform}.`);
+    return;
+  }
+
+  const compatVersion = BigInt(
+    (extra.get("CompatiblityVersion") as string | number) ?? 0
+  );
+  const currentCompatVersion = BigInt(
+    (decodeLocalAPV()?.get("CompatiblityVersion") as string | number) ?? 0
+  );
+
+  if (compatVersion > currentCompatVersion) {
+    console.log(
+      `Stop update process. CompatiblityVersion is higher than current.`
+    );
+    win?.webContents.send("compatiblity-version-higher-than-current");
+    if (win) {
+      const { checkboxChecked } = await dialog.showMessageBox(win, {
+        type: "error",
+        message:
+          "Nine Chronicles has been updated but the update needs reinstallation due to techincal issues. Sorry for inconvenience.",
+        title: "Reinstallation required",
+        checkboxChecked: true,
+        checkboxLabel: "Open the installer page in browser",
+      });
+      if (checkboxChecked)
+        shell.openExternal("https://bit.ly/9c-manual-update");
+      app.exit(0);
+    }
     return;
   }
 
