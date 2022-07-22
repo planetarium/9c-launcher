@@ -4,6 +4,4 @@ dotnet publish NineChronicles.Headless/NineChronicles.Headless.Executable/NineCh
   -r osx-x64 \
   -o dist/publish \
   --self-contained \
-  -p:PublishSingleFile=true \
-  -p:EnableTrimAnalyzer=false \
   --version-suffix "$(git -C NineChronicles.Headless rev-parse HEAD)"
