@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 
-import { ElectronApplication, Page, _electron as electron } from "playwright"
+import { ElectronApplication, Page, _electron as electron } from "playwright";
 import "dotenv/config";
 import { expect } from "chai";
 
@@ -13,8 +13,7 @@ const logsDir = path.join(__dirname, "logs");
 if (!fs.existsSync(snapshotDir)) fs.mkdirSync(snapshotDir);
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
 
-// @ts-expect-error - override
-process.env.ELECTRON_IS_DEV = 0;
+process.env.NODE_ENV = "production";
 
 const { PASSWORD } = process.env;
 
@@ -29,16 +28,14 @@ describe("test", function () {
 
   before(async function () {
     app = await electron.launch({
-      args: ['./dist/']
-    })
+      args: ["./dist/"],
+    });
 
     page = await app.firstWindow();
   });
 
   afterEach(async function () {
-    const pathname = await page.evaluate(
-      "location.pathname"
-    );
+    const pathname = await page.evaluate("location.pathname");
     if (typeof pathname !== "string")
       throw Error("현재 경로를 가져오지 못했습니다");
 
@@ -56,33 +53,34 @@ describe("test", function () {
 
     if (perviousPath.includes(lastPath) && pathname.includes(lastPath)) return;
 
-    if (perviousPath === pathname)
-      throw Error(
-        `"${
-          isWindows ? pathname.slice(3) : pathname
-        }"에서 다음 페이지로 이동에 실패했습니다.`
-      );
+    // if (perviousPath === pathname)
+    //   throw Error(
+    //     `"${
+    //       isWindows ? pathname.slice(3) : pathname
+    //     }"에서 다음 페이지로 이동에 실패했습니다.`
+    //   );
 
     history.push(pathname);
   });
 
   it("로그인 하기", async function () {
-    await page.screenshot({ path: path.join(snapshotDir, `login.png`)});
+    await page.screenshot({ path: path.join(snapshotDir, `login.png`) });
     await page.fill("input[type=password]", PASSWORD);
-    await page.click("button[type=submit]");
+    await page.click("data-testid=login");
   });
 
-  it("마이닝 끄기", async function () {
-    await page.screenshot({ path: path.join(snapshotDir, `mining.png`)});
-    await page.click("#mining-off");
-  });
+  // it("마이닝 끄기", async function () {
+  //   await page.screenshot({ path: path.join(snapshotDir, `mining.png`)});
+  //   await page.click("#mining-off");
+  // });
 
   it("로비 뷰에서 실행 버튼 기다리기", async function () {
-    await page.screenshot({ path: path.join(snapshotDir, `login.png`)});
+    await page.screenshot({ path: path.join(snapshotDir, `login.png`) });
 
-    const submitButton = await page.waitForSelector("#start-game");
-    const text = await submitButton.textContent();
-    expect(text).to.equal("NOW RUNNING...");
+    const isButtonVisible = await page.isVisible("data-testid=play");
+    const statusText = await page.textContent("data-testid=status");
+    expect(isButtonVisible, `Play button shown on status: ${statusText}`).to.be
+      .false;
   });
 
   // after(async function () {
