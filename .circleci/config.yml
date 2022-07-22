@@ -14,6 +14,7 @@ executors:
   macos: &macos
     macos:
       xcode: 14.0.0
+    resource_class: macos.x86.medium.gen2
 
 commands:
   checkout-update-submodules:
@@ -32,25 +33,25 @@ commands:
       - run: git rev-parse HEAD:NineChronicles.Headless > tree-hash
       - restore_cache:
           keys:
-            - headless-publish-{{ arch }}-{{ checksum "tree-hash" }}
+            - headless-pub-{{ arch }}-{{ checksum "tree-hash" }}
       - run:
           command: |
             [ -d dist/publish ] || yarn build-headless
       - save_cache:
-          key: headless-publish-{{ arch }}-{{ checksum "tree-hash" }}
+          key: headless-pub-{{ arch }}-{{ checksum "tree-hash" }}
           paths:
             - dist/publish
   yarn-install:
     steps:
       - restore_cache:
           keys:
-            - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
+            - yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
       - run:
           command: |
             corepack enable
             yarn install --immutable
       - save_cache:
-          key: yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
             - .yarn/cache
   install-dotnet:
