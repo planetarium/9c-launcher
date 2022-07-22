@@ -29,7 +29,7 @@ commands:
             GIT_LFS_SKIP_SMUDGE: 1
   build-headless:
     steps:
-      - run: git -C NineChronicles.Headless log --pretty="%T" -n 1 > tree-hash
+      - run: git rev-parse HEAD:NineChronicles.Headless > tree-hash
       - restore_cache:
           keys:
             - headless-publish-{{ arch }}-{{ checksum "tree-hash" }}
