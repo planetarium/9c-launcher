@@ -92,7 +92,7 @@ jobs:
           steps:
             - run:
                 command: |
-                  wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
+                  curl https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh -o "dotnet-install.sh"
                   chmod +x dotnet-install.sh
                   ./dotnet-install.sh --channel Current
                   echo 'export PATH=$PATH:/home/circleci/.dotnet' >> $BASH_ENV
