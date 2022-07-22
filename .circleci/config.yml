@@ -35,7 +35,7 @@ commands:
             - headless-publish-{{ arch }}-{{ checksum "tree-hash" }}
       - run:
           command: |
-            ! [ -d dist/publish ] && yarn build-headless
+            [ -d dist/publish ] || yarn build-headless
       - save_cache:
           key: headless-publish-{{ arch }}-{{ checksum "tree-hash" }}
           paths:
