@@ -29,7 +29,7 @@ describe("test", function () {
 
   before(async function () {
     app = await electron.launch({
-      args: ['../dist']
+      args: ['./dist/']
     })
 
     page = await app.firstWindow();
