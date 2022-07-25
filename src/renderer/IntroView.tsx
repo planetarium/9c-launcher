@@ -21,7 +21,8 @@ const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
     } else {
       const addresses = protectedPrivateKeys.map((value) => value?.address);
       addresses.map((value) => {
-        !accountStore.addresses.includes(value) && accountStore.addAddress(value);
+        !accountStore.addresses.includes(value) &&
+          accountStore.addAddress(value);
       });
 
       routerStore.push("/login");

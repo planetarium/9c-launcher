@@ -36,7 +36,10 @@ export async function createWindow(): Promise<BrowserWindow> {
       options.frame = true;
       options.resizable = true;
       options.webPreferences!.nodeIntegration = false;
-    } else event.preventDefault(), shell.openExternal(url);
+    } else {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
   });
 
   win.on("close", function (event: any) {
