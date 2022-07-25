@@ -62,7 +62,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     (event: ChangeEvent<HTMLInputElement>) => {
       setActivationKey(event.target.value.trim());
     },
-    [event]
+    []
   );
 
   const { refetch: nonceRefetch } = useActivationKeyNonceQuery({
