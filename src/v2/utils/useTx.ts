@@ -109,8 +109,6 @@ export function useTx<K extends keyof ActionArguemnts>(
           if (res.data) console.log(event, parameters, res.data.stageTxV2);
           return res;
         });
-      } catch (e) {
-        throw e;
       } finally {
         inProgress.current = false;
       }
