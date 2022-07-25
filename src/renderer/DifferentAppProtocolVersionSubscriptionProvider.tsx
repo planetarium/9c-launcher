@@ -56,8 +56,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
       setCopyingState(false);
     });
 
-    //@ts-ignore
-    // Force-update function for developers (debug purpose)
+    // @ts-expect-error -- Force-update function for developers (debug purpose)
     window.updateLauncher = (url) => {
       const extra: string = encode({
         WindowsBinaryUrl: url,

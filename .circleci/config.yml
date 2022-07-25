@@ -187,6 +187,9 @@ jobs:
       - run:
           command: yarn tsc --noEmit
           name: Type Check
+      - run:
+          command: yarn eslint ./src --quiet
+          name: ESLint Check
   chromatic:
     docker:
       - image: cimg/node:lts

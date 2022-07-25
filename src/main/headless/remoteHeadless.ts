@@ -89,7 +89,7 @@ class RemoteHeadless {
       // FIXME: define a new interface or research the type exists.
       if (
         error instanceof Object &&
-        (error as Object).hasOwnProperty("status") &&
+        Object.prototype.hasOwnProperty.call(error, "status") &&
         error.status !== 0
       ) {
         return null;
