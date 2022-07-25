@@ -14,6 +14,7 @@ executors:
   macos: &macos
     macos:
       xcode: 14.0.0
+    resource_class: macos.x86.medium.gen2
 
 commands:
   checkout-update-submodules:
@@ -23,21 +24,34 @@ commands:
         default: ""
     steps:
       - checkout
-      - run: 
+      - run:
           command: git submodule update --init --recursive <<parameters.paths>>
           environment:
             GIT_LFS_SKIP_SMUDGE: 1
+  build-headless:
+    steps:
+      - run: git rev-parse HEAD:NineChronicles.Headless > tree-hash
+      - restore_cache:
+          keys:
+            - headless-pub-{{ arch }}-{{ checksum "tree-hash" }}
+      - run:
+          command: |
+            [ -d dist/publish ] || yarn build-headless
+      - save_cache:
+          key: headless-pub-{{ arch }}-{{ checksum "tree-hash" }}
+          paths:
+            - dist/publish
   yarn-install:
     steps:
       - restore_cache:
           keys:
-            - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
-      - run: 
+            - yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+      - run:
           command: |
             corepack enable
             yarn install --immutable
       - save_cache:
-          key: yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
             - .yarn/cache
   install-dotnet:
@@ -59,8 +73,8 @@ jobs:
     executor: << parameters.os >>
     steps:
       - when:
-          condition: 
-            equal: [ *windows, << parameters.os >>]
+          condition:
+            equal: [*windows, << parameters.os >>]
           steps:
             - run:
                 command: |
@@ -73,49 +87,48 @@ jobs:
       - yarn-install
       - when:
           condition:
-            equal: [ *macos, << parameters.os >>]
+            or:
+              - equal: [*macos, << parameters.os >>]
+              - equal: [*linux, << parameters.os >>]
           steps:
-            - run: 
+            - run:
                 command: |
-                  brew install --cask dotnet-sdk
-                  curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-                  sudo installer -pkg AWSCLIV2.pkg -target /
-                name: Install .NET Core, AWS
+                  curl https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh -o "dotnet-install.sh"
+                  chmod +x dotnet-install.sh
+                  ./dotnet-install.sh --channel Current
+                  echo 'export PATH=$PATH:$HOME/.dotnet' >> $BASH_ENV
+                name: Install .NET Core
       - when:
           condition:
-            equal: [ *linux, << parameters.os >>]
+            equal: [*macos, << parameters.os >>]
           steps:
-            - run: 
+            - run:
                 command: |
-                  wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-                  sudo dpkg -i packages-microsoft-prod.deb
-                  rm packages-microsoft-prod.deb
-                  sudo apt update
-                  sudo apt install -y dotnet-sdk-6.0
-                name: Install .NET Core
+                  curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+                  sudo installer -pkg AWSCLIV2.pkg -target /
+                name: Install AWS CLI
       - run:
           command: |
             dotnet clean -c Release
             dotnet nuget locals all --clear
           working_directory: NineChronicles.Headless
           name: Clean Headless
+      - run: yarn bundle-player
+      - build-headless
       - run:
-          command: yarn concurrently yarn:build-headless yarn:bundle-player
-          name: Setup Software Components
-      - run: 
           command: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
           name: Make APV
-      - run: 
+      - run:
           command: |
             mkdir pack-dist
             set -ex
             mkdir -p dist
             curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
           name: Copy config.json from the last release
-      - run: 
+      - run:
           command: yarn sign-apv
           name: Sign APV
-      - run: 
+      - run:
           command: |
             if [[ "$CIRCLE_BRANCH" == "main" ]]
             then
@@ -124,15 +137,15 @@ jobs:
               yarn run pack
             fi
       - when:
-          condition: 
-            equal: [ *windows, << parameters.os >>]
+          condition:
+            equal: [*windows, << parameters.os >>]
           steps:
-          - run: 
-              command: 7z a -r ../../pack-dist/Windows.zip *
-              working_directory: pack/Nine Chronicles-win32-x64/
+            - run:
+                command: 7z a -r ../../pack-dist/Windows.zip *
+                working_directory: pack/Nine Chronicles-win32-x64/
       - when:
           condition:
-            equal: [ *macos, << parameters.os >>]
+            equal: [*macos, << parameters.os >>]
           steps:
             - run:
                 command: |
@@ -141,9 +154,9 @@ jobs:
                 working_directory: pack/Nine Chronicles-darwin-x64/
       - when:
           condition:
-            equal: [ *linux, << parameters.os >>]
+            equal: [*linux, << parameters.os >>]
           steps:
-            - run: 
+            - run:
                 command: |
                   chmod +x resources/app/9c
                   tar cvfz ../../pack-dist/Linux.tar.gz *
@@ -151,28 +164,28 @@ jobs:
       - store_artifacts:
           path: pack-dist
           destination: dist-artifacts
-      - run: 
+      - run:
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY
             aws configure set aws_secret_access_key $AWS_SECRET_KEY
           name: Set S3
       - when:
-          condition: 
-            equal: [ *windows, << parameters.os >>]
+          condition:
+            equal: [*windows, << parameters.os >>]
           steps:
-            - run: 
+            - run:
                 command: aws s3 cp pack-dist/Windows.zip s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/Windows.zip
       - when:
           condition:
-            equal: [ *macos, << parameters.os >>]
+            equal: [*macos, << parameters.os >>]
           steps:
-            - run: 
+            - run:
                 command: aws s3 cp pack-dist/macOS.tar.gz s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/macOS.tar.gz
       - when:
           condition:
-            equal: [ *linux, << parameters.os >>]
+            equal: [*linux, << parameters.os >>]
           steps:
-            - run: 
+            - run:
                 command: aws s3 cp pack-dist/Linux.tar.gz s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/Linux.tar.gz
   styles:
     docker:
@@ -212,7 +225,7 @@ jobs:
       name: win/default
       size: medium
     steps:
-      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
+      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links
       - checkout-update-submodules:
           paths: "NineChronicles.Headless"
       - yarn-install
@@ -228,7 +241,6 @@ jobs:
       - store_artifacts:
           path: __tests__/logs
           destination: e2e-logs
-
 
 workflows:
   build:
