@@ -130,7 +130,7 @@ const PreloadProgressView = observer(() => {
       }
     );
 
-    //@ts-ignore
+    // @ts-expect-error -- debug purpose
     window.relaunchStandalone = () => ipcRenderer.send("relaunch standalone");
   }, []);
 
