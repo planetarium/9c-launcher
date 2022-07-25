@@ -32,9 +32,7 @@ const Redirector = observer(() => {
       history.replace("/welcome");
     } else {
       protectedPrivateKeys.filter(Boolean).map(({ address }) => {
-        account.addresses.includes(address)
-          ? null
-          : account.addAddress(address);
+        !account.addresses.includes(address) && account.addAddress(address);
       });
 
       history.replace("/login");
