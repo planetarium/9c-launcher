@@ -161,7 +161,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   }
 
   win?.webContents.send("update download started");
-  // TODO: 이어받기 되면 좋을 듯
+  // TODO: It would be nice to have continuing download.
   const options: ElectronDLOptions = {
     onStarted: (downloadItem: DownloadItem) => {
       console.log("Starts to download:", downloadItem);
@@ -190,16 +190,16 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   console.log("Finished to download:", dlPath);
 
   const extractPath =
-    process.platform == "darwin" // .app으로 실행한 건지 npm run dev로 실행한 건지도 확인해야 함
+    process.platform == "darwin" // we should check whether it was executed from .app or from npm run dev.
       ? path.dirname(path.dirname(path.dirname(path.dirname(app.getAppPath()))))
       : path.dirname(path.dirname(app.getAppPath()));
   console.log("The 9C app installation path:", extractPath);
 
   const appDirName = app.getAppPath();
-  // FIXME: "config.json" 이거 하드코딩하지 말아야 함
+  // FIXME: We shouldn't hardcode "config.json"
   const configFileName = "config.json";
 
-  // 압축 해제하기 전에 기존 설정 꿍쳐둔다. 나중에 기존 설정 내용이랑 새 디폴트 값들이랑 합쳐야 함.
+  // Pre-decompress existing config file saving, we will merge them with new default values. 
   const configPath = path.join(appDirName, configFileName);
   const bakConfig = JSON.parse(
     await fs.promises.readFile(configPath, { encoding: "utf-8" })
@@ -207,7 +207,8 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   console.log("The existing configuration:", bakConfig);
 
   if (process.platform == "win32") {
-    // 윈도는 프로세스 떠 있는 실행 파일을 덮어씌우거나 지우지 못하므로 이름을 바꿔둬야 함.
+    // Windows can't replace or remove executable file 
+    // while process is up, so we should change name instead 
     const src = app.getPath("exe");
     const basename = path.basename(src);
     const dirname = path.dirname(src);
@@ -215,10 +216,10 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     await fs.promises.rename(src, dst);
     console.log("The executing file has renamed from", src, "to", dst);
 
-    // TODO: temp directory 앞에 9c-updater- 접두어
+    // TODO: 9c-updater- prefix in front of temp directory name
     const tempDir = await tmpName();
 
-    // ZIP 압축 해제
+    // Unzip ZIP
     console.log("Start to extract the zip archive", dlPath, "to", tempDir);
 
     await extractZip(dlPath, {
@@ -241,7 +242,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     }
     win.webContents.send("update copying complete");
   } else if (process.platform == "darwin") {
-    // .tar.{gz,bz2} 해제
+    // untar .tar.{gz,bz2} 
     const lowerFname = dlFname.toLowerCase();
     const bz2 = lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");
     console.log(
@@ -271,10 +272,10 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     return;
   }
 
-  // 압축을 푼 뒤 압축 파일은 제거합니다.
+  // Delete compressed file after decompress.
   await fs.promises.unlink(dlPath);
 
-  // 설정 합치기
+  // Merging configs
   const newConfig = JSON.parse(
     await fs.promises.readFile(configPath, { encoding: "utf-8" })
   );
@@ -294,14 +295,14 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     lockfilePath
   );
 
-  // 재시작
+  // Restart
   listeners.relaunchRequired();
 
   /*
-      Electron이 제공하는 autoUpdater는 macOS에서는 무조건 코드사이닝 되어야 동작.
-      당장은 쓰고 싶어도 여건이 안 된다.
+      autoUpdater provided from Electron must code signed to work at macOS
+      So we can't use it for now.
 
-      FIXME: 이후 Squirell를 붙여서 업데이트하게 바꿉니다.
+      FIXME: By attatching Squirell, make it update, later.
 
       const { path: tmpPath } = await tmp.file({
         postfix: ".json",
@@ -353,7 +354,7 @@ export function isUpdating() {
 }
 
 /**
- * lockfile lock이 걸려있을 경우 unlock합니다.
+ * unlock if lockfile locked.
  */
 export function cleanUpLockfile() {
   if (lockfile.checkSync(lockfilePath)) {

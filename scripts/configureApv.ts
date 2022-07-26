@@ -1,4 +1,4 @@
-// dist/config.json에 인자로 받은 APV 적용 및 저장
+// Apply and save passed APV parameter to dist/config.json
 import fs from "fs";
 import path from "path";
 

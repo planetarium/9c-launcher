@@ -1,4 +1,4 @@
-// S3에 올라간 마지막 APV 버전 넘버 가져오기
+// Load last APV version uploaded at S3
 import { Parser } from "xml2js";
 import https from "https";
 

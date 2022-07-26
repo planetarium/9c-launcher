@@ -272,7 +272,7 @@ const RpcServerPort = (): { port: number; notDefault: boolean } => {
     return { port: +port, notDefault: true };
   }
 
-  // FIXME: 열려 있지 않는 랜덤한 포트를 반환하게 해야 합니다.
+  // FIXME: It should return not opened 'random' port.
   return { port: 23142, notDefault: false };
 };
 
@@ -289,7 +289,7 @@ const LocalServerPort = (): { port: number; notDefault: boolean } => {
     return { port: +port, notDefault: true };
   }
 
-  // FIXME: 열려 있지 않는 랜덤한 포트를 반환하게 해야 합니다.
+  // FIXME: It should return not opened 'random' port.
   return { port: 23061, notDefault: false };
 };
 
