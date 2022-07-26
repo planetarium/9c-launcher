@@ -4967,18 +4967,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@basixjs/node-rs-loader@npm:^0.0.2-next":
-  version: 0.0.2-next
-  resolution: "@basixjs/node-rs-loader@npm:0.0.2-next"
-  dependencies:
-    "@napi-rs/triples": ^1.0.3
-    loader-utils: ^3.0.0
-  peerDependencies:
-    webpack: ^4.0.0 || ^5.0.0
-  checksum: f941297fa1028bfa1d594b9992aa862f9b5b26ba86d3e259464df4c7bc6c4b8da607b752d63955e95f4a61907a4ec4d7817efeb7ef39b814aa48a9bfb08a636b
-  languageName: node
-  linkType: hard
-
 "@cnakazawa/watch@npm:^1.0.3":
   version: 1.0.4
   resolution: "@cnakazawa/watch@npm:1.0.4"
@@ -6258,13 +6246,6 @@ __metadata:
     call-me-maybe: ^1.0.1
     glob-to-regexp: ^0.3.0
   checksum: d3b82b29368821154ce8e10bef5ccdbfd070d3e9601643c99ea4607e56f3daeaa4e755dd6d2355da20762c695c1b0570543d9f84b48f70c211ec09c4aaada2e1
-  languageName: node
-  linkType: hard
-
-"@napi-rs/triples@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@napi-rs/triples@npm:1.0.3"
-  checksum: c83a4cc55f69115bf4ce1d5924efce7f5faf2dc79fd52257385559f668ce91a03c5d7d004df01ebba56028a9b663955eb97f31b65ac0acff7a93c143f0d809af
   languageName: node
   linkType: hard
 
@@ -10012,7 +9993,6 @@ __metadata:
     "@babel/preset-env": ^7.10.3
     "@babel/preset-react": ^7.10.1
     "@babel/preset-typescript": ^7.10.1
-    "@basixjs/node-rs-loader": ^0.0.2-next
     "@electron/remote": ^2.0.8
     "@graphql-codegen/cli": ^1.15.4
     "@graphql-codegen/typescript": ^1.15.4
@@ -11844,13 +11824,6 @@ __metadata:
   version: 5.2.2
   resolution: "big.js@npm:5.2.2"
   checksum: b89b6e8419b097a8fb4ed2399a1931a68c612bce3cfd5ca8c214b2d017531191070f990598de2fc6f3f993d91c0f08aa82697717f6b3b8732c9731866d233c9e
-  languageName: node
-  linkType: hard
-
-"big.js@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "big.js@npm:6.1.1"
-  checksum: ba5db278e7d6700d7f92b7421e851bb65b6336d90b882869696c50574623c6be31f81500c3195fb1b391045163ffe62745e1c2bc30b35cb15e1b3e3ed135266b
   languageName: node
   linkType: hard
 
@@ -21049,15 +21022,6 @@ __metadata:
     emojis-list: ^3.0.0
     json5: ^1.0.1
   checksum: d150b15e7a42ac47d935c8b484b79e44ff6ab4c75df7cc4cb9093350cf014ec0b17bdb60c5d6f91a37b8b218bd63b973e263c65944f58ca2573e402b9a27e717
-  languageName: node
-  linkType: hard
-
-"loader-utils@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "loader-utils@npm:3.0.0"
-  dependencies:
-    big.js: ^6.1.1
-  checksum: b1b66850790e8750ad6e986d31fb1ed9bfc0abb345776557b9f0d9e2d1ee976494b8387ebd8c1f68febf442dc764d57f3fa093f6aaf93207d164a4446a0b69ab
   languageName: node
   linkType: hard
 
