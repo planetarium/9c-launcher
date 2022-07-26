@@ -15,7 +15,7 @@ type UpdateViewProps = {
 };
 
 const UpdateView = ({ state, variant, progress }: UpdateViewProps) => {
-  // FIXME: files downloaded multiple times because of improper file lock, causing progress going backward.
+  // FIXME: Some files were downloaded multiple times because of improper file lock, causing progress to go backward.
 
   const styles = UpdateViewStyle();
   const StyledLinearProgress = withStyles(() =>
