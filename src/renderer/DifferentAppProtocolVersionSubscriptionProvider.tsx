@@ -19,7 +19,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   const [variant, setVariant] = useState<
     "indeterminate" | "determinate" | undefined
   >("determinate");
-  // FIXME: files downloaded multiple times because of improper file lock, causing progress going backward.
+  // FIXME: Some files were downloaded multiple times because of improper file lock, causing progress to go backward.
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
