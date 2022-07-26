@@ -190,7 +190,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   console.log("Finished to download:", dlPath);
 
   const extractPath =
-    process.platform == "darwin" // we should check whether it was executed from .app or from npm run dev.
+    process.platform == "darwin" // we should check whether it was executed from .app or from yarn dev.
       ? path.dirname(path.dirname(path.dirname(path.dirname(app.getAppPath()))))
       : path.dirname(path.dirname(app.getAppPath()));
   console.log("The 9C app installation path:", extractPath);
