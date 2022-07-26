@@ -70,7 +70,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/styles": "^4.10.0",
-    "@planetarium/check-free-space": "^0.0.1",
+    "@planetarium/check-free-space": "^0.0.2",
     "@radix-ui/react-radio-group": "^0.1.5",
     "@radix-ui/react-scroll-area": "^0.1.4",
     "@reach/alert-dialog": "^0.17.0",
