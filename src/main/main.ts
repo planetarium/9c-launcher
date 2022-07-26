@@ -811,7 +811,7 @@ async function createWindow(): Promise<BrowserWindow> {
 }
 
 /**
- * Clean up byproducts from previous runs at the start of the program.
+ * Clean up the byproducts from the previous runs at the start of the program.
  */
 function cleanUp() {
   cleanUpAfterUpdate();
