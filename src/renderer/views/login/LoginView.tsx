@@ -130,7 +130,7 @@ const LoginView = observer(
       addressCopiedPopupState.open(e.currentTarget);
     };
 
-    // FIXME Aren't we don't have to handle it when you don't have any keys
+    // FIXME Skip handling when you don't have any keys
     if (!accountStore.selectedAddress && accountStore.addresses.length > 0) {
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }
