@@ -301,7 +301,7 @@ function createMainConfig(isDev) {
       }),
 
       new IgnorePlugin({
-        resourceRegExp: /^(utf\-8\-validate|bufferutil)/, // fix ws module
+        resourceRegExp: /^(utf-8-validate|bufferutil|(@planetarium|\.)\/check-free-space)/, // fix intended missing dependencies
       }),
     ],
 
