@@ -91,7 +91,7 @@ function LoginView() {
     const defaultAddress =
       localStorage.getItem("lastAddress") ?? account.addresses[0];
     if (!account.selectedAddress && account.addresses.length > 0) {
-      account.setSelectedAddress(defaultAddress); 
+      account.setSelectedAddress(defaultAddress);
       // TODO: Persist the last chosen address
     }
   }, [account.addresses, account.selectedAddress]);

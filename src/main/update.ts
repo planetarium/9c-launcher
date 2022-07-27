@@ -199,7 +199,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   // FIXME: We shouldn't hardcode "config.json"
   const configFileName = "config.json";
 
-  // Pre-decompress existing config file saving, we will merge them with new default values. 
+  // Pre-decompress existing config file saving, we will merge them with new default values.
   const configPath = path.join(appDirName, configFileName);
   const bakConfig = JSON.parse(
     await fs.promises.readFile(configPath, { encoding: "utf-8" })
@@ -207,8 +207,8 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   console.log("The existing configuration:", bakConfig);
 
   if (process.platform == "win32") {
-    // Windows can't replace or remove executable file 
-    // while process is up, so we should change name instead 
+    // Windows can't replace or remove executable file
+    // while process is up, so we should change name instead
     const src = app.getPath("exe");
     const basename = path.basename(src);
     const dirname = path.dirname(src);
@@ -242,7 +242,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     }
     win.webContents.send("update copying complete");
   } else if (process.platform == "darwin") {
-    // untar .tar.{gz,bz2} 
+    // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
     const bz2 = lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");
     console.log(
