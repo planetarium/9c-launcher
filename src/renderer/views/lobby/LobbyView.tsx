@@ -192,7 +192,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   }, [polling, tx, status]);
 
   let child: JSX.Element;
-  // FIXME We have issue polling does not resolved even after activation failed.
+  // FIXME The polling does not resolve even after activation fails.
   if (loading || polling) {
     child = (
       <div>
