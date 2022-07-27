@@ -284,6 +284,12 @@ function createMainConfig(isDev) {
       ],
     },
 
+    stats: {
+      warningsFilter: [
+        /Can't resolve '(@planetarium|\.)\/check-free-space-/ // Rust bindings tries to import everything by default
+      ]
+    },
+
     plugins: [
       new CleanWebpackPlugin({
         cleanOnceBeforeBuildPatterns: ["main-process.*.js"],
@@ -301,7 +307,7 @@ function createMainConfig(isDev) {
       }),
 
       new IgnorePlugin({
-        resourceRegExp: /^(utf-8-validate|bufferutil|(@planetarium|\.)\/check-free-space)/, // fix intended missing dependencies
+        resourceRegExp: /^(utf-8-validate|bufferutil)/, // fix intended missing dependencies
       }),
     ],
 
