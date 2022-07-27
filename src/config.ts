@@ -272,7 +272,7 @@ const RpcServerPort = (): { port: number; notDefault: boolean } => {
     return { port: +port, notDefault: true };
   }
 
-  // FIXME: It should return not opened 'random' port.
+  // FIXME: It should return a random unopened port.
   return { port: 23142, notDefault: false };
 };
 
