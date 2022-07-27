@@ -115,7 +115,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   const buffer = Buffer.from(peerVersionExtra, "hex");
   console.log("peerVersionExtra (bytes):", buffer);
   const extra = decode(buffer) as BencodexDict;
-  console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // 다른 프로세스라 잘 안보여서 JSON으로...
+  console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // Stringifies the JSON for extra clarity in the log
   const macOSBinaryUrl = extra.get("macOSBinaryUrl") as string;
   const windowsBinaryUrl = extra.get("WindowsBinaryUrl") as string;
   console.log("macOSBinaryUrl: ", macOSBinaryUrl);
