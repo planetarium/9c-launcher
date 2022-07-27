@@ -161,7 +161,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   }
 
   win?.webContents.send("update download started");
-  // TODO: It would be nice to have continuing download.
+  // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {
     onStarted: (downloadItem: DownloadItem) => {
       console.log("Starts to download:", downloadItem);
