@@ -3,7 +3,7 @@ set -e
 
 if [[ "$APV" != "" ]]; then
   echo "APV is given; use \"$APV\" instead of generating new one..." \
-    > /dev/stderr
+    >&2
   npm run --silent configure-apv "$APV"
   exit $?
 elif [[ "$SKIP_APV_SIGN" != "" ]]; then

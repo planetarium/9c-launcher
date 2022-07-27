@@ -69,8 +69,10 @@ const ConfigurationView = observer(() => {
     const useRemoteHeadlessChecked = event.target.useRemoteHeadless.checked;
     userConfigStore.set("UseRemoteHeadless", useRemoteHeadlessChecked);
 
-    const useV2Checked = event.target.v2.checked;
-    userConfigStore.set("UseV2Interface", useV2Checked);
+    const useLegacyChecked = event.target.v2.checked;
+    if (useLegacyChecked)
+      userConfigStore.set("PreferLegacyInterface", useLegacyChecked);
+    else userConfigStore.delete("PreferLegacyInterface");
 
     const logSize = bytes.parse(event.target.logsize.value);
     if (logSize && logSize !== getConfig("LogSizeBytes"))
@@ -242,21 +244,29 @@ const ConfigurationView = observer(() => {
           </FormControl>
           <FormControl className={classes.checkboxGroup}>
             <FormLabel className={classes.newLine}>
-              <T _str="Experimental" _tags={transifexTags} />
+              <T _str="Debugging" _tags={transifexTags} />
             </FormLabel>
             <FormGroup>
               <FormControlLabel
                 control={
                   <Checkbox
                     className={classes.checkbox}
-                    defaultChecked={getConfig("UseV2Interface")}
+                    defaultChecked={getConfig("PreferLegacyInterface")}
                     color="default"
                     name="v2"
                   />
                 }
-                label={<T _str="Use V2 Interface" _tags={transifexTags} />}
+                label={
+                  <T _str="Prefer Legacy Interface" _tags={transifexTags} />
+                }
               />
             </FormGroup>
+            <FormHelperText className={classes.checkboxHelper}>
+              <T
+                _str="If you have time to do so please report your issues on Discord so we can work on it!"
+                _tags={transifexTags}
+              />
+            </FormHelperText>
           </FormControl>
         </article>
         <Button
