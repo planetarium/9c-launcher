@@ -811,7 +811,7 @@ async function createWindow(): Promise<BrowserWindow> {
 }
 
 /**
- * 프로그램이 시작될 때 이전 실행에서 발생한 부산물을 정리합니다.
+ * Clean up the byproducts from the previous runs at the start of the program.
  */
 function cleanUp() {
   cleanUpAfterUpdate();

@@ -1,4 +1,4 @@
-// 9C Unity Player 빌드를 NineChronicles 저장소에서 아티팩트로 남은 거 받아서 풀기
+// Decompress 9C Unity Player build from NineChronicles repository artifacts.
 import { exec, execFile } from "child_process";
 import fs from "fs";
 import https from "https";
@@ -12,9 +12,9 @@ type Platform = "macOS" | "Windows" | "Linux";
 
 const execWithPromise = promisify(exec);
 
-// S3 "9c-artifacts.s3.amazonaws.com" 버킷에 NineChronicles 저장소의
-// 마스터 푸시마다 빌드한 아티팩트가 올라간다.
-// 참고: https://github.com/planetarium/nekoyume-unity/pull/2446
+// Every master push, built artifacts are uploaded at
+// NineChronicles repository's S3 "9c-artifacts.s3.amazonaws.com" bucket
+// Reference: https://github.com/planetarium/nekoyume-unity/pull/2446
 const DOWNLOAD_URL_BASE: string = "https://d3rgdei88xmq6p.cloudfront.net";
 const FILENAMES: { [K in Platform]: string } = {
   Linux: "Linux.tar.gz",
@@ -84,7 +84,7 @@ function downloadPlayerBinary(
   });
 }
 
-// extract-zip 패키지가 없을 때를 위한 PowerShell 외주 구현.
+// PowerShell implementation in case there's no extract-zip package.
 let unzip = (zipPath: string, extractTo: string): Promise<void> => {
   const args = [
     "-Command",
@@ -116,7 +116,7 @@ try {
     await extractZip(zipPath, { dir: extractTo });
   };
 } catch (_) {
-  // extract-zip 패키지 없으면 그냥 PowerShell에 외주 준다.
+  // if there's no extract-zip package just let PowerShell do it.
 }
 
 async function untar(tarPath: string, extractTo: string): Promise<void> {
@@ -196,7 +196,7 @@ async function main(): Promise<void> {
   try {
     await fs.promises.mkdir(distPath, { recursive: true });
   } catch (_) {
-    // dist/ 디렉터리가 이미 있으면 안 만들어도 됨.
+    // if there's already dist/ directory exists, skip mkdir.
   }
   const appPath = path.join(
     distPath,
