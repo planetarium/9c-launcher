@@ -5,29 +5,27 @@ import { useActor } from "@xstate/react";
 import { Redirect, Route, Switch, useRouteMatch } from "react-router";
 import { t } from "@transifex/native";
 import ErrorContent from "./ErrorContent";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
 import { T } from "src/renderer/i18n";
 import Button from "src/v2/components/ui/Button";
 import bytes from "bytes";
-import { getBlockChainStorePath, userConfigStore } from "src/config";
+import { getBlockChainStorePath, userConfigStore, app } from "src/config";
 
 const transifexTags = "v2/ErrorView";
 
 async function handleClearCache() {
   await ipcRenderer.invoke("Clear cache", false);
-  remote.app.relaunch();
-  remote.app.exit();
+  handleRestart();
 }
 
 function enableRemoteHeadless() {
   userConfigStore.set("UseRemoteHeadless", true);
-  remote.app.relaunch();
-  remote.app.exit();
+  handleRestart();
 }
 
 function handleRestart() {
-  remote.app.relaunch();
-  remote.app.exit();
+  app.relaunch();
+  app.exit();
 }
 
 function ErrorView() {

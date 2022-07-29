@@ -1,10 +1,11 @@
+import { app } from "@electron/remote";
 import { assign, createMachine, interpret } from "xstate";
 import { IPC_PRELOAD_NEXT, IPC_SNAPSHOT_PROGRESS } from "../ipcTokens";
 import { invokeIpcEvent } from "../utils/ipcEvent";
 import { inspect } from "@xstate/inspect";
-import isDev from "electron-is-dev";
 
-if (isDev) inspect({ iframe: false, url: "https://stately.ai/viz?inspect" });
+if (process.env.NODE_ENV !== "production")
+  inspect({ iframe: false, url: "https://stately.ai/viz?inspect" });
 
 type PreloadMachineContext = {
   progress?: number;
@@ -203,5 +204,5 @@ export const preloadMachine = createMachine<
 );
 
 export const preloadService = interpret(preloadMachine, {
-  devTools: isDev,
+  devTools: process.env.NODE_ENV !== "production",
 }).start();

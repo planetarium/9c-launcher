@@ -1,7 +1,7 @@
 import { app, BrowserWindow, shell } from "electron";
+import { enable as remoteEnable } from "@electron/remote/main";
 import { join } from "path";
 import logoImage from "../resources/logo.png";
-import isDev from "electron-is-dev";
 
 export let isQuitting = false;
 
@@ -14,9 +14,8 @@ export async function createWindow(): Promise<BrowserWindow> {
     width: 1300,
     height: 768,
     webPreferences: {
-      nativeWindowOpen: true,
+      contextIsolation: false,
       nodeIntegration: true,
-      affinity: "v2",
     },
     frame: false,
     resizable: false,
@@ -24,7 +23,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     titleBarStyle: process.platform === "darwin" ? "hidden" : undefined,
     icon: join(app.getAppPath(), logoImage),
   });
-
+  remoteEnable(win.webContents);
   win.webContents.on("new-window", function (
     event,
     url: string,
@@ -49,7 +48,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     }
   });
 
-  if (isDev) {
+  if (process.env.NODE_ENV !== "production") {
     await win.loadURL("http://localhost:9000/v2.html");
     await win.webContents.openDevTools({ mode: "detach" });
   } else {

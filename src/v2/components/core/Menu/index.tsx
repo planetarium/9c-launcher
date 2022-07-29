@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { observer } from "mobx-react";
 import MenuItem from "./MenuItem";
 import { useStore } from "../../../utils/useStore";
-import electron, { ipcRenderer, shell } from "electron";
+import { ipcRenderer, shell } from "electron";
+import { app } from "@electron/remote";
 import { styled } from "src/v2/stitches.config";
 
 import settings from "../../../resources/icons/settings.png";
@@ -30,8 +31,6 @@ const MenuDivider = styled("hr", {
   border: "none",
   borderTop: "1px solid #979797",
 });
-
-const app = electron.remote.app;
 
 type Overlay = "settings" | "staking";
 

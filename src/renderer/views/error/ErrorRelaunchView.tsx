@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
+import { app } from "@electron/remote";
 import errorViewStyle from "./ErrorView.style";
 import { Button, Typography } from "@material-ui/core";
 import * as Sentry from "@sentry/electron";
@@ -14,8 +15,8 @@ const ErrorRelaunchView = () => {
   const t = useT();
 
   const handleRelaunch = useCallback(() => {
-    remote.app.relaunch();
-    remote.app.exit();
+    app.relaunch();
+    app.exit();
   }, []);
 
   useEffect(() => {

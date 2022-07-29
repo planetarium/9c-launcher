@@ -98,7 +98,7 @@ function createRenderConfig(isDev) {
                 [
                   "@babel/preset-env",
                   {
-                    targets: { electron: "9.0.2" },
+                    targets: { electron: "19.0.8" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -134,6 +134,7 @@ function createRenderConfig(isDev) {
 
       new DefinePlugin({
         GIT_HASH: JSON.stringify(gitHash),
+        "process.type": JSON.stringify("renderer"),
       }),
 
       new HtmlPlugin({
@@ -280,11 +281,13 @@ function createMainConfig(isDev) {
           test: /\.node$/,
           loader: "node-loader",
         },
-        {
-          test: require.resolve("@planetarium/check-free-space"),
-          loader: "@basixjs/node-rs-loader",
-        },
       ],
+    },
+
+    stats: {
+      warningsFilter: [
+        /Can't resolve '(@planetarium|\.)\/check-free-space-/ // Rust bindings tries to import everything by default
+      ]
     },
 
     plugins: [
@@ -295,6 +298,7 @@ function createMainConfig(isDev) {
       // inject this becaus the main process uses different logic for prod and dev.
       new DefinePlugin({
         ENVIRONMENT: JSON.stringify(isDev ? DEVELOPMENT : PRODUCTION), // this variable name must match the one declared in the main process file.
+        "process.type": JSON.stringify("browser"),
       }),
 
       // electron-packager needs the package.json file. the "../" is because context is set to the ./src folder
@@ -303,7 +307,7 @@ function createMainConfig(isDev) {
       }),
 
       new IgnorePlugin({
-        resourceRegExp: /^(utf\-8\-validate|bufferutil)/, // fix ws module
+        resourceRegExp: /^(utf-8-validate|bufferutil)/, // fix intended missing dependencies
       }),
     ],
 
