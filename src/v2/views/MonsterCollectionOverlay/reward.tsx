@@ -4,6 +4,8 @@ import { styled } from "src/v2/stitches.config";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { motion } from "framer-motion";
 
+import lineBg from "src/v2/resources/collection/division-line.png";
+
 const ScrollArea = styled(motion(ScrollAreaPrimitive.ScrollArea), {
   backgroundImage: theme.images.reward,
   backgroundSize: "cover",
@@ -88,10 +90,11 @@ const ItemGroupStyled = styled("section", {
     left: -40,
     display: "block",
     content: "''",
-    boxSizing: "border-box",
-    height: "100%",
-    border: "2px groove #9f6b4b",
+    backgroundImage: `url(${lineBg})`,
+    height: 140,
+    width: 4,
     margin: "0 20px",
+    marginTop: 40,
   },
 });
 
