@@ -26,5 +26,6 @@
   "Confirmations": 0,
   "Mixpanel": true,
   "Sentry": true,
+  "SnapshotPaths": [],
   "UseRemoteHeadless": false
 }
