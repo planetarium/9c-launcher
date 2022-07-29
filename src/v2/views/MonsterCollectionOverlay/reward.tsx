@@ -141,6 +141,8 @@ const ItemFrame = styled("div", {
   alignItems: "center",
   width: 94,
   height: 94,
+  marginLeft: "auto",
+  marginRight: "auto",
   backgroundImage: theme.images.itemBg,
   "> img": {
     display: "block",
