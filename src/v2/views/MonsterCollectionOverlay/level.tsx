@@ -161,10 +161,18 @@ export const Level = ({
       <img src={ncgIcon} alt="NCG" /> {amount}
     </LevelCaption>
     {current && expandedImage && (
-      <CurrentMarker layout="position" layoutId="current-marker" />
+      <CurrentMarker
+        data-chromatic="ignore"
+        layout="position"
+        layoutId="current-marker"
+      />
     )}
     {selected && expandedImage && (
-      <SelectionMarker layout="position" layoutId="selection-marker" />
+      <SelectionMarker
+        data-chromatic="ignore"
+        layout="position"
+        layoutId="selection-marker"
+      />
     )}
   </LevelItem>
 );
