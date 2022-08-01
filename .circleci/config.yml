@@ -136,7 +136,7 @@ jobs:
       - run:
           command: |
             chmod +x "pack/Nine Chronicles-$OS_ALIAS-x64/$EXECUTABLE"
-            $ZIP_CMD pack-dist/$ARTIFACT "pack/Nine Chronicles-$OS_ALIAS-x64/*"
+            $ZIP_CMD pack-dist/$ARTIFACT pack/Nine\ Chronicles-$OS_ALIAS-x64/*
       - store_artifacts:
           path: pack-dist
           destination: dist-artifacts
