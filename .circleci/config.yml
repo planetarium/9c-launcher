@@ -135,8 +135,8 @@ jobs:
             fi
       - run:
           command: |
-            chmod +x $EXECUTABLE
-            $ZIP_CMD ../../pack-dist/$ARTIFACT
+            chmod +x "$EXECUTABLE"
+            $ZIP_CMD "../../pack-dist/$ARTIFACT" *
           working_directory: pack/Nine Chronicles-$OS_ALIAS-x64
       - store_artifacts:
           path: pack-dist
@@ -147,7 +147,7 @@ jobs:
             aws configure set aws_secret_access_key $AWS_SECRET_KEY
           name: Set S3
       - run:
-          command: aws s3 cp pack-dist/$ARTIFACT s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/$ARTIFACT
+          command: aws s3 cp "pack-dist/$ARTIFACT" "s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/$ARTIFACT"
   styles:
     docker:
       - image: cimg/node:lts
