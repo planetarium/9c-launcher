@@ -40,7 +40,7 @@
     "build-headless:macos": "scripts/build-headless.sh || true",
     "bundle-player": "yarn ts-node scripts/downloadPlayer.ts",
     "sign-apv": "run-script-os",
-    "sign-apv:windows": "powershell -nop -ex bypass -noni -f scripts/sign-apv.ps1",
+    "sign-apv:windows": "pwsh -nop -ex bypass -noni -f scripts/sign-apv.ps1",
     "sign-apv:linux": "scripts/sign-apv.sh || true",
     "sign-apv:macos": "scripts/sign-apv.sh || true",
     "latest-apv-no": "yarn ts-node scripts/latestApvNo.ts",
