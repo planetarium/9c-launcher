@@ -135,6 +135,9 @@ jobs:
             fi
       - run:
           command: |
+            echo "$OS_ALIAS $ARTIFACT $EXECUTABLE"
+            pwd
+            ls
             chmod +x "$EXECUTABLE"
             $ZIP_CMD "../../pack-dist/$ARTIFACT" *
           working_directory: pack/Nine Chronicles-$OS_ALIAS-x64
