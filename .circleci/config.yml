@@ -24,12 +24,12 @@ commands:
       - run: git rev-parse HEAD:NineChronicles.Headless > tree-hash
       - restore_cache:
           keys:
-            - headless-pub-{{ arch }}-{{ checksum "tree-hash" }}
+            - headless-pub-<< parameters.os >>-{{ checksum "tree-hash" }}
       - run:
           command: |
             [ -d dist/publish ] || yarn build-headless:<< parameters.os >>
       - save_cache:
-          key: headless-pub-{{ arch }}-{{ checksum "tree-hash" }}
+          key: headless-pub-<< parameters.os >>-{{ checksum "tree-hash" }}
           paths:
             - dist/publish
   yarn-install:
@@ -135,12 +135,8 @@ jobs:
             fi
       - run:
           command: |
-            echo "$OS_ALIAS $ARTIFACT $EXECUTABLE"
-            pwd
-            ls
-            chmod +x "$EXECUTABLE"
-            $ZIP_CMD "../../pack-dist/$ARTIFACT" *
-          working_directory: pack/Nine Chronicles-$OS_ALIAS-x64
+            chmod +x "pack/Nine Chronicles-$OS_ALIAS-x64/$EXECUTABLE"
+            $ZIP_CMD "pack-dist/$ARTIFACT" *
       - store_artifacts:
           path: pack-dist
           destination: dist-artifacts
