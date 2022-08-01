@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
 const TerserPlugin = require("terser-webpack-plugin");
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const child_process = require("child_process");
 
@@ -23,7 +24,7 @@ function createRenderConfig(isDev) {
   return {
     context: path.join(__dirname, "src"),
 
-    target: "electron-renderer", // any other target value makes react-hot-loader stop working
+    target: "electron-renderer",
 
     resolve: {
       extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
@@ -112,8 +113,8 @@ function createRenderConfig(isDev) {
                   "@babel/plugin-proposal-private-property-in-object",
                   { loose: true },
                 ],
-                "react-hot-loader/babel",
-              ],
+                isDev && "react-refresh/babel",
+              ].filter(Boolean),
               sourceMaps: isDev,
             },
           },
@@ -160,7 +161,9 @@ function createRenderConfig(isDev) {
         filename: "v2.html", // output HTML files
         chunks: ["v2"], // respective JS files
       }),
-    ],
+
+      isDev && new ReactRefreshWebpackPlugin()
+    ].filter(Boolean),
 
     devServer: isDev
       ? {
@@ -168,6 +171,7 @@ function createRenderConfig(isDev) {
           compress: true,
           port: 9000,
           historyApiFallback: true,
+          hot: true
         }
       : undefined,
 

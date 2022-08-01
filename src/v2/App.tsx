@@ -1,4 +1,3 @@
-import { hot } from "react-hot-loader";
 import { ApolloProvider } from "@apollo/client";
 import React from "react";
 import { HashRouter as Router } from "react-router-dom";
@@ -29,4 +28,4 @@ function App() {
   );
 }
 
-export default hot(module)(App);
+export default App;
