@@ -63,6 +63,7 @@ jobs:
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
+    resource_class: large
     parameters:
       os:
         type: string
@@ -135,8 +136,9 @@ jobs:
             fi
       - run:
           command: |
-            chmod +x "pack/Nine Chronicles-$OS_ALIAS-x64/$EXECUTABLE"
-            $ZIP_CMD pack-dist/$ARTIFACT pack/Nine\ Chronicles-$OS_ALIAS-x64/*
+            cd pack/Nine\ Chronicles-$OS_ALIAS-x64/
+            chmod +x "$EXECUTABLE"
+            $ZIP_CMD ../../pack-dist/$ARTIFACT *
       - store_artifacts:
           path: pack-dist
           destination: dist-artifacts
