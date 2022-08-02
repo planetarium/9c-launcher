@@ -63,7 +63,7 @@ jobs:
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
-    resource_class: xlarge
+    resource_class: large
     parameters:
       os:
         type: string
