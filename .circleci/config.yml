@@ -68,12 +68,12 @@ jobs:
       os:
         type: string
     steps:
+      - checkout-update-submodules:
+          paths: "NineChronicles.Headless"
       - run:
           command: |
             bash scripts/configure-artifact.sh << parameters.os >> 
           name: Setup OS variables
-      - checkout-update-submodules:
-          paths: "NineChronicles.Headless"
       - yarn-install
       - run:
           command: |

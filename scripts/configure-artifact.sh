@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-echo $1
 if [ -z "$1" ]; then
   echo "No argument supplied, must have one of (windows, macos, linux)"
 elif [ $1 == "windows" ]; then
