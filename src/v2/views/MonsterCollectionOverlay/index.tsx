@@ -17,6 +17,7 @@ import {
 import Migration from "./Migration";
 import { ipcRenderer } from "electron";
 import { useTip } from "src/v2/utils/useTip";
+import { trackEvent } from "src/v2/utils/mixpanel";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
@@ -66,14 +67,10 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         currentNCG={balance}
         onChangeAmount={(amount) => {
           setLoading(true);
-          try {
-            ipcRenderer.send("mixpanel-track-event", "Staking/AmountChange", {
-              amount: amount.toString(),
-              previousAmount: current.stateQuery.stakeState?.deposit,
-            });
-          } catch (e) {
-            console.error(e);
-          }
+          trackEvent("Staking/AmountChange", {
+            amount: amount.toString(),
+            previousAmount: current.stateQuery.stakeState?.deposit,
+          });
           return tx(amount.toString())
             .then(
               (v) =>
@@ -95,7 +92,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             collectionSheet={collection.stateQuery.monsterCollectionSheet}
             onActionTxId={(txId) => {
               setLoading(true);
-              ipcRenderer.send("mixpanel-track-event", "Staking/Migration", {
+              trackEvent("Staking/Migration", {
                 txId,
                 tip,
                 level: collection.stateQuery.monsterCollectionState?.level,

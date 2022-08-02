@@ -17,6 +17,7 @@ import { preloadService } from "src/v2/machines/preloadMachine";
 import { get } from "src/config";
 import toast from "react-hot-toast";
 import _refiner from "refiner-js";
+import { trackEvent } from "src/v2/utils/mixpanel";
 
 const transifexTags = "v2/login-view";
 
@@ -34,7 +35,7 @@ function LoginView() {
     );
     if (error !== undefined) {
       setInvalid(true);
-      ipcRenderer.send("mixpanel-track-event", "Launcher/LoginFailed");
+      trackEvent("Launcher/LoginFailed");
     }
 
     if (unprotectedPrivateKey !== undefined) {
@@ -42,7 +43,7 @@ function LoginView() {
       account.setPrivateKey(key);
       account.setLoginStatus(true);
       ipcRenderer.send("mixpanel-alias", account.selectedAddress);
-      ipcRenderer.send("mixpanel-track-event", "Launcher/Login");
+      trackEvent("Launcher/Login");
       ipcRenderer.send("standalone/set-signer-private-key", key);
 
       _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");

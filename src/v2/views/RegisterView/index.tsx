@@ -10,6 +10,7 @@ import { ipcRenderer } from "electron";
 import type { RawPrivateKey } from "src/main/headless/key-store";
 import { useHistory } from "react-router";
 import { CSS } from "src/v2/stitches.config";
+import { trackEvent } from "src/v2/utils/mixpanel";
 
 const registerStyles: CSS = {
   padding: 52,
@@ -37,7 +38,7 @@ function RegisterView() {
   const onSubmit = ({ password, activationKey }: FormData) => {
     if (!key) return;
 
-    ipcRenderer.send("mixpanel-track-event", "Launcher/CreatePrivateKey");
+    trackEvent("Launcher/CreatePrivateKey");
     ipcRenderer.sendSync("import-private-key", key.privateKey, password);
     const [privateKey, error]:
       | [string, undefined]
