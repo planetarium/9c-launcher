@@ -114,18 +114,12 @@ jobs:
       - build-headless:
           os: << parameters.os >>
       - run:
-          command: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
-          name: Make APV
-      - run:
           command: |
             mkdir pack-dist
             set -ex
             mkdir -p dist
             curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
           name: Copy config.json from the last release
-      - run:
-          command: yarn sign-apv:<< parameters.os >>
-          name: Sign APV
       - run:
           command: |
             if [[ "$CIRCLE_BRANCH" == "main" ]]
