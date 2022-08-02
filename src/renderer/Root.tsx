@@ -1,4 +1,3 @@
-import { hot } from "react-hot-loader";
 import React from "react";
 import { Route, Switch, Redirect } from "react-router";
 import { Layout } from "./views/layout/Layout";
@@ -96,4 +95,4 @@ class Root extends React.Component {
   }
 }
 
-export default hot(module)(Root);
+export default Root;

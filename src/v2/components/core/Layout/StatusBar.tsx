@@ -39,10 +39,11 @@ function StatusBar() {
   return (
     <StatusBarStyled>
       <StatusMessage>
-        <span>{message}</span>
+        <span data-testid="status">{message}</span>
         {!!blockCount && <small>[{blockCount}]</small>}
         {isDone && account.isLogin && !game.isGameStarted && (
           <Button
+            data-testid="play"
             variant="primary"
             disabled={loading || !activated}
             onClick={() => game.startGame(account.privateKey)}

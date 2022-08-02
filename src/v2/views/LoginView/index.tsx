@@ -123,6 +123,7 @@ function LoginView() {
           autoFocus
         />
         <Button
+          data-testid="login"
           variant="primary"
           centered
           onClick={handleLogin}
