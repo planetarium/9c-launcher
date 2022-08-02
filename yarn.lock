@@ -5063,6 +5063,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electron/universal@npm:^1.2.1":
+  version: 1.3.0
+  resolution: "@electron/universal@npm:1.3.0"
+  dependencies:
+    "@malept/cross-spawn-promise": ^1.1.0
+    asar: ^3.1.0
+    debug: ^4.3.1
+    dir-compare: ^2.4.0
+    fs-extra: ^9.0.1
+    minimatch: ^3.0.4
+    plist: ^3.0.4
+  checksum: 943c092f4188e43c1fda1e06cac7054ded35ab05f5d9f4791613471f2f08817bf6cb58ef13b547b101cc5694431165142d3f2bdf7f6fe6406c0079d1a53c22f8
+  languageName: node
+  linkType: hard
+
 "@emotion/cache@npm:^10.0.27":
   version: 10.0.29
   resolution: "@emotion/cache@npm:10.0.29"
@@ -9991,7 +10006,7 @@ __metadata:
     electron-fetch: ^1.7.1
     electron-log: 4.4.8
     electron-mock-ipc: ^0.3.12
-    electron-packager: 15.3.0
+    electron-packager: ^15.3.0
     electron-store: 8.0.2
     eslint: ^8.18.0
     eslint-config-prettier: ^8.5.0
@@ -10941,9 +10956,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asar@npm:^3.0.0":
-  version: 3.1.0
-  resolution: "asar@npm:3.1.0"
+"asar@npm:^3.1.0":
+  version: 3.2.0
+  resolution: "asar@npm:3.2.0"
   dependencies:
     "@types/glob": ^7.1.1
     chromium-pickle-js: ^0.2.0
@@ -10955,7 +10970,7 @@ __metadata:
       optional: true
   bin:
     asar: bin/asar.js
-  checksum: facc80845639fa4f9e1d1aa40b96adbd1e8b6fee0725d287e8c8e30a69b235cd5b7131b7b09ff700da06c919dd0595b373e372c55722808f983fdb71ef0d5399
+  checksum: f7d30b45970b053252ac124230bf319459d0728d7f6dedbe2f765cd2a83792d5a716d2c3f2861ceda69372b401f335e1f46460335169eadd0e91a0904a4f5a15
   languageName: node
   linkType: hard
 
@@ -12064,6 +12079,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"buffer-equal@npm:1.0.0":
+  version: 1.0.0
+  resolution: "buffer-equal@npm:1.0.0"
+  checksum: c63a62d25ffc6f3a7064a86dd0d92d93a32d03b14f22d17374790bc10e94bca2312302895fdd28a2b0060999d4385cf90cbf6ad1a6678065156c664016d3be45
+  languageName: node
+  linkType: hard
+
 "buffer-fill@npm:^1.0.0":
   version: 1.0.0
   resolution: "buffer-fill@npm:1.0.0"
@@ -13144,6 +13166,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"colors@npm:1.0.3":
+  version: 1.0.3
+  resolution: "colors@npm:1.0.3"
+  checksum: 234e8d3ab7e4003851cdd6a1f02eaa16dabc502ee5f4dc576ad7959c64b7477b15bd21177bab4055a4c0a66aa3d919753958030445f87c39a253d73b7a3637f5
+  languageName: node
+  linkType: hard
+
 "colors@npm:1.4.0, colors@npm:^1.1.2":
   version: 1.4.0
   resolution: "colors@npm:1.4.0"
@@ -13164,6 +13193,15 @@ __metadata:
   version: 1.0.8
   resolution: "comma-separated-tokens@npm:1.0.8"
   checksum: 0adcb07174fa4d08cf0f5c8e3aec40a36b5ff0c2c720e5e23f50fe02e6789d1d00a67036c80e0c1e1539f41d3e7f0101b074039dd833b4e4a59031b659d6ca0d
+  languageName: node
+  linkType: hard
+
+"commander@npm:2.9.0":
+  version: 2.9.0
+  resolution: "commander@npm:2.9.0"
+  dependencies:
+    graceful-readlink: ">= 1.0.0"
+  checksum: 37939b6866ae190784fa946ea5b926dfe713731064c746e818642ac59e28f513b54e88e35d8c34b4d24d063cb465977dca2efd2ec974f91e495c743fcb2ae7a2
   languageName: node
   linkType: hard
 
@@ -14060,7 +14098,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4":
+"debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -14363,6 +14401,20 @@ __metadata:
     miller-rabin: ^4.0.0
     randombytes: ^2.0.0
   checksum: 0e620f322170c41076e70181dd1c24e23b08b47dbb92a22a644f3b89b6d3834b0f8ee19e37916164e5eb1ee26d2aa836d6129f92723995267250a0b541811065
+  languageName: node
+  linkType: hard
+
+"dir-compare@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "dir-compare@npm:2.4.0"
+  dependencies:
+    buffer-equal: 1.0.0
+    colors: 1.0.3
+    commander: 2.9.0
+    minimatch: 3.0.4
+  bin:
+    dircompare: src/cli/dircompare.js
+  checksum: 16710bcb640b0edb753c6ecf10440c20a073588d797f624288601c52bca64a1f8c4dcd474d1fb7fda3595361b7cf528dee856140d83ecdaa19ba5695112d1209
   languageName: node
   linkType: hard
 
@@ -14827,7 +14879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-notarize@npm:^1.0.0":
+"electron-notarize@npm:^1.1.1":
   version: 1.2.1
   resolution: "electron-notarize@npm:1.2.1"
   dependencies:
@@ -14854,15 +14906,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-packager@npm:15.3.0":
-  version: 15.3.0
-  resolution: "electron-packager@npm:15.3.0"
+"electron-packager@npm:^15.3.0":
+  version: 15.5.1
+  resolution: "electron-packager@npm:15.5.1"
   dependencies:
     "@electron/get": ^1.6.0
-    asar: ^3.0.0
+    "@electron/universal": ^1.2.1
+    asar: ^3.1.0
     cross-spawn-windows-exe: ^1.2.0
     debug: ^4.0.1
-    electron-notarize: ^1.0.0
+    electron-notarize: ^1.1.1
     electron-osx-sign: ^0.5.0
     extract-zip: ^2.0.0
     filenamify: ^4.1.0
@@ -14878,7 +14931,7 @@ __metadata:
     yargs-parser: ^20.0.0
   bin:
     electron-packager: bin/electron-packager.js
-  checksum: f56f6e00612a3187ad7b3cfcd474bdbd50f1efb90bcd9cfc9d7174136215b5035d111983060365732c0d2c58fb2f5b44e7d853dcfb2a60891dd414586515c66d
+  checksum: d62887bf362a3c0a63ce50600e348ad63728587219a3845e69e979a0edfdeff4ccfeef154ca5f93b45690edcb44fef6075c17c88cea09814e4131cc3b78af066
   languageName: node
   linkType: hard
 
@@ -17547,6 +17600,13 @@ __metadata:
   version: 4.2.10
   resolution: "graceful-fs@npm:4.2.10"
   checksum: 3f109d70ae123951905d85032ebeae3c2a5a7a997430df00ea30df0e3a6c60cf6689b109654d6fdacd28810a053348c4d14642da1d075049e6be1ba5216218da
+  languageName: node
+  linkType: hard
+
+"graceful-readlink@npm:>= 1.0.0":
+  version: 1.0.1
+  resolution: "graceful-readlink@npm:1.0.1"
+  checksum: 4c1889ca0a6fc0bb9585b55c26a99719be132cbc4b7d84036193b70608059b9783e52e2a866d5a8e39821b16a69e899644ca75c6206563f1319b6720836b9ab2
   languageName: node
   linkType: hard
 
@@ -23365,6 +23425,16 @@ __metadata:
     base64-js: ^1.5.1
     xmlbuilder: ^9.0.7
   checksum: f8b82816f66559965a4dabf139bd8dd95cdec7e51f32742bb353af276ea8228b9807113743b860eda3e867f6ed70d2bcbc1e135b3204d92b5c37ac765f68444e
+  languageName: node
+  linkType: hard
+
+"plist@npm:^3.0.4":
+  version: 3.0.6
+  resolution: "plist@npm:3.0.6"
+  dependencies:
+    base64-js: ^1.5.1
+    xmlbuilder: ^15.1.1
+  checksum: e21390fab8a3c388f8f51b76c0aa187242a40537119ce865d8637630e7d7df79b21f841ec6a4668e7c68d409a6f584d696619099a6125d28011561639c0823b8
   languageName: node
   linkType: hard
 
@@ -29733,6 +29803,13 @@ __metadata:
     sax: ">=0.6.0"
     xmlbuilder: ~11.0.0
   checksum: ca0cf2dfbf6deeaae878a891c8fbc0db6fd04398087084edf143cdc83d0509ad0fe199b890f62f39c4415cf60268a27a6aed0d343f0658f8779bd7add690fa98
+  languageName: node
+  linkType: hard
+
+"xmlbuilder@npm:^15.1.1":
+  version: 15.1.1
+  resolution: "xmlbuilder@npm:15.1.1"
+  checksum: 14f7302402e28d1f32823583d121594a9dca36408d40320b33f598bd589ca5163a352d076489c9c64d2dc1da19a790926a07bf4191275330d4de2b0d85bb1843
   languageName: node
   linkType: hard
 
