@@ -55,7 +55,8 @@
     "test": "mocha -r ts-node/register -r tsconfig-paths/register __tests__/**/*.spec.ts --exit",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "update-translations": "txjs-cli push src --key-generator=hash"
+    "update-translations": "txjs-cli push src --key-generator=hash",
+    "postinstall": "yarn build-headless && yarn bundle-player"
   },
   "dependencies": {
     "@apollo/client": "^3.3.21",
