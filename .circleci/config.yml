@@ -59,11 +59,11 @@ commands:
 jobs:
   build:
     docker:
-      - image: planetariumhq/9c-launcher-circleci:git-b430f103fd73bc60473ea5c7b6c6c43182b8385d
+      - image: planetariumhq/9c-launcher-circleci:git-6fa331fdef32d6f124d06b6c48d07e352cc11067
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
-    resource_class: xlarge
+    resource_class: large
     parameters:
       os:
         type: string

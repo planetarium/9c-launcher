@@ -13,6 +13,7 @@ RUN apt-get update && \
 	gnupg \
 	unzip \
 	p7zip \
+	xz-utils \
 	apt-transport-https && \
 	rm -rf /var/lib/apt/lists/*
 
