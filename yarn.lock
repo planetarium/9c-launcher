@@ -10004,7 +10004,7 @@ __metadata:
     electron-dl: ^3.0.2
     electron-download: ^4.1.1
     electron-fetch: ^1.7.1
-    electron-log: 4.4.8
+    electron-log: ^4.4.8
     electron-mock-ipc: ^0.3.12
     electron-packager: ^15.3.0
     electron-store: 8.0.2
@@ -14863,7 +14863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-log@npm:4.4.8":
+"electron-log@npm:^4.4.8":
   version: 4.4.8
   resolution: "electron-log@npm:4.4.8"
   checksum: 5a7958f8fd9a5c95987e885ffe1c5b88be15bb41d348b65c92e2d8664519faddf17ce0208cd4e7027b0908f92fecedfbef246a45061f53e4a53b5d2201aafbd9
