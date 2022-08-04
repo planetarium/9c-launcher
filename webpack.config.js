@@ -99,7 +99,7 @@ function createRenderConfig(isDev) {
                 [
                   "@babel/preset-env",
                   {
-                    targets: { electron: "19.0.8" },
+                    targets: { electron: "20.0.1" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -256,7 +256,7 @@ function createMainConfig(isDev) {
                 [
                   "@babel/preset-env",
                   {
-                    targets: { node: "current" },
+                    targets: { node: "16.15.0" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
