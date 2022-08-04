@@ -1,0 +1,33 @@
+FROM --platform=linux/amd64 node:16.16.0-slim
+
+RUN mkdir /root/9c-launcher
+
+WORKDIR /root/9c-launcher
+
+RUN apt-get update && \
+	apt-get install -y \
+	curl \
+	git \
+	wget \
+	wine64 \
+	gnupg \
+	unzip \
+	p7zip \
+	xz-utils \
+	apt-transport-https && \
+	rm -rf /var/lib/apt/lists/*
+
+# dotnet, powershell
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+	sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
+	apt-get update && \
+	apt-get install -y \
+	powershell \
+	dotnet-sdk-6.0 && \
+	rm -rf /var/lib/apt/lists/*
+
+# install AWS cli
+RUN wget https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -O awscliv2.zip && \
+	unzip awscliv2.zip && \
+	./aws/install && \
+	rm awscliv2.zip
