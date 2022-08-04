@@ -25,7 +25,7 @@ const MenuContainer = styled("div", {
   padding: 10,
   marginLeft: 20,
   dragable: false,
-  whiteSpace: 'nowrap',
+  whiteSpace: "nowrap",
 });
 
 const MenuDivider = styled("hr", {
@@ -51,7 +51,9 @@ function Menu() {
       <MenuItem
         icon={ncgLogo}
         text="WNCG Staking"
-        onClick={() => shell.openExternal("https://stake.nine-chronicles.com/wncg")}
+        onClick={() =>
+          shell.openExternal("https://stake.nine-chronicles.com/wncg")
+        }
       />
       <MenuItem
         icon={exchange}
