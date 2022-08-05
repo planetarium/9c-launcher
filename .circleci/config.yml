@@ -166,7 +166,7 @@ jobs:
           path: __tests__/snapshots
           destination: e2e-snapshots
       - store_artifacts:
-          path: __tests__/logs
+          path: ~/AppData/Roaming/Nine Chronicles/logs
           destination: e2e-logs
 
 workflows:
