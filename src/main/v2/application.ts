@@ -24,20 +24,21 @@ export async function createWindow(): Promise<BrowserWindow> {
     icon: join(app.getAppPath(), logoImage),
   });
   remoteEnable(win.webContents);
-  win.webContents.on("new-window", function (
-    event,
-    url: string,
-    _a,
-    _,
-    options
-  ) {
+  win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https://stately.ai/viz?inspect")) {
-      options.frame = true;
-      options.resizable = true;
-      options.webPreferences!.nodeIntegration = false;
+      return {
+        action: "allow",
+        overrideBrowserWindowOptions: {
+          frame: true,
+          resizable: true,
+          webPreferences: {
+            nodeIntegration: false,
+          },
+        },
+      };
     } else {
-      event.preventDefault();
       shell.openExternal(url);
+      return { action: "deny" };
     }
   });
 
