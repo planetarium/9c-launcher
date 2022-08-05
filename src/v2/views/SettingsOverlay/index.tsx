@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { styled } from "src/v2/stitches.config";
 import { useLanguages } from "@transifex/react";
@@ -9,12 +9,13 @@ import { T } from "src/renderer/i18n";
 import path from "path";
 import log from "electron-log";
 import { shell, ipcRenderer } from "electron";
-import { app } from "@electron/remote";
+import { app, dialog } from "@electron/remote";
 import { preloadService } from "src/v2/machines/preloadMachine";
 
 import H1 from "src/v2/components/ui/H1";
 import TextField from "src/v2/components/ui/TextField";
 import { Select, SelectOption } from "src/v2/components/ui/Select";
+import ImportInput, { ImportData } from "src/v2/components/ImportInput";
 import FolderChooser from "./FolderChooser";
 import { t } from "@transifex/native";
 import Button from "src/v2/components/ui/Button";
@@ -54,6 +55,16 @@ function handleOpenKeyStorePath() {
   shell.showItemInFolder(openpath);
 }
 
+function handleWeb3KeyImport() {
+  dialog.showOpenDialog({ properties: ["openFile"] }).then(function (response) {
+    if (!response.canceled) {
+      console.log(response.filePaths[0]);
+    } else {
+      console.log("no file selected");
+    }
+  });
+}
+
 function handleOpenLogPath() {
   const openpath = log.transports.file.getFile().path;
   console.log(`Open log folder. ${openpath}`);
@@ -79,6 +90,8 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
       ...userConfigStore.store,
     },
   });
+  const [key, setKey] = useState<ImportData>({});
+
   const languages: Languages = useLanguages();
 
   const onSubmit = useCallback(
@@ -161,6 +174,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
             onClick={clearCache}
             text={t("Clear Cache")}
           />
+          <ImportInput onSubmit={setKey} fromFile={key.fromFile} />
           <AdvancedAction
             link
             onClick={handleOpenLogPath}
