@@ -66,7 +66,11 @@ describe("test", function () {
   it("로그인 하기", async function () {
     await page.screenshot({ path: path.join(snapshotDir, `login.png`) });
     await page.fill("input[type=password]", PASSWORD);
-    await page.click("data-testid=login");
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click("data-testid=login"),
+    ]);
+    expect(page.url()).to.include("/lobby");
   });
 
   // it("마이닝 끄기", async function () {
