@@ -20,7 +20,7 @@ import {
   PreloadEndedDocument,
   PreloadEndedQuery,
 } from "../generated/graphql";
-import type { Update } from "src/main/update";
+import type { Update } from "src/main/update/launcher-update";
 import { captureException } from "@sentry/electron";
 
 type Client = ApolloClient<NormalizedCacheObject>;
