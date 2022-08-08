@@ -32,6 +32,7 @@ describe("test", function () {
     });
 
     page = await app.firstWindow();
+    await page.waitForSelector("'Done'")
   });
 
   afterEach(async function () {
