@@ -29,7 +29,7 @@ import { LocaleProvider } from "./i18n";
 import type { NodeInfo } from "../config";
 import RPCSpinner from "./components/RPCSpinner/RPCSpinner";
 import { PreloadEndedDocument, PreloadEndedQuery } from "src/generated/graphql";
-import { Update } from "src/main/update";
+import { Update } from "src/main/update/launcher-update";
 import { GenesisHashDocument, GenesisHashQuery } from "src/generated/graphql";
 import _refiner from "refiner-js";
 

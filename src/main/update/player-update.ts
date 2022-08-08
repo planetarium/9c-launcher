@@ -3,14 +3,16 @@ import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
 import path from "path";
-import { IUpdateOptions } from "./launcher-update"
+import { IUpdateOptions } from "./launcher-update";
 import { macExtract, winExtract } from "./extract";
 
 const playerTempPath = path.join(app.getPath("temp"), "player");
 const extractPath = path.join(app.getPath("userData"), "player");
 
-
-export async function playerUpdate(downloadUrl: string, listeners: IUpdateOptions) {
+export async function playerUpdate(
+  downloadUrl: string,
+  listeners: IUpdateOptions
+) {
   const win = listeners.getWindow();
 
   if (win === null) {
@@ -19,7 +21,7 @@ export async function playerUpdate(downloadUrl: string, listeners: IUpdateOption
   }
 
   win?.webContents.send("update download started");
-  
+
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {
     onStarted: (downloadItem: DownloadItem) => {
@@ -58,4 +60,3 @@ export async function playerUpdate(downloadUrl: string, listeners: IUpdateOption
     return;
   }
 }
-

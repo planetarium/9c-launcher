@@ -4,8 +4,11 @@ import { tmpName } from "tmp-promise";
 import { spawn as spawnPromise } from "child-process-promise";
 import fs from "fs";
 
-
-export async function winExtract(from: string, to: string, win: Electron.BrowserWindow) {
+export async function winExtract(
+  from: string,
+  to: string,
+  win: Electron.BrowserWindow
+) {
   const tempDir = await tmpName();
 
   // Unzip ZIP
@@ -27,7 +30,12 @@ export async function winExtract(from: string, to: string, win: Electron.Browser
     await fs.promises.rmdir(tempDir, { recursive: true });
     console.log("[player] Removed all temporary files from", tempDir);
   } catch (e) {
-    console.warn("[player] Failed to remove temporary files from", tempDir, "\n", e);
+    console.warn(
+      "[player] Failed to remove temporary files from",
+      tempDir,
+      "\n",
+      e
+    );
   }
   win.webContents.send("update copying complete");
 }
@@ -36,26 +44,14 @@ export async function macExtract(from: string, to: string, filename: string) {
   // untar .tar.{gz,bz2}
   const lowerFname = filename.toLowerCase();
   const bz2 = lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");
-  console.log(
-    "[player] Start to extract the tarball archive",
-    from,
-    "to",
-    to
-  );
+  console.log("[player] Start to extract the tarball archive", from, "to", to);
   try {
-    await spawnPromise(
-      "tar",
-      [`xvf${bz2 ? "j" : "z"}`, from, "-C", to],
-      { capture: ["stdout", "stderr"] }
-    );
+    await spawnPromise("tar", [`xvf${bz2 ? "j" : "z"}`, from, "-C", to], {
+      capture: ["stdout", "stderr"],
+    });
   } catch (e) {
     console.error(`${e}:\n`, e.stderr);
     throw e;
   }
-  console.log(
-    "[player] The tarball archive",
-    from,
-    "has extracted to ",
-    to
-  );
+  console.log("[player] The tarball archive", from, "has extracted to ", to);
 }
