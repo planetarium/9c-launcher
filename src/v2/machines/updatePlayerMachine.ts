@@ -22,8 +22,11 @@ type UpdatePlayerMachineState =
       context: {};
     };
 
-export default 
-createMachine<MachineContext, MachineEvent, UpdatePlayerMachineState>(
+export default createMachine<
+  MachineContext,
+  MachineEvent,
+  UpdatePlayerMachineState
+>(
   {
     context: { progress: 0 },
     id: "(machine)",
@@ -57,7 +60,10 @@ createMachine<MachineContext, MachineEvent, UpdatePlayerMachineState>(
         invoke: {
           id: "extract",
           src: () =>
-            invokeIpcEvent<MachineEvent>("update player download complete", "EXTRACT"),
+            invokeIpcEvent<MachineEvent>(
+              "update player download complete",
+              "EXTRACT"
+            ),
         },
       },
       extract: {
@@ -68,7 +74,10 @@ createMachine<MachineContext, MachineEvent, UpdatePlayerMachineState>(
         invoke: {
           id: "extract",
           src: () =>
-            invokeIpcEvent<MachineEvent>("update player extract complete", "DONE"),
+            invokeIpcEvent<MachineEvent>(
+              "update player extract complete",
+              "DONE"
+            ),
         },
       },
     },
