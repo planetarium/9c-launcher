@@ -44,7 +44,12 @@ export async function playerUpdate(
   const dlPath = dl?.getSavePath();
   console.log("[player] Finished to download:", dlPath);
 
-  fs.rmdirSync(extractPath, { recursive: true });
+  if (fs.existsSync(extractPath)) {
+    fs.rmdirSync(extractPath, {recursive: true});
+  } else {
+    fs.mkdirSync(extractPath);
+  }
+
   console.log("[player] Clean up exists player");
 
   console.log("[player] The 9C player installation path:", extractPath);
