@@ -342,7 +342,7 @@ function initializeIpc() {
     const EXECUTE_PATH: {
       [k: string]: string;
     } = {
-      darwin: path.join(app.getAppPath(), MAC_GAME_PATH),
+      darwin: MAC_GAME_PATH,
       linux: path.join(app.getAppPath(), LINUX_GAME_PATH),
     };
 
