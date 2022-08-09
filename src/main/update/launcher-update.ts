@@ -1,15 +1,18 @@
 import { encode, decode, BencodexDict } from "bencodex";
 import { DownloadItem, app, dialog, shell } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
+import extractZip from "extract-zip";
+import * as utils from "../../utils";
 import { IDownloadProgress } from "src/interfaces/ipc";
+import { tmpName } from "tmp-promise";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
 import { get as getConfig } from "../../config";
 import path from "path";
 import fs from "fs";
 import Headless from "../headless/headless";
 import lockfile from "lockfile";
+import { spawn as spawnPromise } from "child-process-promise";
 import { playerUpdate } from "./player-update";
-import { macExtract, winExtract } from "./extract";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -216,12 +219,73 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   console.log("The existing configuration:", bakConfig);
 
   if (process.platform == "win32") {
-    await winExtract(dlPath, extractPath, win);
+    // Windows can't replace or remove executable file
+    // while process is up, so we should change name instead
+    const src = app.getPath("exe");
+    const basename = path.basename(src);
+    const dirname = path.dirname(src);
+    const dst = path.join(dirname, "bak_" + basename);
+    await fs.promises.rename(src, dst);
+    console.log("The executing file has renamed from", src, "to", dst);
+
+    // TODO: 9c-updater- prefix in front of temp directory name
+    const tempDir = await tmpName();
+
+    // Unzip ZIP
+    console.log("Start to extract the zip archive", dlPath, "to", tempDir);
+
+    await extractZip(dlPath, {
+      dir: tempDir,
+      onEntry: (_, zipfile) => {
+        const progress = zipfile.entriesRead / zipfile.entryCount;
+        win?.webContents.send("update extract progress", progress);
+      },
+    });
+    win.webContents.send("update extract complete");
+    console.log("The zip archive", dlPath, "has extracted to", tempDir);
+    win.webContents.send("update copying progress");
+    await utils.copyDir(tempDir, extractPath);
+    console.log("Copied extracted files from", tempDir, "to", extractPath);
+    try {
+      await fs.promises.rmdir(tempDir, { recursive: true });
+      console.log("Removed all temporary files from", tempDir);
+    } catch (e) {
+      console.warn("Failed to remove temporary files from", tempDir, "\n", e);
+    }
+    win.webContents.send("update copying complete");
   } else if (process.platform == "darwin") {
-    await macExtract(dlPath, extractPath, dlFname);
+    // untar .tar.{gz,bz2}
+    const lowerFname = dlFname.toLowerCase();
+    const bz2 = lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");
+    console.log(
+      "Start to extract the tarball archive",
+      dlPath,
+      "to",
+      extractPath
+    );
+    try {
+      await spawnPromise(
+        "tar",
+        [`xvf${bz2 ? "j" : "z"}`, dlPath, "-C", extractPath],
+        { capture: ["stdout", "stderr"] }
+      );
+    } catch (e) {
+      console.error(`${e}:\n`, e.stderr);
+      throw e;
+    }
+    console.log(
+      "The tarball archive",
+      dlPath,
+      "has extracted to ",
+      extractPath
+    );
   } else {
     console.warn("Not supported platform.");
     return;
+  }
+  
+  if (playerDownloadUrl) {
+    await playerUpdate(playerDownloadUrl, win);
   }
 
   // Delete compressed file after decompress.
@@ -240,10 +304,6 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     "The existing and new configuration files has been merged:",
     config
   );
-
-  if (playerDownloadUrl) {
-    await playerUpdate(playerDownloadUrl, listeners);
-  }
 
   lockfile.unlockSync(lockfilePath);
   console.log(
