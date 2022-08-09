@@ -130,14 +130,14 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     process.platform === "win32"
       ? windowsBinaryUrl
       : process.platform === "darwin"
-      ? macOSBinaryUrl
-      : null;
+        ? macOSBinaryUrl
+        : null;
   const playerDownloadUrl =
     process.platform === "win32"
       ? windowsPlayerBinaryUrl
       : process.platform === "darwin"
-      ? macOSPlayerBinaryUrl
-      : null;
+        ? macOSPlayerBinaryUrl
+        : null;
 
   if (downloadUrl == null) {
     console.log(`Stop update process. Not support ${process.platform}.`);
@@ -283,7 +283,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     console.warn("Not supported platform.");
     return;
   }
-  
+
   if (playerDownloadUrl) {
     await playerUpdate(playerDownloadUrl, win);
   }
