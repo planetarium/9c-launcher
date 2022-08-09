@@ -301,13 +301,13 @@ export function MonsterCollectionContent({
               >
                 <img src={crystalImg} />
               </Item>
-              {/* <Item
+              <Item
                 key="arena"
                 amount={systemRewards[index!].arena}
                 title="Arena"
               >
                 <img src={arenaImg} />
-              </Item> */}
+              </Item>
             </ItemGroup>
           </RewardSheet>
         ) : (
