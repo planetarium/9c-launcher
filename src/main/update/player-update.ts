@@ -3,9 +3,9 @@ import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
 import path from "path";
+import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
-
 
 const playerTempPath = path.join(app.getPath("temp"), "player");
 const extractPath = path.join(app.getPath("userData"), "player");
@@ -43,11 +43,19 @@ export async function playerUpdate(
   const dlFname = dl?.getFilename();
   const dlPath = dl?.getSavePath();
   console.log("[player] Finished to download:", dlPath);
-  console.log("[player] The 9C player installation path:", extractPath);
 
+  fs.rmdirSync(extractPath, { recursive: true });
+  console.log("[player] Clean up exists player");
+
+  console.log("[player] The 9C player installation path:", extractPath);
   if (process.platform == "win32") {
     // Unzip ZIP
-    console.log("[player] Start to extract the zip archive", dlPath, "to", extractPath);
+    console.log(
+      "[player] Start to extract the zip archive",
+      dlPath,
+      "to",
+      extractPath
+    );
 
     await extractZip(dlPath, {
       dir: extractPath,
