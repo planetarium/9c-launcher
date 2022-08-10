@@ -45,7 +45,7 @@ export async function playerUpdate(
   console.log("[player] Finished to download:", dlPath);
 
   if (fs.existsSync(extractPath)) {
-    fs.rmdirSync(extractPath, {recursive: true});
+    fs.rmdirSync(extractPath, { recursive: true });
   } else {
     fs.mkdirSync(extractPath);
   }
