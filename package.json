@@ -149,6 +149,7 @@
     "@babel/preset-env": "^7.10.3",
     "@babel/preset-react": "^7.10.1",
     "@babel/preset-typescript": "^7.10.1",
+    "@evilmartians/lefthook": "^1.0.5",
     "@graphql-codegen/cli": "^1.15.4",
     "@graphql-codegen/typescript": "^1.15.4",
     "@graphql-codegen/typescript-graphql-request": "^3.2.5",
