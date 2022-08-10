@@ -12,3 +12,10 @@ pre-commit:
     typescript:
       glob: "*.{js,ts,jsx,tsx}"
       run: yarn tsc --noEmit {staged_files}
+post-checkout:
+  # Reconfigure the environment after a git checkout.
+  parallel: true
+  commands:
+    yarn-install:
+      glob: "yarn.lock"
+      run: yarn install
