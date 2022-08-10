@@ -1,0 +1,14 @@
+pre-commit:
+  # Checks the style requirements.
+  # FIXME: TypeScript check runs even if no TypeScript files are changed.
+  parallel: true
+  commands:
+    eslint:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: yarn eslint {staged_files}
+    prettier:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: yarn prettier {staged_files} --write && git add {staged_files}
+    typescript:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: yarn tsc --noEmit {staged_files}
