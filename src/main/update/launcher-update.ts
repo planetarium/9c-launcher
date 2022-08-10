@@ -2,17 +2,17 @@ import { encode, decode, BencodexDict } from "bencodex";
 import { DownloadItem, app, dialog, shell } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import extractZip from "extract-zip";
-import * as utils from "../utils";
+import * as utils from "../../utils";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { tmpName } from "tmp-promise";
-import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
-import { get as getConfig } from "../config";
+import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
+import { get as getConfig } from "../../config";
 import path from "path";
 import fs from "fs";
-import Headless from "./headless/headless";
+import Headless from "../headless/headless";
 import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
-import { t } from "@transifex/native";
+import { playerUpdate } from "./player-update";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -117,14 +117,26 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   const extra = decode(buffer) as BencodexDict;
   console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // Stringifies the JSON for extra clarity in the log
   const macOSBinaryUrl = extra.get("macOSBinaryUrl") as string;
+  const macOSPlayerBinaryUrl = extra.get("macOSPlayerBinaryUrl") as string;
+  const windowsPlayerBinaryUrl = extra.get("WindowsPlayerBinaryUrl") as string;
   const windowsBinaryUrl = extra.get("WindowsBinaryUrl") as string;
+
   console.log("macOSBinaryUrl: ", macOSBinaryUrl);
   console.log("WindowsBinaryUrl: ", windowsBinaryUrl);
+  console.log("macOSPlayerBinaryUrl: ", macOSPlayerBinaryUrl);
+  console.log("WindowsPlayerBinaryUrl: ", windowsPlayerBinaryUrl);
+
   const downloadUrl =
     process.platform === "win32"
       ? windowsBinaryUrl
       : process.platform === "darwin"
       ? macOSBinaryUrl
+      : null;
+  const playerDownloadUrl =
+    process.platform === "win32"
+      ? windowsPlayerBinaryUrl
+      : process.platform === "darwin"
+      ? macOSPlayerBinaryUrl
       : null;
 
   if (downloadUrl == null) {
@@ -270,6 +282,10 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   } else {
     console.warn("Not supported platform.");
     return;
+  }
+
+  if (playerDownloadUrl) {
+    await playerUpdate(playerDownloadUrl, win);
   }
 
   // Delete compressed file after decompress.

@@ -78,7 +78,7 @@ import {
   IUpdateOptions,
   Update,
   update,
-} from "./update";
+} from "./update/launcher-update";
 import { send } from "./v2/ipc";
 import { IPC_PRELOAD_IDLE, IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
 import {
@@ -339,17 +339,18 @@ function initializeIpc() {
       return;
     }
 
+    const EXECUTE_PATH: {
+      [k: string]: string;
+    } = {
+      darwin: MAC_GAME_PATH,
+      linux: path.join(app.getAppPath(), LINUX_GAME_PATH),
+    };
+
     const node = utils.execute(
-      path.join(
-        app.getAppPath(),
-        process.platform === "darwin"
-          ? MAC_GAME_PATH
-          : process.platform === "linux"
-          ? LINUX_GAME_PATH
-          : WIN_GAME_PATH
-      ),
+      EXECUTE_PATH[process.platform] || WIN_GAME_PATH,
       info.args
     );
+
     node.on("close", (code) => {
       // Code 21: ERROR_NOT_READY
       if (code === 21) {
