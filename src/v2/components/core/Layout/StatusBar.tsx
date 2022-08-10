@@ -12,7 +12,7 @@ import { useHistory } from "react-router";
 const StatusBarStyled = styled("div", {
   display: "flex",
   flexDirection: "column",
-  width: 500,
+  width: 450,
 });
 
 const StatusMessage = styled("span", {
