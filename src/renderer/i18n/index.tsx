@@ -20,7 +20,7 @@ const context = createContext<LocaleContext>({
 const { Provider } = context;
 
 export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
-  const [locale, setLocale] = useState(() => get("Locale"));
+  const [locale, setLocale] = useState(() => get("Locale") ?? "en");
 
   useEffect(() => {
     const unsubscribe = userConfigStore.onDidChange("Locale", (v) =>
@@ -37,8 +37,6 @@ export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
     tx.setCurrentLocale(locale);
 
     validateLocale(locale).then((valid) => valid || setLocale("en"));
-
-    userConfigStore.set("Locale", locale);
   }, [locale]);
 
   return <Provider value={{ locale }}>{children}</Provider>;
