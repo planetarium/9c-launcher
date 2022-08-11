@@ -296,7 +296,7 @@ export async function extractSnapshot(
 
 export async function removeUselessStore(
   blockchainStorePath: string
-): Promise<void[]> {
+): Promise<PromiseSettledResult<void>[]> {
   const listOfUselessDb = [
     "9c-main",
     "chain",
@@ -308,7 +308,7 @@ export async function removeUselessStore(
     path.join("tx", "txindex"),
   ];
 
-  return Promise.all(
+  return Promise.allSettled(
     listOfUselessDb.map((db) => {
       console.log(`Remove ${path.join(blockchainStorePath, db)}`);
       return fs.promises.rmdir(path.join(blockchainStorePath, db), {
@@ -385,10 +385,13 @@ export async function processSnapshot(
       mixpanel
     );
     snapshotPaths.push(stateSnapshotPath);
-    await removeUselessStore(storePath).catch((error) => {
+    const removalResult = await removeUselessStore(storePath);
+    removalResult.forEach((result) => {
+      if (result.status === "fulfilled") return;
+      const { reason: error } = result;
       if (error.code === "ENOENT" || error.code === "ENOTDIR") return; // Ignore if not exist
       console.error("Error while removing useless store: ", error);
-    });
+    })
     send(win, IPC_PRELOAD_NEXT);
     updateProgress.cancel();
     await extractSnapshot(
