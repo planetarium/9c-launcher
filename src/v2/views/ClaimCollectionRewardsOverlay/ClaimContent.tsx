@@ -66,10 +66,10 @@ function ClaimContent({
     (_: number, action: string) => Number(action),
     0
   );
-  const currentAvatar = useMemo(() => avatars?.[currentAvatarIndex], [
-    avatars,
-    currentAvatarIndex,
-  ]);
+  const currentAvatar = useMemo(
+    () => avatars?.[currentAvatarIndex],
+    [avatars, currentAvatarIndex]
+  );
   const hasMultipleAvatars = !avatars || avatars.length !== 1;
 
   useEffect(() => {

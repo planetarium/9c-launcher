@@ -96,9 +96,10 @@ export function MonsterCollectionContent({
   const [amount, setAmount] = useState("0");
   const [openedAlert, setIsAlertOpen] = useState<Alerts | null>(null);
 
-  const deposit = useMemo(() => stakeState && new Decimal(stakeState.deposit), [
-    stakeState,
-  ]);
+  const deposit = useMemo(
+    () => stakeState && new Decimal(stakeState.deposit),
+    [stakeState]
+  );
   const amountDecimal = useMemo(() => new Decimal(amount || 0), [amount]);
   const levels = useMemo(
     () => sheet?.orderedList.filter((v) => v.level !== 0),

@@ -64,12 +64,10 @@ export default function UserInfo() {
     deposit,
     refetch,
   } = useStaking();
-  const [
-    fetchResult,
-    { data: result, stopPolling },
-  ] = useTransactionResultLazyQuery({
-    pollInterval: 1000,
-  });
+  const [fetchResult, { data: result, stopPolling }] =
+    useTransactionResultLazyQuery({
+      pollInterval: 1000,
+    });
 
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
   useEffect(() => {

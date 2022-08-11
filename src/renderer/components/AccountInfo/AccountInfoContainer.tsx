@@ -113,8 +113,8 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     }
 
     sheetRefetch().then((query) => {
-      const sheet = query.data.stateQuery.monsterCollectionSheet?.orderedList?.map(
-        (x) => {
+      const sheet =
+        query.data.stateQuery.monsterCollectionSheet?.orderedList?.map((x) => {
           return {
             level: x?.level,
             requiredGold: x?.requiredGold,
@@ -125,8 +125,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
               } as Reward;
             }),
           } as CollectionSheetItem;
-        }
-      );
+        });
       if (sheet == null) return;
       setDepositeGold(getTotalDepositedGold(sheet, collectionLevel));
     });

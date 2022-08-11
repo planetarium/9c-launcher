@@ -80,13 +80,11 @@ const RetypePasswordForm = ({
 }: RetypePasswordFormProps) => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [passwordConfirmAllowsEmpty, setPasswordConfirmAllowsEmpty] = useState(
-    true
-  );
+  const [passwordConfirmAllowsEmpty, setPasswordConfirmAllowsEmpty] =
+    useState(true);
   const [activationKey, setActivationKey] = useState("");
-  const [activationKeyAllowsEmpty, setActivationKeyAllowsEmpty] = useState(
-    true
-  );
+  const [activationKeyAllowsEmpty, setActivationKeyAllowsEmpty] =
+    useState(true);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);

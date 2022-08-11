@@ -35,10 +35,8 @@ const transifexTags = "configuration";
 
 const ConfigurationView = observer(() => {
   const { routerStore } = useStores();
-  const languages: Array<Record<
-    "code" | "name" | "localized_name",
-    string
-  >> = useLanguages();
+  const languages: Array<Record<"code" | "name" | "localized_name", string>> =
+    useLanguages();
   const selectedLocale: string = useLocale();
   const selectedLanguage = useMemo(
     () => languages.find(({ code }) => code === selectedLocale)?.localized_name,
