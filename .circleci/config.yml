@@ -41,6 +41,8 @@ commands:
           command: |
             corepack enable
             yarn install --immutable
+          environment:
+            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
       - save_cache:
           key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
