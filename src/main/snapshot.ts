@@ -294,7 +294,9 @@ export async function extractSnapshot(
   }
 }
 
-export function removeUselessStore(blockchainStorePath: string): void {
+export async function removeUselessStore(
+  blockchainStorePath: string
+): Promise<void[]> {
   const listOfUselessDb = [
     "9c-main",
     "chain",
@@ -306,10 +308,14 @@ export function removeUselessStore(blockchainStorePath: string): void {
     path.join("tx", "txindex"),
   ];
 
-  listOfUselessDb.forEach((db) => {
-    console.log(`Remove ${path.join(blockchainStorePath, db)}`);
-    fs.rmdirSync(path.join(blockchainStorePath, db), { recursive: true });
-  });
+  return Promise.all(
+    listOfUselessDb.map((db) => {
+      console.log(`Remove ${path.join(blockchainStorePath, db)}`);
+      return fs.promises.rmdir(path.join(blockchainStorePath, db), {
+        recursive: true,
+      });
+    })
+  );
 }
 
 const updateProgress = debounce(
@@ -379,7 +385,10 @@ export async function processSnapshot(
       mixpanel
     );
     snapshotPaths.push(stateSnapshotPath);
-    removeUselessStore(storePath);
+    await removeUselessStore(storePath).catch((error) => {
+      if (error.code === "ENOENT" || error.code === "ENOTDIR") return; // Ignore if not exist
+      console.error("Error while removing useless store: ", error);
+    });
     send(win, IPC_PRELOAD_NEXT);
     updateProgress.cancel();
     await extractSnapshot(
