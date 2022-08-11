@@ -241,8 +241,9 @@ export default class HeadlessStore implements IHeadlessStore {
               return;
             }
           }
-          txResult = await (await this.graphqlSdk.TransactionResult({ txId }))
-            .data!.transaction.transactionResult;
+          txResult = await (
+            await this.graphqlSdk.TransactionResult({ txId })
+          ).data!.transaction.transactionResult;
           break;
         default:
           throw new Error(`Unknown transaction status: ${txResult.txStatus}`);

@@ -28,12 +28,8 @@ export default function FileChooser({
   onDrop,
   disabled,
 }: FileChooserProps) {
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    acceptedFiles,
-  } = useDropzone({ onDrop, disabled, multiple: false });
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles } =
+    useDropzone({ onDrop, disabled, multiple: false });
 
   return (
     <ChooserWrapper {...getRootProps()}>

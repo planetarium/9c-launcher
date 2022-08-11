@@ -483,9 +483,8 @@ function initializeIpc() {
   );
 
   ipcMain.on("create-private-key", async (event, passphrase: string) => {
-    event.returnValue = standalone.keyStore.createProtectedPrivateKey(
-      passphrase
-    );
+    event.returnValue =
+      standalone.keyStore.createProtectedPrivateKey(passphrase);
   });
 
   ipcMain.handle("generate-private-key", async (event) => {

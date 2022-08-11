@@ -16,9 +16,8 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   const [isDownload, setDownloadState] = useState(false);
   const [isExtract, setExtractState] = useState(false);
   const [isCopying, setCopyingState] = useState(false);
-  const [variant, setVariant] = useState<
-    "indeterminate" | "determinate" | undefined
-  >("determinate");
+  const [variant, setVariant] =
+    useState<"indeterminate" | "determinate" | undefined>("determinate");
   // FIXME: Some files were downloaded multiple times because of improper file lock, causing progress to go backward.
   const [progress, setProgress] = useState(0);
 
@@ -61,19 +60,20 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
       const extra: string = encode({
         WindowsBinaryUrl: url,
       }).toString("hex");
-      const differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterSubscription = {
-        differentAppProtocolVersionEncounter: {
-          peer: "",
-          localVersion: {
-            version: 10000,
-            extra,
+      const differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterSubscription =
+        {
+          differentAppProtocolVersionEncounter: {
+            peer: "",
+            localVersion: {
+              version: 10000,
+              extra,
+            },
+            peerVersion: {
+              version: 1000008,
+              extra,
+            },
           },
-          peerVersion: {
-            version: 1000008,
-            extra,
-          },
-        },
-      };
+        };
       ipcRenderer.send(
         "encounter different version",
         differentAppProtocolVersionEncounter
@@ -82,10 +82,8 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   }, []);
 
   // FIXME: It would be nice to seperate from subscription logic completely.
-  const {
-    loading,
-    data,
-  } = useDifferentAppProtocolVersionEncounterSubscription();
+  const { loading, data } =
+    useDifferentAppProtocolVersionEncounterSubscription();
   useEffect(() => {
     if (
       !loading &&
