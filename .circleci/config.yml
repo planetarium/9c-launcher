@@ -83,7 +83,6 @@ jobs:
             dotnet nuget locals all --clear
           working_directory: NineChronicles.Headless
           name: Clean Headless
-      - run: yarn bundle-player $OS_ALIAS
       - build-headless:
           os: << parameters.os >>
       - run:
