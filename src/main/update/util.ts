@@ -1,9 +1,7 @@
-
 import { DOWNLOAD_URL } from "../constants";
 import { NotSupportedPlatformError } from "../exceptions/not-supported-platform";
 import { decode, BencodexDict } from "bencodex";
 import { get as getConfig } from "../../config";
-
 
 export function getVersionNumberFromAPV(apv: string): number {
   const [version] = apv.split("/");
@@ -19,25 +17,31 @@ export function decodeLocalAPV(): BencodexDict | undefined {
   return decode(extra) as BencodexDict | undefined;
 }
 
-export function getDownloadUrl(rc: number, project: "player" | "launcher", projectVersion: number, platform: NodeJS.Platform): string {
-  const fn = FILENAME_MAP[platform]; // nullable
+export function getDownloadUrl(
+  env: string,
+  rc: number,
+  project: "player" | "launcher",
+  projectVersion: number,
+  platform: NodeJS.Platform
+): string {
+  const fn = FILENAME_MAP[platform];
 
   if (fn === null) {
     throw new NotSupportedPlatformError(platform);
   }
 
-  return `${DOWNLOAD_URL}/v${rc}/${project}/v${projectVersion}/${fn}`;
+  return `${DOWNLOAD_URL}/${env}/v${rc}/${project}/v${projectVersion}/${fn}`;
 }
 
-const FILENAME_MAP: {[k in NodeJS.Platform]: string | null} = {
-  "aix": null,
-  "android": null,
-  "darwin": "mac.tar.gz",
-  "freebsd": null,
-  "linux": null,
-  "openbsd": null,
-  "sunos": null,
-  "win32": "win.zip",
-  "cygwin": null,
-  "netbsd": null
-}
+const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
+  aix: null,
+  android: null,
+  darwin: "mac.tar.gz",
+  freebsd: null,
+  linux: null,
+  openbsd: null,
+  sunos: null,
+  win32: "win.zip",
+  cygwin: null,
+  netbsd: null,
+};

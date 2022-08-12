@@ -13,7 +13,11 @@ import Headless from "../headless/headless";
 import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
 import { playerUpdate } from "./player-update";
-import { getDownloadUrl, getVersionNumberFromAPV, decodeLocalAPV } from "./util";
+import {
+  getDownloadUrl,
+  getVersionNumberFromAPV,
+  decodeLocalAPV,
+} from "./util";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -61,7 +65,6 @@ export interface IUpdateOptions {
   getWindow(): Electron.BrowserWindow | null;
 }
 
-
 export async function update(update: Update, listeners: IUpdateOptions) {
   const localVersionNumber: number =
     update.current ?? getVersionNumberFromAPV(getConfig("AppProtocolVersion"));
@@ -106,8 +109,29 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // Stringifies the JSON for extra clarity in the log
 
   // FIXME: project version number hard coding: 1.
-  const launcherDownloadUrl = getDownloadUrl(peerVersionNumber, "launcher", 1, process.platform);
-  const playerDownloadUrl = getDownloadUrl(peerVersionNumber, "player", 1, process.platform);
+  const network = getConfig("Network", "9c-main");
+
+  let netenv;
+  if (network === "9c-main") {
+    netenv = "main";
+  } else {
+    netenv = network;
+  }
+
+  const launcherDownloadUrl = getDownloadUrl(
+    netenv,
+    peerVersionNumber,
+    "launcher",
+    1,
+    process.platform
+  );
+  const playerDownloadUrl = getDownloadUrl(
+    netenv,
+    peerVersionNumber,
+    "player",
+    1,
+    process.platform
+  );
 
   console.log("launcherDownloadUrl: ", launcherDownloadUrl);
   console.log("playerDownloadUrl: ", playerDownloadUrl);
