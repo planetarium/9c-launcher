@@ -13,6 +13,11 @@ import Headless from "../headless/headless";
 import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
 import { playerUpdate } from "./player-update";
+import {
+  getDownloadUrl,
+  getVersionNumberFromAPV,
+  decodeLocalAPV,
+} from "./util";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -60,20 +65,6 @@ export interface IUpdateOptions {
   getWindow(): Electron.BrowserWindow | null;
 }
 
-function getVersionNumberFromAPV(apv: string): number {
-  const [version] = apv.split("/");
-  return parseInt(version, 10);
-}
-
-function decodeLocalAPV(): BencodexDict | undefined {
-  const localApvToken = getConfig("AppProtocolVersion");
-  const extra = Buffer.from(localApvToken.split("/")[1], "hex");
-
-  if (!extra.length) return;
-
-  return decode(extra) as BencodexDict | undefined;
-}
-
 export async function update(update: Update, listeners: IUpdateOptions) {
   const localVersionNumber: number =
     update.current ?? getVersionNumberFromAPV(getConfig("AppProtocolVersion"));
@@ -116,33 +107,34 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   console.log("peerVersionExtra (bytes):", buffer);
   const extra = decode(buffer) as BencodexDict;
   console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // Stringifies the JSON for extra clarity in the log
-  const macOSBinaryUrl = extra.get("macOSBinaryUrl") as string;
-  const macOSPlayerBinaryUrl = extra.get("macOSPlayerBinaryUrl") as string;
-  const windowsPlayerBinaryUrl = extra.get("WindowsPlayerBinaryUrl") as string;
-  const windowsBinaryUrl = extra.get("WindowsBinaryUrl") as string;
 
-  console.log("macOSBinaryUrl: ", macOSBinaryUrl);
-  console.log("WindowsBinaryUrl: ", windowsBinaryUrl);
-  console.log("macOSPlayerBinaryUrl: ", macOSPlayerBinaryUrl);
-  console.log("WindowsPlayerBinaryUrl: ", windowsPlayerBinaryUrl);
+  const network = getConfig("Network", "9c-main");
+  const netenv = network === "9c-main" ? "main" : network;
 
-  const downloadUrl =
-    process.platform === "win32"
-      ? windowsBinaryUrl
-      : process.platform === "darwin"
-      ? macOSBinaryUrl
-      : null;
-  const playerDownloadUrl =
-    process.platform === "win32"
-      ? windowsPlayerBinaryUrl
-      : process.platform === "darwin"
-      ? macOSPlayerBinaryUrl
-      : null;
+  // FIXME: project version number hard coding: 1.
+  const launcherDownloadUrl = getDownloadUrl(
+    netenv,
+    peerVersionNumber,
+    "launcher",
+    1,
+    process.platform
+  );
+  // FIXME: project version number hard coding: 1.
+  const playerDownloadUrl = getDownloadUrl(
+    netenv,
+    peerVersionNumber,
+    "player",
+    1,
+    process.platform
+  );
 
-  if (downloadUrl == null) {
-    console.log(`Stop update process. Not support ${process.platform}.`);
-    return;
-  }
+  console.log("launcherDownloadUrl: ", launcherDownloadUrl);
+  console.log("playerDownloadUrl: ", playerDownloadUrl);
+
+  // if (launcherDownloadUrl == null) {
+  //   console.log(`Stop update process. Not support ${process.platform}.`);
+  //   return;
+  // }
 
   const compatVersion = BigInt(
     (extra.get("CompatiblityVersion") as string | number) ?? 0
@@ -181,19 +173,19 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `Downloading ${launcherDownloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
       win?.webContents.send("update download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("Starts to download:", downloadUrl);
+  console.log("Starts to download:", launcherDownloadUrl);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, downloadUrl, options);
+    dl = await download(win, launcherDownloadUrl, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(downloadUrl);
+    throw new DownloadBinaryFailedError(launcherDownloadUrl);
   }
 
   win.webContents.send("update download complete");
