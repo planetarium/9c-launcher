@@ -101,9 +101,7 @@ jobs:
             fi
       - run:
           command: |
-            cd pack/Nine\ Chronicles-$OS_ALIAS-x64/
-            chmod +x "$EXECUTABLE"
-            $ZIP_CMD ../../pack-dist/$ARTIFACT *
+            $ZIP_CMD ./pack-dist/$ARTIFACT *
       - store_artifacts:
           path: pack-dist
           destination: dist-artifacts
