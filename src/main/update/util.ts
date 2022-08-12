@@ -1,7 +1,6 @@
-import { DOWNLOAD_URL } from "../constants";
 import { NotSupportedPlatformError } from "../exceptions/not-supported-platform";
 import { decode, BencodexDict } from "bencodex";
-import { get as getConfig } from "../../config";
+import { DOWNLOAD_URI, get as getConfig } from "../../config";
 
 export function getVersionNumberFromAPV(apv: string): number {
   const [version] = apv.split("/");
@@ -30,7 +29,7 @@ export function getDownloadUrl(
     throw new NotSupportedPlatformError(platform);
   }
 
-  return `${DOWNLOAD_URL}/${env}/v${rc}/${project}/v${projectVersion}/${fn}`;
+  return `https://${DOWNLOAD_URI}/${env}/v${rc}/${project}/v${projectVersion}/${fn}`;
 }
 
 const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
@@ -42,6 +41,6 @@ const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
   openbsd: null,
   sunos: null,
   win32: "win.zip",
-  cygwin: null,
+  cygwin: "win.zip",
   netbsd: null,
 };
