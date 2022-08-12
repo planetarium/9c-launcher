@@ -108,16 +108,10 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   const extra = decode(buffer) as BencodexDict;
   console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // Stringifies the JSON for extra clarity in the log
 
-  // FIXME: project version number hard coding: 1.
   const network = getConfig("Network", "9c-main");
+  const netenv = network === "9c-main" ? "main" : network;
 
-  let netenv;
-  if (network === "9c-main") {
-    netenv = "main";
-  } else {
-    netenv = network;
-  }
-
+  // FIXME: project version number hard coding: 1.
   const launcherDownloadUrl = getDownloadUrl(
     netenv,
     peerVersionNumber,
@@ -125,6 +119,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     1,
     process.platform
   );
+  // FIXME: project version number hard coding: 1.
   const playerDownloadUrl = getDownloadUrl(
     netenv,
     peerVersionNumber,
