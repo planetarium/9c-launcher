@@ -1,1 +1,1 @@
-export const DOWNLOAD_URL = "https://download.nine-chronicles.com"
+export const DOWNLOAD_URL = "https://download.nine-chronicles.com";
