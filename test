@@ -1,2 +1,0 @@
-export PATH="$PATH:/home/circleci/.dotnet"
-export PATH="$PATH:/home/circleci/.dotnet"
