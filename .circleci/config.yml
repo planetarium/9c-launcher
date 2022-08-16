@@ -3,18 +3,6 @@ version: 2.1
 orbs:
   win: circleci/windows@4.1.1
 
-executors:
-  windows: &windows
-    machine:
-      image: windows-server-2022-gui:current
-    resource_class: windows.large
-  linux: &linux
-    machine:
-      image: ubuntu-2204:2022.04.1
-  macos: &macos
-    macos:
-      xcode: 14.0.0
-
 commands:
   checkout-update-submodules:
     parameters:
@@ -23,21 +11,38 @@ commands:
         default: ""
     steps:
       - checkout
-      - run: 
+      - run:
           command: git submodule update --init --recursive <<parameters.paths>>
           environment:
             GIT_LFS_SKIP_SMUDGE: 1
+  build-headless:
+    parameters:
+      os:
+        type: string
+        default: windows
+    steps:
+      - run: git rev-parse HEAD:NineChronicles.Headless > tree-hash
+      - restore_cache:
+          keys:
+            - headless-pub-<< parameters.os >>-{{ checksum "tree-hash" }}
+      - run:
+          command: |
+            [ -d dist/publish ] || yarn build-headless:<< parameters.os >>
+      - save_cache:
+          key: headless-pub-<< parameters.os >>-{{ checksum "tree-hash" }}
+          paths:
+            - dist/publish
   yarn-install:
     steps:
       - restore_cache:
           keys:
-            - yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
-      - run: 
+            - yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+      - run:
           command: |
             corepack enable
             yarn install --immutable
       - save_cache:
-          key: yarn3-installation-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
             - .yarn/cache
   install-dotnet:
@@ -53,127 +58,62 @@ commands:
 
 jobs:
   build:
+    docker:
+      - image: planetariumhq/9c-launcher-circleci:git-6fa331fdef32d6f124d06b6c48d07e352cc11067
+        auth:
+          username: $DOCKER_USERNAME
+          password: $DOCKER_PASSWORD
+    resource_class: large
     parameters:
       os:
-        type: executor
-    executor: << parameters.os >>
+        type: string
     steps:
-      - when:
-          condition: 
-            equal: [ *windows, << parameters.os >>]
-          steps:
-            - run:
-                command: |
-                  git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
-                  nvm install lts
-                  rm "/c/Program Files/nodejs" -rf
-                  nvm use 16.16.0
       - checkout-update-submodules:
           paths: "NineChronicles.Headless"
+      - run:
+          command: |
+            bash scripts/configure-artifact.sh << parameters.os >> 
+          name: Setup OS variables
       - yarn-install
-      - when:
-          condition:
-            equal: [ *macos, << parameters.os >>]
-          steps:
-            - run: 
-                command: |
-                  brew install --cask dotnet-sdk
-                  curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-                  sudo installer -pkg AWSCLIV2.pkg -target /
-                name: Install .NET Core, AWS
-      - when:
-          condition:
-            equal: [ *linux, << parameters.os >>]
-          steps:
-            - run: 
-                command: |
-                  wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-                  sudo dpkg -i packages-microsoft-prod.deb
-                  rm packages-microsoft-prod.deb
-                  sudo apt update
-                  sudo apt install -y dotnet-sdk-6.0
-                name: Install .NET Core
       - run:
           command: |
             dotnet clean -c Release
             dotnet nuget locals all --clear
           working_directory: NineChronicles.Headless
           name: Clean Headless
+      - run: yarn bundle-player $OS_ALIAS
+      - build-headless:
+          os: << parameters.os >>
       - run:
-          command: yarn concurrently yarn:build-headless yarn:bundle-player
-          name: Setup Software Components
-      - run: 
-          command: 'echo "::set-output name=apv::$(scripts/make-apv.sh)"'
-          name: Make APV
-      - run: 
           command: |
             mkdir pack-dist
             set -ex
             mkdir -p dist
             curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
           name: Copy config.json from the last release
-      - run: 
-          command: yarn sign-apv
-          name: Sign APV
-      - run: 
+      - run:
           command: |
             if [[ "$CIRCLE_BRANCH" == "main" ]]
             then
-              yarn release
+              yarn release:<< parameters.os >>
             else
-              yarn run pack
+              yarn run pack:<< parameters.os >>
             fi
-      - when:
-          condition: 
-            equal: [ *windows, << parameters.os >>]
-          steps:
-          - run: 
-              command: 7z a -r ../../pack-dist/Windows.zip *
-              working_directory: pack/Nine Chronicles-win32-x64/
-      - when:
-          condition:
-            equal: [ *macos, << parameters.os >>]
-          steps:
-            - run:
-                command: |
-                  chmod +x "Nine Chronicles.app/Contents/Resources/app/9c.app/Contents/MacOS/9c"
-                  tar cvfz ../../pack-dist/macOS.tar.gz *
-                working_directory: pack/Nine Chronicles-darwin-x64/
-      - when:
-          condition:
-            equal: [ *linux, << parameters.os >>]
-          steps:
-            - run: 
-                command: |
-                  chmod +x resources/app/9c
-                  tar cvfz ../../pack-dist/Linux.tar.gz *
-                working_directory: pack/Nine Chronicles-linux-x64/
+      - run:
+          command: |
+            cd pack/Nine\ Chronicles-$OS_ALIAS-x64/
+            chmod +x "$EXECUTABLE"
+            $ZIP_CMD ../../pack-dist/$ARTIFACT *
       - store_artifacts:
           path: pack-dist
           destination: dist-artifacts
-      - run: 
+      - run:
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY
             aws configure set aws_secret_access_key $AWS_SECRET_KEY
           name: Set S3
-      - when:
-          condition: 
-            equal: [ *windows, << parameters.os >>]
-          steps:
-            - run: 
-                command: aws s3 cp pack-dist/Windows.zip s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/Windows.zip
-      - when:
-          condition:
-            equal: [ *macos, << parameters.os >>]
-          steps:
-            - run: 
-                command: aws s3 cp pack-dist/macOS.tar.gz s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/macOS.tar.gz
-      - when:
-          condition:
-            equal: [ *linux, << parameters.os >>]
-          steps:
-            - run: 
-                command: aws s3 cp pack-dist/Linux.tar.gz s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/Linux.tar.gz
+      - run:
+          command: aws s3 cp "pack-dist/$ARTIFACT" "s3://9c-artifacts/9c-launcher/$CIRCLE_SHA1/$ARTIFACT"
   styles:
     docker:
       - image: cimg/node:lts
@@ -187,6 +127,9 @@ jobs:
       - run:
           command: yarn tsc --noEmit
           name: Type Check
+      - run:
+          command: yarn eslint ./src --quiet
+          name: ESLint Check
   chromatic:
     docker:
       - image: cimg/node:lts
@@ -209,7 +152,11 @@ jobs:
       name: win/default
       size: medium
     steps:
-      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links 
+      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links
+      - run:
+          name: Restart local mstsc
+          command: psexec64.exe -accepteula -nobanner -i 0 mstsc /v:localhost /w:1920 /h:1080 # FHD
+          background: true
       - checkout-update-submodules:
           paths: "NineChronicles.Headless"
       - yarn-install
@@ -223,9 +170,8 @@ jobs:
           path: __tests__/snapshots
           destination: e2e-snapshots
       - store_artifacts:
-          path: __tests__/logs
+          path: ~/AppData/Roaming/Nine Chronicles/logs
           destination: e2e-logs
-
 
 workflows:
   build:

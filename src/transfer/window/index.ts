@@ -1,7 +1,7 @@
 import { BrowserWindow, app, shell, ipcMain } from "electron";
+import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import logoImage from "./resources/logo.png";
-import isDev from "electron-is-dev";
 
 let _win: BrowserWindow | null = null;
 
@@ -10,6 +10,7 @@ const createTransferWindow = async (): Promise<BrowserWindow> => {
     width: 970,
     height: 650,
     webPreferences: {
+      contextIsolation: false,
       nodeIntegration: true,
     },
     frame: true,
@@ -17,8 +18,9 @@ const createTransferWindow = async (): Promise<BrowserWindow> => {
     autoHideMenuBar: true,
     icon: path.join(app.getAppPath(), logoImage),
   });
+  remoteEnable(_win.webContents);
 
-  if (isDev) {
+  if (process.env.NODE_ENV !== "production") {
     await _win.loadURL("http://localhost:9000/transfer.html");
     await _win.webContents.openDevTools();
   } else {

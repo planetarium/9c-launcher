@@ -136,11 +136,9 @@ export function MonsterCollectionContent({
     setIsEditing(false);
   });
 
-  if (!levels) return null;
-
   const index = isEditing ? selectedIndex : currentIndex;
-  const rewards = levels[index!]?.rewards;
-  const bonusRewards = levels[index!]?.bonusRewards;
+  const rewards = levels?.[index!]?.rewards;
+  const bonusRewards = levels?.[index!]?.bonusRewards;
   const bonusRewardMap = useMemo(
     () =>
       bonusRewards &&
@@ -148,6 +146,8 @@ export function MonsterCollectionContent({
     [levels, index]
   );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
+
+  if (!levels) return null;
 
   return (
     <>
@@ -301,13 +301,13 @@ export function MonsterCollectionContent({
               >
                 <img src={crystalImg} />
               </Item>
-              {/* <Item
+              <Item
                 key="arena"
                 amount={systemRewards[index!].arena}
                 title="Arena"
               >
                 <img src={arenaImg} />
-              </Item> */}
+              </Item>
             </ItemGroup>
           </RewardSheet>
         ) : (

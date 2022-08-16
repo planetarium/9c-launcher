@@ -1,5 +1,6 @@
 import { Button, Typography } from "@material-ui/core";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
+import * as remote from "@electron/remote";
 import React, { useCallback, useEffect } from "react";
 import { T } from "@transifex/react";
 import errorViewStyle from "./ErrorView.style";

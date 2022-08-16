@@ -18,7 +18,7 @@ module.exports = {
   ],
   webpackFinal: async (config, {configType}) => {
     const custom = rendererConfig({
-      NODE_ENV: "development",
+      NODE_ENV: process.env.NODE_ENV || "development",
       target: "renderer",
       release: false,
     });

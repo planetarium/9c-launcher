@@ -62,7 +62,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     (event: ChangeEvent<HTMLInputElement>) => {
       setActivationKey(event.target.value.trim());
     },
-    [event]
+    []
   );
 
   const { refetch: nonceRefetch } = useActivationKeyNonceQuery({
@@ -192,7 +192,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
   }, [polling, tx, status]);
 
   let child: JSX.Element;
-  // FIXME 활성화에 실패한 경우에도 polling이 풀리지 않는 문제가 있습니다.
+  // FIXME The polling does not resolve even after activation fails.
   if (loading || polling) {
     child = (
       <div>
@@ -217,7 +217,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
         />
         {errorMsg !== "" && (
           <FormHelperText>
-            {/* FIXME 예외 타입으로 구분해서 메시지 국제화 할 것 */}
+            {/* FIXME Categorize as an exception type and message i18n */}
             {errorMsg?.split("\n")?.shift()?.split(":")?.pop()?.trim()}
           </FormHelperText>
         )}

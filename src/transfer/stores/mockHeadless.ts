@@ -68,6 +68,7 @@ export default class MockedHeadlessStore implements IHeadlessStore {
         break;
       case "timeout":
         onTimeout(3, "blockHash");
+      // falls through
       default:
         onFailure(4, "blockHash");
     }

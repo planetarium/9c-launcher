@@ -7,15 +7,20 @@
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
+  "ignorePatterns": [
+    "**/generated/**"
+  ],
   "rules": {
     "jsx-a11y/alt-text": 0,
     "react/prop-types": 0,
     "no-underscore-dangle": 0,
+    "no-constant-condition": 0,
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/prefer-default-export": 0,
     "@typescript-eslint/no-inferrable-types": 0,
     "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-empty-function": 0,
     "@typescript-eslint/no-unused-vars": 0,
     "@typescript-eslint/ban-types": [
       "error",

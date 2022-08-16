@@ -6,6 +6,7 @@ const MenuItemContainer = styled("button", {
   all: "unset",
   display: "flex",
   alignItems: "center",
+  width: 160,
   padding: "10px",
   appearence: "none",
   cursor: "pointer",

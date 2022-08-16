@@ -130,7 +130,7 @@ const LoginView = observer(
       addressCopiedPopupState.open(e.currentTarget);
     };
 
-    // FIXME 키가 하나도 없을때 처리는 안해도 되지 않을지?
+    // FIXME Skip handling when you don't have any keys
     if (!accountStore.selectedAddress && accountStore.addresses.length > 0) {
       accountStore.setSelectedAddress(accountStore.addresses[0]);
     }

@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
 const TerserPlugin = require("terser-webpack-plugin");
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const child_process = require("child_process");
 
@@ -23,7 +24,7 @@ function createRenderConfig(isDev) {
   return {
     context: path.join(__dirname, "src"),
 
-    target: "electron-renderer", // any other target value makes react-hot-loader stop working
+    target: "electron-renderer",
 
     resolve: {
       extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
@@ -98,7 +99,7 @@ function createRenderConfig(isDev) {
                 [
                   "@babel/preset-env",
                   {
-                    targets: { electron: "9.0.2" },
+                    targets: { electron: "20.0.1" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -112,15 +113,15 @@ function createRenderConfig(isDev) {
                   "@babel/plugin-proposal-private-property-in-object",
                   { loose: true },
                 ],
-                "react-hot-loader/babel",
-              ],
+                isDev && "react-refresh/babel",
+              ].filter(Boolean),
               sourceMaps: isDev,
             },
           },
         },
 
         {
-          test: /\.(svg|jpg|png|ttf)$/,
+          test: /\.(svg|jpg|png|ttf|webp|gif)$/,
           exclude: /node_modules/,
           type: "asset",
         },
@@ -134,6 +135,7 @@ function createRenderConfig(isDev) {
 
       new DefinePlugin({
         GIT_HASH: JSON.stringify(gitHash),
+        "process.type": JSON.stringify("renderer"),
       }),
 
       new HtmlPlugin({
@@ -159,7 +161,9 @@ function createRenderConfig(isDev) {
         filename: "v2.html", // output HTML files
         chunks: ["v2"], // respective JS files
       }),
-    ],
+
+      isDev && new ReactRefreshWebpackPlugin()
+    ].filter(Boolean),
 
     devServer: isDev
       ? {
@@ -167,6 +171,7 @@ function createRenderConfig(isDev) {
           compress: true,
           port: 9000,
           historyApiFallback: true,
+          hot: true
         }
       : undefined,
 
@@ -251,7 +256,7 @@ function createMainConfig(isDev) {
                 [
                   "@babel/preset-env",
                   {
-                    targets: { node: "current" },
+                    targets: { node: "16.15.0" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -280,11 +285,13 @@ function createMainConfig(isDev) {
           test: /\.node$/,
           loader: "node-loader",
         },
-        {
-          test: require.resolve("@planetarium/check-free-space"),
-          loader: "@basixjs/node-rs-loader",
-        },
       ],
+    },
+
+    stats: {
+      warningsFilter: [
+        /Can't resolve '(@planetarium|\.)\/check-free-space-/ // Rust bindings tries to import everything by default
+      ]
     },
 
     plugins: [
@@ -295,6 +302,7 @@ function createMainConfig(isDev) {
       // inject this becaus the main process uses different logic for prod and dev.
       new DefinePlugin({
         ENVIRONMENT: JSON.stringify(isDev ? DEVELOPMENT : PRODUCTION), // this variable name must match the one declared in the main process file.
+        "process.type": JSON.stringify("browser"),
       }),
 
       // electron-packager needs the package.json file. the "../" is because context is set to the ./src folder
@@ -303,7 +311,7 @@ function createMainConfig(isDev) {
       }),
 
       new IgnorePlugin({
-        resourceRegExp: /^(utf\-8\-validate|bufferutil)/, // fix ws module
+        resourceRegExp: /^(utf-8-validate|bufferutil)/, // fix intended missing dependencies
       }),
     ],
 

@@ -23,7 +23,8 @@ import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppP
 import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
 import montserrat from "./styles/font";
 import { t } from "@transifex/native";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
+import { getCurrentWindow } from "@electron/remote";
 import { LocaleProvider } from "./i18n";
 import type { NodeInfo } from "../config";
 import RPCSpinner from "./components/RPCSpinner/RPCSpinner";
@@ -47,11 +48,7 @@ const history = syncHistoryWithStore(
 );
 
 _refiner("onShow", () => {
-  if (
-    remote.getCurrentWindow().isVisible() &&
-    remote.getCurrentWindow().isFocused()
-  )
-    return;
+  if (getCurrentWindow().isVisible() && getCurrentWindow().isFocused()) return;
   _refiner("addToResponse", {
     notification: true,
   });

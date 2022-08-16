@@ -25,7 +25,6 @@ export const Select: React.FC<ISelectProps> = observer(
         id="select"
         variant="outlined"
         value={value}
-        // @ts-ignore
         onChange={handleChange}
         fullWidth
         {...props}

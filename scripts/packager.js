@@ -1,4 +1,4 @@
-// NOTE: Xcode가 완전히 설치 되지 않은 관계로 동작 여부가 테스트 되지 않았습니다.
+// NOTE: This code has not been tested to work because the Xcode is not fully installed.
 
 const packager = require("electron-packager");
 const path = require("path");

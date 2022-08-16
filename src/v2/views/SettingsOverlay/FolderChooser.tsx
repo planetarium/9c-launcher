@@ -4,7 +4,7 @@ import {
   useController,
   UseControllerProps,
 } from "react-hook-form";
-import { remote } from "electron";
+import { dialog, getCurrentWindow } from "@electron/remote";
 import {
   ActionableTextBoxWrapper,
   TextBox,
@@ -22,13 +22,10 @@ export default function FolderChooser<T extends FieldValues = FieldValues>(
   const [value, setValue] = useState<string>(field.value);
 
   const onClick = async () => {
-    const { filePaths } = await remote.dialog.showOpenDialog(
-      remote.getCurrentWindow(),
-      {
-        properties: ["openDirectory"],
-        defaultPath: field.value,
-      }
-    );
+    const { filePaths } = await dialog.showOpenDialog(getCurrentWindow(), {
+      properties: ["openDirectory"],
+      defaultPath: field.value,
+    });
     if (filePaths && filePaths.length > 0) {
       field.onChange(filePaths[0]);
       field.onBlur();

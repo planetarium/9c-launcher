@@ -12,14 +12,14 @@ import { Update } from "src/main/update";
 export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,
 }) => {
-  // FIXME: DownloadSnapshotButton과 중복되는 로직을 줄일 수 있을까
+  // FIXME: Can we minimize duplicated logic with DownloadSnapshotButton?
   const [isDownload, setDownloadState] = useState(false);
   const [isExtract, setExtractState] = useState(false);
   const [isCopying, setCopyingState] = useState(false);
   const [variant, setVariant] = useState<
     "indeterminate" | "determinate" | undefined
   >("determinate");
-  // FIXME: file lock이 제대로 걸려있지 않아서 파일을 여러 번 받아서 프로그레스가 뒤로 가는 경우가 있습니다.
+  // FIXME: Some files were downloaded multiple times because of improper file lock, causing progress to go backward.
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
       setDownloadState(false);
     });
 
-    // TODO: copying progress를 받아야 합니다.
+    // TODO: we should get copying progress.
     ipcRenderer.on("update copying progress", () => {
       setCopyingState(true);
       setVariant("indeterminate");
@@ -56,8 +56,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
       setCopyingState(false);
     });
 
-    //@ts-ignore
-    // Force-update function for developers (debug purpose)
+    // @ts-expect-error -- Force-update function for developers (debug purpose)
     window.updateLauncher = (url) => {
       const extra: string = encode({
         WindowsBinaryUrl: url,
@@ -82,7 +81,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
     };
   }, []);
 
-  // FIXME: 구독 로직과 아예 분리할 수 있다면 좋을텐데.
+  // FIXME: It would be nice to seperate from subscription logic completely.
   const {
     loading,
     data,
