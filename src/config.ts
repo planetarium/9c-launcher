@@ -182,7 +182,7 @@ export const WIN_GAME_PATH = path.join(
   app.getPath("userData"),
   "player/9c.exe"
 );
-export const LINUX_GAME_PATH = "9c";
+export const LINUX_GAME_PATH = path.join(app.getPath("userData"), "player/9c");
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
 export const LOCAL_SERVER_HOST: string = LocalServerHost().host;
