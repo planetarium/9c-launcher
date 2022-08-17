@@ -96,8 +96,10 @@ const standaloneExecutablePath = path.join(
   "NineChronicles.Headless.Executable"
 );
 
-const REMOTE_CONFIG_URL =
-  "https://download.nine-chronicles.com/9c-launcher-config.json";
+const network = getConfig("Network", "9c-main");
+const netenv = network === "9c-main" ? "main" : network;
+
+const REMOTE_CONFIG_URL = `https://s3.ap-northeast-2.amazonaws.com/9c-release.planetariumhq.com/${netenv}/config.json`;
 
 let win: BrowserWindow | null = null;
 let collectionWin: BrowserWindow | null = null;
