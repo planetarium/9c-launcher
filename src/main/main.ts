@@ -137,6 +137,21 @@ const updateOptions: IUpdateOptions = {
   getWindow: () => win,
 };
 
+const EXECUTE_PATH: {
+  [k in NodeJS.Platform]: string | null;
+} = {
+  aix: null,
+  android: null,
+  darwin: MAC_GAME_PATH,
+  freebsd: null,
+  linux: LINUX_GAME_PATH,
+  openbsd: null,
+  sunos: null,
+  win32: WIN_GAME_PATH,
+  cygwin: WIN_GAME_PATH,
+  netbsd: null,
+};
+
 client
   .syncTime()
   .then((time) => {
@@ -338,13 +353,6 @@ function initializeIpc() {
       console.error("Cannot launch game while updater is running.");
       return;
     }
-
-    const EXECUTE_PATH: {
-      [k: string]: string;
-    } = {
-      darwin: MAC_GAME_PATH,
-      linux: path.join(app.getAppPath(), LINUX_GAME_PATH),
-    };
 
     const node = utils.execute(
       EXECUTE_PATH[process.platform] || WIN_GAME_PATH,
