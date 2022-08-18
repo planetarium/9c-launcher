@@ -7,9 +7,8 @@ import {
   configStore,
   get as getConfig,
   getBlockChainStorePath,
-  LINUX_GAME_PATH,
-  MAC_GAME_PATH,
   WIN_GAME_PATH,
+  EXECUTE_PATH,
   RPC_SERVER_HOST,
   RPC_SERVER_PORT,
   MIXPANEL_TOKEN,
@@ -136,21 +135,6 @@ const updateOptions: IUpdateOptions = {
   downloadStarted: quitAllProcesses,
   relaunchRequired: relaunch,
   getWindow: () => win,
-};
-
-const EXECUTE_PATH: {
-  [k in NodeJS.Platform]: string | null;
-} = {
-  aix: null,
-  android: null,
-  darwin: MAC_GAME_PATH,
-  freebsd: null,
-  linux: LINUX_GAME_PATH,
-  openbsd: null,
-  sunos: null,
-  win32: WIN_GAME_PATH,
-  cygwin: WIN_GAME_PATH,
-  netbsd: null,
 };
 
 client
