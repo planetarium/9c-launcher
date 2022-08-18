@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  DEFAULT_DOWNLOAD_BASE_URL,
   CUSTOM_SERVER,
   LOCAL_SERVER_HOST,
   LOCAL_SERVER_PORT,
@@ -96,8 +97,8 @@ const standaloneExecutablePath = path.join(
   "NineChronicles.Headless.Executable"
 );
 
-const REMOTE_CONFIG_URL =
-  "https://download.nine-chronicles.com/9c-launcher-config.json";
+const baseURL = getConfig("DownloadBaseURL") || DEFAULT_DOWNLOAD_BASE_URL;
+const REMOTE_CONFIG_URL = `${baseURL}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
 let collectionWin: BrowserWindow | null = null;
