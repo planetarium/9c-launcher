@@ -6,11 +6,7 @@ import * as utils from "../../utils";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { tmpName } from "tmp-promise";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
-import {
-  get as getConfig,
-  EXECUTE_PATH,
-  WIN_GAME_PATH,
-} from "../../config";
+import { get as getConfig, EXECUTE_PATH, WIN_GAME_PATH } from "../../config";
 import path from "path";
 import fs from "fs";
 import Headless from "../headless/headless";
@@ -82,7 +78,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
 
     if (!fs.existsSync(executePath)) {
-        await playerUpdateTemp(win, listeners);
+      await playerUpdateTemp(win, listeners);
     }
 
     return;
