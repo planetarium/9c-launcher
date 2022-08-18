@@ -2654,6 +2654,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@evilmartians/lefthook@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@evilmartians/lefthook@npm:1.1.0"
+  bin:
+    lefthook: bin/index.js
+  checksum: b5226b058bc0453a9a1e3958fa36e29926e2c32e2e986c2f22163d1368415098d8d2ed01df9d5293c74244393d7e0ba36198f5660ece7cde8bf74f63b536621f
+  conditions: (os=darwin | os=linux | os=win32) & (cpu=x64 | cpu=arm64 | cpu=ia32)
+  languageName: node
+  linkType: hard
+
 "@gar/promisify@npm:^1.1.3":
   version: 1.1.3
   resolution: "@gar/promisify@npm:1.1.3"
@@ -7608,6 +7618,7 @@ __metadata:
     "@babel/preset-react": ^7.10.1
     "@babel/preset-typescript": ^7.10.1
     "@electron/remote": ^2.0.8
+    "@evilmartians/lefthook": ^1.1.0
     "@graphql-codegen/cli": ^1.15.4
     "@graphql-codegen/typescript-graphql-request": ^4.5.3
     "@graphql-codegen/typescript-operations": ^2.5.3
