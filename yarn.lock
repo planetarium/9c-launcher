@@ -7620,6 +7620,7 @@ __metadata:
     "@electron/remote": ^2.0.8
     "@evilmartians/lefthook": ^1.1.0
     "@graphql-codegen/cli": ^1.15.4
+    "@graphql-codegen/typescript": ^2.7.3
     "@graphql-codegen/typescript-graphql-request": ^4.5.3
     "@graphql-codegen/typescript-operations": ^2.5.3
     "@graphql-codegen/typescript-react-apollo": ^3.3.3
