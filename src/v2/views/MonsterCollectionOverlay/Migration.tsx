@@ -1,5 +1,4 @@
 import React, { useMemo, useReducer } from "react";
-import { noop } from "lodash";
 import { LegacyCollectionStateQuery } from "src/v2/generated/graphql";
 import { MigrationAlert, MigrationAlertItem } from "./dialog";
 import ncgIcon from "src/v2/resources/collection/items/ncg.png";
@@ -88,7 +87,7 @@ export default function Migration({
       <ClaimCollectionRewardsOverlay
         tip={tip}
         isOpen={isOpen}
-        onClose={noop}
+        onClose={() => {}}
         onConfirm={(avatar) => {
           tx(avatar.address.replace("0x", ""))
             .then((v) => v.data?.stageTxV2)
