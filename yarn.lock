@@ -5199,7 +5199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/builder-webpack5@npm:^6.5.10":
+"@storybook/builder-webpack5@npm:^6.4.19":
   version: 6.5.10
   resolution: "@storybook/builder-webpack5@npm:6.5.10"
   dependencies:
@@ -5855,7 +5855,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/manager-webpack5@npm:^6.5.10":
+"@storybook/manager-webpack5@npm:^6.4.19":
   version: 6.5.10
   resolution: "@storybook/manager-webpack5@npm:6.5.10"
   dependencies:
@@ -7718,8 +7718,8 @@ __metadata:
     "@storybook/addon-actions": ^6.4.19
     "@storybook/addon-essentials": ^6.4.19
     "@storybook/addon-links": ^6.4.19
-    "@storybook/builder-webpack5": ^6.5.10
-    "@storybook/manager-webpack5": ^6.5.10
+    "@storybook/builder-webpack5": ^6.4.19
+    "@storybook/manager-webpack5": ^6.4.19
     "@storybook/preset-scss": ^1.0.3
     "@storybook/react": ^6.4.19
     "@transifex/cli": ^3.0.0
