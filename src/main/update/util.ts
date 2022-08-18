@@ -1,6 +1,6 @@
 import { NotSupportedPlatformError } from "../exceptions/not-supported-platform";
 import { decode, BencodexDict } from "bencodex";
-import { DOWNLOAD_URI, get as getConfig } from "../../config";
+import { DEFAULT_DOWNLOAD_BASE_URL, get as getConfig } from "../../config";
 
 export function getVersionNumberFromAPV(apv: string): number {
   const [version] = apv.split("/");
@@ -29,7 +29,9 @@ export function getDownloadUrl(
     throw new NotSupportedPlatformError(platform);
   }
 
-  return `https://${DOWNLOAD_URI}/${env}/v${rc}/${project}/v${projectVersion}/${fn}`;
+  const baseURL = getConfig("DownloadBaseURL") || DEFAULT_DOWNLOAD_BASE_URL;
+
+  return `${baseURL}/${env}/v${rc}/${project}/v${projectVersion}/${fn}`;
 }
 
 const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
