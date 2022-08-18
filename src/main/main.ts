@@ -99,7 +99,7 @@ const standaloneExecutablePath = path.join(
 const network = getConfig("Network", "9c-main");
 const netenv = network === "9c-main" ? "main" : network;
 
-const REMOTE_CONFIG_URL = `https://s3.ap-northeast-2.amazonaws.com/9c-release.planetariumhq.com/${netenv}/config.json`;
+const REMOTE_CONFIG_URL = `http://9c-release.planetariumhq.com.s3-website.ap-northeast-2.amazonaws.com/${netenv}/config.json`;
 
 let win: BrowserWindow | null = null;
 let collectionWin: BrowserWindow | null = null;
