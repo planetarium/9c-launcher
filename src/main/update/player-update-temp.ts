@@ -7,12 +7,8 @@ import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
 import { get as getConfig } from "../../config";
-import {
-  getDownloadUrl,
-  getVersionNumberFromAPV,
-} from "./util";
+import { getDownloadUrl, getVersionNumberFromAPV } from "./util";
 import lockfile from "lockfile";
-
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -21,7 +17,6 @@ export interface IUpdateOptions {
   relaunchRequired(): void;
   getWindow(): Electron.BrowserWindow | null;
 }
-
 
 const playerTempPath = path.join(app.getPath("temp"), "player");
 const extractPath = path.join(app.getPath("userData"), "player");
@@ -48,8 +43,9 @@ export async function playerUpdateTemp(
     throw e;
   }
 
-
-  const localVersionNumber: number = getVersionNumberFromAPV(getConfig("AppProtocolVersion"));
+  const localVersionNumber: number = getVersionNumberFromAPV(
+    getConfig("AppProtocolVersion")
+  );
 
   if (win === null) {
     console.log("Stop update process because win is null.");
