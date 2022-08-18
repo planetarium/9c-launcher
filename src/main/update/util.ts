@@ -29,7 +29,7 @@ export function getDownloadUrl(
     throw new NotSupportedPlatformError(platform);
   }
 
-  return `https://${DOWNLOAD_URI}/${env}/v${rc}/${project}/v${projectVersion}/${fn}`;
+  return `http://${DOWNLOAD_URI}/${env}/v${rc}/${project}/v${projectVersion}/${fn}`;
 }
 
 const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
