@@ -6,8 +6,8 @@ import path from "path";
 import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
-import { get as getConfig } from "../../config";
-import { getDownloadUrl, getVersionNumberFromAPV } from "./util";
+import { getDownloadUrl } from "./util";
+import { playerPath, apvVersionNumber, netenv } from "../../config";
 import lockfile from "lockfile";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
@@ -17,9 +17,6 @@ export interface IUpdateOptions {
   relaunchRequired(): void;
   getWindow(): Electron.BrowserWindow | null;
 }
-
-const playerTempPath = path.join(app.getPath("temp"), "player");
-const extractPath = path.join(app.getPath("userData"), "player");
 
 export async function playerUpdateTemp(
   win: Electron.BrowserWindow | null,
@@ -43,9 +40,7 @@ export async function playerUpdateTemp(
     throw e;
   }
 
-  const localVersionNumber: number = getVersionNumberFromAPV(
-    getConfig("AppProtocolVersion")
-  );
+  const localVersionNumber: number = apvVersionNumber;
 
   if (win === null) {
     console.log("Stop update process because win is null.");
@@ -53,9 +48,6 @@ export async function playerUpdateTemp(
   }
 
   await listeners.downloadStarted();
-
-  const network = getConfig("Network", "9c-main");
-  const netenv = network === "9c-main" ? "main" : network;
 
   // FIXME: project version number hard coding: 1.
   const downloadUrl = getDownloadUrl(
@@ -80,7 +72,7 @@ export async function playerUpdateTemp(
       );
       win?.webContents.send("update download progress", status);
     },
-    directory: playerTempPath,
+    directory: app.getPath("temp"),
   };
   console.log("[player] Starts to download:", downloadUrl);
   let dl: DownloadItem | null | undefined;
@@ -96,26 +88,26 @@ export async function playerUpdateTemp(
   const dlPath = dl?.getSavePath();
   console.log("[player] Finished to download:", dlPath);
 
-  if (fs.existsSync(extractPath)) {
-    fs.rmdirSync(extractPath, { recursive: true });
+  if (fs.existsSync(playerPath)) {
+    fs.rmdirSync(playerPath, { recursive: true });
   } else {
-    fs.mkdirSync(extractPath);
+    fs.mkdirSync(playerPath);
   }
 
   console.log("[player] Clean up exists player");
 
-  console.log("[player] The 9C player installation path:", extractPath);
+  console.log("[player] The 9C player installation path:", playerPath);
   if (process.platform == "win32") {
     // Unzip ZIP
     console.log(
       "[player] Start to extract the zip archive",
       dlPath,
       "to",
-      extractPath
+      playerPath
     );
 
     await extractZip(dlPath, {
-      dir: extractPath,
+      dir: playerPath,
       onEntry: (_, zipfile) => {
         const progress = zipfile.entriesRead / zipfile.entryCount;
         win?.webContents.send("update extract progress", progress);
@@ -130,24 +122,19 @@ export async function playerUpdateTemp(
       "[player] Start to extract the tarball archive",
       dlPath,
       "to",
-      extractPath
+      playerPath
     );
     try {
       await spawnPromise(
         "tar",
-        [`xvf${bz2 ? "j" : "z"}`, dlPath, "-C", extractPath],
+        [`xvf${bz2 ? "j" : "z"}`, dlPath, "-C", playerPath],
         { capture: ["stdout", "stderr"] }
       );
     } catch (e) {
       console.error(`${e}:\n`, e.stderr);
       throw e;
     }
-    console.log(
-      "The tarball archive",
-      dlPath,
-      "has extracted to ",
-      extractPath
-    );
+    console.log("The tarball archive", dlPath, "has extracted to ", playerPath);
   } else {
     console.warn("[player] Not supported platform.");
     return;
