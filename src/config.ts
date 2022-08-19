@@ -3,6 +3,7 @@ import path from "path";
 import { IConfig } from "./interfaces/config";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "./generated/graphql-request";
+import { getVersionNumberFromAPV } from "./utils";
 
 export const { app } =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -17,9 +18,16 @@ export const configStore = new Store<IConfig>({
 });
 
 const network = configStore.get("Network");
+// Removed 9c prefix
+export const netenv = network === "9c-main" ? "main" : network;
 export const userConfigStore = new Store<IConfig>({
   name: network === "9c-main" ? "config" : `config.${network}`,
 });
+
+export const apvVersionNumber = getVersionNumberFromAPV(
+  get("AppProtocolVersion")
+);
+export const playerPath = `${app.getPath("userData")}/player/${netenv}`;
 
 const LocalServerUrl = (): string => {
   return `${LocalServerHost().host}:${LocalServerPort().port}`;
@@ -177,12 +185,9 @@ export function getBlockChainStorePath(): string {
 
 export const REQUIRED_DISK_SPACE = 20n * 1000n * 1000n * 1000n;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
-export const MAC_GAME_PATH = path.join(app.getPath("userData"), "player/9c");
-export const WIN_GAME_PATH = path.join(
-  app.getPath("userData"),
-  "player/9c.exe"
-);
-export const LINUX_GAME_PATH = path.join(app.getPath("userData"), "player/9c");
+export const MAC_GAME_PATH = path.join(playerPath, "9c");
+export const WIN_GAME_PATH = path.join(playerPath, "9c.exe");
+export const LINUX_GAME_PATH = path.join(playerPath, "9c");
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
 export const LOCAL_SERVER_HOST: string = LocalServerHost().host;
