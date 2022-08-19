@@ -59,5 +59,9 @@ export function cleanupOldPlayer() {
       : OLD_WIN_GAME_PATH
   );
 
-  fs.unlinkSync(oldPlayerPath);
+  try {
+    fs.unlinkSync(oldPlayerPath)
+  } catch(e) {
+    console.error("Player not found", e);
+  }
 }
