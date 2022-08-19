@@ -140,6 +140,8 @@ export async function playerUpdateTemp(
     return;
   }
 
+  await fs.promises.unlink(dlPath);
+
   win.webContents.send("update copying progress");
   win.webContents.send("update copying complete");
 
