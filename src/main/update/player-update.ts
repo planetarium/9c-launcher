@@ -92,4 +92,6 @@ export async function playerUpdate(
     console.warn("[player] Not supported platform.");
     return;
   }
+
+  await fs.promises.unlink(dlPath);
 }
