@@ -44,7 +44,7 @@ export async function playerUpdate(
   if (fs.existsSync(playerPath)) {
     fs.rmdirSync(playerPath, { recursive: true });
   } else {
-    fs.mkdirSync(playerPath);
+    fs.mkdirSync(playerPath, { recursive: true });
   }
 
   console.log("[player] Clean up exists player");
