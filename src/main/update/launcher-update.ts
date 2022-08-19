@@ -6,7 +6,13 @@ import * as utils from "../../utils";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { tmpName } from "tmp-promise";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
-import { get as getConfig, EXECUTE_PATH, WIN_GAME_PATH } from "../../config";
+import {
+  get as getConfig,
+  apvVersionNumber,
+  netenv,
+  EXECUTE_PATH,
+  WIN_GAME_PATH,
+} from "../../config";
 import path from "path";
 import fs from "fs";
 import Headless from "../headless/headless";
@@ -14,11 +20,7 @@ import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
 import { playerUpdate } from "./player-update";
 import { playerUpdateTemp } from "./player-update-temp";
-import {
-  getDownloadUrl,
-  getVersionNumberFromAPV,
-  decodeLocalAPV,
-} from "./util";
+import { getDownloadUrl, decodeLocalAPV } from "./util";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -67,8 +69,7 @@ export interface IUpdateOptions {
 }
 
 export async function update(update: Update, listeners: IUpdateOptions) {
-  const localVersionNumber: number =
-    update.current ?? getVersionNumberFromAPV(getConfig("AppProtocolVersion"));
+  const localVersionNumber: number = update.current ?? apvVersionNumber;
   const peerVersionNumber: number = update.newer;
   const peerVersionExtra: string = update.extras;
 
@@ -114,9 +115,6 @@ export async function update(update: Update, listeners: IUpdateOptions) {
   console.log("peerVersionExtra (bytes):", buffer);
   const extra = decode(buffer) as BencodexDict;
   console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // Stringifies the JSON for extra clarity in the log
-
-  const network = getConfig("Network", "9c-main");
-  const netenv = network === "9c-main" ? "main" : network;
 
   // FIXME: project version number hard coding: 1.
   const launcherDownloadUrl = getDownloadUrl(
