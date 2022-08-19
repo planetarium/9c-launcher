@@ -6,7 +6,7 @@ import path from "path";
 import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
-import { getDownloadUrl } from "./util";
+import { getDownloadUrl, cleanupOldPlayer } from "./util";
 import { playerPath, apvVersionNumber, netenv } from "../../config";
 import lockfile from "lockfile";
 
@@ -59,6 +59,8 @@ export async function playerUpdateTemp(
   );
 
   win.webContents.send("update download started");
+
+  cleanupOldPlayer();
 
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {
