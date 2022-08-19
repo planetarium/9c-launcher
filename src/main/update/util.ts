@@ -2,11 +2,6 @@ import { NotSupportedPlatformError } from "../exceptions/not-supported-platform"
 import { decode, BencodexDict } from "bencodex";
 import { DEFAULT_DOWNLOAD_BASE_URL, get as getConfig } from "../../config";
 
-export function getVersionNumberFromAPV(apv: string): number {
-  const [version] = apv.split("/");
-  return parseInt(version, 10);
-}
-
 export function decodeLocalAPV(): BencodexDict | undefined {
   const localApvToken = getConfig("AppProtocolVersion");
   const extra = Buffer.from(localApvToken.split("/")[1], "hex");
