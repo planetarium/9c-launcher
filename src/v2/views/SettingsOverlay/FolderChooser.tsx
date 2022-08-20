@@ -11,9 +11,8 @@ import {
 } from "src/v2/components/ui/ActionableTextBox";
 import { FolderOpen } from "@material-ui/icons";
 
-type FolderChooserProps<
-  T extends FieldValues = FieldValues
-> = UseControllerProps<T>;
+type FolderChooserProps<T extends FieldValues = FieldValues> =
+  UseControllerProps<T>;
 
 export default function FolderChooser<T extends FieldValues = FieldValues>(
   props: FolderChooserProps<T>

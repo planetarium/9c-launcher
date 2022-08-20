@@ -43,14 +43,12 @@ const transifexTags = "lobby";
 const LobbyView = observer((props: ILobbyViewProps) => {
   const classes = lobbyViewStyle();
   const { accountStore, standaloneStore } = props;
-  const [
-    activation,
-    { loading, data: status, refetch: activationRefetch },
-  ] = useActivationAddressLazyQuery({
-    variables: {
-      address: accountStore.selectedAddress,
-    },
-  });
+  const [activation, { loading, data: status, refetch: activationRefetch }] =
+    useActivationAddressLazyQuery({
+      variables: {
+        address: accountStore.selectedAddress,
+      },
+    });
   const [activationKey, setActivationKey] = useState(
     accountStore.activationKey
   );

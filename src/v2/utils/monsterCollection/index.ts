@@ -21,19 +21,16 @@ export function useMonsterCollection() {
     skip: !account.isLogin,
   };
 
-  const { data: collectionStatusQuery } = useCollectionStatusQueryQuery(
-    commonQuery
-  );
-  const { data: collectionStatus } = useCollectionStatusByAgentSubscription(
-    commonQuery
-  );
+  const { data: collectionStatusQuery } =
+    useCollectionStatusQueryQuery(commonQuery);
+  const { data: collectionStatus } =
+    useCollectionStatusByAgentSubscription(commonQuery);
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
     variables: { agentAddress: account.selectedAddress },
     skip: !account.isLogin,
   });
-  const { data: collectionState } = useCollectionStateByAgentSubscription(
-    commonQuery
-  );
+  const { data: collectionState } =
+    useCollectionStateByAgentSubscription(commonQuery);
 
   const level =
     collectionState?.monsterCollectionStateByAgent?.level ??

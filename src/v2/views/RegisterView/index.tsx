@@ -40,13 +40,8 @@ function RegisterView() {
 
     trackEvent("Launcher/CreatePrivateKey");
     ipcRenderer.sendSync("import-private-key", key.privateKey, password);
-    const [privateKey, error]:
-      | [string, undefined]
-      | [undefined, Error] = ipcRenderer.sendSync(
-      "unprotect-private-key",
-      key.address,
-      password
-    );
+    const [privateKey, error]: [string, undefined] | [undefined, Error] =
+      ipcRenderer.sendSync("unprotect-private-key", key.address, password);
     if (error !== undefined) {
       setError(error);
       return;

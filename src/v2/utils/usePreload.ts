@@ -61,12 +61,10 @@ export function usePreload() {
   const [state, send] = useActor(preloadService);
   const standalone = useStore("standalone");
 
-  const {
-    data: preloadProgressSubscriptionResult,
-  } = usePreloadProgressSubscriptionSubscription();
-  const {
-    data: nodeStatusSubscriptionResult,
-  } = useNodeStatusSubscriptionSubscription();
+  const { data: preloadProgressSubscriptionResult } =
+    usePreloadProgressSubscriptionSubscription();
+  const { data: nodeStatusSubscriptionResult } =
+    useNodeStatusSubscriptionSubscription();
 
   const preloadProgress = preloadProgressSubscriptionResult?.preloadProgress;
 

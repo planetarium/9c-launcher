@@ -42,10 +42,10 @@ function MissingActivationView() {
     history.push("/lobby?first");
   };
 
-  useEffect(() => void (activated && history.push("/lobby")), [
-    activated,
-    history,
-  ]);
+  useEffect(
+    () => void (activated && history.push("/lobby")),
+    [activated, history]
+  );
 
   return (
     <Layout sidebar css={SidebarStyles}>

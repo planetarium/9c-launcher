@@ -26,24 +26,20 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     variables: { address: account.selectedAddress },
     skip: !account.isLogin,
   });
-  const {
-    data: collection,
-    refetch: refetchCollection,
-  } = useLegacyCollectionStateQuery({
-    variables: { address: account.selectedAddress },
-    skip: !account.isLogin,
-  });
+  const { data: collection, refetch: refetchCollection } =
+    useLegacyCollectionStateQuery({
+      variables: { address: account.selectedAddress },
+      skip: !account.isLogin,
+    });
   const balance = useBalance();
   const tip = useTip();
 
   const tx = useTx("stake", placeholder);
   const [isLoading, setLoading] = useState(false);
-  const [
-    fetchStatus,
-    { data: txStatus, stopPolling },
-  ] = useTransactionResultLazyQuery({
-    pollInterval: 1000,
-  });
+  const [fetchStatus, { data: txStatus, stopPolling }] =
+    useTransactionResultLazyQuery({
+      pollInterval: 1000,
+    });
 
   useEffect(() => {
     if (!txStatus) return;
