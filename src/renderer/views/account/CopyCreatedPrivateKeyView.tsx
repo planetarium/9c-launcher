@@ -14,8 +14,8 @@ interface ICopyCreatedPrivateKeyProps {
 
 const transifexTags = "copyPrivateKey";
 
-const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observer(
-  ({ accountStore, routerStore }) => {
+const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> =
+  observer(({ accountStore, routerStore }) => {
     const classes = createAccountViewStyle();
 
     return (
@@ -87,7 +87,6 @@ const CopyCreatedPrivateKeyView: React.FC<ICopyCreatedPrivateKeyProps> = observe
         </Button>
       </div>
     );
-  }
-);
+  });
 
 export default inject("accountStore", "routerStore")(CopyCreatedPrivateKeyView);

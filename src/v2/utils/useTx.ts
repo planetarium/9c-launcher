@@ -20,11 +20,11 @@ import { useStore } from "./useStore";
  */
 export const placeholder = Symbol("v2 useTx placeholder");
 
-type PartialTuple<T extends any[]> = T extends [infer A, ...(infer B)]
+type PartialTuple<T extends any[]> = T extends [infer A, ...infer B]
   ? [A | undefined | typeof placeholder, ...PartialTuple<B>]
   : [];
 
-type CutLast<T extends any[]> = T extends [...(infer A), infer _] ? A : T;
+type CutLast<T extends any[]> = T extends [...infer A, infer _] ? A : T;
 
 type ActionArguemnts = {
   "activate-account": CutLast<Parameters<Action["ActivateAccount"]>>;
@@ -42,16 +42,14 @@ type ActionArguemnts = {
 
 type Result = ReturnType<ReturnType<typeof useStageTxV2Mutation>[0]>;
 
-type Replacers<
-  Original extends any[],
-  Provided extends any[]
-> = Provided extends [infer ProvidedValue, ...(infer ProvidedRest)]
-  ? Original extends [infer OriginalValue, ...(infer OriginalRest)]
-    ? ProvidedValue extends typeof placeholder
-      ? [OriginalValue, ...Replacers<OriginalRest, ProvidedRest>]
-      : [...Replacers<OriginalRest, ProvidedRest>]
-    : []
-  : [];
+type Replacers<Original extends any[], Provided extends any[]> =
+  Provided extends [infer ProvidedValue, ...infer ProvidedRest]
+    ? Original extends [infer OriginalValue, ...infer OriginalRest]
+      ? ProvidedValue extends typeof placeholder
+        ? [OriginalValue, ...Replacers<OriginalRest, ProvidedRest>]
+        : [...Replacers<OriginalRest, ProvidedRest>]
+      : []
+    : [];
 
 /**
  * A helper hook that creates and stages a transaction.
@@ -92,7 +90,11 @@ export function useTx<K extends keyof ActionArguemnts>(
         const { data, error } = await refetch();
         if (error) throw error;
         const nonce = data.transaction.nextTxNonce;
-        const { status, stdout: encodedTx, stderr } = ipcRenderer.sendSync(
+        const {
+          status,
+          stdout: encodedTx,
+          stderr,
+        } = ipcRenderer.sendSync(
           "sign-tx",
           nonce,
           new Date().toISOString(),

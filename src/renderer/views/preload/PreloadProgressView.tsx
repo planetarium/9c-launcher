@@ -17,15 +17,12 @@ import preloadProgressViewStyle from "./PreloadProgressView.style";
 const PreloadProgressView = observer(() => {
   const { routerStore, standaloneStore } = useStores();
   const classes = preloadProgressViewStyle();
-  const {
-    data: preloadProgressSubscriptionResult,
-  } = usePreloadProgressSubscriptionSubscription();
-  const {
-    data: nodeStatusSubscriptionResult,
-  } = useNodeStatusSubscriptionSubscription();
-  const {
-    data: nodeExceptionSubscriptionResult,
-  } = useNodeExceptionSubscription();
+  const { data: preloadProgressSubscriptionResult } =
+    usePreloadProgressSubscriptionSubscription();
+  const { data: nodeStatusSubscriptionResult } =
+    useNodeStatusSubscriptionSubscription();
+  const { data: nodeExceptionSubscriptionResult } =
+    useNodeExceptionSubscription();
   const preloadProgress = preloadProgressSubscriptionResult?.preloadProgress;
 
   const [preloadEnded, setPreloadEnded] = useState(false);
@@ -201,11 +198,10 @@ const PreloadProgressView = observer(() => {
     }
   }, [preloadEnded]);
 
-  useEffect(() => setProgressMessage(makeProgressMessage()), [
-    preloadEnded,
-    currentStep,
-    progress,
-  ]);
+  useEffect(
+    () => setProgressMessage(makeProgressMessage()),
+    [preloadEnded, currentStep, progress]
+  );
 
   const message =
     exceptionMessage === null ? progressMessage : exceptionMessage;

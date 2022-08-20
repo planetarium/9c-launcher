@@ -10,9 +10,9 @@ export default {
   parameters: { actions: { argTypesRegex: "^on.*" } },
 } as Meta;
 
-const Template: Story<React.PropsWithChildren<
-  Stitches.VariantProps<typeof Button>
->> = (args) => <Button {...args} />;
+const Template: Story<
+  React.PropsWithChildren<Stitches.VariantProps<typeof Button>>
+> = (args) => <Button {...args} />;
 
 export const Primary = Template.bind({});
 Primary.args = {

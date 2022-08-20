@@ -16,9 +16,10 @@ function LobbyView() {
   const { isDone } = usePreload();
   const { loading, activated } = useActivation(account.activationKey);
   const history = useHistory();
-  const onboardingRequired = useMemo(() => isFirst(history.location.search), [
-    history.location,
-  ]);
+  const onboardingRequired = useMemo(
+    () => isFirst(history.location.search),
+    [history.location]
+  );
   const [showOnboarding, setShowOnboarding] = useState(true);
 
   useEffect(() => {

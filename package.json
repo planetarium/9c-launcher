@@ -55,7 +55,8 @@
     "test": "mocha -r ts-node/register -r tsconfig-paths/register __tests__/**/*.spec.ts --exit",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "update-translations": "txjs-cli push src --key-generator=hash"
+    "update-translations": "txjs-cli push src --key-generator=hash",
+    "download-config": "curl -L https://download.nine-chronicles.com/9c-launcher-config.json -o resources/app/config.json"
   },
   "dependencies": {
     "@apollo/client": "^3.3.21",
@@ -149,6 +150,7 @@
     "@babel/preset-env": "^7.10.3",
     "@babel/preset-react": "^7.10.1",
     "@babel/preset-typescript": "^7.10.1",
+    "@evilmartians/lefthook": "^1.0.5",
     "@graphql-codegen/cli": "^1.15.4",
     "@graphql-codegen/typescript": "^1.15.4",
     "@graphql-codegen/typescript-graphql-request": "^3.2.5",
@@ -214,7 +216,6 @@
     "eslint-plugin-react": "^7.20.0",
     "html-webpack-externals-plugin": "^3.8.0",
     "html-webpack-plugin": "^5.3.2",
-    "husky": "^4.2.5",
     "jscodeshift": "^0.12.0",
     "mini-css-extract-plugin": "^1.6.1",
     "mocha": "^8.1.1",
