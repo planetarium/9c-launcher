@@ -248,7 +248,9 @@ const GameStartButton = observer((props: ILobbyViewProps) => {
   const [shouldAutostart, setShouldAutostart] = useState(get("LaunchPlayer"));
   const classes = lobbyViewStyle();
   const handleStartGame = () => {
-    ipcRenderer.send("mixpanel-track-event", "Launcher/Unity Player Start");
+    ipcRenderer.send("mixpanel-track-event", "Launcher/Unity Player Start", {
+      "address": accountStore.selectedAddress,
+    });
     gameStore.startGame(accountStore.privateKey);
     props.onLaunch();
   };
