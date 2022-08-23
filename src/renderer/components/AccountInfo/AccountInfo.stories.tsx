@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react";
 
 import AccountInfoContainer, { Props } from "./AccountInfoContainer";
 import { Provider } from "mobx-react";
-import AccountStore from "../../stores/account";
+import AccountStore from "src/stores/account";
 import {
   CollectionSheetDocument,
   CollectionStatusDocument,

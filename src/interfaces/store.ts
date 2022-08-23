@@ -1,7 +1,7 @@
-import AccountStore from "../renderer/stores/account";
+import AccountStore from "../stores/account";
 import { RouterStore } from "mobx-react-router";
-import GameStore from "../renderer/stores/game";
-import StandaloneStore from "../renderer/stores/standaloneStore";
+import GameStore from "src/stores/game";
+import StandaloneStore from "src/stores/standaloneStore";
 
 export interface IStoreContainer {
   accountStore: AccountStore;

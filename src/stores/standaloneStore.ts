@@ -1,5 +1,5 @@
 import { observable, action } from "mobx";
-import { get } from "../../config";
+import { get } from "src/config";
 
 export default class StandaloneStore {
   @observable

@@ -4,7 +4,7 @@ import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React from "react";
 import { T } from "../../i18n";
-import AccountStore from "../../stores/account";
+import AccountStore from "src/stores/account";
 import createAccountViewStyle from "./CopyCreatedPrivateKeyView.style";
 
 interface ICopyCreatedPrivateKeyProps {
