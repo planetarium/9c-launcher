@@ -3,6 +3,8 @@
 [![Planetarium-Dev Discord Invite](https://img.shields.io/discord/928926944937013338?color=6278DA&label=Planetarium-dev&logo=discord&logoColor=white)](https://discord.gg/RYJDyFRYY7)
 ## Overview
 
+[WE HAVE WIKI WORKING IN PROGRESS!](https://github.com/planetarium/9c-launcher/wiki)
+
 This is an electron based multi-platform launcher to run Nine Chronicles.
 The basic structure is as follows:
 
@@ -52,6 +54,7 @@ Place the two binaries in the exact path as visualized below:
 After, run the following command.
 
 ```sh
+yarn codegen
 yarn dev
 ```
 
