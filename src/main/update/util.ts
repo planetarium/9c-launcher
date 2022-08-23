@@ -37,7 +37,7 @@ const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
   android: null,
   darwin: "mac.tar.gz",
   freebsd: null,
-  linux: null,
+  linux: "linux.tar.gz",
   openbsd: null,
   sunos: null,
   win32: "win.zip",
