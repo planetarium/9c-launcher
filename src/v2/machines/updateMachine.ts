@@ -27,6 +27,7 @@ type UpdateMachineState =
 const playerUpdate = {
   key: "playerUpdate",
   context: { progress: 0 },
+  initial: "download",
   states: {
     download: {
       entry: "resetProgress",
@@ -73,6 +74,7 @@ const playerUpdate = {
 const launcherUpdate = {
   key: "launcherUpdate",
   context: { progress: 0 },
+  initial: "download",
   states: {
     download: {
       entry: "resetProgress",
@@ -123,10 +125,21 @@ export default createMachine<MachineContext, MachineEvent, UpdateMachineState>({
     ok: {
       invoke: [
         {
+          id: "playerDownload",
           src: () =>
-            invokeIpcEvent<MachineEvent>("update copy complete", "DONE"),
+            invokeIpcEvent<MachineEvent>(
+              "update player download started",
+              "PLAYER_DOWNLOAD"
+            ),
         },
-        { src: () => invokeIpcEvent<MachineEvent>("copy complete", "DONE") },
+        {
+          id: "launcherDownload",
+          src: () =>
+            invokeIpcEvent<MachineEvent>(
+              "update download started",
+              "LAUNCHER_DOWNLOAD"
+            ),
+        },
       ],
       on: {
         PLAYER_DOWNLOAD: {
