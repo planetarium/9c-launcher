@@ -32,11 +32,25 @@ const FixedStatusBar = styled(StatusBar, {
 });
 
 function getMessage(state: StateFrom<typeof machine>): string {
-  switch (state.value) {
+  switch (state.value.launcherUpdate) {
     case "download":
-      return t("Downloading the new version...", { _tags: transifexTags });
+      return t("Downloading the new version launcher...", {
+        _tags: transifexTags,
+      });
     case "extract":
-      return t("Extracting the new version...", { _tags: transifexTags });
+      return t("Extracting the new version launcher...", {
+        _tags: transifexTags,
+      });
+  }
+  switch (state.value.playerUpdate) {
+    case "download":
+      return t("Downloading the new version player...", {
+        _tags: transifexTags,
+      });
+    case "extract":
+      return t("Extracting the new version player...", {
+        _tags: transifexTags,
+      });
     case "copy":
       return t("Copying files...", { _tags: transifexTags });
   }
