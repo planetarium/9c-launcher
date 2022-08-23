@@ -214,31 +214,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 onClick={handleOpenKeyStorePath}
                 text={t("Open keystore Folder")}
               />
-              <AdvancedAction
-                link
-                onClick={handleOpenKeyStorePath}
-                text={t("Open keystore Folder")}
-              />
-              <AdvancedAction
-                link
-                onClick={handleOpenKeyStorePath}
-                text={t("Open keystore Folder")}
-              />
-              <AdvancedAction
-                link
-                onClick={handleOpenKeyStorePath}
-                text={t("Open keystore Folder")}
-              />
-              <AdvancedAction
-                link
-                onClick={handleOpenKeyStorePath}
-                text={t("Open keystore Folder")}
-              />
-              <AdvancedAction
-                link
-                onClick={handleOpenKeyStorePath}
-                text={t("Open keystore Folder")}
-              />
             </FormSection>
             <FormSection>
               <GroupTitle>
