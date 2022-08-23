@@ -4,7 +4,8 @@ import { invokeIpcEvent } from "../utils/ipcEvent";
 
 type MachineEvent =
   | { type: "UPDATE_PROGRESS"; progress: number }
-  | { type: "DOWNLOAD" }
+  | { type: "PLAYER_DOWNLOAD" }
+  | { type: "LAUNCHER_DOWNLOAD" }
   | { type: "EXTRACT" }
   | { type: "COPY" }
   | { type: "DONE" };
@@ -23,76 +24,121 @@ type UpdateMachineState =
       context: {};
     };
 
-export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
-  {
-    initial: "ok",
-    context: {
-      progress: 0,
+const playerUpdate = {
+  key: "playerUpdate",
+  context: { progress: 0 },
+  states: {
+    download: {
+      entry: "resetProgress",
+      on: {
+        EXTRACT: { target: "extract" },
+        UPDATE_PROGRESS: { actions: "updateProgress" },
+      },
+      invoke: {
+        id: "extract",
+        src: () =>
+          invokeIpcEvent<MachineEvent>(
+            "update player download complete",
+            "EXTRACT"
+          ),
+      },
     },
-    states: {
-      ok: {
-        on: {
-          DOWNLOAD: { target: "download" },
-        },
-        invoke: [
-          {
-            id: "download",
-            src: () =>
-              invokeIpcEvent<MachineEvent>(
-                "update download started",
-                "DOWNLOAD"
-              ),
-          },
-          {
-            id: "triggerUpdate",
-            src: () => ipcRenderer.invoke("start update"),
-          },
-        ],
-      },
-      download: {
-        entry: "resetProgress",
-        on: {
-          EXTRACT: { target: "extract" },
-          UPDATE_PROGRESS: { actions: "updateProgress" },
-        },
-        invoke: {
-          id: "extract",
-          src: () =>
-            invokeIpcEvent<MachineEvent>("update download complete", "EXTRACT"),
-        },
-      },
-      extract: {
-        entry: "resetProgress",
-        on: {
-          COPY: { target: "copy" },
-          UPDATE_PROGRESS: { actions: "updateProgress" },
-        },
-        invoke: {
-          id: "extract",
-          src: () =>
-            invokeIpcEvent<MachineEvent>("update extract complete", "COPY"),
-        },
-      },
-      copy: {
-        entry: "resetProgress",
-        on: {
-          DONE: { target: "ok" },
-        },
-        invoke: {
-          id: "extract",
-          src: () =>
-            invokeIpcEvent<MachineEvent>("update copy complete", "DONE"),
-        },
+    extract: {
+      entry: "resetProgress",
+      invoke: {
+        id: "extract",
+        src: () =>
+          invokeIpcEvent<MachineEvent>(
+            "update player extract complete",
+            "DONE"
+          ),
       },
     },
   },
-  {
-    actions: {
-      resetProgress: assign<MachineContext, MachineEvent>({ progress: 0 }),
-      updateProgress: assign({
-        progress: (context, event) =>
-          event.type === "UPDATE_PROGRESS" ? event.progress : context.progress,
-      }),
+  on: {
+    DONE: { target: "ok" },
+  },
+  actions: {
+    resetProgress: assign<MachineContext, MachineEvent>({ progress: 0 }),
+    updateProgress: assign<MachineContext, MachineEvent>({
+      progress: (context, event) =>
+        event.type === "UPDATE_PROGRESS" ? event.progress : context.progress,
+    }),
+  },
+};
+
+const launcherUpdate = {
+  key: "launcherUpdate",
+  context: { progress: 0 },
+  states: {
+    download: {
+      entry: "resetProgress",
+      on: {
+        EXTRACT: { target: "extract" },
+        UPDATE_PROGRESS: { actions: "updateProgress" },
+      },
+      invoke: {
+        id: "extract",
+        src: () =>
+          invokeIpcEvent<MachineEvent>("update download complete", "EXTRACT"),
+      },
     },
-  }
-);
+    extract: {
+      entry: "resetProgress",
+      on: {
+        COPY: { target: "copy" },
+        UPDATE_PROGRESS: { actions: "updateProgress" },
+      },
+      invoke: {
+        src: () =>
+          invokeIpcEvent<MachineEvent>("update extract complete", "COPY"),
+      },
+    },
+    copy: {
+      entry: "resetProgress",
+      invoke: {
+        src: () => invokeIpcEvent<MachineEvent>("update copy complete", "DONE"),
+      },
+    },
+  },
+  on: {
+    DONE: { target: "ok" },
+  },
+  actions: {
+    resetProgress: assign<MachineContext, MachineEvent>({ progress: 0 }),
+    updateProgress: assign<MachineContext, MachineEvent>({
+      progress: (context, event) =>
+        event.type === "UPDATE_PROGRESS" ? event.progress : context.progress,
+    }),
+  },
+};
+
+export default createMachine<MachineContext, MachineEvent, UpdateMachineState>({
+  id: "(machine)",
+  initial: "ok",
+  states: {
+    ok: {
+      invoke: [
+        {
+          src: () =>
+            invokeIpcEvent<MachineEvent>("update copy complete", "DONE"),
+        },
+        { src: () => invokeIpcEvent<MachineEvent>("copy complete", "DONE") },
+      ],
+      on: {
+        PLAYER_DOWNLOAD: {
+          target: "playerUpdate",
+        },
+        LAUNCHER_DOWNLOAD: {
+          target: "launcherUpdate",
+        },
+      },
+    },
+    playerUpdate: {
+      ...playerUpdate,
+    },
+    launcherUpdate: {
+      ...launcherUpdate,
+    },
+  },
+});
