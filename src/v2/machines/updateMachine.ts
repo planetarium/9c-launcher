@@ -45,6 +45,9 @@ const playerUpdate = {
     },
     extract: {
       entry: "resetProgress",
+      on: {
+        UPDATE_PROGRESS: { actions: "updateProgress" },
+      },
       invoke: {
         id: "extract",
         src: () =>
@@ -134,11 +137,7 @@ export default createMachine<MachineContext, MachineEvent, UpdateMachineState>({
         },
       },
     },
-    playerUpdate: {
-      ...playerUpdate,
-    },
-    launcherUpdate: {
-      ...launcherUpdate,
-    },
+    playerUpdate,
+    launcherUpdate,
   },
 });
