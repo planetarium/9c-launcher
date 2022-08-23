@@ -40,6 +40,7 @@ const CloseButtonStyled = styled("button", {
   border: "none",
   cursor: "pointer",
   color: "white",
+  zIndex: 1,
 });
 
 export function CloseButton({ onClick }: { onClick: () => void }) {
