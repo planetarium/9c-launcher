@@ -25,6 +25,7 @@ const AnimatedDialogContent = styled(motion(DialogContent), {
   boxSizing: "border-box",
   height: 600,
   dragable: false,
+  overflow: "hidden",
   "&&": {
     backgroundColor: "#1d1e1ff2",
     width: 1124,
@@ -39,6 +40,7 @@ const CloseButtonStyled = styled("button", {
   border: "none",
   cursor: "pointer",
   color: "white",
+  zIndex: 1,
 });
 
 export function CloseButton({ onClick }: { onClick: () => void }) {
