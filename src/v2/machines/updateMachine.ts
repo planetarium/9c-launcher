@@ -62,13 +62,6 @@ const playerUpdate = {
   on: {
     DONE: { target: "ok" },
   },
-  actions: {
-    resetProgress: assign<MachineContext, MachineEvent>({ progress: 0 }),
-    updateProgress: assign<MachineContext, MachineEvent>({
-      progress: (context, event) =>
-        event.type === "UPDATE_PROGRESS" ? event.progress : context.progress,
-    }),
-  },
 };
 
 const launcherUpdate = {
@@ -109,48 +102,52 @@ const launcherUpdate = {
   on: {
     DONE: { target: "ok" },
   },
-  actions: {
-    resetProgress: assign<MachineContext, MachineEvent>({ progress: 0 }),
-    updateProgress: assign<MachineContext, MachineEvent>({
-      progress: (context, event) =>
-        event.type === "UPDATE_PROGRESS" ? event.progress : context.progress,
-    }),
-  },
 };
 
-export default createMachine<MachineContext, MachineEvent, UpdateMachineState>({
-  id: "(machine)",
-  initial: "ok",
-  states: {
-    ok: {
-      invoke: [
-        {
-          id: "playerDownload",
-          src: () =>
-            invokeIpcEvent<MachineEvent>(
-              "update player download started",
-              "PLAYER_DOWNLOAD"
-            ),
-        },
-        {
-          id: "launcherDownload",
-          src: () =>
-            invokeIpcEvent<MachineEvent>(
-              "update download started",
-              "LAUNCHER_DOWNLOAD"
-            ),
-        },
-      ],
-      on: {
-        PLAYER_DOWNLOAD: {
-          target: "playerUpdate",
-        },
-        LAUNCHER_DOWNLOAD: {
-          target: "launcherUpdate",
+export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
+  {
+    id: "(machine)",
+    initial: "ok",
+    states: {
+      ok: {
+        invoke: [
+          {
+            id: "playerDownload",
+            src: () =>
+              invokeIpcEvent<MachineEvent>(
+                "update player download started",
+                "PLAYER_DOWNLOAD"
+              ),
+          },
+          {
+            id: "launcherDownload",
+            src: () =>
+              invokeIpcEvent<MachineEvent>(
+                "update download started",
+                "LAUNCHER_DOWNLOAD"
+              ),
+          },
+        ],
+        on: {
+          PLAYER_DOWNLOAD: {
+            target: "playerUpdate",
+          },
+          LAUNCHER_DOWNLOAD: {
+            target: "launcherUpdate",
+          },
         },
       },
+      playerUpdate,
+      launcherUpdate,
     },
-    playerUpdate,
-    launcherUpdate,
   },
-});
+  {
+    actions: {
+      resetProgress: assign<MachineContext, MachineEvent>({ progress: 0 }),
+      updateProgress: assign<MachineContext, MachineEvent>({
+        progress: (context, event) =>
+          event.type === "UPDATE_PROGRESS" ? event.progress : context.progress,
+      }),
+    },
+  }
+);
