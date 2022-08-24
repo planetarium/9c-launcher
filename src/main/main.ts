@@ -31,7 +31,7 @@ import path from "path";
 import fs from "fs";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
-import { initializeSentry } from "../preload/sentry";
+import { initializeSentry } from "../sentry";
 import "core-js";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
