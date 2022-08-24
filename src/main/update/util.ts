@@ -60,8 +60,8 @@ export function cleanupOldPlayer() {
   );
 
   try {
-    fs.unlinkSync(oldPlayerPath)
-  } catch(e) {
+    fs.unlinkSync(oldPlayerPath);
+  } catch (e) {
     console.error("Player not found", e);
   }
 }
