@@ -30,4 +30,5 @@ export interface IConfig {
   RemoteNodeList: string[];
   PreferLegacyInterface: boolean;
   DownloadBaseURL: string | undefined;
+  UseUpdate: boolean;
 }

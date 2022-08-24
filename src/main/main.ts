@@ -231,11 +231,14 @@ async function initializeApp() {
     createTray(path.join(app.getAppPath(), logoImage));
 
     const u = await checkForUpdates(standalone);
-    if (u && !isV2) update(u, updateOptions);
-    else if (u && isV2)
-      ipcMain.handle("start update", async () => {
-        await update(u, updateOptions);
-      });
+
+    if (getConfig("UseUpdate", true)) {
+      if (u && !isV2) update(u, updateOptions);
+      else if (u && isV2)
+        ipcMain.handle("start update", async () => {
+          await update(u, updateOptions);
+        });
+    }
 
     mixpanel?.track("Launcher/Start", {
       isV2,
