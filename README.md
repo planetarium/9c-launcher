@@ -6,20 +6,7 @@
 ### THIS README IS SEVERLY OUTDATED AND WORKING IN PROGRESS
 [PLEASE READ WIKI INSTEAD OF THIS!](https://github.com/planetarium/9c-launcher/wiki)
 
-This is an electron based multi-platform launcher to run Nine Chronicles.
-The basic structure is as follows:
-
-```
-./src
-|   +-- resources
-|   +-- styles
-|   +-- views
-|   |   +-- MainView.tsx
-|   |   +-- LoginView.tsx
-|   |   +-- LobbyView.tsx
-|   +-- main-process.ts
-|   +-- App.tsx
-```
+This is an Electron-based multi-platform launcher to run Nine Chronicles.
 
 ## Installation
 
@@ -59,40 +46,11 @@ yarn codegen
 yarn dev
 ```
 
-위 명령은 내부적으로 알아서 _NineChronicles.Headless_ 서버도 함께 실행합니다.
-
-별도로 띄워둔 _NineChronicles.Headless_ 서버에 붙이고 싶을 경우, `NC_RPC_SERVER_HOST`,
-`NC_RPC_SERVER_PORT`, `NC_GRAPHQL_SERVER_HOST`, `NC_GRAPHQL_SERVER_PORT`
-환경 변수를 활용할 수 있습니다. (넷 중 하나만 설정되어도 커스텀 RPC 서버 모드로 동작합니다.)
-
-```sh
-NC_RPC_SERVER_HOST=127.0.0.1 \
-NC_RPC_SERVER_PORT=23142 \
-NC_GRAPHQL_SERVER_HOST=127.0.0.1 \
-NC_GRAPHQL_SERVER_PORT=23061 \
-yarn dev
-```
-
 ## Development
 
 The basic frontend has `webpack-hot-reload`, which automatically reflects code changes.
 Developing the renderer process does not require electron relaunch. However, when there's a change in the main process, electron relaunch is required.
 
-### mobx-devtools
-
-mobx-devtools can be used in this project. First, install a standalone mobx-devtools.
-
-```sh
-yarn global add mobx-devtools
-```
-
-After, run mobx-devtools.
-
-```sh
-mobx-devtools
-```
-
-Run `yarn server` & `yarn start`. The global state will appear on mobx-devtools.
 
 ## Build
 
@@ -108,6 +66,8 @@ yarn build-prod  # production build
 ```
 
 ## Packaging
+> **Note**
+> This section hasn't been used in production and it's likely outdated.
 
 ```bash
 # generate/sign a new APV with the given private key and pack
@@ -135,6 +95,8 @@ APV(App Protocol Version) signing will not take place.
 [appprotocolversion.version]: https://docs.libplanet.io/master/api/Libplanet.Net.AppProtocolVersion.html#Libplanet_Net_AppProtocolVersion_Version
 
 ### Replacing config.json content after packaging
+> **Note**
+> This section hasn't been used in production and it's likely outdated.
 
 For replacing the configuration content of _config.json_ in the already packed _Windows.zip_ or _macOS.tar.gz_, it's convenient to use the _scripts/extract-config.sh_ and _scripts/replace-config.sh_ scripts.
 
@@ -146,6 +108,7 @@ scripts/replace-config.sh path/Windows.zip < config.json
 ```
 
 ### Packaging with electron-builder
+Note that building with electron-builder is experimental.
 
 ```bash
 # Windows (nsis)
@@ -158,14 +121,8 @@ yarn pack-all:electron-builder
 Logs are saved in the following paths:
 
 ```
-- on macOS: ~/Library/Logs/{app name}/{process type}.log
-- on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs{process type}.log
-```
-
-## Code Style Formatting
-
-```bash
-npx pretty-quick --staged
+- on macOS: ~/Library/Logs/Nine Chronicles/{process type}.log
+- on Windows: %USERPROFILE%\AppData\Roaming\Nine Chronicles\logs\{process type}.log
 ```
 
 ### Visual Studio Code Extensions
