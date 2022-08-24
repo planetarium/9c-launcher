@@ -3,7 +3,7 @@ import { ipcMain } from "electron";
 import { basename, dirname } from "path";
 import { CUSTOM_SERVER, LOCAL_SERVER_URL, userConfigStore } from "../../config";
 import { retry } from "@lifeomic/attempt";
-import { FetchError, HeadlessExitedError } from "../../errors";
+import { FetchError, HeadlessExitedError } from "../../main/exceptions";
 import { execute, sleep } from "../../utils";
 import fetch, { Response } from "electron-fetch";
 import { BlockMetadata } from "src/interfaces/block-header";
