@@ -69,6 +69,10 @@ export interface IUpdateOptions {
 }
 
 export async function update(update: Update, listeners: IUpdateOptions) {
+  if (!getConfig("UseUpdate", true)) {
+    return;
+  }
+
   const localVersionNumber: number = update.current ?? apvVersionNumber;
   const peerVersionNumber: number = update.newer;
   const peerVersionExtra: string = update.extras;
