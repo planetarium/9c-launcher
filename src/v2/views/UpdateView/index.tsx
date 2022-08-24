@@ -32,29 +32,27 @@ const FixedStatusBar = styled(StatusBar, {
 });
 
 function getMessage(state: StateFrom<typeof machine>): string {
-  switch (state.value.launcherUpdate) {
-    case "download":
-      return t("Downloading the new version launcher...", {
-        _tags: transifexTags,
-      });
-    case "extract":
-      return t("Extracting the new version launcher...", {
-        _tags: transifexTags,
-      });
+  if (state.matches({ launcherUpdate: "download" })) {
+    return t("Downloading the new version launcher...", {
+      _tags: transifexTags,
+    });
+  } else if (state.matches({ launcherUpdate: "extract" })) {
+    return t("Extracting the new version launcher...", {
+      _tags: transifexTags,
+    });
+  } else if (state.matches({ playerUpdate: "download" })) {
+    return t("Downloading the new version player...", {
+      _tags: transifexTags,
+    });
+  } else if (state.matches({ playerUpdate: "extract" })) {
+    return t("Extracting the new version player...", {
+      _tags: transifexTags,
+    });
+  } else if (state.matches({ playerUpdate: "copy" })) {
+    return t("Copying files...", { _tags: transifexTags });
+  } else {
+    throw new Error("unreachable");
   }
-  switch (state.value.playerUpdate) {
-    case "download":
-      return t("Downloading the new version player...", {
-        _tags: transifexTags,
-      });
-    case "extract":
-      return t("Extracting the new version player...", {
-        _tags: transifexTags,
-      });
-    case "copy":
-      return t("Copying files...", { _tags: transifexTags });
-  }
-  throw new Error("unreachable");
 }
 
 export default function UpdateView({ state, progress }: UpdateViewProps) {
