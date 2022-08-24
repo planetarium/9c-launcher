@@ -3,7 +3,8 @@
 [![Planetarium-Dev Discord Invite](https://img.shields.io/discord/928926944937013338?color=6278DA&label=Planetarium-dev&logo=discord&logoColor=white)](https://discord.gg/RYJDyFRYY7)
 ## Overview
 
-[WE HAVE WIKI WORKING IN PROGRESS!](https://github.com/planetarium/9c-launcher/wiki)
+### THIS README IS SEVERLY OUTDATED AND WORKING IN PROGRESS
+[PLEASE READ WIKI INSTEAD OF THIS!](https://github.com/planetarium/9c-launcher/wiki)
 
 This is an electron based multi-platform launcher to run Nine Chronicles.
 The basic structure is as follows:
@@ -36,7 +37,7 @@ In addition, there are two binaries required.
   - `yarn bundle-player` downloads the CI-built binary from the NineChronicles repository based on the `NineChronicles` git submodule commit hash.
   - Download may fail if the CI-build hasn't been completed. In this case, you can directly build to `dist` as the output directory with Unity Editor.
 
-Before build 9C Headless and Unity Player, you should download these source from git submodule: `git submodule update --recursive`
+Before build 9C Headless and Unity Player, you should download these source from git submodule: `git submodule update --recursive --init`
 
 Place the two binaries in the exact path as visualized below:
 
