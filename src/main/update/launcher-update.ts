@@ -250,7 +250,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
       console.warn("Failed to remove temporary files from", tempDir, "\n", e);
     }
     win.webContents.send("update copying complete");
-  } else if (process.platform == "darwin" || process.platform == "linux") {
+  } else if (process.platform == "darwin") {
     // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
     const bz2 = lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");

@@ -67,7 +67,7 @@ export async function playerUpdate(
       },
     });
     win.webContents.send("update player extract complete");
-  } else if (process.platform == "darwin" || process.platform == "linux") {
+  } else if (process.platform == "darwin") {
     // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
     const bz2 = lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");
