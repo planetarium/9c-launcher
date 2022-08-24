@@ -1,6 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { userConfigStore, get as getConfig, NodeInfo } from "../../config";
+import { userConfigStore, get as getConfig, NodeInfo } from "src/config";
 
 export default class GameStore {
   @observable

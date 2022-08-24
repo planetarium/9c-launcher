@@ -11,7 +11,7 @@ import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React, { useState, MouseEvent, ChangeEvent } from "react";
 import { T } from "@transifex/react";
-import AccountStore from "../../../stores/account";
+import AccountStore from "src/stores/account";
 import reviewPrivateKeyViewStyle from "./ReviewPrivateKeyView.style";
 import TextButton from "../../../components/TextButton";
 

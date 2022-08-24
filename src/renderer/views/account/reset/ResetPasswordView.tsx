@@ -5,7 +5,7 @@ import { RouterStore } from "mobx-react-router";
 import React from "react";
 import RetypePasswordForm from "../../../components/RetypePasswordForm";
 import { T } from "@transifex/react";
-import AccountStore from "../../../stores/account";
+import AccountStore from "src/stores/account";
 import registerPrivateKeyViewStyle from "./ResetPasswordView.style";
 
 interface IResetPasswordViewProps {
