@@ -115,8 +115,8 @@ export async function playerUpdateTemp(
         win?.webContents.send("update player extract progress", progress);
       },
     });
-    win.webContents.send("update player extract complete");
-  } else if (process.platform == "darwin") {
+    win.webContents.send("update extract complete");
+  } else if (process.platform == "darwin" || process.platform == "linux") {
     // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
     const bz2 = lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");
