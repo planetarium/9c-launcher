@@ -43,7 +43,7 @@ import {
   HeadlessExitedError,
   HeadlessInitializeError,
   UndefinedProtectedPrivateKeyError,
-} from "../errors";
+} from "../main/exceptions";
 import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
