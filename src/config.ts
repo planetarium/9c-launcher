@@ -27,7 +27,10 @@ export const userConfigStore = new Store<IConfig>({
 export const apvVersionNumber = getVersionNumberFromAPV(
   get("AppProtocolVersion")
 );
-export const playerPath = path.join(app.getPath("userData"), `player/${netenv}`);
+export const playerPath = path.join(
+  app.getPath("userData"),
+  `player/${netenv}`
+);
 
 const LocalServerUrl = (): string => {
   return `${LocalServerHost().host}:${LocalServerPort().port}`;
