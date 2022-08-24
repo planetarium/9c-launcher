@@ -37,7 +37,7 @@ const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
   android: null,
   darwin: "mac.tar.gz",
   freebsd: null,
-  linux: "linux.tar.gz",
+  linux: null,
   openbsd: null,
   sunos: null,
   win32: "win.zip",
@@ -60,8 +60,8 @@ export function cleanupOldPlayer() {
   );
 
   try {
-    fs.unlinkSync(oldPlayerPath)
-  } catch(e) {
+    fs.unlinkSync(oldPlayerPath);
+  } catch (e) {
     console.error("Player not found", e);
   }
 }
