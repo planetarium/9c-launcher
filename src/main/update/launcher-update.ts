@@ -69,6 +69,11 @@ export interface IUpdateOptions {
 }
 
 export async function update(update: Update, listeners: IUpdateOptions) {
+  if (!getConfig("UseUpdate", process.env.NODE_ENV === "production")) {
+    console.log("`UseUpdate` option is false, Do not proceed update!");
+    return;
+  }
+
   const localVersionNumber: number = update.current ?? apvVersionNumber;
   const peerVersionNumber: number = update.newer;
   const peerVersionExtra: string = update.extras;
