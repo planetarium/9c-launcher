@@ -69,7 +69,8 @@ export interface IUpdateOptions {
 }
 
 export async function update(update: Update, listeners: IUpdateOptions) {
-  if (!getConfig("UseUpdate", true)) {
+  if (!getConfig("UseUpdate", process.env.NODE_ENV === "production")) {
+    console.log("`UseUpdate` option is false, Do not proceed update!");
     return;
   }
 
