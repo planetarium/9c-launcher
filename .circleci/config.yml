@@ -162,7 +162,7 @@ jobs:
       - yarn-install
       - run: scripts/create-key.ps1
       - install-dotnet
-      - run: yarn build-headless
+      - build-headless
       - run: yarn build-prod
       - run: scripts/copy-config.ps1
       - run: yarn test
