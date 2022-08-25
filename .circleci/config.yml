@@ -28,6 +28,7 @@ commands:
       - run:
           command: |
             [ -d dist/publish ] || yarn build-headless:<< parameters.os >>
+          shell: bash
       - save_cache:
           key: headless-pub-<< parameters.os >>-{{ checksum "tree-hash" }}
           paths:
