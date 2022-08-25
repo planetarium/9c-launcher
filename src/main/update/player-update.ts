@@ -2,16 +2,44 @@ import { DownloadItem, app } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
+import path from "path";
 import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
+import { cleanupOldPlayer } from "./util";
 import { playerPath } from "../../config";
+import lockfile from "lockfile";
+
+const lockfilePath = path.join(
+  path.dirname(app.getPath("exe")),
+  "player-lockfile"
+);
 
 export async function playerUpdate(
   downloadUrl: string,
   win: Electron.BrowserWindow
 ) {
+  if (lockfile.checkSync(lockfilePath)) {
+    console.log(
+      "[player] 'encounter different version' event seems running already. Stop this flow."
+    );
+    return;
+  }
+
+  try {
+    lockfile.lockSync(lockfilePath);
+    console.log(
+      "[player] Created 'encounter different version' lockfile at ",
+      lockfilePath
+    );
+  } catch (e) {
+    console.error("[player] Error occurred during trying lock.");
+    throw e;
+  }
+
   win.webContents.send("start update player");
+
+  cleanupOldPlayer();
 
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {
@@ -94,4 +122,10 @@ export async function playerUpdate(
   }
 
   await fs.promises.unlink(dlPath);
+
+  lockfile.unlockSync(lockfilePath);
+  console.log(
+    "[player] Removed 'encounter different version' lockfile at ",
+    lockfilePath
+  );
 }
