@@ -58,7 +58,7 @@ export async function playerUpdateTemp(
     process.platform
   );
 
-  win.webContents.send("update download started");
+  win.webContents.send("update player download started");
 
   cleanupOldPlayer();
 
@@ -72,7 +72,7 @@ export async function playerUpdateTemp(
       console.log(
         `[player] Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
-      win?.webContents.send("update download progress", status);
+      win?.webContents.send("update player download progress", status);
     },
     directory: app.getPath("temp"),
   };
@@ -85,7 +85,7 @@ export async function playerUpdateTemp(
     throw new DownloadBinaryFailedError(downloadUrl);
   }
 
-  win.webContents.send("update download complete");
+  win.webContents.send("update player download complete");
   const dlFname = dl?.getFilename();
   const dlPath = dl?.getSavePath();
   console.log("[player] Finished to download:", dlPath);
@@ -112,10 +112,10 @@ export async function playerUpdateTemp(
       dir: playerPath,
       onEntry: (_, zipfile) => {
         const progress = zipfile.entriesRead / zipfile.entryCount;
-        win?.webContents.send("update extract progress", progress);
+        win?.webContents.send("update player extract progress", progress);
       },
     });
-    win.webContents.send("update extract complete");
+    win.webContents.send("update player extract complete");
   } else if (process.platform == "darwin" || process.platform == "linux") {
     // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
@@ -144,8 +144,8 @@ export async function playerUpdateTemp(
 
   await fs.promises.unlink(dlPath);
 
-  win.webContents.send("update copying progress");
-  win.webContents.send("update copying complete");
+  win.webContents.send("update player copying progress");
+  win.webContents.send("update player copying complete");
 
   lockfile.unlockSync(lockfilePath);
   console.log(
