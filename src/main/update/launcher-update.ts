@@ -285,10 +285,6 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     return;
   }
 
-  if (playerDownloadUrl) {
-    await playerUpdate(playerDownloadUrl, win);
-  }
-
   // Delete compressed file after decompress.
   await fs.promises.unlink(dlPath);
 
@@ -305,6 +301,10 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     "The existing and new configuration files has been merged:",
     config
   );
+
+  if (playerDownloadUrl) {
+    await playerUpdate(playerDownloadUrl, win);
+  }
 
   lockfile.unlockSync(lockfilePath);
   console.log(
