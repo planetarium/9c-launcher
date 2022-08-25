@@ -19,7 +19,6 @@ import Headless from "../headless/headless";
 import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
 import { playerUpdate } from "./player-update";
-import { playerUpdateTemp } from "./player-update-temp";
 import { getDownloadUrl, decodeLocalAPV } from "./util";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
