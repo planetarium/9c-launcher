@@ -37,7 +37,7 @@ export async function playerUpdate(
     throw e;
   }
 
-  win.webContents.send("start update player");
+  win.webContents.send("update player download started");
 
   cleanupOldPlayer();
 
@@ -70,9 +70,9 @@ export async function playerUpdate(
   console.log("[player] Finished to download:", dlPath);
 
   if (fs.existsSync(playerPath)) {
-    fs.rmdirSync(playerPath, { recursive: true });
+    await fs.promises.rmdir(playerPath, { recursive: true });
   } else {
-    fs.mkdirSync(playerPath, { recursive: true });
+    await fs.promises.mkdir(playerPath, { recursive: true });
   }
 
   console.log("[player] Clean up exists player");

@@ -45,7 +45,7 @@ const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
   netbsd: null,
 };
 
-export function cleanupOldPlayer() {
+export async function cleanupOldPlayer() {
   const OLD_MAC_GAME_PATH = "9c.app/Contents/MacOS/9c";
   const OLD_WIN_GAME_PATH = "9c.exe";
   const OLD_LINUX_GAME_PATH = "9c";
@@ -60,7 +60,7 @@ export function cleanupOldPlayer() {
   );
 
   try {
-    fs.unlinkSync(oldPlayerPath);
+    await fs.promises.unlink(oldPlayerPath);
   } catch (e) {
     console.error("Player not found", e);
   }
