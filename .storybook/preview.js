@@ -1,34 +1,36 @@
 import { MockedProvider } from "@apollo/react-testing";
 
-import './storybook.scss';
+import "./storybook.scss";
+import "normalize.css";
+import "core-js/proposals/array-find-from-last";
 
 const customViewports = {
   kindleFire2: {
-    name: 'launcher v2',
+    name: "launcher v2",
     styles: {
-      width: '800px',
-      height: '600px',
+      width: "800px",
+      height: "600px",
     },
   },
   monsterCollection: {
-    name: 'monsterCollection',
+    name: "monsterCollection",
     styles: {
-      width: '1166px',
-      height: '708px',
+      width: "1166px",
+      height: "708px",
     },
   },
   transfer: {
-    name: 'transfer',
+    name: "transfer",
     styles: {
-      width: '970px',
-      height: '680px',
+      width: "970px",
+      height: "680px",
     },
   },
 };
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
-  layout: 'fullscreen',
+  layout: "fullscreen",
   controls: {
     matchers: {
       color: /(background|color)$/i,
@@ -36,9 +38,9 @@ export const parameters = {
     },
   },
   viewport: {
-    viewports: customViewports
+    viewports: customViewports,
   },
   apolloClient: {
     MockedProvider,
   },
-}
+};

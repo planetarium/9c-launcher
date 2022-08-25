@@ -14,9 +14,6 @@ import {
   useStakingSheetQuery,
 } from "src/v2/generated/graphql";
 
-import "normalize.css";
-import "core-js/proposals/array-find-from-last";
-
 const result = {
   data: {
     stateQuery: {
