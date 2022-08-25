@@ -80,36 +80,6 @@ export async function update(update: Update, listeners: IUpdateOptions) {
 
   const win = listeners.getWindow();
 
-  if (peerVersionNumber <= localVersionNumber) {
-    const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
-
-    if (!fs.existsSync(executePath)) {
-      await playerUpdateTemp(win, listeners);
-    }
-
-    return;
-  }
-
-  if (lockfile.checkSync(lockfilePath)) {
-    console.log(
-      "'encounter different version' event seems running already. Stop this flow."
-    );
-    return;
-  }
-
-  try {
-    lockfile.lockSync(lockfilePath);
-    console.log(
-      "Created 'encounter different version' lockfile at ",
-      lockfilePath
-    );
-  } catch (e) {
-    console.error("Error occurred during trying lock.");
-    throw e;
-  }
-
-  await listeners.downloadStarted();
-
   if (win === null) {
     console.log("Stop update process because win is null.");
     return;
@@ -140,6 +110,36 @@ export async function update(update: Update, listeners: IUpdateOptions) {
 
   console.log("launcherDownloadUrl: ", launcherDownloadUrl);
   console.log("playerDownloadUrl: ", playerDownloadUrl);
+
+  if (peerVersionNumber <= localVersionNumber) {
+    const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
+
+    if (!fs.existsSync(executePath)) {
+      await playerUpdate(playerDownloadUrl, win);
+    }
+
+    return;
+  }
+
+  if (lockfile.checkSync(lockfilePath)) {
+    console.log(
+      "'encounter different version' event seems running already. Stop this flow."
+    );
+    return;
+  }
+
+  try {
+    lockfile.lockSync(lockfilePath);
+    console.log(
+      "Created 'encounter different version' lockfile at ",
+      lockfilePath
+    );
+  } catch (e) {
+    console.error("Error occurred during trying lock.");
+    throw e;
+  }
+
+  await listeners.downloadStarted();
 
   // if (launcherDownloadUrl == null) {
   //   console.log(`Stop update process. Not support ${process.platform}.`);
