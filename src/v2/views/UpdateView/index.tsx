@@ -48,7 +48,7 @@ function getMessage(state: StateFrom<typeof machine>): string {
     return t("Extracting the new version player...", {
       _tags: transifexTags,
     });
-  } else if (state.matches({ playerUpdate: "copy" })) {
+  } else if (state.matches({ launcherUpdate: "copy" })) {
     return t("Copying files...", { _tags: transifexTags });
   } else {
     throw new Error("unreachable");
