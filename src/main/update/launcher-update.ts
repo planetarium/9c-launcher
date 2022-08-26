@@ -253,7 +253,6 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     } catch (e) {
       console.warn("Failed to remove temporary files from", tempDir, "\n", e);
     }
-    win.webContents.send("update copying complete");
   } else if (process.platform == "darwin" || process.platform == "linux") {
     // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
@@ -264,6 +263,8 @@ export async function update(update: Update, listeners: IUpdateOptions) {
       "to",
       extractPath
     );
+    win?.webContents.send("update extract progress", 50);
+
     try {
       await spawnPromise(
         "tar",
@@ -274,6 +275,9 @@ export async function update(update: Update, listeners: IUpdateOptions) {
       console.error(`${e}:\n`, e.stderr);
       throw e;
     }
+    win.webContents.send("update extract complete");
+    win.webContents.send("update copying progress");
+
     console.log(
       "The tarball archive",
       dlPath,
@@ -284,6 +288,8 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     console.warn("Not supported platform.");
     return;
   }
+
+  win.webContents.send("update copying complete");
 
   // Delete compressed file after decompress.
   await fs.promises.unlink(dlPath);

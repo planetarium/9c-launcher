@@ -91,10 +91,9 @@ export async function playerUpdate(
       dir: playerPath,
       onEntry: (_, zipfile) => {
         const progress = zipfile.entriesRead / zipfile.entryCount;
-        win?.webContents.send("update player extract progress", progress);
+        win.webContents.send("update player extract progress", progress);
       },
     });
-    win.webContents.send("update player extract complete");
   } else if (process.platform == "darwin" || process.platform == "linux") {
     // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
@@ -105,6 +104,8 @@ export async function playerUpdate(
       "to",
       playerPath
     );
+    win?.webContents.send("update player extract progress", 50);
+
     try {
       await spawnPromise(
         "tar",
@@ -120,6 +121,7 @@ export async function playerUpdate(
     console.warn("[player] Not supported platform.");
     return;
   }
+  win.webContents.send("update player extract complete");
 
   await fs.promises.unlink(dlPath);
 
