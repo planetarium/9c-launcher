@@ -36,7 +36,6 @@ const playerUpdate = {
         UPDATE_PROGRESS: { actions: "updateProgress" },
       },
       invoke: {
-        id: "extract",
         src: () =>
           invokeIpcEvent<MachineEvent>(
             "update player download complete",
@@ -50,7 +49,6 @@ const playerUpdate = {
         UPDATE_PROGRESS: { actions: "updateProgress" },
       },
       invoke: {
-        id: "extract",
         src: () =>
           invokeIpcEvent<MachineEvent>(
             "update player extract complete",
@@ -76,7 +74,6 @@ const launcherUpdate = {
         UPDATE_PROGRESS: { actions: "updateProgress" },
       },
       invoke: {
-        id: "extract",
         src: () =>
           invokeIpcEvent<MachineEvent>("update download complete", "EXTRACT"),
       },
