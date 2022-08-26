@@ -28,6 +28,7 @@ commands:
       - run:
           command: |
             [ -d dist/publish ] || yarn build-headless:<< parameters.os >>
+          shell: bash
       - save_cache:
           key: headless-pub-<< parameters.os >>-{{ checksum "tree-hash" }}
           paths:
@@ -162,7 +163,7 @@ jobs:
       - yarn-install
       - run: scripts/create-key.ps1
       - install-dotnet
-      - run: yarn build-headless
+      - build-headless
       - run: yarn build-prod
       - run: scripts/copy-config.ps1
       - run: yarn test
