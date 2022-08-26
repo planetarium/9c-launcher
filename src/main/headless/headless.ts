@@ -213,7 +213,7 @@ class Headless {
       }
 
       const node = execute(this._path, args);
-      node.addListener("exit", this.exitedHandler);
+      node.addListener("exit", this.exitedHandler.bind(this));
       NODESTATUS.Node = node;
     }
 
