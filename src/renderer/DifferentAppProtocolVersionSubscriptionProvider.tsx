@@ -7,7 +7,7 @@ import {
 } from "../generated/graphql";
 import { IDownloadProgress } from "../interfaces/ipc";
 import UpdateView from "./views/update/UpdateView";
-import { Update } from "src/main/update";
+import { Update } from "src/main/update/launcher-update";
 
 export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,
