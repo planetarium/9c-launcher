@@ -52,7 +52,7 @@
     "release:windows": "yarn build-release && pwsh -nop -ex bypass -noni -f scripts/electron-pack.ps1",
     "release:linux": "yarn build-release && scripts/electron-pack-linux.sh",
     "release:macos": "yarn build-release && scripts/electron-pack.sh",
-    "test": "mocha -r ts-node/register -r tsconfig-paths/register __tests__/**/*.spec.ts --exit",
+    "test": "vitest",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "update-translations": "txjs-cli push src --key-generator=hash",
