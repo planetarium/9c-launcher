@@ -1,5 +1,4 @@
-import { describe, it } from "vitest";
-import { assert } from "chai";
+import { describe, it, assert } from "vitest";
 import { Action } from "../../../src/main/headless/action";
 import { HEADLESS_PATH } from "../../constant";
 import { tmpNameSync } from "tmp-promise";

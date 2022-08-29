@@ -1,10 +1,9 @@
-import { describe, it, beforeAll, afterEach, afterAll } from "vitest";
+import { describe, it, beforeAll, afterEach, afterAll, expect } from "vitest";
 import path from "path";
 import fs from "fs";
 
 import { ElectronApplication, Page, _electron as electron } from "playwright";
 import "dotenv/config";
-import { expect } from "chai";
 
 const isWindows = process.platform === "win32";
 const lastPath = "/lobby";

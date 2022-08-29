@@ -1,7 +1,6 @@
-import { describe, it, beforeAll } from "vitest";
+import { describe, it, beforeAll, assert } from "vitest";
 import fs, { readdirSync } from "fs";
 import CancellationToken from "cancellationtoken";
-import { assert } from "chai";
 import path from "path";
 import {
   downloadMetadata,

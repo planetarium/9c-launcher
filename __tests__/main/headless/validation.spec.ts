@@ -1,5 +1,4 @@
-import { describe, it } from "vitest";
-import { assert } from "chai";
+import { describe, it, assert } from "vitest";
 import { Validation } from "../../../src/main/headless/validation";
 import { HEADLESS_PATH } from "../../constant";
 

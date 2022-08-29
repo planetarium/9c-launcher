@@ -5864,13 +5864,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:^4.2.12":
-  version: 4.2.12
-  resolution: "@types/chai@npm:4.2.12"
-  checksum: 275b40250c4ce70db929735755b0f4fee40915e4f9bb0b695daca614a3215ce8b2bed0b274faf660c2bd214130717e6c75762ba3c7c1cc4399bc6f230ccff645
-  languageName: node
-  linkType: hard
-
 "@types/child-process-promise@npm:^2.2.1":
   version: 2.2.1
   resolution: "@types/child-process-promise@npm:2.2.1"
@@ -7057,7 +7050,6 @@ __metadata:
     "@transifex/native": ^3.0.0
     "@transifex/react": ^3.0.0
     "@types/bytes": ^3.1.1
-    "@types/chai": ^4.2.12
     "@types/child-process-promise": ^2.2.1
     "@types/dotenv": ^8.2.0
     "@types/electron-devtools-installer": ^2.2.0
@@ -7090,7 +7082,6 @@ __metadata:
     buffer: ^5.6.0
     bytes: ^3.1.2
     cancellationtoken: ^2.2.0
-    chai: ^4.2.0
     child-process-promise: ^2.2.1
     chromatic: ^6.5.4
     classnames: ^2.3.1
@@ -9265,20 +9256,6 @@ __metadata:
   version: 1.1.0
   resolution: "ccount@npm:1.1.0"
   checksum: b335a79d0aa4308919cf7507babcfa04ac63d389ebed49dbf26990d4607c8a4713cde93cc83e707d84571ddfe1e7615dad248be9bc422ae4c188210f71b08b78
-  languageName: node
-  linkType: hard
-
-"chai@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "chai@npm:4.2.0"
-  dependencies:
-    assertion-error: ^1.1.0
-    check-error: ^1.0.2
-    deep-eql: ^3.0.1
-    get-func-name: ^2.0.0
-    pathval: ^1.1.0
-    type-detect: ^4.0.5
-  checksum: 47881a30dabb6bad94db8a4ee5c914e9eff21113e721c25f8c210f52f211fa5539b3da9558884ecf16e0bab8548c9c590e9c952cb28b213f953cb152d61b4f34
   languageName: node
   linkType: hard
 
@@ -19044,7 +19021,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pathval@npm:^1.1.0, pathval@npm:^1.1.1":
+"pathval@npm:^1.1.1":
   version: 1.1.1
   resolution: "pathval@npm:1.1.1"
   checksum: 090e3147716647fb7fb5b4b8c8e5b55e5d0a6086d085b6cd23f3d3c01fcf0ff56fd3cc22f2f4a033bd2e46ed55d61ed8379e123b42afe7d531a2a5fc8bb556d6
