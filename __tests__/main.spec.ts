@@ -1,3 +1,4 @@
+import { describe, it, beforeAll, afterEach } from "vitest";
 import path from "path";
 import fs from "fs";
 
@@ -20,19 +21,17 @@ const { PASSWORD } = process.env;
 if (PASSWORD === undefined) throw Error("failed to load password from .env");
 
 describe("test", function () {
-  this.timeout(30 * 1000);
-
   let app: ElectronApplication;
   let page: Page;
   const history: string[] = [];
 
-  before(async function () {
+  beforeAll(async function () {
     app = await electron.launch({
       args: ["./dist/"],
     });
 
     page = await app.firstWindow();
-    await page.waitForSelector("'Done'")
+    await page.waitForSelector("'Done'");
   });
 
   afterEach(async function () {
@@ -84,8 +83,10 @@ describe("test", function () {
 
     const isButtonVisible = await page.isVisible("data-testid=play");
     const statusText = await page.textContent("data-testid=status");
-    expect(isButtonVisible, `Play button shown on status: ${statusText}`).to.be
-      .false;
+    expect(
+      isButtonVisible,
+      `Play button shown on status: ${statusText}`
+    ).equals(false);
   });
 
   // after(async function () {
