@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, afterEach } from "vitest";
+import { describe, it, beforeAll, afterEach, afterAll } from "vitest";
 import path from "path";
 import fs from "fs";
 
@@ -62,6 +62,8 @@ describe("test", function () {
 
     history.push(pathname);
   });
+
+  afterAll(() => app.evaluate(({ app }) => app.exit()));
 
   it("로그인 하기", async function () {
     await page.screenshot({ path: path.join(snapshotDir, `login.png`) });
