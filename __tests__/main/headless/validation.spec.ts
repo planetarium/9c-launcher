@@ -1,4 +1,4 @@
-import { assert } from "chai";
+import { describe, it, assert } from "vitest";
 import { Validation } from "../../../src/main/headless/validation";
 import { HEADLESS_PATH } from "../../constant";
 
@@ -6,7 +6,7 @@ describe("Validation", function () {
   const validation = new Validation(HEADLESS_PATH);
 
   describe("isValidPrivateKey", function () {
-    context("with invalid private key", function () {
+    describe("with invalid private key", function () {
       it("It returns false with empty input", function () {
         assert.isFalse(validation.isValidPrivateKey(""));
       });
@@ -19,7 +19,7 @@ describe("Validation", function () {
       });
     });
 
-    context("with valid private key", function () {
+    describe("with valid private key", function () {
       const validPrivateKeys = [
         "ed5eba446d4c7cb50d7d5eb72c732773d89ee336f1880ee237b07589ed2387fc",
         "243389a88fcb6956aa3fb23acd3b770fb05bcdb993b326c19b1e40918f03155a",

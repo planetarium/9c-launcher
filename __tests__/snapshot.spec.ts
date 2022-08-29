@@ -1,6 +1,6 @@
+import { describe, it, beforeAll, assert } from "vitest";
 import fs, { readdirSync } from "fs";
 import CancellationToken from "cancellationtoken";
-import { assert } from "chai";
 import path from "path";
 import {
   downloadMetadata,
@@ -28,7 +28,7 @@ async function getMetadataFromFilename(filename: string) {
 }
 
 describe("snapshot", function () {
-  before(function () {
+  beforeAll(function () {
     if (!fs.existsSync(userDataPath)) fs.mkdirSync(userDataPath);
     if (!fs.existsSync(emptyStore)) fs.mkdirSync(emptyStore);
     if (!fs.existsSync(integrationStore)) fs.mkdirSync(integrationStore);
@@ -36,13 +36,13 @@ describe("snapshot", function () {
 
   describe("get current epoch from store", function () {
     it("should be equal base epoch with empty store", async function () {
-      let epoch = getCurrentEpoch(emptyStore);
+      const epoch = getCurrentEpoch(emptyStore);
       assert.equal(epoch.BlockEpoch, 0);
       assert.equal(epoch.TxEpoch, 0);
     });
 
     it("should be equal 3 more epoch then base epoch with non-empty store", async function () {
-      let epoch = getCurrentEpoch(nonEmptyStore);
+      const epoch = getCurrentEpoch(nonEmptyStore);
       assert.equal(epoch.BlockEpoch, 18688);
       assert.equal(epoch.TxEpoch, 18679);
     });
@@ -55,7 +55,7 @@ describe("snapshot", function () {
       );
       const cancellation = CancellationToken.create();
 
-      let target = await getSnapshotDownloadTarget(
+      const target = await getSnapshotDownloadTarget(
         metadata,
         emptyStore,
         baseUrl,
@@ -67,7 +67,7 @@ describe("snapshot", function () {
       assert.equal(target.length, 16);
 
       Array.from({ length: 16 }, (v, i) => i).forEach((x: number) => {
-        let epoch = target[x];
+        const epoch = target[x];
         assert.equal(epoch.BlockEpoch, 18698 - x);
         assert.equal(epoch.TxEpoch, 18689 - x);
       });
@@ -77,21 +77,21 @@ describe("snapshot", function () {
       const metadata = await getMetadataFromFilename(
         "snapshot-18698-18689.json"
       );
-      let cancellation = CancellationToken.create();
+      const cancellation = CancellationToken.create();
 
-      let target = await getSnapshotDownloadTarget(
+      const target = await getSnapshotDownloadTarget(
         metadata,
         nonEmptyStore,
         baseUrl,
         userDataPath,
         cancellation.token,
-        mockMixpanel,
+        mockMixpanel
       );
 
       assert.equal(target.length, 11);
 
       Array.from({ length: 11 }, (v, i) => i).forEach((x: number) => {
-        let epoch = target[x];
+        const epoch = target[x];
         assert.equal(epoch.BlockEpoch, 18698 - x);
         assert.equal(epoch.TxEpoch, 18689 - x);
       });
@@ -99,35 +99,34 @@ describe("snapshot", function () {
   });
 
   describe("download snapshot", function () {
-    this.timeout(30 * 1000);
     it("should be download all snapshot", async function () {
-      let cancellation = CancellationToken.create();
-      let metadata = await downloadMetadata(
+      const cancellation = CancellationToken.create();
+      const metadata = await downloadMetadata(
         baseUrl,
         userDataPath,
         "latest.json",
         cancellation.token
       );
 
-      let target = await getSnapshotDownloadTarget(
+      const target = await getSnapshotDownloadTarget(
         metadata,
         emptyStore,
         baseUrl,
         userDataPath,
         cancellation.token,
-        mockMixpanel,
+        mockMixpanel
       );
 
-      let result = await downloadSnapshot(
+      const result = await downloadSnapshot(
         baseUrl,
         target,
         userDataPath,
         (status) => {},
         cancellation.token,
-        mockMixpanel,
+        mockMixpanel
       );
 
-      let snapshotZipList = readdirSync(userDataPath).filter(
+      const snapshotZipList = readdirSync(userDataPath).filter(
         (file) => path.extname(file) === ".zip"
       );
 
@@ -136,19 +135,18 @@ describe("snapshot", function () {
   });
 
   it("should be integrated", async function () {
-    this.timeout(120000);
     console.log(`Trying snapshot path: ${baseUrl}`);
 
-    let cancellation = CancellationToken.create();
+    const cancellation = CancellationToken.create();
     const localMetadata = await getMetadataFromFilename("local-snapshot.json");
 
-    let metadata = await downloadMetadata(
+    const metadata = await downloadMetadata(
       baseUrl,
       userDataPath,
       "latest.json",
       cancellation.token
     );
-    let needSnapshot = validateMetadata(
+    const needSnapshot = validateMetadata(
       metadata,
       localMetadata,
       integrationStore,
@@ -157,22 +155,22 @@ describe("snapshot", function () {
 
     assert.isTrue(needSnapshot);
 
-    let target = await getSnapshotDownloadTarget(
+    const target = await getSnapshotDownloadTarget(
       metadata,
       integrationStore,
       baseUrl,
       userDataPath,
       cancellation.token,
-      mockMixpanel,
+      mockMixpanel
     );
 
-    let snapshotPaths = await downloadSnapshot(
+    const snapshotPaths = await downloadSnapshot(
       baseUrl,
       target,
       userDataPath,
       (status) => {},
       cancellation.token,
-      mockMixpanel,
+      mockMixpanel
     );
 
     await extractSnapshot(
@@ -184,8 +182,8 @@ describe("snapshot", function () {
         }
       },
       cancellation.token,
-      mockMixpanel,
+      mockMixpanel
     );
     console.log("finish");
-  });
+  }, 120000);
 });
