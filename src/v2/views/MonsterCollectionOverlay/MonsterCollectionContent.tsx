@@ -318,7 +318,7 @@ export function MonsterCollectionContent({
               </Item>
               <Item
                 key="stage"
-                amount={systemRewards[index!].stage + "%"}
+                amount={systemRewards[index!].stage + "% DC"}
                 title="Stage AP"
               >
                 <img src={apImg} height={48} />
