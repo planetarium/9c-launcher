@@ -35,13 +35,13 @@ export function getDownloadUrl(
 const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
   aix: null,
   android: null,
-  darwin: "mac.tar.gz",
+  darwin: "macOS.tar.gz",
   freebsd: null,
-  linux: "linux.tar.gz",
+  linux: "Linux.tar.gz",
   openbsd: null,
   sunos: null,
-  win32: "win.zip",
-  cygwin: "win.zip",
+  win32: "Windows.zip",
+  cygwin: "Windows.zip",
   netbsd: null,
 };
 
