@@ -7,7 +7,7 @@ import { useCreatePrivateKeyMutation } from "../../../generated/graphql";
 import { ProtectedPrivateKey } from "../../../main/headless/key-store";
 import RetypePasswordForm from "../../components/RetypePasswordForm";
 import { T } from "@transifex/react";
-import AccountStore from "../../stores/account";
+import AccountStore from "src/stores/account";
 import createAccountViewStyle from "./CreateAccountView.style";
 
 interface ICreateAccountProps {

@@ -10,29 +10,35 @@ Translations: [한국어](./CONTRIBUTING.ko.md).
 
 ## Setting things up
 
-When cloning on Windows, you **must** turn on the `core.symlinks` as [Git For Windows doesn't enable this by default](https://github.com/git-for-windows/git/wiki/Symbolic-Links). You may need to turn on the Developer Mode to do so.
+As this project uses Git submodules quite heavily, we recommend to use `--recursive` flag when cloning.
 
 ```sh
-git clone -c core.symlinks=true <URL>
+git clone --recursive <URL>
 ```
 
-> If you prefer to do this on GitHub CLI, you can clone the repository by: `gh repo clone <repository> -- -c core.symlinks=true`
+> If you prefer to do this on GitHub CLI, you can clone the repository by: `gh repo clone <repository> -- --recursive`
 
 
 After cloning, you can install the required dependencies by running these commands:
 
 ```sh
-git submodule update --recursive # Download 9C Headless and Unity Player build source
-
 yarn # installs npm dependencies
 yarn build-headless # builds the headless
-yarn bundle-player # downloads the unity player. if you not want to test game, you can skip this step.
+yarn bundle-player # downloads the unity player. if you can't test the game, you can skip this step.
 yarn codegen # generates the GraphQL glue code
+```
+
+If you're looking to submit patches to the project, we recommend to install Git hooks which check for our requirements:
+
+```sh
+yarn lefthook install
 ```
 
 ## Running the Launcher
 
-You should have the latest configuration file (`config.json`) in the `dist` directory to run the launcher. You can download it here: https://download.nine-chronicles.com/9c-launcher-config.json.
+To run the launcher, you should have the latest configuration file (`config.json`) in the `dist` directory. You can download it here: https://download.nine-chronicles.com/9c-launcher-config.json.
+
+This step can be done automatically by using this command too: `yarn download-config`.
 
 After doing so, you can run the launcher by running:
 
@@ -40,10 +46,10 @@ After doing so, you can run the launcher by running:
 yarn dev
 ```
 
-## Packaging for distribution
+## Making your changes
 
-In most cases, you shouldn't do this because we use CI builds for distribution. However, if you want to package the launcher for distribution, you can do so by running:
+For contributing, we expect you to make a branch from the `development` branch, where most of our development happens. You should be on this branch when you cloned the repository; if not, please switch to `development`.
 
-```
-yarn run pack
-```
+The branch name can be whatever you want (we don't have specific rules for them), but we recommend using one of these prefixes that match your changes: `fix/`, `chore/`, `feat/`.
+
+After making changes in your branch, please push them into your fork and submit a PR with a descrption explaining the changes. The link to relevant issues would be helpful as well.

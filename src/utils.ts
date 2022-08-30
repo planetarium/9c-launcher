@@ -267,3 +267,8 @@ export async function cancellableExtract(
 export function getType(target: any) {
   return Object.prototype.toString.call(target).slice(8, -1);
 }
+
+export function getVersionNumberFromAPV(apv: string): number {
+  const [version] = apv.split("/");
+  return parseInt(version, 10);
+}

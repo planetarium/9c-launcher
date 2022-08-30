@@ -2,17 +2,24 @@ import { encode, decode, BencodexDict } from "bencodex";
 import { DownloadItem, app, dialog, shell } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import extractZip from "extract-zip";
-import * as utils from "../utils";
+import * as utils from "../../utils";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { tmpName } from "tmp-promise";
-import { DownloadBinaryFailedError } from "./exceptions/download-binary-failed";
-import { get as getConfig } from "../config";
+import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
+import {
+  get as getConfig,
+  apvVersionNumber,
+  netenv,
+  EXECUTE_PATH,
+  WIN_GAME_PATH,
+} from "../../config";
 import path from "path";
 import fs from "fs";
-import Headless from "./headless/headless";
+import Headless from "../headless/headless";
 import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
-import { t } from "@transifex/native";
+import { playerUpdate } from "./player-update";
+import { getDownloadUrl, decodeLocalAPV } from "./util";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -60,29 +67,58 @@ export interface IUpdateOptions {
   getWindow(): Electron.BrowserWindow | null;
 }
 
-function getVersionNumberFromAPV(apv: string): number {
-  const [version] = apv.split("/");
-  return parseInt(version, 10);
-}
-
-function decodeLocalAPV(): BencodexDict | undefined {
-  const localApvToken = getConfig("AppProtocolVersion");
-  const extra = Buffer.from(localApvToken.split("/")[1], "hex");
-
-  if (!extra.length) return;
-
-  return decode(extra) as BencodexDict | undefined;
-}
-
 export async function update(update: Update, listeners: IUpdateOptions) {
-  const localVersionNumber: number =
-    update.current ?? getVersionNumberFromAPV(getConfig("AppProtocolVersion"));
+  if (!getConfig("UseUpdate", process.env.NODE_ENV === "production")) {
+    console.log("`UseUpdate` option is false, Do not proceed update!");
+    return;
+  }
+
+  const localVersionNumber: number = update.current ?? apvVersionNumber;
   const peerVersionNumber: number = update.newer;
   const peerVersionExtra: string = update.extras;
 
   const win = listeners.getWindow();
 
+  if (win === null) {
+    console.log("Stop update process because win is null.");
+    return;
+  }
+
+  console.log("peerVersionExtra (hex):", peerVersionExtra);
+  const buffer = Buffer.from(peerVersionExtra, "hex");
+  console.log("peerVersionExtra (bytes):", buffer);
+  const extra = decode(buffer) as BencodexDict;
+  console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // Stringifies the JSON for extra clarity in the log
+
+  // FIXME: project version number hard coding: 1.
+  const launcherDownloadUrl = getDownloadUrl(
+    netenv,
+    peerVersionNumber,
+    "launcher",
+    1,
+    process.platform
+  );
+  // FIXME: project version number hard coding: 1.
+  const playerDownloadUrl = getDownloadUrl(
+    netenv,
+    peerVersionNumber,
+    "player",
+    1,
+    process.platform
+  );
+
+  console.log("launcherDownloadUrl: ", launcherDownloadUrl);
+  console.log("playerDownloadUrl: ", playerDownloadUrl);
+
   if (peerVersionNumber <= localVersionNumber) {
+    const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
+
+    if (!fs.existsSync(executePath)) {
+      await playerUpdate(playerDownloadUrl, win);
+
+      // Restart
+      listeners.relaunchRequired();
+    }
     return;
   }
 
@@ -106,31 +142,10 @@ export async function update(update: Update, listeners: IUpdateOptions) {
 
   await listeners.downloadStarted();
 
-  if (win === null) {
-    console.log("Stop update process because win is null.");
-    return;
-  }
-
-  console.log("peerVersionExtra (hex):", peerVersionExtra);
-  const buffer = Buffer.from(peerVersionExtra, "hex");
-  console.log("peerVersionExtra (bytes):", buffer);
-  const extra = decode(buffer) as BencodexDict;
-  console.log("peerVersionExtra (decoded):", JSON.stringify(extra)); // Stringifies the JSON for extra clarity in the log
-  const macOSBinaryUrl = extra.get("macOSBinaryUrl") as string;
-  const windowsBinaryUrl = extra.get("WindowsBinaryUrl") as string;
-  console.log("macOSBinaryUrl: ", macOSBinaryUrl);
-  console.log("WindowsBinaryUrl: ", windowsBinaryUrl);
-  const downloadUrl =
-    process.platform === "win32"
-      ? windowsBinaryUrl
-      : process.platform === "darwin"
-      ? macOSBinaryUrl
-      : null;
-
-  if (downloadUrl == null) {
-    console.log(`Stop update process. Not support ${process.platform}.`);
-    return;
-  }
+  // if (launcherDownloadUrl == null) {
+  //   console.log(`Stop update process. Not support ${process.platform}.`);
+  //   return;
+  // }
 
   const compatVersion = BigInt(
     (extra.get("CompatiblityVersion") as string | number) ?? 0
@@ -169,19 +184,19 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `Downloading ${launcherDownloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
       win?.webContents.send("update download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("Starts to download:", downloadUrl);
+  console.log("Starts to download:", launcherDownloadUrl);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, downloadUrl, options);
+    dl = await download(win, launcherDownloadUrl, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(downloadUrl);
+    throw new DownloadBinaryFailedError(launcherDownloadUrl);
   }
 
   win.webContents.send("update download complete");
@@ -240,8 +255,7 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     } catch (e) {
       console.warn("Failed to remove temporary files from", tempDir, "\n", e);
     }
-    win.webContents.send("update copying complete");
-  } else if (process.platform == "darwin") {
+  } else if (process.platform == "darwin" || process.platform == "linux") {
     // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
     const bz2 = lowerFname.endsWith(".tar.bz2") || lowerFname.endsWith(".tbz");
@@ -251,6 +265,8 @@ export async function update(update: Update, listeners: IUpdateOptions) {
       "to",
       extractPath
     );
+    win?.webContents.send("update extract progress", 50);
+
     try {
       await spawnPromise(
         "tar",
@@ -261,6 +277,9 @@ export async function update(update: Update, listeners: IUpdateOptions) {
       console.error(`${e}:\n`, e.stderr);
       throw e;
     }
+    win.webContents.send("update extract complete");
+    win.webContents.send("update copying progress");
+
     console.log(
       "The tarball archive",
       dlPath,
@@ -271,6 +290,8 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     console.warn("Not supported platform.");
     return;
   }
+
+  win.webContents.send("update copying complete");
 
   // Delete compressed file after decompress.
   await fs.promises.unlink(dlPath);
@@ -288,6 +309,10 @@ export async function update(update: Update, listeners: IUpdateOptions) {
     "The existing and new configuration files has been merged:",
     config
   );
+
+  if (playerDownloadUrl) {
+    await playerUpdate(playerDownloadUrl, win);
+  }
 
   lockfile.unlockSync(lockfilePath);
   console.log(

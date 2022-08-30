@@ -1,12 +1,10 @@
 import React from "react";
-import AccountStore from "../stores/account";
 import {
   MenuItem,
   Select as OriginalSelect,
   SelectProps,
 } from "@material-ui/core";
 import { observer } from "mobx-react";
-import { SelectInputProps } from "@material-ui/core/Select/SelectInput";
 
 interface ISelectProps extends Omit<SelectProps, "onChange"> {
   items: string[];

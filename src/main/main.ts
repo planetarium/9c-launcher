@@ -1,14 +1,14 @@
 import axios from "axios";
 import {
+  DEFAULT_DOWNLOAD_BASE_URL,
   CUSTOM_SERVER,
   LOCAL_SERVER_HOST,
   LOCAL_SERVER_PORT,
   configStore,
   get as getConfig,
   getBlockChainStorePath,
-  LINUX_GAME_PATH,
-  MAC_GAME_PATH,
   WIN_GAME_PATH,
+  EXECUTE_PATH,
   RPC_SERVER_HOST,
   RPC_SERVER_PORT,
   MIXPANEL_TOKEN,
@@ -43,7 +43,7 @@ import {
   HeadlessExitedError,
   HeadlessInitializeError,
   UndefinedProtectedPrivateKeyError,
-} from "../errors";
+} from "../main/exceptions";
 import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
@@ -78,7 +78,7 @@ import {
   IUpdateOptions,
   Update,
   update,
-} from "./update";
+} from "./update/launcher-update";
 import { send } from "./v2/ipc";
 import { IPC_PRELOAD_IDLE, IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
 import {
@@ -96,8 +96,8 @@ const standaloneExecutablePath = path.join(
   "NineChronicles.Headless.Executable"
 );
 
-const REMOTE_CONFIG_URL =
-  "https://download.nine-chronicles.com/9c-launcher-config.json";
+const baseURL = getConfig("DownloadBaseURL") || DEFAULT_DOWNLOAD_BASE_URL;
+const REMOTE_CONFIG_URL = `${baseURL}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
 let collectionWin: BrowserWindow | null = null;
@@ -340,16 +340,10 @@ function initializeIpc() {
     }
 
     const node = utils.execute(
-      path.join(
-        app.getAppPath(),
-        process.platform === "darwin"
-          ? MAC_GAME_PATH
-          : process.platform === "linux"
-          ? LINUX_GAME_PATH
-          : WIN_GAME_PATH
-      ),
+      EXECUTE_PATH[process.platform] || WIN_GAME_PATH,
       info.args
     );
+
     node.on("close", (code) => {
       // Code 21: ERROR_NOT_READY
       if (code === 21) {
