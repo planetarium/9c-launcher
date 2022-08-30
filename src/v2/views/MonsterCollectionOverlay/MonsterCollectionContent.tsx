@@ -301,7 +301,7 @@ export function MonsterCollectionContent({
                   </>
                 }
               >
-                <img src={crystalImg} />
+                <img src={crystalImg} height={48} />
               </Item>
               <Item
                 key="arena"
@@ -314,14 +314,14 @@ export function MonsterCollectionContent({
                   </>
                 }
               >
-                <img src={ncgImg} />
+                <img src={ncgImg} height={48} />
               </Item>
               <Item
                 key="stage"
                 amount={systemRewards[index!].stage + "%"}
                 title="Stage AP"
               >
-                <img src={apImg} />
+                <img src={apImg} height={48} />
               </Item>
             </ItemGroup>
           </RewardSheet>
