@@ -1,7 +1,6 @@
 import { IApv } from "src/interfaces/apv";
-import { parseExtraData } from "src/utils/apv";
-import { IDownloadUrls, getDownloadUrls } from "src/utils/url";
-
+import { parseExtraData } from "../../utils/apv";
+import { IDownloadUrls, getDownloadUrls } from "../../utils/url";
 import Headless from "../headless/headless";
 
 export class GetPeersApvFailedError extends Error {}
