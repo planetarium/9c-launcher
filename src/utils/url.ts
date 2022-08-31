@@ -1,4 +1,4 @@
-import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-platform";
+import { NotSupportedPlatformError } from "../main/exceptions/not-supported-platform";
 
 export interface IDownloadUrls {
   launcher: string;
