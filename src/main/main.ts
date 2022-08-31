@@ -80,8 +80,7 @@ import {
 } from "./update/launcher-update";
 import {
   checkUpdateRequired,
-  IUpdateContext,
-  checkUpdateRequiredPeersApv,
+  checkUpdateRequiredUsedPeersApv,
 } from "./update/check";
 import { send } from "./v2/ipc";
 import {
@@ -322,7 +321,7 @@ async function initializeApp() {
 
 function initializeIpc() {
   ipcMain.on("encounter different version", async (_event, apv: IApv) => {
-    const context = await checkUpdateRequiredPeersApv(
+    const context = await checkUpdateRequiredUsedPeersApv(
       apv,
       standalone,
       process.platform,

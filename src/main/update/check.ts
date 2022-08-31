@@ -35,7 +35,8 @@ export async function checkUpdateRequired(
   return null;
 }
 
-export async function checkUpdateRequiredPeersApv(
+// Could use overload function...
+export async function checkUpdateRequiredUsedPeersApv(
   peersApv: IApv,
   standalone: Headless,
   platform: NodeJS.Platform,
