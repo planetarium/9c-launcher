@@ -17,8 +17,13 @@ const lockfilePath = path.join(
 
 export async function playerUpdate(
   downloadUrl: string,
-  win: Electron.BrowserWindow
+  win: Electron.BrowserWindow | null
 ) {
+  if (win === null) {
+    console.log("Stop update process because win is null.");
+    return;
+  }
+
   if (lockfile.checkSync(lockfilePath)) {
     console.log(
       "[player] 'encounter different version' event seems running already. Stop this flow."

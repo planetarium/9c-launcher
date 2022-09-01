@@ -16,6 +16,7 @@ import {
   NodeInfo,
   userConfigStore,
   netenv,
+  apvVersionNumber,
 } from "../config";
 import {
   app,
@@ -37,6 +38,7 @@ import "core-js";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
 import * as utils from "../utils";
+import { buildDownloadUrl } from "src/utils/url";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
 import Headless from "./headless/headless";
@@ -78,6 +80,7 @@ import {
   IUpdateOptions,
   update,
 } from "./update/launcher-update";
+import { playerUpdate } from "./update/player-update";
 import {
   checkUpdateRequired,
   checkUpdateRequiredUsedPeersApv,
@@ -271,6 +274,25 @@ async function initializeApp() {
       ipcMain.handle("start update", async () => {
         await update(context, updateOptions);
       });
+    else if (!context && isV2) {
+      const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
+
+      if (!fs.existsSync(executePath)) {
+        ipcMain.handle("start update", async () => {
+          await playerUpdate(
+            buildDownloadUrl(
+              baseURL,
+              netenv,
+              apvVersionNumber,
+              "player",
+              1,
+              process.platform
+            ),
+            win
+          );
+        });
+      }
+    }
 
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
