@@ -31,6 +31,7 @@ import RPCSpinner from "./components/RPCSpinner/RPCSpinner";
 import { PreloadEndedDocument, PreloadEndedQuery } from "src/generated/graphql";
 import { GenesisHashDocument, GenesisHashQuery } from "src/generated/graphql";
 import _refiner from "refiner-js";
+import { decodeApvExtra } from "../utils/apv";
 
 const Store: IStoreContainer = {
   accountStore: new AccountStore(),

@@ -36,7 +36,8 @@ import logoImage from "./resources/logo.png";
 import { initializeSentry } from "../preload/sentry";
 import "core-js";
 import log from "electron-log";
-import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
+import { AppProtocolVersionType } from "../generated/graphql";
+import { decodeApvExtra } from "../utils/apv";
 import * as utils from "../utils";
 import { buildDownloadUrl } from "../utils/url";
 import * as partitionSnapshot from "./snapshot";
@@ -95,7 +96,7 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
-import { IApv } from "src/interfaces/apv";
+import { ISimpleApv } from "src/interfaces/apv";
 
 initializeSentry();
 
@@ -346,21 +347,31 @@ async function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on("encounter different version", async (_event, apv: IApv) => {
-    if (useUpdate) {
-      const context = await checkUpdateRequiredUsedPeersApv(
-        apv,
-        standalone,
-        process.platform,
-        netenv,
-        baseURL,
-        getConfig("AppProtocolVersion")
-      );
-      if (context) {
-        await update(context, updateOptions);
+  ipcMain.on(
+    "encounter different version",
+    async (_event, apv: Pick<AppProtocolVersionType, "version" | "extra">) => {
+      if (useUpdate) {
+        const decodedExtra = apv.extra && decodeApvExtra(apv.extra);
+
+        const simpleApv = {
+          version: apv.version,
+          extra: decodedExtra ? Object.fromEntries(decodedExtra) : {},
+        };
+
+        const context = await checkUpdateRequiredUsedPeersApv(
+          simpleApv,
+          standalone,
+          process.platform,
+          netenv,
+          baseURL,
+          getConfig("AppProtocolVersion")
+        );
+        if (context) {
+          await update(context, updateOptions);
+        }
       }
     }
-  });
+  );
 
   ipcMain.handle("open collection page", async (_, selectedAddress) => {
     if (collectionWin != null) {

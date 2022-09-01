@@ -4,3 +4,5 @@ export interface IApv {
   signer: string;
   extra: { [key: string]: string };
 }
+
+export type ISimpleApv = Pick<IApv, "version" | "extra">;

@@ -76,6 +76,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
       ipcRenderer.send(
         "encounter different version",
         differentAppProtocolVersionEncounter
+          .differentAppProtocolVersionEncounter.peerVersion
       );
     };
   }, []);

@@ -21,6 +21,7 @@ import {
   PreloadEndedQuery,
 } from "../generated/graphql";
 import { captureException } from "@sentry/electron";
+import { decodeApvExtra } from "../../utils/apv";
 
 type Client = ApolloClient<NormalizedCacheObject>;
 
