@@ -38,7 +38,7 @@ import "core-js";
 import log from "electron-log";
 import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
 import * as utils from "../utils";
-import { buildDownloadUrl } from "src/utils/url";
+import { buildDownloadUrl } from "../utils/url";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
 import Headless from "./headless/headless";
@@ -133,6 +133,7 @@ let remoteNode: NodeInfo;
 
 const isV2 =
   !getConfig("PreferLegacyInterface") || app.commandLine.hasSwitch("v2");
+const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
 ipv4().then((value) => (ip = value));
 
@@ -269,30 +270,33 @@ async function initializeApp() {
       getConfig("AppProtocolVersion"),
       getConfig("TrustedAppProtocolVersionSigners")
     );
-    if (context && !isV2) update(context, updateOptions);
-    else if (context && isV2)
-      ipcMain.handle("start update", async () => {
-        await update(context, updateOptions);
-      });
-    else if (!context && isV2) {
-      const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
 
-      if (!fs.existsSync(executePath)) {
-        ipcMain.handle("start update", async () => {
-          await playerUpdate(
-            buildDownloadUrl(
-              baseURL,
-              netenv,
-              apvVersionNumber,
-              "player",
-              1,
-              process.platform
-            ),
-            win
-          );
-        });
+    ipcMain.handle("start update", async () => {
+      if (useUpdate) {
+        if (context && !isV2) update(context, updateOptions);
+        else if (context && isV2) {
+          await update(context, updateOptions);
+        } else if (!context && isV2) {
+          const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
+
+          if (!fs.existsSync(executePath)) {
+            await playerUpdate(
+              buildDownloadUrl(
+                baseURL,
+                netenv,
+                apvVersionNumber,
+                "player",
+                1,
+                process.platform
+              ),
+              win
+            );
+          }
+        }
+      } else {
+        console.log("`UseUpdate` option is false, Do not proceed update!");
       }
-    }
+    });
 
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
@@ -343,16 +347,18 @@ async function initializeApp() {
 
 function initializeIpc() {
   ipcMain.on("encounter different version", async (_event, apv: IApv) => {
-    const context = await checkUpdateRequiredUsedPeersApv(
-      apv,
-      standalone,
-      process.platform,
-      netenv,
-      baseURL,
-      getConfig("AppProtocolVersion")
-    );
-    if (context) {
-      await update(context, updateOptions);
+    if (useUpdate) {
+      const context = await checkUpdateRequiredUsedPeersApv(
+        apv,
+        standalone,
+        process.platform,
+        netenv,
+        baseURL,
+        getConfig("AppProtocolVersion")
+      );
+      if (context) {
+        await update(context, updateOptions);
+      }
     }
   });
 
