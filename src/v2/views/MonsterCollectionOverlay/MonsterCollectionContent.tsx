@@ -34,8 +34,9 @@ import monster4Img from "src/v2/resources/collection/monster-4.png";
 import monster5Img from "src/v2/resources/collection/monster-5.png";
 import itemMetadata from "src/v2/utils/monsterCollection/items";
 
-import crystalImg from "src/v2/resources/collection/icon-grinding-crystal.png";
-import arenaImg from "src/v2/resources/collection/icon-arena-reward.png";
+import crystalImg from "src/v2/resources/collection/items/crystal.png";
+import apImg from "src/v2/resources/collection/icon-action-power.webp";
+import ncgImg from "src/v2/resources/collection/items/ncg.png";
 import systemRewards from "src/v2/utils/monsterCollection/systemRewards";
 
 import {
@@ -116,7 +117,7 @@ export function MonsterCollectionContent({
     if (!stakeState) return null;
     const index = levels?.findLastIndex((v) => deposit?.gte(v.requiredGold));
     return index != null && index !== -1 ? index : null;
-  }, [stakeState, levels]);
+  }, [stakeState, levels, deposit]);
   const selectedIndex = useMemo(() => {
     const index = levels?.findLastIndex((v) =>
       amountDecimal.gte(v.requiredGold)
@@ -144,7 +145,7 @@ export function MonsterCollectionContent({
     () =>
       bonusRewards &&
       new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
-    [levels, index]
+    [bonusRewards]
   );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
 
@@ -291,23 +292,36 @@ export function MonsterCollectionContent({
             <ItemGroup key="system" title="System Rewards">
               <Item
                 key="crystal"
-                amount={systemRewards[index!].crystal}
+                amount={systemRewards[index!].crystal + "%"}
                 title={
                   <>
-                    Grinding
+                    Crystal
                     <br />
-                    +Staking
+                    Grinding
                   </>
                 }
               >
-                <img src={crystalImg} />
+                <img src={crystalImg} height={48} />
               </Item>
               <Item
                 key="arena"
-                amount={systemRewards[index!].arena}
-                title="Arena"
+                amount={systemRewards[index!].arena + "%"}
+                title={
+                  <>
+                    Arena
+                    <br />
+                    Reward
+                  </>
+                }
               >
-                <img src={arenaImg} />
+                <img src={ncgImg} height={48} />
+              </Item>
+              <Item
+                key="stage"
+                amount={systemRewards[index!].stage + "% DC"}
+                title="Stage AP"
+              >
+                <img src={apImg} height={48} />
               </Item>
             </ItemGroup>
           </RewardSheet>
