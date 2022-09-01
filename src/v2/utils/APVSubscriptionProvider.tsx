@@ -6,6 +6,7 @@ import { ipcRenderer } from "electron";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import UpdateView from "../views/UpdateView";
 import machine from "../machines/updateMachine";
+import { decodeApvExtra } from "../../utils/apv";
 
 export default function APVSubscriptionProvider({
   children,
@@ -17,7 +18,14 @@ export default function APVSubscriptionProvider({
   useEffect(() => {
     if (loading) return;
     if (data?.differentAppProtocolVersionEncounter) {
-      ipcRenderer.send("encounter different version", data);
+      ipcRenderer.send("encounter different version", {
+        version: data.differentAppProtocolVersionEncounter.peerVersion.version,
+        extra: data.differentAppProtocolVersionEncounter.peerVersion.extra
+          ? decodeApvExtra(
+              data.differentAppProtocolVersionEncounter.peerVersion.extra
+            )
+          : {},
+      });
     }
   }, [data, loading]);
 

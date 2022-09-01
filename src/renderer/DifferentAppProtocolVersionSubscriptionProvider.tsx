@@ -7,6 +7,7 @@ import {
 } from "../generated/graphql";
 import { IDownloadProgress } from "../interfaces/ipc";
 import UpdateView from "./views/update/UpdateView";
+import { decodeApvExtra } from "../utils/apv";
 
 export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,
@@ -73,10 +74,18 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
             },
           },
         };
-      ipcRenderer.send(
-        "encounter different version",
-        differentAppProtocolVersionEncounter
-      );
+      ipcRenderer.send("encounter different version", {
+        version:
+          differentAppProtocolVersionEncounter
+            .differentAppProtocolVersionEncounter.peerVersion.version,
+        extra: differentAppProtocolVersionEncounter
+          .differentAppProtocolVersionEncounter.peerVersion.extra
+          ? decodeApvExtra(
+              differentAppProtocolVersionEncounter
+                .differentAppProtocolVersionEncounter.peerVersion.extra
+            )
+          : {},
+      });
     };
   }, []);
 

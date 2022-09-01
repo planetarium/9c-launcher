@@ -31,6 +31,7 @@ import RPCSpinner from "./components/RPCSpinner/RPCSpinner";
 import { PreloadEndedDocument, PreloadEndedQuery } from "src/generated/graphql";
 import { GenesisHashDocument, GenesisHashQuery } from "src/generated/graphql";
 import _refiner from "refiner-js";
+import { decodeApvExtra } from "../utils/apv";
 
 const Store: IStoreContainer = {
   accountStore: new AccountStore(),
@@ -123,7 +124,10 @@ function App() {
                 .then(({ data }) => {
                   const apv = data!.nodeStatus.appProtocolVersion;
                   if (!apv) return;
-                  ipcRenderer.send("encounter different version", apv);
+                  ipcRenderer.send("encounter different version", {
+                    version: apv.version,
+                    extra: apv.extra ? decodeApvExtra(apv.extra) : {},
+                  });
                 });
             },
           },

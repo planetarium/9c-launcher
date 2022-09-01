@@ -1,13 +1,12 @@
-import { IApv } from "src/interfaces/apv";
-import { parseExtraData } from "../../utils/apv";
+import { IApv, ISimpleApv } from "src/interfaces/apv";
 import { IDownloadUrls, getDownloadUrls } from "../../utils/url";
 import Headless from "../headless/headless";
 
 export class GetPeersApvFailedError extends Error {}
 
 export interface IUpdateContext {
-  newApv: IApv;
-  oldApv: IApv;
+  newApv: ISimpleApv;
+  oldApv: ISimpleApv;
   urls: IDownloadUrls;
 }
 
@@ -37,7 +36,7 @@ export async function checkUpdateRequired(
 
 // Could use overload function...
 export async function checkUpdateRequiredUsedPeersApv(
-  peersApv: IApv,
+  peersApv: ISimpleApv,
   standalone: Headless,
   platform: NodeJS.Platform,
   netenv: string,
@@ -57,15 +56,15 @@ export async function checkUpdateRequiredUsedPeersApv(
   return null;
 }
 
-export function checkCompatible(peersApv: IApv, localApv: IApv): boolean {
-  const peersApvExtra = parseExtraData(peersApv.extra);
-  const localApvExtra = parseExtraData(localApv.extra);
-
+export function checkCompatible(
+  peersApv: ISimpleApv,
+  localApv: ISimpleApv
+): boolean {
   const peersCompatVersion = BigInt(
-    (peersApvExtra.get("CompatiblityVersion") as string | number) ?? 0
+    (peersApv.extra["CompatiblityVersion"] as string | number) ?? 0
   );
   const localCompatVersion = BigInt(
-    (localApvExtra.get("CompatiblityVersion") as string | number) ?? 0
+    (localApv.extra["CompatiblityVersion"] as string | number) ?? 0
   );
 
   if (peersCompatVersion > localCompatVersion) {

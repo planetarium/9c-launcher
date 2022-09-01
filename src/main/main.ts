@@ -95,7 +95,7 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
-import { IApv } from "src/interfaces/apv";
+import { ISimpleApv } from "src/interfaces/apv";
 
 initializeSentry();
 
@@ -346,7 +346,7 @@ async function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on("encounter different version", async (_event, apv: IApv) => {
+  ipcMain.on("encounter different version", async (_event, apv: ISimpleApv) => {
     if (useUpdate) {
       const context = await checkUpdateRequiredUsedPeersApv(
         apv,

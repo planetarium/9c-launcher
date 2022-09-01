@@ -21,6 +21,7 @@ import {
   PreloadEndedQuery,
 } from "../generated/graphql";
 import { captureException } from "@sentry/electron";
+import { decodeApvExtra } from "../../utils/apv";
 
 type Client = ApolloClient<NormalizedCacheObject>;
 
@@ -53,7 +54,10 @@ export default function useApolloClient(): Client | null {
               .then(({ data }) => {
                 const apv = data!.nodeStatus.appProtocolVersion;
                 if (!apv) return;
-                ipcRenderer.send("encounter different version", apv);
+                ipcRenderer.send("encounter different version", {
+                  version: apv.version,
+                  extra: apv.extra ? decodeApvExtra(apv.extra) : {},
+                });
               });
           },
         },
