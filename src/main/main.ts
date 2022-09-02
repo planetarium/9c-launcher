@@ -80,7 +80,11 @@ import {
   update,
 } from "./update/launcher-update";
 import { send } from "./v2/ipc";
-import { IPC_PRELOAD_IDLE, IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
+import {
+  IPC_OPEN_URL,
+  IPC_PRELOAD_IDLE,
+  IPC_PRELOAD_NEXT,
+} from "../v2/ipcTokens";
 import {
   initialize as remoteInitialize,
   enable as webEnable,
@@ -158,7 +162,10 @@ client
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on("second-instance", (_event, _commandLine) => {
+  app.on("second-instance", (_event, argv) => {
+    const lastArgv = argv[argv.length - 1];
+    if (lastArgv.startsWith("ninechronicles-launcher://") && win)
+      send(win, IPC_OPEN_URL, lastArgv);
     win?.show();
   });
 
@@ -246,6 +253,11 @@ async function initializeApp() {
       ipcMain.handle("start update", async () => {
         await update(u, updateOptions);
       });
+
+    win.webContents.on("did-finish-load", () => {
+      if (app.commandLine.hasSwitch("protocol"))
+        send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
+    });
 
     mixpanel?.track("Launcher/Start", {
       isV2,
