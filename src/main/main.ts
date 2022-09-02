@@ -218,6 +218,16 @@ async function intializeConfig() {
 
 async function initializeApp() {
   console.log("initializeApp");
+
+  const isProtocolSet = app.setAsDefaultProtocolClient(
+    "ninechronicles-launcher",
+    process.execPath,
+    [!app.isPackaged && path.resolve(process.argv[1]), "--protocol"].filter(
+      Boolean
+    )
+  );
+  console.log("isProtocolSet", isProtocolSet);
+
   app.on("ready", async () => {
     remoteInitialize();
     if (process.env.NODE_ENV !== "production")
