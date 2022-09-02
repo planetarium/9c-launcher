@@ -92,7 +92,8 @@ const launcherUpdate = {
     copy: {
       entry: "resetProgress",
       invoke: {
-        src: () => invokeIpcEvent<MachineEvent>("update copy complete", "DONE"),
+        src: () =>
+          invokeIpcEvent<MachineEvent>("update copying complete", "DONE"),
       },
     },
   },
