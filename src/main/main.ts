@@ -351,14 +351,15 @@ function initializeIpc() {
     "encounter different version",
     async (_event, apv: Pick<AppProtocolVersionType, "version" | "extra">) => {
       if (useUpdate) {
-        const temp = {
+        const decodedExtra = apv.extra && decodeApvExtra(apv.extra);
+
+        const simpleApv = {
           version: apv.version,
-          extra: apv.extra ? decodeApvExtra(apv.extra) : {},
-        } as ISimpleApv;
-        // console.log("test123321", apv, apv.extra, decodeApvExtra(apv.extra as string), apv.extra ? decodeApvExtra(apv.extra) : {});
+          extra: decodedExtra ? Object.fromEntries(decodedExtra) : {},
+        };
 
         const context = await checkUpdateRequiredUsedPeersApv(
-          temp,
+          simpleApv,
           standalone,
           process.platform,
           netenv,
