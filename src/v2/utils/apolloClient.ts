@@ -54,10 +54,7 @@ export default function useApolloClient(): Client | null {
               .then(({ data }) => {
                 const apv = data!.nodeStatus.appProtocolVersion;
                 if (!apv) return;
-                ipcRenderer.send("encounter different version", {
-                  version: apv.version,
-                  extra: apv.extra ? decodeApvExtra(apv.extra) : {},
-                });
+                ipcRenderer.send("encounter different version", apv);
               });
           },
         },

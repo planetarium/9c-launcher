@@ -18,14 +18,10 @@ export default function APVSubscriptionProvider({
   useEffect(() => {
     if (loading) return;
     if (data?.differentAppProtocolVersionEncounter) {
-      ipcRenderer.send("encounter different version", {
-        version: data.differentAppProtocolVersionEncounter.peerVersion.version,
-        extra: data.differentAppProtocolVersionEncounter.peerVersion.extra
-          ? decodeApvExtra(
-              data.differentAppProtocolVersionEncounter.peerVersion.extra
-            )
-          : {},
-      });
+      ipcRenderer.send(
+        "encounter different version",
+        data.differentAppProtocolVersionEncounter.peerVersion
+      );
     }
   }, [data, loading]);
 

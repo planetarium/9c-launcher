@@ -36,7 +36,8 @@ import logoImage from "./resources/logo.png";
 import { initializeSentry } from "../preload/sentry";
 import "core-js";
 import log from "electron-log";
-import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
+import { AppProtocolVersionType } from "../generated/graphql";
+import { decodeApvExtra } from "../utils/apv";
 import * as utils from "../utils";
 import { buildDownloadUrl } from "../utils/url";
 import * as partitionSnapshot from "./snapshot";
@@ -346,21 +347,30 @@ async function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on("encounter different version", async (_event, apv: ISimpleApv) => {
-    if (useUpdate) {
-      const context = await checkUpdateRequiredUsedPeersApv(
-        apv,
-        standalone,
-        process.platform,
-        netenv,
-        baseURL,
-        getConfig("AppProtocolVersion")
-      );
-      if (context) {
-        await update(context, updateOptions);
+  ipcMain.on(
+    "encounter different version",
+    async (_event, apv: Pick<AppProtocolVersionType, "version" | "extra">) => {
+      if (useUpdate) {
+        const temp = {
+          version: apv.version,
+          extra: apv.extra ? decodeApvExtra(apv.extra) : {},
+        } as ISimpleApv;
+        // console.log("test123321", apv, apv.extra, decodeApvExtra(apv.extra as string), apv.extra ? decodeApvExtra(apv.extra) : {});
+
+        const context = await checkUpdateRequiredUsedPeersApv(
+          temp,
+          standalone,
+          process.platform,
+          netenv,
+          baseURL,
+          getConfig("AppProtocolVersion")
+        );
+        if (context) {
+          await update(context, updateOptions);
+        }
       }
     }
-  });
+  );
 
   ipcMain.handle("open collection page", async (_, selectedAddress) => {
     if (collectionWin != null) {
