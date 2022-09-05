@@ -391,7 +391,7 @@ export async function processSnapshot(
       const { reason: error } = result;
       if (error.code === "ENOENT" || error.code === "ENOTDIR") return; // Ignore if not exist
       console.error("Error while removing useless store: ", error);
-    })
+    });
     send(win, IPC_PRELOAD_NEXT);
     updateProgress.cancel();
     await extractSnapshot(

@@ -12,12 +12,12 @@ import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 import { Provider } from "mobx-react";
-import AccountStore from "./stores/account";
+import AccountStore from "../stores/account";
 import { IStoreContainer } from "../interfaces/store";
 import { RouterStore, syncHistoryWithStore } from "mobx-react-router";
-import GameStore from "./stores/game";
+import GameStore from "../stores/game";
 import Root from "./Root";
-import StandaloneStore from "./stores/standaloneStore";
+import StandaloneStore from "src/stores/standaloneStore";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { DifferentAppProtocolVersionSubscriptionProvider } from "./DifferentAppProtocolVersionSubscriptionProvider";
 import { NotificationSubscriptionProvider } from "./NotificationSubscriptionProvider";
@@ -29,7 +29,7 @@ import { LocaleProvider } from "./i18n";
 import type { NodeInfo } from "../config";
 import RPCSpinner from "./components/RPCSpinner/RPCSpinner";
 import { PreloadEndedDocument, PreloadEndedQuery } from "src/generated/graphql";
-import { Update } from "src/main/update";
+import { Update } from "src/main/update/launcher-update";
 import { GenesisHashDocument, GenesisHashQuery } from "src/generated/graphql";
 import _refiner from "refiner-js";
 

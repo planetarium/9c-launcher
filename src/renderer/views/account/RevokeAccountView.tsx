@@ -7,7 +7,7 @@ import React from "react";
 import { useRevokePrivateKeyMutation } from "../../../generated/graphql";
 import { RevokeAccount } from "../../../interfaces/i18n";
 import { T, useT } from "@transifex/react";
-import AccountStore from "../../stores/account";
+import AccountStore from "src/stores/account";
 import revokeAccountViewStyle from "./RevokeAccountView.style";
 
 interface IRevokeAccountProps {

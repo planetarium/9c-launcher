@@ -27,5 +27,6 @@
   "Mixpanel": true,
   "Sentry": true,
   "SnapshotPaths": [],
-  "UseRemoteHeadless": false
+  "UseRemoteHeadless": false,
+  "UseUpdate": false
 }

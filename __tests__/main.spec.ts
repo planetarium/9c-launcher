@@ -1,9 +1,9 @@
+import { describe, it, beforeAll, afterEach, afterAll, expect } from "vitest";
 import path from "path";
 import fs from "fs";
 
 import { ElectronApplication, Page, _electron as electron } from "playwright";
 import "dotenv/config";
-import { expect } from "chai";
 
 const isWindows = process.platform === "win32";
 const lastPath = "/lobby";
@@ -20,19 +20,17 @@ const { PASSWORD } = process.env;
 if (PASSWORD === undefined) throw Error("failed to load password from .env");
 
 describe("test", function () {
-  this.timeout(30 * 1000);
-
   let app: ElectronApplication;
   let page: Page;
   const history: string[] = [];
 
-  before(async function () {
+  beforeAll(async function () {
     app = await electron.launch({
       args: ["./dist/"],
     });
 
     page = await app.firstWindow();
-    await page.waitForSelector("'Done'")
+    await page.waitForSelector("'Done'");
   });
 
   afterEach(async function () {
@@ -64,6 +62,8 @@ describe("test", function () {
     history.push(pathname);
   });
 
+  afterAll(() => app.evaluate(({ app }) => app.exit()));
+
   it("로그인 하기", async function () {
     await page.screenshot({ path: path.join(snapshotDir, `login.png`) });
     await page.fill("input[type=password]", PASSWORD);
@@ -84,8 +84,10 @@ describe("test", function () {
 
     const isButtonVisible = await page.isVisible("data-testid=play");
     const statusText = await page.textContent("data-testid=status");
-    expect(isButtonVisible, `Play button shown on status: ${statusText}`).to.be
-      .false;
+    expect(
+      isButtonVisible,
+      `Play button shown on status: ${statusText}`
+    ).equals(false);
   });
 
   // after(async function () {

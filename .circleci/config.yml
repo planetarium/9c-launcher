@@ -28,6 +28,7 @@ commands:
       - run:
           command: |
             [ -d dist/publish ] || yarn build-headless:<< parameters.os >>
+          shell: bash
       - save_cache:
           key: headless-pub-<< parameters.os >>-{{ checksum "tree-hash" }}
           paths:
@@ -38,9 +39,7 @@ commands:
           keys:
             - yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
       - run:
-          command: |
-            corepack enable
-            yarn install --immutable
+          command: yarn install --immutable
           environment:
             PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
       - save_cache:
@@ -83,7 +82,6 @@ jobs:
             dotnet nuget locals all --clear
           working_directory: NineChronicles.Headless
           name: Clean Headless
-      - run: yarn bundle-player $OS_ALIAS
       - build-headless:
           os: << parameters.os >>
       - run:
@@ -104,7 +102,6 @@ jobs:
       - run:
           command: |
             cd pack/Nine\ Chronicles-$OS_ALIAS-x64/
-            chmod +x "$EXECUTABLE"
             $ZIP_CMD ../../pack-dist/$ARTIFACT *
       - store_artifacts:
           path: pack-dist
@@ -164,7 +161,7 @@ jobs:
       - yarn-install
       - run: scripts/create-key.ps1
       - install-dotnet
-      - run: yarn build-headless
+      - build-headless
       - run: yarn build-prod
       - run: scripts/copy-config.ps1
       - run: yarn test
