@@ -16,17 +16,14 @@ First, install all dependencies required for development.
 yarn
 ```
 
-In addition, there are two binaries required.
+In addition, there are one binaries required.
 
 - 9C Headless (Standalone): can be built with `yarn build-headless`
   (.NET Core SDK required)
-- 9C Unity Player (_9c.exe_/_9c.app_): can be downloaded with `yarn bundle-player`
-  - `yarn bundle-player` downloads the CI-built binary from the NineChronicles repository based on the `NineChronicles` git submodule commit hash.
-  - Download may fail if the CI-build hasn't been completed. In this case, you can directly build to `dist` as the output directory with Unity Editor.
 
-Before build 9C Headless and Unity Player, you should download these source from git submodule: `git submodule update --recursive --init`
+Before build 9C Headless, you should download these source from git submodule: `git submodule update --recursive --init`
 
-Place the two binaries in the exact path as visualized below:
+Place the binary in the exact path as visualized below:
 
 ```
 ./src
@@ -60,7 +57,6 @@ git submodule update --recursive # Download 9C Headless and Unity Player build s
 yarn
 yarn build  # development build
 yarn build-headless  # 9C Headless (Standalone) build (.NET Core SDK required)
-yarn bundle-player  # 9C Unity Player download. if you not want to test game, you can skip this step.
 APV_SIGN_KEY=... APV_NO=... yarn sign-apv  # APV sign (planet command required)
 yarn build-prod  # production build
 ```

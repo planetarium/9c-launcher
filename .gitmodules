@@ -1,6 +1,3 @@
 [submodule "NineChronicles.Headless"]
 	path = NineChronicles.Headless
 	url = https://github.com/planetarium/NineChronicles.Headless.git
-[submodule "NineChronicles"]
-	path = NineChronicles
-	url = https://github.com/planetarium/NineChronicles.git

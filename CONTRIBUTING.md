@@ -24,7 +24,6 @@ After cloning, you can install the required dependencies by running these comman
 ```sh
 yarn # installs npm dependencies
 yarn build-headless # builds the headless
-yarn bundle-player # downloads the unity player. if you can't test the game, you can skip this step.
 yarn codegen # generates the GraphQL glue code
 ```
 
