@@ -28,17 +28,14 @@ Nine Chronicles를 구동하기 위한 일렉트론 기반의 멀티플랫폼 �
 yarn
 ```
 
-추가로, 두 개의 별도 바이너리가 필요합니다.
+추가로, 한 개의 별도 바이너리가 필요합니다.
 
 - 9C Headless (Standalone): `yarn build-headless`로 빌드 가능
   (.NET Core SDK 필요)
-- 9C Unity Player (_9c.exe_/_9c.app_): `yarn bundle-player`로 다운로드 가능
-  - `yarn bundle-player` 는 `NineChronicles` git 서브 모듈의 커밋 해시를 기준으로 NineChronicles 저장소 CI에서 미리 빌드된 바이너리를 다운로드 받습니다.
-  - 빌드가 끝나지 않은 경우 다운로드에 실패하는데, 이 경우엔 Unity 에디터에서 `dist` 디렉토리를 출력 디렉토리로 하여 직접 빌드하시면 됩니다.
 
-9C Headless 와 Unity Player 바이너리를 빌드하기 전에 git submodule 로 해당 바이너리의 소스를 받으셔야 합니다: `git submodule update --recursive`
+9C Headless바이너리를 빌드하기 전에 git submodule 로 해당 바이너리의 소스를 받으셔야 합니다: `git submodule update --recursive`
 
-두 개의 바이너리를 해당 디렉터리와 같게 배치해 주십시오.
+바이너리를 해당 디렉터리와 같게 배치해 주십시오.
 
 ```
 ./src
@@ -86,7 +83,6 @@ git submodule update --recursive # 9C Headless 와 Unity Player 빌드 소스 �
 yarn
 yarn build  # 개발 빌드
 yarn build-headless  # 9C Headless (Standalone) 빌드 (.NET Core SDK 필요)
-yarn bundle-player  # 9C Unity Player 받기. 게임을 테스트하는걸 원하지 않으시면 건너뛰셔도 됩니다.
 APV_SIGN_KEY=... APV_NO=... yarn sign-apv  # APV 서명 (planet 명령 필요)
 yarn build-prod  # 프로덕션 빌드
 ```

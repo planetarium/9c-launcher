@@ -100,12 +100,10 @@ function compare-trees {
 
 fail=0
 compare-trees \
-  NineChronicles/nekoyume/Assets/_Scripts/Lib9c/lib9c \
   NineChronicles.Headless/Lib9c \
   || fail=1
 
 compare-trees \
-  NineChronicles/nekoyume/Assets/_Scripts/NineChronicles.RPC.Shared \
   NineChronicles.Headless/NineChronicles.RPC.Shared \
   || fail=1
 

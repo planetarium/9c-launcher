@@ -27,7 +27,6 @@ git submodule update --recursive # 9C Headless 와 Unity Player 빌드 소스 �
 yarn
 yarn build  # 개발 빌드
 yarn build-headless  # 9C Headless (Standalone) 빌드 (.NET Core SDK 필요)
-yarn bundle-player  # 9C Unity Player 받기. 게임을 테스트하는걸 원하지 않으시면 건너뛰셔도 됩니다.
 APV_SIGN_KEY=... APV_NO=... yarn sign-apv  # APV 서명 (planet 명령 필요)
 yarn build-prod  # 프로덕션 빌드
 ```
