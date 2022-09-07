@@ -20,7 +20,6 @@ import {
   PreloadEndedDocument,
   PreloadEndedQuery,
 } from "../generated/graphql";
-import type { Update } from "src/main/update/launcher-update";
 import { captureException } from "@sentry/electron";
 
 type Client = ApolloClient<NormalizedCacheObject>;
@@ -54,10 +53,7 @@ export default function useApolloClient(): Client | null {
               .then(({ data }) => {
                 const apv = data!.nodeStatus.appProtocolVersion;
                 if (!apv) return;
-                ipcRenderer.send("encounter different version", {
-                  newer: apv.version,
-                  extras: apv.extra,
-                } as Update);
+                ipcRenderer.send("encounter different version", apv);
               });
           },
         },

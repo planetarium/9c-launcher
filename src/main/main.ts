@@ -15,6 +15,7 @@ import {
   initializeNode,
   NodeInfo,
   userConfigStore,
+  netenv,
 } from "../config";
 import {
   app,
@@ -72,13 +73,16 @@ import {
 import { getFreeSpace } from "@planetarium/check-free-space";
 import fg from "fast-glob";
 import {
-  checkForUpdates,
   cleanUpLockfile,
   isUpdating,
   IUpdateOptions,
-  Update,
   update,
 } from "./update/launcher-update";
+import {
+  checkUpdateRequired,
+  IUpdateContext,
+  checkUpdateRequiredPeersApv,
+} from "./update/check";
 import { send } from "./v2/ipc";
 import {
   IPC_OPEN_URL,
@@ -89,6 +93,7 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
+import { IApv } from "src/interfaces/apv";
 
 initializeSentry();
 
@@ -100,7 +105,7 @@ const standaloneExecutablePath = path.join(
   "NineChronicles.Headless.Executable"
 );
 
-const baseURL = getConfig("DownloadBaseURL") || DEFAULT_DOWNLOAD_BASE_URL;
+const baseURL = getConfig("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
 const REMOTE_CONFIG_URL = `${baseURL}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
@@ -253,11 +258,19 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
-    const u = await checkForUpdates(standalone);
-    if (u && !isV2) update(u, updateOptions);
-    else if (u && isV2)
+    const context = await checkUpdateRequired(
+      standalone,
+      process.platform,
+      netenv,
+      getConfig("PeerStrings"),
+      baseURL,
+      getConfig("AppProtocolVersion"),
+      getConfig("TrustedAppProtocolVersionSigners")
+    );
+    if (context && !isV2) update(context, updateOptions);
+    else if (context && isV2)
       ipcMain.handle("start update", async () => {
-        await update(u, updateOptions);
+        await update(context, updateOptions);
       });
 
     if (app.commandLine.hasSwitch("protocol"))
@@ -266,7 +279,7 @@ async function initializeApp() {
     mixpanel?.track("Launcher/Start", {
       isV2,
       useRemoteHeadless,
-      updateAvailable: !!u,
+      updateAvailable: !!context,
     });
 
     try {
@@ -308,9 +321,17 @@ async function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on("encounter different version", async (_event, data: Update) => {
-    if (data.extras) {
-      await update(data, updateOptions);
+  ipcMain.on("encounter different version", async (_event, apv: IApv) => {
+    const context = await checkUpdateRequiredPeersApv(
+      apv,
+      standalone,
+      process.platform,
+      netenv,
+      baseURL,
+      getConfig("AppProtocolVersion")
+    );
+    if (context) {
+      await update(context, updateOptions);
     }
   });
 

@@ -1,60 +1,84 @@
 import { IApv } from "src/interfaces/apv";
+import { parseExtraData } from "src/utils/apv";
+import { IDownloadUrls, getDownloadUrls } from "src/utils/url";
+
 import Headless from "../headless/headless";
-import { NotSupportedPlatformError } from "../exceptions/not-supported-platform";
 
 export class GetPeersApvFailedError extends Error {}
 
-export interface DownloadInfo {
-  launcher: string;
-  player: string;
+export interface IUpdateContext {
+  newApv: IApv;
+  oldApv: IApv;
+  urls: IDownloadUrls;
 }
 
-export default async function checkForUpdates(
+export async function checkUpdateRequired(
   standalone: Headless,
-  // FIXME: should make config object
   platform: NodeJS.Platform,
+  // TODO: should make config object
   netenv: string,
   peerInfos: string[],
   baseUrl: string,
   localApvToken: string,
   trustedApvSigners: string[]
-): Promise<DownloadInfo | null> {
-  const peersApv = getPeersApv(standalone, peerInfos, trustedApvSigners);
-  const localApv = getLocalApv(standalone, localApvToken);
+): Promise<IUpdateContext | null> {
+  const peersApv = await getPeersApv(standalone, peerInfos, trustedApvSigners);
+  const localApv = await getLocalApv(standalone, localApvToken);
 
   if (updateRequired(peersApv.version, localApv.version)) {
-    // FIXME: project version number hard coding: 1.
-    const launcherUrl = buildDownloadUrl(
-      baseUrl,
-      netenv,
-      peersApv.version,
-      "launcher",
-      1,
-      platform
-    );
-    const playerUrl = buildDownloadUrl(
-      baseUrl,
-      netenv,
-      peersApv.version,
-      "player",
-      1,
-      platform
-    );
-
     return {
-      launcher: launcherUrl,
-      player: playerUrl,
+      newApv: peersApv,
+      oldApv: localApv,
+      urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
     };
   }
 
   return null;
 }
 
-function getPeersApv(
+export async function checkUpdateRequiredPeersApv(
+  peersApv: IApv,
+  standalone: Headless,
+  platform: NodeJS.Platform,
+  netenv: string,
+  baseUrl: string,
+  localApvToken: string
+): Promise<IUpdateContext | null> {
+  const localApv = await getLocalApv(standalone, localApvToken);
+
+  if (updateRequired(peersApv.version, localApv.version)) {
+    return {
+      newApv: peersApv,
+      oldApv: localApv,
+      urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
+    };
+  }
+
+  return null;
+}
+
+export function checkCompatible(peersApv: IApv, localApv: IApv): boolean {
+  const peersApvExtra = parseExtraData(peersApv.extra);
+  const localApvExtra = parseExtraData(localApv.extra);
+
+  const peersCompatVersion = BigInt(
+    (peersApvExtra.get("CompatiblityVersion") as string | number) ?? 0
+  );
+  const localCompatVersion = BigInt(
+    (localApvExtra.get("CompatiblityVersion") as string | number) ?? 0
+  );
+
+  if (peersCompatVersion > localCompatVersion) {
+    return true;
+  }
+  return false;
+}
+
+async function getPeersApv(
   standalone: Headless,
   peerInfos: string[],
   trustedApvSigners: string[]
-): IApv {
+): Promise<IApv> {
   if (peerInfos.length > 0) {
     const peerApvToken = standalone.apv.query(peerInfos[0]);
 
@@ -76,40 +100,10 @@ function getPeersApv(
   throw new GetPeersApvFailedError(`Empty peerInfos`);
 }
 
-function getLocalApv(standalone: Headless, token: string): IApv {
+async function getLocalApv(standalone: Headless, token: string): Promise<IApv> {
   return standalone.apv.analyze(token);
 }
 
 function updateRequired(peersApvVersion: number, localApvVersion: number) {
   return peersApvVersion > localApvVersion;
 }
-
-function buildDownloadUrl(
-  baseUrl: string,
-  env: string,
-  rc: number,
-  project: "player" | "launcher",
-  projectVersion: number,
-  platform: NodeJS.Platform
-): string {
-  const fn = FILENAME_MAP[platform];
-
-  if (fn === null) {
-    throw new NotSupportedPlatformError(platform);
-  }
-
-  return `${baseUrl}/${env}/v${rc}/${project}/v${projectVersion}/${fn}`;
-}
-
-const FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
-  aix: null,
-  android: null,
-  darwin: "macOS.tar.gz",
-  freebsd: null,
-  linux: "Linux.tar.gz",
-  openbsd: null,
-  sunos: null,
-  win32: "Windows.zip",
-  cygwin: "Windows.zip",
-  netbsd: null,
-};
