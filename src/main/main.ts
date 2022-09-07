@@ -169,6 +169,8 @@ if (!app.requestSingleInstanceLock()) {
     win?.show();
   });
 
+  app.on("open-url", (_, url) => win && send(win, IPC_OPEN_URL, url));
+
   let quitTracked = false;
   app.on("before-quit", (event) => {
     if (mixpanel != null && !quitTracked) {
