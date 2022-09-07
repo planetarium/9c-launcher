@@ -238,7 +238,11 @@ async function initializeApp() {
   app.on("ready", async () => {
     remoteInitialize();
     if (process.env.NODE_ENV !== "production")
-      await installExtension([MOBX_DEVTOOLS, APOLLO_DEVELOPER_TOOLS])
+      await installExtension([
+        REACT_DEVELOPER_TOOLS,
+        MOBX_DEVTOOLS,
+        APOLLO_DEVELOPER_TOOLS,
+      ])
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
@@ -254,10 +258,8 @@ async function initializeApp() {
         await update(u, updateOptions);
       });
 
-    win.webContents.on("did-finish-load", () => {
-      if (app.commandLine.hasSwitch("protocol"))
-        send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
-    });
+    if (app.commandLine.hasSwitch("protocol"))
+      send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
 
     mixpanel?.track("Launcher/Start", {
       isV2,
