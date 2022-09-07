@@ -115,9 +115,6 @@ export async function update(update: Update, listeners: IUpdateOptions) {
 
     if (!fs.existsSync(executePath)) {
       await playerUpdate(playerDownloadUrl, win);
-
-      // Restart
-      listeners.relaunchRequired();
     }
     return;
   }
