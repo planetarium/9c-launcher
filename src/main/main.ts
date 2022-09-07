@@ -80,7 +80,11 @@ import {
   update,
 } from "./update/launcher-update";
 import { send } from "./v2/ipc";
-import { IPC_PRELOAD_IDLE, IPC_PRELOAD_NEXT } from "../v2/ipcTokens";
+import {
+  IPC_OPEN_URL,
+  IPC_PRELOAD_IDLE,
+  IPC_PRELOAD_NEXT,
+} from "../v2/ipcTokens";
 import {
   initialize as remoteInitialize,
   enable as webEnable,
@@ -158,9 +162,14 @@ client
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on("second-instance", (_event, _commandLine) => {
+  app.on("second-instance", (_event, argv) => {
+    const lastArgv = argv[argv.length - 1];
+    if (lastArgv.startsWith("ninechronicles-launcher://") && win)
+      send(win, IPC_OPEN_URL, lastArgv);
     win?.show();
   });
+
+  app.on("open-url", (_, url) => win && send(win, IPC_OPEN_URL, url));
 
   let quitTracked = false;
   app.on("before-quit", (event) => {
@@ -218,10 +227,24 @@ async function intializeConfig() {
 
 async function initializeApp() {
   console.log("initializeApp");
+
+  const isProtocolSet = app.setAsDefaultProtocolClient(
+    "ninechronicles-launcher",
+    process.execPath,
+    [!app.isPackaged && path.resolve(process.argv[1]), "--protocol"].filter(
+      Boolean
+    )
+  );
+  console.log("isProtocolSet", isProtocolSet);
+
   app.on("ready", async () => {
     remoteInitialize();
     if (process.env.NODE_ENV !== "production")
-      await installExtension([MOBX_DEVTOOLS, APOLLO_DEVELOPER_TOOLS])
+      await installExtension([
+        REACT_DEVELOPER_TOOLS,
+        MOBX_DEVTOOLS,
+        APOLLO_DEVELOPER_TOOLS,
+      ])
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
@@ -236,6 +259,9 @@ async function initializeApp() {
       ipcMain.handle("start update", async () => {
         await update(u, updateOptions);
       });
+
+    if (app.commandLine.hasSwitch("protocol"))
+      send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
 
     mixpanel?.track("Launcher/Start", {
       isV2,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import MenuItem from "./MenuItem";
 import { useStore } from "../../../utils/useStore";
@@ -16,6 +16,7 @@ import exchange from "../../../resources/icons/exchange.png";
 import SettingsOverlay from "src/v2/views/SettingsOverlay";
 import { AnimatePresence } from "framer-motion";
 import MonsterCollectionOverlay from "src/v2/views/MonsterCollectionOverlay";
+import { useExternalURL } from "src/v2/utils/useExternalURL";
 
 const MenuContainer = styled("div", {
   opacity: 0.9,
@@ -39,6 +40,14 @@ type Overlay = "settings" | "staking";
 function Menu() {
   const account = useStore("account");
   const [currentOverlay, openOverlay] = useState<Overlay | null>(null);
+
+  const url = useExternalURL();
+  useEffect(() => {
+    if (!url) return;
+    if (url.pathname.startsWith("//open/monster-collection")) {
+      openOverlay("staking");
+    }
+  }, [url]);
 
   return (
     <MenuContainer>
