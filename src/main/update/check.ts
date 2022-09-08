@@ -68,9 +68,9 @@ export function checkCompatible(
   );
 
   if (peersCompatVersion > localCompatVersion) {
-    return true;
+    return false;
   }
-  return false;
+  return true;
 }
 
 async function getPeersApv(
