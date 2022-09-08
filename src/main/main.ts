@@ -16,7 +16,6 @@ import {
   NodeInfo,
   userConfigStore,
   netenv,
-  apvVersionNumber,
 } from "../config";
 import {
   app,
@@ -39,7 +38,6 @@ import log from "electron-log";
 import { AppProtocolVersionType } from "../generated/graphql";
 import { decodeApvExtra } from "../utils/apv";
 import * as utils from "../utils";
-import { buildDownloadUrl } from "../utils/url";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
 import Headless from "./headless/headless";
@@ -79,9 +77,8 @@ import {
   cleanUpLockfile,
   isUpdating,
   IUpdateOptions,
-  update,
 } from "./update/launcher-update";
-import { playerUpdate } from "./update/player-update";
+import { update } from "./update/update";
 import {
   checkUpdateRequired,
   checkUpdateRequiredUsedPeersApv,
@@ -96,7 +93,6 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
-import { ISimpleApv } from "src/interfaces/apv";
 
 initializeSentry();
 
@@ -193,7 +189,7 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
-  intializeConfig();
+  // intializeConfig();
   useRemoteHeadless = getConfig("UseRemoteHeadless");
   initializeApp();
   initializeIpc();
@@ -272,32 +268,11 @@ async function initializeApp() {
       getConfig("TrustedAppProtocolVersionSigners")
     );
 
-    ipcMain.handle("start update", async () => {
-      if (useUpdate) {
-        if (context && !isV2) update(context, updateOptions);
-        else if (context && isV2) {
-          await update(context, updateOptions);
-        } else if (!context && isV2) {
-          const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
-
-          if (!fs.existsSync(executePath)) {
-            await playerUpdate(
-              buildDownloadUrl(
-                baseURL,
-                netenv,
-                apvVersionNumber,
-                "player",
-                1,
-                process.platform
-              ),
-              win
-            );
-          }
-        }
-      } else {
-        console.log("`UseUpdate` option is false, Do not proceed update!");
-      }
-    });
+    if (context && !isV2) update(context, updateOptions);
+    else if (context && isV2)
+      ipcMain.handle("start update", async () => {
+        await update(context, updateOptions);
+      });
 
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
@@ -366,9 +341,7 @@ function initializeIpc() {
           baseURL,
           getConfig("AppProtocolVersion")
         );
-        if (context) {
-          await update(context, updateOptions);
-        }
+        await update(context, updateOptions);
       }
     }
   );

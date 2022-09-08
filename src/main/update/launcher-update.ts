@@ -11,7 +11,7 @@ import fs from "fs";
 import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
 import { playerUpdate } from "./player-update";
-import { IUpdateContext, checkCompatible } from "./check";
+import { IUpdateContext } from "./check";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -21,7 +21,7 @@ export interface IUpdateOptions {
   getWindow(): Electron.BrowserWindow | null;
 }
 
-export async function update(
+export async function launcherUpdate(
   context: IUpdateContext,
   listeners: IUpdateOptions
 ) {
@@ -56,27 +56,6 @@ export async function update(
   }
 
   await listeners.downloadStarted();
-
-  if (!checkCompatible(context.newApv, context.oldApv)) {
-    console.log(
-      `Stop update process. CompatiblityVersion is higher than current.`
-    );
-    win?.webContents.send("compatiblity-version-higher-than-current");
-    if (win) {
-      const { checkboxChecked } = await dialog.showMessageBox(win, {
-        type: "error",
-        message:
-          "Nine Chronicles has been updated but the update needs reinstallation due to techincal issues. Sorry for inconvenience.",
-        title: "Reinstallation required",
-        checkboxChecked: true,
-        checkboxLabel: "Open the installer page in browser",
-      });
-      if (checkboxChecked)
-        shell.openExternal("https://bit.ly/9c-manual-update");
-      app.exit(0);
-    }
-    return;
-  }
 
   win?.webContents.send("update download started");
   // TODO: It would be nice to have a continuous download feature.
