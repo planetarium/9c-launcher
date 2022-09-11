@@ -5,15 +5,14 @@ import { IUpdateContext, checkCompatible } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
 
-import { WIN_GAME_PATH, EXECUTE_PATH } from "../../config";
+import { playerPath } from "../../config";
+import { FILE_NAME as METAFILE_NAME, readVersionMetafile } from "./metafile";
 
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
   relaunchRequired(): void;
   getWindow(): Electron.BrowserWindow | null;
 }
-
-const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
 
 export async function update(
   context: IUpdateContext,
@@ -42,10 +41,19 @@ export async function update(
       return;
     }
 
+    console.log(`Update Required. start launcher update`);
     await launcherUpdate(context, updateOptions);
   } else {
-    const exists = await fs.promises.stat(executePath).catch(() => false);
-    if (!exists) {
+    console.log(`Update not required. check player version file`);
+
+    const exists = await fs.promises
+      .stat(`${playerPath}/${METAFILE_NAME}`)
+      .catch(() => false);
+    if (exists) {
+      const versionData = await readVersionMetafile(playerPath);
+      if (versionData.apvVersion < context.newApv.version)
+        await playerUpdate(context, win);
+    } else {
       await playerUpdate(context, win);
     }
   }
