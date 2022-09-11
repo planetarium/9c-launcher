@@ -23,18 +23,17 @@ export async function checkUpdateRequired(
   const peersApv = await getPeersApv(standalone, peerInfos, trustedApvSigners);
   const localApv = await getLocalApv(standalone, localApvToken);
 
-  if (updateRequired(peersApv.version, localApv.version)) {
+  if (updateRequired(peersApv.version, localApv.version))
     return {
       newApv: peersApv,
       oldApv: localApv,
       urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
     };
-  }
 
   return null;
 }
 
-// Could use overload function...
+// FIXME: Could use overload function...
 export async function checkUpdateRequiredUsedPeersApv(
   peersApv: ISimpleApv,
   standalone: Headless,
@@ -45,13 +44,12 @@ export async function checkUpdateRequiredUsedPeersApv(
 ): Promise<IUpdateContext | null> {
   const localApv = await getLocalApv(standalone, localApvToken);
 
-  if (updateRequired(peersApv.version, localApv.version)) {
+  if (updateRequired(peersApv.version, localApv.version))
     return {
       newApv: peersApv,
       oldApv: localApv,
       urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
     };
-  }
 
   return null;
 }
@@ -67,9 +65,8 @@ export function checkCompatible(
     (localApv.extra["CompatiblityVersion"] as string | number) ?? 0
   );
 
-  if (peersCompatVersion > localCompatVersion) {
-    return false;
-  }
+  if (peersCompatVersion > localCompatVersion) return false;
+
   return true;
 }
 

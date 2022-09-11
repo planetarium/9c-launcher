@@ -1,4 +1,4 @@
-import { DownloadItem, app, dialog, shell } from "electron";
+import { DownloadItem, app } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import extractZip from "extract-zip";
 import * as utils from "../../utils";
