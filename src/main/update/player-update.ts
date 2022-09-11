@@ -1,4 +1,4 @@
-import { DownloadItem, app } from "electron";
+import { DownloadItem, app, contextBridge } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
@@ -8,6 +8,8 @@ import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
 import { playerPath } from "../../config";
 import lockfile from "lockfile";
+import { createVersionMetafile } from "./metafile";
+import { IUpdateContext } from "./check";
 
 const lockfilePath = path.join(
   path.dirname(app.getPath("exe")),
@@ -15,7 +17,7 @@ const lockfilePath = path.join(
 );
 
 export async function playerUpdate(
-  downloadUrl: string,
+  context: IUpdateContext,
   win: Electron.BrowserWindow | null
 ) {
   if (win === null) {
@@ -51,19 +53,19 @@ export async function playerUpdate(
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `[player] Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `[player] Downloading ${context.urls.player}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
       win?.webContents.send("update player download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("[player] Starts to download:", downloadUrl);
+  console.log("[player] Starts to download:", context.urls.player);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, downloadUrl, options);
+    dl = await download(win, context.urls.player, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(downloadUrl);
+    throw new DownloadBinaryFailedError(context.urls.player);
   }
 
   win.webContents.send("update player download complete");
@@ -71,8 +73,8 @@ export async function playerUpdate(
   const dlPath = dl?.getSavePath();
   console.log("[player] Finished to download:", dlPath);
 
-  if (fs.existsSync(playerPath))
-    await fs.promises.rmdir(playerPath, { recursive: true });
+  const playerDirExists = await fs.promises.stat(playerPath).catch(() => false);
+  if (playerDirExists) await fs.promises.rmdir(playerPath, { recursive: true });
 
   await fs.promises.mkdir(playerPath, { recursive: true });
 
@@ -125,6 +127,11 @@ export async function playerUpdate(
   win.webContents.send("update player extract complete");
 
   await fs.promises.unlink(dlPath);
+
+  await createVersionMetafile(playerPath, {
+    apvVersion: context.newApv.version,
+    timestamp: new Date().toISOString(),
+  });
 
   lockfile.unlockSync(lockfilePath);
   console.log(

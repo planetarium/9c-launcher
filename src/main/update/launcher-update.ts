@@ -192,7 +192,7 @@ export async function launcherUpdate(
     config
   );
 
-  await playerUpdate(context.urls.player, win);
+  await playerUpdate(context, win);
 
   lockfile.unlockSync(lockfilePath);
   console.log(

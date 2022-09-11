@@ -5,6 +5,7 @@ import Headless from "../headless/headless";
 export class GetPeersApvFailedError extends Error {}
 
 export interface IUpdateContext {
+  updateRequired: boolean;
   newApv: ISimpleApv;
   oldApv: ISimpleApv;
   urls: IDownloadUrls;
@@ -19,18 +20,16 @@ export async function checkUpdateRequired(
   baseUrl: string,
   localApvToken: string,
   trustedApvSigners: string[]
-): Promise<IUpdateContext | null> {
+): Promise<IUpdateContext> {
   const peersApv = await getPeersApv(standalone, peerInfos, trustedApvSigners);
   const localApv = await getLocalApv(standalone, localApvToken);
 
-  if (updateRequired(peersApv.version, localApv.version))
-    return {
-      newApv: peersApv,
-      oldApv: localApv,
-      urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
-    };
-
-  return null;
+  return {
+    updateRequired: updateRequired(peersApv.version, localApv.version),
+    newApv: peersApv,
+    oldApv: localApv,
+    urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
+  };
 }
 
 // FIXME: Could use overload function...
@@ -41,17 +40,15 @@ export async function checkUpdateRequiredUsedPeersApv(
   netenv: string,
   baseUrl: string,
   localApvToken: string
-): Promise<IUpdateContext | null> {
+): Promise<IUpdateContext> {
   const localApv = await getLocalApv(standalone, localApvToken);
 
-  if (updateRequired(peersApv.version, localApv.version))
-    return {
-      newApv: peersApv,
-      oldApv: localApv,
-      urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
-    };
-
-  return null;
+  return {
+    updateRequired: updateRequired(peersApv.version, localApv.version),
+    newApv: peersApv,
+    oldApv: localApv,
+    urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
+  };
 }
 
 export function checkCompatible(

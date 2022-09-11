@@ -5,15 +5,7 @@ import { IUpdateContext, checkCompatible } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
 
-import {
-  DEFAULT_DOWNLOAD_BASE_URL,
-  get as getConfig,
-  WIN_GAME_PATH,
-  EXECUTE_PATH,
-  netenv,
-  apvVersionNumber,
-} from "../../config";
-import { buildDownloadUrl } from "../../utils/url";
+import { WIN_GAME_PATH, EXECUTE_PATH } from "../../config";
 
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
@@ -21,15 +13,14 @@ export interface IUpdateOptions {
   getWindow(): Electron.BrowserWindow | null;
 }
 
-const baseURL = getConfig("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
 const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
 
 export async function update(
-  context: IUpdateContext | null,
+  context: IUpdateContext,
   updateOptions: IUpdateOptions
 ) {
   const win = updateOptions.getWindow();
-  if (context) {
+  if (context.updateRequired) {
     if (!checkCompatible(context.newApv, context.oldApv)) {
       console.log(
         `Stop update process. CompatiblityVersion is higher than current.`
@@ -53,18 +44,9 @@ export async function update(
 
     await launcherUpdate(context, updateOptions);
   } else {
-    if (!fs.existsSync(executePath)) {
-      await playerUpdate(
-        buildDownloadUrl(
-          baseURL,
-          netenv,
-          apvVersionNumber,
-          "player",
-          1,
-          process.platform
-        ),
-        win
-      );
+    const exists = await fs.promises.stat(executePath).catch(() => false);
+    if (!exists) {
+      await playerUpdate(context, win);
     }
   }
 }
