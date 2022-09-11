@@ -189,7 +189,7 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
-  // intializeConfig();
+  intializeConfig();
   useRemoteHeadless = getConfig("UseRemoteHeadless");
   initializeApp();
   initializeIpc();

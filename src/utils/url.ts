@@ -1,5 +1,9 @@
 import { NotSupportedPlatformError } from "../main/exceptions/not-supported-platform";
 
+const MACOS_FILE_NAME = "macOS.tar.gz";
+const LINUX_FILE_NAME = "Linux.tar.gz";
+const WINDOWS_FILE_NAME = "Windows.zip";
+
 export interface IDownloadUrls {
   launcher: string;
   player: string;
@@ -55,12 +59,12 @@ export function buildDownloadUrl(
 export const BINARY_FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
   aix: null,
   android: null,
-  darwin: "macOS.tar.gz",
+  darwin: MACOS_FILE_NAME,
   freebsd: null,
-  linux: "Linux.tar.gz",
+  linux: LINUX_FILE_NAME,
   openbsd: null,
   sunos: null,
-  win32: "Windows.zip",
-  cygwin: "Windows.zip",
+  win32: WINDOWS_FILE_NAME,
+  cygwin: WINDOWS_FILE_NAME,
   netbsd: null,
 };
