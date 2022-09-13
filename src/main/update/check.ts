@@ -22,13 +22,13 @@ export async function checkForUpdate(
 ): Promise<IUpdateContext | null> {
   let peersApv;
   try {
-    peersApv = await getPeersApv(standalone, peerInfos, trustedApvSigners);
+    peersApv = getPeersApv(standalone, peerInfos, trustedApvSigners);
   } catch (e) {
     console.error(`getPeersApv Error ocurred ${e}:\n`, e.stderr);
     return null;
   }
 
-  const localApv = await getLocalApv(standalone, localApvToken);
+  const localApv = standalone.apv.analyze(localApvToken);
 
   if (peersApv.version > localApv.version)
     return {
@@ -49,7 +49,7 @@ export async function checkForUpdateUsedPeersApv(
   baseUrl: string,
   localApvToken: string
 ): Promise<IUpdateContext | null> {
-  const localApv = await getLocalApv(standalone, localApvToken);
+  const localApv = standalone.apv.analyze(localApvToken);
 
   if (peersApv.version > localApv.version)
     return {
@@ -77,11 +77,11 @@ export function checkCompatible(
   return true;
 }
 
-async function getPeersApv(
+function getPeersApv(
   standalone: Headless,
   peerInfos: string[],
   trustedApvSigners: string[]
-): Promise<IApv> {
+): IApv {
   if (peerInfos.length > 0) {
     const peerApvToken = standalone.apv.query(peerInfos[0]);
 
@@ -100,8 +100,4 @@ async function getPeersApv(
   }
 
   throw new GetPeersApvFailedError(`Empty peerInfos`);
-}
-
-async function getLocalApv(standalone: Headless, token: string): Promise<IApv> {
-  return standalone.apv.analyze(token);
 }
