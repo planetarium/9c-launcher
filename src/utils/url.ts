@@ -47,13 +47,13 @@ export function buildDownloadUrl(
   projectVersion: number,
   platform: NodeJS.Platform
 ): string {
-  const fn = BINARY_FILENAME_MAP[platform];
+  const filename = BINARY_FILENAME_MAP[platform];
 
-  if (fn === null) {
+  if (filename === null) {
     throw new NotSupportedPlatformError(platform);
   }
 
-  return `${baseUrl}/${env}/v${rc}/${project}/v${projectVersion}/${fn}`;
+  return `${baseUrl}/${env}/v${rc}/${project}/v${projectVersion}/${filename}`;
 }
 
 export const BINARY_FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {

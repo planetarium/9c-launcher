@@ -10,7 +10,7 @@ export interface IUpdateContext {
   urls: IDownloadUrls;
 }
 
-export async function checkUpdateRequired(
+export async function checkForUpdate(
   standalone: Headless,
   platform: NodeJS.Platform,
   // TODO: should make config object
@@ -30,7 +30,7 @@ export async function checkUpdateRequired(
 
   const localApv = await getLocalApv(standalone, localApvToken);
 
-  if (updateRequired(peersApv.version, localApv.version))
+  if (peersApv.version > localApv.version)
     return {
       newApv: peersApv,
       oldApv: localApv,
@@ -41,7 +41,7 @@ export async function checkUpdateRequired(
 }
 
 // FIXME: Could use overload function...
-export async function checkUpdateRequiredUsedPeersApv(
+export async function checkForUpdateUsedPeersApv(
   peersApv: ISimpleApv,
   standalone: Headless,
   platform: NodeJS.Platform,
@@ -51,7 +51,7 @@ export async function checkUpdateRequiredUsedPeersApv(
 ): Promise<IUpdateContext | null> {
   const localApv = await getLocalApv(standalone, localApvToken);
 
-  if (updateRequired(peersApv.version, localApv.version))
+  if (peersApv.version > localApv.version)
     return {
       newApv: peersApv,
       oldApv: localApv,
@@ -85,19 +85,18 @@ async function getPeersApv(
   if (peerInfos.length > 0) {
     const peerApvToken = standalone.apv.query(peerInfos[0]);
 
-    if (peerApvToken !== null) {
-      if (standalone.apv.verify(trustedApvSigners, peerApvToken)) {
-        return standalone.apv.analyze(peerApvToken);
-      } else {
-        throw new GetPeersApvFailedError(
-          `Ignore APV[${peerApvToken}] due to failure to validating.`
-        );
-      }
-    }
+    if (peerApvToken == null)
+      throw new GetPeersApvFailedError(
+        `Empty peerApvToken, peerInfos: ${peerInfos}`
+      );
 
-    throw new GetPeersApvFailedError(
-      `Empty peerApvToken, peerInfos: ${peerInfos}`
-    );
+    if (standalone.apv.verify(trustedApvSigners, peerApvToken)) {
+      return standalone.apv.analyze(peerApvToken);
+    } else {
+      throw new GetPeersApvFailedError(
+        `Ignore APV[${peerApvToken}] due to failure to validating.`
+      );
+    }
   }
 
   throw new GetPeersApvFailedError(`Empty peerInfos`);
@@ -105,8 +104,4 @@ async function getPeersApv(
 
 async function getLocalApv(standalone: Headless, token: string): Promise<IApv> {
   return standalone.apv.analyze(token);
-}
-
-function updateRequired(peersApvVersion: number, localApvVersion: number) {
-  return peersApvVersion > localApvVersion;
 }

@@ -79,10 +79,7 @@ import {
   IUpdateOptions,
 } from "./update/launcher-update";
 import { update } from "./update/update";
-import {
-  checkUpdateRequired,
-  checkUpdateRequiredUsedPeersApv,
-} from "./update/check";
+import { checkForUpdate, checkForUpdateUsedPeersApv } from "./update/check";
 import { send } from "./v2/ipc";
 import {
   IPC_OPEN_URL,
@@ -258,7 +255,7 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
-    const context = await checkUpdateRequired(
+    const context = await checkForUpdate(
       standalone,
       process.platform,
       netenv,
@@ -268,9 +265,9 @@ async function initializeApp() {
       getConfig("TrustedAppProtocolVersionSigners")
     );
 
-    if (useUpdate) {
-      if (context && !isV2) update(context, updateOptions);
-      else if (context && isV2)
+    if (useUpdate && context) {
+      if (!isV2) update(context, updateOptions);
+      else
         ipcMain.handle("start update", async () => {
           await update(context, updateOptions);
         });
@@ -327,24 +324,24 @@ function initializeIpc() {
   ipcMain.on(
     "encounter different version",
     async (_event, apv: Pick<AppProtocolVersionType, "version" | "extra">) => {
-      if (useUpdate) {
-        const decodedExtra = apv.extra && decodeApvExtra(apv.extra);
+      if (!useUpdate) return;
 
-        const simpleApv = {
-          version: apv.version,
-          extra: decodedExtra ? Object.fromEntries(decodedExtra) : {},
-        };
+      const extra = apv.extra && decodeApvExtra(apv.extra);
 
-        const context = await checkUpdateRequiredUsedPeersApv(
-          simpleApv,
-          standalone,
-          process.platform,
-          netenv,
-          baseURL,
-          getConfig("AppProtocolVersion")
-        );
-        await update(context, updateOptions);
-      }
+      const simpleApv = {
+        version: apv.version,
+        extra: extra ? Object.fromEntries(extra) : {},
+      };
+
+      const context = await checkForUpdateUsedPeersApv(
+        simpleApv,
+        standalone,
+        process.platform,
+        netenv,
+        baseURL,
+        getConfig("AppProtocolVersion")
+      );
+      await update(context, updateOptions);
     }
   );
 
