@@ -1,8 +1,8 @@
-export interface IApv {
+export interface ISimpleApv {
   version: number;
-  signature: string;
-  signer: string;
   extra: { [key: string]: string };
 }
-
-export type ISimpleApv = Pick<IApv, "version" | "extra">;
+export interface IApv extends ISimpleApv {
+  signature: string;
+  signer: string;
+}
