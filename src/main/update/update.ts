@@ -53,7 +53,9 @@ export async function update(
 
     await launcherUpdate(context, updateOptions);
   } else {
-    if (!fs.existsSync(executePath)) {
+    const exists = await fs.promises.stat(executePath).catch(() => false);
+
+    if (!exists) {
       await playerUpdate(
         buildDownloadUrl(
           baseURL,

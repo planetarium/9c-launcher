@@ -74,11 +74,13 @@ export async function playerUpdate(
   const dlPath = dl?.getSavePath();
   console.log("[player] Finished to download:", dlPath);
 
-  if (fs.existsSync(playerPath)) {
+  const exists = await fs.promises.stat(playerPath).catch(() => false);
+
+  if (exists) {
     await fs.promises.rmdir(playerPath, { recursive: true });
-  } else {
-    await fs.promises.mkdir(playerPath, { recursive: true });
   }
+
+  await fs.promises.mkdir(playerPath, { recursive: true });
 
   console.log("[player] Clean up exists player");
 
