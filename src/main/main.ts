@@ -73,11 +73,7 @@ import {
 } from "./v2/application";
 import { getFreeSpace } from "@planetarium/check-free-space";
 import fg from "fast-glob";
-import {
-  cleanUpLockfile,
-  isUpdating,
-  IUpdateOptions,
-} from "./update/launcher-update";
+import { cleanUpLockfile, isUpdating, IUpdateOptions } from "./update/update";
 import { performUpdate } from "./update/update";
 import { checkForUpdate, checkForUpdateFromApv } from "./update/check";
 import { send } from "./v2/ipc";

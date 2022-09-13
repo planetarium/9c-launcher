@@ -1,4 +1,6 @@
 import fs from "fs";
+import lockfile from "lockfile";
+import path from "path";
 import { app, dialog, shell } from "electron";
 
 import { IUpdate, checkCompatiblity } from "./check";
@@ -24,11 +26,32 @@ export interface IUpdateOptions {
 const baseURL = getConfig("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
 const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
 
+const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
+
 export async function performUpdate(
   context: IUpdate | null,
   updateOptions: IUpdateOptions
 ) {
+  if (lockfile.checkSync(lockfilePath)) {
+    console.log(
+      "'encounter different version' event seems running already. Stop this flow."
+    );
+    return;
+  }
+
+  try {
+    lockfile.lockSync(lockfilePath);
+    console.log(
+      "Created 'encounter different version' lockfile at ",
+      lockfilePath
+    );
+  } catch (e) {
+    console.error("Error occurred during trying lock.");
+    throw e;
+  }
+
   const win = updateOptions.getWindow();
+
   if (context) {
     if (!checkCompatiblity(context.newApv, context.oldApv)) {
       console.log(
@@ -71,5 +94,24 @@ export async function performUpdate(
         win
       );
     }
+  }
+
+  lockfile.unlockSync(lockfilePath);
+  console.log(
+    "Removed 'encounter different version' lockfile at ",
+    lockfilePath
+  );
+}
+
+export function isUpdating() {
+  return lockfile.checkSync(lockfilePath);
+}
+
+/**
+ * unlock if lockfile locked.
+ */
+export function cleanUpLockfile() {
+  if (lockfile.checkSync(lockfilePath)) {
+    lockfile.unlockSync(lockfilePath);
   }
 }
