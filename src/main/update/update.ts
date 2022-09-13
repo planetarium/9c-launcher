@@ -52,6 +52,9 @@ export async function update(
     }
 
     await launcherUpdate(context, updateOptions);
+    await playerUpdate(context.urls.player, win);
+
+    updateOptions.relaunchRequired();
   } else {
     const exists = await fs.promises.stat(executePath).catch(() => false);
 

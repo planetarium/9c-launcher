@@ -192,17 +192,11 @@ export async function launcherUpdate(
     config
   );
 
-  await playerUpdate(context.urls.player, win);
-
   lockfile.unlockSync(lockfilePath);
   console.log(
     "Removed 'encounter different version' lockfile at ",
     lockfilePath
   );
-
-  // Restart
-  listeners.relaunchRequired();
-
   /*
       autoUpdater provided from Electron must code signed to work at macOS
       So we can't use it for now.
