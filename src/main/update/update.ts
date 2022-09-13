@@ -1,7 +1,7 @@
 import fs from "fs";
 import { app, dialog, shell } from "electron";
 
-import { IUpdateContext, checkCompatiblity } from "./check";
+import { IUpdate, checkCompatiblity } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
 
@@ -24,8 +24,8 @@ export interface IUpdateOptions {
 const baseURL = getConfig("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
 const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
 
-export async function update(
-  context: IUpdateContext | null,
+export async function performUpdate(
+  context: IUpdate | null,
   updateOptions: IUpdateOptions
 ) {
   const win = updateOptions.getWindow();

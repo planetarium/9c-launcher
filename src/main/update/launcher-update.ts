@@ -11,7 +11,7 @@ import fs from "fs";
 import lockfile from "lockfile";
 import { spawn as spawnPromise } from "child-process-promise";
 import { playerUpdate } from "./player-update";
-import { IUpdateContext } from "./check";
+import { IUpdate } from "./check";
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -22,7 +22,7 @@ export interface IUpdateOptions {
 }
 
 export async function launcherUpdate(
-  context: IUpdateContext,
+  update: IUpdate,
   listeners: IUpdateOptions
 ) {
   if (!getConfig("UseUpdate", process.env.NODE_ENV === "production")) {
@@ -66,19 +66,19 @@ export async function launcherUpdate(
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `Downloading ${context.urls.launcher}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `Downloading ${update.urls.launcher}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
       win?.webContents.send("update download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("Starts to download:", context.urls.launcher);
+  console.log("Starts to download:", update.urls.launcher);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, context.urls.launcher, options);
+    dl = await download(win, update.urls.launcher, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(context.urls.launcher);
+    throw new DownloadBinaryFailedError(update.urls.launcher);
   }
 
   win.webContents.send("update download complete");

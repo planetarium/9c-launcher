@@ -79,7 +79,7 @@ import {
   isUpdating,
   IUpdateOptions,
 } from "./update/launcher-update";
-import { update } from "./update/update";
+import { performUpdate } from "./update/update";
 import { checkForUpdate, checkForUpdateUsedPeersApv } from "./update/check";
 import { send } from "./v2/ipc";
 import {
@@ -255,13 +255,13 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
-    const context = await checkForUpdate(standalone, process.platform);
+    const update = await checkForUpdate(standalone, process.platform);
 
-    if (useUpdate && context) {
-      if (!isV2) update(context, updateOptions);
+    if (useUpdate && update) {
+      if (!isV2) performUpdate(update, updateOptions);
       else
         ipcMain.handle("start update", async () => {
-          await update(context, updateOptions);
+          await performUpdate(update, updateOptions);
         });
     }
 
@@ -271,7 +271,7 @@ async function initializeApp() {
     mixpanel?.track("Launcher/Start", {
       isV2,
       useRemoteHeadless,
-      updateAvailable: !!context,
+      updateAvailable: !!update,
     });
 
     try {
@@ -325,12 +325,12 @@ function initializeIpc() {
         extra: extra ? Object.fromEntries(extra) : {},
       };
 
-      const context = await checkForUpdateUsedPeersApv(
+      const update = await checkForUpdateUsedPeersApv(
         standalone,
         simpleApv,
         process.platform
       );
-      await update(context, updateOptions);
+      await performUpdate(update, updateOptions);
     }
   );
 

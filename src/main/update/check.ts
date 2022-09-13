@@ -5,7 +5,7 @@ import { get as getConfig, baseUrl, netenv } from "../../config";
 
 export class GetPeersApvFailedError extends Error {}
 
-export interface IUpdateContext {
+export interface IUpdate {
   newApv: ISimpleApv;
   oldApv: ISimpleApv;
   urls: IDownloadUrls;
@@ -18,7 +18,7 @@ const trustedApvSigners = getConfig("TrustedAppProtocolVersionSigners");
 export async function checkForUpdate(
   standalone: Headless,
   platform: NodeJS.Platform
-): Promise<IUpdateContext | null> {
+): Promise<IUpdate | null> {
   let peersApv;
   try {
     peersApv = getPeersApv(standalone, peerInfos, trustedApvSigners);
@@ -44,7 +44,7 @@ export async function checkForUpdateUsedPeersApv(
   standalone: Headless,
   peersApv: ISimpleApv,
   platform: NodeJS.Platform
-): Promise<IUpdateContext | null> {
+): Promise<IUpdate | null> {
   const localApv = standalone.apv.analyze(localApvToken);
 
   if (peersApv.version > localApv.version)
