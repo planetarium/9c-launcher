@@ -20,7 +20,14 @@ export async function checkUpdateRequired(
   localApvToken: string,
   trustedApvSigners: string[]
 ): Promise<IUpdateContext | null> {
-  const peersApv = await getPeersApv(standalone, peerInfos, trustedApvSigners);
+  let peersApv;
+  try {
+    peersApv = await getPeersApv(standalone, peerInfos, trustedApvSigners);
+  } catch (e) {
+    console.error(`getPeersApv Error ocurred ${e}:\n`, e.stderr);
+    return null;
+  }
+
   const localApv = await getLocalApv(standalone, localApvToken);
 
   if (updateRequired(peersApv.version, localApv.version))
