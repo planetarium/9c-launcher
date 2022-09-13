@@ -268,11 +268,13 @@ async function initializeApp() {
       getConfig("TrustedAppProtocolVersionSigners")
     );
 
-    if (context && !isV2) update(context, updateOptions);
-    else if (context && isV2)
-      ipcMain.handle("start update", async () => {
-        await update(context, updateOptions);
-      });
+    if (useUpdate) {
+      if (context && !isV2) update(context, updateOptions);
+      else if (context && isV2)
+        ipcMain.handle("start update", async () => {
+          await update(context, updateOptions);
+        });
+    }
 
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
