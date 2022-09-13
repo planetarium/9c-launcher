@@ -16,6 +16,7 @@ import {
   NodeInfo,
   userConfigStore,
   netenv,
+  baseUrl,
 } from "../config";
 import {
   app,
@@ -101,8 +102,7 @@ const standaloneExecutablePath = path.join(
   "NineChronicles.Headless.Executable"
 );
 
-const baseURL = getConfig("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
-const REMOTE_CONFIG_URL = `${baseURL}/9c-launcher-config.json`;
+const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
 let collectionWin: BrowserWindow | null = null;
@@ -255,15 +255,7 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
-    const context = await checkForUpdate(
-      standalone,
-      process.platform,
-      netenv,
-      getConfig("PeerStrings"),
-      baseURL,
-      getConfig("AppProtocolVersion"),
-      getConfig("TrustedAppProtocolVersionSigners")
-    );
+    const context = await checkForUpdate(standalone, process.platform);
 
     if (useUpdate && context) {
       if (!isV2) update(context, updateOptions);
@@ -334,12 +326,9 @@ function initializeIpc() {
       };
 
       const context = await checkForUpdateUsedPeersApv(
-        simpleApv,
         standalone,
-        process.platform,
-        netenv,
-        baseURL,
-        getConfig("AppProtocolVersion")
+        simpleApv,
+        process.platform
       );
       await update(context, updateOptions);
     }

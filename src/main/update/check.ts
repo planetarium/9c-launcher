@@ -1,6 +1,7 @@
 import { IApv, ISimpleApv } from "src/interfaces/apv";
 import { IDownloadUrls, getDownloadUrls } from "../../utils/url";
 import Headless from "../headless/headless";
+import { get as getConfig, baseUrl, netenv } from "../../config";
 
 export class GetPeersApvFailedError extends Error {}
 
@@ -10,15 +11,13 @@ export interface IUpdateContext {
   urls: IDownloadUrls;
 }
 
+const peerInfos = getConfig("PeerStrings");
+const localApvToken = getConfig("AppProtocolVersion");
+const trustedApvSigners = getConfig("TrustedAppProtocolVersionSigners");
+
 export async function checkForUpdate(
   standalone: Headless,
-  platform: NodeJS.Platform,
-  // TODO: should make config object
-  netenv: string,
-  peerInfos: string[],
-  baseUrl: string,
-  localApvToken: string,
-  trustedApvSigners: string[]
+  platform: NodeJS.Platform
 ): Promise<IUpdateContext | null> {
   let peersApv;
   try {
@@ -42,12 +41,9 @@ export async function checkForUpdate(
 
 // FIXME: Could use overload function...
 export async function checkForUpdateUsedPeersApv(
-  peersApv: ISimpleApv,
   standalone: Headless,
-  platform: NodeJS.Platform,
-  netenv: string,
-  baseUrl: string,
-  localApvToken: string
+  peersApv: ISimpleApv,
+  platform: NodeJS.Platform
 ): Promise<IUpdateContext | null> {
   const localApv = standalone.apv.analyze(localApvToken);
 

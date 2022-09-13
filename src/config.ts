@@ -220,6 +220,7 @@ export const EXECUTE_PATH: {
   cygwin: WIN_GAME_PATH,
   netbsd: null,
 };
+export const baseUrl = get("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
 
 export async function initializeNode(): Promise<NodeInfo> {
   console.log("config initialize called");
