@@ -61,7 +61,10 @@ export async function checkForUpdateUsedPeersApv(
   return null;
 }
 
-export function checkCompatible(
+/**
+ * Checks `CompatiblityVersion` to check if we can proceed with our updater.
+ */
+export function checkCompatiblity(
   peersApv: ISimpleApv,
   localApv: ISimpleApv
 ): boolean {

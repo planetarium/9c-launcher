@@ -1,7 +1,7 @@
 import fs from "fs";
 import { app, dialog, shell } from "electron";
 
-import { IUpdateContext, checkCompatible } from "./check";
+import { IUpdateContext, checkCompatiblity } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
 
@@ -30,7 +30,7 @@ export async function update(
 ) {
   const win = updateOptions.getWindow();
   if (context) {
-    if (!checkCompatible(context.newApv, context.oldApv)) {
+    if (!checkCompatiblity(context.newApv, context.oldApv)) {
       console.log(
         `Stop update process. CompatiblityVersion is higher than current.`
       );
