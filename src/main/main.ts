@@ -15,7 +15,6 @@ import {
   initializeNode,
   NodeInfo,
   userConfigStore,
-  netenv,
   baseUrl,
 } from "../config";
 import {
@@ -80,7 +79,7 @@ import {
   IUpdateOptions,
 } from "./update/launcher-update";
 import { performUpdate } from "./update/update";
-import { checkForUpdate, checkForUpdateUsedPeersApv } from "./update/check";
+import { checkForUpdate, checkForUpdateFromApv } from "./update/check";
 import { send } from "./v2/ipc";
 import {
   IPC_OPEN_URL,
@@ -325,7 +324,7 @@ function initializeIpc() {
         extra: extra ? Object.fromEntries(extra) : {},
       };
 
-      const update = await checkForUpdateUsedPeersApv(
+      const update = await checkForUpdateFromApv(
         standalone,
         simpleApv,
         process.platform

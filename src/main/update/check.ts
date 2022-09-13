@@ -27,20 +27,11 @@ export async function checkForUpdate(
     return null;
   }
 
-  const localApv = standalone.apv.analyze(localApvToken);
-
-  if (peersApv.version > localApv.version)
-    return {
-      newApv: peersApv,
-      oldApv: localApv,
-      urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
-    };
-
-  return null;
+  return checkForUpdateFromApv(standalone, peersApv, platform);
 }
 
 // FIXME: Could use overload function...
-export async function checkForUpdateUsedPeersApv(
+export async function checkForUpdateFromApv(
   standalone: Headless,
   peersApv: ISimpleApv,
   platform: NodeJS.Platform
@@ -71,9 +62,7 @@ export function checkCompatiblity(
     (localApv.extra["CompatiblityVersion"] as string | number) ?? 0
   );
 
-  if (peersCompatVersion > localCompatVersion) return false;
-
-  return true;
+  return peersCompatVersion <= localCompatVersion;
 }
 
 function getPeersApv(
@@ -81,22 +70,19 @@ function getPeersApv(
   peerInfos: string[],
   trustedApvSigners: string[]
 ): IApv {
-  if (peerInfos.length > 0) {
-    const peerApvToken = standalone.apv.query(peerInfos[0]);
+  const peerApvToken = standalone.apv.query(peerInfos[0]);
 
-    if (peerApvToken == null)
-      throw new GetPeersApvFailedError(
-        `Empty peerApvToken, peerInfos: ${peerInfos}`
-      );
+  if (peerInfos.length < 1) throw new GetPeersApvFailedError(`Empty peerInfos`);
+  if (peerApvToken == null)
+    throw new GetPeersApvFailedError(
+      `Empty peerApvToken, peerInfos: ${peerInfos}`
+    );
 
-    if (standalone.apv.verify(trustedApvSigners, peerApvToken)) {
-      return standalone.apv.analyze(peerApvToken);
-    } else {
-      throw new GetPeersApvFailedError(
-        `Ignore APV[${peerApvToken}] due to failure to validating.`
-      );
-    }
+  if (standalone.apv.verify(trustedApvSigners, peerApvToken)) {
+    return standalone.apv.analyze(peerApvToken);
+  } else {
+    throw new GetPeersApvFailedError(
+      `Ignore APV[${peerApvToken}] due to failure to validating.`
+    );
   }
-
-  throw new GetPeersApvFailedError(`Empty peerInfos`);
 }
