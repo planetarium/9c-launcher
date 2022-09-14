@@ -53,6 +53,8 @@ export async function performUpdate(
   const win = updateOptions.getWindow();
 
   if (context) {
+    console.log(`Start launcher update, First check compatiblity.`);
+
     if (!checkCompatiblity(context.newApv, context.oldApv)) {
       console.log(
         `Stop update process. CompatiblityVersion is higher than current.`
@@ -79,9 +81,13 @@ export async function performUpdate(
 
     updateOptions.relaunchRequired();
   } else {
+    console.log(`Not required launcher update, Check player path.`);
+
     const exists = await fs.promises.stat(executePath).catch(() => false);
 
     if (!exists) {
+      console.log(`Player not exists. Start player update`);
+
       await playerUpdate(
         buildDownloadUrl(
           baseURL,

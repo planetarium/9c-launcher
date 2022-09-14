@@ -53,7 +53,9 @@ export function buildDownloadUrl(
     throw new NotSupportedPlatformError(platform);
   }
 
-  return [baseUrl, env, rc, project, "v" + projectVersion, filename].join("/");
+  return [baseUrl, env, `v${rc}`, project, `v${projectVersion}`, filename].join(
+    "/"
+  );
 }
 
 export const BINARY_FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
