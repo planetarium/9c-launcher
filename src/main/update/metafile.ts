@@ -15,7 +15,7 @@ export async function readVersion(dir: string): Promise<IVersionMetadata> {
 
   const m = JSON.parse(data);
 
-  if (m["schemaVersion"] < PLAYER_METAFILE_VERSION) {
+  if (m["schemaVersion"] !== PLAYER_METAFILE_VERSION) {
     throw new SchemaNotCompatibilityError(
       `Old version ${m["schemaVersion"]} and New version ${PLAYER_METAFILE_VERSION} are not compatible`
     );

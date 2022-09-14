@@ -250,18 +250,19 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
-    let update: IUpdate | null = null;
-    try {
-      update = await checkForUpdate(standalone, process.platform);
-    } catch (e) {
-      console.log("An error occurred: ", e);
-    }
+    const update: IUpdate | null = await checkForUpdate(
+      standalone,
+      process.platform
+    ).catch((e) => {
+      console.error("An error has occurred while checking updates", e);
+      return null;
+    });
 
     if (useUpdate && update) {
       if (!isV2) performUpdate(update, updateOptions);
       else
         ipcMain.handle("start update", async () => {
-          if (update) await performUpdate(update, updateOptions);
+          await performUpdate(update, updateOptions);
         });
     }
 
@@ -271,7 +272,7 @@ async function initializeApp() {
     mixpanel?.track("Launcher/Start", {
       isV2,
       useRemoteHeadless,
-      updateAvailable: update && update.updateRequired,
+      updateAvailable: update?.updateRequired ?? false,
     });
 
     try {
