@@ -8,7 +8,7 @@ import { spawn as spawnPromise } from "child-process-promise";
 import { cleanupOldPlayer } from "./util";
 import { IUpdate } from "./check";
 import { playerPath } from "../../config";
-import { createVersionMetafile } from "./metafile";
+import { createVersion } from "./metafile";
 
 export async function playerUpdate(
   update: IUpdate,
@@ -109,7 +109,7 @@ export async function playerUpdate(
 
   await fs.promises.unlink(dlPath);
 
-  await createVersionMetafile(playerPath, {
+  await createVersion(playerPath, {
     apvVersion: update.newApv.version,
     timestamp: new Date().toISOString(),
   });

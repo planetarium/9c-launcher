@@ -1,14 +1,11 @@
-import fs from "fs";
 import lockfile from "lockfile";
 import path from "path";
 import { app, dialog, shell } from "electron";
 
-import { IUpdate, checkCompatiblity } from "./check";
+import { IUpdate, checkCompatiblity, checkMetafile } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
-
-import { playerPath } from "../../config";
-import { FILE_NAME as METAFILE_NAME, readVersionMetafile } from "./metafile";
+import { playerPath } from "src/config";
 
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
@@ -73,26 +70,7 @@ export async function performUpdate(
   } else {
     console.log(`Not required launcher update, Check player path.`);
 
-    const exists = await fs.promises
-      .stat(`${playerPath}/${METAFILE_NAME}`)
-      .catch(() => false);
-
-    if (exists) {
-      console.log(`Player exists. check version metafile`);
-
-      const versionData = await readVersionMetafile(playerPath);
-
-      console.log(
-        `Player version: ${versionData.apvVersion}, New version: ${update.newApv.version}`
-      );
-
-      if (versionData.apvVersion < update.newApv.version) {
-        console.log(`Player update required, Start player update`);
-
-        await playerUpdate(update, win);
-      }
-    } else {
-      console.log(`Player not exists. Start player update`);
+    if (await checkMetafile(update.newApv.version, playerPath)) {
       await playerUpdate(update, win);
     }
   }

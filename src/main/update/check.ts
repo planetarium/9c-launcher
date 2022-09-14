@@ -2,6 +2,7 @@ import { IApv, ISimpleApv } from "src/interfaces/apv";
 import { IDownloadUrls, getDownloadUrls } from "../../utils/url";
 import Headless from "../headless/headless";
 import { get as getConfig, baseUrl, netenv } from "../../config";
+import { readVersion, exists as metafileExists } from "./metafile";
 
 export class GetPeersApvFailedError extends Error {}
 
@@ -62,6 +63,29 @@ export function checkCompatiblity(
   );
 
   return peersCompatVersion <= localCompatVersion;
+}
+
+export async function checkMetafile(newApvVersion: number, dir: string) {
+  if (await metafileExists(dir)) {
+    console.log(`Player exists. check version metafile`);
+
+    const version = await readVersion(dir);
+
+    console.log(
+      `Player version: ${version.apvVersion}, New version: ${newApvVersion}`
+    );
+
+    if (version.apvVersion < newApvVersion) {
+      console.log(`Player update required, Start player update`);
+
+      return true;
+    }
+  } else {
+    console.log(`Player not exists. Start player update`);
+    return true;
+  }
+
+  return false;
 }
 
 function getPeersApv(
