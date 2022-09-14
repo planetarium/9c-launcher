@@ -66,31 +66,31 @@ export function checkCompatiblity(
 }
 
 export async function checkMetafile(newApvVersion: number, dir: string) {
-  if (await metafileExists(dir)) {
-    console.log(`Player exists. check version metafile`);
-
-    let version;
-    try {
-      version = await readVersion(dir);
-    } catch (e) {
-      console.error(
-        `readVersion Error ocurred, Start player update ${e}:\n`,
-        e.stderr
-      );
-      return true;
-    }
-
-    console.log(
-      `Player version: ${version.apvVersion}, New version: ${newApvVersion}`
-    );
-
-    if (version.apvVersion < newApvVersion) {
-      console.log(`Player update required, Start player update`);
-
-      return true;
-    }
-  } else {
+  if (!(await metafileExists(dir))) {
     console.log(`Player not exists. Start player update`);
+    return true;
+  }
+
+  console.log(`Player exists. check version metafile`);
+
+  let version;
+  try {
+    version = await readVersion(dir);
+  } catch (e) {
+    console.error(
+      `readVersion Error ocurred, Start player update ${e}:\n`,
+      e.stderr
+    );
+    return true;
+  }
+
+  console.log(
+    `Player version: ${version.apvVersion}, New version: ${newApvVersion}`
+  );
+
+  if (version.apvVersion < newApvVersion) {
+    console.log(`Player update required, Start player update`);
+
     return true;
   }
 
