@@ -2,10 +2,12 @@ import { IApv, ISimpleApv } from "src/interfaces/apv";
 import { IDownloadUrls, getDownloadUrls } from "../../utils/url";
 import Headless from "../headless/headless";
 import { get as getConfig, baseUrl, netenv } from "../../config";
+import { readVersion, exists as metafileExists } from "./metafile";
 
 export class GetPeersApvFailedError extends Error {}
 
 export interface IUpdate {
+  updateRequired: boolean;
   newApv: ISimpleApv;
   oldApv: ISimpleApv;
   urls: IDownloadUrls;
@@ -18,13 +20,13 @@ const trustedApvSigners = getConfig("TrustedAppProtocolVersionSigners");
 export async function checkForUpdate(
   standalone: Headless,
   platform: NodeJS.Platform
-): Promise<IUpdate | null> {
+): Promise<IUpdate> {
   let peersApv;
   try {
     peersApv = getPeersApv(standalone, peerInfos, trustedApvSigners);
   } catch (e) {
     console.error(`getPeersApv Error ocurred ${e}:\n`, e.stderr);
-    return null;
+    throw e;
   }
 
   return checkForUpdateFromApv(standalone, peersApv, platform);
@@ -35,17 +37,15 @@ export async function checkForUpdateFromApv(
   standalone: Headless,
   peersApv: ISimpleApv,
   platform: NodeJS.Platform
-): Promise<IUpdate | null> {
+): Promise<IUpdate> {
   const localApv = standalone.apv.analyze(localApvToken);
 
-  if (peersApv.version > localApv.version)
-    return {
-      newApv: peersApv,
-      oldApv: localApv,
-      urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
-    };
-
-  return null;
+  return {
+    updateRequired: peersApv.version > localApv.version,
+    newApv: peersApv,
+    oldApv: localApv,
+    urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
+  };
 }
 
 /**
@@ -63,6 +63,38 @@ export function checkCompatiblity(
   );
 
   return peersCompatVersion <= localCompatVersion;
+}
+
+export async function checkMetafile(newApvVersion: number, dir: string) {
+  if (!(await metafileExists(dir))) {
+    console.log(`Player not exists. Start player update`);
+    return true;
+  }
+
+  console.log(`Player exists. check version metafile`);
+
+  let version;
+  try {
+    version = await readVersion(dir);
+  } catch (e) {
+    console.error(
+      `readVersion Error ocurred, Start player update ${e}:\n`,
+      e.stderr
+    );
+    return true;
+  }
+
+  console.log(
+    `Player version: ${version.apvVersion}, New version: ${newApvVersion}`
+  );
+
+  if (version.apvVersion < newApvVersion) {
+    console.log(`Player update required, Start player update`);
+
+    return true;
+  }
+
+  return false;
 }
 
 function getPeersApv(

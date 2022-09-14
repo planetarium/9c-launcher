@@ -125,6 +125,10 @@ export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
                 "LAUNCHER_DOWNLOAD"
               ),
           },
+          {
+            id: "triggerUpdate",
+            src: () => ipcRenderer.invoke("start update"),
+          },
         ],
         on: {
           PLAYER_DOWNLOAD: {

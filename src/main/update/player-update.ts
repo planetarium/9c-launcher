@@ -6,10 +6,12 @@ import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
 import { cleanupOldPlayer } from "./util";
-import { playerPath } from "../../config";
+import { IUpdate } from "./check";
+import { playerPath, PLAYER_METAFILE_VERSION } from "../../config";
+import { createVersion } from "./metafile";
 
 export async function playerUpdate(
-  downloadUrl: string,
+  update: IUpdate,
   win: Electron.BrowserWindow | null
 ) {
   if (win === null) {
@@ -29,19 +31,19 @@ export async function playerUpdate(
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `[player] Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `[player] Downloading ${update.urls.player}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
       win?.webContents.send("update player download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("[player] Starts to download:", downloadUrl);
+  console.log("[player] Starts to download:", update.urls.player);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, downloadUrl, options);
+    dl = await download(win, update.urls.player, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(downloadUrl);
+    throw new DownloadBinaryFailedError(update.urls.player);
   }
 
   win.webContents.send("update player download complete");
@@ -106,4 +108,10 @@ export async function playerUpdate(
   win.webContents.send("update player extract complete");
 
   await fs.promises.unlink(dlPath);
+
+  await createVersion(playerPath, {
+    apvVersion: update.newApv.version,
+    timestamp: new Date().toISOString(),
+    schemaVersion: PLAYER_METAFILE_VERSION,
+  });
 }

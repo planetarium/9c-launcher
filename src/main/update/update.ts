@@ -1,21 +1,11 @@
-import fs from "fs";
 import lockfile from "lockfile";
 import path from "path";
 import { app, dialog, shell } from "electron";
 
-import { IUpdate, checkCompatiblity } from "./check";
+import { IUpdate, checkCompatiblity, checkMetafile } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
-
-import {
-  DEFAULT_DOWNLOAD_BASE_URL,
-  get as getConfig,
-  WIN_GAME_PATH,
-  EXECUTE_PATH,
-  netenv,
-  apvVersionNumber,
-} from "../../config";
-import { buildDownloadUrl } from "../../utils/url";
+import { playerPath } from "../../config";
 
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
@@ -23,13 +13,10 @@ export interface IUpdateOptions {
   getWindow(): Electron.BrowserWindow | null;
 }
 
-const baseURL = getConfig("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
-const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
-
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
 export async function performUpdate(
-  context: IUpdate | null,
+  update: IUpdate,
   updateOptions: IUpdateOptions
 ) {
   if (lockfile.checkSync(lockfilePath)) {
@@ -52,10 +39,10 @@ export async function performUpdate(
 
   const win = updateOptions.getWindow();
 
-  if (context) {
+  if (update.updateRequired) {
     console.log(`Start launcher update, First check compatiblity.`);
 
-    if (!checkCompatiblity(context.newApv, context.oldApv)) {
+    if (!checkCompatiblity(update.newApv, update.oldApv)) {
       console.log(
         `Stop update process. CompatiblityVersion is higher than current.`
       );
@@ -76,29 +63,15 @@ export async function performUpdate(
       return;
     }
 
-    await launcherUpdate(context, updateOptions);
-    await playerUpdate(context.urls.player, win);
+    await launcherUpdate(update, updateOptions);
+    await playerUpdate(update, win);
 
     updateOptions.relaunchRequired();
   } else {
     console.log(`Not required launcher update, Check player path.`);
 
-    const exists = await fs.promises.stat(executePath).catch(() => false);
-
-    if (!exists) {
-      console.log(`Player not exists. Start player update`);
-
-      await playerUpdate(
-        buildDownloadUrl(
-          baseURL,
-          netenv,
-          apvVersionNumber,
-          "player",
-          1,
-          process.platform
-        ),
-        win
-      );
+    if (await checkMetafile(update.newApv.version, playerPath)) {
+      await playerUpdate(update, win);
     }
   }
 
