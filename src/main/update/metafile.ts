@@ -1,7 +1,9 @@
 import fs from "fs";
 import { IVersionMetadata } from "../../interfaces/metadata";
+import { PLAYER_METAFILE_VERSION } from "../../config";
 
 export const FILE_NAME = "version.json";
+export class SchemaNotCompatibilityError extends Error {}
 
 export async function createVersion(dir: string, data: IVersionMetadata) {
   await fs.promises.writeFile(`${dir}/${FILE_NAME}`, JSON.stringify(data));
@@ -10,13 +12,17 @@ export async function createVersion(dir: string, data: IVersionMetadata) {
 export async function readVersion(dir: string): Promise<IVersionMetadata> {
   const data = await fs.promises.readFile(`${dir}/${FILE_NAME}`, "utf8");
 
-  const m: IVersionMetadata = JSON.parse(data);
+  const m = JSON.parse(data);
 
-  return m;
+  if (m["schemaVersion"] < PLAYER_METAFILE_VERSION) {
+    throw new SchemaNotCompatibilityError(
+      `Old version ${m["schemaVersion"]} and New version ${PLAYER_METAFILE_VERSION} are not compatible`
+    );
+  }
+
+  return m as IVersionMetadata;
 }
 
 export async function exists(dir: string) {
-  const e = await fs.promises.stat(`${dir}/${FILE_NAME}`).catch(() => false);
-
-  return e;
+  return await fs.promises.stat(`${dir}/${FILE_NAME}`).catch(() => false);
 }

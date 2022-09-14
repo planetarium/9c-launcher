@@ -7,7 +7,7 @@ import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
 import { cleanupOldPlayer } from "./util";
 import { IUpdate } from "./check";
-import { playerPath } from "../../config";
+import { playerPath, PLAYER_METAFILE_VERSION } from "../../config";
 import { createVersion } from "./metafile";
 
 export async function playerUpdate(
@@ -112,5 +112,6 @@ export async function playerUpdate(
   await createVersion(playerPath, {
     apvVersion: update.newApv.version,
     timestamp: new Date().toISOString(),
+    schemaVersion: PLAYER_METAFILE_VERSION,
   });
 }
