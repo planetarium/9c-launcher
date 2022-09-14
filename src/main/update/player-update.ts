@@ -2,39 +2,19 @@ import { DownloadItem, app } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
-import path from "path";
 import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
 import { cleanupOldPlayer } from "./util";
 import { playerPath } from "../../config";
-import lockfile from "lockfile";
-
-const lockfilePath = path.join(
-  path.dirname(app.getPath("exe")),
-  "player-lockfile"
-);
 
 export async function playerUpdate(
   downloadUrl: string,
-  win: Electron.BrowserWindow
+  win: Electron.BrowserWindow | null
 ) {
-  if (lockfile.checkSync(lockfilePath)) {
-    console.log(
-      "[player] 'encounter different version' event seems running already. Stop this flow."
-    );
+  if (win === null) {
+    console.log("Stop update process because win is null.");
     return;
-  }
-
-  try {
-    lockfile.lockSync(lockfilePath);
-    console.log(
-      "[player] Created 'encounter different version' lockfile at ",
-      lockfilePath
-    );
-  } catch (e) {
-    console.error("[player] Error occurred during trying lock.");
-    throw e;
   }
 
   win.webContents.send("update player download started");
@@ -69,11 +49,13 @@ export async function playerUpdate(
   const dlPath = dl?.getSavePath();
   console.log("[player] Finished to download:", dlPath);
 
-  if (fs.existsSync(playerPath)) {
+  const exists = await fs.promises.stat(playerPath).catch(() => false);
+
+  if (exists) {
     await fs.promises.rmdir(playerPath, { recursive: true });
-  } else {
-    await fs.promises.mkdir(playerPath, { recursive: true });
   }
+
+  await fs.promises.mkdir(playerPath, { recursive: true });
 
   console.log("[player] Clean up exists player");
 
@@ -124,10 +106,4 @@ export async function playerUpdate(
   win.webContents.send("update player extract complete");
 
   await fs.promises.unlink(dlPath);
-
-  lockfile.unlockSync(lockfilePath);
-  console.log(
-    "[player] Removed 'encounter different version' lockfile at ",
-    lockfilePath
-  );
 }

@@ -15,6 +15,7 @@ import {
   initializeNode,
   NodeInfo,
   userConfigStore,
+  baseUrl,
 } from "../config";
 import {
   app,
@@ -34,7 +35,8 @@ import logoImage from "./resources/logo.png";
 import { initializeSentry } from "../preload/sentry";
 import "core-js";
 import log from "electron-log";
-import { DifferentAppProtocolVersionEncounterSubscription } from "../generated/graphql";
+import { AppProtocolVersionType } from "../generated/graphql";
+import { decodeApvExtra } from "../utils/apv";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
@@ -71,14 +73,9 @@ import {
 } from "./v2/application";
 import { getFreeSpace } from "@planetarium/check-free-space";
 import fg from "fast-glob";
-import {
-  checkForUpdates,
-  cleanUpLockfile,
-  isUpdating,
-  IUpdateOptions,
-  Update,
-  update,
-} from "./update/launcher-update";
+import { cleanUpLockfile, isUpdating, IUpdateOptions } from "./update/update";
+import { performUpdate } from "./update/update";
+import { checkForUpdate, checkForUpdateFromApv } from "./update/check";
 import { send } from "./v2/ipc";
 import {
   IPC_OPEN_URL,
@@ -100,8 +97,7 @@ const standaloneExecutablePath = path.join(
   "NineChronicles.Headless.Executable"
 );
 
-const baseURL = getConfig("DownloadBaseURL") || DEFAULT_DOWNLOAD_BASE_URL;
-const REMOTE_CONFIG_URL = `${baseURL}/9c-launcher-config.json`;
+const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
 let collectionWin: BrowserWindow | null = null;
@@ -126,6 +122,7 @@ let remoteNode: NodeInfo;
 
 const isV2 =
   !getConfig("PreferLegacyInterface") || app.commandLine.hasSwitch("v2");
+const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
 ipv4().then((value) => (ip = value));
 
@@ -253,12 +250,15 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
-    const u = await checkForUpdates(standalone);
-    if (u && !isV2) update(u, updateOptions);
-    else if (u && isV2)
-      ipcMain.handle("start update", async () => {
-        await update(u, updateOptions);
-      });
+    const update = await checkForUpdate(standalone, process.platform);
+
+    if (useUpdate && update) {
+      if (!isV2) performUpdate(update, updateOptions);
+      else
+        ipcMain.handle("start update", async () => {
+          await performUpdate(update, updateOptions);
+        });
+    }
 
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
@@ -266,7 +266,7 @@ async function initializeApp() {
     mixpanel?.track("Launcher/Start", {
       isV2,
       useRemoteHeadless,
-      updateAvailable: !!u,
+      updateAvailable: !!update,
     });
 
     try {
@@ -308,11 +308,26 @@ async function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on("encounter different version", async (_event, data: Update) => {
-    if (data.extras) {
-      await update(data, updateOptions);
+  ipcMain.on(
+    "encounter different version",
+    async (_event, apv: Pick<AppProtocolVersionType, "version" | "extra">) => {
+      if (!useUpdate) return;
+
+      const extra = apv.extra && decodeApvExtra(apv.extra);
+
+      const simpleApv = {
+        version: apv.version,
+        extra: extra ? Object.fromEntries(extra) : {},
+      };
+
+      const update = await checkForUpdateFromApv(
+        standalone,
+        simpleApv,
+        process.platform
+      );
+      await performUpdate(update, updateOptions);
     }
-  });
+  );
 
   ipcMain.handle("open collection page", async (_, selectedAddress) => {
     if (collectionWin != null) {

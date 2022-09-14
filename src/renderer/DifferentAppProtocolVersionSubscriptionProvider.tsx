@@ -7,7 +7,6 @@ import {
 } from "../generated/graphql";
 import { IDownloadProgress } from "../interfaces/ipc";
 import UpdateView from "./views/update/UpdateView";
-import { Update } from "src/main/update/launcher-update";
 
 export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,
@@ -77,6 +76,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
       ipcRenderer.send(
         "encounter different version",
         differentAppProtocolVersionEncounter
+          .differentAppProtocolVersionEncounter.peerVersion
       );
     };
   }, []);
@@ -90,11 +90,10 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
       null !== data?.differentAppProtocolVersionEncounter &&
       undefined !== data?.differentAppProtocolVersionEncounter
     ) {
-      ipcRenderer.send("encounter different version", {
-        current: data.differentAppProtocolVersionEncounter.localVersion.version,
-        newer: data.differentAppProtocolVersionEncounter.peerVersion.version,
-        extras: data.differentAppProtocolVersionEncounter.peerVersion.extra,
-      } as Update);
+      ipcRenderer.send(
+        "encounter different version",
+        data.differentAppProtocolVersionEncounter.peerVersion
+      );
     }
   }, [loading, data]);
 
