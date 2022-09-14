@@ -13,7 +13,7 @@ export async function createVersion(dir: string, data: IVersionMetadata) {
 export async function readVersion(dir: string): Promise<IVersionMetadata> {
   const data = await fs.promises.readFile(path.join(dir, FILE_NAME), "utf8");
 
-  const m = JSON.parse(data);
+  const m: IVersionMetadata = JSON.parse(data);
 
   if (m["schemaVersion"] !== PLAYER_METAFILE_VERSION) {
     throw new SchemaNotCompatibilityError(
@@ -21,7 +21,7 @@ export async function readVersion(dir: string): Promise<IVersionMetadata> {
     );
   }
 
-  return m as IVersionMetadata;
+  return m;
 }
 
 export async function exists(dir: string) {
