@@ -67,6 +67,9 @@ const Side = styled("span", {
   transform: "translateY(-50%)",
   display: "flex",
   alignItems: "flex-end",
+});
+
+const SideButton = styled("button", {
   transition: "opacity .2s ease",
   variants: {
     showOnHover: {
@@ -77,10 +80,15 @@ const Side = styled("span", {
         },
       },
     },
+    showOnFocus: {
+      true: {
+        opacity: 0,
+        "&:focus": {
+          opacity: 1,
+        },
+      },
+    },
   },
-});
-
-const SideButton = styled("button", {
   appearance: "none",
   color: "white",
   background: "none",
@@ -172,8 +180,13 @@ export const PasswordField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           {...inputAttrs}
         />
         <Label htmlFor={id}>{label}</Label>
-        <Side showOnHover={!!message}>
-          <SideButton type="button" onClick={toggleVisible}>
+        <Side>
+          <SideButton
+            type="button"
+            onClick={toggleVisible}
+            showOnHover={!!message}
+            showOnFocus={!!message}
+          >
             <Icon />
           </SideButton>
         </Side>
