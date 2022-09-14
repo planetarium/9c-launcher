@@ -5,7 +5,7 @@ import { app, dialog, shell } from "electron";
 import { IUpdate, checkCompatiblity, checkMetafile } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
-import { playerPath } from "src/config";
+import { playerPath } from "../../config";
 
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
