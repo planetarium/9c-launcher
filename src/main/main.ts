@@ -257,7 +257,7 @@ async function initializeApp() {
       console.log("An error occurred: ", e);
     }
 
-    if (useUpdate && update && update.updateRequired) {
+    if (useUpdate && update) {
       if (!isV2) performUpdate(update, updateOptions);
       else
         ipcMain.handle("start update", async () => {

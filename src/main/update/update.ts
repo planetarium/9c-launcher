@@ -7,13 +7,7 @@ import { IUpdate, checkCompatiblity } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
 
-import {
-  DEFAULT_DOWNLOAD_BASE_URL,
-  get as getConfig,
-  WIN_GAME_PATH,
-  EXECUTE_PATH,
-  playerPath,
-} from "../../config";
+import { playerPath } from "../../config";
 import { FILE_NAME as METAFILE_NAME, readVersionMetafile } from "./metafile";
 
 export interface IUpdateOptions {
@@ -21,9 +15,6 @@ export interface IUpdateOptions {
   relaunchRequired(): void;
   getWindow(): Electron.BrowserWindow | null;
 }
-
-const baseURL = getConfig("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
-const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
 
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
@@ -87,10 +78,19 @@ export async function performUpdate(
       .catch(() => false);
 
     if (exists) {
+      console.log(`Player exists. check version metafile`);
+
       const versionData = await readVersionMetafile(playerPath);
 
-      if (versionData.apvVersion < update.newApv.version)
+      console.log(
+        `Player version: ${versionData.apvVersion}, New version: ${update.newApv.version}`
+      );
+
+      if (versionData.apvVersion < update.newApv.version) {
+        console.log(`Player update required, Start player update`);
+
         await playerUpdate(update, win);
+      }
     } else {
       console.log(`Player not exists. Start player update`);
       await playerUpdate(update, win);
