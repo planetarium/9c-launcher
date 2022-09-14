@@ -12,10 +12,9 @@ import {
   get as getConfig,
   WIN_GAME_PATH,
   EXECUTE_PATH,
-  netenv,
-  apvVersionNumber,
+  playerPath,
 } from "../../config";
-import { buildDownloadUrl } from "../../utils/url";
+import { FILE_NAME as METAFILE_NAME, readVersionMetafile } from "./metafile";
 
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
@@ -29,7 +28,7 @@ const executePath = EXECUTE_PATH[process.platform] || WIN_GAME_PATH;
 const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
 
 export async function performUpdate(
-  context: IUpdate | null,
+  update: IUpdate,
   updateOptions: IUpdateOptions
 ) {
   if (lockfile.checkSync(lockfilePath)) {
@@ -52,10 +51,10 @@ export async function performUpdate(
 
   const win = updateOptions.getWindow();
 
-  if (context) {
+  if (update.updateRequired) {
     console.log(`Start launcher update, First check compatiblity.`);
 
-    if (!checkCompatiblity(context.newApv, context.oldApv)) {
+    if (!checkCompatiblity(update.newApv, update.oldApv)) {
       console.log(
         `Stop update process. CompatiblityVersion is higher than current.`
       );
@@ -76,29 +75,25 @@ export async function performUpdate(
       return;
     }
 
-    await launcherUpdate(context, updateOptions);
-    await playerUpdate(context.urls.player, win);
+    await launcherUpdate(update, updateOptions);
+    await playerUpdate(update, win);
 
     updateOptions.relaunchRequired();
   } else {
     console.log(`Not required launcher update, Check player path.`);
 
-    const exists = await fs.promises.stat(executePath).catch(() => false);
+    const exists = await fs.promises
+      .stat(`${playerPath}/${METAFILE_NAME}`)
+      .catch(() => false);
 
-    if (!exists) {
+    if (exists) {
+      const versionData = await readVersionMetafile(playerPath);
+
+      if (versionData.apvVersion < update.newApv.version)
+        await playerUpdate(update, win);
+    } else {
       console.log(`Player not exists. Start player update`);
-
-      await playerUpdate(
-        buildDownloadUrl(
-          baseURL,
-          netenv,
-          apvVersionNumber,
-          "player",
-          1,
-          process.platform
-        ),
-        win
-      );
+      await playerUpdate(update, win);
     }
   }
 

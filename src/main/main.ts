@@ -75,7 +75,7 @@ import { getFreeSpace } from "@planetarium/check-free-space";
 import fg from "fast-glob";
 import { cleanUpLockfile, isUpdating, IUpdateOptions } from "./update/update";
 import { performUpdate } from "./update/update";
-import { checkForUpdate, checkForUpdateFromApv } from "./update/check";
+import { checkForUpdate, checkForUpdateFromApv, IUpdate } from "./update/check";
 import { send } from "./v2/ipc";
 import {
   IPC_OPEN_URL,
@@ -250,13 +250,18 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
-    const update = await checkForUpdate(standalone, process.platform);
+    let update: IUpdate | null = null;
+    try {
+      update = await checkForUpdate(standalone, process.platform);
+    } catch (e) {
+      console.log("An error occurred: ", e);
+    }
 
-    if (useUpdate && update) {
+    if (useUpdate && update && update.updateRequired) {
       if (!isV2) performUpdate(update, updateOptions);
       else
         ipcMain.handle("start update", async () => {
-          await performUpdate(update, updateOptions);
+          if (update) await performUpdate(update, updateOptions);
         });
     }
 
@@ -266,7 +271,7 @@ async function initializeApp() {
     mixpanel?.track("Launcher/Start", {
       isV2,
       useRemoteHeadless,
-      updateAvailable: !!update,
+      updateAvailable: update && update.updateRequired,
     });
 
     try {

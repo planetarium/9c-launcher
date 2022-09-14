@@ -6,6 +6,7 @@ import { get as getConfig, baseUrl, netenv } from "../../config";
 export class GetPeersApvFailedError extends Error {}
 
 export interface IUpdate {
+  updateRequired: boolean;
   newApv: ISimpleApv;
   oldApv: ISimpleApv;
   urls: IDownloadUrls;
@@ -18,13 +19,13 @@ const trustedApvSigners = getConfig("TrustedAppProtocolVersionSigners");
 export async function checkForUpdate(
   standalone: Headless,
   platform: NodeJS.Platform
-): Promise<IUpdate | null> {
+): Promise<IUpdate> {
   let peersApv;
   try {
     peersApv = getPeersApv(standalone, peerInfos, trustedApvSigners);
   } catch (e) {
     console.error(`getPeersApv Error ocurred ${e}:\n`, e.stderr);
-    return null;
+    throw e;
   }
 
   return checkForUpdateFromApv(standalone, peersApv, platform);
@@ -35,17 +36,15 @@ export async function checkForUpdateFromApv(
   standalone: Headless,
   peersApv: ISimpleApv,
   platform: NodeJS.Platform
-): Promise<IUpdate | null> {
+): Promise<IUpdate> {
   const localApv = standalone.apv.analyze(localApvToken);
 
-  if (peersApv.version > localApv.version)
-    return {
-      newApv: peersApv,
-      oldApv: localApv,
-      urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
-    };
-
-  return null;
+  return {
+    updateRequired: peersApv.version > localApv.version,
+    newApv: peersApv,
+    oldApv: localApv,
+    urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
+  };
 }
 
 /**
