@@ -39,10 +39,10 @@ export async function checkForUpdateFromApv(
 ): Promise<IUpdate> {
   const localApv = standalone.apv.analyze(localApvToken);
 
-  const extraDetail = analyzeApvExtra(peersApv, localApv);
+  const info = analyzeApvExtra(peersApv, localApv);
 
   return {
-    updateRequired: extraDetail.updateRequired,
+    updateRequired: info.updateRequired,
     newApv: peersApv,
     oldApv: localApv,
     urls: getDownloadUrls(
@@ -50,7 +50,7 @@ export async function checkForUpdateFromApv(
       netenv,
       peersApv.version,
       platform,
-      extraDetail.commitHash
+      info.commitHash
     ),
   };
 }
