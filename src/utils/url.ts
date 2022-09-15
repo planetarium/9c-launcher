@@ -13,15 +13,18 @@ export function getDownloadUrls(
   baseUrl: string,
   netenv: string,
   apvVersion: number,
-  platform: NodeJS.Platform
+  platform: NodeJS.Platform,
+  commitHash: {
+    launcher: string;
+    player: string;
+  }
 ): IDownloadUrls {
-  // TODO: fix project version number hard coding: 1.
   const launcherUrl = buildDownloadUrl(
     baseUrl,
     netenv,
     apvVersion,
     "launcher",
-    1,
+    commitHash.launcher,
     platform
   );
   const playerUrl = buildDownloadUrl(
@@ -29,7 +32,7 @@ export function getDownloadUrls(
     netenv,
     apvVersion,
     "player",
-    1,
+    commitHash.player,
     platform
   );
 
@@ -44,7 +47,7 @@ export function buildDownloadUrl(
   env: string,
   rc: number,
   project: "player" | "launcher",
-  projectVersion: number,
+  commitHash: string,
   platform: NodeJS.Platform
 ): string {
   const filename = BINARY_FILENAME_MAP[platform];
@@ -53,9 +56,7 @@ export function buildDownloadUrl(
     throw new NotSupportedPlatformError(platform);
   }
 
-  return [baseUrl, env, `v${rc}`, project, `v${projectVersion}`, filename].join(
-    "/"
-  );
+  return [baseUrl, env, `v${rc}`, project, commitHash, filename].join("/");
 }
 
 export const BINARY_FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {

@@ -32,7 +32,6 @@ export async function checkForUpdate(
   return checkForUpdateFromApv(standalone, peersApv, platform);
 }
 
-// FIXME: Could use overload function...
 export async function checkForUpdateFromApv(
   standalone: Headless,
   peersApv: ISimpleApv,
@@ -40,11 +39,19 @@ export async function checkForUpdateFromApv(
 ): Promise<IUpdate> {
   const localApv = standalone.apv.analyze(localApvToken);
 
+  const extraDetail = analyzeApvExtra(peersApv, localApv);
+
   return {
-    updateRequired: peersApv.version > localApv.version,
+    updateRequired: extraDetail.updateRequired,
     newApv: peersApv,
     oldApv: localApv,
-    urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
+    urls: getDownloadUrls(
+      baseUrl,
+      netenv,
+      peersApv.version,
+      platform,
+      extraDetail.commitHash
+    ),
   };
 }
 
@@ -117,4 +124,27 @@ function getPeersApv(
       `Ignore APV[${peerApvToken}] due to failure to validating.`
     );
   }
+}
+
+function analyzeApvExtra(newApv: ISimpleApv, oldApv: ISimpleApv) {
+  let updateRequired = false;
+  const commitHash = {
+    player: oldApv.extra["player"] ?? "v1",
+    launcher: oldApv.extra["launcher"] ?? "v1",
+  };
+  const keys = Object.keys(commitHash) as (keyof typeof commitHash)[];
+
+  keys.forEach((project) => {
+    const newCommit = newApv.extra[project] ?? null;
+
+    if (newCommit !== null && commitHash[project] !== newCommit) {
+      updateRequired = true;
+      commitHash[project] = newCommit;
+    }
+  });
+
+  return {
+    updateRequired,
+    commitHash,
+  };
 }
