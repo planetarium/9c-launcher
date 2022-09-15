@@ -9,22 +9,12 @@ import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed"
 import fs from "fs";
 import { spawn as spawnPromise } from "child-process-promise";
 import { IUpdate } from "./check";
-import { IUpdateOptions } from "./update";
 
 export async function launcherUpdate(
   update: IUpdate,
-  listeners: IUpdateOptions
+  win: Electron.BrowserWindow
 ) {
-  const win = listeners.getWindow();
-
-  if (win === null) {
-    console.log("Stop update process because win is null.");
-    return;
-  }
-
-  await listeners.downloadStarted();
-
-  win?.webContents.send("update download started");
+  win.webContents.send("update download started");
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {
     onStarted: (downloadItem: DownloadItem) => {
@@ -33,19 +23,19 @@ export async function launcherUpdate(
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `Downloading ${update.urls.launcher}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `Downloading ${update.launcher.url}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
-      win?.webContents.send("update download progress", status);
+      win.webContents.send("update download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("Starts to download:", update.urls.launcher);
+  console.log("Starts to download:", update.launcher.url);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, update.urls.launcher, options);
+    dl = await download(win, update.launcher.url, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(update.urls.launcher);
+    throw new DownloadBinaryFailedError(update.launcher.url);
   }
 
   win.webContents.send("update download complete");
@@ -90,7 +80,7 @@ export async function launcherUpdate(
       dir: tempDir,
       onEntry: (_, zipfile) => {
         const progress = zipfile.entriesRead / zipfile.entryCount;
-        win?.webContents.send("update extract progress", progress);
+        win.webContents.send("update extract progress", progress);
       },
     });
     win.webContents.send("update extract complete");
@@ -114,7 +104,7 @@ export async function launcherUpdate(
       "to",
       extractPath
     );
-    win?.webContents.send("update extract progress", 50);
+    win.webContents.send("update extract progress", 50);
 
     try {
       await spawnPromise(

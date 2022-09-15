@@ -9,16 +9,11 @@ import { cleanupOldPlayer } from "./util";
 import { IUpdate } from "./check";
 import { playerPath, PLAYER_METAFILE_VERSION } from "../../config";
 import { createVersion } from "./metafile";
-import { IUpdateOptions } from "./update";
 
-export async function playerUpdate(update: IUpdate, listeners: IUpdateOptions) {
-  const win = listeners.getWindow();
-
-  if (win === null) {
-    console.log("Stop update process because win is null.");
-    return;
-  }
-
+export async function playerUpdate(
+  update: IUpdate,
+  win: Electron.BrowserWindow
+) {
   win.webContents.send("update player download started");
 
   cleanupOldPlayer();
@@ -31,19 +26,19 @@ export async function playerUpdate(update: IUpdate, listeners: IUpdateOptions) {
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `[player] Downloading ${update.urls.player}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `[player] Downloading ${update.player.url}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
-      win?.webContents.send("update player download progress", status);
+      win.webContents.send("update player download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("[player] Starts to download:", update.urls.player);
+  console.log("[player] Starts to download:", update.player.url);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, update.urls.player, options);
+    dl = await download(win, update.player.url, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(update.urls.player);
+    throw new DownloadBinaryFailedError(update.player.url);
   }
 
   win.webContents.send("update player download complete");
@@ -88,7 +83,7 @@ export async function playerUpdate(update: IUpdate, listeners: IUpdateOptions) {
       "to",
       playerPath
     );
-    win?.webContents.send("update player extract progress", 50);
+    win.webContents.send("update player extract progress", 50);
 
     try {
       await spawnPromise(

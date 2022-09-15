@@ -270,12 +270,18 @@ async function initializeApp() {
 
     if (update) {
       ipcMain.handle("start player update", async () => {
-        await playerUpdate(update, updateOptions);
+        if (win) {
+          updateOptions.downloadStarted();
+          await playerUpdate(update, win);
+        }
       });
 
       ipcMain.handle("start launcher update", async () => {
-        await launcherUpdate(update, updateOptions);
-        updateOptions.relaunchRequired();
+        if (win) {
+          updateOptions.downloadStarted();
+          await launcherUpdate(update, win);
+          updateOptions.relaunchRequired();
+        }
       });
     }
 
@@ -285,7 +291,9 @@ async function initializeApp() {
     mixpanel?.track("Launcher/Start", {
       isV2,
       useRemoteHeadless,
-      updateAvailable: update?.updateRequired ?? false,
+      updateAvailable: update
+        ? update.launcher.updateRequired || update.player.updateRequired
+        : false,
     });
 
     try {

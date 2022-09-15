@@ -1,5 +1,5 @@
 import { IApv, ISimpleApv } from "src/interfaces/apv";
-import { IDownloadUrls, getDownloadUrls } from "../../utils/url";
+import { buildDownloadUrl } from "../../utils/url";
 import Headless from "../headless/headless";
 import { get as getConfig, baseUrl, netenv } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
@@ -7,10 +7,14 @@ import { readVersion, exists as metafileExists } from "./metafile";
 export class GetPeersApvFailedError extends Error {}
 
 export interface IUpdate {
-  updateRequired: boolean;
   newApv: ISimpleApv;
   oldApv: ISimpleApv;
-  urls: IDownloadUrls;
+  player: IProjectUpdate;
+  launcher: IProjectUpdate;
+}
+export interface IProjectUpdate {
+  updateRequired: boolean;
+  url: string;
 }
 
 const peerInfos = getConfig("PeerStrings");
@@ -39,19 +43,12 @@ export async function checkForUpdateFromApv(
 ): Promise<IUpdate> {
   const localApv = standalone.apv.analyze(localApvToken);
 
-  const info = analyzeApvExtra(peersApv, localApv);
+  const info = analyzeApvExtra(peersApv, localApv, platform);
 
   return {
-    updateRequired: info.updateRequired,
     newApv: peersApv,
     oldApv: localApv,
-    urls: getDownloadUrls(
-      baseUrl,
-      netenv,
-      peersApv.version,
-      platform,
-      info.commitHash
-    ),
+    ...info,
   };
 }
 
@@ -126,25 +123,57 @@ function getPeersApv(
   }
 }
 
-function analyzeApvExtra(newApv: ISimpleApv, oldApv: ISimpleApv) {
-  let updateRequired = false;
-  const commitHash = {
-    player: oldApv.extra["player"] ?? "v1",
-    launcher: oldApv.extra["launcher"] ?? "v1",
+function analyzeApvExtra(
+  newApv: ISimpleApv,
+  oldApv: ISimpleApv,
+  platform: NodeJS.Platform
+) {
+  const defaultPlayerUrl = buildDownloadUrl(
+    baseUrl,
+    netenv,
+    newApv.version,
+    "player",
+    "v1",
+    platform
+  );
+  const defaultLauncherUrl = buildDownloadUrl(
+    baseUrl,
+    netenv,
+    newApv.version,
+    "player",
+    "v1",
+    platform
+  );
+
+  const data = {
+    player: {
+      updateRequired: false,
+      url: defaultPlayerUrl,
+    },
+    launcher: {
+      updateRequired: false,
+      url: defaultLauncherUrl,
+    },
   };
-  const keys = Object.keys(commitHash) as (keyof typeof commitHash)[];
+
+  const keys = Object.keys(data) as (keyof typeof data)[];
 
   keys.forEach((project) => {
+    const oldCommit = oldApv.extra[project] ?? null;
     const newCommit = newApv.extra[project] ?? null;
 
-    if (newCommit !== null && commitHash[project] !== newCommit) {
-      updateRequired = true;
-      commitHash[project] = newCommit;
+    if (newCommit !== null && oldCommit !== newCommit) {
+      data[project].updateRequired = true;
+      data[project].url = buildDownloadUrl(
+        baseUrl,
+        netenv,
+        newApv.version,
+        project,
+        newCommit,
+        platform
+      );
     }
   });
 
-  return {
-    updateRequired,
-    commitHash,
-  };
+  return data;
 }

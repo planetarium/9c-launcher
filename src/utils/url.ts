@@ -4,44 +4,6 @@ const MACOS_FILE_NAME = "macOS.tar.gz";
 const LINUX_FILE_NAME = "Linux.tar.gz";
 const WINDOWS_FILE_NAME = "Windows.zip";
 
-export interface IDownloadUrls {
-  launcher: string;
-  player: string;
-}
-
-export function getDownloadUrls(
-  baseUrl: string,
-  netenv: string,
-  apvVersion: number,
-  platform: NodeJS.Platform,
-  commitHash: {
-    launcher: string;
-    player: string;
-  }
-): IDownloadUrls {
-  const launcherUrl = buildDownloadUrl(
-    baseUrl,
-    netenv,
-    apvVersion,
-    "launcher",
-    commitHash.launcher,
-    platform
-  );
-  const playerUrl = buildDownloadUrl(
-    baseUrl,
-    netenv,
-    apvVersion,
-    "player",
-    commitHash.player,
-    platform
-  );
-
-  return {
-    launcher: launcherUrl,
-    player: playerUrl,
-  };
-}
-
 export function buildDownloadUrl(
   baseUrl: string,
   env: string,
