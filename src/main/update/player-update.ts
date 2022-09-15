@@ -9,11 +9,11 @@ import { cleanupOldPlayer } from "./util";
 import { IUpdate } from "./check";
 import { playerPath, PLAYER_METAFILE_VERSION } from "../../config";
 import { createVersion } from "./metafile";
+import { IUpdateOptions } from "./update";
 
-export async function playerUpdate(
-  update: IUpdate,
-  win: Electron.BrowserWindow | null
-) {
+export async function playerUpdate(update: IUpdate, listeners: IUpdateOptions) {
+  const win = listeners.getWindow();
+
   if (win === null) {
     console.log("Stop update process because win is null.");
     return;

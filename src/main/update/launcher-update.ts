@@ -6,7 +6,6 @@ import * as utils from "../../utils";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { tmpName } from "tmp-promise";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
-import { get as getConfig } from "../../config";
 import fs from "fs";
 import { spawn as spawnPromise } from "child-process-promise";
 import { IUpdate } from "./check";
@@ -16,11 +15,6 @@ export async function launcherUpdate(
   update: IUpdate,
   listeners: IUpdateOptions
 ) {
-  if (!getConfig("UseUpdate", process.env.NODE_ENV === "production")) {
-    console.log("`UseUpdate` option is false, Do not proceed update!");
-    return;
-  }
-
   const win = listeners.getWindow();
 
   if (win === null) {
