@@ -67,15 +67,7 @@ export async function performUpdate(
     return;
   }
 
-  if (!update.player.updateRequired && !update.player.updateRequired) {
-    console.log(`Not required update, Check player path.`);
-
-    if (await checkMetafile(update.newApv, playerPath)) {
-      updateOptions.downloadStarted();
-
-      await playerUpdate(update, win);
-    }
-  } else {
+  if (update.player.updateRequired || update.player.updateRequired) {
     updateOptions.downloadStarted();
 
     if (update.player.updateRequired) {
@@ -89,6 +81,14 @@ export async function performUpdate(
 
       await launcherUpdate(update, win);
       updateOptions.relaunchRequired();
+    }
+  } else {
+    console.log(`Not required update, Check player path.`);
+
+    if (await checkMetafile(update.newApv, playerPath)) {
+      updateOptions.downloadStarted();
+
+      await playerUpdate(update, win);
     }
   }
 
