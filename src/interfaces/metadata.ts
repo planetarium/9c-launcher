@@ -1,6 +1,6 @@
 export interface IVersionMetadata {
   apvVersion: number;
-  // commitHash: string;
+  commitHash: string;
   timestamp: string;
   schemaVersion: number;
 }

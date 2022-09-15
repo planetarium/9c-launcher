@@ -70,7 +70,7 @@ export async function performUpdate(
   if (!update.player.updateRequired && !update.player.updateRequired) {
     console.log(`Not required update, Check player path.`);
 
-    if (await checkMetafile(update.newApv.version, playerPath)) {
+    if (await checkMetafile(update.newApv, playerPath)) {
       updateOptions.downloadStarted();
 
       await playerUpdate(update, win);

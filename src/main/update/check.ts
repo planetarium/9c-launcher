@@ -5,6 +5,7 @@ import { get as getConfig, baseUrl, netenv } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
 
 export class GetPeersApvFailedError extends Error {}
+export class NewCommitHashNotFoundError extends Error {}
 
 export interface IUpdate {
   newApv: ISimpleApv;
@@ -14,6 +15,7 @@ export interface IUpdate {
 }
 export interface IProjectUpdate {
   updateRequired: boolean;
+  commitHash: string;
   url: string;
 }
 
@@ -69,10 +71,13 @@ export function checkCompatiblity(
   return peersCompatVersion <= localCompatVersion;
 }
 
-export async function checkMetafile(newApvVersion: number, dir: string) {
+export async function checkMetafile(newApv: ISimpleApv, dir: string) {
   if (!(await metafileExists(dir))) {
     console.log(`Player not exists. Start player update`);
     return true;
+  }
+  if (!newApv.extra["player"]) {
+    throw new NewCommitHashNotFoundError("New player commit hash required");
   }
 
   console.log(`Player exists. check version metafile`);
@@ -89,10 +94,10 @@ export async function checkMetafile(newApvVersion: number, dir: string) {
   }
 
   console.log(
-    `Player version: ${version.apvVersion}, New version: ${newApvVersion}`
+    `User's player version: ${version.commitHash}, New version: ${newApv.extra["player"]}`
   );
 
-  if (version.apvVersion < newApvVersion) {
+  if (newApv.extra["player"] !== version.commitHash) {
     console.log(`Player update required, Start player update`);
 
     return true;
@@ -128,42 +133,34 @@ function analyzeApvExtra(
   oldApv: ISimpleApv,
   platform: NodeJS.Platform
 ) {
-  const defaultPlayerUrl = buildDownloadUrl(
-    baseUrl,
-    netenv,
-    newApv.version,
-    "player",
-    "v1",
-    platform
-  );
-  const defaultLauncherUrl = buildDownloadUrl(
-    baseUrl,
-    netenv,
-    newApv.version,
-    "player",
-    "v1",
-    platform
-  );
-
   const data = {
     player: {
       updateRequired: false,
-      url: defaultPlayerUrl,
+      commitHash: "",
+      url: "",
     },
     launcher: {
       updateRequired: false,
-      url: defaultLauncherUrl,
+      commitHash: "",
+      url: "",
     },
   };
 
   const keys = Object.keys(data) as (keyof typeof data)[];
 
   keys.forEach((project) => {
-    const oldCommit = oldApv.extra[project] ?? null;
-    const newCommit = newApv.extra[project] ?? null;
+    const oldCommit = oldApv.extra[project];
+    const newCommit = newApv.extra[project];
 
-    if (newCommit !== null && oldCommit !== newCommit) {
+    if (!newCommit) {
+      throw new NewCommitHashNotFoundError(
+        `New ${project} commit hash required`
+      );
+    }
+
+    if (oldCommit !== newCommit) {
       data[project].updateRequired = true;
+      data[project].commitHash = newCommit;
       data[project].url = buildDownloadUrl(
         baseUrl,
         netenv,

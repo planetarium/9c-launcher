@@ -106,6 +106,7 @@ export async function playerUpdate(
 
   await createVersion(playerPath, {
     apvVersion: update.newApv.version,
+    commitHash: update.player.commitHash,
     timestamp: new Date().toISOString(),
     schemaVersion: PLAYER_METAFILE_VERSION,
   });
