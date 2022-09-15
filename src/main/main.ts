@@ -86,6 +86,8 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
+import { playerUpdate } from "./update/player-update";
+import { launcherUpdate } from "./update/launcher-update";
 
 initializeSentry();
 
@@ -264,6 +266,17 @@ async function initializeApp() {
         ipcMain.handle("start update", async () => {
           await performUpdate(update, updateOptions);
         });
+    }
+
+    if (update) {
+      ipcMain.handle("start player update", async () => {
+        await playerUpdate(update, updateOptions);
+      });
+
+      ipcMain.handle("start launcher update", async () => {
+        await launcherUpdate(update, updateOptions);
+        updateOptions.relaunchRequired();
+      });
     }
 
     if (app.commandLine.hasSwitch("protocol"))

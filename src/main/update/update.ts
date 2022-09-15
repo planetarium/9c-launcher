@@ -64,14 +64,14 @@ export async function performUpdate(
     }
 
     await launcherUpdate(update, updateOptions);
-    await playerUpdate(update, win);
+    await playerUpdate(update, updateOptions);
 
     updateOptions.relaunchRequired();
   } else {
     console.log(`Not required launcher update, Check player path.`);
 
     if (await checkMetafile(update.newApv.version, playerPath)) {
-      await playerUpdate(update, win);
+      await playerUpdate(update, updateOptions);
     }
   }
 

@@ -23,6 +23,7 @@ import OverlayBase, { CloseButton } from "src/v2/components/core/OverlayBase";
 import Checkbox from "src/v2/components/ui/Checkbox";
 import AdvancedAction from "./AdvancedAction";
 import DeleteIcon from "@material-ui/icons/Delete";
+import UpdateIcon from "@material-ui/icons/Update";
 import { OverlayProps } from "src/v2/utils/types";
 import toast from "react-hot-toast";
 
@@ -104,6 +105,16 @@ function handleOpenLogPath() {
 async function clearCache() {
   preloadService.send("IDLE");
   const result = await ipcRenderer.invoke("clear cache", true);
+  return result;
+}
+
+async function handleLauncherUpdate() {
+  const result = await ipcRenderer.invoke("start launcher update");
+  return result;
+}
+
+async function handlePlayerUpdate() {
+  const result = await ipcRenderer.invoke("start player update", true);
   return result;
 }
 
@@ -213,6 +224,16 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 link
                 onClick={handleOpenKeyStorePath}
                 text={t("Open keystore Folder")}
+              />
+              <AdvancedAction
+                icon={<UpdateIcon />}
+                onClick={handleLauncherUpdate}
+                text={t("Manual Launcher Update")}
+              />
+              <AdvancedAction
+                icon={<UpdateIcon />}
+                onClick={handlePlayerUpdate}
+                text={t("Manual Player Update")}
               />
             </FormSection>
             <FormSection>
