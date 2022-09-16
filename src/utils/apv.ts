@@ -21,11 +21,20 @@ export function parseVersionNumber(apv: string): number {
   return parseInt(version, 10);
 }
 
-export function buildToken(version: number, extra: string) {
+export function decodeProjectVersion(projectVersion: string) {
+  const [version, commitHash] = projectVersion.split("/");
+
+  return {
+    version: Number(version),
+    commitHash,
+  };
+}
+
+export function encodeToken(version: number, extra: string) {
   return `${version}/${extra}`;
 }
 
-export function buildTokenFromHex(version: number, extraHex: string) {
+export function encodeTokenFromHex(version: number, extraHex: string) {
   const extra = Buffer.from(extraHex, "hex");
   const encoded = atob(extra.toString());
 

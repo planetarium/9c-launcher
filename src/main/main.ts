@@ -36,7 +36,7 @@ import { initializeSentry } from "../preload/sentry";
 import "core-js";
 import log from "electron-log";
 import { AppProtocolVersionType } from "../generated/graphql";
-import { decodeApvExtra, buildTokenFromHex } from "../utils/apv";
+import { decodeApvExtra, encodeTokenFromHex } from "../utils/apv";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
@@ -343,7 +343,7 @@ function initializeIpc() {
       const extra = decodeApvExtra(apv.extra);
 
       const simpleApv = {
-        raw: buildTokenFromHex(apv.version, apv.extra),
+        raw: encodeTokenFromHex(apv.version, apv.extra),
         version: apv.version,
         extra: extra ? Object.fromEntries(extra) : {},
       };

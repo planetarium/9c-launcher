@@ -3,9 +3,10 @@ import { buildDownloadUrl } from "../../utils/url";
 import Headless from "../headless/headless";
 import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
+import { decodeProjectVersion } from "../../utils/apv";
 
 export class GetPeersApvFailedError extends Error {}
-export class NewCommitHashNotFoundError extends Error {}
+export class NewProjectVersionFoundError extends Error {}
 
 export interface IUpdate {
   newApv: ISimpleApv;
@@ -15,7 +16,7 @@ export interface IUpdate {
 }
 export interface IProjectUpdate {
   updateRequired: boolean;
-  commitHash: string;
+  projectVersion: string;
   url: string;
 }
 
@@ -83,14 +84,14 @@ export async function checkMetafile(newApv: ISimpleApv, dir: string) {
     return true;
   }
   if (!newApv.extra["player"]) {
-    throw new NewCommitHashNotFoundError("New player commit hash required");
+    throw new NewProjectVersionFoundError("New player commit hash required");
   }
 
   console.log(`Player exists. check version metafile`);
 
-  let version;
+  let metadata;
   try {
-    version = await readVersion(dir);
+    metadata = await readVersion(dir);
   } catch (e) {
     console.error(
       `readVersion Error ocurred, Start player update ${e}:\n`,
@@ -100,10 +101,15 @@ export async function checkMetafile(newApv: ISimpleApv, dir: string) {
   }
 
   console.log(
-    `User's player version: ${version.commitHash}, New version: ${newApv.extra["player"]}`
+    `User's player version: ${metadata.projectVersion}, New version: ${newApv.extra["player"]}`
   );
 
-  if (newApv.extra["player"] !== version.commitHash) {
+  const { version: existsVersion } = decodeProjectVersion(
+    metadata.projectVersion
+  );
+  const { version: newVersion } = decodeProjectVersion(newApv.extra["player"]);
+
+  if (existsVersion < newVersion) {
     console.log(`Player update required, Start player update`);
 
     return true;
@@ -149,17 +155,19 @@ function analyzeApvExtra(
   };
 
   keys.forEach((project) => {
-    const oldCommit = oldApv.extra[project];
-    const newCommit = newApv.extra[project];
-
-    if (!newCommit) {
-      throw new NewCommitHashNotFoundError(
+    if (!newApv.extra[project]) {
+      throw new NewProjectVersionFoundError(
         `New ${project} commit hash required`
       );
     }
 
+    const { version: oldVersion } = decodeProjectVersion(oldApv.extra[project]);
+    const { version: newVersion, commitHash: newCommit } = decodeProjectVersion(
+      newApv.extra[project]
+    );
+
     result[project] = {
-      commitHash: newCommit,
+      projectVersion: newCommit,
       url: buildDownloadUrl(
         baseUrl,
         netenv,
@@ -168,7 +176,7 @@ function analyzeApvExtra(
         newCommit,
         platform
       ),
-      updateRequired: oldCommit !== newCommit,
+      updateRequired: oldVersion < newVersion,
     };
   });
 
