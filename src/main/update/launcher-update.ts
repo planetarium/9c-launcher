@@ -14,6 +14,8 @@ export async function launcherUpdate(
   update: IUpdate,
   win: Electron.BrowserWindow
 ) {
+  console.log("Start launcher update", update.player);
+
   win.webContents.send("update download started");
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {

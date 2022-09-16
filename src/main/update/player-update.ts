@@ -5,7 +5,6 @@ import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed"
 import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
-import { cleanupOldPlayer } from "./util";
 import { IUpdate } from "./check";
 import { playerPath, PLAYER_METAFILE_VERSION } from "../../config";
 import { createVersion } from "./metafile";
@@ -14,9 +13,8 @@ export async function playerUpdate(
   update: IUpdate,
   win: Electron.BrowserWindow
 ) {
+  console.log("Start player update", update.player);
   win.webContents.send("update player download started");
-
-  cleanupOldPlayer();
 
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {

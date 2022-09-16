@@ -2,10 +2,9 @@ import lockfile from "lockfile";
 import path from "path";
 import { app, dialog, shell } from "electron";
 
-import { IUpdate, checkCompatiblity, checkMetafile } from "./check";
+import { IUpdate, checkCompatiblity } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
-import { playerPath } from "../../config";
 
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
@@ -36,6 +35,8 @@ export async function performUpdate(
     console.error("Error occurred during trying lock.");
     throw e;
   }
+
+  console.log("Update", update);
 
   const win = updateOptions.getWindow();
 
@@ -81,14 +82,6 @@ export async function performUpdate(
 
       await launcherUpdate(update, win);
       updateOptions.relaunchRequired();
-    }
-  } else {
-    console.log(`Not required update, Check player path.`);
-
-    if (await checkMetafile(update.newApv, playerPath)) {
-      updateOptions.downloadStarted();
-
-      await playerUpdate(update, win);
     }
   }
 

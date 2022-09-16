@@ -1,7 +1,7 @@
 import { IApv, ISimpleApv } from "src/interfaces/apv";
 import { buildDownloadUrl } from "../../utils/url";
 import Headless from "../headless/headless";
-import { get as getConfig, baseUrl, netenv } from "../../config";
+import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
 
 export class GetPeersApvFailedError extends Error {}
@@ -46,6 +46,12 @@ export async function checkForUpdateFromApv(
   const localApv = standalone.apv.analyze(localApvToken);
 
   const info = analyzeApvExtra(peersApv, localApv, platform);
+
+  if (!info.player.updateRequired) {
+    console.log(`Not required update, Check player path.`);
+
+    info.player.updateRequired = await checkMetafile(peersApv, playerPath);
+  }
 
   return {
     newApv: peersApv,
@@ -132,21 +138,15 @@ function analyzeApvExtra(
   newApv: ISimpleApv,
   oldApv: ISimpleApv,
   platform: NodeJS.Platform
-) {
-  const data = {
-    player: {
-      updateRequired: false,
-      commitHash: "",
-      url: "",
-    },
-    launcher: {
-      updateRequired: false,
-      commitHash: "",
-      url: "",
-    },
+): {
+  player: IProjectUpdate;
+  launcher: IProjectUpdate;
+} {
+  const keys: ("player" | "launcher")[] = ["player", "launcher"];
+  const result = {
+    player: {},
+    launcher: {},
   };
-
-  const keys = Object.keys(data) as (keyof typeof data)[];
 
   keys.forEach((project) => {
     const oldCommit = oldApv.extra[project];
@@ -158,19 +158,23 @@ function analyzeApvExtra(
       );
     }
 
-    if (oldCommit !== newCommit) {
-      data[project].updateRequired = true;
-      data[project].commitHash = newCommit;
-      data[project].url = buildDownloadUrl(
+    result[project] = {
+      commitHash: newCommit,
+      url: buildDownloadUrl(
         baseUrl,
         netenv,
         newApv.version,
         project,
         newCommit,
         platform
-      );
-    }
+      ),
+      updateRequired: oldCommit !== newCommit,
+    };
   });
 
-  return data;
+  // Will this be right...?
+  return result as {
+    player: IProjectUpdate;
+    launcher: IProjectUpdate;
+  };
 }
