@@ -1,4 +1,5 @@
 export interface ISimpleApv {
+  raw: string;
   version: number;
   extra: { [key: string]: string };
 }

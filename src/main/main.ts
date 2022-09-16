@@ -36,7 +36,7 @@ import { initializeSentry } from "../preload/sentry";
 import "core-js";
 import log from "electron-log";
 import { AppProtocolVersionType } from "../generated/graphql";
-import { decodeApvExtra } from "../utils/apv";
+import { decodeApvExtra, buildTokenFromHex } from "../utils/apv";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
@@ -338,11 +338,12 @@ function initializeIpc() {
   ipcMain.on(
     "encounter different version",
     async (_event, apv: Pick<AppProtocolVersionType, "version" | "extra">) => {
-      if (!useUpdate) return;
+      if (!useUpdate || !apv.extra) return;
 
-      const extra = apv.extra && decodeApvExtra(apv.extra);
+      const extra = decodeApvExtra(apv.extra);
 
       const simpleApv = {
+        raw: buildTokenFromHex(apv.version, apv.extra),
         version: apv.version,
         extra: extra ? Object.fromEntries(extra) : {},
       };

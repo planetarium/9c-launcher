@@ -68,7 +68,7 @@ export async function performUpdate(
     return;
   }
 
-  if (update.player.updateRequired || update.player.updateRequired) {
+  if (update.launcher.updateRequired || update.player.updateRequired) {
     updateOptions.downloadStarted();
 
     if (update.player.updateRequired) {

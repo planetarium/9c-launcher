@@ -6,7 +6,7 @@ import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
 import { IUpdate } from "./check";
-import { playerPath, PLAYER_METAFILE_VERSION } from "../../config";
+import { configStore, playerPath, PLAYER_METAFILE_VERSION } from "../../config";
 import { createVersion } from "./metafile";
 
 export async function playerUpdate(
@@ -101,6 +101,10 @@ export async function playerUpdate(
   win.webContents.send("update player extract complete");
 
   await fs.promises.unlink(dlPath);
+
+  if (!update.launcher.updateRequired && update.player.updateRequired) {
+    configStore.set("AppProtocolVersion", update.newApv.raw);
+  }
 
   await createVersion(playerPath, {
     apvVersion: update.newApv.version,

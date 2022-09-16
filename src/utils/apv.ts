@@ -20,3 +20,14 @@ export function parseVersionNumber(apv: string): number {
   const [version] = apv.split("/");
   return parseInt(version, 10);
 }
+
+export function buildToken(version: number, extra: string) {
+  return `${version}/${extra}`;
+}
+
+export function buildTokenFromHex(version: number, extraHex: string) {
+  const extra = Buffer.from(extraHex, "hex");
+  const encoded = atob(extra.toString());
+
+  return `${version}/${encoded}`;
+}

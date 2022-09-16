@@ -14,6 +14,7 @@ export class Apv extends StandaloneSubcommand {
   public analyze(apvToken: string): IApv {
     const raw = JSON.parse(this.execSync("apv", "analyze", "--json", apvToken));
     return {
+      raw: apvToken.replace("\r\n", ""),
       version: parseInt(raw["version"]),
       signature: raw["signature"],
       signer: raw["signer"],

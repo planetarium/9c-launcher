@@ -48,7 +48,7 @@ export async function checkForUpdateFromApv(
   const info = analyzeApvExtra(peersApv, localApv, platform);
 
   if (!info.player.updateRequired) {
-    console.log(`Not required update, Check player path.`);
+    console.log(`Not required player update, Check player path.`);
 
     info.player.updateRequired = await checkMetafile(peersApv, playerPath);
   }
