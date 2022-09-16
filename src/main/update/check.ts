@@ -161,7 +161,9 @@ function analyzeApvExtra(
       );
     }
 
-    const { version: oldVersion } = decodeProjectVersion(oldApv.extra[project]);
+    const { version: oldVersion } = oldApv.extra[project]
+      ? decodeProjectVersion(oldApv.extra[project])
+      : { version: -1 };
     const { version: newVersion, commitHash: newCommit } = decodeProjectVersion(
       newApv.extra[project]
     );
