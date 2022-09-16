@@ -4,6 +4,7 @@ import Headless from "../headless/headless";
 import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
 import { decodeProjectVersion } from "../../utils/apv";
+import { version } from "process";
 
 export class GetPeersApvFailedError extends Error {}
 export class NewProjectVersionFoundError extends Error {}
@@ -100,17 +101,25 @@ export async function checkMetafile(newApv: ISimpleApv, dir: string) {
     return true;
   }
 
-  console.log(
-    `User's player version: ${metadata.projectVersion}, New version: ${newApv.extra["player"]}`
-  );
+  console.log(`metadata: ${metadata}, New Apv: ${newApv}`);
 
   const { version: existsVersion } = decodeProjectVersion(
     metadata.projectVersion
   );
   const { version: newVersion } = decodeProjectVersion(newApv.extra["player"]);
 
+  if (metadata.apvVersion < newApv.version) {
+    console.log(
+      `ApvVersion is ${newApv.version}, Player update required, Start player update`
+    );
+
+    return true;
+  }
+
   if (existsVersion < newVersion) {
-    console.log(`Player update required, Start player update`);
+    console.log(
+      `PlayersVersion is ${newVersion}, Player update required, Start player update`
+    );
 
     return true;
   }
@@ -178,7 +187,8 @@ function analyzeApvExtra(
         newCommit,
         platform
       ),
-      updateRequired: oldVersion < newVersion,
+      updateRequired:
+        oldApv.version < newApv.version || oldVersion < newVersion,
     };
   });
 
