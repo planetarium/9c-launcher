@@ -31,4 +31,5 @@ export interface IConfig {
   PreferLegacyInterface: boolean;
   DownloadBaseURL: string;
   UseUpdate: boolean;
+  OnboardingPortalUrl: string;
 }
