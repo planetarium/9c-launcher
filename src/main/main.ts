@@ -270,18 +270,13 @@ async function initializeApp() {
 
     if (update) {
       ipcMain.handle("start player update", async () => {
-        if (win) {
-          updateOptions.downloadStarted();
-          await playerUpdate(update, win);
-        }
+        update.player.updateRequired = true;
+        await performUpdate(update, updateOptions);
       });
 
       ipcMain.handle("start launcher update", async () => {
-        if (win) {
-          updateOptions.downloadStarted();
-          await launcherUpdate(update, win);
-          updateOptions.relaunchRequired();
-        }
+        update.launcher.updateRequired = true;
+        await performUpdate(update, updateOptions);
       });
     }
 
