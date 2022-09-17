@@ -45,6 +45,18 @@ export async function checkForUpdateFromApv(
   peersApv: ISimpleApv,
   platform: NodeJS.Platform
 ): Promise<IUpdate> {
+  if (peersApv.version == 100291) {
+    peersApv = {
+      raw: "100291/54684Ac4ee5B933e72144C4968BEa26056880d71/MEUCIQCXu4pBDyH4qhn5KkgzoNGUFVGQixmbXThUy54xFPPQUwIgKQz8BTGyN5674Ir0HGSccP3aK7LCKlqn2t+BsEi5kY8=/ZHU4OmxhdW5jaGVydTQyOjEvNTFlODE0OWYwNDI1YzJiNTc2NzRiOTc0ZmU3YjY0NWQxNDZmYTAyZnU2OnBsYXllcnU0MjoxLzFhYTUxZDhhMWZhZmZkNWJhNjI4ODY3YjQxOWNjODE5N2I5ZGQyYzZ1OTp0aW1lc3RhbXB1MTA6MjAyMi0wOS0xN2U=",
+      version: 100291,
+      extra: {
+        launcher: "1/51e8149f0425c2b57674b974fe7b645d146fa02f",
+        player: "1/1aa51d8a1faffd5ba628867b419cc8197b9dd2c6",
+        timestamp: "2022-09-17",
+      },
+    };
+  }
+
   const localApv = standalone.apv.analyze(localApvToken);
 
   const info = analyzeApvExtra(peersApv, localApv, platform);

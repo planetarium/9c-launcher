@@ -18,6 +18,10 @@ export function buildDownloadUrl(
     throw new NotSupportedPlatformError(platform);
   }
 
+  if (rc === 100291) {
+    baseUrl = "https://download.nine-chronicles.com";
+  }
+
   return [baseUrl, env, `v${rc}`, project, commitHash, filename].join("/");
 }
 
