@@ -178,7 +178,7 @@ function analyzeApvExtra(
     );
 
     result[project] = {
-      projectVersion: newCommit,
+      projectVersion: newApv.extra[project],
       url: buildDownloadUrl(
         baseUrl,
         netenv,
