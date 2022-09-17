@@ -19,7 +19,7 @@ export function buildDownloadUrl(
   }
 
   if (rc === 100291) {
-    baseUrl = "https://download.nine-chronicles.com";
+    baseUrl = "https://download.nine-chronicles.com/launcher-test";
   }
 
   return [baseUrl, env, `v${rc}`, project, commitHash, filename].join("/");
