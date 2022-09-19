@@ -20,3 +20,23 @@ export function parseVersionNumber(apv: string): number {
   const [version] = apv.split("/");
   return parseInt(version, 10);
 }
+
+export function decodeProjectVersion(projectVersion: string) {
+  const [version, commitHash] = projectVersion.split("/");
+
+  return {
+    version: Number(version),
+    commitHash,
+  };
+}
+
+export function encodeToken(version: number, extra: string) {
+  return `${version}/${extra}`;
+}
+
+export function encodeTokenFromHex(version: number, extraHex: string) {
+  const extra = Buffer.from(extraHex, "hex");
+  const encoded = extra.toString("base64");
+
+  return `${version}/${encoded}`;
+}
