@@ -89,7 +89,7 @@ export class NodeInfo {
 
 const NodeList = async (): Promise<NodeInfo[]> => {
   const nodeList: NodeInfo[] = [];
-  if (get("UseRemoteHeadless")) {
+  if (true) {
     const remoteNodeList: string[] = get("RemoteNodeList");
     await Promise.any(
       remoteNodeList

@@ -50,12 +50,12 @@ function LoginView() {
       _refiner("identifyUser", {
         id: account.selectedAddress,
         config: {
-          rpc: get("UseRemoteHeadless"),
+          rpc: true,
           locale: get("Locale"),
         },
       });
 
-      if (get("UseRemoteHeadless")) {
+      if (true) {
         history.push("/lobby");
         standalone.setPrivateKeyEnded(true);
         account.setMiningConfigStatus(true);

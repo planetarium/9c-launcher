@@ -69,11 +69,11 @@ const LoginView = observer(
         _refiner("identifyUser", {
           id: accountStore.selectedAddress,
           config: {
-            rpc: get("UseRemoteHeadless"),
+            rpc: true,
             locale: get("Locale"),
           },
         });
-        if (get("UseRemoteHeadless")) {
+        if (true) {
           routerStore.push("lobby/preload");
           standaloneStore.setPrivateKeyEnded(true);
           accountStore.setMiningConfigStatus(true);
