@@ -68,16 +68,19 @@ export async function performUpdate(
     return;
   }
 
-  if (update.launcher.updateRequired || update.player.updateRequired) {
+  if (
+    update.projects.launcher.updateRequired ||
+    update.projects.player.updateRequired
+  ) {
     updateOptions.downloadStarted();
 
-    if (update.player.updateRequired) {
+    if (update.projects.player.updateRequired) {
       console.log(`player update required. start player update`);
 
       await playerUpdate(update, win);
     }
 
-    if (update.launcher.updateRequired) {
+    if (update.projects.launcher.updateRequired) {
       console.log(`Launcher update required. start launcher update`);
 
       await launcherUpdate(update, win);

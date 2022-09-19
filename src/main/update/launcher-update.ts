@@ -14,7 +14,7 @@ export async function launcherUpdate(
   update: IUpdate,
   win: Electron.BrowserWindow
 ) {
-  console.log("Start launcher update", update.player);
+  console.log("Start launcher update", update.projects.player);
 
   win.webContents.send("update download started");
   // TODO: It would be nice to have a continuous download feature.
@@ -25,19 +25,19 @@ export async function launcherUpdate(
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `Downloading ${update.launcher.url}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `Downloading ${update.projects.launcher.url}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
       win.webContents.send("update download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("Starts to download:", update.launcher.url);
+  console.log("Starts to download:", update.projects.launcher.url);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, update.launcher.url, options);
+    dl = await download(win, update.projects.launcher.url, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(update.launcher.url);
+    throw new DownloadBinaryFailedError(update.projects.launcher.url);
   }
 
   win.webContents.send("update download complete");

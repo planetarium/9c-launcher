@@ -270,12 +270,12 @@ async function initializeApp() {
 
     if (update) {
       ipcMain.handle("start player update", async () => {
-        update.player.updateRequired = true;
+        update.projects.player.updateRequired = true;
         await performUpdate(update, updateOptions);
       });
 
       ipcMain.handle("start launcher update", async () => {
-        update.launcher.updateRequired = true;
+        update.projects.launcher.updateRequired = true;
         await performUpdate(update, updateOptions);
       });
     }
@@ -287,7 +287,8 @@ async function initializeApp() {
       isV2,
       useRemoteHeadless,
       updateAvailable: update
-        ? update.launcher.updateRequired || update.player.updateRequired
+        ? update.projects.launcher.updateRequired ||
+          update.projects.player.updateRequired
         : false,
     });
 

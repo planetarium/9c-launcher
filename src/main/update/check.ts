@@ -4,22 +4,24 @@ import Headless from "../headless/headless";
 import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
 import { decodeProjectVersion } from "../../utils/apv";
-import { version } from "process";
 
 export class GetPeersApvFailedError extends Error {}
-export class NewProjectVersionFoundError extends Error {}
+export class NoProjectVersionFoundError extends Error {}
 
 export interface IUpdate {
   newApv: ISimpleApv;
   oldApv: ISimpleApv;
-  player: IProjectUpdate;
-  launcher: IProjectUpdate;
+  projects: {
+    [key in Project]: IProjectUpdate;
+  };
 }
 export interface IProjectUpdate {
   updateRequired: boolean;
   projectVersion: string;
   url: string;
 }
+
+export type Project = "player" | "launcher";
 
 const peerInfos = getConfig("PeerStrings");
 const localApvToken = getConfig("AppProtocolVersion");
@@ -49,10 +51,13 @@ export async function checkForUpdateFromApv(
 
   const info = analyzeApvExtra(peersApv, localApv, platform);
 
-  if (!info.player.updateRequired) {
+  if (!info.projects.player.updateRequired) {
     console.log(`Not required player update, Check player path.`);
 
-    info.player.updateRequired = await checkMetafile(peersApv, playerPath);
+    info.projects.player.updateRequired = await checkMetafile(
+      peersApv,
+      playerPath
+    );
   }
 
   return {
@@ -85,7 +90,7 @@ export async function checkMetafile(newApv: ISimpleApv, dir: string) {
     return true;
   }
   if (!newApv.extra["player"]) {
-    throw new NewProjectVersionFoundError("New player commit hash required");
+    throw new NoProjectVersionFoundError("New player commit hash required");
   }
 
   console.log(`Player exists. check version metafile`);
@@ -108,23 +113,7 @@ export async function checkMetafile(newApv: ISimpleApv, dir: string) {
   );
   const { version: newVersion } = decodeProjectVersion(newApv.extra["player"]);
 
-  if (metadata.apvVersion < newApv.version) {
-    console.log(
-      `ApvVersion is ${newApv.version}, Player update required, Start player update`
-    );
-
-    return true;
-  }
-
-  if (existsVersion < newVersion) {
-    console.log(
-      `PlayersVersion is ${newVersion}, Player update required, Start player update`
-    );
-
-    return true;
-  }
-
-  return false;
+  return metadata.apvVersion < newApv.version || existsVersion < newVersion;
 }
 
 function getPeersApv(
@@ -153,19 +142,13 @@ function analyzeApvExtra(
   newApv: ISimpleApv,
   oldApv: ISimpleApv,
   platform: NodeJS.Platform
-): {
-  player: IProjectUpdate;
-  launcher: IProjectUpdate;
-} {
-  const keys: ("player" | "launcher")[] = ["player", "launcher"];
-  const result = {
-    player: {},
-    launcher: {},
-  };
+) {
+  const keys: Project[] = ["player", "launcher"];
+  let result!: { projects: Record<Project, IProjectUpdate> };
 
   keys.forEach((project) => {
     if (!newApv.extra[project]) {
-      throw new NewProjectVersionFoundError(
+      throw new NoProjectVersionFoundError(
         `New ${project} commit hash required`
       );
     }
@@ -177,7 +160,7 @@ function analyzeApvExtra(
       newApv.extra[project]
     );
 
-    result[project] = {
+    result.projects[project] = {
       projectVersion: newApv.extra[project],
       url: buildDownloadUrl(
         baseUrl,
@@ -192,9 +175,5 @@ function analyzeApvExtra(
     };
   });
 
-  // Will this be right...?
-  return result as {
-    player: IProjectUpdate;
-    launcher: IProjectUpdate;
-  };
+  return result;
 }

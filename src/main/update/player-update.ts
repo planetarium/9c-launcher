@@ -13,7 +13,7 @@ export async function playerUpdate(
   update: IUpdate,
   win: Electron.BrowserWindow
 ) {
-  console.log("Start player update", update.player);
+  console.log("Start player update", update.projects.player);
   win.webContents.send("update player download started");
 
   // TODO: It would be nice to have a continuous download feature.
@@ -24,19 +24,19 @@ export async function playerUpdate(
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `[player] Downloading ${update.player.url}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `[player] Downloading ${update.projects.player.url}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
       win.webContents.send("update player download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("[player] Starts to download:", update.player.url);
+  console.log("[player] Starts to download:", update.projects.player.url);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, update.player.url, options);
+    dl = await download(win, update.projects.player.url, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(update.player.url);
+    throw new DownloadBinaryFailedError(update.projects.player.url);
   }
 
   win.webContents.send("update player download complete");
@@ -102,13 +102,16 @@ export async function playerUpdate(
 
   await fs.promises.unlink(dlPath);
 
-  if (!update.launcher.updateRequired && update.player.updateRequired) {
+  if (
+    !update.projects.launcher.updateRequired &&
+    update.projects.player.updateRequired
+  ) {
     configStore.set("AppProtocolVersion", update.newApv.raw);
   }
 
   await createVersion(playerPath, {
     apvVersion: update.newApv.version,
-    projectVersion: update.player.projectVersion,
+    projectVersion: update.projects.player.projectVersion,
     timestamp: new Date().toISOString(),
     schemaVersion: PLAYER_METAFILE_VERSION,
   });
