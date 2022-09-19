@@ -1,7 +1,11 @@
 export interface ISimpleApv {
   raw: string;
   version: number;
-  extra: { [key: string]: string };
+  extra: {
+    player: string;
+    launcher: string;
+    [key: string]: unknown;
+  };
 }
 export interface IApv extends ISimpleApv {
   signature: string;

@@ -36,7 +36,7 @@ export function encodeToken(version: number, extra: string) {
 
 export function encodeTokenFromHex(version: number, extraHex: string) {
   const extra = Buffer.from(extraHex, "hex");
-  const encoded = atob(extra.toString());
+  const encoded = extra.toString("base64");
 
   return `${version}/${encoded}`;
 }
