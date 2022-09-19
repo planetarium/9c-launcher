@@ -2,10 +2,9 @@ import lockfile from "lockfile";
 import path from "path";
 import { app, dialog, shell } from "electron";
 
-import { IUpdate, checkCompatiblity, checkMetafile } from "./check";
+import { IUpdate, checkCompatiblity } from "./check";
 import { launcherUpdate } from "./launcher-update";
 import { playerUpdate } from "./player-update";
-import { playerPath } from "../../config";
 
 export interface IUpdateOptions {
   downloadStarted(): Promise<void>;
@@ -37,41 +36,55 @@ export async function performUpdate(
     throw e;
   }
 
+  console.log("Update", update);
+
   const win = updateOptions.getWindow();
 
-  if (update.updateRequired) {
-    console.log(`Start launcher update, First check compatiblity.`);
+  if (win === null) {
+    console.log("Stop update process because win is null.");
+    return;
+  }
 
-    if (!checkCompatiblity(update.newApv, update.oldApv)) {
-      console.log(
-        `Stop update process. CompatiblityVersion is higher than current.`
-      );
-      win?.webContents.send("compatiblity-version-higher-than-current");
-      if (win) {
-        const { checkboxChecked } = await dialog.showMessageBox(win, {
-          type: "error",
-          message:
-            "Nine Chronicles has been updated but the update needs reinstallation due to techincal issues. Sorry for inconvenience.",
-          title: "Reinstallation required",
-          checkboxChecked: true,
-          checkboxLabel: "Open the installer page in browser",
-        });
-        if (checkboxChecked)
-          shell.openExternal("https://bit.ly/9c-manual-update");
-        app.exit(0);
-      }
-      return;
+  console.log(`First check compatiblity.`);
+
+  if (!checkCompatiblity(update.newApv, update.oldApv)) {
+    console.log(
+      `Stop update process. CompatiblityVersion is higher than current.`
+    );
+    win?.webContents.send("compatiblity-version-higher-than-current");
+    if (win) {
+      const { checkboxChecked } = await dialog.showMessageBox(win, {
+        type: "error",
+        message:
+          "Nine Chronicles has been updated but the update needs reinstallation due to techincal issues. Sorry for inconvenience.",
+        title: "Reinstallation required",
+        checkboxChecked: true,
+        checkboxLabel: "Open the installer page in browser",
+      });
+      if (checkboxChecked)
+        shell.openExternal("https://bit.ly/9c-manual-update");
+      app.exit(0);
+    }
+    return;
+  }
+
+  if (
+    update.projects.launcher.updateRequired ||
+    update.projects.player.updateRequired
+  ) {
+    updateOptions.downloadStarted();
+
+    if (update.projects.player.updateRequired) {
+      console.log(`player update required. start player update`);
+
+      await playerUpdate(update, win);
     }
 
-    await launcherUpdate(update, updateOptions);
-    await playerUpdate(update, updateOptions);
+    if (update.projects.launcher.updateRequired) {
+      console.log(`Launcher update required. start launcher update`);
 
-    updateOptions.relaunchRequired();
-  } else {
-    console.log(`Not required launcher update, Check player path.`);
-
-    if (await checkMetafile(update.newApv.version, playerPath)) {
-      await playerUpdate(update, updateOptions);
+      await launcherUpdate(update, win);
+      updateOptions.relaunchRequired();
     }
   }
 

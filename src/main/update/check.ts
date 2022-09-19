@@ -1,17 +1,27 @@
 import { IApv, ISimpleApv } from "src/interfaces/apv";
-import { IDownloadUrls, getDownloadUrls } from "../../utils/url";
+import { buildDownloadUrl } from "../../utils/url";
 import Headless from "../headless/headless";
-import { get as getConfig, baseUrl, netenv } from "../../config";
+import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
+import { decodeProjectVersion } from "../../utils/apv";
 
 export class GetPeersApvFailedError extends Error {}
+export class NoProjectVersionFoundError extends Error {}
 
 export interface IUpdate {
-  updateRequired: boolean;
   newApv: ISimpleApv;
   oldApv: ISimpleApv;
-  urls: IDownloadUrls;
+  projects: {
+    [key in Project]: IProjectUpdate;
+  };
 }
+export interface IProjectUpdate {
+  updateRequired: boolean;
+  projectVersion: string;
+  url: string;
+}
+
+export type Project = "player" | "launcher";
 
 const peerInfos = getConfig("PeerStrings");
 const localApvToken = getConfig("AppProtocolVersion");
@@ -32,7 +42,6 @@ export async function checkForUpdate(
   return checkForUpdateFromApv(standalone, peersApv, platform);
 }
 
-// FIXME: Could use overload function...
 export async function checkForUpdateFromApv(
   standalone: Headless,
   peersApv: ISimpleApv,
@@ -40,11 +49,21 @@ export async function checkForUpdateFromApv(
 ): Promise<IUpdate> {
   const localApv = standalone.apv.analyze(localApvToken);
 
+  const info = analyzeApvExtra(peersApv, localApv, platform);
+
+  if (!info.projects.player.updateRequired) {
+    console.log(`Not required player update, Check player path.`);
+
+    info.projects.player.updateRequired = await checkMetafile(
+      peersApv,
+      playerPath
+    );
+  }
+
   return {
-    updateRequired: peersApv.version > localApv.version,
     newApv: peersApv,
     oldApv: localApv,
-    urls: getDownloadUrls(baseUrl, netenv, peersApv.version, platform),
+    ...info,
   };
 }
 
@@ -65,17 +84,20 @@ export function checkCompatiblity(
   return peersCompatVersion <= localCompatVersion;
 }
 
-export async function checkMetafile(newApvVersion: number, dir: string) {
+export async function checkMetafile(newApv: ISimpleApv, dir: string) {
   if (!(await metafileExists(dir))) {
     console.log(`Player not exists. Start player update`);
     return true;
   }
+  if (!newApv.extra["player"]) {
+    throw new NoProjectVersionFoundError("New player commit hash required");
+  }
 
   console.log(`Player exists. check version metafile`);
 
-  let version;
+  let metadata;
   try {
-    version = await readVersion(dir);
+    metadata = await readVersion(dir);
   } catch (e) {
     console.error(
       `readVersion Error ocurred, Start player update ${e}:\n`,
@@ -84,17 +106,14 @@ export async function checkMetafile(newApvVersion: number, dir: string) {
     return true;
   }
 
-  console.log(
-    `Player version: ${version.apvVersion}, New version: ${newApvVersion}`
+  console.log(`metadata: ${metadata}, New Apv: ${newApv}`);
+
+  const { version: existsVersion } = decodeProjectVersion(
+    metadata.projectVersion
   );
+  const { version: newVersion } = decodeProjectVersion(newApv.extra["player"]);
 
-  if (version.apvVersion < newApvVersion) {
-    console.log(`Player update required, Start player update`);
-
-    return true;
-  }
-
-  return false;
+  return metadata.apvVersion < newApv.version || existsVersion < newVersion;
 }
 
 function getPeersApv(
@@ -117,4 +136,44 @@ function getPeersApv(
       `Ignore APV[${peerApvToken}] due to failure to validating.`
     );
   }
+}
+
+function analyzeApvExtra(
+  newApv: ISimpleApv,
+  oldApv: ISimpleApv,
+  platform: NodeJS.Platform
+) {
+  const keys: Project[] = ["player", "launcher"];
+  let result!: { projects: Record<Project, IProjectUpdate> };
+
+  keys.forEach((project) => {
+    if (!newApv.extra[project]) {
+      throw new NoProjectVersionFoundError(
+        `New ${project} commit hash required`
+      );
+    }
+
+    const { version: oldVersion } = oldApv.extra[project]
+      ? decodeProjectVersion(oldApv.extra[project])
+      : { version: -1 };
+    const { version: newVersion, commitHash: newCommit } = decodeProjectVersion(
+      newApv.extra[project]
+    );
+
+    result.projects[project] = {
+      projectVersion: newApv.extra[project],
+      url: buildDownloadUrl(
+        baseUrl,
+        netenv,
+        newApv.version,
+        project,
+        newCommit,
+        platform
+      ),
+      updateRequired:
+        oldApv.version < newApv.version || oldVersion < newVersion,
+    };
+  });
+
+  return result;
 }

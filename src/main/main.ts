@@ -36,7 +36,7 @@ import { initializeSentry } from "../preload/sentry";
 import "core-js";
 import log from "electron-log";
 import { AppProtocolVersionType } from "../generated/graphql";
-import { decodeApvExtra } from "../utils/apv";
+import { decodeApvExtra, encodeTokenFromHex } from "../utils/apv";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
@@ -270,12 +270,29 @@ async function initializeApp() {
 
     if (update) {
       ipcMain.handle("start player update", async () => {
-        await playerUpdate(update, updateOptions);
+        await performUpdate(
+          {
+            ...update,
+            projects: {
+              ...update.projects,
+              player: { ...update.projects.player, updateRequired: true },
+            },
+          },
+          updateOptions
+        );
       });
 
       ipcMain.handle("start launcher update", async () => {
-        await launcherUpdate(update, updateOptions);
-        updateOptions.relaunchRequired();
+        await performUpdate(
+          {
+            ...update,
+            projects: {
+              ...update.projects,
+              launcher: { ...update.projects.launcher, updateRequired: true },
+            },
+          },
+          updateOptions
+        );
       });
     }
 
@@ -285,7 +302,10 @@ async function initializeApp() {
     mixpanel?.track("Launcher/Start", {
       isV2,
       useRemoteHeadless,
-      updateAvailable: update?.updateRequired ?? false,
+      updateAvailable: update
+        ? update.projects.launcher.updateRequired ||
+          update.projects.player.updateRequired
+        : false,
     });
 
     try {
@@ -330,11 +350,12 @@ function initializeIpc() {
   ipcMain.on(
     "encounter different version",
     async (_event, apv: Pick<AppProtocolVersionType, "version" | "extra">) => {
-      if (!useUpdate) return;
+      if (!useUpdate || !apv.extra) return;
 
-      const extra = apv.extra && decodeApvExtra(apv.extra);
+      const extra = decodeApvExtra(apv.extra);
 
       const simpleApv = {
+        raw: encodeTokenFromHex(apv.version, apv.extra),
         version: apv.version,
         extra: extra ? Object.fromEntries(extra) : {},
       };
