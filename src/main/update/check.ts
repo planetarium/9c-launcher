@@ -144,7 +144,7 @@ function analyzeApvExtra(
   platform: NodeJS.Platform
 ) {
   const keys: Project[] = ["player", "launcher"];
-  let result!: { projects: Record<Project, IProjectUpdate> };
+  const projects: Partial<Record<Project, IProjectUpdate>> = {};
 
   keys.forEach((project) => {
     if (!newApv.extra[project]) {
@@ -160,7 +160,7 @@ function analyzeApvExtra(
       newApv.extra[project]
     );
 
-    result.projects[project] = {
+    projects[project] = {
       projectVersion: newApv.extra[project],
       url: buildDownloadUrl(
         baseUrl,
@@ -175,5 +175,7 @@ function analyzeApvExtra(
     };
   });
 
-  return result;
+  return { projects } as {
+    projects: Required<Record<Project, IProjectUpdate>>;
+  };
 }
