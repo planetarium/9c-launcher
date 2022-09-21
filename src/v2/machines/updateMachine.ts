@@ -59,6 +59,7 @@ const playerUpdate = {
   },
   on: {
     DONE: { target: "ok" },
+    LAUNCHER_DOWNLOAD: { target: "launcherUpdate" },
   },
 };
 
