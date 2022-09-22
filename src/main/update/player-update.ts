@@ -100,8 +100,8 @@ export async function playerUpdate(
   }
 
   update.projects.launcher.updateRequired
-    ? win.webContents.send("update player extract complete")
-    : win.webContents.send("update download started");
+    ? win.webContents.send("update download started")
+    : win.webContents.send("update player extract complete");
 
   await fs.promises.unlink(dlPath);
 
