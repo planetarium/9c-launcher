@@ -14,7 +14,7 @@ import { getBlockChainStorePath, userConfigStore, app } from "src/config";
 const transifexTags = "v2/ErrorView";
 
 async function handleClearCache() {
-  await ipcRenderer.invoke("Clear cache", false);
+  await ipcRenderer.invoke("clear cache", false);
   handleRestart();
 }
 
