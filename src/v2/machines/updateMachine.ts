@@ -48,13 +48,22 @@ const playerUpdate = {
       on: {
         UPDATE_PROGRESS: { actions: "updateProgress" },
       },
-      invoke: {
-        src: () =>
-          invokeIpcEvent<MachineEvent>(
-            "update player extract complete",
-            "DONE"
-          ),
-      },
+      invoke: [
+        {
+          src: () =>
+            invokeIpcEvent<MachineEvent>(
+              "update player extract complete",
+              "DONE"
+            ),
+        },
+        {
+          src: () =>
+            invokeIpcEvent<MachineEvent>(
+              "update download started",
+              "LAUNCHER_DOWNLOAD"
+            ),
+        },
+      ],
     },
   },
   on: {
