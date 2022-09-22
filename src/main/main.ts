@@ -261,8 +261,10 @@ async function initializeApp() {
     });
 
     if (useUpdate && update) {
-      if (!isV2) performUpdate(update, updateOptions);
-      else
+      if (!isV2) {
+        win.webContents.send("update download started");
+        performUpdate(update, updateOptions);
+      } else
         ipcMain.handle("start update", async () => {
           await performUpdate(update, updateOptions);
         });
