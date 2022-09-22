@@ -262,7 +262,12 @@ async function initializeApp() {
 
     if (useUpdate && update) {
       if (!isV2) {
-        win.webContents.send("update download progress", 1);
+        win.webContents.send("update download progress", {
+          percent: 1,
+          transferredBytes: 100,
+          totalBytes: 3000,
+        });
+
         performUpdate(update, updateOptions);
       } else
         ipcMain.handle("start update", async () => {
