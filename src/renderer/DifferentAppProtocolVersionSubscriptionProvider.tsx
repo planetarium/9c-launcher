@@ -12,6 +12,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   children,
 }) => {
   // FIXME: Can we minimize duplicated logic with DownloadSnapshotButton?
+  const [isPlayerUpdate, setPlayerUpdateState] = useState(false);
   const [isDownload, setDownloadState] = useState(false);
   const [isExtract, setExtractState] = useState(false);
   const [isCopying, setCopyingState] = useState(false);
@@ -21,10 +22,9 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    ipcRenderer.on("update extract progress", (event, progress) => {
+    ipcRenderer.on("update extract progress", (event) => {
       setExtractState(true);
-      setVariant("determinate");
-      setProgress(progress * 100);
+      setVariant("indeterminate");
     });
 
     ipcRenderer.on("update extract complete", (event) => {
@@ -34,6 +34,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
     ipcRenderer.on(
       "update download progress",
       (event: IpcRendererEvent, progress: IDownloadProgress) => {
+        setPlayerUpdateState(false);
         setDownloadState(true);
         setVariant("determinate");
         setProgress(progress.percent * 100);
@@ -52,6 +53,29 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
 
     ipcRenderer.on("update copying complete", () => {
       setCopyingState(false);
+    });
+
+    ipcRenderer.on(
+      "update player download progress",
+      (event: IpcRendererEvent, progress: IDownloadProgress) => {
+        setPlayerUpdateState(true);
+        setDownloadState(true);
+        setVariant("determinate");
+        setProgress(progress.percent * 100);
+      }
+    );
+
+    ipcRenderer.on("update player download complete", () => {
+      setDownloadState(false);
+    });
+
+    ipcRenderer.on("update player extract progress", (event) => {
+      setExtractState(true);
+      setVariant("indeterminate");
+    });
+
+    ipcRenderer.on("update player extract complete", () => {
+      setExtractState(false);
     });
 
     // @ts-expect-error -- Force-update function for developers (debug purpose)
@@ -99,6 +123,7 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
 
   return isDownload || isExtract || isCopying ? (
     <UpdateView
+      updateTarget={isPlayerUpdate ? "player" : "launcher"}
       state={isDownload ? "download" : isExtract ? "extract" : "copy"}
       variant={variant}
       progress={progress}
