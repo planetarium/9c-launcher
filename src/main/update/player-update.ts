@@ -1,4 +1,4 @@
-import { DownloadItem, app } from "electron";
+import { DownloadItem, app, ipcRenderer } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
@@ -101,7 +101,7 @@ export async function playerUpdate(
 
   update.projects.launcher.updateRequired
     ? win.webContents.send("update player extract complete")
-    : win.webContents.send("update download started");
+    : ipcRenderer.invoke("update download started");
 
   await fs.promises.unlink(dlPath);
 
