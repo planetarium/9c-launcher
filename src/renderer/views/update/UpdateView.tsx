@@ -9,12 +9,13 @@ import DiscordIconImage from "../../resources/discord-icon-32x32.png";
 import UpdateViewStyle from "./UpdateView.style";
 
 type UpdateViewProps = {
+  updateTarget: "player" | "launcher";
   state: "download" | "extract" | "copy";
   variant: "indeterminate" | "determinate" | undefined;
   progress: number;
 };
 
-const UpdateView = ({ state, variant, progress }: UpdateViewProps) => {
+const UpdateView = ({ updateTarget, state, variant, progress }: UpdateViewProps) => {
   // FIXME: Some files were downloaded multiple times because of improper file lock, causing progress to go backward.
 
   const styles = UpdateViewStyle();
@@ -44,10 +45,10 @@ const UpdateView = ({ state, variant, progress }: UpdateViewProps) => {
       progressMessage = "Copying files...";
       break;
     case "download":
-      progressMessage = `Downloading the new version...${progressToString}`;
+      progressMessage = `Downloading the new version ${updateTarget}...${progressToString}`;
       break;
     case "extract":
-      progressMessage = `Extracting the new version...${progressToString}`;
+      progressMessage = `Extracting the new version ${updateTarget}...`;
       break;
   }
 
