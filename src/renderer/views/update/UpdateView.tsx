@@ -15,7 +15,12 @@ type UpdateViewProps = {
   progress: number;
 };
 
-const UpdateView = ({ updateTarget, state, variant, progress }: UpdateViewProps) => {
+const UpdateView = ({
+  updateTarget,
+  state,
+  variant,
+  progress,
+}: UpdateViewProps) => {
   // FIXME: Some files were downloaded multiple times because of improper file lock, causing progress to go backward.
 
   const styles = UpdateViewStyle();
