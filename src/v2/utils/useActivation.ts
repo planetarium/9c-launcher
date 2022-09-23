@@ -14,7 +14,7 @@ interface ActivationResult {
 
 /**
  * A helper hook which has two jobs to do.
- * 1. It queries the activation atatus of the current account.
+ * 1. It queries the activation status of the current account.
  * 2. When the activationKey is provided, it will stage a transaction to activate the account.
  *
  * @param activationKey An activation key to use for automatic activation. Pass `undefined` to disable automatic activation.
