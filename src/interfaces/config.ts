@@ -29,6 +29,7 @@ export interface IConfig {
   LaunchPlayer: boolean;
   RemoteNodeList: string[];
   PreferLegacyInterface: boolean;
-  DownloadBaseURL: string | undefined;
+  DownloadBaseURL: string;
   UseUpdate: boolean;
+  OnboardingPortalUrl: string;
 }

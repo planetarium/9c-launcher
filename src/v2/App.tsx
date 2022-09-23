@@ -7,6 +7,7 @@ import APVSubscriptionProvider from "./utils/APVSubscriptionProvider";
 import "./global.scss";
 import { StoreProvider } from "./utils/useStore";
 import { LocaleProvider } from "src/renderer/i18n";
+import { ExternalURLProvider } from "./utils/useExternalURL";
 
 function App() {
   const client = useApolloClient();
@@ -18,9 +19,11 @@ function App() {
       <ApolloProvider client={client}>
         <StoreProvider>
           <APVSubscriptionProvider>
-            <Router>
-              <Routes />
-            </Router>
+            <ExternalURLProvider>
+              <Router>
+                <Routes />
+              </Router>
+            </ExternalURLProvider>
           </APVSubscriptionProvider>
         </StoreProvider>
       </ApolloProvider>

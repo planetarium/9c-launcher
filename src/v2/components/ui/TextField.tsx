@@ -60,13 +60,11 @@ const Label = styled("label", {
   },
 });
 
-const Side = styled("span", {
+const SideButton = styled("button", {
   position: "absolute",
   top: "50%",
   right: 20,
   transform: "translateY(-50%)",
-  display: "flex",
-  alignItems: "flex-end",
   transition: "opacity .2s ease",
   variants: {
     showOnHover: {
@@ -77,10 +75,15 @@ const Side = styled("span", {
         },
       },
     },
+    showOnFocus: {
+      true: {
+        opacity: 0,
+        "&:focus": {
+          opacity: 1,
+        },
+      },
+    },
   },
-});
-
-const SideButton = styled("button", {
   appearance: "none",
   color: "white",
   background: "none",
@@ -108,7 +111,10 @@ const Message = styled("span", {
   [`${Input}:placeholder-shown ~ &`]: {
     display: "none",
   },
-  [`${Side}:hover ~ &`]: {
+  [`${SideButton}:hover ~ &`]: {
+    opacity: 0,
+  },
+  [`${SideButton}:focus ~ &`]: {
     opacity: 0,
   },
 });
@@ -172,11 +178,14 @@ export const PasswordField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           {...inputAttrs}
         />
         <Label htmlFor={id}>{label}</Label>
-        <Side showOnHover={!!message}>
-          <SideButton type="button" onClick={toggleVisible}>
-            <Icon />
-          </SideButton>
-        </Side>
+        <SideButton
+          type="button"
+          onClick={toggleVisible}
+          showOnHover={!!message}
+          showOnFocus={!!message}
+        >
+          <Icon />
+        </SideButton>
         {message && <Message invalid={invalid}>{message}</Message>}
       </TextFieldWrapper>
     );

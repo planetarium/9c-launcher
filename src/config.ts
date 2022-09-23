@@ -205,6 +205,7 @@ export const CUSTOM_SERVER: boolean =
 export const MIXPANEL_TOKEN = "80a1e14b57d050536185c7459d45195a";
 export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
 export const DEFAULT_DOWNLOAD_BASE_URL = "https://release.nine-chronicles.com";
+export const PLAYER_METAFILE_VERSION = 2;
 
 export const EXECUTE_PATH: {
   [k in NodeJS.Platform]: string | null;
@@ -220,6 +221,7 @@ export const EXECUTE_PATH: {
   cygwin: WIN_GAME_PATH,
   netbsd: null,
 };
+export const baseUrl = get("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
 
 export async function initializeNode(): Promise<NodeInfo> {
   console.log("config initialize called");

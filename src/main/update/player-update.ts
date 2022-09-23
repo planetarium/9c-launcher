@@ -2,44 +2,19 @@ import { DownloadItem, app } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
-import path from "path";
 import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
-import { cleanupOldPlayer } from "./util";
-import { playerPath } from "../../config";
-import lockfile from "lockfile";
-
-const lockfilePath = path.join(
-  path.dirname(app.getPath("exe")),
-  "player-lockfile"
-);
+import { IUpdate } from "./check";
+import { configStore, playerPath, PLAYER_METAFILE_VERSION } from "../../config";
+import { createVersion } from "./metafile";
 
 export async function playerUpdate(
-  downloadUrl: string,
+  update: IUpdate,
   win: Electron.BrowserWindow
 ) {
-  if (lockfile.checkSync(lockfilePath)) {
-    console.log(
-      "[player] 'encounter different version' event seems running already. Stop this flow."
-    );
-    return;
-  }
-
-  try {
-    lockfile.lockSync(lockfilePath);
-    console.log(
-      "[player] Created 'encounter different version' lockfile at ",
-      lockfilePath
-    );
-  } catch (e) {
-    console.error("[player] Error occurred during trying lock.");
-    throw e;
-  }
-
+  console.log("Start player update", update.projects.player);
   win.webContents.send("update player download started");
-
-  cleanupOldPlayer();
 
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {
@@ -49,19 +24,19 @@ export async function playerUpdate(
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `[player] Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `[player] Downloading ${update.projects.player.url}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
-      win?.webContents.send("update player download progress", status);
+      win.webContents.send("update player download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("[player] Starts to download:", downloadUrl);
+  console.log("[player] Starts to download:", update.projects.player.url);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, downloadUrl, options);
+    dl = await download(win, update.projects.player.url, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(downloadUrl);
+    throw new DownloadBinaryFailedError(update.projects.player.url);
   }
 
   win.webContents.send("update player download complete");
@@ -69,11 +44,13 @@ export async function playerUpdate(
   const dlPath = dl?.getSavePath();
   console.log("[player] Finished to download:", dlPath);
 
-  if (fs.existsSync(playerPath)) {
+  const exists = await fs.promises.stat(playerPath).catch(() => false);
+
+  if (exists) {
     await fs.promises.rmdir(playerPath, { recursive: true });
-  } else {
-    await fs.promises.mkdir(playerPath, { recursive: true });
   }
+
+  await fs.promises.mkdir(playerPath, { recursive: true });
 
   console.log("[player] Clean up exists player");
 
@@ -104,7 +81,7 @@ export async function playerUpdate(
       "to",
       playerPath
     );
-    win?.webContents.send("update player extract progress", 50);
+    win.webContents.send("update player extract progress", 50);
 
     try {
       await spawnPromise(
@@ -125,9 +102,17 @@ export async function playerUpdate(
 
   await fs.promises.unlink(dlPath);
 
-  lockfile.unlockSync(lockfilePath);
-  console.log(
-    "[player] Removed 'encounter different version' lockfile at ",
-    lockfilePath
-  );
+  if (
+    !update.projects.launcher.updateRequired &&
+    update.projects.player.updateRequired
+  ) {
+    configStore.set("AppProtocolVersion", update.newApv.raw);
+  }
+
+  await createVersion(playerPath, {
+    apvVersion: update.newApv.version,
+    projectVersion: update.projects.player.projectVersion,
+    timestamp: new Date().toISOString(),
+    schemaVersion: PLAYER_METAFILE_VERSION,
+  });
 }

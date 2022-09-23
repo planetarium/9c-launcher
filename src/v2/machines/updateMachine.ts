@@ -92,7 +92,8 @@ const launcherUpdate = {
     copy: {
       entry: "resetProgress",
       invoke: {
-        src: () => invokeIpcEvent<MachineEvent>("update copy complete", "DONE"),
+        src: () =>
+          invokeIpcEvent<MachineEvent>("update copying complete", "DONE"),
       },
     },
   },
@@ -123,6 +124,10 @@ export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
                 "update download started",
                 "LAUNCHER_DOWNLOAD"
               ),
+          },
+          {
+            id: "triggerUpdate",
+            src: () => ipcRenderer.invoke("start update"),
           },
         ],
         on: {

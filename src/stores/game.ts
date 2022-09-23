@@ -21,7 +21,7 @@ export default class GameStore {
       this._isGameStarted = false;
     });
     this._genesisBlockPath = getConfig("GenesisBlockPath") as string;
-    this._language = getConfig("Locale") as string;
+    this._language = getConfig("Locale", "en") as string;
     this._appProtocolVersion = getConfig("AppProtocolVersion") as string;
     ipcRenderer.invoke("get-node-info").then((node) => {
       this._host = node.host;
@@ -49,6 +49,7 @@ export default class GameStore {
       "get-aws-sink-cloudwatch-guid"
     );
     const dataProviderUrl = getConfig("DataProviderUrl");
+    const portalUrl = getConfig("OnboardingPortalUrl");
 
     ipcRenderer.send("launch game", {
       args: [
@@ -60,6 +61,7 @@ export default class GameStore {
         `--language=${this._language}`,
         `--app-protocol-version=${this._appProtocolVersion}`,
         `--aws-sink-guid=${awsSinkGuid}`,
+        `--on-boarding-host=${portalUrl}`,
       ].concat(
         dataProviderUrl === undefined
           ? []
