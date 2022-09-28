@@ -360,12 +360,16 @@ function initializeIpc() {
         extra: extra ? Object.fromEntries(extra) : {},
       };
 
-      const update = await checkForUpdateFromApv(
-        standalone,
-        simpleApv,
-        process.platform
-      );
-      await performUpdate(update, updateOptions);
+      try {
+        const update = await checkForUpdateFromApv(
+          standalone,
+          simpleApv,
+          process.platform
+        );
+        await performUpdate(update, updateOptions);
+      } catch (e) {
+        console.error("An error has occurred while checking updates", e);
+      }
     }
   );
 
