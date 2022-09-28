@@ -7,6 +7,7 @@ import {
 } from "../generated/graphql";
 
 const TIMEOUT = 1000;
+const ENCOUNTERED_PEERS = new Set<string>([]);
 
 // TODO: Generalize this over all subscription types
 export function useEncounteredAPV() {
@@ -30,10 +31,13 @@ export function useEncounteredAPV() {
             return;
           const apv =
             result.data.differentAppProtocolVersionEncounter.peerVersion;
+          const peer = result.data.differentAppProtocolVersionEncounter.peer;
           if (lastId.current) cancelIdleCallback(lastId.current);
           lastId.current = requestIdleCallback(
             () => {
               offset = Date.now() + TIMEOUT;
+              if (ENCOUNTERED_PEERS.has(peer)) return;
+              else ENCOUNTERED_PEERS.add(peer);
               setApv(apv);
             },
             { timeout: offset - Date.now() }
