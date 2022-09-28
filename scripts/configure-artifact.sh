@@ -8,7 +8,7 @@ elif [ $1 == "windows" ]; then
   echo "export ZIP_CMD='7zr a -r'" >> $BASH_ENV
 elif [ $1 == "macos" ]; then
   echo "export OS_ALIAS=darwin" >> $BASH_ENV
-  echo "export ARTIFACT=MacOS.tar.gz" >> $BASH_ENV
+  echo "export ARTIFACT=macOS.tar.gz" >> $BASH_ENV
   echo "export EXECUTABLE='Nine Chronicles.app/Contents/Resources/app/9c.app/Contents/MacOS/9c'" >> $BASH_ENV
   echo "export ZIP_CMD='tar cvfz'" >> $BASH_ENV
 elif [ $1 == "linux" ]; then
