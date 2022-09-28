@@ -188,7 +188,7 @@ export function getBlockChainStorePath(): string {
 
 export const REQUIRED_DISK_SPACE = 20n * 1000n * 1000n * 1000n;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
-export const MAC_GAME_PATH = path.join(playerPath, "9c");
+export const MAC_GAME_PATH = path.join(playerPath, "9c.app/Contents/MacOS/9c");
 export const WIN_GAME_PATH = path.join(playerPath, "9c.exe");
 export const LINUX_GAME_PATH = path.join(playerPath, "9c");
 export const LOCAL_SERVER_URL = LocalServerUrl();
