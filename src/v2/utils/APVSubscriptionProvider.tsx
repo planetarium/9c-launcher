@@ -7,23 +7,19 @@ import { IDownloadProgress } from "src/interfaces/ipc";
 import UpdateView from "../views/UpdateView";
 import machine from "../machines/updateMachine";
 import { decodeApvExtra } from "../../utils/apv";
+import { useEncounteredAPV } from "./useEncounteredAPV";
 
 export default function APVSubscriptionProvider({
   children,
 }: React.PropsWithChildren<{}>) {
   const [state, send] = useMachine(machine, { devTools: true });
-  const { loading, data } =
-    useDifferentAppProtocolVersionEncounterSubscription();
+  const apv = useEncounteredAPV();
 
   useEffect(() => {
-    if (loading) return;
-    if (data?.differentAppProtocolVersionEncounter) {
-      ipcRenderer.send(
-        "encounter different version",
-        data.differentAppProtocolVersionEncounter.peerVersion
-      );
+    if (apv) {
+      ipcRenderer.send("encounter different version", apv);
     }
-  }, [data, loading]);
+  }, [apv]);
 
   useEffect(() => {
     // Progress updates
