@@ -12,6 +12,8 @@ import bytes from "bytes";
 import { getBlockChainStorePath, userConfigStore, app } from "src/config";
 
 const transifexTags = "v2/ErrorView";
+const downloadLink =
+  "https://release.nine-chronicles.com/NineChroniclesInstaller.exe";
 
 async function handleClearCache() {
   await ipcRenderer.invoke("clear cache", false);
@@ -133,8 +135,14 @@ function ErrorView() {
         </ErrorContent>
       </Route>
       <Route path={`${path}/reinstall`}>
-        <ErrorContent title={t("Reinstall required", { _tags: transifexTags })}>
+        <ErrorContent
+          title={t("Reinstall required edit edit", { _tags: transifexTags })}
+        >
           <T _str="Please reinstall Nine Chronicles." _tags={transifexTags} />
+          <T
+            _str={`Please download this link: ${downloadLink}`}
+            _tags={transifexTags}
+          />
           <Button variant="primary" centered onClick={handleRestart}>
             <T _str="Restart" _tags={transifexTags} />
           </Button>
