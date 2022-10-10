@@ -1,19 +1,23 @@
-import React from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { preloadService } from "../../machines/preloadMachine";
 import { useActor } from "@xstate/react";
 import { Redirect, Route, Switch, useRouteMatch } from "react-router";
 import { t } from "@transifex/native";
 import ErrorContent from "./ErrorContent";
-import { ipcRenderer } from "electron";
+import { ipcRenderer, shell } from "electron";
 import { T } from "src/renderer/i18n";
 import Button from "src/v2/components/ui/Button";
+import Checkbox from "src/v2/components/ui/Checkbox";
 import bytes from "bytes";
-import { getBlockChainStorePath, userConfigStore, app } from "src/config";
+import {
+  getBlockChainStorePath,
+  userConfigStore,
+  app,
+  installerUrl,
+} from "src/config";
 
 const transifexTags = "v2/ErrorView";
-const downloadLink =
-  "https://release.nine-chronicles.com/NineChroniclesInstaller.exe";
 
 async function handleClearCache() {
   await ipcRenderer.invoke("clear cache", false);
@@ -33,6 +37,15 @@ function handleRestart() {
 function ErrorView() {
   const { path } = useRouteMatch();
   const [state] = useActor(preloadService);
+  const checkboxRef = useRef<HTMLInputElement>(null);
+
+  const onRestartButtonClick = useCallback(() => {
+    if (checkboxRef?.current?.checked) {
+      shell.openExternal(installerUrl);
+    }
+
+    handleRestart();
+  }, [checkboxRef]);
 
   return (
     <Switch>
@@ -135,17 +148,14 @@ function ErrorView() {
         </ErrorContent>
       </Route>
       <Route path={`${path}/reinstall`}>
-        <ErrorContent
-          title={t("Reinstall required edit edit", { _tags: transifexTags })}
-        >
+        <ErrorContent title={t("Reinstall required", { _tags: transifexTags })}>
           <T _str="Please reinstall Nine Chronicles." _tags={transifexTags} />
-          <T
-            _str={`Please download this link: ${downloadLink}`}
-            _tags={transifexTags}
-          />
-          <Button variant="primary" centered onClick={handleRestart}>
+          <Button variant="primary" centered onClick={onRestartButtonClick}>
             <T _str="Restart" _tags={transifexTags} />
           </Button>
+          <Checkbox ref={checkboxRef}>
+            <T _str="If you want reinstall?" _tags={transifexTags} />
+          </Checkbox>
         </ErrorContent>
       </Route>
       <Route path={`${path}/relaunch`}>
