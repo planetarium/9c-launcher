@@ -53,6 +53,10 @@ export function useActivation(activationKey?: string): ActivationResult {
   );
 
   useEffect(() => {
+    if (nonceData?.activated) {
+      setTxError(new Error("Already activated."));
+      return;
+    }
     if (
       !data?.activationStatus.addressActivated &&
       activationKey &&
