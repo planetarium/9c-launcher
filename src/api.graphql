@@ -322,6 +322,7 @@ query CollectionStatusQuery($address: Address) {
 
 query ActivationKeyNonce($encodedActivationKey: String!) {
   activationKeyNonce(invitationCode: $encodedActivationKey)
+  activated(invitationCode: $encodedActivationKey)
 }
 
 mutation StageTx($encodedTx: String!) {

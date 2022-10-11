@@ -1,4 +1,5 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
+import { unstable_batchedUpdates } from "react-dom";
 import {
   useActivationAddressQuery,
   useActivationKeyNonceQuery,
@@ -9,12 +10,13 @@ import { useTx } from "./useTx";
 
 interface ActivationResult {
   loading: boolean;
+  error: boolean;
   activated: boolean;
 }
 
 /**
  * A helper hook which has two jobs to do.
- * 1. It queries the activation atatus of the current account.
+ * 1. It queries the activation status of the current account.
  * 2. When the activationKey is provided, it will stage a transaction to activate the account.
  *
  * @param activationKey An activation key to use for automatic activation. Pass `undefined` to disable automatic activation.
@@ -24,7 +26,8 @@ export function useActivation(activationKey?: string): ActivationResult {
   const accountStore = useStore("account");
   const isDone = useIsPreloadDone();
   const [isPolling, setPolling] = useState(false);
-  const { loading, data } = useActivationAddressQuery({
+  const [txError, setTxError] = useState<Error | undefined>();
+  const { loading, data, error } = useActivationAddressQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
@@ -32,15 +35,17 @@ export function useActivation(activationKey?: string): ActivationResult {
     skip: !accountStore.isLogin,
   });
 
-  const { loading: nonceLoading, data: nonceData } = useActivationKeyNonceQuery(
-    {
-      variables: {
-        // @ts-expect-error The query will not run if activationKey is undefined due to the skip option.
-        encodedActivationKey: activationKey,
-      },
-      skip: !activationKey,
-    }
-  );
+  const {
+    loading: nonceLoading,
+    data: nonceData,
+    error: nonceError,
+  } = useActivationKeyNonceQuery({
+    variables: {
+      // @ts-expect-error The query will not run if activationKey is undefined due to the skip option.
+      encodedActivationKey: activationKey,
+    },
+    skip: !activationKey,
+  });
   const tx = useTx(
     "activate-account",
     activationKey,
@@ -48,15 +53,25 @@ export function useActivation(activationKey?: string): ActivationResult {
   );
 
   useEffect(() => {
+    if (nonceData?.activated) {
+      setTxError(new Error("Already activated."));
+      return;
+    }
     if (
       !data?.activationStatus.addressActivated &&
       activationKey &&
       nonceData?.activationKeyNonce &&
       !isPolling
     ) {
-      setPolling(true);
+      unstable_batchedUpdates(() => {
+        setPolling(true);
+        setTxError(undefined);
+      });
       tx()
-        .catch((e) => console.error(e))
+        .catch((e) => {
+          setTxError(e);
+          console.error(e);
+        })
         .then(() => setPolling(false));
     }
   }, [activationKey, tx, nonceData, isPolling]);
@@ -67,6 +82,7 @@ export function useActivation(activationKey?: string): ActivationResult {
 
   return {
     loading: loading || nonceLoading || !isDone,
+    error: Boolean(txError || error || nonceError),
     activated: data?.activationStatus.addressActivated ?? false,
   };
 }
