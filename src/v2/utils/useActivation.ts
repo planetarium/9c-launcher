@@ -1,4 +1,5 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
+import { unstable_batchedUpdates } from "react-dom";
 import {
   useActivationAddressQuery,
   useActivationKeyNonceQuery,
@@ -9,6 +10,7 @@ import { useTx } from "./useTx";
 
 interface ActivationResult {
   loading: boolean;
+  error: boolean;
   activated: boolean;
 }
 
@@ -24,7 +26,8 @@ export function useActivation(activationKey?: string): ActivationResult {
   const accountStore = useStore("account");
   const isDone = useIsPreloadDone();
   const [isPolling, setPolling] = useState(false);
-  const { loading, data } = useActivationAddressQuery({
+  const [txError, setTxError] = useState<Error | undefined>();
+  const { loading, data, error } = useActivationAddressQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
@@ -32,15 +35,17 @@ export function useActivation(activationKey?: string): ActivationResult {
     skip: !accountStore.isLogin,
   });
 
-  const { loading: nonceLoading, data: nonceData } = useActivationKeyNonceQuery(
-    {
-      variables: {
-        // @ts-expect-error The query will not run if activationKey is undefined due to the skip option.
-        encodedActivationKey: activationKey,
-      },
-      skip: !activationKey,
-    }
-  );
+  const {
+    loading: nonceLoading,
+    data: nonceData,
+    error: nonceError,
+  } = useActivationKeyNonceQuery({
+    variables: {
+      // @ts-expect-error The query will not run if activationKey is undefined due to the skip option.
+      encodedActivationKey: activationKey,
+    },
+    skip: !activationKey,
+  });
   const tx = useTx(
     "activate-account",
     activationKey,
@@ -54,9 +59,15 @@ export function useActivation(activationKey?: string): ActivationResult {
       nonceData?.activationKeyNonce &&
       !isPolling
     ) {
-      setPolling(true);
+      unstable_batchedUpdates(() => {
+        setPolling(true);
+        setTxError(undefined);
+      });
       tx()
-        .catch((e) => console.error(e))
+        .catch((e) => {
+          setTxError(e);
+          console.error(e);
+        })
         .then(() => setPolling(false));
     }
   }, [activationKey, tx, nonceData, isPolling]);
@@ -67,6 +78,7 @@ export function useActivation(activationKey?: string): ActivationResult {
 
   return {
     loading: loading || nonceLoading || !isDone,
+    error: Boolean(txError || error || nonceError),
     activated: data?.activationStatus.addressActivated ?? false,
   };
 }
