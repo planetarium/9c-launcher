@@ -39,7 +39,7 @@ function ErrorView() {
   const [state] = useActor(preloadService);
   const checkboxRef = useRef<HTMLInputElement>(null);
 
-  const onRestartButtonClick = useCallback(() => {
+  const handleRestartClick = useCallback(() => {
     if (checkboxRef?.current?.checked) {
       shell.openExternal(installerUrl);
     }
@@ -150,7 +150,7 @@ function ErrorView() {
       <Route path={`${path}/reinstall`}>
         <ErrorContent title={t("Reinstall required", { _tags: transifexTags })}>
           <T _str="Please reinstall Nine Chronicles." _tags={transifexTags} />
-          <Button variant="primary" centered onClick={onRestartButtonClick}>
+          <Button variant="primary" centered onClick={handleRestartClick}>
             <T _str="Restart" _tags={transifexTags} />
           </Button>
           <Checkbox ref={checkboxRef}>
