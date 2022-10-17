@@ -10,6 +10,7 @@ export class Tx extends StandaloneSubcommand {
   ) {
     return this.spawnSync(
       "tx",
+      "sign",
       privateKeyHex,
       String(nonce),
       genesisHash,
