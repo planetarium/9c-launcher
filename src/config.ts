@@ -237,7 +237,7 @@ export async function initializeNode(): Promise<NodeInfo> {
     const rate = get("RemoteClientSamplingRate", 10) ?? Infinity;
     const baseA = a.tip - a.clientCount / rate;
     const baseB = b.tip - b.clientCount / rate;
-    return baseA - baseB;
+    return baseB - baseA;
   });
   console.log("config initialize complete");
   const nodeInfo = nodeList[0];
