@@ -57,7 +57,8 @@ export class NodeInfo {
   readonly graphqlPort: number;
   readonly rpcPort: number;
   readonly nodeNumber: number;
-  clientCount: number = 0;
+  clientCount = 0;
+  tip = 0;
 
   public GraphqlServer(): string {
     return `${this.HeadlessUrl()}/graphql`;
@@ -78,6 +79,7 @@ export class NodeInfo {
       const ended = await headlessGraphQLSDK.PreloadEnded();
       if (ended.status == 200) {
         this.clientCount = ended.data!.rpcInformation.totalCount;
+        this.tip = ended.data!.nodeStatus.tip.index;
         return ended.data!.nodeStatus.preloadEnded;
       }
     } catch (e) {
@@ -232,7 +234,9 @@ export async function initializeNode(): Promise<NodeInfo> {
     throw Error("can't find available remote node.");
   }
   nodeList.sort((a, b) => {
-    return a.clientCount - b.clientCount;
+    const baseA = a.tip - a.clientCount / 10;
+    const baseB = b.tip - b.clientCount / 10;
+    return baseA - baseB;
   });
   console.log("config initialize complete");
   const nodeInfo = nodeList[0];
