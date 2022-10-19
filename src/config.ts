@@ -234,8 +234,9 @@ export async function initializeNode(): Promise<NodeInfo> {
     throw Error("can't find available remote node.");
   }
   nodeList.sort((a, b) => {
-    const baseA = a.tip - a.clientCount / 10;
-    const baseB = b.tip - b.clientCount / 10;
+    const rate = get("RemoteClientSamplingRate", 10) ?? Infinity;
+    const baseA = a.tip - a.clientCount / rate;
+    const baseB = b.tip - b.clientCount / rate;
     return baseA - baseB;
   });
   console.log("config initialize complete");

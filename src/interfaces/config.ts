@@ -28,6 +28,7 @@ export interface IConfig {
   UseRemoteHeadless: boolean;
   LaunchPlayer: boolean;
   RemoteNodeList: string[];
+  RemoteClientSamplingRate: number | null;
   PreferLegacyInterface: boolean;
   DownloadBaseURL: string;
   UseUpdate: boolean;
