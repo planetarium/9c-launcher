@@ -363,6 +363,9 @@ mutation StageTxV2($encodedTx: String!) {
 query PreloadEnded {
   nodeStatus {
     preloadEnded
+    tip {
+      index
+    }
     appProtocolVersion {
       version
       extra
