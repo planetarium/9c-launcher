@@ -98,7 +98,10 @@ export async function playerUpdate(
     console.warn("[player] Not supported platform.");
     return;
   }
-  win.webContents.send("update player extract complete");
+
+  update.projects.launcher.updateRequired
+    ? win.webContents.send("update download started")
+    : win.webContents.send("update player extract complete");
 
   await fs.promises.unlink(dlPath);
 

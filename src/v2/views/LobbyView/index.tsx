@@ -14,7 +14,7 @@ const isFirst = (state: string): boolean => {
 function LobbyView() {
   const { account, game } = useStore();
   const { isDone } = usePreload();
-  const { loading, activated } = useActivation(account.activationKey);
+  const { loading, activated, error } = useActivation(account.activationKey);
   const history = useHistory();
   const onboardingRequired = useMemo(
     () => isFirst(history.location.search),
@@ -32,6 +32,10 @@ function LobbyView() {
       game.startGame(account.privateKey);
     }
   }, [isDone, account.isLogin, activated]);
+
+  useEffect(() => {
+    if (error) history.push("/error/relaunch");
+  }, [error]);
 
   return (
     <>
