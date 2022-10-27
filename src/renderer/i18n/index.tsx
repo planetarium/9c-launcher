@@ -1,9 +1,5 @@
 import { tx } from "@transifex/native";
-import React, {
-  createContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { userConfigStore, get, TRANSIFEX_TOKEN } from "../../config";
 
 interface LocaleContext {

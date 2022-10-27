@@ -6,7 +6,7 @@ import React from "react";
 export default {
   title: "MonsterCollection/ClaimContent",
   component: ClaimContent,
-}
+};
 
 export const Default = () => (
   <ClaimContent
