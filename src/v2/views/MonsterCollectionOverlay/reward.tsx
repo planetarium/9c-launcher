@@ -178,51 +178,19 @@ const ItemAmount = styled("div", {
   WebKitTextStroke: "1px solid black",
 });
 
-const ItemUpdatedAmount = styled("span", {
-  "&::before": {
-    content: "' > '",
-    color: "#fff5e3",
-  },
-  variants: {
-    isUpgrade: {
-      true: {
-        color: "#67ff57",
-      },
-      false: {
-        color: "#ff4343",
-      },
-    },
-  },
-});
-
 interface ItemProps {
   children: React.ReactNode;
   title: React.ReactNode;
   amount: string | number;
   received?: boolean;
   tooltip?: React.ReactNode;
-  isUpgrade?: boolean;
-  updatedAmount?: string | number;
 }
 
-export const Item = ({
-  children,
-  title,
-  amount,
-  updatedAmount,
-  isUpgrade,
-}: ItemProps) => (
+export const Item = ({ children, title, amount, tooltip }: ItemProps) => (
   <div>
     <ItemFrame>
       {children}
-      <ItemAmount>
-        {amount}
-        {isUpgrade != null && (
-          <ItemUpdatedAmount isUpgrade={isUpgrade}>
-            {updatedAmount}
-          </ItemUpdatedAmount>
-        )}
-      </ItemAmount>
+      <ItemAmount>{amount}</ItemAmount>
     </ItemFrame>
     <ItemTitle>{title}</ItemTitle>
   </div>

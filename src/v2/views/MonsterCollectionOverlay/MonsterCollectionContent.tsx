@@ -75,36 +75,6 @@ const images = [
   monster5Img,
 ];
 
-type LevelList =
-  | NonNullable<StakingSheetQuery["stateQuery"]["stakeRewards"]>["orderedList"]
-  | null
-  | undefined;
-
-function useRewardIndex(levels: LevelList, amount: Decimal = new Decimal(0)) {
-  return useMemo(() => {
-    const index = levels?.findLastIndex((v) => amount?.gte(v.requiredGold));
-    return index != null && index !== -1 ? index : null;
-  }, [amount, levels]);
-}
-
-function useRewards(levels: LevelList, index: number = 0) {
-  const rewards = levels?.[index!]?.rewards;
-  const bonusRewards = levels?.[index!]?.bonusRewards;
-  const bonusRewardMap = useMemo(
-    () =>
-      bonusRewards &&
-      new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
-    [levels, index]
-  );
-
-  return rewards?.map((v) => ({
-    ...v,
-    count(amount: Decimal) {
-      return amount.divToInt(v.rate).add(bonusRewardMap?.get(v.itemId) || 0);
-    },
-  }));
-}
-
 type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
 
 export function MonsterCollectionContent({
@@ -142,8 +112,19 @@ export function MonsterCollectionContent({
     [deposit, currentNCG]
   );
 
-  const currentIndex = useRewardIndex(levels, deposit ?? new Decimal(0));
-  const selectedIndex = useRewardIndex(levels, amountDecimal);
+  // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
+  const currentIndex = useMemo(() => {
+    if (!stakeState) return null;
+    const index = levels?.findLastIndex((v) => deposit?.gte(v.requiredGold));
+    return index != null && index !== -1 ? index : null;
+  }, [stakeState, levels, deposit]);
+  const selectedIndex = useMemo(() => {
+    const index = levels?.findLastIndex((v) =>
+      amountDecimal.gte(v.requiredGold)
+    );
+    return index != null && index !== -1 ? index : null;
+  }, [amountDecimal, levels]);
+
   const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
   useEffect(() => {
@@ -157,10 +138,16 @@ export function MonsterCollectionContent({
     setIsEditing(false);
   });
 
+  const index = isEditing ? selectedIndex : currentIndex;
+  const rewards = levels?.[index!]?.rewards;
+  const bonusRewards = levels?.[index!]?.bonusRewards;
+  const bonusRewardMap = useMemo(
+    () =>
+      bonusRewards &&
+      new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
+    [bonusRewards]
+  );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
-  const currentRewards = useRewards(levels, currentIndex ?? 0);
-  const selectedRewards = useRewards(levels, selectedIndex ?? 0);
-  if (!levels) return null;
 
   if (!levels) return null;
 
@@ -280,109 +267,63 @@ export function MonsterCollectionContent({
         ))}
       </Levels>
       <AnimatePresence exitBeforeEnter>
-        {currentRewards ? (
+        {rewards ? (
           <RewardSheet>
             <ItemGroup key="recurring" title="Recurring Rewards">
-              {currentRewards.map((item, index) => {
+              {rewards?.map((item) => {
                 const itemMeta = itemMetadata[item.itemId] ?? {
                   name: "Unknown",
                 };
-                const selectedAmount = isEditing
-                  ? selectedRewards?.[index].count(amountDecimal)
-                  : null;
-                const itemAmount = item.count(deposit ?? new Decimal(0));
+                const bonusCount = bonusRewardMap?.get(item.itemId) ?? 0;
                 return (
                   <Item
                     key={item.itemId}
-                    amount={itemAmount.toString()}
+                    amount={currentAmount
+                      .divToInt(item.rate)
+                      .add(bonusCount)
+                      .toString()}
                     title={itemMeta.name}
-                    isUpgrade={selectedAmount?.gte(itemAmount)}
-                    updatedAmount={selectedAmount?.toString()}
                   >
                     <img src={itemMeta.img} />
                   </Item>
                 );
               })}
             </ItemGroup>
-            {isEditing ? (
-              <ItemGroup key="system" title="System Rewards">
-                <Item
-                  key="crystal"
-                  amount={systemRewards[currentIndex!].crystal + "%"}
-                  title={
-                    <>
-                      Crystal
-                      <br />
-                      Grinding
-                    </>
-                  }
-                  isUpgrade={selectedIndex! >= currentIndex!}
-                  updatedAmount={systemRewards[selectedIndex!].crystal + "%"}
-                >
-                  <img src={crystalImg} height={48} />
-                </Item>
-                <Item
-                  key="arena"
-                  amount={systemRewards[currentIndex!].arena + "%"}
-                  title={
-                    <>
-                      Arena
-                      <br />
-                      Reward
-                    </>
-                  }
-                  isUpgrade={selectedIndex! >= currentIndex!}
-                  updatedAmount={systemRewards[selectedIndex!].arena + "%"}
-                >
-                  <img src={ncgImg} height={48} />
-                </Item>
-                <Item
-                  key="stage"
-                  amount={systemRewards[currentIndex!].stage + "% DC"}
-                  title="Stage AP"
-                  isUpgrade={selectedIndex! >= currentIndex!}
-                  updatedAmount={systemRewards[selectedIndex!].stage + "%"}
-                >
-                  <img src={apImg} height={48} />
-                </Item>
-              </ItemGroup>
-            ) : (
-              <ItemGroup key="system" title="System Rewards">
-                <Item
-                  key="crystal"
-                  amount={systemRewards[currentIndex!].crystal + "%"}
-                  title={
-                    <>
-                      Crystal
-                      <br />
-                      Grinding
-                    </>
-                  }
-                >
-                  <img src={crystalImg} height={48} />
-                </Item>
-                <Item
-                  key="arena"
-                  amount={systemRewards[currentIndex!].arena + "%"}
-                  title={
-                    <>
-                      Arena
-                      <br />
-                      Reward
-                    </>
-                  }
-                >
-                  <img src={ncgImg} height={48} />
-                </Item>
-                <Item
-                  key="stage"
-                  amount={systemRewards[currentIndex!].stage + "% DC"}
-                  title="Stage AP"
-                >
-                  <img src={apImg} height={48} />
-                </Item>
-              </ItemGroup>
-            )}
+            <ItemGroup key="system" title="System Rewards">
+              <Item
+                key="crystal"
+                amount={systemRewards[index!].crystal + "%"}
+                title={
+                  <>
+                    Crystal
+                    <br />
+                    Grinding
+                  </>
+                }
+              >
+                <img src={crystalImg} height={48} />
+              </Item>
+              <Item
+                key="arena"
+                amount={systemRewards[index!].arena + "%"}
+                title={
+                  <>
+                    Arena
+                    <br />
+                    Reward
+                  </>
+                }
+              >
+                <img src={ncgImg} height={48} />
+              </Item>
+              <Item
+                key="stage"
+                amount={systemRewards[index!].stage + "% DC"}
+                title="Stage AP"
+              >
+                <img src={apImg} height={48} />
+              </Item>
+            </ItemGroup>
           </RewardSheet>
         ) : (
           <RewardSheetPlaceholder />
