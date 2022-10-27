@@ -75,19 +75,19 @@ const images = [
   monster5Img,
 ];
 
-type Levels =
+type LevelList =
   | NonNullable<StakingSheetQuery["stateQuery"]["stakeRewards"]>["orderedList"]
   | null
   | undefined;
 
-function useRewardIndex(levels: Levels, amount: Decimal = new Decimal(0)) {
+function useRewardIndex(levels: LevelList, amount: Decimal = new Decimal(0)) {
   return useMemo(() => {
     const index = levels?.findLastIndex((v) => amount?.gte(v.requiredGold));
     return index != null && index !== -1 ? index : null;
   }, [amount, levels]);
 }
 
-function useRewards(levels: Levels, index: number = 0) {
+function useRewards(levels: LevelList, index: number = 0) {
   const rewards = levels?.[index!]?.rewards;
   const bonusRewards = levels?.[index!]?.bonusRewards;
   const bonusRewardMap = useMemo(
@@ -304,41 +304,85 @@ export function MonsterCollectionContent({
                 );
               })}
             </ItemGroup>
-            <ItemGroup key="system" title="System Rewards">
-              <Item
-                key="crystal"
-                amount={systemRewards[index!].crystal + "%"}
-                title={
-                  <>
-                    Crystal
-                    <br />
-                    Grinding
-                  </>
-                }
-              >
-                <img src={crystalImg} height={48} />
-              </Item>
-              <Item
-                key="arena"
-                amount={systemRewards[index!].arena + "%"}
-                title={
-                  <>
-                    Arena
-                    <br />
-                    Reward
-                  </>
-                }
-              >
-                <img src={ncgImg} height={48} />
-              </Item>
-              <Item
-                key="stage"
-                amount={systemRewards[index!].stage + "% DC"}
-                title="Stage AP"
-              >
-                <img src={apImg} height={48} />
-              </Item>
-            </ItemGroup>
+            {isEditing ? (
+              <ItemGroup key="system" title="System Rewards">
+                <Item
+                  key="crystal"
+                  amount={systemRewards[currentIndex!].crystal + "%"}
+                  title={
+                    <>
+                      Crystal
+                      <br />
+                      Grinding
+                    </>
+                  }
+                  isUpgrade={selectedIndex! >= currentIndex!}
+                  updatedAmount={systemRewards[selectedIndex!].crystal + "%"}
+                >
+                  <img src={crystalImg} height={48} />
+                </Item>
+                <Item
+                  key="arena"
+                  amount={systemRewards[currentIndex!].arena + "%"}
+                  title={
+                    <>
+                      Arena
+                      <br />
+                      Reward
+                    </>
+                  }
+                  isUpgrade={selectedIndex! >= currentIndex!}
+                  updatedAmount={systemRewards[selectedIndex!].arena + "%"}
+                >
+                  <img src={ncgImg} height={48} />
+                </Item>
+                <Item
+                  key="stage"
+                  amount={systemRewards[currentIndex!].stage + "% DC"}
+                  title="Stage AP"
+                  isUpgrade={selectedIndex! >= currentIndex!}
+                  updatedAmount={systemRewards[selectedIndex!].stage + "%"}
+                >
+                  <img src={apImg} height={48} />
+                </Item>
+              </ItemGroup>
+            ) : (
+              <ItemGroup key="system" title="System Rewards">
+                <Item
+                  key="crystal"
+                  amount={systemRewards[currentIndex!].crystal + "%"}
+                  title={
+                    <>
+                      Crystal
+                      <br />
+                      Grinding
+                    </>
+                  }
+                >
+                  <img src={crystalImg} height={48} />
+                </Item>
+                <Item
+                  key="arena"
+                  amount={systemRewards[currentIndex!].arena + "%"}
+                  title={
+                    <>
+                      Arena
+                      <br />
+                      Reward
+                    </>
+                  }
+                >
+                  <img src={ncgImg} height={48} />
+                </Item>
+                <Item
+                  key="stage"
+                  amount={systemRewards[currentIndex!].stage + "% DC"}
+                  title="Stage AP"
+                >
+                  <img src={apImg} height={48} />
+                </Item>
+              </ItemGroup>
+            )}
           </RewardSheet>
         ) : (
           <RewardSheetPlaceholder />
