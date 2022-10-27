@@ -165,7 +165,7 @@ function analyzeApvExtra(
       url: buildDownloadUrl(
         baseUrl,
         netenv,
-        newApv.version,
+        newApv,
         project,
         newCommit,
         platform

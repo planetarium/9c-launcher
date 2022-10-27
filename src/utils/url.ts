@@ -1,3 +1,4 @@
+import { ISimpleApv } from "src/interfaces/apv";
 import { NotSupportedPlatformError } from "../main/exceptions/not-supported-platform";
 
 const MACOS_FILE_NAME = "macOS.tar.gz";
@@ -7,7 +8,7 @@ const WINDOWS_FILE_NAME = "Windows.zip";
 export function buildDownloadUrl(
   baseUrl: string,
   env: string,
-  rc: number,
+  apv: ISimpleApv,
   project: "player" | "launcher",
   commitHash: string,
   platform: NodeJS.Platform
@@ -18,7 +19,9 @@ export function buildDownloadUrl(
     throw new NotSupportedPlatformError(platform);
   }
 
-  return [baseUrl, env, `v${rc}`, project, commitHash, filename].join("/");
+  return [baseUrl, env, `v${apv.version}`, project, commitHash, filename].join(
+    "/"
+  );
 }
 
 export const BINARY_FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
