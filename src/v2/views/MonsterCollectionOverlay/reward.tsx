@@ -161,7 +161,6 @@ const ItemTitle = styled("h2", {
   fontSize: "1rem",
   lineHeight: 1,
   wordBreak: "keep-all",
-  width: 74,
   textAlign: "center",
   border: "none",
   margin: 10,
@@ -209,6 +208,10 @@ const ItemUpdatedAmount = styled("span", {
   },
 });
 
+const ItemBox = styled("div", {
+  width: 94,
+});
+
 interface ItemProps {
   children: React.ReactNode;
   title: React.ReactNode;
@@ -228,7 +231,7 @@ export const Item = ({
   isUpgrade,
   isDiff,
 }: ItemProps) => (
-  <div>
+  <ItemBox>
     <ItemFrame>
       {children}
       <ItemAmount>
@@ -241,5 +244,5 @@ export const Item = ({
       </ItemAmount>
     </ItemFrame>
     <ItemTitle>{title}</ItemTitle>
-  </div>
+  </ItemBox>
 );
