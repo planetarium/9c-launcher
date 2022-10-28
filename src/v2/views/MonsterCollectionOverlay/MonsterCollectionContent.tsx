@@ -295,7 +295,7 @@ export function MonsterCollectionContent({
                     title={itemMeta.name}
                     isUpgrade={selectedAmount?.gte(itemAmount)}
                     updatedAmount={selectedAmount?.toString()}
-                    isDiff={true}
+                    isDiff
                   >
                     <img src={itemMeta.img} />
                   </Item>
