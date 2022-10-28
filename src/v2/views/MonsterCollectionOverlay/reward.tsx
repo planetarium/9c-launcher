@@ -160,6 +160,7 @@ const ItemTitle = styled("h2", {
   color: "#9f6b4b",
   fontSize: "1rem",
   lineHeight: 1,
+  wordBreak: "keep-all",
   textAlign: "center",
   border: "none",
   margin: 10,
@@ -178,20 +179,70 @@ const ItemAmount = styled("div", {
   WebKitTextStroke: "1px solid black",
 });
 
+const ItemUpdatedAmount = styled("span", {
+  variants: {
+    isUpgrade: {
+      true: {
+        color: "#67ff57",
+      },
+      false: {
+        color: "#ff4343",
+      },
+    },
+    isDiff: {
+      true: {
+        "&::before": {
+          content: "' > '",
+          color: "#fff5e3",
+        },
+        false: {
+          "&::before": {
+            content: "",
+          },
+          "&": {
+            content: "",
+          },
+        },
+      },
+    },
+  },
+});
+
+const ItemBox = styled("div", {
+  width: 94,
+});
+
 interface ItemProps {
   children: React.ReactNode;
   title: React.ReactNode;
-  amount: string | number;
+  amount?: string | number;
   received?: boolean;
   tooltip?: React.ReactNode;
+  isUpgrade?: boolean;
+  isDiff?: boolean;
+  updatedAmount?: string | number;
 }
 
-export const Item = ({ children, title, amount, tooltip }: ItemProps) => (
-  <div>
+export const Item = ({
+  children,
+  title,
+  amount,
+  updatedAmount,
+  isUpgrade,
+  isDiff,
+}: ItemProps) => (
+  <ItemBox>
     <ItemFrame>
       {children}
-      <ItemAmount>{amount}</ItemAmount>
+      <ItemAmount>
+        {amount}
+        {isUpgrade != null && (
+          <ItemUpdatedAmount isUpgrade={isUpgrade} isDiff={isDiff ?? false}>
+            {updatedAmount}
+          </ItemUpdatedAmount>
+        )}
+      </ItemAmount>
     </ItemFrame>
     <ItemTitle>{title}</ItemTitle>
-  </div>
+  </ItemBox>
 );

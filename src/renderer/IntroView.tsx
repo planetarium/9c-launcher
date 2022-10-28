@@ -7,8 +7,9 @@ import { ipcRenderer } from "electron";
 import { ProtectedPrivateKey } from "src/main/headless/key-store";
 
 const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
-  const [protectedPrivateKeys, setProtectedPrivateKeys] =
-    useState<ProtectedPrivateKey[] | null>(null);
+  const [protectedPrivateKeys, setProtectedPrivateKeys] = useState<
+    ProtectedPrivateKey[] | null
+  >(null);
 
   useEffect(() => {
     if (!protectedPrivateKeys) {

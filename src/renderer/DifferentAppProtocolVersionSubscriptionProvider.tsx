@@ -16,8 +16,9 @@ export const DifferentAppProtocolVersionSubscriptionProvider: React.FC = ({
   const [isDownload, setDownloadState] = useState(false);
   const [isExtract, setExtractState] = useState(false);
   const [isCopying, setCopyingState] = useState(false);
-  const [variant, setVariant] =
-    useState<"indeterminate" | "determinate" | undefined>("determinate");
+  const [variant, setVariant] = useState<
+    "indeterminate" | "determinate" | undefined
+  >("determinate");
   // FIXME: Some files were downloaded multiple times because of improper file lock, causing progress to go backward.
   const [progress, setProgress] = useState(0);
 

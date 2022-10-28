@@ -19,8 +19,9 @@ import RevokeView from "./views/RevokeView";
 const Redirector = observer(() => {
   const account = useStore("account");
   const history = useHistory();
-  const [protectedPrivateKeys, setProtectedPrivateKeys] =
-    useState<ProtectedPrivateKey[] | null>(null);
+  const [protectedPrivateKeys, setProtectedPrivateKeys] = useState<
+    ProtectedPrivateKey[] | null
+  >(null);
 
   useEffect(() => {
     if (!protectedPrivateKeys) {
