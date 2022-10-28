@@ -199,11 +199,11 @@ export function MonsterCollectionContent({
                 onClick={() => inputRef.current?.focus()}
               >
                 <BareInput
-                  maxLength={6}
                   ref={inputRef}
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onInput={(e) => setAmount(e.target.value)}
                   max={availableNCG.toString()}
+                  min={0}
                   type="number"
                 />
                 <sub>/{availableNCG.toString()}</sub>
