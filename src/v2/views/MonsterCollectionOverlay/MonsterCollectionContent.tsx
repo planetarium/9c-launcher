@@ -303,13 +303,13 @@ export function MonsterCollectionContent({
               })}
             </ItemGroup>
             <ItemGroup key="system" title="System Rewards">
-              {systemRewards.map((item) => {
+              {systemRewards.map((item, index) => {
                 const sysRewardSuffix = item.name === "stage" ? "% DC" : "%";
-                const amount = item.amount[currentIndex ?? 0] + sysRewardSuffix;
-                const updatedAmount = item.amount[selectedIndex ?? 0] + sysRewardSuffix;
+                const amount = item.amount[currentIndex ?? 0];
+                const updatedAmount = item.amount[selectedIndex ?? 0];
                 return (
                   <Item
-                    key={item.name}
+                    key={index}
                     amount={isEditing ? "" : amount + sysRewardSuffix}
                     updatedAmount={
                       isEditing ? updatedAmount + sysRewardSuffix : ""
