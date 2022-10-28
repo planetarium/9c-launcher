@@ -34,9 +34,6 @@ import monster4Img from "src/v2/resources/collection/monster-4.png";
 import monster5Img from "src/v2/resources/collection/monster-5.png";
 import itemMetadata from "src/v2/utils/monsterCollection/items";
 
-import crystalImg from "src/v2/resources/collection/items/crystal.png";
-import apImg from "src/v2/resources/collection/icon-action-power.webp";
-import ncgImg from "src/v2/resources/collection/items/ncg.png";
 import systemRewards from "src/v2/utils/monsterCollection/systemRewards";
 
 import {
@@ -298,91 +295,32 @@ export function MonsterCollectionContent({
                     title={itemMeta.name}
                     isUpgrade={selectedAmount?.gte(itemAmount)}
                     updatedAmount={selectedAmount?.toString()}
+                    isDiff={true}
                   >
                     <img src={itemMeta.img} />
                   </Item>
                 );
               })}
             </ItemGroup>
-            {isEditing ? (
-              <ItemGroup key="system" title="System Rewards">
-                <Item
-                  key="crystal"
-                  amount={systemRewards[currentIndex!].crystal + "%"}
-                  title={
-                    <>
-                      Crystal
-                      <br />
-                      Grinding
-                    </>
-                  }
-                  isUpgrade={selectedIndex! >= currentIndex!}
-                  updatedAmount={systemRewards[selectedIndex!].crystal + "%"}
-                >
-                  <img src={crystalImg} height={48} />
-                </Item>
-                <Item
-                  key="arena"
-                  amount={systemRewards[currentIndex!].arena + "%"}
-                  title={
-                    <>
-                      Arena
-                      <br />
-                      Reward
-                    </>
-                  }
-                  isUpgrade={selectedIndex! >= currentIndex!}
-                  updatedAmount={systemRewards[selectedIndex!].arena + "%"}
-                >
-                  <img src={ncgImg} height={48} />
-                </Item>
-                <Item
-                  key="stage"
-                  amount={systemRewards[currentIndex!].stage + "% DC"}
-                  title="Stage AP"
-                  isUpgrade={selectedIndex! >= currentIndex!}
-                  updatedAmount={systemRewards[selectedIndex!].stage + "%"}
-                >
-                  <img src={apImg} height={48} />
-                </Item>
-              </ItemGroup>
-            ) : (
-              <ItemGroup key="system" title="System Rewards">
-                <Item
-                  key="crystal"
-                  amount={systemRewards[currentIndex!].crystal + "%"}
-                  title={
-                    <>
-                      Crystal
-                      <br />
-                      Grinding
-                    </>
-                  }
-                >
-                  <img src={crystalImg} height={48} />
-                </Item>
-                <Item
-                  key="arena"
-                  amount={systemRewards[currentIndex!].arena + "%"}
-                  title={
-                    <>
-                      Arena
-                      <br />
-                      Reward
-                    </>
-                  }
-                >
-                  <img src={ncgImg} height={48} />
-                </Item>
-                <Item
-                  key="stage"
-                  amount={systemRewards[currentIndex!].stage + "% DC"}
-                  title="Stage AP"
-                >
-                  <img src={apImg} height={48} />
-                </Item>
-              </ItemGroup>
-            )}
+            <ItemGroup key="system" title="System Rewards">
+              {systemRewards.map((item, index) => {
+                return (
+                  <Item
+                    key={item.name}
+                    amount={isEditing ? "" : item.amount[currentIndex!] + "%"}
+                    updatedAmount={item.amount[selectedIndex!] + "%"}
+                    isUpgrade={
+                      selectedIndex
+                        ? selectedIndex! >= currentIndex!
+                        : undefined
+                    }
+                    title={item.title}
+                  >
+                    <img src={item.img} height={48}></img>
+                  </Item>
+                );
+              })}
+            </ItemGroup>
           </RewardSheet>
         ) : (
           <RewardSheetPlaceholder />
