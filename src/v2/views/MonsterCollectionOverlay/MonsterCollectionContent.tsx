@@ -201,10 +201,9 @@ export function MonsterCollectionContent({
                 <BareInput
                   ref={inputRef}
                   value={amount}
-                  onInput={(e) => setAmount(e.target.value)}
-                  max={availableNCG.toString()}
-                  min={0}
-                  type="number"
+                  onChange={(e) => setAmount(e.target.value)}
+                  maxLength={6}
+                  type="text"
                 />
                 <sub>/{availableNCG.toString()}</sub>
               </DepositContent>
@@ -306,11 +305,14 @@ export function MonsterCollectionContent({
               {systemRewards.map((item) => {
                 const amount = item.amount[currentIndex ?? 0];
                 const updatedAmount = item.amount[selectedIndex ?? 0];
+                const sysRewardSuffix = item.name === "stage" ? "% DC" : "%";
                 return (
                   <Item
                     key={item.name}
-                    amount={isEditing ? "" : amount + "%"}
-                    updatedAmount={isEditing ? updatedAmount + "%" : ""}
+                    amount={isEditing ? "" : amount + sysRewardSuffix}
+                    updatedAmount={
+                      isEditing ? updatedAmount + sysRewardSuffix : ""
+                    }
                     isUpgrade={updatedAmount >= amount}
                     title={item.title}
                   >
