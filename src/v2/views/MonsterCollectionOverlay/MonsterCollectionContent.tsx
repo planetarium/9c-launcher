@@ -203,6 +203,7 @@ export function MonsterCollectionContent({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   maxLength={6}
+                  pattern={"[0-9]*"}
                   type="text"
                 />
                 <sub>/{availableNCG.toString()}</sub>
