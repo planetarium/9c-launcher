@@ -160,6 +160,8 @@ const ItemTitle = styled("h2", {
   color: "#9f6b4b",
   fontSize: "1rem",
   lineHeight: 1,
+  wordBreak: "keep-all",
+  width: 74,
   textAlign: "center",
   border: "none",
   margin: 10,

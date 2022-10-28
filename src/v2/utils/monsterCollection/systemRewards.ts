@@ -6,13 +6,13 @@ const systemRewards: Reward[] = [
   {
     name: "crystal",
     img: crystalImg,
-    title: `Crystal\nGrinding`,
+    title: `Crystal Grinding`,
     amount: [0, 50, 100, 200, 300],
   },
   {
     name: "arena",
     img: apImg,
-    title: `Arena\nReward`,
+    title: `Arena Reward`,
     amount: [0, 100, 200, 200, 200],
   },
   {
