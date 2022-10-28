@@ -52,8 +52,9 @@ const LoginView = observer(
     const [isInvalid, setInvalid] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
-    const [unprotectedPrivateKey, setUnprotectedPrivateKey] =
-      useState<string | undefined>(undefined);
+    const [unprotectedPrivateKey, setUnprotectedPrivateKey] = useState<
+      string | undefined
+    >(undefined);
     const addressCopiedPopupState = usePopupState({
       variant: "popover",
       popupId: "addressCopiedPopup",
