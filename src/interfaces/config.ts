@@ -33,4 +33,5 @@ export interface IConfig {
   DownloadBaseURL: string;
   UseUpdate: boolean;
   OnboardingPortalUrl: string;
+  UnitySentrySampleRate: number;
 }
