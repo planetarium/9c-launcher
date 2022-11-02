@@ -129,7 +129,7 @@ const NonStaleNodeList = (
 ): Promise<NodeInfo[]> => {
   return nodeList
     .sort((a, b) => b.tip - a.tip)
-    .filter((node) => node.tip <= nodeList[0].tip - staleThreshold);
+    .filter((node) => node.tip >= nodeList[0].tip - staleThreshold);
 };
 
 const clientWeightedSelector = (
