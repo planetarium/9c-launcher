@@ -127,9 +127,13 @@ const NonStaleNodeList = (
   nodeList: NodeInfo[],
   staleThreshold: number
 ): NodeInfo[] => {
-  return nodeList
-    .sort((a, b) => b.tip - a.tip)
-    .filter((node) => node.tip >= nodeList[0].tip - staleThreshold);
+  if (staleThreshold < 0) {
+    return nodeList;
+  } else {
+    return nodeList
+      .sort((a, b) => b.tip - a.tip)
+      .filter((node) => node.tip >= nodeList[0].tip - staleThreshold);
+  }
 };
 
 const clientWeightedSelector = (nodeList: NodeInfo[]): NodeInfo => {
@@ -252,7 +256,7 @@ export const installerUrl = path.join(DEFAULT_DOWNLOAD_BASE_URL, installerName);
 
 export async function initializeNode(): Promise<NodeInfo> {
   console.log("config initialize called");
-  const relativeTipLimit = get("RemoteClientStaleTipLimit", 20) || Infinity;
+  const relativeTipLimit = get("RemoteClientStaleTipLimit", 20) ?? Infinity;
   const nodeList = NonStaleNodeList(await NodeList(), relativeTipLimit);
   if (nodeList.length < 1) {
     throw Error("can't find available remote node.");
