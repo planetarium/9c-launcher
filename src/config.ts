@@ -90,7 +90,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
   const nodeList: NodeInfo[] = [];
   if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
-    await Promise.any(
+    await Promise.all(
       remoteNodeList
         .sort(() => Math.random() - 0.5)
         .map(async (v, index) => {
@@ -121,6 +121,34 @@ const NodeList = async (): Promise<NodeInfo[]> => {
     nodeList.push(nodeInfo);
   }
   return nodeList;
+};
+
+const NonStaleNodeList = (
+  nodeList: NodeInfo[],
+  staleThreshold: number
+): NodeInfo[] => {
+  if (staleThreshold < 0) {
+    return nodeList;
+  }
+  const maxTip = Math.max(...nodeList.map((node) => node.tip));
+  return nodeList.filter((node) => node.tip >= maxTip - staleThreshold);
+};
+
+const clientWeightedSelector = (nodeList: NodeInfo[]): NodeInfo => {
+  if (nodeList.length <= 1) {
+    return nodeList[0];
+  }
+  const sum = nodeList
+    .map((node) => node.clientCount)
+    .reduce((p, c) => p + c, 0);
+  const weightList = nodeList.map((node) => sum / node.clientCount);
+  const target = Math.random() * weightList.reduce((p, v) => p + v, 0);
+  let weightSum = 0;
+  return nodeList[
+    weightList.findIndex(
+      (weight) => (weightSum += weight) && weightSum >= target
+    )
+  ];
 };
 
 const RpcServerHost = (): { host: string; notDefault: boolean } => {
@@ -229,18 +257,13 @@ export const installerUrl = path.join(DEFAULT_DOWNLOAD_BASE_URL, installerName);
 
 export async function initializeNode(): Promise<NodeInfo> {
   console.log("config initialize called");
-  const nodeList = await NodeList();
+  const relativeTipLimit = get("RemoteClientStaleTipLimit", 20) ?? Infinity;
+  const nodeList = NonStaleNodeList(await NodeList(), relativeTipLimit);
   if (nodeList.length < 1) {
     throw Error("can't find available remote node.");
   }
-  nodeList.sort((a, b) => {
-    const rate = get("RemoteClientSamplingRate", 10) || Infinity;
-    const baseA = a.tip - a.clientCount / rate;
-    const baseB = b.tip - b.clientCount / rate;
-    return baseB - baseA;
-  });
   console.log("config initialize complete");
-  const nodeInfo = nodeList[0];
+  const nodeInfo = clientWeightedSelector(nodeList);
   console.log(
     `selected node: ${nodeInfo.HeadlessUrl()}, clients: ${nodeInfo.clientCount}`
   );
