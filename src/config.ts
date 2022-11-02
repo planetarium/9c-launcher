@@ -129,11 +129,9 @@ const NonStaleNodeList = (
 ): NodeInfo[] => {
   if (staleThreshold < 0) {
     return nodeList;
-  } else {
-    return nodeList
-      .sort((a, b) => b.tip - a.tip)
-      .filter((node) => node.tip >= nodeList[0].tip - staleThreshold);
   }
+  const maxTip = Math.max(...nodeList.map((node) => node.tip));
+  return nodeList.filter((node) => node.tip >= maxTip - staleThreshold);
 };
 
 const clientWeightedSelector = (nodeList: NodeInfo[]): NodeInfo => {
