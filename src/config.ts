@@ -135,6 +135,9 @@ const NonStaleNodeList = (
 };
 
 const clientWeightedSelector = (nodeList: NodeInfo[]): NodeInfo => {
+  if (nodeList.length <= 1) {
+    return nodeList[0];
+  }
   const sum = nodeList
     .map((node) => node.clientCount)
     .reduce((p, c) => p + c, 0);
