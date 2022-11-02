@@ -90,7 +90,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
   const nodeList: NodeInfo[] = [];
   if (get("UseRemoteHeadless")) {
     const remoteNodeList: string[] = get("RemoteNodeList");
-    await Promise.any(
+    await Promise.all(
       remoteNodeList
         .sort(() => Math.random() - 0.5)
         .map(async (v, index) => {
