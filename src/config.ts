@@ -138,8 +138,8 @@ const clientWeightedSelector = (nodeList: NodeInfo[]): NodeInfo => {
   const sum = nodeList
     .map((node) => node.clientCount)
     .reduce((p, c) => p + c, 0);
-  const weightList = nodeList.map((node) => sum / node.clientCount);
-  const target = Math.random() * weightList.reduce((p, v) => p + v, 0);
+  const weightList = nodeList.map((node) => node.clientCount / sum);
+  const target = Math.random();
   let weightSum = 0;
   return nodeList[
     weightList.findIndex(
