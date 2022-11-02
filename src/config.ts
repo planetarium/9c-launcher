@@ -123,7 +123,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
   return nodeList;
 };
 
-const NonStaleNodeList = async (
+const NonStaleNodeList = (
   nodeList: NodeInfo[],
   staleThreshold: number
 ): Promise<NodeInfo[]> => {
@@ -132,7 +132,7 @@ const NonStaleNodeList = async (
     .filter((node) => node.tip <= nodeList[0].tip - staleThreshold);
 };
 
-const clientWeightedSelector = async (
+const clientWeightedSelector = (
   nodeList: NodeInfo[]
 ): Promise<NodeInfo> => {
   const sum = nodeList
