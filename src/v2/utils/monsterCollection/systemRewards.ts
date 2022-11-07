@@ -1,27 +1,33 @@
-export default [
+import crystalImg from "src/v2/resources/collection/items/crystal.png";
+import apImg from "src/v2/resources/collection/icon-action-power.webp";
+import ncgImg from "src/v2/resources/collection/items/ncg.png";
+
+const systemRewards: Reward[] = [
   {
-    crystal: 0,
-    arena: 0,
-    stage: 0,
+    name: "crystal",
+    img: crystalImg,
+    title: `Crystal Grinding`,
+    amount: [0, 50, 100, 200, 300],
   },
   {
-    crystal: 50,
-    arena: 100,
-    stage: 0,
+    name: "arena",
+    img: ncgImg,
+    title: `Arena Reward`,
+    amount: [0, 100, 200, 200, 200],
   },
   {
-    crystal: 100,
-    arena: 200,
-    stage: 20,
-  },
-  {
-    crystal: 200,
-    arena: 200,
-    stage: 20,
-  },
-  {
-    crystal: 300,
-    arena: 200,
-    stage: 40,
+    name: "stage",
+    img: apImg,
+    title: "Stage AP",
+    amount: [0, 0, 20, 20, 40],
   },
 ];
+
+type Reward = {
+  name: string;
+  img: string;
+  title: string;
+  amount: number[];
+};
+
+export default systemRewards;

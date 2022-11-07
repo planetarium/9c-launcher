@@ -28,8 +28,10 @@ export interface IConfig {
   UseRemoteHeadless: boolean;
   LaunchPlayer: boolean;
   RemoteNodeList: string[];
+  RemoteClientStaleTipLimit: number;
   PreferLegacyInterface: boolean;
   DownloadBaseURL: string;
   UseUpdate: boolean;
   OnboardingPortalUrl: string;
+  UnitySentrySampleRate: number;
 }

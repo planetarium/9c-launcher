@@ -34,9 +34,6 @@ import monster4Img from "src/v2/resources/collection/monster-4.png";
 import monster5Img from "src/v2/resources/collection/monster-5.png";
 import itemMetadata from "src/v2/utils/monsterCollection/items";
 
-import crystalImg from "src/v2/resources/collection/items/crystal.png";
-import apImg from "src/v2/resources/collection/icon-action-power.webp";
-import ncgImg from "src/v2/resources/collection/items/ncg.png";
 import systemRewards from "src/v2/utils/monsterCollection/systemRewards";
 
 import {
@@ -75,6 +72,36 @@ const images = [
   monster5Img,
 ];
 
+type LevelList =
+  | NonNullable<StakingSheetQuery["stateQuery"]["stakeRewards"]>["orderedList"]
+  | null
+  | undefined;
+
+function useRewardIndex(levels: LevelList, amount: Decimal = new Decimal(0)) {
+  return useMemo(() => {
+    const index = levels?.findLastIndex((v) => amount?.gte(v.requiredGold));
+    return index != null && index !== -1 ? index : null;
+  }, [amount, levels]);
+}
+
+function useRewards(levels: LevelList, index: number = 0) {
+  const rewards = levels?.[index!]?.rewards;
+  const bonusRewards = levels?.[index!]?.bonusRewards;
+  const bonusRewardMap = useMemo(
+    () =>
+      bonusRewards &&
+      new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
+    [levels, index]
+  );
+
+  return rewards?.map((v) => ({
+    ...v,
+    count(amount: Decimal) {
+      return amount.divToInt(v.rate).add(bonusRewardMap?.get(v.itemId) || 0);
+    },
+  }));
+}
+
 type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
 
 export function MonsterCollectionContent({
@@ -112,19 +139,8 @@ export function MonsterCollectionContent({
     [deposit, currentNCG]
   );
 
-  // FIXME: These useMemo calls performs a O(n) search for the item, usually twice.
-  const currentIndex = useMemo(() => {
-    if (!stakeState) return null;
-    const index = levels?.findLastIndex((v) => deposit?.gte(v.requiredGold));
-    return index != null && index !== -1 ? index : null;
-  }, [stakeState, levels, deposit]);
-  const selectedIndex = useMemo(() => {
-    const index = levels?.findLastIndex((v) =>
-      amountDecimal.gte(v.requiredGold)
-    );
-    return index != null && index !== -1 ? index : null;
-  }, [amountDecimal, levels]);
-
+  const currentIndex = useRewardIndex(levels, deposit ?? new Decimal(0));
+  const selectedIndex = useRewardIndex(levels, amountDecimal);
   const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
   useEffect(() => {
@@ -138,16 +154,10 @@ export function MonsterCollectionContent({
     setIsEditing(false);
   });
 
-  const index = isEditing ? selectedIndex : currentIndex;
-  const rewards = levels?.[index!]?.rewards;
-  const bonusRewards = levels?.[index!]?.bonusRewards;
-  const bonusRewardMap = useMemo(
-    () =>
-      bonusRewards &&
-      new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
-    [bonusRewards]
-  );
   const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
+  const currentRewards = useRewards(levels, currentIndex ?? 0);
+  const selectedRewards = useRewards(levels, selectedIndex ?? 0);
+  if (!levels) return null;
 
   if (!levels) return null;
 
@@ -189,12 +199,12 @@ export function MonsterCollectionContent({
                 onClick={() => inputRef.current?.focus()}
               >
                 <BareInput
-                  maxLength={6}
                   ref={inputRef}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  max={availableNCG.toString()}
-                  type="number"
+                  maxLength={6}
+                  pattern={"[0-9]*"}
+                  type="text"
                 />
                 <sub>/{availableNCG.toString()}</sub>
               </DepositContent>
@@ -267,22 +277,25 @@ export function MonsterCollectionContent({
         ))}
       </Levels>
       <AnimatePresence exitBeforeEnter>
-        {rewards ? (
+        {currentRewards ? (
           <RewardSheet>
             <ItemGroup key="recurring" title="Recurring Rewards">
-              {rewards?.map((item) => {
+              {currentRewards.map((item, index) => {
                 const itemMeta = itemMetadata[item.itemId] ?? {
                   name: "Unknown",
                 };
-                const bonusCount = bonusRewardMap?.get(item.itemId) ?? 0;
+                const selectedAmount = isEditing
+                  ? selectedRewards?.[index].count(amountDecimal)
+                  : null;
+                const itemAmount = item.count(deposit ?? new Decimal(0));
                 return (
                   <Item
                     key={item.itemId}
-                    amount={currentAmount
-                      .divToInt(item.rate)
-                      .add(bonusCount)
-                      .toString()}
+                    amount={itemAmount.toString()}
                     title={itemMeta.name}
+                    isUpgrade={selectedAmount?.gte(itemAmount)}
+                    updatedAmount={selectedAmount?.toString()}
+                    isDiff
                   >
                     <img src={itemMeta.img} />
                   </Item>
@@ -290,39 +303,24 @@ export function MonsterCollectionContent({
               })}
             </ItemGroup>
             <ItemGroup key="system" title="System Rewards">
-              <Item
-                key="crystal"
-                amount={systemRewards[index!].crystal + "%"}
-                title={
-                  <>
-                    Crystal
-                    <br />
-                    Grinding
-                  </>
-                }
-              >
-                <img src={crystalImg} height={48} />
-              </Item>
-              <Item
-                key="arena"
-                amount={systemRewards[index!].arena + "%"}
-                title={
-                  <>
-                    Arena
-                    <br />
-                    Reward
-                  </>
-                }
-              >
-                <img src={ncgImg} height={48} />
-              </Item>
-              <Item
-                key="stage"
-                amount={systemRewards[index!].stage + "% DC"}
-                title="Stage AP"
-              >
-                <img src={apImg} height={48} />
-              </Item>
+              {systemRewards.map((item, index) => {
+                const sysRewardSuffix = item.name === "stage" ? "% DC" : "%";
+                const amount = item.amount[currentIndex ?? 0];
+                const updatedAmount = item.amount[selectedIndex ?? 0];
+                return (
+                  <Item
+                    key={index}
+                    amount={isEditing ? "" : amount + sysRewardSuffix}
+                    updatedAmount={
+                      isEditing ? updatedAmount + sysRewardSuffix : ""
+                    }
+                    isUpgrade={updatedAmount >= amount}
+                    title={item.title}
+                  >
+                    <img src={item.img} height={48}></img>
+                  </Item>
+                );
+              })}
             </ItemGroup>
           </RewardSheet>
         ) : (

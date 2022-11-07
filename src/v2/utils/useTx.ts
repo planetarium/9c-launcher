@@ -42,14 +42,16 @@ type ActionArguemnts = {
 
 type Result = ReturnType<ReturnType<typeof useStageTxV2Mutation>[0]>;
 
-type Replacers<Original extends any[], Provided extends any[]> =
-  Provided extends [infer ProvidedValue, ...infer ProvidedRest]
-    ? Original extends [infer OriginalValue, ...infer OriginalRest]
-      ? ProvidedValue extends typeof placeholder
-        ? [OriginalValue, ...Replacers<OriginalRest, ProvidedRest>]
-        : [...Replacers<OriginalRest, ProvidedRest>]
-      : []
-    : [];
+type Replacers<
+  Original extends any[],
+  Provided extends any[]
+> = Provided extends [infer ProvidedValue, ...infer ProvidedRest]
+  ? Original extends [infer OriginalValue, ...infer OriginalRest]
+    ? ProvidedValue extends typeof placeholder
+      ? [OriginalValue, ...Replacers<OriginalRest, ProvidedRest>]
+      : [...Replacers<OriginalRest, ProvidedRest>]
+    : []
+  : [];
 
 /**
  * A helper hook that creates and stages a transaction.

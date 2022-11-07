@@ -16,6 +16,7 @@ import {
   NodeInfo,
   userConfigStore,
   baseUrl,
+  CONFIG_FILE_PATH,
 } from "../config";
 import {
   app,
@@ -183,19 +184,25 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
-  intializeConfig();
+  initializeConfig();
   useRemoteHeadless = getConfig("UseRemoteHeadless");
   initializeApp();
   initializeIpc();
 }
 
-async function intializeConfig() {
+async function initializeConfig() {
   try {
     const res = await axios(REMOTE_CONFIG_URL);
     const remoteConfig: IConfig = res.data;
 
     const localApv = getConfig("AppProtocolVersion");
     const remoteApv = remoteConfig.AppProtocolVersion;
+
+    if (localApv == null) {
+      configStore.store = remoteConfig;
+      return;
+    }
+
     if (localApv !== remoteApv) {
       console.log(
         `APVs are different, ignore. (local: ${localApv}, remote: ${remoteApv})`
