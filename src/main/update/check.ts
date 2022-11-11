@@ -49,6 +49,12 @@ export async function checkForUpdateFromApv(
 ): Promise<IUpdate> {
   const localApv = standalone.apv.analyze(localApvToken);
 
+  if (!standalone.apv.verify(trustedApvSigners, peersApv.raw)) {
+    throw new GetPeersApvFailedError(
+      `Ignore APV[${peersApv.raw}] due to failure to validating.`
+    );
+  }
+
   const info = analyzeApvExtra(peersApv, localApv, platform);
 
   if (!info.projects.player.updateRequired) {
