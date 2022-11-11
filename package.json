@@ -55,7 +55,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "update-translations": "txjs-cli push src --key-generator=hash",
-    "download-config": "curl -L https://download.nine-chronicles.com/9c-launcher-config.json -o dist/config.json"
+    "download-config": "curl -L https://release.nine-chronicles.com/9c-launcher-config.json -o dist/config.json"
   },
   "dependencies": {
     "@apollo/client": "^3.3.21",
