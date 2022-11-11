@@ -35,7 +35,7 @@ yarn lefthook install
 
 ## Running the Launcher
 
-To run the launcher, you should have the latest configuration file (`config.json`) in the `dist` directory. You can download it here: https://download.nine-chronicles.com/9c-launcher-config.json.
+To run the launcher, you should have the latest configuration file (`config.json`) in the `dist` directory. You can download it here: https://release.nine-chronicles.com/9c-launcher-config.json.
 
 This step can be done automatically by using this command too: `yarn download-config`.
 
