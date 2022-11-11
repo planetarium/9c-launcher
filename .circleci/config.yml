@@ -89,7 +89,7 @@ jobs:
             mkdir pack-dist
             set -ex
             mkdir -p dist
-            curl -o "dist/config.json" 'https://download.nine-chronicles.com/9c-launcher-config.json'
+            curl -o "dist/config.json" 'https://release.nine-chronicles.com/9c-launcher-config.json'
           name: Copy config.json from the last release
       - run:
           command: |
