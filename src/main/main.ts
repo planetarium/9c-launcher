@@ -367,6 +367,14 @@ function initializeIpc() {
         extra: extra ? Object.fromEntries(extra) : {},
       };
 
+      if (
+        !standalone.apv.verify(
+          getConfig("TrustedAppProtocolVersionSigners"),
+          simpleApv.raw
+        )
+      )
+        return;
+
       try {
         const update = await checkForUpdateFromApv(
           standalone,
