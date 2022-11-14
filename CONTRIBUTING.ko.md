@@ -33,7 +33,7 @@ yarn build-prod  # 프로덕션 빌드
 
 ## 실행하기
 
-실행하기 전 런처를 사용하기 위해 최신 버전의 `config.json` 파일이 필요합니다. 없는 경우 이곳에서 다운로드 한 뒤 `dist` 폴더 내에 `config.json`이라는 이름으로 저장해주세요: https://download.nine-chronicles.com/9c-launcher-config.json.
+실행하기 전 런처를 사용하기 위해 최신 버전의 `config.json` 파일이 필요합니다. 없는 경우 이곳에서 다운로드 한 뒤 `dist` 폴더 내에 `config.json`이라는 이름으로 저장해주세요: https://release.nine-chronicles.com/9c-launcher-config.json.
 
 그 이후에는 다음 명령어를 통해 런처를 실행하실 수 있습니다.
 
