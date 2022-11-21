@@ -55,34 +55,7 @@ function LoginView() {
         },
       });
 
-      if (get("UseRemoteHeadless")) {
-        history.push("/lobby");
-        standalone.setPrivateKeyEnded(true);
-        account.setMiningConfigStatus(true);
-        return;
-      }
-
-      if (ipcRenderer.sendSync("standalone/set-private-key", key)) {
-        standalone.setPrivateKeyEnded(true);
-        account.setMiningConfigStatus(true);
-        ipcRenderer.send("set mining");
-      } else {
-        preloadService.send({ type: "ERROR", error: "relaunch" });
-      }
-
-      const isMining = !get("NoMiner");
-      if (ipcRenderer.sendSync("standalone/set-mining", isMining)) {
-        if (isMining)
-          toast(
-            <T
-              _str="Mining is enabled. You may disable this in settings."
-              _tags={transifexTags}
-            />,
-            { icon: "⚠️" }
-          );
-      } else {
-        preloadService.send({ type: "ERROR", error: "relaunch" });
-      }
+      standalone.setPrivateKeyEnded(true);
       localStorage.setItem("lastAddress", account.selectedAddress);
       history.push("/lobby");
     }

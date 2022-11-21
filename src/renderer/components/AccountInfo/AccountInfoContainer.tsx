@@ -198,11 +198,7 @@ const AccountInfoContainer: React.FC<Props> = (props: Props) => {
     [balance, ncgBalanceQuery]
   );
 
-  if (
-    accountStore.isLogin &&
-    nodeStatus?.nodeStatus?.preloadEnded &&
-    accountStore.isMiningConfigEnded
-  ) {
+  if (accountStore.isLogin && nodeStatus?.nodeStatus?.preloadEnded) {
     const mcStatus = collectionStatus?.monsterCollectionStatusByAgent;
     return (
       <>

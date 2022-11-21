@@ -61,12 +61,6 @@ class Headless {
       }
     );
 
-    ipcMain.on("standalone/set-mining", async (event, mining: boolean) => {
-      const ret = await this.miningOption(mining).catch(() => false);
-      console.log(`set-mining: ${ret}`);
-      event.returnValue = ret;
-    });
-
     ipcMain.on(
       "activate-account",
       async (event, activationKey: string, nonce: string, filePath: string) => {
@@ -171,7 +165,6 @@ class Headless {
   private _path: string;
   private _running: boolean;
   private _privateKey: string | undefined;
-  private _mining: boolean | undefined;
   private _signerPrivateKey: string | undefined;
   private _genesisHash: string | undefined;
   private _exitListeners: (() => void)[];
@@ -220,9 +213,6 @@ class Headless {
     if (this._privateKey !== undefined) {
       await this.setPrivateKey(this._privateKey);
     }
-    if (this._mining !== undefined) {
-      await this.setMining(this._mining);
-    }
   }
 
   public async setPrivateKey(privateKey: string): Promise<boolean> {
@@ -231,15 +221,6 @@ class Headless {
       PrivateKeyString: privateKey,
     });
     return this.retriableFetch("set-private-key", body);
-  }
-
-  public async setMining(mine: boolean): Promise<boolean> {
-    console.log(`Setting mining: ${mine}`);
-    userConfigStore.set("NoMiner", !mine);
-    const body = JSON.stringify({
-      Mine: mine,
-    });
-    return this.retriableFetch("set-mining", body);
   }
 
   public async kill(): Promise<void> {
@@ -268,12 +249,6 @@ class Headless {
   public async login(privateKey: string): Promise<boolean> {
     this._privateKey = privateKey;
     if (this.alive) return await this.setPrivateKey(privateKey);
-    return true;
-  }
-
-  public async miningOption(mining: boolean): Promise<boolean> {
-    this._mining = mining;
-    if (this.alive) return await this.setMining(mining);
     return true;
   }
 

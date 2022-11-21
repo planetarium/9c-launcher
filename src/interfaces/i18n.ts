@@ -6,7 +6,6 @@ export default interface I18n {
   menu: Menu;
   main: Main;
   login: Login;
-  mining: Mining;
   lobby: Lobby;
   preload: Preload;
   errorClearCache: ErrorClearCache;
@@ -84,14 +83,6 @@ export interface Login {
   비밀번호: LocaleRecord;
   로그인: LocaleRecord;
   "비밀번호 찾기": LocaleRecord;
-}
-
-export interface Mining {
-  "채굴 기능을 켜시겠습니까?": LocaleRecord;
-  description: LocaleRecord;
-  requirement: Description;
-  끄기: LocaleRecord;
-  켜기: LocaleRecord;
 }
 
 export interface Lobby {

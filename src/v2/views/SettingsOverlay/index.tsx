@@ -205,11 +205,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
               <GroupTitle>
                 <T _str="Advanced" _tags={transifexTags} />
               </GroupTitle>
-              {!useRemoteHeadless && (
-                <Checkbox {...register("NoMiner")}>
-                  <T _str="Disable Mining" _tags={transifexTags} />
-                </Checkbox>
-              )}
               <AdvancedAction
                 icon={<DeleteIcon />}
                 onClick={clearCache}

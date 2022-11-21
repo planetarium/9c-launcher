@@ -10,7 +10,6 @@ import RevokeAccountView from "./views/account/RevokeAccountView";
 import LobbyView from "./views/lobby/LobbyView";
 import IntroView from "./IntroView";
 import LoginView from "./views/login/LoginView";
-import MiningView from "./views/login/MiningView";
 import ReviewPrivateKeyView from "./views/account/reset/ReviewPrivateKeyView";
 import ResetPasswordView from "./views/account/reset/ResetPasswordView";
 import PreloadView from "./views/lobby/PreloadView";
@@ -85,7 +84,6 @@ class Root extends React.Component {
           <Route exact path="/lobby" component={LobbyView} />
           <Route exact path="/lobby/preload" component={PreloadView} />
           <Route exact path="/login" component={LoginView} />
-          <Route exact path="/login/mining" component={MiningView} />
           <Route exact path="/main" component={MainView} />
           <Redirect from="*" to="/" />
         </Switch>

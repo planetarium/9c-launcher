@@ -1,5 +1,4 @@
-import { ipcRenderer } from "electron";
-import { observable, action, decorate } from "mobx";
+import { observable, action } from "mobx";
 
 export interface IAccountStore {
   addresses: string[];
@@ -22,9 +21,6 @@ export default class AccountStore implements IAccountStore {
 
   @observable
   public isLogin: boolean = false;
-
-  @observable
-  public isMiningConfigEnded: boolean = false;
 
   @observable
   public activationKey: string = "";
@@ -57,11 +53,6 @@ export default class AccountStore implements IAccountStore {
   @action
   setLoginStatus = (status: boolean) => {
     this.isLogin = status;
-  };
-
-  @action
-  setMiningConfigStatus = (status: boolean) => {
-    this.isMiningConfigEnded = status;
   };
 
   @action
