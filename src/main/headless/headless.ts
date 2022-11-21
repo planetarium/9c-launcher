@@ -1,11 +1,8 @@
 import { ChildProcess, execFileSync } from "child_process";
 import { ipcMain } from "electron";
 import { basename, dirname } from "path";
-import { CUSTOM_SERVER, LOCAL_SERVER_URL, userConfigStore } from "../../config";
-import { retry } from "@lifeomic/attempt";
-import { FetchError, HeadlessExitedError } from "../../main/exceptions";
+import { CUSTOM_SERVER } from "../../config";
 import { execute, sleep } from "../../utils";
-import fetch, { Response } from "electron-fetch";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { KeyStore } from "./key-store";
 import { Validation } from "./validation";
@@ -40,15 +37,6 @@ class Headless {
     this._running = false;
     this._genesisHash = undefined;
     this._exitListeners = [];
-
-    ipcMain.on(
-      "standalone/set-private-key",
-      async (event, privateKey: string) => {
-        const ret = await this.login(privateKey).catch(() => false);
-        console.log(`set-private-key: ${ret}`);
-        event.returnValue = ret;
-      }
-    );
 
     ipcMain.on(
       "standalone/set-signer-private-key",
@@ -215,18 +203,6 @@ class Headless {
       node.addListener("exit", this.exitedHandler.bind(this));
       NODESTATUS.Node = node;
     }
-
-    if (this._privateKey !== undefined) {
-      await this.setPrivateKey(this._privateKey);
-    }
-  }
-
-  public async setPrivateKey(privateKey: string): Promise<boolean> {
-    console.log("Setting private key.");
-    const body = JSON.stringify({
-      PrivateKeyString: privateKey,
-    });
-    return this.retriableFetch("set-private-key", body);
   }
 
   public async kill(): Promise<void> {
@@ -250,12 +226,6 @@ class Headless {
 
     NODESTATUS.QuitRequested = false;
     console.log("Standalone killed successfully.");
-  }
-
-  public async login(privateKey: string): Promise<boolean> {
-    this._privateKey = privateKey;
-    if (this.alive) return await this.setPrivateKey(privateKey);
-    return true;
   }
 
   public async setSignerPrivateKey(privateKey: string): Promise<boolean> {
@@ -333,65 +303,6 @@ class Headless {
       this._exitListeners.forEach((listener) => listener());
       this._exitListeners = [];
     }
-  }
-
-  private retriableFetch(addr: string, body: string): Promise<boolean> {
-    console.log(`Retriable fetch ${addr}`);
-    return retry(async (context) => {
-      if (!this.alive) {
-        console.log("Standalone is not alive. Abort...");
-        context.abort();
-        throw new HeadlessExitedError("Headless is exited during fetching.");
-      }
-
-      try {
-        const response = await fetch(`http://${LOCAL_SERVER_URL}/${addr}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: body,
-        });
-
-        if (await this.needRetry(response)) {
-          console.log(
-            `Failed to fetch standalone (${addr}). Retrying... ${
-              context.attemptNum
-            }/${context.attemptsRemaining + context.attemptNum}`
-          );
-          throw new Error("Retry required.");
-        } else {
-          console.log(
-            `Successfully fetched standalone (${addr}) in ${context.attemptNum} retries.`
-          );
-          return true;
-        }
-      } catch (error) {
-        if (error instanceof FetchError) {
-          console.log(`Failed to fetch standalone (${addr}). Abort: ${error}`);
-          context.abort();
-          return false;
-        }
-
-        console.log(
-          `Unhandled exception occurred fetching standalone (${addr}). Abort: ${error}`
-        );
-        throw error;
-      }
-    }, retryOptions);
-  }
-
-  private async needRetry(response: Response): Promise<boolean> {
-    if (response.status === 200) {
-      return false;
-    } else if (response.status === 503) {
-      throw new FetchError(await response.text(), 503);
-    } else if (response.status === 400) {
-      throw new FetchError(await response.text(), 400);
-    }
-
-    // Excluding 200 & 503, retry.
-    return true;
   }
 }
 
