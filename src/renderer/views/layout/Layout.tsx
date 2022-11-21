@@ -104,9 +104,7 @@ export const Layout: React.FC = observer(({ children }) => {
                   accountStore.selectedAddress
                 );
               }}
-              disabled={
-                !accountStore.isMiningConfigEnded || !standaloneStore.Ready
-              }
+              disabled={!standaloneStore.Ready}
             >
               <T _str="Send NCG" _tags={transifexTags} />
             </Button>

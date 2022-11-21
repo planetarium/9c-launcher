@@ -74,13 +74,8 @@ const LoginView = observer(
             locale: get("Locale"),
           },
         });
-        if (get("UseRemoteHeadless")) {
-          routerStore.push("lobby/preload");
-          standaloneStore.setPrivateKeyEnded(true);
-          accountStore.setMiningConfigStatus(true);
-        } else {
-          routerStore.push("/login/mining");
-        }
+        routerStore.push("lobby/preload");
+        standaloneStore.setPrivateKeyEnded(true);
         ipcRenderer.send(
           "standalone/set-signer-private-key",
           accountStore.privateKey

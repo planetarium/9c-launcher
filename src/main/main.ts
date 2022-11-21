@@ -484,10 +484,6 @@ function initializeIpc() {
     mixpanel?.login();
   });
 
-  ipcMain.on("set mining", async () => {
-    mixpanel?.miningConfig();
-  });
-
   ipcMain.on("relaunch standalone", async (event, param: object) => {
     mixpanel?.track("Launcher/Relaunch Headless", {
       relaunched,
