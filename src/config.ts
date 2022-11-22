@@ -3,7 +3,6 @@ import path from "path";
 import { IConfig } from "./interfaces/config";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "./generated/graphql-request";
-import { getVersionNumberFromAPV } from "./utils";
 
 export const { app } =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -13,8 +12,15 @@ export const { app } =
 
 if (process.type === "browser") Store.initRenderer();
 
+export function getConfigPath() {
+  if (process.platform === "darwin") return app.getPath("userData");
+  else return app.getAppPath();
+}
+export const configFileName = "config.json";
+export const CONFIG_FILE_PATH = path.join(getConfigPath(), configFileName);
+
 export const configStore = new Store<IConfig>({
-  cwd: app.getAppPath(),
+  cwd: getConfigPath(),
 });
 
 const network = configStore.get("Network");
@@ -234,9 +240,6 @@ export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
 export const DEFAULT_DOWNLOAD_BASE_URL = "https://release.nine-chronicles.com";
 export const PLAYER_METAFILE_VERSION = 2;
 export const installerName = "NineChroniclesInstaller.exe";
-export const configFileName = "config.json";
-
-export const CONFIG_FILE_PATH = path.join(app.getAppPath(), configFileName);
 
 export const EXECUTE_PATH: {
   [k in NodeJS.Platform]: string | null;
