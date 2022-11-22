@@ -70,11 +70,12 @@ export function useTx<K extends keyof ActionArguemnts>(
     variables: {
       address: accountStore.selectedAddress,
     },
+    skip: !accountStore.isLogin,
   });
 
   const [stage] = useStageTxV2Mutation();
 
-  if (args.some((arg) => arg == undefined))
+  if (args.some((arg) => arg === undefined))
     return () => Promise.reject(new Error("Missing arguments"));
   else
     return async (...replacers) => {
