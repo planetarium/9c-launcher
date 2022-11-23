@@ -87,7 +87,7 @@ export default function UserInfo() {
     return getRemain(minutes);
   }, [claimableBlockIndex, tip]);
 
-  const tx = useTx("claim-stake-reward", placeholder);
+  const tx = useTx("claim-stake-reward", placeholder, placeholder);
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -131,7 +131,7 @@ export default function UserInfo() {
           onClose={() => setOpenDialog(false)}
           tip={tip}
           onConfirm={(avatar) => {
-            tx(avatar.address.replace(/^0x/, ""))
+            tx(avatar.address.replace(/^0x/, ""), tip.toString())
               .then((v) => v.data?.stageTxV2)
               .then((txId) => {
                 if (!txId) return;
