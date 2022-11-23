@@ -77,9 +77,19 @@ export class Action extends StandaloneSubcommand {
     }
   }
 
-  public ClaimStakeReward(avatarAddress: string, path: string): boolean {
+  public ClaimStakeReward(
+    avatarAddress: string,
+    path: string,
+    blockIndex: string
+  ): boolean {
     try {
-      this.execSync("action", "claim-stake-reward", avatarAddress, path);
+      this.execSync(
+        "action",
+        "claim-stake-reward",
+        avatarAddress,
+        path,
+        blockIndex
+      );
       return true;
     } catch (error) {
       console.error(error);
