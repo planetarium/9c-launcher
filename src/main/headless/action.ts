@@ -1,4 +1,6 @@
 import { StandaloneSubcommand } from "./subcommand";
+import { encode } from "bencodex";
+import { writeFileSync } from "fs";
 
 export class Action extends StandaloneSubcommand {
   public ActivateAccount(
@@ -50,16 +52,28 @@ export class Action extends StandaloneSubcommand {
     memo: string,
     path: string
   ): boolean {
+    console.log(sender, recipient, amount, memo, path);
     try {
-      this.execSync(
-        "action",
-        "transfer-asset",
-        sender,
-        recipient,
-        `${amount}`,
-        path,
-        memo
-      );
+      const encoded = encode([
+        "TransferAsset",
+        {
+          recipient: Buffer.from(recipient.replace("0x", ""), "hex"),
+          sender: Buffer.from(sender.replace("0x", ""), "hex"),
+          amount: [
+            {
+              decimalPlaces: Buffer.from([0x02]),
+              minters: [
+                Buffer.from("2c2a05e29e8f57c4661fb8fff5e0c7a7e0f3c4fc", "hex"),
+              ],
+              ticker: "NCG",
+            },
+            Math.floor(amount * 100),
+          ],
+          ...(memo == null ? {} : { memo: memo }),
+        },
+      ]);
+
+      writeFileSync(path, encoded.toString("base64"));
       return true;
     } catch (error) {
       console.error(error);
