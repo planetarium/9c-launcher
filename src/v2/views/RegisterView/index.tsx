@@ -64,6 +64,7 @@ function RegisterView() {
         address={key?.address}
         onSubmit={onSubmit}
         useActivitionKey
+        useLink={"https://nine-chronicles.com/start?step=2"}
       />
       {error !== null && (
         <p>{`Failed to unprotect private key. ${error.name}: ${error.message}`}</p>
