@@ -1052,23 +1052,5 @@ function getHeadlessArgs(): string[] {
     ...(process.env.NODE_ENV !== "production" ? ["--no-cors"] : []),
   ];
 
-  {
-    const awsAccessKey = getConfig("AwsAccessKey");
-    const awsSecretKey = getConfig("AwsSecretKey");
-    const awsRegion = getConfig("AwsRegion");
-
-    if (
-      awsAccessKey !== undefined &&
-      awsSecretKey !== undefined &&
-      awsRegion !== undefined
-    ) {
-      args.push(
-        `--aws-access-key=${awsAccessKey}`,
-        `--aws-secret-key=${awsSecretKey}`,
-        `--aws-region=${awsRegion}`
-      );
-    }
-  }
-
   return args;
 }
