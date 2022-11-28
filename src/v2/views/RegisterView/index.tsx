@@ -9,8 +9,12 @@ import { useStore } from "src/v2/utils/useStore";
 import { ipcRenderer } from "electron";
 import type { RawPrivateKey } from "src/main/headless/key-store";
 import { useHistory } from "react-router";
+import { T } from "src/renderer/i18n";
+import { ExtLink } from "src/v2/components/ui/Link";
 import { CSS } from "src/v2/stitches.config";
 import { trackEvent } from "src/v2/utils/mixpanel";
+
+const transifexTags = "v2/register";
 
 const registerStyles: CSS = {
   padding: 52,
@@ -60,11 +64,13 @@ function RegisterView() {
     <Layout sidebar css={registerStyles}>
       <H1>Create your account</H1>
       <p style={{ marginBlockEnd: 54 }}>Please set your password only.</p>
+      <ExtLink target="_blank" href="https://nine-chronicles.com/start?step=2">
+        <T _str="Get the activation code" _tags={transifexTags} />
+      </ExtLink>
       <RetypePasswordForm
         address={key?.address}
         onSubmit={onSubmit}
         useActivitionKey
-        useLink={"https://nine-chronicles.com/start?step=2"}
       />
       {error !== null && (
         <p>{`Failed to unprotect private key. ${error.name}: ${error.message}`}</p>
