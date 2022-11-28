@@ -12,12 +12,12 @@ export interface IUpdateOptions {
   getWindow(): Electron.BrowserWindow | null;
 }
 
-const lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
-
 export async function performUpdate(
   update: IUpdate,
   updateOptions: IUpdateOptions
 ) {
+  const lockfilePath = getLockfilePath();
+
   if (lockfile.checkSync(lockfilePath)) {
     console.log(
       "'encounter different version' event seems running already. Stop this flow."
@@ -96,6 +96,7 @@ export async function performUpdate(
 }
 
 export function isUpdating() {
+  const lockfilePath = getLockfilePath();
   return lockfile.checkSync(lockfilePath);
 }
 
@@ -103,7 +104,16 @@ export function isUpdating() {
  * unlock if lockfile locked.
  */
 export function cleanUpLockfile() {
+  const lockfilePath = getLockfilePath();
   if (lockfile.checkSync(lockfilePath)) {
     lockfile.unlockSync(lockfilePath);
   }
+}
+
+function getLockfilePath(): string {
+  let lockfilePath: string;
+  if (process.platform === "darwin")
+    lockfilePath = path.join(path.dirname(app.getPath("userData")), "lockfile");
+  else lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
+  return lockfilePath;
 }

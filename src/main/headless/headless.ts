@@ -105,11 +105,17 @@ class Headless {
 
     ipcMain.on(
       "claim-stake-reward",
-      async (event, avatarAddress: string, filePath: string) => {
+      async (
+        event,
+        avatarAddress: string,
+        filePath: string,
+        blockIndex: string
+      ) => {
         console.log("claim-stake-reward");
         event.returnValue = this.action.ClaimStakeReward(
           avatarAddress,
-          filePath
+          filePath,
+          blockIndex
         );
       }
     );

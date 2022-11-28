@@ -9,6 +9,7 @@ import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed"
 import fs from "fs";
 import { spawn as spawnPromise } from "child-process-promise";
 import { IUpdate } from "./check";
+import { CONFIG_FILE_PATH } from "../../config";
 
 export async function launcherUpdate(
   update: IUpdate,
@@ -51,12 +52,8 @@ export async function launcherUpdate(
       : path.dirname(path.dirname(app.getAppPath()));
   console.log("The 9C app installation path:", extractPath);
 
-  const appDirName = app.getAppPath();
-  // FIXME: We shouldn't hardcode "config.json"
-  const configFileName = "config.json";
-
   // Pre-decompress existing config file saving, we will merge them with new default values.
-  const configPath = path.join(appDirName, configFileName);
+  const configPath = CONFIG_FILE_PATH;
   const bakConfig = JSON.parse(
     await fs.promises.readFile(configPath, { encoding: "utf-8" })
   );
