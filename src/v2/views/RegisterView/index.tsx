@@ -5,6 +5,7 @@ import H1 from "src/v2/components/ui/H1";
 import RetypePasswordForm, {
   FormData,
 } from "src/v2/components/RetypePasswordForm";
+import { get as getConfig } from "../../../config";
 import { useStore } from "src/v2/utils/useStore";
 import { ipcRenderer } from "electron";
 import type { RawPrivateKey } from "src/main/headless/key-store";
@@ -25,6 +26,7 @@ function RegisterView() {
   const history = useHistory();
   const [key, setKey] = useState<RawPrivateKey | null>(null);
   const [error, setError] = useState<Error | null>(null);
+  const activationCodeUrl = getConfig("ActivationCodeUrl");
 
   useEffect(
     () =>
@@ -64,6 +66,7 @@ function RegisterView() {
         address={key?.address}
         onSubmit={onSubmit}
         useActivitionKey
+        activationCodeUrl={activationCodeUrl}
       />
       {error !== null && (
         <p>{`Failed to unprotect private key. ${error.name}: ${error.message}`}</p>
