@@ -4,14 +4,12 @@ import { AnimateSharedLayout } from "framer-motion";
 import { useForm } from "react-hook-form";
 import zxcvbn from "zxcvbn";
 import Button from "./ui/Button";
-import { Link } from "./ui/Link";
 import TextField, { PasswordField } from "./ui/TextField";
 import { styled } from "../stitches.config";
 
 interface Props {
   onSubmit: (data: FormData) => void;
   useActivitionKey?: boolean;
-  useLink?: string;
   address?: string;
 }
 
@@ -32,7 +30,6 @@ const Form = styled("form", {
 export default function RetypePasswordForm({
   onSubmit,
   useActivitionKey,
-  useLink,
   address,
 }: Props) {
   const {
@@ -83,7 +80,6 @@ export default function RetypePasswordForm({
           })}
         />
       )}
-      {useLink && <Link to={useLink}>Get the activation code</Link>}
       <Button layout variant="primary" centered css={{ width: 200 }}>
         NEXT
       </Button>
