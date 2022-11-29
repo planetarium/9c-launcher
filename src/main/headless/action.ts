@@ -79,8 +79,8 @@ export class Action extends StandaloneSubcommand {
 
   public ClaimStakeReward(
     avatarAddress: string,
-    path: string,
-    blockIndex: string
+    blockIndex: string,
+    path: string
   ): boolean {
     try {
       this.execSync(
