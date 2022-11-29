@@ -172,7 +172,7 @@ function analyzeApvExtra(
       ),
       updateRequired:
         oldApv.version < newApv.version ||
-        (oldApv.version < newApv.version && oldVersion < newVersion),
+        (oldApv.version === newApv.version && oldVersion < newVersion),
     };
   });
 
