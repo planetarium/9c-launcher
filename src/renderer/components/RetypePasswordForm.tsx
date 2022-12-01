@@ -222,7 +222,7 @@ const RetypePasswordForm = ({
           className={classes.formControl}
         >
           <InputLabel className={classes.label}>
-            <T _str="Invitation Code" _tags={transifexTags} />
+            <T _str="Activation Code" _tags={transifexTags} />
           </InputLabel>
           <OutlinedInput type="text" onChange={handleActivationKeyChange} />
         </FormControl>

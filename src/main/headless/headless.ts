@@ -108,14 +108,14 @@ class Headless {
       async (
         event,
         avatarAddress: string,
-        filePath: string,
-        blockIndex: string
+        blockIndex: string,
+        filePath: string
       ) => {
         console.log("claim-stake-reward");
         event.returnValue = this.action.ClaimStakeReward(
           avatarAddress,
-          filePath,
-          blockIndex
+          blockIndex,
+          filePath
         );
       }
     );

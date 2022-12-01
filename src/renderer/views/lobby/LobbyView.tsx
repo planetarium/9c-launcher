@@ -209,7 +209,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
       <form onSubmit={handleActivationKeySubmit}>
         <TextField
           error={errorMsg !== ""}
-          label={<T _str="Invitation Code" _tags={transifexTags} />}
+          label={<T _str="Activation Code" _tags={transifexTags} />}
           onChange={handleActivationKeyChange}
           fullWidth
         />
