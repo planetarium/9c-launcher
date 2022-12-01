@@ -19,9 +19,6 @@ export interface IConfig {
   Sentry: boolean;
   MuteTeaser: boolean;
   LogSizeBytes: number;
-  AwsAccessKey: string | undefined;
-  AwsSecretKey: string | undefined;
-  AwsRegion: string | undefined;
   Network: string;
   SwapAddress: string | undefined;
   DataProviderUrl: string | undefined;
