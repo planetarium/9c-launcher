@@ -1,4 +1,20 @@
+import { IApv } from "src/interfaces/apv";
 import { encode, decode, BencodexDict } from "bencodex";
+
+export function analyzeApv(token: string) {
+  const [version, signer, signature, rawExtra] = token
+    .replace(".", "")
+    .split("/");
+  const extra = decode(Buffer.from(rawExtra, "base64"));
+
+  return {
+    raw: token,
+    version: parseInt(version),
+    signer: signer,
+    signature: Buffer.from(signature, "base64").toString("hex"),
+    extra: extra,
+  };
+}
 
 export function decodeApv(token: string): BencodexDict | undefined {
   return decodeApvExtra(token.split("/")[1]);
