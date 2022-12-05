@@ -88,6 +88,7 @@ export class Action extends StandaloneSubcommand {
         "claim-stake-reward",
         avatarAddress,
         path,
+        "--block-index",
         blockIndex
       );
       return true;
