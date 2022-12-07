@@ -1,14 +1,11 @@
 import { BencodexValue } from "bencodex";
-
-type Extra = {
-  [key: string]: unknown;
-};
+import { IExtra } from "../interfaces/apv";
 
 export function flatBencodexValue(
   value: BencodexValue,
-  table: Extra,
+  table: IExtra,
   key: string
-): Extra {
+): IExtra {
   if (typeof value == "undefined") {
     throw Error("Invalid Bencodex Value.");
   }
@@ -55,7 +52,7 @@ export function flatBencodexValue(
       }
       return 0;
     });
-    let innerTable: Extra = {};
+    let innerTable: IExtra = {};
     pairs.forEach((value) => {
       if (value[1] instanceof Map) {
         innerTable = flatBencodexValue(
