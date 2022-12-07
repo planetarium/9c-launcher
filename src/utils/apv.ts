@@ -1,18 +1,22 @@
-import { IApv } from "src/interfaces/apv";
-import { encode, decode, BencodexDict } from "bencodex";
+import { encode, decode, BencodexDict, BencodexValue } from "bencodex";
+import { ISimpleApv, IApv } from "src/interfaces/apv";
+import { flatBencodexValue } from "./bencodex";
 
-export function analyzeApv(token: string) {
+export function analyzeApvFromToken(token: string): IApv {
   const [version, signer, signature, rawExtra] = token
     .replace(".", "")
     .split("/");
   const extra = decode(Buffer.from(rawExtra, "base64"));
+  if (extra === undefined) {
+    throw Error("Unable to decode extra data from bencodex string.");
+  }
 
   return {
     raw: token,
     version: parseInt(version),
     signer: signer,
     signature: Buffer.from(signature, "base64").toString("hex"),
-    extra: extra,
+    extra: flatBencodexValue(extra, {}, "extra"),
   };
 }
 
