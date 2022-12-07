@@ -259,62 +259,6 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
-    const update: IUpdate | null = await checkForUpdate(
-      standalone,
-      process.platform
-    ).catch((e) => {
-      console.error("An error has occurred while checking updates", e);
-      return null;
-    });
-
-    if (useUpdate && update) {
-      if (!isV2) performUpdate(update, updateOptions);
-      else
-        ipcMain.handle("start update", async () => {
-          await performUpdate(update, updateOptions);
-        });
-    }
-
-    if (update) {
-      ipcMain.handle("start player update", async () => {
-        await performUpdate(
-          {
-            ...update,
-            projects: {
-              ...update.projects,
-              player: { ...update.projects.player, updateRequired: true },
-            },
-          },
-          updateOptions
-        );
-      });
-
-      ipcMain.handle("start launcher update", async () => {
-        await performUpdate(
-          {
-            ...update,
-            projects: {
-              ...update.projects,
-              launcher: { ...update.projects.launcher, updateRequired: true },
-            },
-          },
-          updateOptions
-        );
-      });
-    }
-
-    if (app.commandLine.hasSwitch("protocol"))
-      send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
-
-    mixpanel?.track("Launcher/Start", {
-      isV2,
-      useRemoteHeadless,
-      updateAvailable: update
-        ? update.projects.launcher.updateRequired ||
-          update.projects.player.updateRequired
-        : false,
-    });
-
     try {
       remoteNode = await initializeNode();
     } catch (e) {
@@ -325,6 +269,62 @@ async function initializeApp() {
         checkboxLabel: "Disable RPC mode",
       }); // TODO Replace with "go to error page" event
       if (checkboxChecked) userConfigStore.set("UseRemoteHeadless", false);
+
+      const update: IUpdate | null = await checkForUpdate(
+        remoteNode.GraphqlClient(),
+        process.platform
+      ).catch((e) => {
+        console.error("An error has occurred while checking updates", e);
+        return null;
+      });
+
+      if (useUpdate && update) {
+        if (!isV2) performUpdate(update, updateOptions);
+        else
+          ipcMain.handle("start update", async () => {
+            await performUpdate(update, updateOptions);
+          });
+      }
+
+      if (update) {
+        ipcMain.handle("start player update", async () => {
+          await performUpdate(
+            {
+              ...update,
+              projects: {
+                ...update.projects,
+                player: { ...update.projects.player, updateRequired: true },
+              },
+            },
+            updateOptions
+          );
+        });
+
+        ipcMain.handle("start launcher update", async () => {
+          await performUpdate(
+            {
+              ...update,
+              projects: {
+                ...update.projects,
+                launcher: { ...update.projects.launcher, updateRequired: true },
+              },
+            },
+            updateOptions
+          );
+        });
+      }
+
+      if (app.commandLine.hasSwitch("protocol"))
+        send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
+
+      mixpanel?.track("Launcher/Start", {
+        isV2,
+        useRemoteHeadless,
+        updateAvailable: update
+          ? update.projects.launcher.updateRequired ||
+            update.projects.player.updateRequired
+          : false,
+      });
 
       app.exit();
     }
