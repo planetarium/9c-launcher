@@ -52,10 +52,10 @@ export function flatBencodexValue(
       }
       return 0;
     });
-    let innerTable: IExtra = {};
+    const innerTable: IExtra = {};
     pairs.forEach((value) => {
       if (value[1] instanceof Map) {
-        innerTable = flatBencodexValue(
+        innerTable[value[0].toString()] = flatBencodexValue(
           value[1],
           innerTable,
           value[0].toString()
