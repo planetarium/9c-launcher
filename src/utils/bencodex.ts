@@ -64,8 +64,7 @@ export function flatBencodexValue(
         innerTable[value[0].toString()] = value[1];
       }
     });
-    table[key] = innerTable;
-    return table;
+    return innerTable;
   }
   return table;
 }
