@@ -1,4 +1,6 @@
 export interface IExtra {
+  player?: string;
+  launcher?: string;
   [key: string]: unknown;
 }
 
