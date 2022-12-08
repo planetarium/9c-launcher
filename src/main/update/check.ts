@@ -1,11 +1,12 @@
 import { IApv, ISimpleApv } from "src/interfaces/apv";
 import { buildDownloadUrl } from "../../utils/url";
-import Headless from "../headless/headless";
 import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
-import { decodeProjectVersion } from "../../utils/apv";
+import { analyzeApv, verifyApv, decodeProjectVersion } from "../../utils/apv";
+import { GraphQLClient } from "graphql-request";
+import { AppProtocolVersionType, getSdk } from "src/generated/graphql-request";
 
-export class GetPeersApvFailedError extends Error {}
+export class GetnodeApvFailedError extends Error {}
 export class NoProjectVersionFoundError extends Error {}
 
 export interface IUpdate {
@@ -23,45 +24,43 @@ export interface IProjectUpdate {
 
 export type Project = "player" | "launcher";
 
-const peerInfos = getConfig("PeerStrings");
 const localApvToken = getConfig("AppProtocolVersion");
 const trustedApvSigners = getConfig("TrustedAppProtocolVersionSigners");
 
 export async function checkForUpdate(
-  standalone: Headless,
+  graphqlClient: GraphQLClient,
   platform: NodeJS.Platform
 ): Promise<IUpdate> {
-  let peersApv;
+  let nodeApv;
   try {
-    peersApv = getPeersApv(standalone, peerInfos, trustedApvSigners);
+    nodeApv = getNodeApv(graphqlClient, trustedApvSigners);
   } catch (e) {
-    console.error(`getPeersApv Error ocurred ${e}:\n`, e.stderr);
+    console.error(`getNodeApv Error ocurred ${e}:\n`, e.stderr);
     throw e;
   }
 
-  return checkForUpdateFromApv(standalone, peersApv, platform);
+  return checkForUpdateFromApv(nodeApv, platform);
 }
 
 export async function checkForUpdateFromApv(
-  standalone: Headless,
-  peersApv: ISimpleApv,
+  nodeApv: ISimpleApv,
   platform: NodeJS.Platform
 ): Promise<IUpdate> {
-  const localApv = standalone.apv.analyze(localApvToken);
+  const localApv = analyzeApv(localApvToken);
 
-  const info = analyzeApvExtra(peersApv, localApv, platform);
+  const info = analyzeApvExtra(nodeApv, localApv, platform);
 
   if (!info.projects.player.updateRequired) {
     console.log(`Not required player update, Check player path.`);
 
     info.projects.player.updateRequired = await checkMetafile(
-      peersApv,
+      nodeApv,
       playerPath
     );
   }
 
   return {
-    newApv: peersApv,
+    newApv: nodeApv,
     oldApv: localApv,
     ...info,
   };
@@ -71,11 +70,11 @@ export async function checkForUpdateFromApv(
  * Checks `CompatiblityVersion` to check if we can proceed with our updater.
  */
 export function checkCompatiblity(
-  peersApv: ISimpleApv,
+  nodeApv: ISimpleApv,
   localApv: ISimpleApv
 ): boolean {
   const peersCompatVersion = BigInt(
-    (peersApv.extra["CompatiblityVersion"] as string | number) ?? 0
+    (nodeApv.extra["CompatiblityVersion"] as string | number) ?? 0
   );
   const localCompatVersion = BigInt(
     (localApv.extra["CompatiblityVersion"] as string | number) ?? 0
@@ -116,24 +115,19 @@ export async function checkMetafile(newApv: ISimpleApv, dir: string) {
   return metadata.apvVersion < newApv.version || existsVersion < newVersion;
 }
 
-function getPeersApv(
-  standalone: Headless,
-  peerInfos: string[],
+async function getNodeApv(
+  graphqlClient: GraphQLClient,
   trustedApvSigners: string[]
-): IApv {
-  const peerApvToken = standalone.apv.query(peerInfos[0]);
+): Promise<IApv> {
+  const { data } = await getSdk(graphqlClient).NodeAppProtocolVersion();
+  const nodeApvToken: AppProtocolVersionType =
+    data.nodeStatus.appProtocolVersion!;
 
-  if (peerInfos.length < 1) throw new GetPeersApvFailedError(`Empty peerInfos`);
-  if (peerApvToken == null)
-    throw new GetPeersApvFailedError(
-      `Empty peerApvToken, peerInfos: ${peerInfos}`
-    );
-
-  if (standalone.apv.verify(trustedApvSigners, peerApvToken)) {
-    return standalone.apv.analyze(peerApvToken);
+  if (await verifyApv(trustedApvSigners, nodeApvToken)) {
+    return analyzeApv(nodeApvToken);
   } else {
-    throw new GetPeersApvFailedError(
-      `Ignore APV[${peerApvToken}] due to failure to validating.`
+    throw new GetnodeApvFailedError(
+      `Ignore APV[${nodeApvToken}] due to failure to validating.`
     );
   }
 }
