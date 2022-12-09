@@ -269,6 +269,8 @@ async function initializeApp() {
         checkboxLabel: "Disable RPC mode",
       }); // TODO Replace with "go to error page" event
       if (checkboxChecked) userConfigStore.set("UseRemoteHeadless", false);
+
+      app.exit();
     }
 
     const update: IUpdate | null = await checkForUpdate(
@@ -326,8 +328,6 @@ async function initializeApp() {
           update.projects.player.updateRequired
         : false,
     });
-
-    app.exit();
 
     // Detects and move old snapshot caches as they're unused.
     // Ignores any failure as they're not critical.
