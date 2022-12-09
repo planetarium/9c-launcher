@@ -6,7 +6,6 @@ import { execute, sleep } from "../../utils";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { KeyStore } from "./key-store";
 import { Validation } from "./validation";
-import { Apv } from "./apv";
 import { Tx } from "./tx";
 import { Action } from "./action";
 
@@ -239,10 +238,6 @@ class Headless {
 
   public get validation(): Validation {
     return new Validation(this._path);
-  }
-
-  public get apv(): Apv {
-    return new Apv(this._path);
   }
 
   public get tx(): Tx {
