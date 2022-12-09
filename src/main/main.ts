@@ -87,8 +87,6 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
-import { playerUpdate } from "./update/player-update";
-import { launcherUpdate } from "./update/launcher-update";
 
 initializeSentry();
 
@@ -955,7 +953,7 @@ async function relaunchHeadless(reason: string = "default") {
 async function quitAllProcesses(reason: string = "default") {
   await stopHeadlessProcess(reason);
   if (gameNode === null) return;
-  const pid = gameNode.pid;
+  const pid = gameNode.pid!;
   process.kill(pid, "SIGINT");
   gameNode = null;
 }
