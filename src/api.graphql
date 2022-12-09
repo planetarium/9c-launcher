@@ -109,6 +109,17 @@ query ValidatePrivateKey($privateKey: ByteString!) {
   }
 }
 
+query NodeAppProtocolVersion {
+  nodeStatus {
+    appProtocolVersion {
+      version
+      signer
+      signature
+      extra
+    }
+  }
+}
+
 subscription DifferentAppProtocolVersionEncounter {
   differentAppProtocolVersionEncounter {
     peer
@@ -444,4 +455,3 @@ query GenesisHash {
 mutation stageTransaction($payload: String!) {
   stageTransaction(payload: $payload)
 }
-
