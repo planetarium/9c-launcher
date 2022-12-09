@@ -1,11 +1,16 @@
 import { IApv, ISimpleApv } from "src/interfaces/apv";
+import {
+  AppProtocolVersionType,
+  getSdk,
+} from "../../generated/graphql-request";
 import { buildDownloadUrl } from "../../utils/url";
 import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
 import { analyzeApv, verifyApv, decodeProjectVersion } from "../../utils/apv";
+import { retryWrapper } from "../../utils/graphql";
 import { GraphQLClient } from "graphql-request";
-import { AppProtocolVersionType, getSdk } from "src/generated/graphql-request";
 
+export class QueryApvFailedError extends Error {}
 export class GetnodeApvFailedError extends Error {}
 export class NoProjectVersionFoundError extends Error {}
 
@@ -33,13 +38,13 @@ export async function checkForUpdate(
 ): Promise<IUpdate> {
   let nodeApv;
   try {
-    nodeApv = getNodeApv(graphqlClient, trustedApvSigners);
+    nodeApv = await getNodeApv(graphqlClient, trustedApvSigners);
   } catch (e) {
     console.error(`getNodeApv Error ocurred ${e}:\n`, e.stderr);
     throw e;
   }
 
-  return checkForUpdateFromApv(nodeApv, platform);
+  return await checkForUpdateFromApv(nodeApv, platform);
 }
 
 export async function checkForUpdateFromApv(
@@ -119,15 +124,23 @@ async function getNodeApv(
   graphqlClient: GraphQLClient,
   trustedApvSigners: string[]
 ): Promise<IApv> {
-  const { data } = await getSdk(graphqlClient).NodeAppProtocolVersion();
-  const nodeApvToken: AppProtocolVersionType =
-    data.nodeStatus.appProtocolVersion!;
-
-  if (await verifyApv(trustedApvSigners, nodeApvToken)) {
-    return analyzeApv(nodeApvToken);
+  const query = await getSdk(
+    graphqlClient,
+    retryWrapper
+  ).NodeAppProtocolVersion();
+  if (query.status == 200) {
+    const nodeApvToken: AppProtocolVersionType =
+      query.data.nodeStatus.appProtocolVersion!;
+    if (verifyApv(trustedApvSigners, nodeApvToken)) {
+      return analyzeApv(nodeApvToken);
+    } else {
+      throw new GetnodeApvFailedError(
+        `Ignore APV[${nodeApvToken}] due to failure to validating.`
+      );
+    }
   } else {
-    throw new GetnodeApvFailedError(
-      `Ignore APV[${nodeApvToken}] due to failure to validating.`
+    throw new QueryApvFailedError(
+      `Failed to query nodeApvToken from GraphQL node, Node: ${graphqlClient}`
     );
   }
 }
@@ -148,14 +161,14 @@ function analyzeApvExtra(
     }
 
     const { version: oldVersion } = oldApv.extra[project]
-      ? decodeProjectVersion(oldApv.extra[project])
+      ? decodeProjectVersion(oldApv.extra[project]!)
       : { version: -1 };
     const { version: newVersion, commitHash: newCommit } = decodeProjectVersion(
-      newApv.extra[project]
+      newApv.extra[project]!
     );
 
     projects[project] = {
-      projectVersion: newApv.extra[project],
+      projectVersion: newApv.extra[project]!,
       url: buildDownloadUrl(
         baseUrl,
         netenv,

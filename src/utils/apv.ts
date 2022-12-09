@@ -16,11 +16,10 @@ function analyzeApvFromToken(token: string): IApv {
   const [version, signer, signature, rawExtra] = token
     .replace(".", "")
     .split("/");
-  const extra = decode(Buffer.from(rawExtra, "base64"));
-  if (extra === undefined) {
-    throw Error("Unable to decode extra data from bencodex string.");
+  if (rawExtra === undefined) {
+    throw Error("Unable to decode extra data from APV string.");
   }
-
+  const extra = decode(Buffer.from(rawExtra, "base64"))!;
   return {
     raw: token,
     version: parseInt(version),
@@ -35,7 +34,7 @@ function analyzeApvFromGQL(query: AppProtocolVersionType): IApv {
     throw Error("Unable to decode extra data from bencodex string.");
   }
   return {
-    raw: query.toString(),
+    raw: JSON.stringify(query),
     version: query.version,
     signer: query.signer,
     signature: query.signature,
@@ -43,21 +42,25 @@ function analyzeApvFromGQL(query: AppProtocolVersionType): IApv {
   };
 }
 
-export async function verifyApv(
+export function verifyApv(
   publicKeys: string[],
   apvToken: AppProtocolVersionType
-): Promise<boolean> {
+): boolean {
+  //version must be in 32-bit (4 byte) container, Big-endian according to libplanet-spec
   const version = new Uint8Array(
     Int32Array.of(apvToken.version).buffer
   ).reverse();
-  const extra = Buffer.from(apvToken.extra!, "hex");
-  const message = new Uint8Array(
-    await crypto.subtle.digest("SHA-256", Buffer.concat([version, extra]))
+  const extra = Buffer.from(apvToken.extra ?? "", "hex");
+  const message = crypto.subtle.digest(
+    "SHA-256",
+    Buffer.concat([version, extra])
   );
   const signature = Signature.fromHex(apvToken.signature);
   return publicKeys.every((publicKey) => {
     const pubKey = Buffer.from(publicKey, "hex");
-    return verify(signature, message, pubKey);
+    return message.then((message) => {
+      return verify(signature, new Uint8Array(message), pubKey);
+    });
   });
 }
 
