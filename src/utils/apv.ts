@@ -50,27 +50,14 @@ export async function verifyApv(
   const version = new Uint8Array(
     Int32Array.of(apvToken.version).buffer
   ).reverse();
-  console.log(version);
   const extra = Buffer.from(apvToken.extra!, "hex");
-  console.log(extra);
-  const message = await crypto.subtle.digest(
-    "SHA-256",
-    Buffer.concat([version, extra])
+  const message = new Uint8Array(
+    await crypto.subtle.digest("SHA-256", Buffer.concat([version, extra]))
   );
-  console.log(message);
-  const signature = Buffer.from(apvToken.signature, "hex");
-  console.log(signature);
-  return publicKeys.every(async (publicKey) => {
-    // Key Compression
+  const signature = Signature.fromHex(apvToken.signature);
+  return publicKeys.every((publicKey) => {
     const pubKey = Buffer.from(publicKey, "hex");
-    const result = await crypto.subtle.verify(
-      "SHA-256",
-      pubKey,
-      signature,
-      message
-    );
-    console.log(result);
-    return result;
+    return verify(signature, message, pubKey);
   });
 }
 
