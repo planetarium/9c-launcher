@@ -3,8 +3,11 @@ import { AppProtocolVersionType } from "src/generated/graphql-request";
 import { IApv } from "src/interfaces/apv";
 import { verify, Signature } from "@noble/secp256k1";
 import { flatBencodexValue } from "./bencodex";
+import { webcrypto } from "node:crypto";
 
-export function analyzeApv(token: string | AppProtocolVersionType) {
+const subtle = webcrypto.subtle;
+
+export function analyzeApv(token: string | AppProtocolVersionType): IApv {
   if (typeof token === "string") {
     return analyzeApvFromToken(token);
   } else {
@@ -51,10 +54,7 @@ export function verifyApv(
     Int32Array.of(apvToken.version).buffer
   ).reverse();
   const extra = Buffer.from(apvToken.extra ?? "", "hex");
-  const message = crypto.subtle.digest(
-    "SHA-256",
-    Buffer.concat([version, extra])
-  );
+  const message = subtle.digest("SHA-256", Buffer.concat([version, extra]));
   const signature = Signature.fromHex(apvToken.signature);
   return publicKeys.every((publicKey) => {
     const pubKey = Buffer.from(publicKey, "hex");
