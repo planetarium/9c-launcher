@@ -63,6 +63,10 @@ export class NodeInfo {
   clientCount = 0;
   tip = 0;
 
+  public GraphqlClient(): GraphQLClient {
+    return new GraphQLClient(`http://${this.GraphqlServer()}`);
+  }
+
   public GraphqlServer(): string {
     return `${this.HeadlessUrl()}/graphql`;
   }
@@ -76,8 +80,7 @@ export class NodeInfo {
   }
 
   public async PreloadEnded(): Promise<boolean> {
-    const client = new GraphQLClient(`http://${this.GraphqlServer()}`);
-    const headlessGraphQLSDK = getSdk(client);
+    const headlessGraphQLSDK = getSdk(this.GraphqlClient());
     try {
       const ended = await headlessGraphQLSDK.PreloadEnded();
       if (ended.status == 200) {
@@ -248,6 +251,7 @@ export const EXECUTE_PATH: {
   android: null,
   darwin: MAC_GAME_PATH,
   freebsd: null,
+  haiku: null,
   linux: LINUX_GAME_PATH,
   openbsd: null,
   sunos: null,

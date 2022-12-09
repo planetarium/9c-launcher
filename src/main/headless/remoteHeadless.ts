@@ -47,7 +47,7 @@ class RemoteHeadless {
 
     NODESTATUS.QuitRequested = true;
 
-    const pid: number = NODESTATUS.Node.pid;
+    const pid: number = NODESTATUS.Node.pid!;
     process.kill(pid, "SIGINT");
 
     console.log("Wait for standalone quit...");

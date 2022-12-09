@@ -87,8 +87,6 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
-import { playerUpdate } from "./update/player-update";
-import { launcherUpdate } from "./update/launcher-update";
 
 initializeSentry();
 
@@ -259,8 +257,22 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
+    try {
+      remoteNode = await initializeNode();
+    } catch (e) {
+      console.error(e);
+      const { checkboxChecked } = await dialog.showMessageBox(win!, {
+        message: "Failed to connect remote node. please restart launcher.",
+        type: "error",
+        checkboxLabel: "Disable RPC mode",
+      }); // TODO Replace with "go to error page" event
+      if (checkboxChecked) userConfigStore.set("UseRemoteHeadless", false);
+
+      app.exit();
+    }
+
     const update: IUpdate | null = await checkForUpdate(
-      standalone,
+      remoteNode.GraphqlClient(),
       process.platform
     ).catch((e) => {
       console.error("An error has occurred while checking updates", e);
@@ -315,20 +327,6 @@ async function initializeApp() {
         : false,
     });
 
-    try {
-      remoteNode = await initializeNode();
-    } catch (e) {
-      console.error(e);
-      const { checkboxChecked } = await dialog.showMessageBox(win!, {
-        message: "Failed to connect remote node. please restart launcher.",
-        type: "error",
-        checkboxLabel: "Disable RPC mode",
-      }); // TODO Replace with "go to error page" event
-      if (checkboxChecked) userConfigStore.set("UseRemoteHeadless", false);
-
-      app.exit();
-    }
-
     // Detects and move old snapshot caches as they're unused.
     // Ignores any failure as they're not critical.
     fg("snapshot-*", { cwd: app.getPath("userData") }).then((files) =>
@@ -368,11 +366,7 @@ function initializeIpc() {
       };
 
       try {
-        const update = await checkForUpdateFromApv(
-          standalone,
-          simpleApv,
-          process.platform
-        );
+        const update = await checkForUpdateFromApv(simpleApv, process.platform);
         await performUpdate(update, updateOptions);
       } catch (e) {
         console.error("An error has occurred while checking updates", e);
@@ -959,7 +953,7 @@ async function relaunchHeadless(reason: string = "default") {
 async function quitAllProcesses(reason: string = "default") {
   await stopHeadlessProcess(reason);
   if (gameNode === null) return;
-  const pid = gameNode.pid;
+  const pid = gameNode.pid!;
   process.kill(pid, "SIGINT");
   gameNode = null;
 }
