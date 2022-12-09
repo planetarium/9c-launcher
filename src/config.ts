@@ -251,6 +251,7 @@ export const EXECUTE_PATH: {
   android: null,
   darwin: MAC_GAME_PATH,
   freebsd: null,
+  haiku: null,
   linux: LINUX_GAME_PATH,
   openbsd: null,
   sunos: null,

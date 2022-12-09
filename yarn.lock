@@ -6150,17 +6150,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^12.12.54":
-  version: 12.12.54
-  resolution: "@types/node@npm:12.12.54"
-  checksum: 556a272958249314564a634c67f51f40902edd60a6e83396bb9794073be47ee3e6b1cd5b8acfb9b821c9d03a466f5963962eb91ad19cfd5968988a3aedc68365
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^14.0.10":
   version: 14.14.39
   resolution: "@types/node@npm:14.14.39"
   checksum: 57e56ceb7b8747cb8c2d83dad04f3435c8286063f58f6ebaa531e3f5dfb3c3ed6d1abbb31ec2e9d268047a68a7c45eb6d692664e059af7ebeb03519ce99f07e4
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.11.12":
+  version: 18.11.12
+  resolution: "@types/node@npm:18.11.12"
+  checksum: 6c67f0998a9ad8ef0f357fcc0d72841c579576c746cfbac67c9d0229e1cd219d3b96297c2caaeaa4084ba7e9ad112b412e64af4066e522faa0be4ef9ad0a613a
   languageName: node
   linkType: hard
 
@@ -7110,7 +7110,7 @@ __metadata:
     "@types/electron-devtools-installer": ^2.2.0
     "@types/lockfile": ^1.0.1
     "@types/lodash.debounce": ^4.0.6
-    "@types/node": ^12.12.54
+    "@types/node": ^18.11.12
     "@types/react": ^16.9.35
     "@types/react-dom": ^16.9.8
     "@types/react-router": ^5.1.7

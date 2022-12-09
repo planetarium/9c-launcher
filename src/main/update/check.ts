@@ -7,7 +7,6 @@ import { buildDownloadUrl } from "../../utils/url";
 import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
 import { readVersion, exists as metafileExists } from "./metafile";
 import { analyzeApv, verifyApv, decodeProjectVersion } from "../../utils/apv";
-import { retryWrapper } from "../../utils/graphql";
 import { GraphQLClient } from "graphql-request";
 
 export class QueryApvFailedError extends Error {}
@@ -124,10 +123,7 @@ async function getNodeApv(
   graphqlClient: GraphQLClient,
   trustedApvSigners: string[]
 ): Promise<IApv> {
-  const query = await getSdk(
-    graphqlClient,
-    retryWrapper
-  ).NodeAppProtocolVersion();
+  const query = await getSdk(graphqlClient).NodeAppProtocolVersion();
   if (query.status == 200) {
     const nodeApvToken: AppProtocolVersionType =
       query.data.nodeStatus.appProtocolVersion!;

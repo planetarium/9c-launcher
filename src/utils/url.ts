@@ -29,6 +29,7 @@ export const BINARY_FILENAME_MAP: { [k in NodeJS.Platform]: string | null } = {
   android: null,
   darwin: MACOS_FILE_NAME,
   freebsd: null,
+  haiku: null,
   linux: LINUX_FILE_NAME,
   openbsd: null,
   sunos: null,
