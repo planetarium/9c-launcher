@@ -1,5 +1,9 @@
-type KeyId = string;
-type Address = string;
-type PrivateKey = string;
-type ProtectedPrivateKey = { keyId: KeyId; address: Address };
-type RawPrivateKey = { privateKey: string; address: Address };
+export type KeyId = string;
+export type Address = string;
+export type PrivateKey = string;
+export type ProtectedPrivateKey = {
+  keyId: KeyId;
+  address: Address;
+  path: string;
+};
+export type RawPrivateKey = { privateKey: string; address: Address };
