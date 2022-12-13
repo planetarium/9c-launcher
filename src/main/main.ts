@@ -43,10 +43,12 @@ import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
 import {
   importV3,
+  isValidPrivateKey,
   listPPK,
   rawPPKToAddress,
   removePPK,
 } from "src/utils/keystore";
+import { ProtectedPrivateKey } from "../interfaces/keystore";
 import Headless from "./headless/headless";
 import {
   HeadlessExitedError,
@@ -98,7 +100,6 @@ import {
   rawPrivateKeyToV3,
 } from "@planetarium/account-local";
 import { createAccount } from "@planetarium/account-raw";
-import { ProtectedPrivateKey } from "./headless/key-store";
 
 initializeSentry();
 
@@ -588,12 +589,7 @@ function initializeIpc() {
   );
 
   ipcMain.on("validate-private-key", async (event, privateKeyHex: string) => {
-    try {
-      createAccount(privateKeyHex);
-    } catch (e) {
-      event.returnValue = false;
-    }
-    return true;
+    isValidPrivateKey(privateKeyHex);
   });
 
   ipcMain.on(

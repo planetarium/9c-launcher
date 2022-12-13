@@ -2,7 +2,7 @@ import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { Redirect, Route, Switch, useHistory } from "react-router";
-import type { ProtectedPrivateKey } from "src/main/headless/key-store";
+import { ProtectedPrivateKey } from "../interfaces/keystore";
 import { useStore } from "./utils/useStore";
 
 import LoginView from "./views/LoginView";

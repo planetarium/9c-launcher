@@ -7,7 +7,7 @@ import RetypePasswordForm, {
 } from "src/v2/components/RetypePasswordForm";
 import { useStore } from "src/v2/utils/useStore";
 import { ipcRenderer } from "electron";
-import type { RawPrivateKey } from "src/main/headless/key-store";
+import { RawPrivateKey } from "../../../interfaces/keystore";
 import { useHistory } from "react-router";
 import { CSS } from "src/v2/stitches.config";
 import { trackEvent } from "src/v2/utils/mixpanel";

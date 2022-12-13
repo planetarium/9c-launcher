@@ -4,8 +4,6 @@ import { basename, dirname } from "path";
 import { CUSTOM_SERVER } from "../../config";
 import { execute, sleep } from "../../utils";
 import { BlockMetadata } from "src/interfaces/block-header";
-import { KeyStore } from "./key-store";
-import { Validation } from "./validation";
 import { Tx } from "./tx";
 import { Action } from "./action";
 
@@ -230,14 +228,6 @@ class Headless {
   public async setSignerPrivateKey(privateKey: string): Promise<boolean> {
     this._signerPrivateKey = privateKey;
     return true;
-  }
-
-  public get keyStore(): KeyStore {
-    return new KeyStore(this._path);
-  }
-
-  public get validation(): Validation {
-    return new Validation(this._path);
   }
 
   public get tx(): Tx {

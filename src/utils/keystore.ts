@@ -47,3 +47,12 @@ export async function importV3(privateKey: PrivateKey, passphrase: string) {
   const v3 = rawPrivateKeyToV3(privateKey, passphrase);
   fs.writeFileSync(path.resolve(sanitizeKeypath(), v3.filename), v3.data);
 }
+
+export function isValidPrivateKey(privateKeyHex: PrivateKey): boolean {
+  try {
+    createAccount(privateKeyHex);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}

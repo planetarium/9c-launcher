@@ -4,7 +4,7 @@ import { IStoreContainer } from "../interfaces/store";
 
 import { T } from "@transifex/react";
 import { ipcRenderer } from "electron";
-import { ProtectedPrivateKey } from "src/main/headless/key-store";
+import { ProtectedPrivateKey } from "../interfaces/keystore";
 
 const IntroView = observer(({ accountStore, routerStore }: IStoreContainer) => {
   const [protectedPrivateKeys, setProtectedPrivateKeys] = useState<
