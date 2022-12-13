@@ -21,7 +21,6 @@ import { clipboard, ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 
 import "../../styles/login/login.scss";
-import { useDecryptedPrivateKeyLazyQuery } from "../../../generated/graphql";
 import { get } from "../../../config";
 import { Select } from "../../components/Select";
 import ClearCacheButton from "../../components/ClearCacheButton";
