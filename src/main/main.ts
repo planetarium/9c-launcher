@@ -41,6 +41,12 @@ import { decodeApvExtra, encodeTokenFromHex } from "../utils/apv";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
+import {
+  importV3,
+  listPPK,
+  rawPPKToAddress,
+  removePPK,
+} from "src/utils/keystore";
 import Headless from "./headless/headless";
 import {
   HeadlessExitedError,
@@ -52,7 +58,7 @@ import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
 import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
-import { Address, PrivateKey } from "./headless/key-store";
+import { Address, PrivateKey } from "../interfaces/keystore";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
@@ -87,6 +93,12 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
+import {
+  getAccountFromFile,
+  rawPrivateKeyToV3,
+} from "@planetarium/account-local";
+import { createAccount } from "@planetarium/account-raw";
+import { ProtectedPrivateKey } from "./headless/key-store";
 
 initializeSentry();
 
@@ -524,17 +536,15 @@ function initializeIpc() {
     mixpanel?.alias(alias);
   });
 
-  ipcMain.handle("get-protected-private-keys", async () =>
-    standalone.keyStore.list()
-  );
+  ipcMain.handle("get-protected-private-keys", async () => listPPK());
 
   ipcMain.on(
     "unprotect-private-key",
     async (event, address: Address, passphrase: string) => {
       try {
-        const protectedPrivateKey = standalone.keyStore
-          .list()
-          .find((x) => x.address === address);
+        const protectedPrivateKey = listPPK().find(
+          (x: ProtectedPrivateKey) => x.address === address
+        );
         if (protectedPrivateKey === undefined) {
           event.returnValue = [
             undefined,
@@ -546,10 +556,7 @@ function initializeIpc() {
         }
 
         event.returnValue = [
-          standalone.keyStore.unprotectPrivateKey(
-            protectedPrivateKey.keyId,
-            passphrase
-          ),
+          await getAccountFromFile(protectedPrivateKey.keyId, passphrase),
           undefined,
         ];
       } catch (error) {
@@ -558,50 +565,41 @@ function initializeIpc() {
     }
   );
 
-  ipcMain.on("create-private-key", async (event, passphrase: string) => {
-    event.returnValue =
-      standalone.keyStore.createProtectedPrivateKey(passphrase);
-  });
+  ipcMain.on("create-private-key", async (event, passphrase: string) => {});
 
   ipcMain.handle("generate-private-key", async (event) => {
-    return standalone.keyStore.generateRawKey();
+    return createAccount();
   });
 
   ipcMain.on(
     "import-private-key",
     async (event, privateKey: PrivateKey, passphrase: string) => {
-      event.returnValue = standalone.keyStore.importPrivateKey(
-        privateKey,
-        passphrase
-      );
+      await importV3(privateKey, passphrase);
     }
   );
 
   ipcMain.on(
     "revoke-protected-private-key",
     async (event, address: Address) => {
-      const keyList = standalone.keyStore.list();
-      keyList.forEach((pv) => {
-        if (pv.address.replace("0x", "") === address.toString()) {
-          standalone.keyStore.revokeProtectedPrivateKey(pv.keyId);
-        }
-      });
+      removePPK(address);
 
       event.returnValue = ["", undefined];
     }
   );
 
   ipcMain.on("validate-private-key", async (event, privateKeyHex: string) => {
-    event.returnValue = standalone.validation.isValidPrivateKey(privateKeyHex);
+    try {
+      createAccount(privateKeyHex);
+    } catch (e) {
+      event.returnValue = false;
+    }
+    return true;
   });
 
   ipcMain.on(
     "convert-private-key-to-address",
     async (event, privateKeyHex: string) => {
-      event.returnValue = standalone.keyStore.convertPrivateKey(
-        privateKeyHex,
-        "address"
-      );
+      event.returnValue = rawPPKToAddress(privateKeyHex);
     }
   );
 
