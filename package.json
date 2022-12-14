@@ -70,7 +70,7 @@
     "@planetarium/account-local": "^0.0.8",
     "@planetarium/account-raw": "^0.0.2",
     "@planetarium/check-free-space": "^0.0.2",
-    "@planetarium/sign": "^0.0.9",
+    "@planetarium/sign": "^0.0.11",
     "@radix-ui/react-radio-group": "^0.1.5",
     "@radix-ui/react-scroll-area": "^0.1.4",
     "@reach/alert-dialog": "^0.17.0",
