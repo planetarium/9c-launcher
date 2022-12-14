@@ -41,26 +41,16 @@ import { decodeApvExtra, encodeTokenFromHex } from "../utils/apv";
 import * as utils from "../utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
-import {
-  importV3,
-  isValidPrivateKey,
-  listPPK,
-  rawPPKToAddress,
-  removePPK,
-} from "src/utils/keystore";
-import { ProtectedPrivateKey } from "../interfaces/keystore";
 import Headless from "./headless/headless";
 import {
   HeadlessExitedError,
   HeadlessInitializeError,
-  UndefinedProtectedPrivateKeyError,
 } from "../main/exceptions";
 import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
 import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
-import { Address, PrivateKey } from "../interfaces/keystore";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
@@ -536,68 +526,6 @@ function initializeIpc() {
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
     mixpanel?.alias(alias);
   });
-
-  ipcMain.handle("get-protected-private-keys", async () => listPPK());
-
-  ipcMain.on(
-    "unprotect-private-key",
-    async (event, address: Address, passphrase: string) => {
-      try {
-        const protectedPrivateKey = listPPK().find(
-          (x: ProtectedPrivateKey) => x.address === address
-        );
-        if (protectedPrivateKey === undefined) {
-          event.returnValue = [
-            undefined,
-            new UndefinedProtectedPrivateKeyError(
-              "ProtectedPrivateKey is undefined during unprotect private key."
-            ),
-          ];
-          return;
-        }
-
-        event.returnValue = [
-          await getAccountFromFile(protectedPrivateKey.keyId, passphrase),
-          undefined,
-        ];
-      } catch (error) {
-        event.returnValue = [undefined, error];
-      }
-    }
-  );
-
-  ipcMain.on("create-private-key", async (event, passphrase: string) => {});
-
-  ipcMain.handle("generate-private-key", async (event) => {
-    return createAccount();
-  });
-
-  ipcMain.on(
-    "import-private-key",
-    async (event, privateKey: PrivateKey, passphrase: string) => {
-      await importV3(privateKey, passphrase);
-    }
-  );
-
-  ipcMain.on(
-    "revoke-protected-private-key",
-    async (event, address: Address) => {
-      removePPK(address);
-
-      event.returnValue = ["", undefined];
-    }
-  );
-
-  ipcMain.on("validate-private-key", async (event, privateKeyHex: string) => {
-    isValidPrivateKey(privateKeyHex);
-  });
-
-  ipcMain.on(
-    "convert-private-key-to-address",
-    async (event, privateKeyHex: string) => {
-      event.returnValue = rawPPKToAddress(privateKeyHex);
-    }
-  );
 
   ipcMain.on("online-status-changed", (event, status: "online" | "offline") => {
     console.log(`online-status-changed: ${status}`);
