@@ -25,9 +25,7 @@ const Redirector = observer(() => {
 
   useEffect(() => {
     if (!protectedPrivateKeys) {
-      ipcRenderer
-        .invoke("get-protected-private-keys")
-        .then(setProtectedPrivateKeys);
+      setProtectedPrivateKeys(account.listPPK());
     } else if (protectedPrivateKeys.length < 1) {
       history.replace("/welcome");
     } else {
