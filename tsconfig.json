@@ -3,7 +3,7 @@
   "exclude": [
     "node_modules/**/*",
     "src/generated/**/*",
-    "src/renderer/view/**/*"
+    "src/renderer/views/**/*"
   ],
   "compilerOptions": {
     /* Basic Options */
