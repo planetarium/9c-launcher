@@ -172,7 +172,10 @@ export default class AccountStore implements IAccountStore {
 
   // NO. REMOVE. THIS. 2
   @action
-  getPassword = () => this.password.toString("base64");
+  getPassword = () =>
+    new Promise<string>((resolve) =>
+      resolve(this.password.toString("base64"))
+    ).finally(() => this.password.fill("0"));
 
   // NO. REMOVE. THIS. 3
   @action

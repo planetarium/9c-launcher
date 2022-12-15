@@ -6,7 +6,6 @@ import { T } from "src/renderer/i18n";
 import { Select, SelectOption } from "../components/ui/Select";
 import { useStore } from "../utils/useStore";
 import Button from "../components/ui/Button";
-import { ipcRenderer } from "electron";
 import { useHistory } from "react-router";
 
 const transifexTags = "v2/revoke-view";
@@ -33,9 +32,9 @@ function RevokeView() {
         value={account.selectedAddress}
         onChange={(v) => account.setSelectedAddress(v)}
       >
-        {account.addresses.map((address) => (
-          <SelectOption key={address} value={address}>
-            {address}
+        {account.listV3().map((key) => (
+          <SelectOption key={key.address} value={key.address}>
+            {key.address}
           </SelectOption>
         ))}
       </Select>
@@ -43,11 +42,7 @@ function RevokeView() {
         variant="primary"
         centered
         onClick={() => {
-          ipcRenderer.sendSync(
-            "revoke-protected-private-key",
-            account.selectedAddress.replace("0x", "")
-          );
-          account.removeAddress(account.selectedAddress);
+          account.removeV3ByAddress(account.selectedAddress);
           history.push("/");
         }}
       >

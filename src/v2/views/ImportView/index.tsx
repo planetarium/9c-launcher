@@ -8,7 +8,6 @@ import H2 from "src/v2/components/ui/H2";
 import { useStore } from "src/v2/utils/useStore";
 import { useHistory } from "react-router";
 import ImportInput, { ImportData } from "src/v2/components/ImportInput";
-import { ipcRenderer } from "electron";
 import { t } from "@transifex/native";
 
 const transifexTags = "v2/import-view";
@@ -22,7 +21,7 @@ function ImportView() {
 
   const handleSubmit = () => {
     if (!key.key) return;
-    if (!ipcRenderer.sendSync("validate-private-key", key.key)) {
+    if (!account.isValidPrivateKey(key.key)) {
       setError(t("Invalid private key"));
       return;
     }

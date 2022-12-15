@@ -25,12 +25,14 @@ const Redirector = observer(() => {
 
   useEffect(() => {
     if (!protectedPrivateKeys) {
-      setProtectedPrivateKeys(account.listPPK());
+      setProtectedPrivateKeys(account.listV3());
     } else if (protectedPrivateKeys.length < 1) {
       history.replace("/welcome");
     } else {
-      protectedPrivateKeys.filter(Boolean).map(({ address }) => {
-        !account.addresses.includes(address) && account.addAddress(address);
+      protectedPrivateKeys.filter(Boolean).map((key) => {
+        if (account.V3Keys.some((target) => target.address === key.address)) {
+          account.addV3(key);
+        }
       });
 
       history.replace("/login");

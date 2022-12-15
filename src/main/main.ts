@@ -85,11 +85,6 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
-import {
-  getAccountFromFile,
-  rawPrivateKeyToV3,
-} from "@planetarium/account-local";
-import { createAccount } from "@planetarium/account-raw";
 
 initializeSentry();
 
