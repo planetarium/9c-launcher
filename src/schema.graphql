@@ -361,6 +361,8 @@ enum StatType {
   CRI
   HIT
   SPD
+  DRV
+  DRR
 }
 
 type MaterialType {
@@ -1417,6 +1419,9 @@ type ActionQuery {
 
     # refill ticket by NCG.
     payNcg: Boolean = false
+
+    # list of rune slot
+    runeSlotInfos: [RuneSlotInfoInputType!] = []
   ): ByteString!
   claimRaidReward(
     # address of avatar state to receive reward.
@@ -1443,12 +1448,50 @@ type ActionQuery {
     # A 80-max length string to note.
     memo: String
   ): ByteString!
+  activateAccount(
+    # Activation code that you've get.
+    activationCode: String!
+  ): ByteString!
+  createAvatar(
+    # index of avatar in `AgentState.avatarAddresses`.(0~2)
+    index: Int!
+
+    # name of avatar.(2~20 characters)
+    name: String!
+
+    # hair index of avatar.
+    hair: Int = 0
+
+    # lens index of avatar.
+    lens: Int = 0
+
+    # ear index of avatar.
+    ear: Int = 0
+
+    # tail index of avatar.
+    tail: Int = 0
+  ): ByteString!
+  runeEnhancement(
+    # The avatar address to enhance rune.
+    avatarAddress: Address!
+
+    # Rune ID to enhance.
+    runeId: Int!
+
+    # The try count to enhance rune
+    tryCount: Int
+  ): ByteString!
 }
 
 # The currency type.
 enum CurrencyEnum {
   CRYSTAL
   NCG
+}
+
+input RuneSlotInfoInputType {
+  slotIndex: Int!
+  runeId: Int!
 }
 
 input FungibleAssetValueInputType {
@@ -1538,6 +1581,9 @@ type ActionTxQuery {
 
     # refill ticket by NCG.
     payNcg: Boolean = false
+
+    # list of rune slot
+    runeSlotInfos: [RuneSlotInfoInputType!] = []
   ): ByteString!
   claimRaidReward(
     # address of avatar state to receive reward.
@@ -1563,6 +1609,39 @@ type ActionTxQuery {
 
     # A 80-max length string to note.
     memo: String
+  ): ByteString!
+  activateAccount(
+    # Activation code that you've get.
+    activationCode: String!
+  ): ByteString!
+  createAvatar(
+    # index of avatar in `AgentState.avatarAddresses`.(0~2)
+    index: Int!
+
+    # name of avatar.(2~20 characters)
+    name: String!
+
+    # hair index of avatar.
+    hair: Int = 0
+
+    # lens index of avatar.
+    lens: Int = 0
+
+    # ear index of avatar.
+    ear: Int = 0
+
+    # tail index of avatar.
+    tail: Int = 0
+  ): ByteString!
+  runeEnhancement(
+    # The avatar address to enhance rune.
+    avatarAddress: Address!
+
+    # Rune ID to enhance.
+    runeId: Int!
+
+    # The try count to enhance rune
+    tryCount: Int
   ): ByteString!
 }
 
@@ -1596,6 +1675,12 @@ type AddressQuery {
     # world boss season id.
     raidId: Int!
   ): Address!
+
+  # currency minters address.
+  currencyMintersAddress(
+    # A currency type. see also: https://github.com/planetarium/NineChronicles.Headless/blob/main/NineChronicles.Headless/GraphTypes/CurrencyEnumType.cs
+    currency: CurrencyEnum!
+  ): [Address!]
 }
 
 type StandaloneMutation {
@@ -1698,6 +1783,9 @@ type ActionMutation {
 
     # List of consumable id for use.
     consumableIds: [Guid]
+
+    # List of rune slot info for equip.
+    runeSlotInfos: [RuneSlotInfoInputType!] = []
   ): TxId!
 
   # Combine new equipment.
