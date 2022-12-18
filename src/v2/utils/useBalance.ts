@@ -9,13 +9,13 @@ export function useBalance() {
   const account = useStore("account");
   const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
     variables: {
-      address: account.selectedAddress,
+      address: account.address,
     },
     skip: !account.isLogin,
   });
   const { data: balance } = useBalanceByAgentSubscription({
     variables: {
-      address: account.selectedAddress,
+      address: account.address,
     },
     skip: !account.isLogin,
   });

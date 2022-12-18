@@ -94,9 +94,9 @@ export default function UserInfo() {
   const gold = useBalance();
 
   const copyAddress = useCallback(() => {
-    clipboard.writeText(account.selectedAddress);
+    clipboard.writeText(account.address);
     toast("Copied!");
-  }, [account.selectedAddress]);
+  }, [account.address]);
 
   const t = useT();
 
@@ -108,7 +108,7 @@ export default function UserInfo() {
     <UserInfoStyled>
       <UserInfoItem onClick={copyAddress}>
         <AccountBoxIcon />
-        <strong>{account.selectedAddress}</strong>
+        <strong>{account.address}</strong>
         <FileCopyIcon />
       </UserInfoItem>
       <UserInfoItem>

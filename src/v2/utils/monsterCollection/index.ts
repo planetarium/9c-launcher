@@ -16,7 +16,7 @@ export function useMonsterCollection() {
   const account = useStore("account");
   const commonQuery = {
     variables: {
-      address: account.selectedAddress,
+      address: account.address,
     },
     skip: !account.isLogin,
   };
@@ -26,7 +26,7 @@ export function useMonsterCollection() {
   const { data: collectionStatus } =
     useCollectionStatusByAgentSubscription(commonQuery);
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
-    variables: { agentAddress: account.selectedAddress },
+    variables: { agentAddress: account.address },
     skip: !account.isLogin,
   });
   const { data: collectionState } =

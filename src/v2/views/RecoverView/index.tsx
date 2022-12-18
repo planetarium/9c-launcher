@@ -12,12 +12,12 @@ const transifexTags = "v2/recover-view";
 
 function RecoverView() {
   const account = useStore("account");
-  const address = account.selectedAddress;
+  const address = account.address;
   const history = useHistory();
 
   const onSubmit = ({ password }: { password: string }) => {
     try {
-      account.removeV3ByAddress(address);
+      account.removeKeyByAddress(address);
     } finally {
       account
         .getPrivateKeyAndForget()

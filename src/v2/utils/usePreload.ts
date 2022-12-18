@@ -93,7 +93,7 @@ export function usePreload() {
 
   return {
     message: getStatusMessage(state, preloadProgressSubscriptionResult),
-    isDone: standalone.Ready,
+    isDone: true,
     progress,
     blockCount: useMemo(
       () =>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import Layout from "../../components/core/Layout";
 import { useStore } from "src/v2/utils/useStore";
+import { Address } from "src/interfaces/keystore";
 import { useHistory } from "react-router";
 import { CSS, styled } from "src/v2/stitches.config";
 import { ipcRenderer } from "electron";
@@ -24,24 +25,29 @@ function LoginView() {
   const { account } = useStore();
   const [password, setPassword] = useState("");
   const [invalid, setInvalid] = useState(false);
+  const [address, setAddress] = useState<Address>(
+    localStorage.getItem("lastAddress") ?? account.keyring[0].address
+  );
   const history = useHistory();
 
   const handleLogin = () => {
-    account.getAccount(account.selectedAddress, password).then(
-      () => {
+    account.getAccount(address, password).then(
+      (acc) => {
+        account.setAccount(acc);
+        account.setPrivateKeyFromAddress(address, password);
         account.setLoginStatus(true);
-        ipcRenderer.send("mixpanel-alias", account.selectedAddress);
+        ipcRenderer.send("mixpanel-alias", address);
         trackEvent("Launcher/Login");
 
         _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
         _refiner("identifyUser", {
-          id: account.selectedAddress,
+          id: address,
           config: {
             rpc: get("UseRemoteHeadless"),
             locale: get("Locale"),
           },
         });
-        localStorage.setItem("lastAddress", account.selectedAddress);
+        localStorage.setItem("lastAddress", address);
         history.push("/lobby");
       },
       (reject) => {
@@ -54,12 +60,12 @@ function LoginView() {
 
   useEffect(() => {
     const defaultAddress =
-      localStorage.getItem("lastAddress") ?? account.V3Keys[0].address;
-    if (!account.selectedAddress && account.V3Keys.length > 0) {
-      account.setSelectedAddress(defaultAddress);
+      localStorage.getItem("lastAddress") ?? account.keyring[0].address;
+    if (account.keyring.length > 0) {
+      setAddress(defaultAddress);
       // TODO: Persist the last chosen address
     }
-  }, [account.V3Keys, account.selectedAddress]);
+  }, [account.keyring, address]);
 
   return (
     <Layout sidebar flex>
@@ -70,11 +76,8 @@ function LoginView() {
         <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
       </p>
       <Form onSubmit={(e) => e.preventDefault()}>
-        <Select
-          value={account.selectedAddress}
-          onChange={(v) => account.setSelectedAddress(v)}
-        >
-          {account.V3Keys.map((key) => (
+        <Select value={address} onChange={(v) => setAddress(v)}>
+          {account.keyring.map((key) => (
             <SelectOption key={key.address} value={key.address}>
               {key.address}
             </SelectOption>

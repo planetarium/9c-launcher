@@ -41,7 +41,7 @@ function RegisterView() {
       <H1>Create your account</H1>
       <p style={{ marginBlockEnd: 54 }}>Please set your password only.</p>
       <RetypePasswordForm
-        address={account.selectedAddress}
+        address={account.address}
         onSubmit={onSubmit}
         useActivitionKey
       />

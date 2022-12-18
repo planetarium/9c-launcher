@@ -23,12 +23,12 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
   const { data: sheet } = useStakingSheetQuery();
   const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
-    variables: { address: account.selectedAddress },
+    variables: { address: account.address },
     skip: !account.isLogin,
   });
   const { data: collection, refetch: refetchCollection } =
     useLegacyCollectionStateQuery({
-      variables: { address: account.selectedAddress },
+      variables: { address: account.address },
       skip: !account.isLogin,
     });
   const balance = useBalance();

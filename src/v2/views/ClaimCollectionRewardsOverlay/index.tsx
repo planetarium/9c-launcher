@@ -25,7 +25,7 @@ function ClaimCollectionRewardsOverlay({
   const { account } = useStore();
   const { loading, data } = useGetAvatarAddressQuery({
     variables: {
-      address: account.selectedAddress,
+      address: account.address,
     },
   });
 
