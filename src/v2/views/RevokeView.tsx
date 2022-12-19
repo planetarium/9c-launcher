@@ -13,7 +13,7 @@ const transifexTags = "v2/revoke-view";
 
 function RevokeView() {
   const account = useStore("account");
-  const [address, setAddress] = useState<Address>(account.keyring[0].address);
+  const [address, setAddress] = useState<Address>(account.address);
   const history = useHistory();
 
   return (
