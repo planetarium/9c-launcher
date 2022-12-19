@@ -6,7 +6,7 @@ import {
   sanitizeKeypath,
   V3Keystore,
 } from "@planetarium/account-local";
-import { createAccount } from "@planetarium/account-raw";
+import { createAccount, isValidPrivateKey } from "@planetarium/account-raw";
 import { Account } from "@planetarium/sign";
 import fs from "fs";
 import path from "path";
@@ -169,23 +169,13 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
-  isValidPrivateKey = (privateKey: string): boolean => {
-    try {
-      createAccount(privateKey);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  };
-
-  @action
   generatePrivateKey = () => {
     this.setPrivateKey(utils.bytesToHex(utils.randomPrivateKey()));
   };
 
   @action
   setPrivateKey = (privateKeyHex: string) => {
-    if (this.isValidPrivateKey(privateKeyHex)) {
+    if (isValidPrivateKey(privateKeyHex)) {
       this.privateKey = Buffer.from(privateKeyHex, "hex");
     }
   };

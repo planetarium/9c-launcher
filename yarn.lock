@@ -3393,15 +3393,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planetarium/account-raw@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "@planetarium/account-raw@npm:0.0.2"
+"@planetarium/account-raw@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "@planetarium/account-raw@npm:0.0.3"
   dependencies:
     "@noble/hashes": ^1.1.2
     "@noble/secp256k1": ^1.7.0
   peerDependencies:
-    "@planetarium/sign": ^0.0.9
-  checksum: 07c49d797db959ca8ddc56bd5a9983363624ca6779d7276efb362d3840097a299a2fa60820406fe7ce323ffc4764b36bdcf466c745b48f429e1ee2b96952a8e6
+    "@planetarium/sign": ^0.0.11
+  checksum: f87c2e913e6639dfd7fc45b689264ba56b01a06caaa886e5f82df534a9f1a7c52b1c20fd08ba1f6ec62ba51df6fee7630af8b0de07c5341d71d906069353e068
   languageName: node
   linkType: hard
 
@@ -7101,7 +7101,7 @@ __metadata:
     "@material-ui/styles": ^4.10.0
     "@noble/secp256k1": ^1.7.0
     "@planetarium/account-local": ^0.0.19
-    "@planetarium/account-raw": ^0.0.2
+    "@planetarium/account-raw": ^0.0.3
     "@planetarium/check-free-space": ^0.0.2
     "@planetarium/cli": ^0.40.0
     "@planetarium/sign": ^0.0.11
