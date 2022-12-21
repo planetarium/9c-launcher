@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { observer } from "mobx-react";
 import { GetAvatarAddressQuery } from "src/v2/generated/graphql";
-import { useTx } from "src/v2/utils/useTx";
 
 import type { ClaimCollectionRewardsOverlayProps } from ".";
 import { RadioItem, RadioGroup } from "src/v2/components/ui/RadioGroup";

@@ -1,9 +1,13 @@
 import React, { useMemo, useReducer } from "react";
-import { LegacyCollectionStateQuery } from "src/v2/generated/graphql";
+import {
+  LegacyCollectionStateQuery,
+  useMigrateMonsterCollectionLazyQuery,
+} from "src/v2/generated/graphql";
+import { useStore } from "src/v2/utils/useStore";
 import { MigrationAlert, MigrationAlertItem } from "./dialog";
 import ncgIcon from "src/v2/resources/collection/items/ncg.png";
 import ClaimCollectionRewardsOverlay from "../ClaimCollectionRewardsOverlay";
-import { placeholder, useTx } from "src/v2/utils/useTx";
+import { useTx } from "src/v2/utils/useTx";
 
 interface MigrationProps {
   tip: number;
@@ -36,8 +40,11 @@ export default function Migration({
   onClose,
 }: MigrationProps) {
   const [isOpen, open] = useReducer(() => true, false);
+  const account = useStore("account");
   const isClaimable = tip >= collectionState.claimableBlockIndex;
-  const tx = useTx("migrate-monster-collection", placeholder);
+  const [migrateMonsterCollection, { data, loading, error }] =
+    useMigrateMonsterCollectionLazyQuery();
+  const tx = useTx();
 
   const deposit = useMemo(
     () =>
@@ -89,9 +96,22 @@ export default function Migration({
         isOpen={isOpen}
         onClose={() => {}}
         onConfirm={(avatar) => {
-          tx(avatar.address.replace("0x", ""))
-            .then((v) => v.data?.stageTxV2)
-            .then((txId) => txId && onActionTxId(txId))
+          account
+            .getPublicKeyString()
+            .then((v) =>
+              migrateMonsterCollection({
+                variables: {
+                  publicKey: v,
+                  avatarAddress: avatar.address.replace("0x", ""),
+                },
+              })
+            )
+            .then(() => tx(data?.actionTxQuery.migrateMonsterCollection))
+            .then(
+              (txId) =>
+                txId.data?.stageTransaction &&
+                onActionTxId(txId.data.stageTransaction)
+            )
             .catch((e) => console.error(e));
         }}
       />

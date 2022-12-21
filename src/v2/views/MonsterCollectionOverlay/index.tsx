@@ -6,16 +6,16 @@ import { OverlayProps } from "src/v2/utils/types";
 
 import { useBalance } from "src/v2/utils/useBalance";
 import { useStore } from "src/v2/utils/useStore";
-import { placeholder, useTx } from "src/v2/utils/useTx";
+import { useTx } from "src/v2/utils/useTx";
 import {
   TxStatus,
   useCurrentStakingQuery,
   useLegacyCollectionStateQuery,
+  useStakeLazyQuery,
   useStakingSheetQuery,
   useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
 import Migration from "./Migration";
-import { ipcRenderer } from "electron";
 import { useTip } from "src/v2/utils/useTip";
 import { trackEvent } from "src/v2/utils/mixpanel";
 
@@ -34,7 +34,8 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const balance = useBalance();
   const tip = useTip();
 
-  const tx = useTx("stake", placeholder);
+  const tx = useTx();
+  const [stake, { data, loading, error }] = useStakeLazyQuery();
   const [isLoading, setLoading] = useState(false);
   const [fetchStatus, { data: txStatus, stopPolling }] =
     useTransactionResultLazyQuery({
@@ -67,10 +68,21 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             amount: amount.toString(),
             previousAmount: current.stateQuery.stakeState?.deposit,
           });
-          return tx(amount.toString())
+          return account
+            .getPublicKeyString()
+            .then((v) =>
+              stake({
+                variables: {
+                  publicKey: v,
+                  amount: amount.toString(),
+                },
+              })
+            )
+            .then(() => tx(data?.actionTxQuery.stake))
             .then(
               (v) =>
-                v.data && fetchStatus({ variables: { txId: v.data.stageTxV2 } })
+                v.data &&
+                fetchStatus({ variables: { txId: v.data.stageTransaction } })
             )
             .catch((e) => {
               console.error(e);
