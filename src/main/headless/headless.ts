@@ -4,8 +4,6 @@ import { basename, dirname } from "path";
 import { CUSTOM_SERVER } from "../../config";
 import { execute, sleep } from "../../utils";
 import { BlockMetadata } from "src/interfaces/block-header";
-import { Tx } from "./tx";
-import { Action } from "./action";
 
 export const retryOptions = {
   delay: 100,
@@ -35,129 +33,13 @@ class Headless {
     this._genesisHash = undefined;
     this._exitListeners = [];
 
-    ipcMain.on(
-      "standalone/set-signer-private-key",
-      async (event, privateKey: string) => {
-        const ret = await this.setSignerPrivateKey(privateKey).catch(
-          () => false
-        );
-        console.log(`set-signer-private-key: ${ret}`);
-        event.returnValue = ret;
-      }
-    );
-
-    ipcMain.on(
-      "activate-account",
-      async (event, activationKey: string, nonce: string, filePath: string) => {
-        console.log("activate-account");
-        event.returnValue = this.action.ActivateAccount(
-          activationKey,
-          nonce,
-          filePath
-        );
-      }
-    );
-
-    ipcMain.on(
-      "monster-collect",
-      async (event, level: number, filePath: string) => {
-        console.log("monster-collect");
-        event.returnValue = this.action.MonsterCollect(level, filePath);
-      }
-    );
-
-    ipcMain.on(
-      "claim-monster-collection-reward",
-      async (event, avatarAddress: string, filePath: string) => {
-        console.log("claim-monster-collection-reward");
-        event.returnValue = this.action.ClaimMonsterCollectionReward(
-          avatarAddress,
-          filePath
-        );
-      }
-    );
-
-    ipcMain.on("stake", async (event, amount: string, filePath: string) => {
-      console.log("stake");
-      event.returnValue = this.action.Stake(amount, filePath);
-    });
-
-    ipcMain.on(
-      "claim-stake-reward",
-      async (
-        event,
-        avatarAddress: string,
-        filePath: string,
-        blockIndex: string
-      ) => {
-        console.log("claim-stake-reward");
-        event.returnValue = this.action.ClaimStakeReward(
-          avatarAddress,
-          filePath,
-          blockIndex
-        );
-      }
-    );
-
-    ipcMain.on(
-      "migrate-monster-collection",
-      async (event, avatarAddress: string, filePath: string) => {
-        console.log("migrate-monster-collection");
-        event.returnValue = this.action.MigrateMonsterCollection(
-          avatarAddress,
-          filePath
-        );
-      }
-    );
-
-    ipcMain.on(
-      "transfer-asset",
-      async (
-        event,
-        sender: string,
-        recipient: string,
-        amount: number,
-        memo: string,
-        filePath: string
-      ) => {
-        console.log("transfer-asset");
-        event.returnValue = this.action.TransferAsset(
-          sender,
-          recipient,
-          amount,
-          memo,
-          filePath
-        );
-      }
-    );
-
     ipcMain.on("set-genesis-hash", (event, hash: string) => {
       this._genesisHash = hash;
     });
-
-    ipcMain.on(
-      "sign-tx",
-      async (event, nonce: number, timeStamp: string, filePath: string) => {
-        console.log("sign-tx");
-        if (!this._signerPrivateKey || !this._genesisHash) {
-          throw new Error("set signer private key and genesis hash first.");
-        }
-        event.returnValue = this.tx.Sign(
-          this._signerPrivateKey,
-          nonce,
-          this._genesisHash,
-          timeStamp,
-          filePath
-        );
-      }
-    );
   }
 
   private _path: string;
   private _running: boolean;
-  private _privateKey: string | undefined;
-  private _signerPrivateKey: string | undefined;
-  private _genesisHash: string | undefined;
   private _exitListeners: (() => void)[];
 
   // execute-kill
@@ -228,14 +110,6 @@ class Headless {
   public async setSignerPrivateKey(privateKey: string): Promise<boolean> {
     this._signerPrivateKey = privateKey;
     return true;
-  }
-
-  public get tx(): Tx {
-    return new Tx(this._path);
-  }
-
-  public get action(): Action {
-    return new Action(this._path);
   }
 
   public getTip(storeType: string, storePath: string): BlockMetadata | null {
