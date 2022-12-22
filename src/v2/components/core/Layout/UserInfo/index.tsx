@@ -15,7 +15,7 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 import goldIconUrl from "src/v2/resources/ui-main-icon-gold.png";
 import monsterIconUrl from "src/v2/resources/monster.png";
-import { getRemain } from "src/collection/common/utils";
+import { getRemain } from "src/v2/utils/monsterCollection/utils";
 import ClaimCollectionRewardsOverlay from "src/v2/views/ClaimCollectionRewardsOverlay";
 import { ClaimButton } from "./ClaimButton";
 import { clipboard } from "electron";

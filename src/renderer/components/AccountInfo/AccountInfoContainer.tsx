@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { getRemain } from "../../../collection/common/utils";
-import { getTotalDepositedGold } from "../../../collection/components/common/collectionSheet";
 import {
+  getRemain,
+  getTotalDepositedGold,
   CollectionSheetItem,
   Reward,
   RewardCategory,
-} from "../../../collection/types";
+} from "src/v2/utils/monsterCollection/utils";
 import {
   useNodeStatusSubscriptionSubscription,
   useCollectionSheetQuery,
@@ -22,7 +22,6 @@ import useStores from "../../../hooks/useStores";
 import ClaimCollectionRewardContainer from "../ClaimCollectionRewardDialog/ClaimCollectionRewardContainer";
 import RewardButton from "../RewardButton/RewardButton";
 import AccountInfo from "./AccountInfo";
-import { variables } from "electron-log";
 
 export type Props = {
   onReward: (address: string) => void;

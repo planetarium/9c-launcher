@@ -7,7 +7,7 @@ import { RadioItem, RadioGroup } from "src/v2/components/ui/RadioGroup";
 import Button, { ButtonBar } from "src/v2/components/ui/Button";
 import { T } from "src/renderer/i18n";
 import { styled } from "src/v2/stitches.config";
-import { getRemain } from "src/collection/common/utils";
+import { getRemain } from "src/v2/utils/monsterCollection/utils";
 import OverlayBase from "src/v2/components/core/OverlayBase";
 
 interface ClaimContentProps extends ClaimCollectionRewardsOverlayProps {

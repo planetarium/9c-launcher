@@ -54,7 +54,6 @@ import { v4 as uuidv4 } from "uuid";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
-import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
 import installExtension, {
@@ -99,7 +98,7 @@ const standaloneExecutablePath = path.join(
 const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
-let collectionWin: BrowserWindow | null = null;
+let transferWin: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
@@ -372,43 +371,23 @@ function initializeIpc() {
     }
   );
 
-  ipcMain.handle("open collection page", async (_, selectedAddress) => {
-    if (collectionWin != null) {
-      collectionWin.focus();
-      return;
-    }
-    console.log(`open collection page address: ${selectedAddress}`);
-    collectionWin = await createCollectionWindow();
-    console.log(
-      `call initialize collection window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
-    );
-    collectionWin!.webContents.send(
-      "initialize collection window",
-      selectedAddress,
-      remoteNode!.HeadlessUrl()
-    );
-    collectionWin.on("close", function (event: any) {
-      collectionWin = null;
-    });
-  });
-
   ipcMain.handle("open transfer page", async (_, selectedAddress) => {
-    if (collectionWin != null) {
-      collectionWin.focus();
+    if (transferWin != null) {
+      transferWin.focus();
       return;
     }
     console.log(`open transfer page address: ${selectedAddress}`);
-    collectionWin = await createTransferWindow();
+    transferWin = await createTransferWindow();
     console.log(
       `call initialize transfer window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
     );
-    collectionWin!.webContents.send(
+    transferWin!.webContents.send(
       "initialize transfer window",
       selectedAddress,
       remoteNode!.HeadlessUrl()
     );
-    collectionWin.on("close", function (event: any) {
-      collectionWin = null;
+    transferWin.on("close", function (event: any) {
+      transferWin = null;
     });
   });
 
