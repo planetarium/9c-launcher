@@ -371,7 +371,7 @@ function initializeIpc() {
     }
   );
 
-  ipcMain.handle("open transfer page", async (_, selectedAddress) => {
+  ipcMain.handle("open transfer page", async (_, selectedAddress, account) => {
     if (transferWin != null) {
       transferWin.focus();
       return;
@@ -384,6 +384,7 @@ function initializeIpc() {
     transferWin!.webContents.send(
       "initialize transfer window",
       selectedAddress,
+      account,
       remoteNode!.HeadlessUrl()
     );
     transferWin.on("close", function (event: any) {

@@ -75,13 +75,14 @@ const App: React.FC = () => {
       if (!agentAddress) {
         ipcRenderer.on(
           "initialize transfer window",
-          async (_, address, headlessUrl) => {
+          async (_, address, account, headlessUrl) => {
             console.log(
               `initialize transfer window at Transfer App.tsx. address: ${address}, node: ${headlessUrl}`
             );
             const client = new GraphQLClient(`http://${headlessUrl}/graphql`);
             const headlessGraphQLSDK = getSdk(client);
             storeContainer.headlessStore.updateSdk(headlessGraphQLSDK);
+            storeContainer.headlessStore.updateAccount(account);
             setAgentAddress(address);
           }
         );
@@ -94,6 +95,7 @@ const App: React.FC = () => {
         //FIXME: make a error page and show it.
         throw new Error("Could not set agent address");
       }
+      const publicKey = await storeContainer.headlessStore.account;
       await storeContainer.headlessStore.updateBalance(agentAddress);
     }
     main();

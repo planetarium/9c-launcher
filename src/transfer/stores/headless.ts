@@ -4,6 +4,8 @@ import { observable, action, decorate } from "mobx";
 import { sleep } from "src/utils";
 import { GraphQLSDK } from "../middleware/graphql";
 import { tmpName } from "tmp-promise";
+import { signTransaction, Account } from "@planetarium/sign";
+import { createAccount } from "@planetarium/account-raw";
 
 export interface IHeadlessStore {
   balance: Decimal;
@@ -30,6 +32,7 @@ export interface IHeadlessStore {
   ) => Promise<void>;
   updateBalance: (agentAddress: string) => Promise<Decimal>;
   updateSdk: (sdk: GraphQLSDK) => void;
+  updateAccount: (account: Account) => void;
 }
 
 type TxExecutionCallback = (blockIndex: number, blockHash: string) => void;
@@ -45,6 +48,7 @@ export default class HeadlessStore implements IHeadlessStore {
   private agentAddress: string = "";
   private bridgeAddress: string = "";
   private graphqlSdk: GraphQLSDK;
+  private account: Account = createAccount();
   @observable public balance: Decimal;
 
   constructor(sdk: GraphQLSDK, bridgeAddress: string) {
@@ -97,97 +101,54 @@ export default class HeadlessStore implements IHeadlessStore {
 
   @action
   transferGold = async (
-    signer: string,
+    sender: string,
     recipient: string,
     amount: Decimal,
     memo: string
   ): Promise<TxId> => {
-    if (signer.startsWith("0x")) {
-      signer = signer.substr(2);
+    if (sender.startsWith("0x")) {
+      sender = sender.replace("0x", "");
     }
     if (recipient.startsWith("0x")) {
-      recipient = recipient.substr(2);
+      recipient = recipient.replace("0x", "");
     }
 
-    this.assertAgentAddressV2(signer);
+    this.assertAgentAddressV2(sender);
 
-    async function makeTx(
-      signer: string,
-      recipient: string,
-      amount: Decimal,
-      memo: string,
-      fileName: string,
-      graphqlSdk: GraphQLSDK
-    ) {
-      // create action.
-      if (
-        !ipcRenderer.sendSync(
-          "transfer-asset",
-          signer,
-          recipient,
-          Number(amount),
-          memo,
-          fileName
-        )
-      ) {
+    return this.account
+      .getPublicKey()
+      .then((v) =>
+        this.graphqlSdk.transferAsset({
+          publicKey: Buffer.from(v).toString("hex"),
+          sender: sender,
+          recipient: recipient,
+          amount: amount.toString(),
+          memo: memo,
+        })
+      )
+      .catch((e) => {
+        console.error(e);
         throw new Error("Failed to create transfer asset action.");
-      }
-
-      // get tx nonce.
-      const ended = async (signer: string, graphqlSdk: GraphQLSDK) => {
-        return await graphqlSdk.GetNextTxNonce({
-          address: signer,
-        });
-      };
-
-      let txNonce;
-      try {
-        const res = await ended(signer, graphqlSdk);
-        txNonce = res.data?.transaction.nextTxNonce;
-      } catch (e) {
-        throw new Error(
-          `Failed to get next tx nonce. Error message: ${e.message}`
-        );
-      }
-
-      // sign tx.
-      const result = ipcRenderer.sendSync(
-        "sign-tx",
-        txNonce,
-        new Date().toISOString(),
-        fileName
-      );
-
-      if (result.stderr !== "") {
-        throw new Error(
-          `Failed to create sign tx action. Error message: ${result.stderr}`
-        );
-      }
-
-      return result.stdout as string;
-    }
-
-    const fileName = await tmpName();
-    const tx = await makeTx(
-      signer,
-      recipient,
-      amount,
-      memo,
-      fileName,
-      this.graphqlSdk
-    );
-
-    if (tx === "") {
-      throw new Error("Failed to create transaction.");
-    }
-
-    const transferResult = await this.graphqlSdk.StageTxV2({ encodedTx: tx });
-
-    if (transferResult.data == null) {
-      throw new Error("Failed to transfer ncg.");
-    }
-
-    return transferResult.data.stageTxV2 as string;
+      })
+      .then(
+        (v) =>
+          v.data.actionTxQuery.transferAsset &&
+          signTransaction(v.data.actionTxQuery.transferAsset, this.account)
+      )
+      .catch((e) => {
+        console.error(e);
+        throw new Error("Failed to sign transaction.");
+      })
+      .then((v) => {
+        if (v !== "string") {
+          throw new Error("Signed transaction not provided.");
+        }
+        return this.graphqlSdk.stageTransaction({ payload: v });
+      })
+      .then((v) => {
+        if (!v.data) throw new Error("Failed to stage transaction.");
+        return v.data.stageTransaction as string;
+      });
   };
 
   @action
@@ -262,5 +223,10 @@ export default class HeadlessStore implements IHeadlessStore {
   @action
   updateSdk = (sdk: GraphQLSDK) => {
     this.graphqlSdk = sdk;
+  };
+
+  @action
+  updateAccount = (account: Account) => {
+    this.account = account;
   };
 }
