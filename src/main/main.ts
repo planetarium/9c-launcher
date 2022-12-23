@@ -431,10 +431,7 @@ function initializeIpc() {
       return;
     }
 
-    const node = utils.execute(
-      EXECUTE_PATH[process.platform] || WIN_GAME_PATH,
-      info.args
-    );
+    const node = utils.execute("./resources/app/9c.exe", info.args);
 
     node.on("close", (code) => {
       // Code 21: ERROR_NOT_READY
