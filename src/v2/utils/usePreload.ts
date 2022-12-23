@@ -59,7 +59,6 @@ const getProgress = (
 
 export function usePreload() {
   const [state, send] = useActor(preloadService);
-  const standalone = useStore("standalone");
 
   const { data: preloadProgressSubscriptionResult } =
     usePreloadProgressSubscriptionSubscription();
@@ -72,7 +71,6 @@ export function usePreload() {
     const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
 
     if (isEnded) {
-      standalone.setReady(true);
       send("DONE");
       trackEvent(`Launcher/Preload Completed`);
     }
@@ -95,7 +93,7 @@ export function usePreload() {
 
   return {
     message: getStatusMessage(state, preloadProgressSubscriptionResult),
-    isDone: standalone.Ready,
+    isDone: true,
     progress,
     blockCount: useMemo(
       () =>

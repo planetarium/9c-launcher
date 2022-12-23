@@ -3161,6 +3161,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/hashes@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@noble/hashes@npm:1.1.5"
+  checksum: de3f095a7ac1cbf5b4b3d09f193288d4f2eec35fbadf2ed9fd7e47d8a3042fef410052ba62dc0296a185f994c11192f5357fdb1bd9178c905efd82e946c53b00
+  languageName: node
+  linkType: hard
+
 "@noble/secp256k1@npm:^1.7.0":
   version: 1.7.0
   resolution: "@noble/secp256k1@npm:1.7.0"
@@ -3372,15 +3379,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planetarium/account-local@npm:^0.0.0":
-  version: 0.0.0
-  resolution: "@planetarium/account-local@npm:0.0.0"
+"@planetarium/account-local@npm:^0.0.19":
+  version: 0.0.19
+  resolution: "@planetarium/account-local@npm:0.0.19"
   dependencies:
+    "@noble/hashes": ^1.1.5
     "@noble/secp256k1": ^1.7.0
+    buffer: ^6.0.3
     ethereumjs-wallet: ^1.0.2
   peerDependencies:
-    "@planetarium/sign": ^0.0.0
-  checksum: f4aa569ac0952933ba1ccbea7dd30b6b8b482661a77258376fce2e4e44eee1fdeb971ab2e54f5b58b1aa8a855acd95d2b951f72b139f79d9f4ec01b8c24b4376
+    "@planetarium/sign": ^0.0.11
+  checksum: df365e268db9dfba86e82ebb3d0a9f6441c5068099f86b2606bb86fb8736f974ec7dd15ee15440d6d1dbb045d7260e3a6850821fe653789ba5e58789aed94bd7
+  languageName: node
+  linkType: hard
+
+"@planetarium/account-raw@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "@planetarium/account-raw@npm:0.0.3"
+  dependencies:
+    "@noble/hashes": ^1.1.2
+    "@noble/secp256k1": ^1.7.0
+  peerDependencies:
+    "@planetarium/sign": ^0.0.11
+  checksum: f87c2e913e6639dfd7fc45b689264ba56b01a06caaa886e5f82df534a9f1a7c52b1c20fd08ba1f6ec62ba51df6fee7630af8b0de07c5341d71d906069353e068
   languageName: node
   linkType: hard
 
@@ -3466,14 +3487,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planetarium/sign@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "@planetarium/sign@npm:0.0.3"
+"@planetarium/sign@npm:^0.0.11":
+  version: 0.0.11
+  resolution: "@planetarium/sign@npm:0.0.11"
   dependencies:
     "@noble/hashes": ^1.1.2
     bencodex: ^0.1.2
     buffer: ^6.0.3
-  checksum: 21374ff9462c28aeb9e82a9666a4f28ed7375f33c33191af69d0e32503887cb49db2576792c97328f531896fe58da5d6b4094bb60618a87062f2e8218c8a65c0
+  checksum: 71be8b55f1ea237b9bd426568671b880da217f723597a21c3b50f08a625d470414ec8dd3fc69a244e6299355d5b99f2927ca91082c9144698627e1db85bfd717
   languageName: node
   linkType: hard
 
@@ -7079,10 +7100,11 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.56
     "@material-ui/styles": ^4.10.0
     "@noble/secp256k1": ^1.7.0
-    "@planetarium/account-local": ^0.0.0
+    "@planetarium/account-local": ^0.0.19
+    "@planetarium/account-raw": ^0.0.3
     "@planetarium/check-free-space": ^0.0.2
     "@planetarium/cli": ^0.40.0
-    "@planetarium/sign": ^0.0.3
+    "@planetarium/sign": ^0.0.11
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
     "@radix-ui/react-radio-group": ^0.1.5
     "@radix-ui/react-scroll-area": ^0.1.4

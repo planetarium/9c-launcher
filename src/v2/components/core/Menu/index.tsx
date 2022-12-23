@@ -69,7 +69,7 @@ function Menu() {
         text="Send NCG"
         disabled={!account.isLogin}
         onClick={() =>
-          ipcRenderer.invoke("open transfer page", account.selectedAddress)
+          ipcRenderer.invoke("open transfer page", account.address)
         }
       />
       <MenuItem

@@ -4,8 +4,6 @@ import { ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React from "react";
-import { useRevokePrivateKeyMutation } from "../../../generated/graphql";
-import { RevokeAccount } from "../../../interfaces/i18n";
 import { T, useT } from "@transifex/react";
 import AccountStore from "src/stores/account";
 import revokeAccountViewStyle from "./RevokeAccountView.style";
@@ -19,7 +17,6 @@ const transifexTags = "revokeAccount";
 
 const RevokeAccountView: React.FC<IRevokeAccountProps> = observer(
   ({ accountStore, routerStore }) => {
-    const [revokePrivateKey] = useRevokePrivateKeyMutation();
     const t = useT();
     const classes = revokeAccountViewStyle();
     return (

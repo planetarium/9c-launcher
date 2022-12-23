@@ -1,6 +1,5 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { observer } from "mobx-react";
-import { ipcRenderer } from "electron";
 import { useStore } from "src/v2/utils/useStore";
 import Layout from "src/v2/components/core/Layout";
 import H1 from "src/v2/components/ui/H1";
@@ -13,21 +12,16 @@ const transifexTags = "v2/recover-view";
 
 function RecoverView() {
   const account = useStore("account");
-  const address = useMemo(
-    (): string =>
-      ipcRenderer.sendSync(
-        "convert-private-key-to-address",
-        account.privateKey
-      ),
-    [account.privateKey]
-  );
+  const address = account.address;
   const history = useHistory();
 
   const onSubmit = ({ password }: { password: string }) => {
     try {
-      ipcRenderer.sendSync("revoke-protected-private-key", address);
+      account.removeKeyByAddress(address);
     } finally {
-      ipcRenderer.sendSync("import-private-key", account.privateKey, password);
+      account
+        .getPrivateKeyAndForget()
+        .then((privateKey) => account.importRaw(privateKey, password));
       history.push("/");
     }
   };

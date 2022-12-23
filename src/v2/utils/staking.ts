@@ -6,7 +6,7 @@ export function useStaking() {
   const account = useStore("account");
   const commonQuery = {
     variables: {
-      address: account.selectedAddress,
+      address: account.address,
     },
     skip: !account.isLogin,
   };

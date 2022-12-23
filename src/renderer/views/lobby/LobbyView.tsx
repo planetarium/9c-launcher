@@ -69,7 +69,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
     },
   });
 
-  const { refetch: txNoceRefetch } = useGetNextTxNonceQuery({
+  const { refetch: txNonceRefetch } = useGetNextTxNonceQuery({
     variables: {
       address: accountStore.selectedAddress,
     },
@@ -137,7 +137,7 @@ const LobbyView = observer((props: ILobbyViewProps) => {
 
     // get tx nonce.
     const ended2 = async () => {
-      return await txNoceRefetch({ address: accountStore.selectedAddress });
+      return await txNonceRefetch({ address: accountStore.selectedAddress });
     };
     let txNonce;
     try {

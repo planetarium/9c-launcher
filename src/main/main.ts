@@ -45,14 +45,12 @@ import Headless from "./headless/headless";
 import {
   HeadlessExitedError,
   HeadlessInitializeError,
-  UndefinedProtectedPrivateKeyError,
 } from "../main/exceptions";
 import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
 import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
-import { Address, PrivateKey } from "./headless/key-store";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
@@ -523,87 +521,6 @@ function initializeIpc() {
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
     mixpanel?.alias(alias);
   });
-
-  ipcMain.handle("get-protected-private-keys", async () =>
-    standalone.keyStore.list()
-  );
-
-  ipcMain.on(
-    "unprotect-private-key",
-    async (event, address: Address, passphrase: string) => {
-      try {
-        const protectedPrivateKey = standalone.keyStore
-          .list()
-          .find((x) => x.address === address);
-        if (protectedPrivateKey === undefined) {
-          event.returnValue = [
-            undefined,
-            new UndefinedProtectedPrivateKeyError(
-              "ProtectedPrivateKey is undefined during unprotect private key."
-            ),
-          ];
-          return;
-        }
-
-        event.returnValue = [
-          standalone.keyStore.unprotectPrivateKey(
-            protectedPrivateKey.keyId,
-            passphrase
-          ),
-          undefined,
-        ];
-      } catch (error) {
-        event.returnValue = [undefined, error];
-      }
-    }
-  );
-
-  ipcMain.on("create-private-key", async (event, passphrase: string) => {
-    event.returnValue =
-      standalone.keyStore.createProtectedPrivateKey(passphrase);
-  });
-
-  ipcMain.handle("generate-private-key", async (event) => {
-    return standalone.keyStore.generateRawKey();
-  });
-
-  ipcMain.on(
-    "import-private-key",
-    async (event, privateKey: PrivateKey, passphrase: string) => {
-      event.returnValue = standalone.keyStore.importPrivateKey(
-        privateKey,
-        passphrase
-      );
-    }
-  );
-
-  ipcMain.on(
-    "revoke-protected-private-key",
-    async (event, address: Address) => {
-      const keyList = standalone.keyStore.list();
-      keyList.forEach((pv) => {
-        if (pv.address.replace("0x", "") === address.toString()) {
-          standalone.keyStore.revokeProtectedPrivateKey(pv.keyId);
-        }
-      });
-
-      event.returnValue = ["", undefined];
-    }
-  );
-
-  ipcMain.on("validate-private-key", async (event, privateKeyHex: string) => {
-    event.returnValue = standalone.validation.isValidPrivateKey(privateKeyHex);
-  });
-
-  ipcMain.on(
-    "convert-private-key-to-address",
-    async (event, privateKeyHex: string) => {
-      event.returnValue = standalone.keyStore.convertPrivateKey(
-        privateKeyHex,
-        "address"
-      );
-    }
-  );
 
   ipcMain.on("online-status-changed", (event, status: "online" | "offline") => {
     console.log(`online-status-changed: ${status}`);

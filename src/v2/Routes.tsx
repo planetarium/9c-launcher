@@ -2,7 +2,7 @@ import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { Redirect, Route, Switch, useHistory } from "react-router";
-import type { ProtectedPrivateKey } from "src/main/headless/key-store";
+import { ProtectedPrivateKey } from "../interfaces/keystore";
 import { useStore } from "./utils/useStore";
 
 import LoginView from "./views/LoginView";
@@ -25,14 +25,14 @@ const Redirector = observer(() => {
 
   useEffect(() => {
     if (!protectedPrivateKeys) {
-      ipcRenderer
-        .invoke("get-protected-private-keys")
-        .then(setProtectedPrivateKeys);
+      setProtectedPrivateKeys(account.listKeyFiles());
     } else if (protectedPrivateKeys.length < 1) {
       history.replace("/welcome");
     } else {
-      protectedPrivateKeys.filter(Boolean).map(({ address }) => {
-        !account.addresses.includes(address) && account.addAddress(address);
+      protectedPrivateKeys.filter(Boolean).map((key) => {
+        if (account.keyring.some((target) => target.address === key.address)) {
+          account.addKey(key);
+        }
       });
 
       history.replace("/login");

@@ -65,12 +65,12 @@ export function useTx<K extends keyof ActionArguemnts>(
   ...args: PartialTuple<ActionArguemnts[K]>
 ): (...replacers: Replacers<ActionArguemnts[K], typeof args>) => Result {
   const inProgress = useRef(false);
-  const accountStore = useStore("account");
+  const account = useStore("account");
   const { refetch } = useGetNextTxNonceQuery({
     variables: {
-      address: accountStore.selectedAddress,
+      address: account.address,
     },
-    skip: !accountStore.isLogin,
+    skip: !account.isLogin,
   });
 
   const [stage] = useStageTxV2Mutation();

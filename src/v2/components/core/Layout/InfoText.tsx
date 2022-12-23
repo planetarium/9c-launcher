@@ -28,14 +28,14 @@ function InfoText() {
     () =>
       [
         `APV: ${getConfig("AppProtocolVersion")}`,
-        account.isLogin && `Account: ${account.selectedAddress}`,
+        account.isLogin && `Account: ${account.address}`,
         `Node: ${node}`,
         awsSinkGuid && `Client ID: ${awsSinkGuid}`,
         `Commit: ${GIT_HASH}`,
       ]
         .filter(Boolean)
         .join("\n"),
-    [account.isLogin, account.selectedAddress, node, awsSinkGuid]
+    [account.isLogin, account.address, node, awsSinkGuid]
   );
 
   const onClick = () => {

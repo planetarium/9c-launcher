@@ -3,7 +3,6 @@ import { observer, inject } from "mobx-react";
 import LobbyView from "../lobby/LobbyView";
 import LoginView from "../login/LoginView";
 import { IStoreContainer } from "../../../interfaces/store";
-import { useProtectedPrivateKeysQuery } from "../../../generated/graphql";
 import { Button, Container, Box } from "@material-ui/core";
 import { NineChroniclesLogo } from "../../components/NineChroniclesLogo";
 import mainViewStyle from "./MainView.style";

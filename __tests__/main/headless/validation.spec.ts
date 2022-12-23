@@ -1,21 +1,19 @@
 import { describe, it, assert } from "vitest";
-import { Validation } from "../../../src/main/headless/validation";
-import { HEADLESS_PATH } from "../../constant";
+import AccountStore from "src/stores/account";
 
 describe("Validation", function () {
-  const validation = new Validation(HEADLESS_PATH);
-
+  const account = new AccountStore();
   describe("isValidPrivateKey", function () {
     describe("with invalid private key", function () {
       it("It returns false with empty input", function () {
-        assert.isFalse(validation.isValidPrivateKey(""));
+        assert.isFalse(account.isValidPrivateKey(""));
       });
 
       it("It returns false with odd-length input", function () {
-        assert.isFalse(validation.isValidPrivateKey("a"));
-        assert.isFalse(validation.isValidPrivateKey("abc"));
-        assert.isFalse(validation.isValidPrivateKey("1"));
-        assert.isFalse(validation.isValidPrivateKey("111"));
+        assert.isFalse(account.isValidPrivateKey("a"));
+        assert.isFalse(account.isValidPrivateKey("abc"));
+        assert.isFalse(account.isValidPrivateKey("1"));
+        assert.isFalse(account.isValidPrivateKey("111"));
       });
     });
 
@@ -27,7 +25,7 @@ describe("Validation", function () {
       ];
       validPrivateKeys.forEach((validPrivateKey) => {
         it(`It returns true with "${validPrivateKey}"`, function () {
-          assert.isTrue(validation.isValidPrivateKey(validPrivateKey));
+          assert.isTrue(account.isValidPrivateKey(validPrivateKey));
         });
       });
     });

@@ -46,7 +46,11 @@ function StatusBar() {
             data-testid="play"
             variant="primary"
             disabled={loading || !activated}
-            onClick={() => game.startGame(account.privateKey)}
+            onClick={() =>
+              account
+                .getPrivateKeyAndForget()
+                .then((privateKey) => game.startGame(privateKey))
+            }
           >
             <T _str="Start" _tags="v2/start-game" />
           </Button>

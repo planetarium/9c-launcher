@@ -3,8 +3,7 @@ import { ipcRenderer } from "electron";
 import { observer, inject } from "mobx-react";
 import { RouterStore } from "mobx-react-router";
 import React from "react";
-import { useCreatePrivateKeyMutation } from "../../../generated/graphql";
-import { ProtectedPrivateKey } from "../../../main/headless/key-store";
+import { ProtectedPrivateKey } from "../../../interfaces/keystore";
 import RetypePasswordForm from "../../components/RetypePasswordForm";
 import { T } from "@transifex/react";
 import AccountStore from "src/stores/account";
@@ -17,8 +16,6 @@ interface ICreateAccountProps {
 
 const CreateAccountView = observer(
   ({ accountStore, routerStore }: ICreateAccountProps) => {
-    const [createAccount, { data }] = useCreatePrivateKeyMutation();
-
     const classes = createAccountViewStyle();
 
     const handleSubmit = async (password: string, activationKey: string) => {

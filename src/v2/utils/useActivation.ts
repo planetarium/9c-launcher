@@ -23,16 +23,16 @@ interface ActivationResult {
  * @returns {ActivationResult} A object with two properties: `loading` and `activated`. They are pretty self-explanatory.
  */
 export function useActivation(activationKey?: string): ActivationResult {
-  const accountStore = useStore("account");
+  const account = useStore("account");
   const isDone = useIsPreloadDone();
   const [isPolling, setPolling] = useState(false);
   const [txError, setTxError] = useState<Error | undefined>();
   const { loading, data, error } = useActivationAddressQuery({
     variables: {
-      address: accountStore.selectedAddress,
+      address: account.address,
     },
     pollInterval: isPolling ? 1000 : undefined,
-    skip: !accountStore.isLogin,
+    skip: !account.isLogin,
   });
 
   const {

@@ -1,5 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react";
+import { isValidPrivateKey } from "@planetarium/account-raw";
 import Layout from "src/v2/components/core/Layout";
 import H1 from "src/v2/components/ui/H1";
 import { T } from "src/renderer/i18n";
@@ -10,7 +11,6 @@ import Button from "src/v2/components/ui/Button";
 import { Link } from "src/v2/components/ui/Link";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useStore } from "src/v2/utils/useStore";
-import { ipcRenderer } from "electron";
 import { useHistory } from "react-router";
 import Form from "src/v2/components/ui/Form";
 
@@ -53,7 +53,7 @@ function ForgotPasswordView() {
           label={t("Private key", { _tags: transifexTags })}
           {...register("privateKey", {
             required: true,
-            validate: (v) => ipcRenderer.sendSync("validate-private-key", v),
+            validate: (v) => isValidPrivateKey(v),
           })}
           invalid={!!errors.privateKey}
         />
