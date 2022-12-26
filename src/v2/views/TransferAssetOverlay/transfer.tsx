@@ -5,42 +5,38 @@ import {
   InputAdornment,
   OutlinedInput,
   styled,
-  TextField,
   Typography,
   CircularProgress as OriginCircularProgress,
 } from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
-import { observer } from "mobx-react";
-import React, { useContext, useState } from "react";
-import FailureDialog from "src/transfer/components/FailureDialog/FailureDialog";
-import SendingDialog from "src/transfer/components/SendingDialog/SendingDialog";
-import SuccessDialog from "src/transfer/components/SuccessDialog/SuccessDialog";
-import { StoreContext } from "src/transfer/hooks";
-import { TransactionConfirmationListener } from "src/transfer/stores/headless";
-import { TransferPhase } from "src/transfer/stores/views/transfer";
-import refreshIcon from "../../resources/refreshIcon.png";
-import { verify as addressVerify } from "eip55";
 import { ipcRenderer } from "electron";
+import { observer } from "mobx-react";
+import React, { useState } from "react";
+import { verify as addressVerify } from "eip55";
+import FailureDialog from "src/v2/components/FailureDialog/FailureDialog";
+import SendingDialog from "src/v2/components/SendingDialog/SendingDialog";
+import SuccessDialog from "src/v2/components/SuccessDialog/SuccessDialog";
+import { TransactionConfirmationListener } from "src/stores/transfer";
+import refreshIcon from "../../resources/refreshIcon.png";
+import { useStore } from "src/v2/utils/useStore";
+import { handleDetailView, TransferPhase } from "src/v2/utils/transfer/utils";
 
 const transifexTags = "Transfer/Transfer";
-
-export type Props = {
-  signer: string;
-  onDetailedView: (tx: string) => void;
-};
 
 const TransferContainer = styled(Container)({
   flex: "3",
 });
 
 const TransferTitle = styled(Typography)({
+  fontFamily: "Montserrat",
   fontSize: "18px",
   color: "#dddddd",
   fontWeight: "bold",
 });
 
 const TransferSecondTitle = styled(Typography)({
+  fontFamily: "Montserrat",
   fontSize: "14px",
   color: "#dddddd",
 });
@@ -68,56 +64,70 @@ const CircularProgress = styled(OriginCircularProgress)({
   marginRight: "1em",
 });
 
-const TransferPage: React.FC<Props> = observer((props: Props) => {
-  const { headlessStore, transferPage } = useContext(StoreContext);
-  const { signer, onDetailedView } = props;
+function TransferPage() {
+  const { transfer, account } = useStore();
+  const [recipient, setRecipient] = useState<string>("");
+  const [memo, setMemo] = useState<string>("");
+  const [amount, setAmount] = useState<Decimal>(new Decimal(0));
+  const [recipientWarning, setRecipientWarning] = useState<boolean>(false);
+  const [amountWarning, setAmountWarning] = useState<boolean>(false);
+  const [tx, setTx] = useState<string>("");
+  const [success, setSuccess] = useState<boolean>(false);
+  const [currentPhase, setCurrentPhase] = useState<TransferPhase>(
+    TransferPhase.READY
+  );
 
   const listener: TransactionConfirmationListener = {
     onSuccess: (blockIndex, blockHash) => {
       console.log(`Block #${blockIndex} (${blockHash})`);
-      transferPage.endSend(true);
+      setCurrentPhase(TransferPhase.FINISHED);
+      setSuccess(false);
     },
     onFailure: (blockIndex, blockHash) => {
       console.log(`Failed`);
-      transferPage.endSend(false);
+      setCurrentPhase(TransferPhase.FINISHED);
+      setSuccess(false);
     },
     onTimeout: (blockIndex, blockHash) => {
       console.log(`Timeout`);
-      transferPage.endSend(false);
+      setCurrentPhase(TransferPhase.FINISHED);
+      setSuccess(false);
     },
   };
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
-    if (!transferPage.validateRecipient || !transferPage.validateAmount) {
+    if (!addressVerify(recipient) || !amount.gt(0)) {
       return;
     }
 
-    if (transferPage.recipient === signer) {
+    if (recipient === transfer.senderAddress) {
       const errorMessage = "You can't transfer NCG to yourself.";
       alert(errorMessage);
       return;
     }
 
-    transferPage.startSend();
-    const { recipient, amount, memo } = transferPage;
-    const tx = await headlessStore.transferGold(
-      signer,
+    setCurrentPhase(TransferPhase.SENDTX);
+
+    const publickey = await account.getPublicKeyString();
+    const tx = await transfer.transferAsset(
+      transfer.senderAddress,
       recipient,
       amount,
-      memo
+      memo,
+      publickey
     );
-    transferPage.setTx(tx);
+    setTx(tx);
 
-    headlessStore.confirmTransaction(tx, undefined, listener);
+    transfer.confirmTransaction(tx, undefined, listener);
   };
 
   const loading =
-    transferPage.currentPhase === TransferPhase.SENDTX ||
-    transferPage.currentPhase === TransferPhase.SENDING;
+    currentPhase === TransferPhase.SENDTX ||
+    currentPhase === TransferPhase.SENDING;
 
-  const disabled = !transferPage.sendButtonActivated || loading;
+  const disabled = amountWarning || recipientWarning || loading;
 
   return (
     <TransferContainer>
@@ -137,10 +147,10 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
         <TransferInput
           type="text"
           name="address"
-          error={transferPage.recipientWarning}
-          onChange={(e) => transferPage.setRecipient(e.target.value)}
-          onBlur={() => transferPage.setRecipientWarning()}
-          onFocus={() => transferPage.resetRecipientWarning()}
+          error={recipientWarning}
+          onChange={(e) => setRecipient(e.target.value)}
+          onBlur={() => setRecipientWarning(!addressVerify(recipient, true))}
+          onFocus={() => setRecipientWarning(false)}
         />
         <TransferTitle>
           <T _str="NCG Amount" _tags={transifexTags} />
@@ -152,25 +162,23 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
             <T
               _str="(Your balance: {ncg} NCG)"
               _tags={transifexTags}
-              ncg={headlessStore.balance}
+              ncg={transfer.balance}
             />
           </b>
           <Button
             startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={() => headlessStore.updateBalance(signer)}
+            onClick={() => transfer.updateBalance(transfer.senderAddress)}
           />
         </TransferSecondTitle>
         <TransferInput
           type="number"
           name="amount"
           onChange={(e) =>
-            transferPage.setAmount(
-              new Decimal(e.target.value === "" ? -1 : e.target.value)
-            )
+            setAmount(new Decimal(e.target.value === "" ? -1 : e.target.value))
           }
-          onBlur={() => transferPage.setAmountWarning()}
-          onFocus={() => transferPage.resetAmountWarning()}
-          error={transferPage.amountWarning}
+          onBlur={() => setAmountWarning(!amount.gt(0))}
+          onFocus={() => setAmountWarning(false)}
+          error={amountWarning}
           endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
           defaultValue={0}
         />
@@ -183,7 +191,7 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
         <TransferInput
           type="text"
           name="memo"
-          onChange={(e) => transferPage.setMemo(e.target.value)}
+          onChange={(e) => setMemo(e.target.value)}
         />
         <TransferButton
           variant="contained"
@@ -197,31 +205,31 @@ const TransferPage: React.FC<Props> = observer((props: Props) => {
       </FormControl>
 
       <SendingDialog
-        open={transferPage.currentPhase === TransferPhase.SENDING}
-        onDetailedView={() => onDetailedView(transferPage.tx)}
+        open={currentPhase === TransferPhase.SENDING}
+        onDetailedView={() => handleDetailView(tx)}
       />
 
       <SuccessDialog
-        open={
-          transferPage.currentPhase === TransferPhase.FINISHED &&
-          transferPage.success
-        }
-        onDetailedView={() => onDetailedView(transferPage.tx)}
-        onClose={() => transferPage.finish()}
+        open={currentPhase === TransferPhase.FINISHED && success}
+        onDetailedView={() => handleDetailView(tx)}
+        onClose={() => {
+          setCurrentPhase(TransferPhase.READY);
+          setSuccess(false);
+        }}
       >
         <T _str="Send Success!" _tags={transifexTags} />
       </SuccessDialog>
 
       <FailureDialog
-        open={
-          transferPage.currentPhase === TransferPhase.FINISHED &&
-          !transferPage.success
-        }
-        onDetailedView={() => onDetailedView(transferPage.tx)}
-        onClose={() => transferPage.finish()}
+        open={currentPhase === TransferPhase.FINISHED && !success}
+        onDetailedView={() => handleDetailView(tx)}
+        onClose={() => {
+          setCurrentPhase(TransferPhase.READY);
+          setSuccess(false);
+        }}
       />
     </TransferContainer>
   );
-});
+}
 
-export default TransferPage;
+export default observer(TransferPage);

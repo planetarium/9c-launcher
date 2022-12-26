@@ -1,98 +1,81 @@
 import Decimal from "decimal.js";
-import { ipcRenderer } from "electron";
 import { observable, action, decorate } from "mobx";
 import { sleep } from "src/utils";
-import { GraphQLSDK } from "../middleware/graphql";
-import { tmpName } from "tmp-promise";
-import { signTransaction, Account } from "@planetarium/sign";
-import { createAccount } from "@planetarium/account-raw";
+import { GraphQLClient } from "graphql-request";
+import { get as getConfig } from "src/config";
+import { getSdk } from "src/generated/graphql-request";
+import { signTransaction } from "@planetarium/sign";
 
-export interface IHeadlessStore {
+type GraphQLSDK = ReturnType<typeof getSdk>;
+
+type TxExecutionCallback = (blockIndex: number, blockHash: string) => void;
+
+type TxId = string;
+
+export interface ITransferStore {
   balance: Decimal;
-  assertAgentAddress: () => void;
-  assertAgentAddressV2: (signer: string) => void;
-  getBalance: (agentAdress: string) => Promise<Decimal>;
-  getAgentAddress: () => string;
-  trySetAgentAddress: (agentAddress: string) => Promise<boolean>;
-  transferGold: (
-    signer: string,
+  getBalance: (senderAdress: string) => Promise<Decimal>;
+  trySetSenderAddress: (senderAddress: string) => Promise<boolean>;
+  transferAsset: (
+    sender: string,
     recipient: string,
     amount: Decimal,
-    memo: string
+    memo: string,
+    publickey: string
   ) => Promise<string>;
   swapToWNCG: (
-    signer: string,
+    sender: string,
     recipient: string,
-    amount: Decimal
+    amount: Decimal,
+    publickey: string
   ) => Promise<string>;
   confirmTransaction: (
     txId: TxId,
     timeout: number | undefined,
     listener: TransactionConfirmationListener
   ) => Promise<void>;
-  updateBalance: (agentAddress: string) => Promise<Decimal>;
+  updateBalance: (senderAddress: string) => Promise<Decimal>;
   updateSdk: (sdk: GraphQLSDK) => void;
-  updateAccount: (account: Account) => void;
 }
 
-type TxExecutionCallback = (blockIndex: number, blockHash: string) => void;
 export interface TransactionConfirmationListener {
   onSuccess: TxExecutionCallback;
   onFailure: TxExecutionCallback;
   onTimeout: TxExecutionCallback;
 }
 
-type TxId = string;
+export default class TransferStore implements ITransferStore {
+  private bridgeAddress: string =
+    getConfig("SwapAddress") || "0x9093dd96c4bb6b44A9E0A522e2DE49641F146223";
+  @observable public graphqlSdk: GraphQLSDK = getSdk(new GraphQLClient(""));
+  @observable public balance: Decimal = new Decimal(0);
+  @observable public senderAddress: string = "";
 
-export default class HeadlessStore implements IHeadlessStore {
-  private agentAddress: string = "";
-  private bridgeAddress: string = "";
-  private graphqlSdk: GraphQLSDK;
-  private account: Account = createAccount();
-  @observable public balance: Decimal;
-
-  constructor(sdk: GraphQLSDK, bridgeAddress: string) {
-    this.graphqlSdk = sdk;
-    this.bridgeAddress = bridgeAddress;
-    this.balance = new Decimal(0);
-  }
-
-  assertAgentAddress = (): void => {
-    if (this.agentAddress === "") {
-      throw new Error("Agent address is empty");
+  @action
+  getBalance = async (senderAddress: string): Promise<Decimal> => {
+    if (senderAddress === "") {
+      throw new Error("Sender address is empty");
     }
-  };
-
-  assertAgentAddressV2 = (signer: string): void => {
-    if (signer === "") {
-      throw new Error("Agent address is empty");
-    }
-  };
-
-  getBalance = async (agentAddress: string): Promise<Decimal> => {
-    this.assertAgentAddressV2(agentAddress);
-    const balance = await this.graphqlSdk.GetNCGBalance({
-      address: agentAddress,
-    });
-    if (balance.data) {
-      return new Decimal(balance.data.goldBalance);
-    }
-    return new Decimal(0);
+    return this.graphqlSdk
+      .GetNCGBalance({
+        address: senderAddress,
+      })
+      .then((v) => {
+        if (v.data) {
+          return new Decimal(v.data.goldBalance);
+        }
+        return new Decimal(0);
+      });
   };
 
   @action
-  getAgentAddress = () => {
-    return this.agentAddress;
-  };
-
-  @action
-  trySetAgentAddress = async (agentAddress: string): Promise<boolean> => {
-    if (agentAddress === "") {
-      throw new Error("Agent address is empty");
+  trySetSenderAddress = async (senderAddress: string): Promise<boolean> => {
+    if (senderAddress === "") {
+      throw new Error("Sender address is empty");
     }
 
-    if (agentAddress) {
-      this.agentAddress = agentAddress;
+    if (senderAddress) {
+      this.senderAddress = senderAddress;
       return true;
     }
 
@@ -100,11 +83,12 @@ export default class HeadlessStore implements IHeadlessStore {
   };
 
   @action
-  transferGold = async (
+  transferAsset = async (
     sender: string,
     recipient: string,
     amount: Decimal,
-    memo: string
+    memo: string,
+    publickey: string
   ): Promise<TxId> => {
     if (sender.startsWith("0x")) {
       sender = sender.replace("0x", "");
@@ -113,19 +97,18 @@ export default class HeadlessStore implements IHeadlessStore {
       recipient = recipient.replace("0x", "");
     }
 
-    this.assertAgentAddressV2(sender);
+    if (sender === "") {
+      throw new Error("Sender address is empty");
+    }
 
-    return this.account
-      .getPublicKey()
-      .then((v) =>
-        this.graphqlSdk.transferAsset({
-          publicKey: Buffer.from(v).toString("hex"),
-          sender: sender,
-          recipient: recipient,
-          amount: amount.toString(),
-          memo: memo,
-        })
-      )
+    return this.graphqlSdk
+      .transferAsset({
+        publicKey: publickey,
+        sender: sender,
+        recipient: recipient,
+        amount: amount.toString(),
+        memo: memo,
+      })
       .catch((e) => {
         console.error(e);
         throw new Error("Failed to create transfer asset action.");
@@ -153,15 +136,17 @@ export default class HeadlessStore implements IHeadlessStore {
 
   @action
   swapToWNCG = async (
-    signer: string,
+    sender: string,
     recipient: string,
-    amount: Decimal
+    amount: Decimal,
+    publickey: string
   ): Promise<TxId> => {
-    return await this.transferGold(
-      signer,
+    return await this.transferAsset(
+      sender,
       this.bridgeAddress,
       amount,
-      recipient
+      recipient,
+      publickey
     );
   };
 
@@ -214,8 +199,8 @@ export default class HeadlessStore implements IHeadlessStore {
   };
 
   @action
-  updateBalance = async (agentAddress: string): Promise<Decimal> => {
-    const balance = await this.getBalance(agentAddress);
+  updateBalance = async (senderAddress: string): Promise<Decimal> => {
+    const balance = await this.getBalance(senderAddress);
     this.balance = balance;
     return balance;
   };
@@ -223,10 +208,5 @@ export default class HeadlessStore implements IHeadlessStore {
   @action
   updateSdk = (sdk: GraphQLSDK) => {
     this.graphqlSdk = sdk;
-  };
-
-  @action
-  updateAccount = (account: Account) => {
-    this.account = account;
   };
 }

@@ -23,7 +23,7 @@ type Result = ReturnType<ReturnType<typeof useStageTransactionMutation>[0]>;
  * @param args Arguments to pass to the action.
  * @returns A async function that stages the transaction when called.
  */
-export async function useTx(): (tx: string) => Result {
+export function useTx(): (tx: string) => Result {
   const inProgress = useRef(false);
   const account = useStore("account");
   const [stage] = useStageTransactionMutation();

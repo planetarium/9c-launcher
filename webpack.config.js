@@ -43,7 +43,6 @@ function createRenderConfig(isDev) {
     devtool: isDev && "eval-cheap-module-source-map",
 
     entry: {
-      transfer: "./transfer/transfer.tsx",
       v2: "./v2/render.tsx",
     },
 
@@ -137,12 +136,6 @@ function createRenderConfig(isDev) {
       }),
 
       new HtmlPlugin({
-        template: `index.html`, // relative path to the HTML files
-        filename: `transfer.html`, // output HTML files
-        chunks: ["transfer"], // respective JS files
-      }),
-
-      new HtmlPlugin({
         template: "v2.html", // relative path to the HTML files
         filename: "v2.html", // output HTML files
         chunks: ["v2"], // respective JS files
@@ -202,7 +195,6 @@ function createMainConfig(isDev) {
 
     entry: {
       main: "./main/main.ts",
-      preload: "./preload/preload.ts",
     },
 
     resolve: {

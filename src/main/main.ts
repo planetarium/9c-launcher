@@ -62,7 +62,6 @@ import installExtension, {
   APOLLO_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
 import bytes from "bytes";
-import createTransferWindow from "../transfer/window";
 import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import {
@@ -98,12 +97,10 @@ const standaloneExecutablePath = path.join(
 const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
-let transferWin: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 const standalone: Headless = new Headless(standaloneExecutablePath);
-let ip: string | null = null;
 let relaunched: boolean = false;
 
 let bootstrapped = false;
@@ -370,27 +367,6 @@ function initializeIpc() {
       }
     }
   );
-
-  ipcMain.handle("open transfer page", async (_, selectedAddress, account) => {
-    if (transferWin != null) {
-      transferWin.focus();
-      return;
-    }
-    console.log(`open transfer page address: ${selectedAddress}`);
-    transferWin = await createTransferWindow();
-    console.log(
-      `call initialize transfer window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
-    );
-    transferWin!.webContents.send(
-      "initialize transfer window",
-      selectedAddress,
-      account,
-      remoteNode!.HeadlessUrl()
-    );
-    transferWin.on("close", function (event: any) {
-      transferWin = null;
-    });
-  });
 
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {

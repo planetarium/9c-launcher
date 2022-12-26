@@ -5,28 +5,23 @@ import {
   InputAdornment,
   OutlinedInput,
   styled,
-  TextField,
   Typography,
 } from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
 import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
-import React, { useContext, useState } from "react";
-import FailureDialog from "src/transfer/components/FailureDialog/FailureDialog";
-import SendingDialog from "src/transfer/components/SendingDialog/SendingDialog";
-import SuccessDialog from "src/transfer/components/SuccessDialog/SuccessDialog";
-import { StoreContext } from "src/transfer/hooks";
-import { TransactionConfirmationListener } from "src/transfer/stores/headless";
-import { TransferPhase } from "src/transfer/stores/views/transfer";
+import React, { useState } from "react";
+import { verify as addressVerify } from "eip55";
+import FailureDialog from "src/v2/components/FailureDialog/FailureDialog";
+import SendingDialog from "src/v2/components/SendingDialog/SendingDialog";
+import SuccessDialog from "src/v2/components/SuccessDialog/SuccessDialog";
+import { useStore } from "src/v2/utils/useStore";
+import { TransactionConfirmationListener } from "src/stores/transfer";
+import { handleDetailView, TransferPhase } from "src/v2/utils/transfer/utils";
 import refreshIcon from "../../resources/refreshIcon.png";
 
 const transifexTags = "Transfer/Transfer";
-
-export type Props = {
-  signer: string;
-  onDetailedView: (tx: string) => void;
-};
 
 const SwapContainer = styled(Container)({
   flex: "3",
@@ -74,38 +69,55 @@ const SwapButton = styled(Button)({
   left: "100px",
 });
 
-const SwapPage: React.FC<Props> = observer((props: Props) => {
-  const { headlessStore, swapPage } = useContext(StoreContext);
-  const { signer, onDetailedView } = props;
-  const [tx, setTx] = useState("");
+function SwapPage() {
+  const { transfer, account } = useStore();
+  const [recipient, setRecipient] = useState<string>("");
+  const [amount, setAmount] = useState<Decimal>(new Decimal(0));
+  const [recipientWarning, setRecipientWarning] = useState<boolean>(false);
+  const [amountWarning, setAmountWarning] = useState<boolean>(false);
+  const [tx, setTx] = useState<string>("");
+  const [success, setSuccess] = useState<boolean>(false);
+  const [currentPhase, setCurrentPhase] = useState<TransferPhase>(
+    TransferPhase.READY
+  );
 
   const listener: TransactionConfirmationListener = {
     onSuccess: (blockIndex, blockHash) => {
       console.log(`Block #${blockIndex} (${blockHash})`);
-      swapPage.endSend(true);
+      setCurrentPhase(TransferPhase.FINISHED);
+      setSuccess(false);
     },
     onFailure: (blockIndex, blockHash) => {
       console.log(`Failed`);
-      swapPage.endSend(false);
+      setCurrentPhase(TransferPhase.FINISHED);
+      setSuccess(false);
     },
     onTimeout: (blockIndex, blockHash) => {
       console.log(`Timeout`);
-      swapPage.endSend(false);
+      setCurrentPhase(TransferPhase.FINISHED);
+      setSuccess(false);
     },
   };
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
-    if (!swapPage.validateRecipient || !swapPage.validateAmount) {
+    if (!addressVerify(recipient) || !amount.gt(0)) {
       return;
     }
-    swapPage.startSend();
-    const { recipient, amount } = swapPage;
-    const tx = await headlessStore.swapToWNCG(signer, recipient, amount);
-    swapPage.setTx(tx);
 
-    headlessStore.confirmTransaction(tx, undefined, listener);
+    setCurrentPhase(TransferPhase.SENDTX);
+
+    const publickey = await account.getPublicKeyString();
+    const tx = await transfer.swapToWNCG(
+      transfer.senderAddress,
+      recipient,
+      amount,
+      publickey
+    );
+    setTx(tx);
+
+    transfer.confirmTransaction(tx, undefined, listener);
   };
 
   return (
@@ -120,10 +132,10 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
         <SwapInput
           type="text"
           name="address"
-          error={swapPage.recipientWarning}
-          onChange={(e) => swapPage.setRecipient(e.target.value)}
-          onBlur={() => swapPage.setRecipientWarning()}
-          onFocus={() => swapPage.resetRecipientWarning()}
+          error={recipientWarning}
+          onChange={(e) => setRecipient(e.target.value)}
+          onBlur={() => setRecipientWarning(!addressVerify(recipient, true))}
+          onFocus={() => setRecipientWarning(false)}
         />
         <SwapTitle>
           <T _str="NCG Amount" _tags={transifexTags} />
@@ -135,25 +147,23 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
             <T
               _str="(Your balance: {ncg} NCG)"
               _tags={transifexTags}
-              ncg={headlessStore.balance}
+              ncg={transfer.balance}
             />
           </b>
           <Button
             startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={() => headlessStore.updateBalance(signer)}
+            onClick={() => transfer.updateBalance(transfer.senderAddress)}
           />
         </SwapSecondTitle>
         <SwapInput
           type="number"
           name="amount"
           onChange={(e) =>
-            swapPage.setAmount(
-              new Decimal(e.target.value === "" ? -1 : e.target.value)
-            )
+            setAmount(new Decimal(e.target.value === "" ? -1 : e.target.value))
           }
-          onBlur={() => swapPage.setAmountWarning()}
-          onFocus={() => swapPage.resetAmountWarning()}
-          error={swapPage.amountWarning}
+          onBlur={() => setAmountWarning(!amount.gt(0))}
+          onFocus={() => setAmountWarning(false)}
+          error={amountWarning}
           endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
           defaultValue={0}
         />
@@ -188,7 +198,7 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
           variant="contained"
           color="primary"
           onClick={handleButton}
-          disabled={!swapPage.sendButtonActivated}
+          disabled={amountWarning || recipientWarning}
         >
           {" "}
           Send{" "}
@@ -196,16 +206,17 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
       </FormControl>
 
       <SendingDialog
-        open={swapPage.currentPhase === TransferPhase.SENDING}
-        onDetailedView={() => onDetailedView(swapPage.tx)}
+        open={currentPhase === TransferPhase.SENDING}
+        onDetailedView={() => handleDetailView(tx)}
       />
 
       <SuccessDialog
-        open={
-          swapPage.currentPhase === TransferPhase.FINISHED && swapPage.success
-        }
-        onDetailedView={() => onDetailedView(swapPage.tx)}
-        onClose={() => swapPage.finish()}
+        open={currentPhase === TransferPhase.FINISHED && success}
+        onDetailedView={() => handleDetailView(tx)}
+        onClose={() => {
+          setCurrentPhase(TransferPhase.READY);
+          setSuccess(false);
+        }}
       >
         <T
           _str="Although the NCG remittance was successful, the WNCG conversion takes about 20 minutes."
@@ -214,14 +225,15 @@ const SwapPage: React.FC<Props> = observer((props: Props) => {
       </SuccessDialog>
 
       <FailureDialog
-        open={
-          swapPage.currentPhase === TransferPhase.FINISHED && !swapPage.success
-        }
-        onDetailedView={() => onDetailedView(swapPage.tx)}
-        onClose={() => swapPage.finish()}
+        open={currentPhase === TransferPhase.FINISHED && !success}
+        onDetailedView={() => handleDetailView(tx)}
+        onClose={() => {
+          setCurrentPhase(TransferPhase.READY);
+          setSuccess(false);
+        }}
       />
     </SwapContainer>
   );
-});
+}
 
-export default SwapPage;
+export default observer(SwapPage);

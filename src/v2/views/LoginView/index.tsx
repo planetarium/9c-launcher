@@ -13,16 +13,14 @@ import { Select, SelectOption } from "src/v2/components/ui/Select";
 import { Link } from "src/v2/components/ui/Link";
 import { T } from "src/renderer/i18n";
 import Form from "src/v2/components/ui/Form";
-import { preloadService } from "src/v2/machines/preloadMachine";
 import { get } from "src/config";
-import toast from "react-hot-toast";
 import _refiner from "refiner-js";
 import { trackEvent } from "src/v2/utils/mixpanel";
 
 const transifexTags = "v2/login-view";
 
 function LoginView() {
-  const { account } = useStore();
+  const { account, transfer } = useStore();
   const [password, setPassword] = useState("");
   const [invalid, setInvalid] = useState(false);
   const [address, setAddress] = useState<Address>(
@@ -38,6 +36,9 @@ function LoginView() {
         account.setLoginStatus(true);
         ipcRenderer.send("mixpanel-alias", address);
         trackEvent("Launcher/Login");
+
+        transfer.trySetSenderAddress(account.address);
+        transfer.updateBalance(account.address);
 
         _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
         _refiner("identifyUser", {
