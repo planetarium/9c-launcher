@@ -50,17 +50,17 @@ function MissingActivationView() {
   return (
     <Layout sidebar css={SidebarStyles}>
       <H1>
-        <T _str="Retype your Invitation Code" _tags={transifexTags} />
+        <T _str="Retype your Activation Code" _tags={transifexTags} />
       </H1>
       <p>
         <T
-          _str="The previously entered invitation code is invalid or the invitation code has not been entered yet."
+          _str="The previously entered activation code is invalid or the activation code has not been entered yet."
           _tags={transifexTags}
         />
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
-          label={t("Invitation Code", { _tags: transifexTags })}
+          label={t("Activation Code", { _tags: transifexTags })}
           invalid={errors.activationKey}
           {...register("activationKey", {
             required: true,

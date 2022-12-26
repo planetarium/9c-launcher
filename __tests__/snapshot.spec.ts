@@ -14,7 +14,7 @@ import { BlockMetadata } from "src/interfaces/block-header";
 import { MockedNineChroniclesMixpanel } from "./mock/MockNineChroniclesMixpanel";
 
 const storePath = path.join(__dirname, "fixture", "store");
-const baseUrl = "https://download.nine-chronicles.com/partition-test";
+const baseUrl = "http://snapshots.nine-chronicles.com/partition-test";
 const userDataPath = path.join(__dirname, "userData");
 const emptyStore = path.join(storePath, "empty");
 const nonEmptyStore = path.join(storePath, "non-empty");

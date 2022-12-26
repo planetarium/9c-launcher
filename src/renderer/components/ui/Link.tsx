@@ -12,3 +12,15 @@ export const Link = styled(ReactRouterLink, {
     },
   },
 });
+
+export const ExtLink = styled("a", {
+  color: "#888888",
+  cursor: "pointer",
+  variants: {
+    centered: {
+      true: {
+        textAlign: "center",
+      },
+    },
+  },
+});
