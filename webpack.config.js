@@ -43,7 +43,7 @@ function createRenderConfig(isDev) {
     devtool: isDev && "eval-cheap-module-source-map",
 
     entry: {
-      main: "./renderer/render.tsx",
+      render: "./renderer/render.tsx",
     },
 
     output: {
@@ -138,7 +138,7 @@ function createRenderConfig(isDev) {
       new HtmlPlugin({
         template: "index.html", // relative path to the HTML files
         filename: "index.html", // output HTML files
-        chunks: ["index"], // respective JS files
+        chunks: ["render"], // respective JS files
       }),
 
       isDev && new ReactRefreshWebpackPlugin(),
@@ -199,6 +199,10 @@ function createMainConfig(isDev) {
 
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
+      alias: {
+        root: __dirname,
+        src: path.resolve(__dirname, "src"),
+      },
     },
 
     ignoreWarnings: [
