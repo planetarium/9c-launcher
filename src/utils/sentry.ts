@@ -1,5 +1,5 @@
 import { get, app } from "src/config";
-import { version } from "package.json";
+import { version } from "../../package.json";
 
 const { init } =
   process.type === "browser"
