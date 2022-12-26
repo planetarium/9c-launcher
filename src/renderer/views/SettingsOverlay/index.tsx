@@ -104,12 +104,6 @@ function handleOpenLogPath() {
   shell.showItemInFolder(openpath);
 }
 
-async function clearCache() {
-  preloadService.send("IDLE");
-  const result = await ipcRenderer.invoke("clear cache", true);
-  return result;
-}
-
 async function handleLauncherUpdate() {
   const result = await ipcRenderer.invoke("start launcher update");
   return result;
@@ -197,11 +191,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
               <GroupTitle>
                 <T _str="Advanced" _tags={transifexTags} />
               </GroupTitle>
-              <AdvancedAction
-                icon={<DeleteIcon />}
-                onClick={clearCache}
-                text={t("Clear Cache")}
-              />
               <AdvancedAction
                 link
                 onClick={handleOpenLogPath}
