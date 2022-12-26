@@ -1,6 +1,6 @@
 import { describe, it, assert } from "vitest";
-import { Action } from "../../../src/main/headless/action";
-import { HEADLESS_PATH } from "../../constant";
+import { Action } from "src/main/headless/action";
+import { HEADLESS_PATH } from "src/constant";
 import { tmpNameSync } from "tmp-promise";
 import fs from "fs";
 import path from "path";

@@ -1,12 +1,9 @@
 import { IApv, ISimpleApv } from "src/interfaces/apv";
-import {
-  AppProtocolVersionType,
-  getSdk,
-} from "../../generated/graphql-request";
-import { buildDownloadUrl } from "../../utils/url";
-import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
+import { AppProtocolVersionType, getSdk } from "src/generated/graphql-request";
+import { buildDownloadUrl } from "src/utils/url";
+import { get as getConfig, baseUrl, netenv, playerPath } from "src/config";
 import { readVersion, exists as metafileExists } from "./metafile";
-import { analyzeApv, verifyApv, decodeProjectVersion } from "../../utils/apv";
+import { analyzeApv, verifyApv, decodeProjectVersion } from "src/utils/apv";
 import { GraphQLClient } from "graphql-request";
 
 export class QueryApvFailedError extends Error {}

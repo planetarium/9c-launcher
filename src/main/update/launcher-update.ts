@@ -2,14 +2,14 @@ import path from "path";
 import { DownloadItem, app } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import extractZip from "extract-zip";
-import * as utils from "../../utils";
+import * as utils from "src/utils";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { tmpName } from "tmp-promise";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
 import fs from "fs";
 import { spawn as spawnPromise } from "child-process-promise";
 import { IUpdate } from "./check";
-import { CONFIG_FILE_PATH } from "../../config";
+import { CONFIG_FILE_PATH } from "src/config";
 
 export async function launcherUpdate(
   update: IUpdate,

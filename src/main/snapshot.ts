@@ -1,7 +1,7 @@
 import fs, { readdirSync } from "fs";
 import CancellationToken from "cancellationtoken";
 import { IDownloadProgress } from "../interfaces/ipc";
-import { cancellableDownload, cancellableExtract } from "../utils";
+import { cancellableDownload, cancellableExtract } from "src/utils";
 import path from "path";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
@@ -11,8 +11,8 @@ import { ClearCacheException } from "./exceptions/clear-cache-exception";
 import { ExtractSnapshotFailedError } from "./exceptions/extract-snapshot-failed";
 import { INineChroniclesMixpanel } from "./mixpanel";
 import axios from "axios";
-import { send } from "./v2/ipc";
-import { IPC_PRELOAD_NEXT, IPC_SNAPSHOT_PROGRESS } from "../v2/ipcTokens";
+import { send } from "./ipc";
+import { IPC_PRELOAD_NEXT, IPC_SNAPSHOT_PROGRESS } from "../renderer/ipcTokens";
 import debounce from "lodash.debounce";
 
 export type Epoch = {

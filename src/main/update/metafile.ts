@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { IVersionMetadata } from "../../interfaces/metadata";
-import { PLAYER_METAFILE_VERSION } from "../../config";
+import { IVersionMetadata } from "src/interfaces/metadata";
+import { PLAYER_METAFILE_VERSION } from "src/config";
 
 export const FILE_NAME = "version.json";
 export class SchemaNotCompatibilityError extends Error {}

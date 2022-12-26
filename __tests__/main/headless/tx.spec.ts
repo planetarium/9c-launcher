@@ -1,6 +1,6 @@
 import { describe, it, assert } from "vitest";
-import { Tx } from "../../../src/main/headless/tx";
-import { HEADLESS_PATH } from "../../constant";
+import { Tx } from "src/main/headless/tx";
+import { HEADLESS_PATH } from "src/constant";
 import path from "path";
 import fs from "fs";
 

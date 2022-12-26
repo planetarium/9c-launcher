@@ -33,15 +33,14 @@ import path from "path";
 import fs from "fs";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
-import { initializeSentry } from "../v2/utils/sentry";
+import { initializeSentry } from "src/utils/sentry";
 import "core-js";
 import log from "electron-log";
 import { AppProtocolVersionType } from "../generated/graphql";
-import { decodeApvExtra, encodeTokenFromHex } from "../utils/apv";
-import * as utils from "../utils";
+import { decodeApvExtra, encodeTokenFromHex } from "src/utils/apv";
+import * as utils from "src/utils";
 import * as partitionSnapshot from "./snapshot";
 import * as monoSnapshot from "./monosnapshot";
-import Headless from "./headless/headless";
 import {
   HeadlessExitedError,
   HeadlessInitializeError,
@@ -67,18 +66,18 @@ import { NineChroniclesMixpanel } from "./mixpanel";
 import {
   createWindow as createV2Window,
   setQuitting as setV2Quitting,
-} from "./v2/application";
+} from "./application";
 import { getFreeSpace } from "@planetarium/check-free-space";
 import fg from "fast-glob";
 import { cleanUpLockfile, isUpdating, IUpdateOptions } from "./update/update";
 import { performUpdate } from "./update/update";
 import { checkForUpdate, checkForUpdateFromApv, IUpdate } from "./update/check";
-import { send } from "./v2/ipc";
+import { send } from "./ipc";
 import {
   IPC_OPEN_URL,
   IPC_PRELOAD_IDLE,
   IPC_PRELOAD_NEXT,
-} from "../v2/ipcTokens";
+} from "src/renderer/ipcTokens";
 import {
   initialize as remoteInitialize,
   enable as webEnable,
@@ -100,7 +99,7 @@ let win: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
-const standalone: Headless = new Headless(standaloneExecutablePath);
+let ip: string | null = null;
 let relaunched: boolean = false;
 
 let bootstrapped = false;
@@ -509,11 +508,6 @@ async function initializeHeadless(): Promise<void> {
 
   if (initializeHeadlessCts !== null) {
     console.error("Cannot initialize headless while initializing headless.");
-    return;
-  }
-
-  if (standalone.alive) {
-    console.error("Cannot initialize headless while headless is running.");
     return;
   }
 
