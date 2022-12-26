@@ -77,10 +77,10 @@ function LoginView() {
         <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
       </p>
       <Form onSubmit={(e) => e.preventDefault()}>
-        <Select value={address} onChange={(v) => setAddress(v)}>
+        <Select onChange={(v) => setAddress(v)}>
           {account.keyring.map((key) => (
             <SelectOption key={key.address} value={key.address}>
-              {key.address}
+              {"0x" + key.address}
             </SelectOption>
           ))}
         </Select>
