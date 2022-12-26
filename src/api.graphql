@@ -406,3 +406,44 @@ query GenesisHash {
 mutation stageTransaction($payload: String!) {
   stageTransaction(payload: $payload)
 }
+
+query ActivateAccount($publicKey: String!, $activationCode: String!){
+  actionTxQuery(publicKey: $publicKey){
+    activateAccount(activationCode: $activationCode)
+  }
+}
+
+query transferAsset($publicKey: String!, $sender: Address!, $recipient: Address!, $amount: String!, $memo: String){
+  actionTxQuery(publicKey: $publicKey){
+    transferAsset(
+    sender: $sender
+    recipient: $recipient
+    amount: $amount
+    currency: NCG
+    memo: $memo
+    )
+  }
+}
+
+query Stake($publicKey: String!, $amount: BigInt){
+  actionTxQuery(publicKey: $publicKey){
+    stake(amount: $amount)
+  }
+}
+
+query ClaimStakeReward($publicKey: String!, $avatarAddress: Address){
+  actionTxQuery(publicKey: $publicKey){
+    claimStakeReward(avatarAddress: $avatarAddress)
+  }
+}
+
+query MigrateMonsterCollection($publicKey: String!, $avatarAddress: Address){
+  actionTxQuery(publicKey: $publicKey){
+    migrateMonsterCollection(avatarAddress: $avatarAddress)
+  }
+}
+
+
+
+
+

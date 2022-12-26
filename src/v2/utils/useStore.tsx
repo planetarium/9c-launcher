@@ -1,10 +1,12 @@
 import React, { createContext, useContext } from "react";
 import AccountStore from "src/stores/account";
 import GameStore from "src/stores/game";
+import TransferStore from "src/stores/transfer";
 
 const stores = {
   account: new AccountStore(),
   game: new GameStore(),
+  transfer: new TransferStore(),
 } as const;
 
 export const StoreContext = createContext<typeof stores>(stores);

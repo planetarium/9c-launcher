@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { styled } from "src/v2/stitches.config";
 import {
   TxStatus,
+  useClaimStakeRewardLazyQuery,
   useTransactionResultLazyQuery,
 } from "src/v2/generated/graphql";
 import { useStore } from "src/v2/utils/useStore";
@@ -14,7 +15,7 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 import goldIconUrl from "src/v2/resources/ui-main-icon-gold.png";
 import monsterIconUrl from "src/v2/resources/monster.png";
-import { getRemain } from "src/collection/common/utils";
+import { getRemain } from "src/v2/utils/monsterCollection/utils";
 import ClaimCollectionRewardsOverlay from "src/v2/views/ClaimCollectionRewardsOverlay";
 import { ClaimButton } from "./ClaimButton";
 import { clipboard } from "electron";
@@ -23,7 +24,7 @@ import { useT } from "@transifex/react";
 import { useBalance } from "src/v2/utils/useBalance";
 import MonsterCollectionOverlay from "src/v2/views/MonsterCollectionOverlay";
 import { useStaking } from "src/v2/utils/staking";
-import { useTx, placeholder } from "src/v2/utils/useTx";
+import { useTx } from "src/v2/utils/useTx";
 import { trackEvent } from "src/v2/utils/mixpanel";
 
 const UserInfoStyled = styled(motion.ul, {
@@ -87,7 +88,9 @@ export default function UserInfo() {
     return getRemain(minutes);
   }, [claimableBlockIndex, tip]);
 
-  const tx = useTx("claim-stake-reward", placeholder, placeholder);
+  const [claimStakeReward, { data, loading, error }] =
+    useClaimStakeRewardLazyQuery();
+  const tx = useTx();
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -131,11 +134,22 @@ export default function UserInfo() {
           onClose={() => setOpenDialog(false)}
           tip={tip}
           onConfirm={(avatar) => {
-            tx(avatar.address.replace(/^0x/, ""), tip.toString())
-              .then((v) => v.data?.stageTxV2)
+            account
+              .getPublicKeyString()
+              .then((v) =>
+                claimStakeReward({
+                  variables: {
+                    publicKey: v,
+                    avatarAddress: avatar.address.replace(/^0x/, ""),
+                  },
+                })
+              )
+              .then(() => tx(data?.actionTxQuery.claimStakeReward))
               .then((txId) => {
-                if (!txId) return;
-                fetchResult({ variables: { txId } });
+                if (!txId.data) return;
+                fetchResult({
+                  variables: { txId: txId.data.stageTransaction },
+                });
                 trackEvent("Staking/Claim", {
                   txId,
                   avatar: avatar.address,

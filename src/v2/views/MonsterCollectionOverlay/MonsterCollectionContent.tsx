@@ -44,7 +44,7 @@ import { Alert } from "./dialog";
 import { AnimatePresence } from "framer-motion";
 import { useEvent } from "src/v2/utils/useEvent";
 import { CloseButton } from "src/v2/components/core/OverlayBase";
-import { getRemain } from "src/collection/common/utils";
+import { getRemain } from "src/v2/utils/monsterCollection/utils";
 
 declare global {
   interface Array<T> {

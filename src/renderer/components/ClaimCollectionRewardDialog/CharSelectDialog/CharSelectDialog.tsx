@@ -8,7 +8,7 @@ import {
   RadioGroup,
 } from "@material-ui/core";
 import React from "react";
-import { getRemain } from "../../../../collection/common/utils";
+import { getRemain } from "src/v2/utils/monsterCollection/utils";
 
 import "./CharSelectDialog.scss";
 
@@ -51,7 +51,7 @@ const CharSelectDialog: React.FC<Props> = (props: Props) => {
 
   const classes = charSelectDialogStyle();
   console.log(
-    avatar.map((x) => {
+    avatar.forEach((x) => {
       console.log(`address: ${x.address} updateAt: ${x.updatedAt}`);
     })
   );

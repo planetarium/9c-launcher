@@ -169,6 +169,20 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
+  getPublicKeyString = () =>
+    this.account.getPublicKey().then((v) => utils.bytesToHex(v));
+
+  @action
+  isValidPrivateKey = (privateKey: string): boolean => {
+    try {
+      createAccount(privateKey);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  };
+
+  @action
   generatePrivateKey = () => {
     this.setPrivateKey(utils.bytesToHex(utils.randomPrivateKey()));
   };

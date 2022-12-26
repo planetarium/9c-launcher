@@ -54,7 +54,6 @@ import { v4 as uuidv4 } from "uuid";
 import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
 import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
 import { ClearCacheException } from "./exceptions/clear-cache-exception";
-import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
 import installExtension, {
@@ -63,7 +62,6 @@ import installExtension, {
   APOLLO_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
 import bytes from "bytes";
-import createTransferWindow from "../transfer/window";
 import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import {
@@ -99,12 +97,10 @@ const standaloneExecutablePath = path.join(
 const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
-let collectionWin: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 const standalone: Headless = new Headless(standaloneExecutablePath);
-let ip: string | null = null;
 let relaunched: boolean = false;
 
 let bootstrapped = false;
@@ -371,46 +367,6 @@ function initializeIpc() {
       }
     }
   );
-
-  ipcMain.handle("open collection page", async (_, selectedAddress) => {
-    if (collectionWin != null) {
-      collectionWin.focus();
-      return;
-    }
-    console.log(`open collection page address: ${selectedAddress}`);
-    collectionWin = await createCollectionWindow();
-    console.log(
-      `call initialize collection window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
-    );
-    collectionWin!.webContents.send(
-      "initialize collection window",
-      selectedAddress,
-      remoteNode!.HeadlessUrl()
-    );
-    collectionWin.on("close", function (event: any) {
-      collectionWin = null;
-    });
-  });
-
-  ipcMain.handle("open transfer page", async (_, selectedAddress) => {
-    if (collectionWin != null) {
-      collectionWin.focus();
-      return;
-    }
-    console.log(`open transfer page address: ${selectedAddress}`);
-    collectionWin = await createTransferWindow();
-    console.log(
-      `call initialize transfer window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
-    );
-    collectionWin!.webContents.send(
-      "initialize transfer window",
-      selectedAddress,
-      remoteNode!.HeadlessUrl()
-    );
-    collectionWin.on("close", function (event: any) {
-      collectionWin = null;
-    });
-  });
 
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {

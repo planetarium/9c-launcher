@@ -16,6 +16,7 @@ import exchange from "../../../resources/icons/exchange.png";
 import SettingsOverlay from "src/v2/views/SettingsOverlay";
 import { AnimatePresence } from "framer-motion";
 import MonsterCollectionOverlay from "src/v2/views/MonsterCollectionOverlay";
+import TransferAssetOverlay from "src/v2/views/TransferAssetOverlay/main";
 import { useExternalURL } from "src/v2/utils/useExternalURL";
 
 const MenuContainer = styled("div", {
@@ -35,7 +36,7 @@ const MenuDivider = styled("hr", {
   borderTop: "1px solid #979797",
 });
 
-type Overlay = "settings" | "staking";
+type Overlay = "settings" | "staking" | "transfer";
 
 function Menu() {
   const account = useStore("account");
@@ -46,6 +47,8 @@ function Menu() {
     if (!url) return;
     if (url.pathname.startsWith("//open/monster-collection")) {
       openOverlay("staking");
+    } else if (url.pathname.startsWith("//open/transfer-asset")) {
+      openOverlay("transfer");
     }
   }, [url]);
 
@@ -67,10 +70,8 @@ function Menu() {
       <MenuItem
         icon={exchange}
         text="Send NCG"
-        disabled={!account.isLogin}
-        onClick={() =>
-          ipcRenderer.invoke("open transfer page", account.address)
-        }
+        disabled={!account.isLogin || currentOverlay === "transfer"}
+        onClick={() => openOverlay("transfer")}
       />
       <MenuItem
         icon={logo}
@@ -103,6 +104,10 @@ function Menu() {
       />
       <MonsterCollectionOverlay
         isOpen={currentOverlay === "staking"}
+        onClose={() => openOverlay(null)}
+      />
+      <TransferAssetOverlay
+        isOpen={currentOverlay === "transfer"}
         onClose={() => openOverlay(null)}
       />
     </MenuContainer>

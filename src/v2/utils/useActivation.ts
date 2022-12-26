@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 import {
+  useActivateAccountLazyQuery,
   useActivationAddressQuery,
   useActivationKeyNonceQuery,
 } from "../generated/graphql";
 import { useIsPreloadDone } from "./usePreload";
 import { useStore } from "./useStore";
-import { useTx } from "./useTx";
 
 interface ActivationResult {
   loading: boolean;
@@ -46,11 +46,7 @@ export function useActivation(activationKey?: string): ActivationResult {
     },
     skip: !activationKey,
   });
-  const tx = useTx(
-    "activate-account",
-    activationKey,
-    nonceData?.activationKeyNonce
-  );
+  const [tx] = useActivateAccountLazyQuery();
 
   useEffect(() => {
     if (nonceData?.activated) {
@@ -67,7 +63,16 @@ export function useActivation(activationKey?: string): ActivationResult {
         setPolling(true);
         setTxError(undefined);
       });
-      tx()
+      account
+        .getPublicKeyString()
+        .then((v) =>
+          tx({
+            variables: {
+              publicKey: v,
+              activationCode: activationKey,
+            },
+          })
+        )
         .catch((e) => {
           setTxError(e);
           console.error(e);

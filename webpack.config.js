@@ -7,7 +7,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const { version } = require("./package.json");
 const TerserPlugin = require("terser-webpack-plugin");
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 const child_process = require("child_process");
 
@@ -43,9 +43,6 @@ function createRenderConfig(isDev) {
     devtool: isDev && "eval-cheap-module-source-map",
 
     entry: {
-      render: "./renderer/render.tsx",
-      collection: "./collection/collection.tsx",
-      transfer: "./transfer/transfer.tsx",
       v2: "./v2/render.tsx",
     },
 
@@ -139,30 +136,12 @@ function createRenderConfig(isDev) {
       }),
 
       new HtmlPlugin({
-        filename: "index.html",
-        template: "index.html",
-        chunks: ["render"], // respective JS files
-      }),
-
-      new HtmlPlugin({
-        template: "collection.html", // relative path to the HTML files
-        filename: "collection.html", // output HTML files
-        chunks: ["collection"], // respective JS files
-      }),
-
-      new HtmlPlugin({
-        template: `index.html`, // relative path to the HTML files
-        filename: `transfer.html`, // output HTML files
-        chunks: ["transfer"], // respective JS files
-      }),
-
-      new HtmlPlugin({
         template: "v2.html", // relative path to the HTML files
         filename: "v2.html", // output HTML files
         chunks: ["v2"], // respective JS files
       }),
 
-      isDev && new ReactRefreshWebpackPlugin()
+      isDev && new ReactRefreshWebpackPlugin(),
     ].filter(Boolean),
 
     devServer: isDev
@@ -171,7 +150,7 @@ function createRenderConfig(isDev) {
           compress: true,
           port: 9000,
           historyApiFallback: true,
-          hot: true
+          hot: true,
         }
       : undefined,
 
@@ -216,7 +195,6 @@ function createMainConfig(isDev) {
 
     entry: {
       main: "./main/main.ts",
-      preload: "./preload/preload.ts",
     },
 
     resolve: {
@@ -290,8 +268,8 @@ function createMainConfig(isDev) {
 
     stats: {
       warningsFilter: [
-        /Can't resolve '(@planetarium|\.)\/check-free-space-/ // Rust bindings tries to import everything by default
-      ]
+        /Can't resolve '(@planetarium|\.)\/check-free-space-/, // Rust bindings tries to import everything by default
+      ],
     },
 
     plugins: [
