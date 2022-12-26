@@ -1,8 +1,4 @@
 import { assign, createMachine, interpret } from "xstate";
-import {
-  IPC_PRELOAD_NEXT,
-  IPC_SNAPSHOT_PROGRESS,
-} from "src/renderer/ipcTokens";
 import { invokeIpcEvent } from "src/utils/ipcEvent";
 import { inspect } from "@xstate/inspect";
 
@@ -27,7 +23,6 @@ type PreloadMachineEvent =
   | { type: "NEXT" }
   | { type: "SKIP_UPDATE" }
   | { type: "PROGRESS"; progress: number }
-  | { type: "HEADLESS" }
   | { type: "REMOTE_HEADLESS" }
   | { type: "DONE" }
   | { type: "ERROR"; error: string; data?: any }
@@ -53,7 +48,6 @@ export const preloadMachine = createMachine<
     states: {
       idle: {
         on: {
-          BOOTSTRAP: "snapshot",
           REMOTE_HEADLESS: "headless",
         },
         meta: {
@@ -61,99 +55,12 @@ export const preloadMachine = createMachine<
         },
         invoke: [
           {
-            id: "bootstrap",
-            src: () =>
-              invokeIpcEvent<PreloadMachineEvent>(
-                "start bootstrap",
-                "BOOTSTRAP"
-              ),
-          },
-          {
             id: "remoteHeadless",
             src: () =>
               invokeIpcEvent<PreloadMachineEvent>(
                 "start remote headless",
                 "REMOTE_HEADLESS"
               ),
-          },
-        ],
-      },
-      snapshot: {
-        initial: "checkUpdates",
-        states: {
-          checkUpdates: {
-            entry: "resetProgress",
-            on: {
-              NEXT: "download",
-              SKIP_UPDATE: "startingHeadless",
-            },
-            meta: {
-              step: 1,
-            },
-          },
-          download: {
-            entry: "resetProgress",
-            on: {
-              NEXT: "downloadState",
-            },
-            meta: {
-              step: 2,
-            },
-          },
-          downloadState: {
-            entry: "resetProgress",
-            on: {
-              NEXT: "extract",
-            },
-            meta: {
-              step: 3,
-            },
-          },
-          extract: {
-            entry: "resetProgress",
-            on: {
-              NEXT: "startingHeadless",
-            },
-            meta: {
-              step: 4,
-            },
-          },
-          startingHeadless: {
-            entry: "resetProgress",
-            meta: {
-              step: 5,
-            },
-          },
-        },
-        on: {
-          HEADLESS: {
-            target: "headless",
-          },
-          PROGRESS: {
-            actions: ["setProgress"],
-          },
-        },
-        invoke: [
-          {
-            id: "progress",
-            src: () =>
-              invokeIpcEvent<PreloadMachineEvent, typeof IPC_SNAPSHOT_PROGRESS>(
-                IPC_SNAPSHOT_PROGRESS,
-                (progress) => ({
-                  type: "PROGRESS",
-                  progress: progress * 100,
-                })
-              ),
-          },
-          {
-            id: "next",
-            src: () =>
-              invokeIpcEvent<PreloadMachineEvent>(IPC_PRELOAD_NEXT, "NEXT"),
-          },
-          {
-            id: "headless",
-            src: () =>
-              invokeIpcEvent<PreloadMachineEvent>("start headless", "HEADLESS"),
           },
         ],
       },
