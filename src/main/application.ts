@@ -1,7 +1,7 @@
 import { app, BrowserWindow, shell } from "electron";
 import { enable as remoteEnable } from "@electron/remote/main";
 import { join } from "path";
-import logoImage from "../resources/logo.png";
+import logoImage from "src/renderer/resources/logo.png";
 
 export let isQuitting = false;
 
@@ -50,10 +50,10 @@ export async function createWindow(): Promise<BrowserWindow> {
   });
 
   if (process.env.NODE_ENV !== "production") {
-    await win.loadURL("http://localhost:9000/v2.html");
+    await win.loadURL("http://localhost:9000/index.html");
     await win.webContents.openDevTools({ mode: "detach" });
   } else {
-    await win.loadFile("v2.html");
+    await win.loadFile("index.html");
   }
 
   return win;

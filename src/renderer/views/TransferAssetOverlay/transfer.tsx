@@ -18,7 +18,7 @@ import FailureDialog from "src/renderer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/renderer/components/SendingDialog/SendingDialog";
 import SuccessDialog from "src/renderer/components/SuccessDialog/SuccessDialog";
 import { TransactionConfirmationListener } from "src/stores/transfer";
-import refreshIcon from "src/resources/refreshIcon.png";
+import refreshIcon from "src/renderer/resources/refreshIcon.png";
 import { useStore } from "src/utils/useStore";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
 

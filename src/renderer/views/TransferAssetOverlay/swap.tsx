@@ -19,7 +19,7 @@ import SuccessDialog from "src/renderer/components/SuccessDialog/SuccessDialog";
 import { useStore } from "src/utils/useStore";
 import { TransactionConfirmationListener } from "src/stores/transfer";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
-import refreshIcon from "src/resources/refreshIcon.png";
+import refreshIcon from "src/renderer/resources/refreshIcon.png";
 
 const transifexTags = "Transfer/Transfer";
 
