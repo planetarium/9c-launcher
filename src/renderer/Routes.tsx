@@ -28,17 +28,10 @@ const Redirector = observer(() => {
       setProtectedPrivateKeys(account.listKeyFiles());
     } else if (protectedPrivateKeys.length < 1) {
       history.replace("/welcome");
-    } else {
-      protectedPrivateKeys.filter(Boolean).map((key) => {
-        if (account.keyring.some((target) => target.address === key.address)) {
-          account.addKey(key);
-        }
-      });
-
-      history.replace("/login");
     }
-  });
 
+    history.replace("/login");
+  });
   return null;
 });
 
