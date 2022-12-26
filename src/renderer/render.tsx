@@ -4,7 +4,7 @@ import React from "react";
 import * as DOM from "react-dom";
 
 import "core-js";
-import { initializeSentry } from "../preload/sentry";
+import { initializeSentry } from "../v2/utils/sentry";
 
 import App from "./App";
 
