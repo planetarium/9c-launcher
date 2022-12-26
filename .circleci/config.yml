@@ -4,35 +4,6 @@ orbs:
   win: circleci/windows@4.1.1
 
 commands:
-  checkout-update-submodules:
-    parameters:
-      paths:
-        type: string
-        default: ""
-    steps:
-      - checkout
-      - run:
-          command: git submodule update --init --recursive <<parameters.paths>>
-          environment:
-            GIT_LFS_SKIP_SMUDGE: 1
-  build-headless:
-    parameters:
-      os:
-        type: string
-        default: windows
-    steps:
-      - run: git rev-parse HEAD:NineChronicles.Headless > tree-hash
-      - restore_cache:
-          keys:
-            - headless-pub-<< parameters.os >>-{{ checksum "tree-hash" }}
-      - run:
-          command: |
-            [ -d dist/publish ] || yarn build-headless:<< parameters.os >>
-          shell: bash
-      - save_cache:
-          key: headless-pub-<< parameters.os >>-{{ checksum "tree-hash" }}
-          paths:
-            - dist/publish
   yarn-install:
     steps:
       - restore_cache:
@@ -69,21 +40,12 @@ jobs:
       os:
         type: string
     steps:
-      - checkout-update-submodules:
-          paths: "NineChronicles.Headless"
+      - checkout
       - run:
           command: |
             bash scripts/configure-artifact.sh << parameters.os >> 
           name: Setup OS variables
       - yarn-install
-      - run:
-          command: |
-            dotnet clean -c Release
-            dotnet nuget locals all --clear
-          working_directory: NineChronicles.Headless
-          name: Clean Headless
-      - build-headless:
-          os: << parameters.os >>
       - run:
           command: |
             mkdir pack-dist
@@ -156,12 +118,9 @@ jobs:
           name: Restart local mstsc
           command: psexec64.exe -accepteula -nobanner -i 0 mstsc /v:localhost /w:1920 /h:1080 # FHD
           background: true
-      - checkout-update-submodules:
-          paths: "NineChronicles.Headless"
       - yarn-install
       - run: scripts/create-key.ps1
       - install-dotnet
-      - build-headless
       - run: yarn build-prod
       - run: scripts/copy-config.ps1
       - run: yarn test

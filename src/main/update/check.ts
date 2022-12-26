@@ -1,17 +1,15 @@
 import { IApv, ISimpleApv } from "src/interfaces/apv";
-import {
-  AppProtocolVersionType,
-  getSdk,
-} from "../../generated/graphql-request";
-import { buildDownloadUrl } from "../../utils/url";
-import { get as getConfig, baseUrl, netenv, playerPath } from "../../config";
+import { AppProtocolVersionType, getSdk } from "src/generated/graphql-request";
+import { buildDownloadUrl } from "src/utils/url";
+import { get as getConfig, baseUrl, netenv, playerPath } from "src/config";
 import { readVersion, exists as metafileExists } from "./metafile";
-import { analyzeApv, verifyApv, decodeProjectVersion } from "../../utils/apv";
-import { GraphQLClient } from "graphql-request";
+import { analyzeApv, verifyApv, decodeProjectVersion } from "src/utils/apv";
 
 export class QueryApvFailedError extends Error {}
 export class GetnodeApvFailedError extends Error {}
 export class NoProjectVersionFoundError extends Error {}
+
+type GraphQLSDK = ReturnType<typeof getSdk>;
 
 export interface IUpdate {
   newApv: ISimpleApv;
@@ -32,12 +30,12 @@ const localApvToken = getConfig("AppProtocolVersion");
 const trustedApvSigners = getConfig("TrustedAppProtocolVersionSigners");
 
 export async function checkForUpdate(
-  graphqlClient: GraphQLClient,
+  graphqlSdk: GraphQLSDK,
   platform: NodeJS.Platform
 ): Promise<IUpdate> {
   let nodeApv;
   try {
-    nodeApv = await getNodeApv(graphqlClient, trustedApvSigners);
+    nodeApv = await getNodeApv(graphqlSdk, trustedApvSigners);
   } catch (e) {
     console.error(`getNodeApv Error ocurred ${e}:\n`, e.stderr);
     throw e;
@@ -120,10 +118,10 @@ export async function checkMetafile(newApv: ISimpleApv, dir: string) {
 }
 
 async function getNodeApv(
-  graphqlClient: GraphQLClient,
+  graphqlSdk: GraphQLSDK,
   trustedApvSigners: string[]
 ): Promise<IApv> {
-  const query = await getSdk(graphqlClient).NodeAppProtocolVersion();
+  const query = await graphqlSdk.NodeAppProtocolVersion();
   if (query.status == 200) {
     const nodeApvToken: AppProtocolVersionType =
       query.data.nodeStatus.appProtocolVersion!;
@@ -136,7 +134,7 @@ async function getNodeApv(
     }
   } else {
     throw new QueryApvFailedError(
-      `Failed to query nodeApvToken from GraphQL node, Node: ${graphqlClient}`
+      `Failed to query nodeApvToken from GraphQL node, Node: ${graphqlSdk}`
     );
   }
 }

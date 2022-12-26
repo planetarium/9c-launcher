@@ -6,7 +6,7 @@ import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
 import { IUpdate } from "./check";
-import { configStore, playerPath, PLAYER_METAFILE_VERSION } from "../../config";
+import { configStore, playerPath, PLAYER_METAFILE_VERSION } from "src/config";
 import { createVersion } from "./metafile";
 
 export async function playerUpdate(

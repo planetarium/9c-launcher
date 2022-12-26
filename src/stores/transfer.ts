@@ -4,7 +4,7 @@ import { sleep } from "src/utils";
 import { GraphQLClient } from "graphql-request";
 import { get as getConfig } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
-import { signTransaction } from "@planetarium/sign";
+import { signTransaction, Account } from "@planetarium/sign";
 
 type GraphQLSDK = ReturnType<typeof getSdk>;
 
@@ -21,13 +21,15 @@ export interface ITransferStore {
     recipient: string,
     amount: Decimal,
     memo: string,
-    publickey: string
+    publickey: string,
+    account: Account
   ) => Promise<string>;
   swapToWNCG: (
     sender: string,
     recipient: string,
     amount: Decimal,
-    publickey: string
+    publickey: string,
+    account: Account
   ) => Promise<string>;
   confirmTransaction: (
     txId: TxId,
@@ -88,7 +90,8 @@ export default class TransferStore implements ITransferStore {
     recipient: string,
     amount: Decimal,
     memo: string,
-    publickey: string
+    publickey: string,
+    account: Account
   ): Promise<TxId> => {
     if (sender.startsWith("0x")) {
       sender = sender.replace("0x", "");
@@ -116,7 +119,7 @@ export default class TransferStore implements ITransferStore {
       .then(
         (v) =>
           v.data.actionTxQuery.transferAsset &&
-          signTransaction(v.data.actionTxQuery.transferAsset, this.account)
+          signTransaction(v.data.actionTxQuery.transferAsset, account)
       )
       .catch((e) => {
         console.error(e);
@@ -139,14 +142,16 @@ export default class TransferStore implements ITransferStore {
     sender: string,
     recipient: string,
     amount: Decimal,
-    publickey: string
+    publickey: string,
+    account: Account
   ): Promise<TxId> => {
     return await this.transferAsset(
       sender,
       this.bridgeAddress,
       amount,
       recipient,
-      publickey
+      publickey,
+      account
     );
   };
 

@@ -1,10 +1,20 @@
-import { execFileSync } from "child_process";
+import { ChildProcess, execFileSync } from "child_process";
 import { dirname, basename } from "path";
-import { CUSTOM_SERVER, NodeInfo } from "../../config";
-import { sleep } from "../../utils";
+import { CUSTOM_SERVER, NodeInfo } from "src/config";
+import { sleep } from "src/utils";
 import { BlockMetadata } from "src/interfaces/block-header";
-import { NODESTATUS } from "./headless";
 
+interface NodeStatus {
+  Node: ChildProcess | null;
+  QuitRequested: boolean;
+  ExitCode: number | null;
+}
+
+export const NODESTATUS: NodeStatus = {
+  Node: null,
+  QuitRequested: false,
+  ExitCode: null,
+};
 class RemoteHeadless {
   constructor(node: NodeInfo) {
     this._url = `${node.host}/${node.rpcPort}`;

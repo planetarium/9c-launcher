@@ -9,7 +9,7 @@ import {
   getCurrentEpoch,
   getSnapshotDownloadTarget,
   validateMetadata,
-} from "../src/main/snapshot";
+} from "src/main/snapshot";
 import { BlockMetadata } from "src/interfaces/block-header";
 import { MockedNineChroniclesMixpanel } from "./mock/MockNineChroniclesMixpanel";
 
