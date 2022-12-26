@@ -1,4 +1,4 @@
-import { execFileSync } from "child_process";
+import { ChildProcess, execFileSync } from "child_process";
 import { dirname, basename } from "path";
 import { CUSTOM_SERVER, NodeInfo } from "src/config";
 import { sleep } from "src/utils";

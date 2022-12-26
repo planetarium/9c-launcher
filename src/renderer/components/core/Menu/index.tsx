@@ -14,7 +14,6 @@ import staking from "src/renderer/resources/icons/staking.png";
 import ncgLogo from "src/renderer/resources/icons/ncgLogo.png";
 import exchange from "src/renderer/resources/icons/exchange.png";
 import SettingsOverlay from "src/renderer/views/SettingsOverlay";
-import { AnimatePresence } from "framer-motion";
 import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverlay";
 import TransferAssetOverlay from "src/renderer/views/TransferAssetOverlay/main";
 import { useExternalURL } from "src/utils/useExternalURL";
@@ -47,7 +46,8 @@ function Menu() {
     if (!url) return;
     if (url.pathname.startsWith("//open/monster-collection")) {
       openOverlay("staking");
-    } else if (url.pathname.startsWith("//open/transfer-asset")) {
+    }
+    if (url.pathname.startsWith("//open/transfer-asset")) {
       openOverlay("transfer");
     }
   }, [url]);
