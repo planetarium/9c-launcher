@@ -17,16 +17,6 @@ commands:
           key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
             - .yarn/cache
-  install-dotnet:
-    parameters:
-      version:
-        type: string
-        default: "6.0.100"
-    steps:
-      - run:
-          command: |
-            choco install dotnet-sdk --version <<parameters.version>> -y --no-progress
-          name: Install .NET Core Latest
 
 jobs:
   build:
@@ -118,9 +108,9 @@ jobs:
           name: Restart local mstsc
           command: psexec64.exe -accepteula -nobanner -i 0 mstsc /v:localhost /w:1920 /h:1080 # FHD
           background: true
+      - checkout
       - yarn-install
       - run: scripts/create-key.ps1
-      - install-dotnet
       - run: yarn build-prod
       - run: scripts/copy-config.ps1
       - run: yarn test
