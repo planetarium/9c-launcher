@@ -9,7 +9,7 @@ export default {
   parameters: { actions: { argTypesRegex: "^on.*" } },
 } as Meta;
 
-const Template: Story<Props> = (props: Props) => <TransferPage />;
+const Template: Story = () => <TransferPage />;
 
 export const Default = Template.bind({});
 Default.args = {};
