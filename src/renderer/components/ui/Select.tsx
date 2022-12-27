@@ -6,6 +6,10 @@ globalCss({
   "div[data-reach-listbox-popover]": {
     backgroundColor: "$gray",
   },
+  "[data-reach-listbox-list]": {
+    maxHeight: "8rem",
+    overflowY: "scroll",
+  },
 })();
 
 export const Select = styled(Listbox, {
