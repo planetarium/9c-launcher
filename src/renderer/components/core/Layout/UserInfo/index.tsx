@@ -150,10 +150,10 @@ export default function UserInfo() {
                   tx(data.actionTxQuery.claimStakeReward!)
               )
               .then((txId) => {
-                if (!txId.data) return;
-                fetchResult({
-                  variables: { txId: txId.data.stageTransaction },
-                });
+                if (txId!.data)
+                  fetchResult({
+                    variables: { txId: txId!.data.stageTransaction },
+                  });
                 trackEvent("Staking/Claim", {
                   txId,
                   avatar: avatar.address,

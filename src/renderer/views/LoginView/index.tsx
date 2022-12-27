@@ -44,7 +44,7 @@ function LoginView() {
         _refiner("identifyUser", {
           id: address,
           config: {
-            rpc: get("UseRemoteHeadless"),
+            rpc: true,
             locale: get("Locale"),
           },
         });
