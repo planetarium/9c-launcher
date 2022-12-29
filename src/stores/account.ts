@@ -7,7 +7,7 @@ import {
   V3Keystore,
 } from "@planetarium/account-local";
 import { createAccount, isValidPrivateKey } from "@planetarium/account-raw";
-import { Account } from "@planetarium/sign";
+import { Account } from "@planetarium/sign/dist/src";
 import fs from "fs";
 import path from "path";
 import { Buffer } from "buffer";

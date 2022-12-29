@@ -203,10 +203,6 @@ function createMainConfig(isDev) {
         root: __dirname,
         src: path.resolve(__dirname, "src"),
       },
-      fallback: {
-        os: false,
-        fs: false,
-      },
     },
 
     ignoreWarnings: [
