@@ -40,7 +40,7 @@ function InfoText() {
 
   const onClick = () => {
     clipboard.writeText(debugValue);
-    toast(<T _str="Copied diagnostic inforomation." _tags="v2/diagnostics" />, {
+    toast(<T _str="Copied diagnostic information." _tags="v2/diagnostics" />, {
       position: "bottom-left",
       id: "diagnostics-copied",
     });
