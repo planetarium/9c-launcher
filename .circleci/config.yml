@@ -133,5 +133,4 @@ workflows:
           filters:
             branches:
               only: development
-      - e2e-test
       - chromatic
