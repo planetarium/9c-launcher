@@ -5,7 +5,7 @@ import { mergeMeta } from "./mergeMeta";
 import { useActor } from "@xstate/react";
 import {
   usePreloadProgressSubscriptionSubscription,
-  useNodeStatusSubscriptionSubscription,
+  useNodeStatusQuery,
 } from "src/v2/generated/graphql";
 import { useStore } from "src/v2/utils/useStore";
 import { ipcRenderer } from "electron";
@@ -63,20 +63,19 @@ export function usePreload() {
 
   const { data: preloadProgressSubscriptionResult } =
     usePreloadProgressSubscriptionSubscription();
-  const { data: nodeStatusSubscriptionResult } =
-    useNodeStatusSubscriptionSubscription();
+  const { data: nodeStatusQueryResult } = useNodeStatusQuery();
 
   const preloadProgress = preloadProgressSubscriptionResult?.preloadProgress;
 
   useEffect(() => {
-    const isEnded = nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded;
+    const isEnded = nodeStatusQueryResult?.nodeStatus?.preloadEnded;
 
     if (isEnded) {
       standalone.setReady(true);
       send("DONE");
       trackEvent(`Launcher/Preload Completed`);
     }
-  }, [nodeStatusSubscriptionResult?.nodeStatus?.preloadEnded]);
+  }, [nodeStatusQueryResult?.nodeStatus?.preloadEnded]);
 
   const progress = useMemo(
     () =>
