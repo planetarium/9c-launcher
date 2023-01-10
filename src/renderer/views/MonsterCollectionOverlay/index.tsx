@@ -68,28 +68,24 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             amount: amount.toString(),
             previousAmount: current.stateQuery.stakeState?.deposit,
           });
-          return account
-            .getPublicKeyString()
-            .then((v) =>
+          try {
+            account.getPublicKeyString().then((v) => {
               stake({
                 variables: {
                   publicKey: v,
-                  amount: amount.toString(),
+                  amount: amount.toNumber(),
                 },
-              })
-            )
-            .then(
-              () => staked?.actionTxQuery && tx(staked.actionTxQuery.stake!)
-            )
-            .then(
-              (v) =>
-                v?.data &&
-                fetchStatus({ variables: { txId: v.data.stageTransaction } })
-            )
-            .catch((e) => {
-              console.error(e);
-              setLoading(false);
+              });
             });
+            if (!staked?.actionTxQuery) throw error;
+            return tx(staked.actionTxQuery.stake).then((v) => {
+              if (!v.data) throw error;
+              fetchStatus({ variables: { txId: v.data.stageTransaction } });
+            });
+          } catch (e) {
+            setLoading(false);
+            console.error(e);
+          }
         }}
         onClose={onClose}
         tip={tip}
