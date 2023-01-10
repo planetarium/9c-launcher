@@ -13,7 +13,7 @@ import Decimal from "decimal.js";
 import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
 import React, { useState } from "react";
-import { verify as addressVerify } from "eip55";
+import { verify as addressVerify, encode } from "eip55";
 import FailureDialog from "src/renderer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/renderer/components/SendingDialog/SendingDialog";
 import SuccessDialog from "src/renderer/components/SuccessDialog/SuccessDialog";
@@ -96,9 +96,8 @@ function TransferPage() {
   };
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
     ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
-    if (!addressVerify(recipient) || !amount.gt(0)) {
+    if (!addressVerify(encode(recipient)) || !amount.gt(0)) {
       return;
     }
 
@@ -107,7 +106,6 @@ function TransferPage() {
       alert(errorMessage);
       return;
     }
-
     setCurrentPhase(TransferPhase.SENDTX);
 
     const publickey = await account.getPublicKeyString();
@@ -122,6 +120,7 @@ function TransferPage() {
     setTx(tx);
 
     transfer.confirmTransaction(tx, undefined, listener);
+    event.preventDefault();
   };
 
   const loading =

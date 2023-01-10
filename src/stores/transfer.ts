@@ -126,7 +126,7 @@ export default class TransferStore implements ITransferStore {
         throw new Error("Failed to sign transaction.");
       })
       .then((v) => {
-        if (v !== "string") {
+        if (typeof v !== "string") {
           throw new Error("Signed transaction not provided.");
         }
         return this.graphqlSdk.stageTransaction({ payload: v });
@@ -192,13 +192,13 @@ export default class TransferStore implements ITransferStore {
               return;
             }
           }
-          txResult = await (
-            await this.graphqlSdk.TransactionResult({ txId })
-          ).data!.transaction.transactionResult;
           break;
         default:
           throw new Error(`Unknown transaction status: ${txResult.txStatus}`);
       }
+      txResult = await (
+        await this.graphqlSdk.TransactionResult({ txId })
+      ).data!.transaction.transactionResult;
       await sleep(1000);
     }
   };
