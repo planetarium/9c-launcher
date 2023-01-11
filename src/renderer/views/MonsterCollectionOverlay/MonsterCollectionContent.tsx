@@ -199,7 +199,7 @@ export function MonsterCollectionContent({
                   ref={inputRef}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  maxLength={6}
+                  maxLength={8}
                   pattern={"[0-9]*"}
                   type="text"
                 />
