@@ -81,7 +81,7 @@ function TransferPage() {
     onSuccess: (blockIndex, blockHash) => {
       console.log(`Block #${blockIndex} (${blockHash})`);
       setCurrentPhase(TransferPhase.FINISHED);
-      setSuccess(false);
+      setSuccess(true);
     },
     onFailure: (blockIndex, blockHash) => {
       console.log(`Failed`);
