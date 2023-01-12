@@ -7,7 +7,7 @@ import {
   useTransactionResultLazyQuery,
 } from "src/generated/graphql";
 import { useStore } from "src/utils/useStore";
-import { useIsPreloadDone } from "src/utils/usePreload";
+import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LaunchIcon from "@material-ui/icons/Launch";
@@ -55,7 +55,7 @@ const UserInfoItem = styled(motion.li, {
 
 export default function UserInfo() {
   const account = useStore("account");
-  const isDone = useIsPreloadDone();
+  const isAvailable = useIsHeadlessAvailable();
   const {
     canClaim,
     tip,
@@ -105,7 +105,7 @@ export default function UserInfo() {
 
   const [isCollectionOpen, setCollectionOpen] = useState<boolean>(false);
 
-  if (!isDone || !account.isLogin) return null;
+  if (!isAvailable || !account.isLogin) return null;
 
   return (
     <UserInfoStyled>

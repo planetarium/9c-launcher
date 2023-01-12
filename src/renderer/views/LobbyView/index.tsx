@@ -5,7 +5,6 @@ import { useStore } from "src/utils/useStore";
 import { useActivation } from "src/utils/useActivation";
 import { useHistory } from "react-router";
 import OnboardingOverlay from "src/renderer/views/OnboardingOverlay";
-import { usePreload } from "src/utils/usePreload";
 
 const isFirst = (state: string): boolean => {
   return state.includes("first");
@@ -13,7 +12,6 @@ const isFirst = (state: string): boolean => {
 
 function LobbyView() {
   const { account, game } = useStore();
-  const { isDone } = usePreload();
   const { loading, activated, error } = useActivation(account.activationKey);
   const history = useHistory();
   const onboardingRequired = useMemo(
@@ -28,12 +26,12 @@ function LobbyView() {
   }, [loading, activated, account.activationKey]);
 
   useEffect(() => {
-    if (isDone && account.isLogin && activated) {
+    if (account.isLogin && activated) {
       account
         .getPrivateKeyAndForget()
         .then((privateKey) => game.startGame(privateKey));
     }
-  }, [isDone, account.isLogin, activated]);
+  }, [account.isLogin, activated]);
 
   useEffect(() => {
     if (error) history.push("/error/relaunch");

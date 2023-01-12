@@ -1,13 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { observer } from "mobx-react";
-import ProgressBar from "../../ProgressBar";
 import { styled } from "src/renderer/stitches.config";
-import { usePreload } from "src/utils/usePreload";
+import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 import { useStore } from "src/utils/useStore";
 import Button from "../../ui/Button";
 import { T } from "src/renderer/i18n";
 import { useActivation } from "src/utils/useActivation";
-import { useHistory } from "react-router";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -26,22 +24,14 @@ const StatusMessage = styled("span", {
 });
 
 function StatusBar() {
-  const { message, isDone, progress, blockCount, error } = usePreload();
+  const isAvailable = useIsHeadlessAvailable();
   const { account, game } = useStore();
   const { loading, activated } = useActivation();
-  const history = useHistory();
-
-  useEffect(() => {
-    if (!error) return;
-    history.push(`/error/${error}`);
-  }, [error, history]);
 
   return (
     <StatusBarStyled>
       <StatusMessage>
-        <span data-testid="status">{message}</span>
-        {!!blockCount && <small>[{blockCount}]</small>}
-        {isDone && account.isLogin && !game.isGameStarted && (
+        {isAvailable && account.isLogin && !game.isGameStarted ? (
           <Button
             data-testid="play"
             variant="primary"
@@ -54,9 +44,12 @@ function StatusBar() {
           >
             <T _str="Start" _tags="v2/start-game" />
           </Button>
+        ) : (
+          <span data-testid="status">
+            {account.isLogin ? "Done" : "Loading..."}
+          </span>
         )}
       </StatusMessage>
-      {!!progress && !isDone && !error && <ProgressBar percent={progress} />}
     </StatusBarStyled>
   );
 }
