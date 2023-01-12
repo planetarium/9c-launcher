@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { observable, action, decorate } from "mobx";
+import { observable, action } from "mobx";
 import { sleep } from "src/utils";
 import { GraphQLClient } from "graphql-request";
 import { get as getConfig } from "src/config";
