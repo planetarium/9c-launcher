@@ -54,7 +54,7 @@ interface MonsterCollectionOverlayProps {
   current: CurrentStakingQuery;
   isEditing?: boolean;
   currentNCG: number;
-  onChangeAmount(amount: Decimal): Promise<unknown>;
+  onChangeAmount(amount: Decimal): void;
   onClose(): void;
   tip: number;
   isLoading: boolean;
