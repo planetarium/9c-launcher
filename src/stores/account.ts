@@ -104,17 +104,22 @@ export default class AccountStore implements IAccountStore {
 
   @action
   listKeyFiles = (): ProtectedPrivateKey[] => {
-    return listKeystoreFiles().map((keyId: string) => {
-      const key: V3Keystore = JSON.parse(
-        fs.readFileSync(path.resolve(sanitizeKeypath(), keyId), "utf8")
-      );
-      const ppk: ProtectedPrivateKey = {
-        keyId: key.id,
-        address: key.address,
-        path: path.resolve(sanitizeKeypath(), keyId),
-      };
-      return ppk;
-    });
+    try {
+      return listKeystoreFiles().map((keyId: string) => {
+        const key: V3Keystore = JSON.parse(
+          fs.readFileSync(path.resolve(sanitizeKeypath(), keyId), "utf8")
+        );
+        const ppk: ProtectedPrivateKey = {
+          keyId: key.id,
+          address: key.address,
+          path: path.resolve(sanitizeKeypath(), keyId),
+        };
+        return ppk;
+      });
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
   };
 
   @action
