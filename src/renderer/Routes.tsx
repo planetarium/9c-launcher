@@ -19,18 +19,12 @@ import RevokeView from "./views/RevokeView";
 const Redirector = observer(() => {
   const account = useStore("account");
   const history = useHistory();
-  const [protectedPrivateKeys, setProtectedPrivateKeys] = useState<
-    ProtectedPrivateKey[] | null
-  >(null);
 
   useEffect(() => {
-    if (!protectedPrivateKeys) {
-      setProtectedPrivateKeys(account.listKeyFiles());
-    } else if (protectedPrivateKeys.length < 1) {
+    history.replace("/login");
+    if (account.listKeyFiles().length < 1) {
       history.replace("/welcome");
     }
-
-    history.replace("/login");
   });
   return null;
 });
