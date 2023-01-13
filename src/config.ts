@@ -63,6 +63,10 @@ export class NodeInfo {
   clientCount = 0;
   tip = 0;
 
+  public GraphqlClient(): GraphQLClient {
+    return new GraphQLClient(`http://${this.GraphqlServer()}`);
+  }
+
   public GraphqlServer(): string {
     return `${this.HeadlessUrl()}/graphql`;
   }
@@ -76,8 +80,7 @@ export class NodeInfo {
   }
 
   public async PreloadEnded(): Promise<boolean> {
-    const client = new GraphQLClient(`http://${this.GraphqlServer()}`);
-    const headlessGraphQLSDK = getSdk(client);
+    const headlessGraphQLSDK = getSdk(this.GraphqlClient());
     try {
       const ended = await headlessGraphQLSDK.PreloadEnded();
       if (ended.status == 200) {
@@ -94,38 +97,28 @@ export class NodeInfo {
 
 const NodeList = async (): Promise<NodeInfo[]> => {
   const nodeList: NodeInfo[] = [];
-  if (get("UseRemoteHeadless")) {
-    const remoteNodeList: string[] = get("RemoteNodeList");
-    await Promise.all(
-      remoteNodeList
-        .sort(() => Math.random() - 0.5)
-        .map(async (v, index) => {
-          const rawInfos = v.split(",");
-          if (rawInfos.length != 3) {
-            console.error(`${v} does not contained node info.`);
-            return;
-          }
-          const host = rawInfos[0];
-          const graphqlPort = Number.parseInt(rawInfos[1]);
-          const rpcPort = Number.parseInt(rawInfos[2]);
-          const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort, index + 1);
-          try {
-            const preloadEnded = await nodeInfo.PreloadEnded();
-            if (preloadEnded) nodeList.push(nodeInfo);
-          } catch (e) {
-            console.error(e);
-          }
-        })
-    );
-  } else {
-    const nodeInfo = new NodeInfo(
-      LocalServerHost().host,
-      LocalServerPort().port,
-      RpcServerPort().port,
-      1
-    );
-    nodeList.push(nodeInfo);
-  }
+  const remoteNodeList: string[] = get("RemoteNodeList");
+  await Promise.all(
+    remoteNodeList
+      .sort(() => Math.random() - 0.5)
+      .map(async (v, index) => {
+        const rawInfos = v.split(",");
+        if (rawInfos.length != 3) {
+          console.error(`${v} does not contained node info.`);
+          return;
+        }
+        const host = rawInfos[0];
+        const graphqlPort = Number.parseInt(rawInfos[1]);
+        const rpcPort = Number.parseInt(rawInfos[2]);
+        const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort, index + 1);
+        try {
+          const preloadEnded = await nodeInfo.PreloadEnded();
+          if (preloadEnded) nodeList.push(nodeInfo);
+        } catch (e) {
+          console.error(e);
+        }
+      })
+  );
   return nodeList;
 };
 
@@ -248,6 +241,7 @@ export const EXECUTE_PATH: {
   android: null,
   darwin: MAC_GAME_PATH,
   freebsd: null,
+  haiku: null,
   linux: LINUX_GAME_PATH,
   openbsd: null,
   sunos: null,

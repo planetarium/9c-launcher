@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { userConfigStore, get, TRANSIFEX_TOKEN } from "../../config";
+import { userConfigStore, get, TRANSIFEX_TOKEN } from "src/config";
 
 interface LocaleContext {
   locale: string;
