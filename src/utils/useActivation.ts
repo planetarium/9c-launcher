@@ -5,7 +5,7 @@ import {
   useActivationAddressQuery,
   useActivationKeyNonceQuery,
 } from "src/generated/graphql";
-import { useIsPreloadDone } from "./usePreload";
+import { useIsHeadlessAvailable } from "./useIsHeadlessAvailable";
 import { useStore } from "./useStore";
 
 interface ActivationResult {
@@ -24,7 +24,7 @@ interface ActivationResult {
  */
 export function useActivation(activationKey?: string): ActivationResult {
   const account = useStore("account");
-  const isDone = useIsPreloadDone();
+  const isAvailable = useIsHeadlessAvailable();
   const [isPolling, setPolling] = useState(false);
   const [txError, setTxError] = useState<Error | undefined>();
   const { loading, data, error } = useActivationAddressQuery({
@@ -86,7 +86,7 @@ export function useActivation(activationKey?: string): ActivationResult {
   }, [data]);
 
   return {
-    loading: loading || nonceLoading || !isDone,
+    loading: loading || nonceLoading || !isAvailable,
     error: Boolean(txError || error || nonceError),
     activated: data?.activationStatus.addressActivated ?? false,
   };
