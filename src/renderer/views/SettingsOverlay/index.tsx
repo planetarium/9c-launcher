@@ -183,9 +183,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 )}
               />
               <GroupTitle>
-                <T _str="Connection" _tags={transifexTags} />
-              </GroupTitle>
-              <GroupTitle>
                 <T _str="Advanced" _tags={transifexTags} />
               </GroupTitle>
               <AdvancedAction
@@ -210,29 +207,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
               />
             </FormSection>
             <FormSection>
-              <GroupTitle>
-                <T _str="Root chain path" _tags={transifexTags} />
-              </GroupTitle>
-              <span>
-                <T
-                  _str="Path where game chain data is stored."
-                  _tags={transifexTags}
-                />
-              </span>
-              <FolderChooser
-                control={control}
-                name="BlockchainStoreDirParent"
-              />
-
-              <GroupTitle>
-                <T _str="Chain store directory name" _tags={transifexTags} />
-              </GroupTitle>
-              <TextField
-                label={t("Chain store directory name")}
-                readOnly
-                {...register("BlockchainStoreDirName")}
-              />
-
               <GroupTitle>
                 <T _str="Send Information" _tags={transifexTags} />
               </GroupTitle>
