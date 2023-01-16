@@ -208,10 +208,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
             </FormSection>
             <FormSection>
               <GroupTitle>
-                <T _str="Connection" _tags={transifexTags} />
-              </GroupTitle>
-
-              <GroupTitle>
                 <T _str="Send Information" _tags={transifexTags} />
               </GroupTitle>
               <Checkbox {...register("Mixpanel")}>
