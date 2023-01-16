@@ -177,6 +177,7 @@ const ItemAmount = styled("div", {
   color: "#fff5e3",
   textShadow: theme.shadows.standard,
   WebKitTextStroke: "1px solid black",
+  textAlign: "center",
 });
 
 const ItemUpdatedAmount = styled("span", {
