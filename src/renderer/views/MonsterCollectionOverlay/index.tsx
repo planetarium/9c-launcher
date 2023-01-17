@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { MonsterCollectionOverlayBase } from "./base";
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { OverlayProps } from "src/utils/types";
-
+import { sleep } from "src/utils";
 import { useBalance } from "src/utils/useBalance";
 import { useStore } from "src/utils/useStore";
 import { useTx } from "src/utils/useTx";
@@ -35,11 +35,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const tip = useTip();
 
   const tx = useTx();
-  const [stake, { data: staked, loading, error }] = useStakeLazyQuery();
+  const [stake, { data: staked, loading, error }] = useStakeLazyQuery({
+    fetchPolicy: "no-cache",
+  });
   const [isLoading, setLoading] = useState(false);
   const [fetchStatus, { data: txStatus, stopPolling }] =
     useTransactionResultLazyQuery({
       pollInterval: 1000,
+      fetchPolicy: "no-cache",
     });
 
   useEffect(() => {
@@ -77,6 +80,9 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
                 },
               });
             });
+            while (loading) {
+              sleep(500);
+            }
             if (!staked?.actionTxQuery) throw error;
             return tx(staked.actionTxQuery.stake).then((v) => {
               if (!v.data) throw error;
@@ -84,7 +90,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             });
           } catch (e) {
             setLoading(false);
-            console.error(e);
+            console.error(`Change Amount Failed : ${e}`);
           }
         }}
         onClose={onClose}
