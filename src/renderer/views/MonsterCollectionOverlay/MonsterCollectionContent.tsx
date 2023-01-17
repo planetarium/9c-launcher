@@ -198,9 +198,11 @@ export function MonsterCollectionContent({
                 <BareInput
                   ref={inputRef}
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  maxLength={6}
-                  pattern={"[0-9]*"}
+                  onChange={(e) =>
+                    /^\d*$/.test(e.target.value) && setAmount(e.target.value)
+                  }
+                  maxLength={9}
+                  pattern={"^[0-9]*$"}
                   type="text"
                 />
                 <sub>/{availableNCG.toString()}</sub>

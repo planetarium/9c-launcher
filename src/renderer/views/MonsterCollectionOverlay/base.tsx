@@ -121,11 +121,12 @@ export const DepositTitle = styled("h1", {
 });
 
 export const DepositContent = styled("div", {
+  fontFamily: "Fira Sans Condensed, sans-serif",
   gridColumn: 2,
   gridRow: 2,
   justifySelf: "center",
   alignSelf: "center",
-  fontSize: 60,
+  fontSize: 46,
   fontWeight: "$bold",
   color: theme.colors.depositContent,
   lineHeight: 1,
@@ -133,7 +134,7 @@ export const DepositContent = styled("div", {
   textAlign: "center",
   margin: "0 10px",
   "& > sub": {
-    fontSize: 30,
+    fontSize: 26,
     bottom: 0,
   },
   variants: {
@@ -145,6 +146,7 @@ export const DepositContent = styled("div", {
         color: "#44271c",
         "> sub": {
           color: "#b6aeab",
+          fontSize: 24,
         },
       },
     },
