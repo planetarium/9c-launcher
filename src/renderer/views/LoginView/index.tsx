@@ -60,13 +60,20 @@ function LoginView() {
   };
 
   useEffect(() => {
-    const defaultAddress =
-      localStorage.getItem("lastAddress") ?? account.keyring[0].address;
-    if (account.keyring.length > 0) {
-      setAddress(defaultAddress);
-      // TODO: Persist the last chosen address
+    async function isInKeyring(address: string) {
+      return await account
+        .findKeyByAddress(address)
+        .catch(() => {
+          return false;
+        })
+        .then(() => {
+          return true;
+        });
     }
-  }, [account.keyring, address]);
+    isInKeyring(address).then((v) => {
+      if (!v) setAddress(account.keyring[0].address);
+    });
+  }, []);
 
   return (
     <Layout sidebar flex>
@@ -77,7 +84,7 @@ function LoginView() {
         <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
       </p>
       <Form onSubmit={(e) => e.preventDefault()}>
-        <Select onChange={(v) => setAddress(v)}>
+        <Select defaultValue={address} onChange={(v) => setAddress(v)}>
           {account.keyring.map((key) => (
             <SelectOption key={key.address} value={key.address}>
               {"0x" + key.address}
