@@ -28,7 +28,7 @@ function LobbyView() {
   useEffect(() => {
     if (account.isLogin && activated) {
       account
-        .getPrivateKeyAndForget()
+        .getPrivateKeyAndForget(false)
         .then((privateKey) => game.startGame(privateKey));
     }
   }, [account.isLogin, activated]);

@@ -211,13 +211,17 @@ export default class AccountStore implements IAccountStore {
 
   // NO. REMOVE. THIS.
   @action
-  getPrivateKeyAndForget = () => {
+  getPrivateKeyAndForget = (forget: boolean = true) => {
     return new Promise<string>((resolve, reject) => {
       if (this.privateKey.toString("hex") === "0".repeat(64)) {
         reject();
       } else {
         resolve(this.privateKey.toString("hex"));
       }
-    }).finally(() => (this.privateKey = Buffer.alloc(32, "0")));
+    }).finally(() => {
+      if (forget) {
+        this.privateKey = Buffer.alloc(32, "0");
+      }
+    });
   };
 }

@@ -38,7 +38,7 @@ function StatusBar() {
             disabled={loading || !activated}
             onClick={() =>
               account
-                .getPrivateKeyAndForget()
+                .getPrivateKeyAndForget(false)
                 .then((privateKey) => game.startGame(privateKey))
             }
           >
