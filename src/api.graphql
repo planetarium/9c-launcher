@@ -331,6 +331,8 @@ query PreloadEnded {
     appProtocolVersion {
       version
       extra
+      signer
+      signature
     }
   }
   rpcInformation {

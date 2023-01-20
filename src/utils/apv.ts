@@ -96,9 +96,20 @@ export function encodeToken(version: number, extra: string) {
   return `${version}/${extra}`;
 }
 
-export function encodeTokenFromHex(version: number, extraHex: string) {
+export function encodeTokenFromHex(
+  version: number,
+  signer: string,
+  signatureHex: string,
+  extraHex: string
+) {
   const extra = Buffer.from(extraHex, "hex");
-  const encoded = extra.toString("base64");
+  const signature = Buffer.from(signatureHex, "hex");
 
-  return `${version}/${encoded}`;
+  const encodedExtra = extra.toString("base64");
+  const encodedSignature = signature.toString("base64");
+
+  return `${version}/${signer.replace(
+    "0x",
+    ""
+  )}/${encodedSignature}/${encodedExtra}`;
 }
