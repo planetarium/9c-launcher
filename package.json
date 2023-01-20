@@ -63,7 +63,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/styles": "^4.10.0",
     "@noble/secp256k1": "^1.7.0",
-    "@planetarium/account-local": "^0.0.19",
+    "@planetarium/account-local": "^0.0.31",
     "@planetarium/account-raw": "^0.0.3",
     "@planetarium/check-free-space": "^0.0.2",
     "@planetarium/sign": "^0.0.11",
