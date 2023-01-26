@@ -39,7 +39,7 @@ function RegisterView() {
     <Layout sidebar css={registerStyles}>
       <H1>Create your account</H1>
       <p style={{ marginBlockEnd: 54 }}>Please set your password only.</p>
-      <RetypePasswordForm onSubmit={onSubmit} useActivitionKey />
+      <RetypePasswordForm onSubmit={onSubmit} useActivationKey />
     </Layout>
   );
 }
