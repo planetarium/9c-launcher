@@ -14,7 +14,7 @@ import { Account, deriveAddress } from "@planetarium/sign";
 // this store to the dedicated backend, and inject that into this.
 import fs from "fs";
 import path from "path";
-import { action, observable } from "mobx";
+import { action, observable, makeObservable } from "mobx";
 import { Address, ProtectedPrivateKey } from "src/interfaces/keystore";
 import { utils } from "@noble/secp256k1";
 
@@ -49,6 +49,7 @@ export default class AccountStore implements IAccountStore {
   public loginSession: ILoginSession | null = null;
 
   constructor() {
+    makeObservable(this);
     this.setKeys(this.listKeyFiles());
   }
 
@@ -66,8 +67,14 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
+  setAddress = (address: Address) => {
+    this.address = address;
+  };
+
+  @action
   getAccount = (address: Address, passphrase: string): Promise<Account> => {
     return this.findKeyByAddress(address).then((key) => {
+      this.setAddress(address);
       return getAccountFromFile(key.keyId, passphrase);
     });
   };
