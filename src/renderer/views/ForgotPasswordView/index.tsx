@@ -29,8 +29,8 @@ function ForgotPasswordView() {
   const account = useStore("account");
   const history = useHistory();
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    account.setPrivateKey(data.privateKey);
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    account.beginRecovery(data.privateKey);
     history.push("/recover");
   };
 

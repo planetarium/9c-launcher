@@ -11,17 +11,14 @@ import { T } from "src/renderer/i18n";
 const transifexTags = "v2/recover-view";
 
 function RecoverView() {
-  const account = useStore("account");
-  const address = account.address;
+  const accountStore = useStore("account");
   const history = useHistory();
 
-  const onSubmit = ({ password }: { password: string }) => {
+  const onSubmit = async ({ password }: { password: string }) => {
     try {
-      account.removeKeyByAddress(address);
+      const newAccount = await accountStore.completeRecovery(password);
+      await accountStore.login(newAccount, password);
     } finally {
-      account
-        .getPrivateKeyAndForget()
-        .then((privateKey) => account.importRaw(privateKey, password));
       history.push("/");
     }
   };
@@ -34,7 +31,7 @@ function RecoverView() {
       <H2>
         <T _str="Found your account!" _tags={transifexTags} />
       </H2>
-      <RetypePasswordForm address={address} onSubmit={onSubmit} />
+      <RetypePasswordForm onSubmit={onSubmit} />
     </Layout>
   );
 }

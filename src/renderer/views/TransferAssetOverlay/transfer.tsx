@@ -21,6 +21,7 @@ import { TransactionConfirmationListener } from "src/stores/transfer";
 import refreshIcon from "src/renderer/resources/refreshIcon.png";
 import { useStore } from "src/utils/useStore";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 const transifexTags = "Transfer/Transfer";
 
@@ -65,7 +66,8 @@ const CircularProgress = styled(OriginCircularProgress)({
 });
 
 function TransferPage() {
-  const { transfer, account } = useStore();
+  const { transfer } = useStore();
+  const { publicKey, account } = useLoginSession();
   const [recipient, setRecipient] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [amount, setAmount] = useState<Decimal>(new Decimal(0));
@@ -106,16 +108,20 @@ function TransferPage() {
       alert(errorMessage);
       return;
     }
+
+    if (!publicKey || !account) {
+      return;
+    }
+
     setCurrentPhase(TransferPhase.SENDTX);
 
-    const publickey = await account.getPublicKeyString();
     const tx = await transfer.transferAsset(
       transfer.senderAddress,
       recipient,
       amount,
       memo,
-      publickey,
-      account.account
+      publicKey,
+      account
     );
     setTx(tx);
 

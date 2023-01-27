@@ -25,28 +25,25 @@ const StatusMessage = styled("span", {
 
 function StatusBar() {
   const isAvailable = useIsHeadlessAvailable();
-  const { account, game } = useStore();
-  const { loading, activated } = useActivation();
+  const { account: accountStore, game } = useStore();
+  const { loading, activated } = useActivation(false);
+  const loginSession = accountStore.loginSession;
 
   return (
     <StatusBarStyled>
       <StatusMessage>
-        {isAvailable && account.isLogin && !game.isGameStarted ? (
+        {isAvailable && loginSession && !game.isGameStarted ? (
           <Button
             data-testid="play"
             variant="primary"
             disabled={loading || !activated}
-            onClick={() =>
-              account
-                .getPrivateKeyAndForget(false)
-                .then((privateKey) => game.startGame(privateKey))
-            }
+            onClick={() => game.startGame(loginSession.privateKey)}
           >
             <T _str="Start" _tags="v2/start-game" />
           </Button>
         ) : (
           <span data-testid="status">
-            {account.isLogin ? "Done" : "Loading..."}
+            {!loginSession ? "Done" : "Loading..."}
           </span>
         )}
       </StatusMessage>

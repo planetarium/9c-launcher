@@ -20,6 +20,7 @@ import { useStore } from "src/utils/useStore";
 import { TransactionConfirmationListener } from "src/stores/transfer";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
 import refreshIcon from "src/renderer/resources/refreshIcon.png";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 const transifexTags = "Transfer/Transfer";
 
@@ -70,7 +71,8 @@ const SwapButton = styled(Button)({
 });
 
 function SwapPage() {
-  const { transfer, account } = useStore();
+  const transfer = useStore("transfer");
+  const { address, publicKey, account } = useLoginSession();
   const [recipient, setRecipient] = useState<string>("");
   const [amount, setAmount] = useState<Decimal>(new Decimal(0));
   const [recipientWarning, setRecipientWarning] = useState<boolean>(false);
@@ -106,15 +108,18 @@ function SwapPage() {
       return;
     }
 
+    if (!publicKey || !account) {
+      return;
+    }
+
     setCurrentPhase(TransferPhase.SENDTX);
 
-    const publickey = await account.getPublicKeyString();
     const tx = await transfer.swapToWNCG(
       transfer.senderAddress,
       recipient,
       amount,
-      publickey,
-      account.account
+      publicKey,
+      account
     );
     setTx(tx);
 

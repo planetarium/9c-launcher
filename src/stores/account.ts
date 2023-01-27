@@ -7,26 +7,29 @@ import {
   getDefaultKeystorePath,
   V3Keystore,
 } from "@planetarium/account-local";
-import { createAccount, isValidPrivateKey } from "@planetarium/account-raw";
-import { Account } from "@planetarium/sign/dist/src";
+import { createAccount } from "@planetarium/account-raw";
+import { Account, deriveAddress } from "@planetarium/sign";
 import fs from "fs";
 import path from "path";
-import { Buffer } from "buffer";
 import { action, observable } from "mobx";
 import { Address, ProtectedPrivateKey } from "src/interfaces/keystore";
 import { utils } from "@noble/secp256k1";
 
+interface ILoginSession {
+  account: Account;
+  publicKey: string;
+  address: string;
+  privateKey: string;
+}
+
 export interface IAccountStore {
   keyring: ProtectedPrivateKey[];
-  account: Account;
-  address: Address;
-  isLogin: boolean;
   activationKey: string;
+  loginSession: ILoginSession | null;
 }
 
 export default class AccountStore implements IAccountStore {
-  // WE SHOULD NOT STORE PRIVATE KEY NOT EVEN MOMENTARILY.
-  private privateKey: Buffer = Buffer.alloc(32, "0");
+  private _privateKeyToRecovery: string | null = null;
 
   // Referenced mobxjs/mobx#669-comments
   // https://git.io/JJv8j
@@ -34,30 +37,34 @@ export default class AccountStore implements IAccountStore {
   public readonly keyring = observable<ProtectedPrivateKey>([]);
 
   @observable
-  public account: Account = createAccount();
-
-  @observable
-  public address: Address = "";
-
-  @observable
   public isLogin: boolean = false;
 
   @observable
   public activationKey: string = "";
+
+  @observable
+  public loginSession: ILoginSession | null = null;
 
   constructor() {
     this.setKeys(this.listKeyFiles());
   }
 
   @action
-  setAccount = (account: Account) => {
-    this.account = account;
+  login = async (account: Account, password: string) => {
+    const bs = await account.getPublicKey(false);
+    const address = await deriveAddress(account);
+
+    this.loginSession = {
+      account,
+      publicKey: utils.bytesToHex(bs),
+      address,
+      privateKey: await this.loadPrivateKeyFromAddress(address, password),
+    };
   };
 
   @action
   getAccount = (address: Address, passphrase: string): Promise<Account> => {
     return this.findKeyByAddress(address).then((key) => {
-      this.address = address;
       return getAccountFromFile(key.keyId, passphrase);
     });
   };
@@ -91,11 +98,6 @@ export default class AccountStore implements IAccountStore {
   @action
   setLoginStatus = (status: boolean) => {
     this.isLogin = status;
-  };
-
-  @action
-  toggleLogin = () => {
-    this.isLogin = !this.isLogin;
   };
 
   @action
@@ -171,17 +173,11 @@ export default class AccountStore implements IAccountStore {
         address: v3.address,
         path: filePath,
       });
-      this.address = v3.address;
-      const account = await getAccountFromFile(v3.id, passphrase);
-      this.setAccount(account);
+      return await getAccountFromFile(v3.id, passphrase);
     } else {
       throw Error("Importing raw private key to V3 file failed.");
     }
   };
-
-  @action
-  getPublicKeyString = () =>
-    this.account.getPublicKey().then((v) => utils.bytesToHex(v));
 
   @action
   isValidPrivateKey = (privateKey: string): boolean => {
@@ -193,41 +189,32 @@ export default class AccountStore implements IAccountStore {
     return true;
   };
 
-  @action
-  generatePrivateKey = () => {
-    this.setPrivateKey(utils.bytesToHex(utils.randomPrivateKey()));
+  loadPrivateKeyFromAddress = async (
+    address: Address,
+    password: string
+  ): Promise<string> => {
+    const key = await this.findKeyByAddress(address);
+    const raw = decipherV3(
+      await fs.promises.readFile(key.path, "utf8"),
+      password
+    ).getPrivateKey();
+
+    return utils.bytesToHex(raw);
   };
 
-  @action
-  setPrivateKey = (privateKeyHex: string) => {
-    if (isValidPrivateKey(privateKeyHex)) {
-      this.privateKey = Buffer.from(privateKeyHex, "hex");
+  beginRecovery = (privateKey: string) => {
+    if (this._privateKeyToRecovery) {
+      throw new Error("There is another recovery in progress.");
     }
+
+    this._privateKeyToRecovery = privateKey;
   };
 
-  @action
-  setPrivateKeyFromAddress = (address: Address, password: string) => {
-    this.findKeyByAddress(address).then((key) => {
-      this.privateKey = decipherV3(
-        fs.readFileSync(key.path, "utf8"),
-        password
-      ).getPrivateKey();
-    });
-  };
+  completeRecovery = async (passphrase: string) => {
+    if (!this._privateKeyToRecovery) {
+      throw new Error("There is no recovery in progress.");
+    }
 
-  // NO. REMOVE. THIS.
-  @action
-  getPrivateKeyAndForget = (forget: boolean = true) => {
-    return new Promise<string>((resolve, reject) => {
-      if (this.privateKey.toString("hex") === "0".repeat(64)) {
-        reject();
-      } else {
-        resolve(this.privateKey.toString("hex"));
-      }
-    }).finally(() => {
-      if (forget) {
-        this.privateKey = Buffer.alloc(32, "0");
-      }
-    });
+    return await this.importRaw(this._privateKeyToRecovery, passphrase);
   };
 }

@@ -3490,14 +3490,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planetarium/sign@npm:^0.0.11":
-  version: 0.0.11
-  resolution: "@planetarium/sign@npm:0.0.11"
+"@planetarium/sign@npm:^0.0.12":
+  version: 0.0.12
+  resolution: "@planetarium/sign@npm:0.0.12"
   dependencies:
     "@noble/hashes": ^1.1.2
     bencodex: ^0.1.2
     buffer: ^6.0.3
-  checksum: 71be8b55f1ea237b9bd426568671b880da217f723597a21c3b50f08a625d470414ec8dd3fc69a244e6299355d5b99f2927ca91082c9144698627e1db85bfd717
+  checksum: fd8bf1f4ea990d10d07bfd43994662ce7d5e01f1475a01711053dc6e0510837f324f8d6eaa4dfc802df3f64fb16c67450df0e626f661f9485e55f28d90dbae59
   languageName: node
   linkType: hard
 
@@ -7107,7 +7107,7 @@ __metadata:
     "@planetarium/account-raw": ^0.0.3
     "@planetarium/check-free-space": ^0.0.2
     "@planetarium/cli": ^0.40.0
-    "@planetarium/sign": ^0.0.11
+    "@planetarium/sign": ^0.0.12
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
     "@radix-ui/react-radio-group": ^0.1.5
     "@radix-ui/react-scroll-area": ^0.1.4
