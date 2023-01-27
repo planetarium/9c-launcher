@@ -4,6 +4,7 @@ import {
   listKeystoreFiles,
   rawPrivateKeyToV3,
   sanitizeKeypath,
+  getDefaultKeystorePath,
   V3Keystore,
 } from "@planetarium/account-local";
 import { createAccount, isValidPrivateKey } from "@planetarium/account-raw";
@@ -144,33 +145,38 @@ export default class AccountStore implements IAccountStore {
   //TODO: This function solely depending on behavior that
   //addV3 push to end of the array, we need to fix that.
   @action
-  importRaw = (privateKey: string, passphrase: string) => {
-    return rawPrivateKeyToV3(privateKey, passphrase).then((v3) => {
-      if (v3 !== undefined) {
-        const filePath = path.resolve(
-          sanitizeKeypath(),
-          [
-            "UTC--",
-            new Date().toJSON().replace(/:/g, "-").slice(0, -5),
-            "Z",
-            "--",
-            v3.id,
-          ].join("")
-        );
-        fs.writeFileSync(filePath, JSON.stringify(v3));
-        this.addKey({
-          keyId: v3.id,
-          address: v3.address,
-          path: filePath,
-        });
-        this.address = v3.address;
-        getAccountFromFile(v3.id, passphrase).then((account) =>
-          this.setAccount(account)
-        );
-      } else {
-        throw Error("Importing raw private key to V3 file failed.");
-      }
-    });
+  importRaw = async (privateKey: string, passphrase: string) => {
+    const keystorePath = getDefaultKeystorePath(process.platform);
+
+    if (!fs.existsSync(keystorePath)) {
+      await fs.promises.mkdir(keystorePath, { recursive: true });
+    }
+
+    const v3 = await rawPrivateKeyToV3(privateKey, passphrase);
+
+    if (v3 !== undefined) {
+      const filePath = path.resolve(
+        keystorePath,
+        [
+          "UTC--",
+          new Date().toJSON().replace(/:/g, "-").slice(0, -5),
+          "Z",
+          "--",
+          v3.id,
+        ].join("")
+      );
+      await fs.promises.writeFile(filePath, JSON.stringify(v3));
+      this.addKey({
+        keyId: v3.id,
+        address: v3.address,
+        path: filePath,
+      });
+      this.address = v3.address;
+      const account = await getAccountFromFile(v3.id, passphrase);
+      this.setAccount(account);
+    } else {
+      throw Error("Importing raw private key to V3 file failed.");
+    }
   };
 
   @action
