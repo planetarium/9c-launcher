@@ -125,7 +125,9 @@ function TransferPage() {
     );
     setTx(tx);
 
-    transfer.confirmTransaction(tx, undefined, listener);
+    setCurrentPhase(TransferPhase.SENDING);
+
+    await transfer.confirmTransaction(tx, undefined, listener);
     event.preventDefault();
   };
 
@@ -137,7 +139,7 @@ function TransferPage() {
 
   return (
     <TransferContainer>
-      <FormControl fullWidth>
+      <div>
         <TransferTitle>
           <T _str="User Address" _tags={transifexTags} />
         </TransferTitle>
@@ -150,14 +152,16 @@ function TransferPage() {
             <T _str="Not the ETH address." _tags={transifexTags} />
           </b>
         </TransferSecondTitle>
-        <TransferInput
-          type="text"
-          name="address"
-          error={recipientWarning}
-          onChange={(e) => setRecipient(e.target.value)}
-          onBlur={() => setRecipientWarning(!addressVerify(recipient, true))}
-          onFocus={() => setRecipientWarning(false)}
-        />
+        <FormControl fullWidth>
+          <TransferInput
+            type="text"
+            name="address"
+            error={recipientWarning}
+            onChange={(e) => setRecipient(e.target.value)}
+            onBlur={() => setRecipientWarning(!addressVerify(recipient, true))}
+            onFocus={() => setRecipientWarning(false)}
+          />
+        </FormControl>
         <TransferTitle>
           <T _str="NCG Amount" _tags={transifexTags} />
         </TransferTitle>
@@ -173,42 +177,52 @@ function TransferPage() {
           </b>
           <Button
             startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={() => transfer.updateBalance(transfer.senderAddress)}
+            onClick={async () =>
+              await transfer.updateBalance(transfer.senderAddress)
+            }
           />
         </TransferSecondTitle>
-        <TransferInput
-          type="number"
-          name="amount"
-          onChange={(e) =>
-            setAmount(new Decimal(e.target.value === "" ? -1 : e.target.value))
-          }
-          onBlur={() => setAmountWarning(!amount.gt(0))}
-          onFocus={() => setAmountWarning(false)}
-          error={amountWarning}
-          endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
-          defaultValue={0}
-        />
+        <FormControl fullWidth>
+          <TransferInput
+            type="number"
+            name="amount"
+            onChange={(e) =>
+              setAmount(
+                new Decimal(e.target.value === "" ? -1 : e.target.value)
+              )
+            }
+            onBlur={() => setAmountWarning(!amount.gt(0))}
+            onFocus={() => setAmountWarning(false)}
+            error={amountWarning}
+            endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
+            defaultValue={0}
+          />
+        </FormControl>
         <TransferTitle>
           <T _str="Memo" _tags={transifexTags} />
         </TransferTitle>
         <TransferSecondTitle>
           <T _str="Enter an additional note." _tags={transifexTags} />
         </TransferSecondTitle>
-        <TransferInput
-          type="text"
-          name="memo"
-          onChange={(e) => setMemo(e.target.value)}
-        />
-        <TransferButton
-          variant="contained"
-          color="primary"
-          onClick={handleButton}
-          disabled={disabled}
-        >
-          {loading && <CircularProgress />}
-          Send
-        </TransferButton>
-      </FormControl>
+        <FormControl fullWidth>
+          <TransferInput
+            type="text"
+            name="memo"
+            onChange={(e) => setMemo(e.target.value)}
+          />
+        </FormControl>
+        <FormControl fullWidth>
+          <TransferButton
+            variant="contained"
+            color="primary"
+            onClick={handleButton}
+            disabled={disabled}
+          >
+            {loading && <CircularProgress />}
+            Send
+          </TransferButton>
+        </FormControl>
+      </div>
 
       <SendingDialog
         open={currentPhase === TransferPhase.SENDING}

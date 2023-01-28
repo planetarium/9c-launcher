@@ -36,8 +36,8 @@ function LoginView() {
       ipcRenderer.send("mixpanel-alias", address);
       trackEvent("Launcher/Login");
 
-      transfer.trySetSenderAddress(address);
-      transfer.updateBalance(address);
+      await transfer.trySetSenderAddress(address);
+      await transfer.updateBalance(address);
 
       _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
       _refiner("identifyUser", {
