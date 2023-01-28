@@ -37,7 +37,12 @@ function analyzeApvFromGQL(query: AppProtocolVersionType): IApv {
     throw Error("Unable to decode extra data from bencodex string.");
   }
   return {
-    raw: JSON.stringify(query),
+    raw: encodeTokenFromHex(
+      query.version,
+      query.signer,
+      query.signature,
+      query.extra ?? ""
+    ),
     version: query.version,
     signer: query.signer,
     signature: query.signature,
