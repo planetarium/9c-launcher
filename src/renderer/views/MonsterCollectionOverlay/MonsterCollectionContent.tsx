@@ -199,8 +199,10 @@ export function MonsterCollectionContent({
                   ref={inputRef}
                   value={amount}
                   onChange={(e) => {
+                    setAmount("0");
+                    if (e.target.value.length !== 0)
+                      setAmount(`${e.target.valueAsNumber}`);
                     if (e.target.valueAsNumber > 999999999) return;
-                    setAmount(e.target.value);
                   }}
                   min="0"
                   max={availableNCG.toNumber()}
