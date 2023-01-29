@@ -94,10 +94,41 @@ export default class AccountStore implements IAccountStore {
   @action
   removeKeyByAddress = (address: Address) => {
     this.keyring.forEach((key) => {
+      console.log(
+        `${key.address.replace("0x", "")} | ${address} | ${
+          key.address.replace("0x", "") === address
+        }`
+      );
       if (key.address.replace("0x", "") === address) {
         this.removeKey(key);
       }
     });
+  };
+
+  @action
+  restoreKey = (passphrase: string) => {
+    try {
+      console.log(this.keyring);
+      let importedPPK: ProtectedPrivateKey;
+      this.getPrivateKeyAndForget()
+        .then((privateKey) => this.importRaw(privateKey, passphrase))
+        .then(() => {
+          if (this.keyring.length > 0) {
+            importedPPK = this.keyring.pop()!;
+            console.log(`1Curr ring: ${this.keyring}`);
+            console.log(`2pop: ${importedPPK}`);
+            console.log(`3Curr ring: ${this.keyring}`);
+            this.removeKeyByAddress(this.address);
+            console.log(`4Curr ring: ${this.keyring}`);
+          } else throw Error("Private key import from RAW hex failed.");
+        })
+        .then(() => {
+          this.addKey(importedPPK);
+          console.log(`5Curr ring: ${this.keyring}`);
+        });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   @action
