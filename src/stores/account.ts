@@ -32,7 +32,7 @@ export interface IAccountStore {
 }
 
 export default class AccountStore implements IAccountStore {
-  private _privateKeyToRecovery: string | null = null;
+  private _privateKeyToRecovery: Buffer | null = null;
 
   // Referenced mobxjs/mobx#669-comments
   // https://git.io/JJv8j
@@ -67,16 +67,9 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
-  setAddress = (address: Address) => {
-    this.address = address;
-  };
-
-  @action
-  getAccount = (address: Address, passphrase: string): Promise<Account> => {
-    return this.findKeyByAddress(address).then((key) => {
-      this.setAddress(address);
-      return getAccountFromFile(key.keyId, passphrase);
-    });
+  popKey = () => {
+    if (this.keyring.length < 0) return;
+    return this.keyring.pop();
   };
 
   @action
@@ -86,49 +79,28 @@ export default class AccountStore implements IAccountStore {
 
   @action
   removeKey = (protectedPrivateKey: ProtectedPrivateKey) => {
-    fs.rmSync(protectedPrivateKey.path);
+    fs.rmSync(protectedPrivateKey.path, { force: true });
     //Is Key Object comparable?
     this.keyring.remove(protectedPrivateKey);
   };
 
   @action
-  removeKeyByAddress = (address: Address) => {
-    this.keyring.forEach((key) => {
-      console.log(
-        `${key.address.replace("0x", "")} | ${address} | ${
-          key.address.replace("0x", "") === address
-        }`
-      );
-      if (key.address.replace("0x", "") === address) {
-        this.removeKey(key);
-      }
+  getAccount = (address: Address, passphrase: string): Promise<Account> => {
+    return this.findKeyByAddress(address).then((key) => {
+      return getAccountFromFile(key.keyId, passphrase);
     });
   };
 
   @action
-  restoreKey = (passphrase: string) => {
-    try {
-      console.log(this.keyring);
-      let importedPPK: ProtectedPrivateKey;
-      this.getPrivateKeyAndForget()
-        .then((privateKey) => this.importRaw(privateKey, passphrase))
-        .then(() => {
-          if (this.keyring.length > 0) {
-            importedPPK = this.keyring.pop()!;
-            console.log(`1Curr ring: ${this.keyring}`);
-            console.log(`2pop: ${importedPPK}`);
-            console.log(`3Curr ring: ${this.keyring}`);
-            this.removeKeyByAddress(this.address);
-            console.log(`4Curr ring: ${this.keyring}`);
-          } else throw Error("Private key import from RAW hex failed.");
-        })
-        .then(() => {
-          this.addKey(importedPPK);
-          console.log(`5Curr ring: ${this.keyring}`);
-        });
-    } catch (e) {
-      console.error(e);
-    }
+  removeKeyByAddress = (address: Address) => {
+    this.keyring.forEach((key) => {
+      if (
+        key.address.replace("0x", "").toLowerCase() ===
+        address.replace("0x", "").toLowerCase()
+      ) {
+        this.removeKey(key);
+      }
+    });
   };
 
   @action
@@ -248,7 +220,7 @@ export default class AccountStore implements IAccountStore {
       throw new Error("There is another recovery in progress.");
     }
 
-    this._privateKeyToRecovery = privateKey;
+    this._privateKeyToRecovery = Buffer.from(privateKey, "hex");
   };
 
   completeRecovery = async (passphrase: string) => {
@@ -256,6 +228,21 @@ export default class AccountStore implements IAccountStore {
       throw new Error("There is no recovery in progress.");
     }
 
-    return await this.importRaw(this._privateKeyToRecovery, passphrase);
+    const account = await this.importRaw(
+      this._privateKeyToRecovery.toString("hex"),
+      passphrase
+    );
+    const address = await deriveAddress(account);
+    if (this.keyring.length <= 0) {
+      throw new Error("There's no key in keyring despite we just generated.");
+    }
+
+    const importedKey = this.popKey();
+    this.removeKeyByAddress(address);
+    this.addKey(importedKey!);
+
+    this._privateKeyToRecovery.fill(0);
+    this._privateKeyToRecovery = null;
+    return account;
   };
 }
