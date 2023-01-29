@@ -14,7 +14,7 @@ import { Account, deriveAddress } from "@planetarium/sign";
 // this store to the dedicated backend, and inject that into this.
 import fs from "fs";
 import path from "path";
-import { action, observable } from "mobx";
+import { action, observable, makeObservable } from "mobx";
 import { Address, ProtectedPrivateKey } from "src/interfaces/keystore";
 import { utils } from "@noble/secp256k1";
 
@@ -32,7 +32,7 @@ export interface IAccountStore {
 }
 
 export default class AccountStore implements IAccountStore {
-  private _privateKeyToRecovery: string | null = null;
+  private _privateKeyToRecovery: Buffer | null = null;
 
   // Referenced mobxjs/mobx#669-comments
   // https://git.io/JJv8j
@@ -49,6 +49,7 @@ export default class AccountStore implements IAccountStore {
   public loginSession: ILoginSession | null = null;
 
   constructor() {
+    makeObservable(this);
     this.setKeys(this.listKeyFiles());
   }
 
@@ -66,10 +67,9 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
-  getAccount = (address: Address, passphrase: string): Promise<Account> => {
-    return this.findKeyByAddress(address).then((key) => {
-      return getAccountFromFile(key.keyId, passphrase);
-    });
+  popKey = () => {
+    if (this.keyring.length < 0) return;
+    return this.keyring.pop();
   };
 
   @action
@@ -79,15 +79,25 @@ export default class AccountStore implements IAccountStore {
 
   @action
   removeKey = (protectedPrivateKey: ProtectedPrivateKey) => {
-    fs.rmSync(protectedPrivateKey.path);
+    fs.rmSync(protectedPrivateKey.path, { force: true });
     //Is Key Object comparable?
     this.keyring.remove(protectedPrivateKey);
   };
 
   @action
+  getAccount = (address: Address, passphrase: string): Promise<Account> => {
+    return this.findKeyByAddress(address).then((key) => {
+      return getAccountFromFile(key.keyId, passphrase);
+    });
+  };
+
+  @action
   removeKeyByAddress = (address: Address) => {
     this.keyring.forEach((key) => {
-      if (key.address.replace("0x", "") === address) {
+      if (
+        key.address.replace("0x", "").toLowerCase() ===
+        address.replace("0x", "").toLowerCase()
+      ) {
         this.removeKey(key);
       }
     });
@@ -210,7 +220,7 @@ export default class AccountStore implements IAccountStore {
       throw new Error("There is another recovery in progress.");
     }
 
-    this._privateKeyToRecovery = privateKey;
+    this._privateKeyToRecovery = Buffer.from(privateKey, "hex");
   };
 
   completeRecovery = async (passphrase: string) => {
@@ -218,6 +228,21 @@ export default class AccountStore implements IAccountStore {
       throw new Error("There is no recovery in progress.");
     }
 
-    return await this.importRaw(this._privateKeyToRecovery, passphrase);
+    const account = await this.importRaw(
+      this._privateKeyToRecovery.toString("hex"),
+      passphrase
+    );
+    const address = await deriveAddress(account);
+    if (this.keyring.length <= 0) {
+      throw new Error("There's no key in keyring despite we just generated.");
+    }
+
+    const importedKey = this.popKey();
+    this.removeKeyByAddress(address);
+    this.addKey(importedKey!);
+
+    this._privateKeyToRecovery.fill(0);
+    this._privateKeyToRecovery = null;
+    return account;
   };
 }
