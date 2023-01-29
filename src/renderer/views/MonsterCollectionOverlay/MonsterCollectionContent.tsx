@@ -198,12 +198,13 @@ export function MonsterCollectionContent({
                 <BareInput
                   ref={inputRef}
                   value={amount}
-                  onChange={(e) =>
-                    /^\d*$/.test(e.target.value) && setAmount(e.target.value)
-                  }
-                  maxLength={9}
-                  pattern={"^[0-9]*$"}
-                  type="text"
+                  onChange={(e) => {
+                    if (e.target.valueAsNumber > 999999999) return;
+                    setAmount(e.target.value);
+                  }}
+                  min="0"
+                  max={availableNCG.toNumber()}
+                  type="number"
                 />
                 <sub>/{availableNCG.toString()}</sub>
               </DepositContent>
