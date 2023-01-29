@@ -9,6 +9,9 @@ import {
 } from "@planetarium/account-local";
 import { createAccount } from "@planetarium/account-raw";
 import { Account, deriveAddress } from "@planetarium/sign";
+// FIXME these imports cause matter since file-system related features aren't
+// possible on some targets (e.g., browser). thus we should extract them from
+// this store to the dedicated backend, and inject that into this.
 import fs from "fs";
 import path from "path";
 import { action, observable } from "mobx";

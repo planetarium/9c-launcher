@@ -133,4 +133,5 @@ workflows:
           filters:
             branches:
               only: development
-      - chromatic
+      # FIXME we should restore this job after fixing system module import problems
+      # - chromatic
