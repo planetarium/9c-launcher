@@ -1,14 +1,12 @@
 import { observer } from "mobx-react";
 import React from "react";
-import { Reward } from "src/interfaces/collection";
 import { T } from "src/renderer/i18n";
 import OverlayBase from "src/renderer/components/core/OverlayBase";
 import H1 from "src/renderer/components/ui/H1";
 import { useGetAvatarAddressQuery } from "src/generated/graphql";
-import { styled } from "src/renderer/stitches.config";
 import { OverlayProps } from "src/utils/types";
-import { useStore } from "src/utils/useStore";
 import ClaimContent, { Avatar } from "./ClaimContent";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 export interface ClaimCollectionRewardsOverlayProps extends OverlayProps {
   tip: number;
@@ -22,11 +20,12 @@ function ClaimCollectionRewardsOverlay({
   onClose,
   ...collectionData
 }: ClaimCollectionRewardsOverlayProps) {
-  const { account } = useStore();
+  const { address } = useLoginSession();
   const { loading, data } = useGetAvatarAddressQuery({
     variables: {
-      address: account.address,
+      address,
     },
+    skip: !address,
   });
 
   if (loading) {

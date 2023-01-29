@@ -3379,9 +3379,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planetarium/account-local@npm:^0.0.31":
-  version: 0.0.31
-  resolution: "@planetarium/account-local@npm:0.0.31"
+"@planetarium/account-local@npm:^0.0.37":
+  version: 0.0.37
+  resolution: "@planetarium/account-local@npm:0.0.37"
   dependencies:
     "@noble/hashes": ^1.1.5
     "@noble/secp256k1": ^1.7.0
@@ -3392,7 +3392,7 @@ __metadata:
     uuid: ^9.0.0
   peerDependencies:
     "@planetarium/sign": ^0.0.11
-  checksum: 307dbfd4fa20ac5555e282f07fbe050a0ee82122a4e274563c58f460cbfec4305ae2653b1c8aa64afeeda719f3b2f918ed4efb54d6442d27ac751c9cbca6f426
+  checksum: 30775690dc610c7c2fe08efc258c285cca24a93544604d99bf1e5b20e1bf1d321c9a94e040fd25d2678f287811539de3f4e6290e6d14ceb918cbfcee81d199e6
   languageName: node
   linkType: hard
 
@@ -3490,14 +3490,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planetarium/sign@npm:^0.0.11":
-  version: 0.0.11
-  resolution: "@planetarium/sign@npm:0.0.11"
+"@planetarium/sign@npm:^0.0.12":
+  version: 0.0.12
+  resolution: "@planetarium/sign@npm:0.0.12"
   dependencies:
     "@noble/hashes": ^1.1.2
     bencodex: ^0.1.2
     buffer: ^6.0.3
-  checksum: 71be8b55f1ea237b9bd426568671b880da217f723597a21c3b50f08a625d470414ec8dd3fc69a244e6299355d5b99f2927ca91082c9144698627e1db85bfd717
+  checksum: fd8bf1f4ea990d10d07bfd43994662ce7d5e01f1475a01711053dc6e0510837f324f8d6eaa4dfc802df3f64fb16c67450df0e626f661f9485e55f28d90dbae59
   languageName: node
   linkType: hard
 
@@ -7103,11 +7103,11 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.56
     "@material-ui/styles": ^4.10.0
     "@noble/secp256k1": ^1.7.0
-    "@planetarium/account-local": ^0.0.31
+    "@planetarium/account-local": ^0.0.37
     "@planetarium/account-raw": ^0.0.3
     "@planetarium/check-free-space": ^0.0.2
     "@planetarium/cli": ^0.40.0
-    "@planetarium/sign": ^0.0.11
+    "@planetarium/sign": ^0.0.12
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
     "@radix-ui/react-radio-group": ^0.1.5
     "@radix-ui/react-scroll-area": ^0.1.4

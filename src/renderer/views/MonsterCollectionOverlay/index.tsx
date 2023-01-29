@@ -18,18 +18,19 @@ import {
 import Migration from "./Migration";
 import { useTip } from "src/utils/useTip";
 import { trackEvent } from "src/utils/mixpanel";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
-  const account = useStore("account");
+  const { address, publicKey } = useLoginSession();
   const { data: sheet } = useStakingSheetQuery();
   const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
-    variables: { address: account.address },
-    skip: !account.isLogin,
+    variables: { address },
+    skip: !address,
   });
   const { data: collection, refetch: refetchCollection } =
     useLegacyCollectionStateQuery({
-      variables: { address: account.address },
-      skip: !account.isLogin,
+      variables: { address },
+      skip: !address,
     });
   const balance = useBalance();
   const tip = useTip();
@@ -57,7 +58,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     }
   }, [txStatus]);
 
-  if (!sheet || !current || !collection || !tip) return null;
+  if (!sheet || !current || !collection || !tip || !publicKey) return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
@@ -72,13 +73,11 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             previousAmount: current.stateQuery.stakeState?.deposit,
           });
           try {
-            account.getPublicKeyString().then((v) => {
-              stake({
-                variables: {
-                  publicKey: v,
-                  amount: amount.toNumber(),
-                },
-              });
+            stake({
+              variables: {
+                publicKey,
+                amount: amount.toNumber(),
+              },
             });
             while (loading) {
               sleep(500);

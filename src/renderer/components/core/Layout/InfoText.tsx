@@ -8,6 +8,7 @@ import { styled } from "src/renderer/stitches.config";
 import toast from "react-hot-toast";
 import { T } from "@transifex/react";
 import { useTip } from "src/utils/useTip";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid"
@@ -21,21 +22,21 @@ const InfoTextStyled = styled("div", {
 });
 
 function InfoText() {
-  const account = useStore("account");
+  const { address } = useLoginSession();
   const [node, setNode] = useState<string>("loading");
 
   const debugValue = useMemo(
     () =>
       [
         `APV: ${getConfig("AppProtocolVersion")}`,
-        account.isLogin && `Account: ${account.address}`,
+        address && `Account: ${address}`,
         `Node: ${node}`,
         awsSinkGuid && `Client ID: ${awsSinkGuid}`,
         `Commit: ${GIT_HASH}`,
       ]
         .filter(Boolean)
         .join("\n"),
-    [account.isLogin, account.address, node, awsSinkGuid]
+    [address, node, awsSinkGuid]
   );
 
   const onClick = () => {

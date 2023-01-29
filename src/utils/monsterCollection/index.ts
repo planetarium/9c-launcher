@@ -14,6 +14,7 @@ import {
 } from "src/interfaces/collection";
 import { useStore } from "../useStore";
 import { mapSheetResponseToSheet } from "./internal";
+import { useLoginSession } from "../useLoginSession";
 
 const getTotalDepositedGold = (
   sheet: CollectionSheetItem[],
@@ -27,12 +28,12 @@ const getTotalDepositedGold = (
 };
 
 export function useMonsterCollection() {
-  const account = useStore("account");
+  const { address } = useLoginSession();
   const commonQuery = {
     variables: {
-      address: account.address,
+      address,
     },
-    skip: !account.isLogin,
+    skip: !address,
   };
 
   const { data: collectionStatusQuery } =
@@ -40,8 +41,8 @@ export function useMonsterCollection() {
   const { data: collectionStatus } =
     useCollectionStatusByAgentSubscription(commonQuery);
   const { data: collectionStateQuery } = useStateQueryMonsterCollectionQuery({
-    variables: { agentAddress: account.address },
-    skip: !account.isLogin,
+    variables: { agentAddress: address },
+    skip: !address,
   });
   const { data: collectionState } =
     useCollectionStateByAgentSubscription(commonQuery);

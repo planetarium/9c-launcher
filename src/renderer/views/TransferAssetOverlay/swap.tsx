@@ -20,6 +20,7 @@ import { useStore } from "src/utils/useStore";
 import { TransactionConfirmationListener } from "src/stores/transfer";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
 import refreshIcon from "src/renderer/resources/refreshIcon.png";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 const transifexTags = "Transfer/Transfer";
 
@@ -70,7 +71,8 @@ const SwapButton = styled(Button)({
 });
 
 function SwapPage() {
-  const { transfer, account } = useStore();
+  const transfer = useStore("transfer");
+  const { publicKey, account } = useLoginSession();
   const [recipient, setRecipient] = useState<string>("");
   const [amount, setAmount] = useState<Decimal>(new Decimal(0));
   const [recipientWarning, setRecipientWarning] = useState<boolean>(false);
@@ -106,30 +108,36 @@ function SwapPage() {
       return;
     }
 
+    if (!publicKey || !account) {
+      return;
+    }
+
     setCurrentPhase(TransferPhase.SENDTX);
 
-    const publickey = await account.getPublicKeyString();
     const tx = await transfer.swapToWNCG(
       transfer.senderAddress,
       recipient,
       amount,
-      publickey,
-      account.account
+      publicKey,
+      account
     );
     setTx(tx);
 
-    transfer.confirmTransaction(tx, undefined, listener);
+    setCurrentPhase(TransferPhase.SENDING);
+
+    await transfer.confirmTransaction(tx, undefined, listener);
   };
 
   return (
     <SwapContainer>
+      <SwapTitle>
+        <T _str="ETH Address" _tags={transifexTags} />
+      </SwapTitle>
+      <SwapSecondTitle>
+        <T _str="Enter the ETH Address." _tags={transifexTags} />
+      </SwapSecondTitle>
+
       <FormControl fullWidth>
-        <SwapTitle>
-          <T _str="ETH Address" _tags={transifexTags} />
-        </SwapTitle>
-        <SwapSecondTitle>
-          <T _str="Enter the ETH Address." _tags={transifexTags} />
-        </SwapSecondTitle>
         <SwapInput
           type="text"
           name="address"
@@ -138,24 +146,26 @@ function SwapPage() {
           onBlur={() => setRecipientWarning(!addressVerify(recipient, true))}
           onFocus={() => setRecipientWarning(false)}
         />
-        <SwapTitle>
-          <T _str="NCG Amount" _tags={transifexTags} />
-        </SwapTitle>
-        <SwapSecondTitle>
-          <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
-          &nbsp;
-          <b>
-            <T
-              _str="(Your balance: {ncg} NCG)"
-              _tags={transifexTags}
-              ncg={transfer.balance}
-            />
-          </b>
-          <Button
-            startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={() => transfer.updateBalance(transfer.senderAddress)}
+      </FormControl>
+      <SwapTitle>
+        <T _str="NCG Amount" _tags={transifexTags} />
+      </SwapTitle>
+      <SwapSecondTitle>
+        <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
+        &nbsp;
+        <b>
+          <T
+            _str="(Your balance: {ncg} NCG)"
+            _tags={transifexTags}
+            ncg={transfer.balance}
           />
-        </SwapSecondTitle>
+        </b>
+        <Button
+          startIcon={<img src={refreshIcon} alt="refresh" />}
+          onClick={() => transfer.updateBalance(transfer.senderAddress)}
+        />
+      </SwapSecondTitle>
+      <FormControl fullWidth>
         <SwapInput
           type="number"
           name="amount"
@@ -168,43 +178,43 @@ function SwapPage() {
           endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
           defaultValue={0}
         />
-        <SwapNoticeTitle>
-          <T _str="Notice" _tags={transifexTags} />
-        </SwapNoticeTitle>
-        <ul style={{ listStyleType: "none", padding: 0, marginTop: "5px" }}>
-          <li>
-            <SwapNoticeLabel>
-              <T _str="* Minimum 100 NCG per transfer" _tags={transifexTags} />
-            </SwapNoticeLabel>
-          </li>
-          <li>
-            <SwapNoticeLabel>
-              <T
-                _str="* Maximum {max, number, integer} NCG per day"
-                _tags={transifexTags}
-                max={5000}
-              />
-            </SwapNoticeLabel>
-          </li>
-          <li>
-            <SwapNoticeLabel>
-              <T
-                _str="* 1% fee deducted to operate bridge (ETH gas fee & development cost)"
-                _tags={transifexTags}
-              />
-            </SwapNoticeLabel>
-          </li>
-        </ul>
-        <SwapButton
-          variant="contained"
-          color="primary"
-          onClick={handleButton}
-          disabled={amountWarning || recipientWarning}
-        >
-          {" "}
-          Send{" "}
-        </SwapButton>
       </FormControl>
+      <SwapNoticeTitle>
+        <T _str="Notice" _tags={transifexTags} />
+      </SwapNoticeTitle>
+      <ul style={{ listStyleType: "none", padding: 0, marginTop: "5px" }}>
+        <li>
+          <SwapNoticeLabel>
+            <T _str="* Minimum 100 NCG per transfer" _tags={transifexTags} />
+          </SwapNoticeLabel>
+        </li>
+        <li>
+          <SwapNoticeLabel>
+            <T
+              _str="* Maximum {max, number, integer} NCG per day"
+              _tags={transifexTags}
+              max={5000}
+            />
+          </SwapNoticeLabel>
+        </li>
+        <li>
+          <SwapNoticeLabel>
+            <T
+              _str="* 1% fee deducted to operate bridge (ETH gas fee & development cost)"
+              _tags={transifexTags}
+            />
+          </SwapNoticeLabel>
+        </li>
+      </ul>
+      <SwapButton
+        variant="contained"
+        color="primary"
+        onClick={handleButton}
+        disabled={amountWarning || recipientWarning}
+      >
+        {" "}
+        Send{" "}
+      </SwapButton>
 
       <SendingDialog
         open={currentPhase === TransferPhase.SENDING}

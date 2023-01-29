@@ -9,6 +9,7 @@ import { useStore } from "src/utils/useStore";
 import { useHistory } from "react-router";
 import { CSS } from "src/renderer/stitches.config";
 import { trackEvent } from "src/utils/mixpanel";
+import { utils } from "@noble/secp256k1";
 
 const registerStyles: CSS = {
   padding: 52,
@@ -19,20 +20,18 @@ const registerStyles: CSS = {
 };
 
 function RegisterView() {
-  const account = useStore("account");
+  const accountStore = useStore("account");
   const history = useHistory();
-  const [error, setError] = useState<Error | null>(null);
 
-  account.generatePrivateKey();
-
-  const onSubmit = ({ password, activationKey }: FormData) => {
+  const onSubmit = async ({ password, activationKey }: FormData) => {
     trackEvent("Launcher/CreatePrivateKey");
-    account
-      .getPrivateKeyAndForget()
-      .then((privateKey) => account.importRaw(privateKey, password));
+    const account = await accountStore.importRaw(
+      utils.bytesToHex(utils.randomPrivateKey()),
+      password
+    );
 
-    account.setLoginStatus(true);
-    account.setActivationKey(activationKey!);
+    await accountStore.login(account, password);
+    accountStore.setActivationKey(activationKey!);
     history.push("/lobby?first");
   };
 
@@ -40,11 +39,7 @@ function RegisterView() {
     <Layout sidebar css={registerStyles}>
       <H1>Create your account</H1>
       <p style={{ marginBlockEnd: 54 }}>Please set your password only.</p>
-      <RetypePasswordForm
-        address={account.address}
-        onSubmit={onSubmit}
-        useActivitionKey
-      />
+      <RetypePasswordForm onSubmit={onSubmit} useActivitionKey />
     </Layout>
   );
 }

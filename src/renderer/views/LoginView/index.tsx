@@ -20,48 +20,45 @@ import { trackEvent } from "src/utils/mixpanel";
 const transifexTags = "v2/login-view";
 
 function LoginView() {
-  const { account, transfer } = useStore();
+  const { account: accountStore, transfer } = useStore();
   const [password, setPassword] = useState("");
   const [invalid, setInvalid] = useState(false);
   const [address, setAddress] = useState<Address>(
-    localStorage.getItem("lastAddress") ?? account.keyring[0].address
+    localStorage.getItem("lastAddress") ?? accountStore.keyring[0].address
   );
   const history = useHistory();
 
-  const handleLogin = () => {
-    account.getAccount(address, password).then(
-      (acc) => {
-        account.setAccount(acc);
-        account.setPrivateKeyFromAddress(address, password);
-        account.setLoginStatus(true);
-        ipcRenderer.send("mixpanel-alias", address);
-        trackEvent("Launcher/Login");
+  const handleLogin = async () => {
+    try {
+      const account = await accountStore.getAccount(address, password);
+      await accountStore.login(account, password);
+      accountStore.setLoginStatus(true);
+      ipcRenderer.send("mixpanel-alias", address);
+      trackEvent("Launcher/Login");
 
-        transfer.trySetSenderAddress(account.address);
-        transfer.updateBalance(account.address);
+      await transfer.trySetSenderAddress(address);
+      await transfer.updateBalance(address);
 
-        _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
-        _refiner("identifyUser", {
-          id: address,
-          config: {
-            rpc: true,
-            locale: get("Locale"),
-          },
-        });
-        localStorage.setItem("lastAddress", address);
-        history.push("/lobby");
-      },
-      (reject) => {
-        setInvalid(true);
-        trackEvent("Launcher/LoginFailed");
-        console.error(reject);
-      }
-    );
+      _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
+      _refiner("identifyUser", {
+        id: address,
+        config: {
+          rpc: true,
+          locale: get("Locale"),
+        },
+      });
+      localStorage.setItem("lastAddress", address);
+      history.push("/lobby");
+    } catch (error) {
+      setInvalid(true);
+      trackEvent("Launcher/LoginFailed");
+      console.error(error);
+    }
   };
 
   useEffect(() => {
     async function isInKeyring(address: string) {
-      return await account
+      return await accountStore
         .findKeyByAddress(address)
         .catch(() => {
           return false;
@@ -71,7 +68,7 @@ function LoginView() {
         });
     }
     isInKeyring(address).then((v) => {
-      if (!v) setAddress(account.keyring[0].address);
+      if (!v) setAddress(accountStore.keyring[0].address);
     });
   }, []);
 
@@ -85,7 +82,7 @@ function LoginView() {
       </p>
       <Form onSubmit={(e) => e.preventDefault()}>
         <Select defaultValue={address} onChange={(v) => setAddress(v)}>
-          {account.keyring.map((key) => (
+          {accountStore.keyring.map((key) => (
             <SelectOption key={key.address} value={key.address}>
               {"0x" + key.address}
             </SelectOption>

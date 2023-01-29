@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { unstable_batchedUpdates } from "react-dom";
 import {
   useActivateAccountLazyQuery,
   useActivationAddressQuery,
@@ -7,6 +6,8 @@ import {
 } from "src/generated/graphql";
 import { useIsHeadlessAvailable } from "./useIsHeadlessAvailable";
 import { useStore } from "./useStore";
+import { useTx } from "src/utils/useTx";
+import { useLoginSession } from "./useLoginSession";
 
 interface ActivationResult {
   loading: boolean;
@@ -19,21 +20,25 @@ interface ActivationResult {
  * 1. It queries the activation status of the current account.
  * 2. When the activationKey is provided, it will stage a transaction to activate the account.
  *
- * @param activationKey An activation key to use for automatic activation. Pass `undefined` to disable automatic activation.
  * @returns {ActivationResult} A object with two properties: `loading` and `activated`. They are pretty self-explanatory.
  */
-export function useActivation(activationKey?: string): ActivationResult {
-  const account = useStore("account");
+
+// FIXME Divide this hook onto query and mutation instead of flag
+export function useActivation(doActivate: boolean): ActivationResult {
+  const { address, publicKey } = useLoginSession();
+  const accountStore = useStore("account");
   const isAvailable = useIsHeadlessAvailable();
-  const [isPolling, setPolling] = useState(false);
+  const [activateAccountTxId, setActivateAccountTxId] = useState<string>();
   const [txError, setTxError] = useState<Error | undefined>();
-  const { loading, data, error } = useActivationAddressQuery({
+  const { loading, data, error, stopPolling } = useActivationAddressQuery({
     variables: {
-      address: account.address,
+      address,
     },
-    pollInterval: isPolling ? 1000 : undefined,
-    skip: !account.isLogin,
+    pollInterval: activateAccountTxId ? 1000 : undefined,
+    skip: !address,
   });
+  const tx = useTx();
+  const activated = data?.activationStatus.addressActivated ?? false;
 
   const {
     loading: nonceLoading,
@@ -41,53 +46,73 @@ export function useActivation(activationKey?: string): ActivationResult {
     error: nonceError,
   } = useActivationKeyNonceQuery({
     variables: {
-      // @ts-expect-error The query will not run if activationKey is undefined due to the skip option.
-      encodedActivationKey: activationKey,
+      encodedActivationKey: accountStore.activationKey,
     },
-    skip: !activationKey,
+    skip: !accountStore.activationKey,
   });
-  const [tx] = useActivateAccountLazyQuery();
+  const [
+    requestActivateAccountTx,
+    {
+      called: activateAccountTxCalled,
+      loading: activateAccountTxLoading,
+      error: activateAccountTxError,
+    },
+  ] = useActivateAccountLazyQuery({
+    fetchPolicy: "network-only",
+    onCompleted: ({ actionTxQuery: { activateAccount } }) => {
+      tx(activateAccount)
+        .then((res) => {
+          if (res.data?.stageTransaction) {
+            setActivateAccountTxId(res.data.stageTransaction);
+          }
+        })
+        .catch((e) => {
+          setTxError(e);
+        });
+    },
+  });
 
   useEffect(() => {
     if (nonceData?.activated) {
       setTxError(new Error("Already activated."));
       return;
     }
-    if (
-      !data?.activationStatus.addressActivated &&
-      activationKey &&
-      nonceData?.activationKeyNonce &&
-      !isPolling
-    ) {
-      unstable_batchedUpdates(() => {
-        setPolling(true);
-        setTxError(undefined);
-      });
-      account
-        .getPublicKeyString()
-        .then((v) =>
-          tx({
-            variables: {
-              publicKey: v,
-              activationCode: activationKey,
-            },
-          })
-        )
-        .catch((e) => {
-          setTxError(e);
-          console.error(e);
-        })
-        .then(() => setPolling(false));
-    }
-  }, [activationKey, tx, nonceData, isPolling]);
 
-  useEffect(() => {
-    if (data?.activationStatus.addressActivated) setPolling(false);
-  }, [data]);
+    if (!doActivate) {
+      return;
+    }
+
+    if (
+      !activated &&
+      !activateAccountTxCalled &&
+      !activateAccountTxLoading &&
+      publicKey &&
+      accountStore.activationKey &&
+      nonceData?.activationKeyNonce
+    ) {
+      requestActivateAccountTx({
+        variables: {
+          publicKey,
+          activationCode: accountStore.activationKey,
+        },
+      });
+    }
+ if(activated) stopPolling();
+   }, [
+    accountStore.activationKey,
+    requestActivateAccountTx,
+    nonceData,
+    activated,
+    publicKey,
+    activateAccountTxCalled,
+    doActivate,
+    activateAccountTxLoading,
+  ]);
 
   return {
-    loading: loading || nonceLoading || !isAvailable,
-    error: Boolean(txError || error || nonceError),
-    activated: data?.activationStatus.addressActivated ?? false,
+    loading:
+      loading || nonceLoading || !isAvailable || activateAccountTxLoading,
+    error: Boolean(txError || error || nonceError || activateAccountTxError),
+    activated,
   };
 }
