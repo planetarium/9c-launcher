@@ -30,7 +30,7 @@ export function useActivation(doActivate: boolean): ActivationResult {
   const isAvailable = useIsHeadlessAvailable();
   const [activateAccountTxId, setActivateAccountTxId] = useState<string>();
   const [txError, setTxError] = useState<Error | undefined>();
-  const { loading, data, error } = useActivationAddressQuery({
+  const { loading, data, error, stopPolling } = useActivationAddressQuery({
     variables: {
       address,
     },
@@ -97,7 +97,8 @@ export function useActivation(doActivate: boolean): ActivationResult {
         },
       });
     }
-  }, [
+ if(activated) stopPolling();
+   }, [
     accountStore.activationKey,
     requestActivateAccountTx,
     nonceData,
