@@ -17,8 +17,7 @@ function RecoverView() {
 
   const onSubmit = async ({ password }: { password: string }) => {
     try {
-      const newAccount = await accountStore.completeRecovery(password);
-      await accountStore.login(newAccount, password);
+      await accountStore.completeRecovery(password);
     } finally {
       history.push("/");
     }
