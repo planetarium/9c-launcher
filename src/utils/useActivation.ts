@@ -97,8 +97,8 @@ export function useActivation(doActivate: boolean): ActivationResult {
         },
       });
     }
- if(activated) stopPolling();
-   }, [
+    if (activated) stopPolling();
+  }, [
     accountStore.activationKey,
     requestActivateAccountTx,
     nonceData,
