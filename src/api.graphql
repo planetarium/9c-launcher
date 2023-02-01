@@ -1,22 +1,3 @@
-mutation createPrivateKey($privateKey: ByteString, $passphrase: String!) {
-  keyStore {
-    createPrivateKey(privateKey: $privateKey, passphrase: $passphrase) {
-      hex
-      publicKey {
-        address
-      }
-    }
-  }
-}
-
-mutation revokePrivateKey($address: Address!) {
-  keyStore {
-    revokePrivateKey(address: $address) {
-      address
-    }
-  }
-}
-
 query NodeStatus {
   nodeStatus {
     bootstrapEnded
@@ -65,20 +46,6 @@ subscription NodeException {
   }
 }
 
-query DecryptedPrivateKey($address: Address!, $passphrase: String!) {
-  keyStore {
-    decryptedPrivateKey(address: $address, passphrase: $passphrase)
-  }
-}
-
-query ProtectedPrivateKeys {
-  keyStore {
-    protectedPrivateKeys {
-      address
-    }
-  }
-}
-
 query GetNCGBalance($address: Address!) {
   goldBalance(address: $address)
 }
@@ -93,19 +60,14 @@ query TransactionResult($txId: TxId!) {
   }
 }
 
-query ConvertPrivateKeyToAddress($privateKey: ByteString!) {
-  keyStore {
-    privateKey(hex: $privateKey) {
-      publicKey {
-        address
-      }
+query NodeAppProtocolVersion {
+  nodeStatus {
+    appProtocolVersion {
+      version
+      signer
+      signature
+      extra
     }
-  }
-}
-
-query ValidatePrivateKey($privateKey: ByteString!) {
-  validation {
-    privateKey(hex: $privateKey)
   }
 }
 
@@ -369,6 +331,8 @@ query PreloadEnded {
     appProtocolVersion {
       version
       extra
+      signer
+      signature
     }
   }
   rpcInformation {
@@ -440,3 +404,48 @@ query GenesisHash {
     }
   }
 }
+
+mutation stageTransaction($payload: String!) {
+  stageTransaction(payload: $payload)
+}
+
+query ActivateAccount($publicKey: String!, $activationCode: String!){
+  actionTxQuery(publicKey: $publicKey){
+    activateAccount(activationCode: $activationCode)
+  }
+}
+
+query transferAsset($publicKey: String!, $sender: Address!, $recipient: Address!, $amount: String!, $memo: String){
+  actionTxQuery(publicKey: $publicKey){
+    transferAsset(
+    sender: $sender
+    recipient: $recipient
+    amount: $amount
+    currency: NCG
+    memo: $memo
+    )
+  }
+}
+
+query Stake($publicKey: String!, $amount: BigInt){
+  actionTxQuery(publicKey: $publicKey){
+    stake(amount: $amount)
+  }
+}
+
+query ClaimStakeReward($publicKey: String!, $avatarAddress: Address){
+  actionTxQuery(publicKey: $publicKey){
+    claimStakeReward(avatarAddress: $avatarAddress)
+  }
+}
+
+query MigrateMonsterCollection($publicKey: String!, $avatarAddress: Address){
+  actionTxQuery(publicKey: $publicKey){
+    migrateMonsterCollection(avatarAddress: $avatarAddress)
+  }
+}
+
+
+
+
+

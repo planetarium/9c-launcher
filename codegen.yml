@@ -7,26 +7,9 @@ config:
   scalars:
     Address: ../mappers#Address
     ByteString: ../mappers#ByteStringHex
+    BigInt: ../mappers#BigInt
 generates:
   src/generated/graphql.tsx:
-    plugins:
-      - typescript
-      - typescript-operations
-      - typescript-resolvers
-      - typescript-react-apollo
-    config:
-      reactApolloVersion: 2
-      withHooks: true
-      withMutationFn: true
-  src/generated/graphql-request.ts:
-    plugins:
-      - typescript
-      - typescript-operations
-      - typescript-resolvers
-      - typescript-graphql-request
-    config:
-      rawRequest: true
-  src/v2/generated/graphql.tsx:
     plugins:
       - typescript
       - typescript-operations
@@ -39,3 +22,13 @@ generates:
       scalars:
         Long: number
         TxId: string
+  src/generated/graphql-request.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-resolvers
+      - typescript-graphql-request
+    config:
+      rawRequest: true
+
+

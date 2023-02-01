@@ -33,30 +33,22 @@ import path from "path";
 import fs from "fs";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
-import { initializeSentry } from "../preload/sentry";
+import { initializeSentry } from "src/utils/sentry";
 import "core-js";
 import log from "electron-log";
 import { AppProtocolVersionType } from "../generated/graphql";
-import { decodeApvExtra, encodeTokenFromHex } from "../utils/apv";
-import * as utils from "../utils";
-import * as partitionSnapshot from "./snapshot";
-import * as monoSnapshot from "./monosnapshot";
-import Headless from "./headless/headless";
+import { getSdk } from "src/generated/graphql-request";
+import { decodeApvExtra, encodeTokenFromHex } from "src/utils/apv";
+import * as utils from "src/utils";
 import {
   HeadlessExitedError,
   HeadlessInitializeError,
-  UndefinedProtectedPrivateKeyError,
 } from "../main/exceptions";
 import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
 import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
-import { Address, PrivateKey } from "./headless/key-store";
-import { DownloadSnapshotFailedError } from "./exceptions/download-snapshot-failed";
-import { DownloadSnapshotMetadataFailedError } from "./exceptions/download-snapshot-metadata-failed";
-import { ClearCacheException } from "./exceptions/clear-cache-exception";
-import createCollectionWindow from "../collection/window";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
 import installExtension, {
@@ -64,54 +56,35 @@ import installExtension, {
   MOBX_DEVTOOLS,
   APOLLO_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
-import bytes from "bytes";
-import createTransferWindow from "../transfer/window";
 import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import {
   createWindow as createV2Window,
   setQuitting as setV2Quitting,
-} from "./v2/application";
-import { getFreeSpace } from "@planetarium/check-free-space";
+} from "./application";
 import fg from "fast-glob";
 import { cleanUpLockfile, isUpdating, IUpdateOptions } from "./update/update";
 import { performUpdate } from "./update/update";
 import { checkForUpdate, checkForUpdateFromApv, IUpdate } from "./update/check";
-import { send } from "./v2/ipc";
-import {
-  IPC_OPEN_URL,
-  IPC_PRELOAD_IDLE,
-  IPC_PRELOAD_NEXT,
-} from "../v2/ipcTokens";
+import { send } from "./ipc";
+import { IPC_OPEN_URL } from "src/renderer/ipcTokens";
 import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
-import { playerUpdate } from "./update/player-update";
-import { launcherUpdate } from "./update/launcher-update";
 
 initializeSentry();
 
 Object.assign(console, log.functions);
 
-const standaloneExecutablePath = path.join(
-  app.getAppPath(),
-  "publish",
-  "NineChronicles.Headless.Executable"
-);
-
 const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
-let collectionWin: BrowserWindow | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
-const standalone: Headless = new Headless(standaloneExecutablePath);
 let ip: string | null = null;
 let relaunched: boolean = false;
-
-let bootstrapped = false;
 
 let initializeHeadlessCts: {
   cancel: (reason?: any) => void;
@@ -123,8 +96,6 @@ let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
 let remoteNode: NodeInfo;
 
-const isV2 =
-  !getConfig("PreferLegacyInterface") || app.commandLine.hasSwitch("v2");
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
 ipv4().then((value) => (ip = value));
@@ -185,7 +156,6 @@ if (!app.requestSingleInstanceLock()) {
   cleanUp();
 
   initializeConfig();
-  useRemoteHeadless = getConfig("UseRemoteHeadless");
   initializeApp();
   initializeIpc();
 }
@@ -254,13 +224,27 @@ async function initializeApp() {
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log("An error occurred: ", err));
 
-    if (isV2) win = await createV2Window();
-    else win = await createWindow();
+    win = await createV2Window();
+
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
+    try {
+      remoteNode = await initializeNode();
+    } catch (e) {
+      console.error(e);
+      const { checkboxChecked } = await dialog.showMessageBox(win!, {
+        message: "Failed to connect remote node. please restart launcher.",
+        type: "error",
+        checkboxLabel: "Disable RPC mode",
+      }); // TODO Replace with "go to error page" event
+      if (checkboxChecked) userConfigStore.set("UseRemoteHeadless", false);
+
+      app.exit();
+    }
+
     const update: IUpdate | null = await checkForUpdate(
-      standalone,
+      getSdk(remoteNode.GraphqlClient()),
       process.platform
     ).catch((e) => {
       console.error("An error has occurred while checking updates", e);
@@ -268,11 +252,9 @@ async function initializeApp() {
     });
 
     if (useUpdate && update) {
-      if (!isV2) performUpdate(update, updateOptions);
-      else
-        ipcMain.handle("start update", async () => {
-          await performUpdate(update, updateOptions);
-        });
+      ipcMain.handle("start update", async () => {
+        await performUpdate(update, updateOptions);
+      });
     }
 
     if (update) {
@@ -307,7 +289,7 @@ async function initializeApp() {
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
 
     mixpanel?.track("Launcher/Start", {
-      isV2,
+      isV2: true,
       useRemoteHeadless,
       updateAvailable: update
         ? update.projects.launcher.updateRequired ||
@@ -315,32 +297,13 @@ async function initializeApp() {
         : false,
     });
 
-    try {
-      remoteNode = await initializeNode();
-    } catch (e) {
-      console.error(e);
-      const { checkboxChecked } = await dialog.showMessageBox(win!, {
-        message: "Failed to connect remote node. please restart launcher.",
-        type: "error",
-        checkboxLabel: "Disable RPC mode",
-      }); // TODO Replace with "go to error page" event
-      if (checkboxChecked) userConfigStore.set("UseRemoteHeadless", false);
-
-      app.exit();
-    }
-
     // Detects and move old snapshot caches as they're unused.
     // Ignores any failure as they're not critical.
     fg("snapshot-*", { cwd: app.getPath("userData") }).then((files) =>
       Promise.allSettled(files.map((file) => fs.promises.unlink(file)))
     );
-
-    if (useRemoteHeadless) {
-      console.log("main initializeApp call initializeRemoteHeadless");
-      initializeRemoteHeadless();
-    } else {
-      initializeHeadless();
-    }
+    console.log("main initializeApp call initializeRemoteHeadless");
+    initializeRemoteHeadless();
   });
 
   app.on("quit", (event) => {
@@ -356,69 +319,36 @@ async function initializeApp() {
 function initializeIpc() {
   ipcMain.on(
     "encounter different version",
-    async (_event, apv: Pick<AppProtocolVersionType, "version" | "extra">) => {
+    async (
+      _event,
+      apv: Pick<
+        AppProtocolVersionType,
+        "version" | "extra" | "signer" | "signature"
+      >
+    ) => {
       if (!useUpdate || !apv.extra) return;
 
       const extra = decodeApvExtra(apv.extra);
 
       const simpleApv = {
-        raw: encodeTokenFromHex(apv.version, apv.extra),
+        raw: encodeTokenFromHex(
+          apv.version,
+          apv.signer,
+          apv.signature,
+          apv.extra
+        ),
         version: apv.version,
         extra: extra ? Object.fromEntries(extra) : {},
       };
 
       try {
-        const update = await checkForUpdateFromApv(
-          standalone,
-          simpleApv,
-          process.platform
-        );
+        const update = await checkForUpdateFromApv(simpleApv, process.platform);
         await performUpdate(update, updateOptions);
       } catch (e) {
         console.error("An error has occurred while checking updates", e);
       }
     }
   );
-
-  ipcMain.handle("open collection page", async (_, selectedAddress) => {
-    if (collectionWin != null) {
-      collectionWin.focus();
-      return;
-    }
-    console.log(`open collection page address: ${selectedAddress}`);
-    collectionWin = await createCollectionWindow();
-    console.log(
-      `call initialize collection window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
-    );
-    collectionWin!.webContents.send(
-      "initialize collection window",
-      selectedAddress,
-      remoteNode!.HeadlessUrl()
-    );
-    collectionWin.on("close", function (event: any) {
-      collectionWin = null;
-    });
-  });
-
-  ipcMain.handle("open transfer page", async (_, selectedAddress) => {
-    if (collectionWin != null) {
-      collectionWin.focus();
-      return;
-    }
-    console.log(`open transfer page address: ${selectedAddress}`);
-    collectionWin = await createTransferWindow();
-    console.log(
-      `call initialize transfer window: ${selectedAddress}, ${remoteNode.HeadlessUrl()}`
-    );
-    collectionWin!.webContents.send(
-      "initialize transfer window",
-      selectedAddress,
-      remoteNode!.HeadlessUrl()
-    );
-    collectionWin.on("close", function (event: any) {
-      collectionWin = null;
-    });
-  });
 
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {
@@ -458,12 +388,8 @@ function initializeIpc() {
     await quitAllProcesses("clear-cache");
     utils.deleteBlockchainStoreSync(getBlockChainStorePath());
     if (rerun) {
-      if (useRemoteHeadless) {
-        console.log("main clear cache call initializeRemoteHeadless");
-        await initializeRemoteHeadless();
-      } else {
-        await initializeHeadless();
-      }
+      console.log("main clear cache call initializeRemoteHeadless");
+      await initializeRemoteHeadless();
     }
     return true;
   });
@@ -482,10 +408,6 @@ function initializeIpc() {
 
   ipcMain.on("login", async () => {
     mixpanel?.login();
-  });
-
-  ipcMain.on("set mining", async () => {
-    mixpanel?.miningConfig();
   });
 
   ipcMain.on("relaunch standalone", async (event, param: object) => {
@@ -534,87 +456,6 @@ function initializeIpc() {
     mixpanel?.alias(alias);
   });
 
-  ipcMain.handle("get-protected-private-keys", async () =>
-    standalone.keyStore.list()
-  );
-
-  ipcMain.on(
-    "unprotect-private-key",
-    async (event, address: Address, passphrase: string) => {
-      try {
-        const protectedPrivateKey = standalone.keyStore
-          .list()
-          .find((x) => x.address === address);
-        if (protectedPrivateKey === undefined) {
-          event.returnValue = [
-            undefined,
-            new UndefinedProtectedPrivateKeyError(
-              "ProtectedPrivateKey is undefined during unprotect private key."
-            ),
-          ];
-          return;
-        }
-
-        event.returnValue = [
-          standalone.keyStore.unprotectPrivateKey(
-            protectedPrivateKey.keyId,
-            passphrase
-          ),
-          undefined,
-        ];
-      } catch (error) {
-        event.returnValue = [undefined, error];
-      }
-    }
-  );
-
-  ipcMain.on("create-private-key", async (event, passphrase: string) => {
-    event.returnValue =
-      standalone.keyStore.createProtectedPrivateKey(passphrase);
-  });
-
-  ipcMain.handle("generate-private-key", async (event) => {
-    return standalone.keyStore.generateRawKey();
-  });
-
-  ipcMain.on(
-    "import-private-key",
-    async (event, privateKey: PrivateKey, passphrase: string) => {
-      event.returnValue = standalone.keyStore.importPrivateKey(
-        privateKey,
-        passphrase
-      );
-    }
-  );
-
-  ipcMain.on(
-    "revoke-protected-private-key",
-    async (event, address: Address) => {
-      const keyList = standalone.keyStore.list();
-      keyList.forEach((pv) => {
-        if (pv.address.replace("0x", "") === address.toString()) {
-          standalone.keyStore.revokeProtectedPrivateKey(pv.keyId);
-        }
-      });
-
-      event.returnValue = ["", undefined];
-    }
-  );
-
-  ipcMain.on("validate-private-key", async (event, privateKeyHex: string) => {
-    event.returnValue = standalone.validation.isValidPrivateKey(privateKeyHex);
-  });
-
-  ipcMain.on(
-    "convert-private-key-to-address",
-    async (event, privateKeyHex: string) => {
-      event.returnValue = standalone.keyStore.convertPrivateKey(
-        privateKeyHex,
-        "address"
-      );
-    }
-  );
-
   ipcMain.on("online-status-changed", (event, status: "online" | "offline") => {
     console.log(`online-status-changed: ${status}`);
     if (status === "offline") {
@@ -628,170 +469,6 @@ function initializeIpc() {
     }
     return remoteNode;
   });
-
-  ipcMain.handle("is bootstrapped", () => bootstrapped);
-}
-
-async function initializeHeadless(): Promise<void> {
-  /*
-  1. Check disk (permission, storage).
-  2. Check APV and update if needed.
-  3. If use snapshot, download metadata.
-  4. Validate metadata via headless-command.
-  5. If metadata is valid, download snapshot with parallel.
-  6. Extract downloaded snapshot.
-  7. Execute headless.
-  */
-  console.log(`Initialize headless. (win: ${win?.getTitle})`);
-
-  if (initializeHeadlessCts !== null) {
-    console.error("Cannot initialize headless while initializing headless.");
-    return;
-  }
-
-  if (standalone.alive) {
-    console.error("Cannot initialize headless while headless is running.");
-    return;
-  }
-
-  if (isUpdating()) {
-    console.error("Cannot initialize headless while updater is running.");
-    return;
-  }
-
-  initializeHeadlessCts = CancellationToken.create();
-
-  try {
-    const chainPath = getBlockChainStorePath();
-    if (!utils.isDiskPermissionValid(chainPath)) {
-      win?.webContents.send("go to error page", "no-permission");
-      throw new HeadlessInitializeError(`Not enough permission. ${chainPath}`);
-    }
-
-    win?.webContents.send("start bootstrap");
-    bootstrapped = true;
-    const snapshot =
-      getConfig("StoreType") === "rocksdb" ? partitionSnapshot : monoSnapshot;
-
-    const snapshotPaths: string[] = getConfig("SnapshotPaths");
-    if (CUSTOM_SERVER) {
-      console.log(
-        "As a custom headless server is used, snapshot won't be used."
-      );
-    } else if (snapshotPaths.length > 0 && win != null) {
-      const snapshotDownloadUrls: string[] = getConfig("SnapshotPaths");
-      let isProcessSuccess = false;
-      let recentError: Error = Error();
-      const cacheFolder = path.join(
-        getConfig("BlockchainStoreDirParent"),
-        "temp"
-      );
-      if (!fs.existsSync(cacheFolder)) await fs.promises.mkdir(cacheFolder);
-      for (const snapshotDownloadUrl of snapshotDownloadUrls) {
-        try {
-          isProcessSuccess = await snapshot.processSnapshot(
-            snapshotDownloadUrl,
-            chainPath,
-            cacheFolder,
-            standalone,
-            win,
-            initializeHeadlessCts.token,
-            async (size) => {
-              try {
-                const freeSpace = await getFreeSpace(chainPath);
-                if (freeSpace < size) {
-                  win?.webContents.send("go to error page", "disk-space", {
-                    size,
-                  });
-                  throw new HeadlessInitializeError(
-                    `Not enough space. ${chainPath} (${freeSpace} < ${size})`
-                  );
-                }
-              } catch (e) {
-                console.error("Error while checking free space:", e);
-                await dialog.showMessageBox(win!, {
-                  message: `Failed to check free space. Please make sure you have at least ${bytes(
-                    Number(size)
-                  )} available on your disk.`,
-                  type: "warning",
-                });
-              }
-            },
-            mixpanel
-          );
-
-          if (isProcessSuccess) break;
-        } catch (error) {
-          recentError = error;
-        }
-      }
-
-      if (!isProcessSuccess) {
-        console.log(recentError.message);
-        switch (recentError.constructor) {
-          case DownloadSnapshotFailedError:
-            win?.webContents.send(
-              "go to error page",
-              "download-snapshot-failed-error"
-            );
-            throw new HeadlessInitializeError(
-              `Snapshot download failed.`,
-              recentError
-            );
-          case DownloadSnapshotMetadataFailedError:
-            win?.webContents.send(
-              "go to error page",
-              "download-snapshot-metadata-failed-error"
-            );
-            throw new HeadlessInitializeError(
-              `Snapshot metadata download failed.`,
-              recentError
-            );
-          case ClearCacheException:
-            // do nothing when clearing cache
-            return;
-          default:
-            win?.webContents.send(
-              "go to error page",
-              "download-snapshot-failed-error"
-            );
-            throw new HeadlessInitializeError(
-              `Unexpected Error occupied when download snapshot.`,
-              recentError
-            );
-        }
-      }
-    }
-
-    initializeHeadlessCts.token.throwIfCancelled();
-    send(win!, IPC_PRELOAD_NEXT);
-    win?.webContents.send("start headless");
-    await standalone.execute(getHeadlessArgs());
-
-    console.log("Register exit handler.");
-    standalone.once("exit", async () => {
-      console.error("Headless exited by self.");
-      send(win!, IPC_PRELOAD_IDLE);
-      await relaunchHeadless();
-    });
-  } catch (error) {
-    console.error(`Error occurred during initializeHeadless(). ${error}`);
-    if (
-      error instanceof HeadlessInitializeError ||
-      error instanceof CancellationToken.CancellationError
-    ) {
-      console.error(`InitializeHeadless() halted: ${error}`);
-    } else if (error instanceof HeadlessExitedError) {
-      console.error("Headless exited during initialization:", error);
-      win?.webContents.send("go to error page", "clear-cache");
-    } else {
-      win?.webContents.send("go to error page", "reinstall");
-      throw error;
-    }
-  } finally {
-    console.log("initializeHeadless() finished.");
-    initializeHeadlessCts = null;
-  }
 }
 
 async function initializeRemoteHeadless(): Promise<void> {
@@ -799,18 +476,11 @@ async function initializeRemoteHeadless(): Promise<void> {
   1. Check APV and update if needed.
   2. Execute remote headless.
   */
-  console.log(`Initialize remote headless. (win: ${win?.getTitle})`);
+  console.log(`Initialize remote headless. (win: ${win?.getTitle()})`);
 
   if (initializeHeadlessCts !== null) {
     console.error(
       "Cannot initialize remote headless while initializing headless."
-    );
-    return;
-  }
-
-  if (standalone.alive) {
-    console.error(
-      "Cannot initialize remote headless while headless is running."
     );
     return;
   }
@@ -830,12 +500,6 @@ async function initializeRemoteHeadless(): Promise<void> {
     // console.log("main call remote_node");
     remoteHeadless = new RemoteHeadless(remoteNode!);
     await remoteHeadless.execute();
-
-    console.log("Register exit handler.");
-    standalone.once("exit", async () => {
-      console.error("remote headless exited by self.");
-      await relaunchHeadless();
-    });
   } catch (error) {
     console.error(
       `Error occurred during initialize remote headless(). ${error}`
@@ -951,29 +615,14 @@ function loadInstallerMixpanelUUID(): string {
 }
 
 async function relaunchHeadless(reason: string = "default") {
-  await stopHeadlessProcess(reason);
-  if (useRemoteHeadless) {
-    console.log("main relaunchHeadless call initializeRemoteHeadless");
-    await initializeRemoteHeadless();
-  } else {
-    await initializeHeadless();
-  }
+  await initializeRemoteHeadless();
 }
 
 async function quitAllProcesses(reason: string = "default") {
-  await stopHeadlessProcess(reason);
   if (gameNode === null) return;
-  const pid = gameNode.pid;
+  const pid = gameNode.pid!;
   process.kill(pid, "SIGINT");
   gameNode = null;
-}
-
-async function stopHeadlessProcess(reason: string = "default"): Promise<void> {
-  console.log("Cancelling initializeHeadless()");
-  initializeHeadlessCts?.cancel(reason);
-  while (initializeHeadlessCts !== null) await utils.sleep(100);
-  console.log("initializeHeadless() cancelled.");
-  await standalone.kill();
 }
 
 function createTray(iconPath: string) {
@@ -1023,34 +672,4 @@ function relaunch() {
     app.relaunch();
     app.exit();
   }
-}
-
-function getHeadlessArgs(): string[] {
-  const args = [
-    `-V=${getConfig("AppProtocolVersion")}`,
-    `-G=${getConfig("GenesisBlockPath")}`,
-    `--store-type=${getConfig("StoreType")}`,
-    `--store-path=${getBlockChainStorePath()}`,
-    ...getConfig("IceServerStrings").map(
-      (iceServerString) => `-I=${iceServerString}`
-    ),
-    ...getConfig("PeerStrings").map((peerString) => `--peer=${peerString}`),
-    ...getConfig("TrustedAppProtocolVersionSigners").map(
-      (trustedAppProtocolVersionSigner) =>
-        `-T=${trustedAppProtocolVersionSigner}`
-    ),
-    "--no-miner",
-    "--rpc-server",
-    `--rpc-listen-host=${RPC_SERVER_HOST}`,
-    `--rpc-listen-port=${RPC_SERVER_PORT}`,
-    "--graphql-server",
-    `--graphql-host=${LOCAL_SERVER_HOST}`,
-    `--graphql-port=${LOCAL_SERVER_PORT}`,
-    `--workers=${getConfig("Workers")}`,
-    `--confirmations=${getConfig("Confirmations")}`,
-    ...getConfig("HeadlessArgs", []),
-    ...(process.env.NODE_ENV !== "production" ? ["--no-cors"] : []),
-  ];
-
-  return args;
 }
