@@ -7,21 +7,18 @@ import RetypePasswordForm from "src/renderer/components/RetypePasswordForm";
 import { useHistory } from "react-router";
 import H2 from "src/renderer/components/ui/H2";
 import { T } from "src/renderer/i18n";
+import { ProtectedPrivateKey } from "src/interfaces/keystore";
 
 const transifexTags = "v2/recover-view";
 
 function RecoverView() {
-  const account = useStore("account");
-  const address = account.address;
+  const accountStore = useStore("account");
   const history = useHistory();
 
-  const onSubmit = ({ password }: { password: string }) => {
+  const onSubmit = async ({ password }: { password: string }) => {
     try {
-      account.removeKeyByAddress(address);
+      await accountStore.completeRecovery(password);
     } finally {
-      account
-        .getPrivateKeyAndForget()
-        .then((privateKey) => account.importRaw(privateKey, password));
       history.push("/");
     }
   };
@@ -34,7 +31,7 @@ function RecoverView() {
       <H2>
         <T _str="Found your account!" _tags={transifexTags} />
       </H2>
-      <RetypePasswordForm address={address} onSubmit={onSubmit} />
+      <RetypePasswordForm onSubmit={onSubmit} />
     </Layout>
   );
 }

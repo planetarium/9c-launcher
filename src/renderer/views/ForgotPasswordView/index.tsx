@@ -1,6 +1,5 @@
 import React from "react";
 import { observer } from "mobx-react";
-import { isValidPrivateKey } from "@planetarium/account-raw";
 import Layout from "src/renderer/components/core/Layout";
 import H1 from "src/renderer/components/ui/H1";
 import { T } from "src/renderer/i18n";
@@ -30,8 +29,8 @@ function ForgotPasswordView() {
   const account = useStore("account");
   const history = useHistory();
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    account.setPrivateKey(data.privateKey);
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    account.beginRecovery(data.privateKey);
     history.push("/recover");
   };
 
@@ -53,7 +52,7 @@ function ForgotPasswordView() {
           label={t("Private key", { _tags: transifexTags })}
           {...register("privateKey", {
             required: true,
-            validate: (v) => isValidPrivateKey(v),
+            validate: (v) => account.isValidPrivateKey(v),
           })}
           invalid={!!errors.privateKey}
         />

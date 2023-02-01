@@ -26,7 +26,8 @@ function ImportView() {
       setError(t("Invalid private key"));
       return;
     }
-    account.setPrivateKey(key.key);
+
+    account.beginRecovery(key.key);
     history.push("/recover");
   };
 

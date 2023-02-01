@@ -12,7 +12,7 @@ const isFirst = (state: string): boolean => {
 
 function LobbyView() {
   const { account, game } = useStore();
-  const { loading, activated, error } = useActivation(account.activationKey);
+  const { loading, activated, error } = useActivation(true);
   const history = useHistory();
   const onboardingRequired = useMemo(
     () => isFirst(history.location.search),
@@ -26,12 +26,10 @@ function LobbyView() {
   }, [loading, activated, account.activationKey]);
 
   useEffect(() => {
-    if (account.isLogin && activated) {
-      account
-        .getPrivateKeyAndForget(false)
-        .then((privateKey) => game.startGame(privateKey));
+    if (account.loginSession && activated) {
+      game.startGame(account.loginSession.privateKey);
     }
-  }, [account.isLogin, activated]);
+  }, [account.loginSession, activated, game]);
 
   useEffect(() => {
     if (error) history.push("/error/relaunch");

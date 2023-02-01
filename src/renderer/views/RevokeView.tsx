@@ -8,12 +8,16 @@ import { useStore } from "src/utils/useStore";
 import { Address } from "src/interfaces/keystore";
 import Button from "src/renderer/components/ui/Button";
 import { useHistory } from "react-router";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 const transifexTags = "v2/revoke-view";
 
 function RevokeView() {
-  const account = useStore("account");
-  const [address, setAddress] = useState<Address>(account.address);
+  const accountStore = useStore("account");
+  const { address: loggedinAddress } = useLoginSession();
+  const [address, setAddress] = useState<Address>(
+    loggedinAddress ?? accountStore.keyring[0].address
+  );
   const history = useHistory();
 
   return (
@@ -31,7 +35,7 @@ function RevokeView() {
         _tags={transifexTags}
       />
       <Select value={address} onChange={(v) => setAddress(v)}>
-        {account.keyring.map((key) => (
+        {accountStore.keyring.map((key) => (
           <SelectOption key={key.address} value={key.address}>
             {key.address}
           </SelectOption>
@@ -41,7 +45,7 @@ function RevokeView() {
         variant="primary"
         centered
         onClick={() => {
-          account.removeKeyByAddress(address);
+          accountStore.removeKeyByAddress(address);
           history.push("/");
         }}
       >

@@ -10,7 +10,7 @@ import { styled } from "../stitches.config";
 
 interface Props {
   onSubmit: (data: FormData) => void;
-  useActivitionKey?: boolean;
+  useActivationKey?: boolean;
   address?: string;
   activationCodeUrl?: string;
 }
@@ -34,7 +34,7 @@ const Form = styled("form", {
 
 export default function RetypePasswordForm({
   onSubmit,
-  useActivitionKey,
+  useActivationKey,
   activationCodeUrl,
   address,
 }: Props) {
@@ -73,7 +73,7 @@ export default function RetypePasswordForm({
           deps: ["password"],
         })}
       />
-      {useActivitionKey && (
+      {useActivationKey && (
         <TextField
           motion
           type="text"

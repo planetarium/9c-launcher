@@ -3,21 +3,21 @@ import {
   useGetNcgBalanceQuery,
   useBalanceByAgentSubscription,
 } from "src/generated/graphql";
-import { useStore } from "./useStore";
+import { useLoginSession } from "./useLoginSession";
 
 export function useBalance() {
-  const account = useStore("account");
+  const { address } = useLoginSession();
   const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
     variables: {
-      address: account.address,
+      address,
     },
-    skip: !account.isLogin,
+    skip: !address,
   });
   const { data: balance } = useBalanceByAgentSubscription({
     variables: {
-      address: account.address,
+      address,
     },
-    skip: !account.isLogin,
+    skip: !address,
   });
 
   return useMemo(

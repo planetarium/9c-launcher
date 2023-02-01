@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { motion } from "framer-motion";
 import { styled } from "src/renderer/stitches.config";
 import {
@@ -26,6 +32,8 @@ import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverla
 import { useStaking } from "src/utils/staking";
 import { useTx } from "src/utils/useTx";
 import { trackEvent } from "src/utils/mixpanel";
+import { useLoginSession } from "src/utils/useLoginSession";
+import { Avatar } from "src/renderer/views/ClaimCollectionRewardsOverlay/ClaimContent";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -54,13 +62,11 @@ const UserInfoItem = styled(motion.li, {
 });
 
 export default function UserInfo() {
-  const account = useStore("account");
-  const isAvailable = useIsHeadlessAvailable();
+  const { publicKey, address, account } = useLoginSession();
   const {
     canClaim,
     tip,
     startedBlockIndex,
-    receivedBlockIndex,
     claimableBlockIndex,
     deposit,
     refetch,
@@ -80,7 +86,6 @@ export default function UserInfo() {
     if (txStatus === TxStatus.Success) refetch();
     else console.error("Claim transaction failed: ", result);
   }, [result]);
-
   const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
   const remainingText = useMemo(() => {
     if (!claimableBlockIndex) return 0;
@@ -88,8 +93,32 @@ export default function UserInfo() {
     return getRemain(minutes);
   }, [claimableBlockIndex, tip]);
 
-  const [claimStakeReward, { data, loading, error }] =
-    useClaimStakeRewardLazyQuery();
+  const claimedAvatar = useRef<Avatar>();
+
+  const [requestClaimStakeRewardTx] = useClaimStakeRewardLazyQuery({
+    fetchPolicy: "network-only",
+    onCompleted: ({ actionTxQuery: { claimStakeReward } }) => {
+      const avatar = claimedAvatar.current!;
+      tx(claimStakeReward).then((txId) => {
+        if (txId!.data)
+          fetchResult({
+            variables: { txId: txId!.data.stageTransaction },
+          });
+        trackEvent("Staking/Claim", {
+          txId,
+          avatar: avatar.address,
+        });
+        toast.success(
+          t("Successfully sent rewards to {name} #{address}", {
+            _tags: "v2/monster-collection",
+            name: avatar.name,
+            address: avatar.address.slice(2),
+          })
+        );
+        setClaimLoading(true);
+      });
+    },
+  });
   const tx = useTx();
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -97,21 +126,23 @@ export default function UserInfo() {
   const gold = useBalance();
 
   const copyAddress = useCallback(() => {
-    clipboard.writeText(account.address);
-    toast("Copied!");
-  }, [account.address]);
+    if (address) {
+      clipboard.writeText(address);
+      toast("Copied!");
+    }
+  }, [address]);
 
   const t = useT();
 
   const [isCollectionOpen, setCollectionOpen] = useState<boolean>(false);
 
-  if (!isAvailable || !account.isLogin) return null;
+  if (account === null) return null;
 
   return (
     <UserInfoStyled>
       <UserInfoItem onClick={copyAddress}>
         <AccountBoxIcon />
-        <strong>{account.address}</strong>
+        <strong>{address}</strong>
         <FileCopyIcon />
       </UserInfoItem>
       <UserInfoItem>
@@ -134,40 +165,16 @@ export default function UserInfo() {
           onClose={() => setOpenDialog(false)}
           tip={tip}
           onConfirm={(avatar) => {
-            account
-              .getPublicKeyString()
-              .then((v) =>
-                claimStakeReward({
-                  variables: {
-                    publicKey: v,
-                    avatarAddress: avatar.address.replace(/^0x/, ""),
-                  },
-                })
-              )
-              .then(
-                () =>
-                  data?.actionTxQuery &&
-                  tx(data.actionTxQuery.claimStakeReward!)
-              )
-              .then((txId) => {
-                if (txId!.data)
-                  fetchResult({
-                    variables: { txId: txId!.data.stageTransaction },
-                  });
-                trackEvent("Staking/Claim", {
-                  txId,
-                  avatar: avatar.address,
-                });
-                toast.success(
-                  t("Successfully sent rewards to {name} #{address}", {
-                    _tags: "v2/monster-collection",
-                    name: avatar.name,
-                    address: avatar.address.slice(2, 6),
-                  })
-                );
-                setClaimLoading(true);
-              })
-              .catch((e) => console.error(e));
+            if (publicKey) {
+              claimedAvatar.current = avatar;
+              requestClaimStakeRewardTx({
+                variables: {
+                  publicKey,
+                  avatarAddress: avatar.address.replace(/^0x/, ""),
+                },
+              });
+            }
+
             setOpenDialog(false);
           }}
         />

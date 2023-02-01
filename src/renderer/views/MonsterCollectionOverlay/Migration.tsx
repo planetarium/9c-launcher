@@ -8,6 +8,7 @@ import { MigrationAlert, MigrationAlertItem } from "./dialog";
 import ncgIcon from "src/renderer/resources/collection/items/ncg.png";
 import ClaimCollectionRewardsOverlay from "../ClaimCollectionRewardsOverlay";
 import { useTx } from "src/utils/useTx";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 interface MigrationProps {
   tip: number;
@@ -40,10 +41,20 @@ export default function Migration({
   onClose,
 }: MigrationProps) {
   const [isOpen, open] = useReducer(() => true, false);
-  const account = useStore("account");
+  const { publicKey } = useLoginSession();
   const isClaimable = tip >= collectionState.claimableBlockIndex;
-  const [migrateMonsterCollection, { data, loading, error }] =
-    useMigrateMonsterCollectionLazyQuery();
+  const [requestMigrateMonsterCollectionTx] =
+    useMigrateMonsterCollectionLazyQuery({
+      onCompleted: ({ actionTxQuery: { migrateMonsterCollection } }) => {
+        tx(migrateMonsterCollection)
+          .then(
+            (txId) =>
+              txId.data?.stageTransaction &&
+              onActionTxId(txId.data.stageTransaction)
+          )
+          .catch((e) => console.error(e));
+      },
+    });
   const tx = useTx();
 
   const deposit = useMemo(
@@ -96,23 +107,14 @@ export default function Migration({
         isOpen={isOpen}
         onClose={() => {}}
         onConfirm={(avatar) => {
-          account
-            .getPublicKeyString()
-            .then((v) =>
-              migrateMonsterCollection({
-                variables: {
-                  publicKey: v,
-                  avatarAddress: avatar.address.replace("0x", ""),
-                },
-              })
-            )
-            .then(() => tx(data!.actionTxQuery.migrateMonsterCollection))
-            .then(
-              (txId) =>
-                txId.data?.stageTransaction &&
-                onActionTxId(txId.data.stageTransaction)
-            )
-            .catch((e) => console.error(e));
+          if (publicKey) {
+            requestMigrateMonsterCollectionTx({
+              variables: {
+                publicKey: publicKey,
+                avatarAddress: avatar.address.replace("0x", ""),
+              },
+            });
+          }
         }}
       />
     </MigrationAlert>

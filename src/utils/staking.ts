@@ -1,14 +1,15 @@
 import { useCurrentStakingQuery } from "src/generated/graphql";
 import { useStore } from "./useStore";
 import { useTip } from "./useTip";
+import { useLoginSession } from "./useLoginSession";
 
 export function useStaking() {
-  const account = useStore("account");
+  const { address } = useLoginSession();
   const commonQuery = {
     variables: {
-      address: account.address,
+      address,
     },
-    skip: !account.isLogin,
+    skip: !address,
   };
 
   const { data: current, refetch } = useCurrentStakingQuery(commonQuery);

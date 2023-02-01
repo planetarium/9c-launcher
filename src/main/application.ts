@@ -1,7 +1,7 @@
 import { app, BrowserWindow, shell } from "electron";
 import { enable as remoteEnable } from "@electron/remote/main";
 import { join } from "path";
-import logoImage from "src/renderer/resources/logo.png";
+import logoImage from "src/renderer/resources/launcher-logo.png";
 
 export let isQuitting = false;
 

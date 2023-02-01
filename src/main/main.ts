@@ -319,13 +319,24 @@ async function initializeApp() {
 function initializeIpc() {
   ipcMain.on(
     "encounter different version",
-    async (_event, apv: Pick<AppProtocolVersionType, "version" | "extra">) => {
+    async (
+      _event,
+      apv: Pick<
+        AppProtocolVersionType,
+        "version" | "extra" | "signer" | "signature"
+      >
+    ) => {
       if (!useUpdate || !apv.extra) return;
 
       const extra = decodeApvExtra(apv.extra);
 
       const simpleApv = {
-        raw: encodeTokenFromHex(apv.version, apv.extra),
+        raw: encodeTokenFromHex(
+          apv.version,
+          apv.signer,
+          apv.signature,
+          apv.extra
+        ),
         version: apv.version,
         extra: extra ? Object.fromEntries(extra) : {},
       };
