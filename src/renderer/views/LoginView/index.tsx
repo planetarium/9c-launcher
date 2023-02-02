@@ -23,13 +23,25 @@ function LoginView() {
   const { account: accountStore, transfer } = useStore();
   const [password, setPassword] = useState("");
   const [invalid, setInvalid] = useState(false);
-  const [address, setAddress] = useState<Address>(
-    localStorage.getItem("lastAddress") ?? accountStore.keyring[0].address
-  );
+  const [address, setAddress] = useState<Address>(getLastLoggedinAddress());
+
+  function getLastLoggedinAddress() {
+    const stored = localStorage.getItem("lastAddress");
+    const keyringAddresses = accountStore.keyring.map((k) => k.address);
+
+    if (stored && keyringAddresses.filter((a) => a === stored).length > 0) {
+      return stored;
+    }
+
+    return keyringAddresses[0];
+  }
+
   const history = useHistory();
 
   const handleLogin = async () => {
     try {
+      localStorage.setItem("lastAddress", address);
+
       const account = await accountStore.getAccount(address, password);
       await accountStore.login(account, password);
       accountStore.setLoginStatus(true);
@@ -47,7 +59,6 @@ function LoginView() {
           locale: get("Locale"),
         },
       });
-      localStorage.setItem("lastAddress", address);
       history.push("/lobby");
     } catch (error) {
       setInvalid(true);
@@ -55,22 +66,6 @@ function LoginView() {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    async function isInKeyring(address: string) {
-      return await accountStore
-        .findKeyByAddress(address)
-        .catch(() => {
-          return false;
-        })
-        .then(() => {
-          return true;
-        });
-    }
-    isInKeyring(address).then((v) => {
-      if (!v) setAddress(accountStore.keyring[0].address);
-    });
-  }, []);
 
   return (
     <Layout sidebar flex>
