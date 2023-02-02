@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react";
 import Layout from "src/renderer/components/core/Layout";
 import { useStore } from "src/utils/useStore";
-import { Address } from "src/interfaces/keystore";
 import { useHistory } from "react-router";
-import { CSS, styled } from "src/renderer/stitches.config";
 import { ipcRenderer } from "electron";
 import H1 from "src/renderer/components/ui/H1";
 import { PasswordField } from "src/renderer/components/ui/TextField";
@@ -16,20 +14,45 @@ import Form from "src/renderer/components/ui/Form";
 import { get } from "src/config";
 import _refiner from "refiner-js";
 import { trackEvent } from "src/utils/mixpanel";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 const transifexTags = "v2/login-view";
 
+interface FormData {
+  address: string;
+  password: string;
+}
+
 function LoginView() {
   const { account: accountStore, transfer } = useStore();
-  const [password, setPassword] = useState("");
   const [invalid, setInvalid] = useState(false);
-  const [address, setAddress] = useState<Address>(
-    localStorage.getItem("lastAddress") ?? accountStore.keyring[0].address
-  );
+  const keyringAddresses = accountStore.keyring.map((k) => k.address);
+  const defaultAddress = getLastLoggedinAddress();
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  function getLastLoggedinAddress() {
+    const stored = localStorage.getItem("lastAddress");
+
+    if (stored && keyringAddresses.filter((a) => a === stored).length > 0) {
+      return stored;
+    }
+
+    return keyringAddresses[0];
+  }
+
   const history = useHistory();
 
-  const handleLogin = async () => {
+  const handleLogin: SubmitHandler<FormData> = async ({
+    address,
+    password,
+  }) => {
     try {
+      localStorage.setItem("lastAddress", address);
       const account = await accountStore.getAccount(address, password);
       await accountStore.login(account, password);
       accountStore.setLoginStatus(true);
@@ -47,7 +70,6 @@ function LoginView() {
           locale: get("Locale"),
         },
       });
-      localStorage.setItem("lastAddress", address);
       history.push("/lobby");
     } catch (error) {
       setInvalid(true);
@@ -55,22 +77,6 @@ function LoginView() {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    async function isInKeyring(address: string) {
-      return await accountStore
-        .findKeyByAddress(address)
-        .catch(() => {
-          return false;
-        })
-        .then(() => {
-          return true;
-        });
-    }
-    isInKeyring(address).then((v) => {
-      if (!v) setAddress(accountStore.keyring[0].address);
-    });
-  }, []);
 
   return (
     <Layout sidebar flex>
@@ -80,26 +86,32 @@ function LoginView() {
       <p>
         <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
       </p>
-      <Form onSubmit={(e) => e.preventDefault()}>
-        <Select defaultValue={address} onChange={(v) => setAddress(v)}>
-          {accountStore.keyring.map((key) => (
-            <SelectOption key={key.address} value={key.address}>
-              {"0x" + key.address}
-            </SelectOption>
-          ))}
-        </Select>
+      <Form onSubmit={handleSubmit(handleLogin)}>
+        <Controller
+          control={control}
+          defaultValue={defaultAddress}
+          {...register("address")}
+          render={({ field }) => (
+            <Select {...field}>
+              {keyringAddresses.map((address) => (
+                <SelectOption key={address} value={address}>
+                  {"0x" + address}
+                </SelectOption>
+              ))}
+            </Select>
+          )}
+        />
+
         <PasswordField
           label="Password"
-          value={password}
-          invalid={invalid}
-          onChange={(e) => setPassword(e.target.value)}
+          invalid={invalid || !!errors.password}
           autoFocus
+          {...register("password")}
         />
         <Button
           data-testid="login"
           variant="primary"
           centered
-          onClick={handleLogin}
           css={{ width: 280 }}
         >
           <T _str="LOGIN" _tags={transifexTags} />
