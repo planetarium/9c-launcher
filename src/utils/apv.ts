@@ -16,18 +16,18 @@ export function analyzeApv(token: string | AppProtocolVersionType): IApv {
 }
 
 function analyzeApvFromToken(token: string): IApv {
-  const [version, signer, signature, rawExtra] = token
-    .replaceAll(".", "")
-    .split("/");
+  const [version, signer, signature, rawExtra] = token.split("/");
   if (rawExtra === undefined) {
     throw Error("Unable to decode extra data from APV string.");
   }
-  const extra = decode(Buffer.from(rawExtra, "base64"))!;
+  const extra = decode(Buffer.from(rawExtra.replaceAll(".", "/"), "base64"))!;
   return {
     raw: token,
     version: parseInt(version),
     signer: signer.replace("0x", ""),
-    signature: Buffer.from(signature, "base64").toString("hex"),
+    signature: Buffer.from(signature.replaceAll(".", "/"), "base64").toString(
+      "hex"
+    ),
     extra: flatBencodexValue(extra, {}, "extra"),
   };
 }
