@@ -17,7 +17,7 @@ export function analyzeApv(token: string | AppProtocolVersionType): IApv {
 
 function analyzeApvFromToken(token: string): IApv {
   const [version, signer, signature, rawExtra] = token
-    .replace(".", "")
+    .replaceAll(".", "")
     .split("/");
   if (rawExtra === undefined) {
     throw Error("Unable to decode extra data from APV string.");
@@ -110,8 +110,8 @@ export function encodeTokenFromHex(
   const extra = Buffer.from(extraHex, "hex");
   const signature = Buffer.from(signatureHex, "hex");
 
-  const encodedExtra = extra.toString("base64");
-  const encodedSignature = signature.toString("base64");
+  const encodedSignature = signature.toString("base64").replaceAll("/", ".");
+  const encodedExtra = extra.toString("base64").replaceAll("/", ".");
 
   return `${version}/${signer.replace(
     "0x",
