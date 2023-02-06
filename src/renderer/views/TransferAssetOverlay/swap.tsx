@@ -104,7 +104,7 @@ function SwapPage() {
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
-    if (!addressVerify(recipient) || !amount.gt(0)) {
+    if (!addressVerify(recipient, true) || !amount.gte(100)) {
       return;
     }
 
