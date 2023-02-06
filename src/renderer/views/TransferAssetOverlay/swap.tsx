@@ -172,11 +172,11 @@ function SwapPage() {
           onChange={(e) =>
             setAmount(new Decimal(e.target.value === "" ? -1 : e.target.value))
           }
-          onBlur={() => setAmountWarning(!amount.gt(0))}
+          onBlur={() => setAmountWarning(!amount.gte(100))}
           onFocus={() => setAmountWarning(false)}
           error={amountWarning}
           endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
-          defaultValue={0}
+          defaultValue={100}
         />
       </FormControl>
       <SwapNoticeTitle>
