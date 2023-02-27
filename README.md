@@ -1,12 +1,11 @@
 # Nine Chronicles Launcher
 [![Discord](https://img.shields.io/discord/539405872346955788?color=6278DA&label=Planetarium&logo=discord&logoColor=white)](https://discord.gg/JyujU8E4SD)
 [![Planetarium-Dev Discord Invite](https://img.shields.io/discord/928926944937013338?color=6278DA&label=Planetarium-dev&logo=discord&logoColor=white)](https://discord.gg/RYJDyFRYY7)
+[Wiki for more in-depth information.](https://github.com/planetarium/9c-launcher/wiki)
+
 ## Overview
 
-### THIS README IS SEVERLY OUTDATED AND WORKING IN PROGRESS
-[PLEASE READ WIKI INSTEAD OF THIS!](https://github.com/planetarium/9c-launcher/wiki)
-
-This is an Electron-based multi-platform launcher to run Nine Chronicles.
+Electron-based multi-platform game launcher to run [Nine Chronicles.](https://github.com/planetarium/NineChronicles)
 
 ## Installation
 
@@ -16,29 +15,9 @@ First, install all dependencies required for development.
 yarn
 ```
 
-In addition, there are one binaries required.
-
-- 9C Headless (Standalone): can be built with `yarn build-headless`
-  (.NET Core SDK required)
-
-Before build 9C Headless, you should download these source from git submodule: `git submodule update --recursive --init`
-
-Place the binary in the exact path as visualized below:
-
-```
-./src
-./dist
-|   +-- 9c.(exe|app) // 9C Unity Player
-|   +-- publish // 9C Headless (Standalone)
-|   |   +-- Libpalnet.dll
-|   |   +-- Grpc.Core.dll
-|   |   +-- ...
-|   |   +-- NineChronicles.Standalone.Executable(.exe)
-```
-
 After, run the following command.
 
-```sh
+```bash
 yarn codegen
 yarn dev
 ```
@@ -48,16 +27,12 @@ yarn dev
 The basic frontend has `webpack-hot-reload`, which automatically reflects code changes.
 Developing the renderer process does not require electron relaunch. However, when there's a change in the main process, electron relaunch is required.
 
-
 ## Build
 
 ```bash
-git submodule update --recursive # Download 9C Headless and Unity Player build source
-
 yarn
+yarn codegen
 yarn build  # development build
-yarn build-headless  # 9C Headless (Standalone) build (.NET Core SDK required)
-APV_SIGN_KEY=... APV_NO=... yarn sign-apv  # APV sign (planet command required)
 yarn build-prod  # production build
 ```
 
