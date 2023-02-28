@@ -1,6 +1,6 @@
-import { observable, action, computed, makeObservable } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { userConfigStore, get as getConfig, NodeInfo } from "src/config";
+import { action, computed, makeObservable, observable } from "mobx";
+import { get as getConfig, userConfigStore } from "src/config";
 
 export default class GameStore {
   @observable
@@ -57,7 +57,7 @@ export default class GameStore {
     ipcRenderer.send("launch game", {
       args: [
         `--private-key=${privateKey}`,
-        `--rpc-client=true`,
+        "--rpc-client=true",
         `--rpc-server-host=${this._host}`,
         `--rpc-server-port=${this._port}`,
         `--genesis-block-path=${this._genesisBlockPath}`,
