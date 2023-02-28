@@ -119,6 +119,21 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
+  isActivationKeyFormatValid = (activationKey: string): boolean => {
+    try {
+      const [privateKey, address] = activationKey.split("/", 2);
+      deriveAddress(createAccount(privateKey)).then((subject) => {
+        return (
+          subject.replace("0x", "") === address.replace("0x", "").toLowerCase()
+        );
+      });
+    } catch (e) {
+      return false;
+    }
+    return false;
+  };
+
+  @action
   listKeyFiles = (): ProtectedPrivateKey[] => {
     try {
       return listKeystoreFiles().map((keyId: string) => {
