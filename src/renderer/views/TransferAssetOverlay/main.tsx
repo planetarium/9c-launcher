@@ -13,7 +13,9 @@ import { useState, useMemo } from "react";
 import { OverlayProps } from "src/utils/types";
 import ExchangePage from "./swap";
 import TransferPage from "./transfer";
-import OverlayBase from "src/renderer/components/core/OverlayBase";
+import OverlayBase, {
+  CloseButton,
+} from "src/renderer/components/core/OverlayBase";
 
 const transifexTags = "Transfer/Main";
 
@@ -118,6 +120,7 @@ function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
   return (
     <ThemeProvider theme={theme}>
       <MainPageContainer isOpen={isOpen} onDismiss={onClose}>
+        <CloseButton onClick={() => onClose()} />
         <TitleContainer>
           <TitleMessage>
             <T _str="Send NCG" _tags={transifexTags} />
