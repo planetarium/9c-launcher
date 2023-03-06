@@ -14,7 +14,15 @@ function ActivationWaitSubview({ setState }: Props) {
   const activate = useActivate();
   const { activated, error } = useActivationStatus();
 
-  useEffect(() => void activate(), [activate]);
+  useEffect(() => {
+    (async () => {
+      const activationResult = await activate();
+
+      if (!activationResult.result) {
+        setState("activationFailed");
+      }
+    })();
+  }, [activate, setState]);
 
   useEffect(() => {
     if (activated) {
