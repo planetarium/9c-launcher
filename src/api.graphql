@@ -85,12 +85,6 @@ subscription DifferentAppProtocolVersionEncounter {
   }
 }
 
-query Activation {
-  activationStatus {
-    activated
-  }
-}
-
 query ActivationAddress($address: Address!) {
   activationStatus {
     addressActivated(address: $address)
