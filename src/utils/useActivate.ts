@@ -3,7 +3,6 @@ import { NodeInfo } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
 import { useTx } from "src/utils/useTx";
 import { useLoginSession } from "./useLoginSession";
-import { useStore } from "./useStore";
 
 type ActivationStep =
   | "getActivationInfo"
@@ -27,12 +26,13 @@ type ActivationFailResult = {
 
 type ActivationResult = ActivationSuccessResult | ActivationFailResult;
 
-export function useActivate(): () => Promise<ActivationResult> {
+type ActivationFunction = (activationKey: string) => Promise<ActivationResult>;
+
+export function useActivate(): ActivationFunction {
   const tx = useTx();
   const { address, publicKey } = useLoginSession();
-  const { activationKey } = useStore("account");
 
-  const activate: () => Promise<ActivationResult> = async () => {
+  const activate: ActivationFunction = async (activationKey: string) => {
     let step: ActivationStep = "getActivationInfo";
 
     if (!(address && publicKey)) {
@@ -40,16 +40,6 @@ export function useActivate(): () => Promise<ActivationResult> {
         result: false,
         error: {
           error: new Error("No address"),
-          step,
-        },
-      };
-    }
-
-    if (!activationKey) {
-      return {
-        result: false,
-        error: {
-          error: new Error("No activation key"),
           step,
         },
       };

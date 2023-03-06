@@ -17,12 +17,14 @@ function ActivationKeySubview({ setState }: Props) {
   const accountStore = useStore("account");
   const activate = useActivate();
 
-  const onSubmit = ({ activationKey }: FormData) => {
+  const onSubmit = async ({ activationKey }: FormData) => {
     trackEvent("Launcher/EnterActivationCode");
 
     setState("waitActivation");
 
     accountStore.setActivationKey(activationKey);
+
+    await activate(activationKey);
   };
 
   return (
