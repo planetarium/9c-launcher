@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router";
 import Button from "src/renderer/components/ui/Button";
 import H1 from "src/renderer/components/ui/H1";
 import TextField from "src/renderer/components/ui/TextField";
@@ -14,6 +15,8 @@ type Props = {
 } & ResultProps;
 
 function ActivationSuccessSubview({ setState }: ResultProps) {
+  const history = useHistory();
+
   const account = useLoginSession();
 
   return (
@@ -27,9 +30,9 @@ function ActivationSuccessSubview({ setState }: ResultProps) {
         variant="primary"
         centered
         css={{ width: 200 }}
-        onClick={() => setState("enterActivationCode")}
+        onClick={() => history.push("/lobby")}
       >
-        Activate
+        Start
       </Button>
     </>
   );
@@ -48,7 +51,7 @@ function ActivationFailSubview({ setState }: ResultProps) {
         css={{ width: 200 }}
         onClick={() => setState("enterActivationCode")}
       >
-        Activate
+        Retry
       </Button>
     </>
   );

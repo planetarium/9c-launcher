@@ -6,19 +6,10 @@ import OnboardingOverlay from "src/renderer/views/OnboardingOverlay";
 import { useActivationStatus } from "src/utils/useActivationStatus";
 import { useStore } from "src/utils/useStore";
 
-const isFirst = (state: string): boolean => {
-  return state.includes("first");
-};
-
 function LobbyView() {
   const { account, game } = useStore();
   const { loading, activated, error } = useActivationStatus();
   const history = useHistory();
-  const onboardingRequired = useMemo(
-    () => isFirst(history.location.search),
-    [history.location]
-  );
-  const [showOnboarding, setShowOnboarding] = useState(true);
 
   useEffect(() => {
     if (loading || activated || account.activationKey) return;
@@ -41,7 +32,7 @@ function LobbyView() {
       <OnboardingOverlay
         // isOpen={onboardingRequired && showOnboarding}
         isOpen={false}
-        onClose={() => setShowOnboarding(false)}
+        onClose={() => {}}
       />
     </>
   );
