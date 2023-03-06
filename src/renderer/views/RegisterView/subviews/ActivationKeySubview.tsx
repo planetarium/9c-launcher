@@ -23,8 +23,6 @@ function ActivationKeySubview({ setState }: Props) {
     setState("waitActivation");
 
     accountStore.setActivationKey(activationKey);
-
-    await activate(activationKey);
   };
 
   return (

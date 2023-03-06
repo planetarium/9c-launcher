@@ -1,28 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { ACTIVATION_DOCUMENTATION_LINK } from "src/config";
+import H1 from "src/renderer/components/ui/H1";
+import { ExtLink } from "src/renderer/components/ui/Link";
 import { useActivate } from "src/utils/useActivate";
 import { useActivationStatus } from "src/utils/useActivationStatus";
+import { RegisterState } from "..";
 
-function ActivationWaitSubview() {
+interface Props {
+  setState: (state: RegisterState) => void;
+}
+
+function ActivationWaitSubview({ setState }: Props) {
   const activate = useActivate();
-  const { activated, loading, error } = useActivationStatus();
+  const { activated, error } = useActivationStatus();
 
-  const [state, setState] = useState("");
+  useEffect(() => void activate(), [activate]);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     await activate();
+  useEffect(() => {
+    if (activated) {
+      setState("activationSuccess");
+    }
 
-  //     setState('Activation tx Staged, waiting for validation...');
-  //   })();
+    if (error) {
+      setState("activationFailed");
+    }
+  }, [activated, error, setState]);
 
-  //   if (activated) {
-  //     setState('Account Activated!');
-
-  //     Router.push()
-  //   }
-  // });
-
-  return <></>;
+  return (
+    <>
+      <H1>Activation is in progress...</H1>
+      <p style={{ marginBlockEnd: 54 }}>
+        This process can take less than a minute. While you waiting, we strongly
+        recommend you to backup your keystore file.
+      </p>
+      <p>
+        Here&apos;s&nbsp;
+        <ExtLink href={ACTIVATION_DOCUMENTATION_LINK}>
+          the document for details.
+        </ExtLink>
+      </p>
+    </>
+  );
 }
 
 export default ActivationWaitSubview;

@@ -54,7 +54,7 @@ function ActivationFailSubview({ setState }: ResultProps) {
   );
 }
 
-function ActivationWaitSubview({ result, ...resultProps }: Props) {
+function ActivationResultSubview({ result, ...resultProps }: Props) {
   return result ? (
     <ActivationSuccessSubview {...resultProps} />
   ) : (
@@ -62,4 +62,4 @@ function ActivationWaitSubview({ result, ...resultProps }: Props) {
   );
 }
 
-export default ActivationWaitSubview;
+export default ActivationResultSubview;

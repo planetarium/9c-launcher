@@ -2,12 +2,19 @@ import { observer } from "mobx-react";
 import React, { useState } from "react";
 import Layout from "src/renderer/components/core/Layout";
 import { CSS } from "src/renderer/stitches.config";
-import { ActivationKeySubview, CreateKeySubview } from "./subviews";
+import {
+  ActivationKeySubview,
+  ActivationResultSubview,
+  ActivationWaitSubview,
+  CreateKeySubview,
+} from "./subviews";
 
 export type RegisterState =
   | "createKey"
   | "enterActivationCode"
-  | "waitActivation";
+  | "waitActivation"
+  | "activationSuccess"
+  | "activationFailed";
 
 const registerStyles: CSS = {
   padding: 52,
@@ -26,7 +33,15 @@ function RegisterView() {
       {state === "enterActivationCode" && (
         <ActivationKeySubview setState={setState} />
       )}
-      {state === "waitActivation" && <></>}
+      {state === "waitActivation" && (
+        <ActivationWaitSubview setState={setState} />
+      )}
+      {state === "activationSuccess" && (
+        <ActivationResultSubview result={true} setState={setState} />
+      )}
+      {state === "activationFailed" && (
+        <ActivationResultSubview result={false} setState={setState} />
+      )}
     </Layout>
   );
 }

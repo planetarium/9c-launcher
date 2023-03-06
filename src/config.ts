@@ -234,6 +234,9 @@ export const DEFAULT_DOWNLOAD_BASE_URL = "https://release.nine-chronicles.com";
 export const PLAYER_METAFILE_VERSION = 2;
 export const installerName = "NineChroniclesInstaller.exe";
 
+// TODO: Update activation documentation link
+export const ACTIVATION_DOCUMENTATION_LINK = "";
+
 export const EXECUTE_PATH: {
   [k in NodeJS.Platform]: string | null;
 } = {
