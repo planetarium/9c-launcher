@@ -80,6 +80,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
         disabled={status !== "Valid"}
         centered
         css={{ width: 200 }}
+        onClick={() => onSubmit({ activationKey })}
       >
         Activate
       </Button>

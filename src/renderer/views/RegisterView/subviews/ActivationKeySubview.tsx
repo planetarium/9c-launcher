@@ -5,6 +5,7 @@ import ActivationKeyForm, {
 import H1 from "src/renderer/components/ui/H1";
 import { ExtLink } from "src/renderer/components/ui/Link";
 import { trackEvent } from "src/utils/mixpanel";
+import { useActivate } from "src/utils/useActivate";
 import { useStore } from "src/utils/useStore";
 import { RegisterState } from "..";
 
@@ -14,6 +15,7 @@ interface Props {
 
 function ActivationKeySubview({ setState }: Props) {
   const accountStore = useStore("account");
+  const activate = useActivate();
 
   const onSubmit = ({ activationKey }: FormData) => {
     trackEvent("Launcher/EnterActivationCode");
