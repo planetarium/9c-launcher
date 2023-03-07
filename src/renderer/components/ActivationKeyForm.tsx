@@ -72,7 +72,11 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
         label="Activation Code"
         message={status}
         invalid={!["", "Valid"].includes(status)}
-        onChange={handleInput}
+        onChange={async (e) => {
+          setActivationKey(e.currentTarget.value);
+          await handleInput();
+        }}
+        value={activationKey}
       />
       <Button
         layout
