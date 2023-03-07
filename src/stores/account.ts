@@ -7,6 +7,7 @@ import {
   getDefaultKeystorePath,
   V3Keystore,
 } from "@planetarium/account-local";
+import { SigningKey, Wallet } from "ethers";
 import { createAccount } from "@planetarium/account-raw";
 import { Account, deriveAddress } from "@planetarium/sign";
 // FIXME these imports cause matter since file-system related features aren't
@@ -16,6 +17,7 @@ import fs from "fs";
 import path from "path";
 import { action, observable, makeObservable } from "mobx";
 import { Address, ProtectedPrivateKey } from "src/interfaces/keystore";
+import { V3toRaw } from "src/utils/web3key";
 import { utils } from "@noble/secp256k1";
 
 interface ILoginSession {
@@ -62,7 +64,9 @@ export default class AccountStore implements IAccountStore {
       account,
       publicKey: utils.bytesToHex(bs),
       address,
-      privateKey: await this.loadPrivateKeyFromAddress(address, password),
+      privateKey: (
+        await this.loadPrivateKeyFromAddress(address, password)
+      ).toString("hex"),
     };
   };
 
@@ -87,7 +91,10 @@ export default class AccountStore implements IAccountStore {
   @action
   getAccount = (address: Address, passphrase: string): Promise<Account> => {
     return this.findKeyByAddress(address).then((key) => {
-      return getAccountFromFile(key.keyId, passphrase);
+      // Short Key Pad Check Flow
+      return this.fixKeyLength(key, passphrase).then((v) =>
+        getAccountFromFile(key.keyId, passphrase)
+      );
     });
   };
 
@@ -205,14 +212,12 @@ export default class AccountStore implements IAccountStore {
   loadPrivateKeyFromAddress = async (
     address: Address,
     password: string
-  ): Promise<string> => {
+  ): Promise<Buffer> => {
     const key = await this.findKeyByAddress(address);
-    const raw = decipherV3(
+    return decipherV3(
       await fs.promises.readFile(key.path, "utf8"),
       password
     ).getPrivateKey();
-
-    return utils.bytesToHex(raw);
   };
 
   beginRecovery = (privateKey: string) => {
@@ -244,5 +249,24 @@ export default class AccountStore implements IAccountStore {
     this._privateKeyToRecovery.fill(0);
     this._privateKeyToRecovery = null;
     return account;
+  };
+
+  fixKeyLength = async (v: ProtectedPrivateKey, passphrase: string) => {
+    const key = V3toRaw(await fs.promises.readFile(v.path, "utf8"), passphrase);
+    if (key.length < 32) {
+      fs.promises.writeFile(
+        v.path,
+        (
+          await new Wallet(
+            new SigningKey(
+              Buffer.concat([Buffer.alloc(32 - key.length), key], 32)
+            )
+          ).encrypt(passphrase)
+        )
+          .replace(/"id":"[0-9A-z-]*"/, `"id":"${v.keyId}"`)
+          .replace("C", "c")
+      );
+      key.fill(0);
+    }
   };
 }
