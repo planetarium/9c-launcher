@@ -12,17 +12,21 @@ interface Props {
 
 function ActivationWaitSubview({ setState }: Props) {
   const activate = useActivate();
-  const { activated, error } = useActivationStatus();
+  const { activated, error } = useActivationStatus(true);
 
   useEffect(() => {
     (async () => {
       const activationResult = await activate();
 
       if (!activationResult.result) {
+        console.log(activationResult);
+
         setState("activationFailed");
       }
     })();
-  }, [activate, setState]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- multiple calls to activate() when fully populated
+  }, []);
 
   useEffect(() => {
     if (activated) {

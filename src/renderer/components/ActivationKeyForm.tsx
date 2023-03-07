@@ -1,4 +1,5 @@
 import { ipcRenderer } from "electron";
+import { GraphQLClient } from "graphql-request";
 import React, { useCallback, useEffect, useState } from "react";
 import { NodeInfo } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
@@ -25,7 +26,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
   const [activationKey, setActivationKey] = useState("");
   const [status, setStatus] = useState<ActivationStatus>("");
 
-  const handleInput = useCallback(async () => {
+  const handleInput = useCallback(async (activationKey: string) => {
     if (!ACTIVATION_KEY_REGEX.test(activationKey)) {
       setStatus("The code is invalid");
       return;
@@ -38,16 +39,23 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
     // }
 
     const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
-    const sdks = getSdk(nodeInfo.GraphqlClient());
+
+    const sdks = getSdk(
+      new GraphQLClient(
+        `http://${nodeInfo.host}:${nodeInfo.graphqlPort}/graphql`
+      )
+    );
 
     const { data } = await sdks.CheckActivationKey({ activationKey });
+
+    console.log(data);
 
     if (data.activated) {
       setStatus("The code is already used");
     } else {
       setStatus("Valid");
     }
-  }, [activationKey]);
+  }, []);
 
   useEffect(() => {
     const handleFocus = async () => {
@@ -55,7 +63,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
 
       if (ACTIVATION_KEY_REGEX.test(data)) {
         setActivationKey(data);
-        await handleInput();
+        await handleInput(data);
       }
     };
 
@@ -74,7 +82,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
         invalid={!["", "Valid"].includes(status)}
         onChange={async (e) => {
           setActivationKey(e.currentTarget.value);
-          await handleInput();
+          await handleInput(e.currentTarget.value);
         }}
         value={activationKey}
       />

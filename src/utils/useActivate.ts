@@ -1,4 +1,5 @@
 import { ipcRenderer } from "electron";
+import { GraphQLClient } from "graphql-request";
 import { NodeInfo } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
 import { useTx } from "src/utils/useTx";
@@ -60,7 +61,12 @@ export function useActivate(): ActivationFunction {
     try {
       step = "getGraphQLClient";
       const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
-      const sdks = getSdk(nodeInfo.GraphqlClient());
+
+      const sdks = getSdk(
+        new GraphQLClient(
+          `http://${nodeInfo.host}:${nodeInfo.graphqlPort}/graphql`
+        )
+      );
 
       step = "getActivationAddress";
       const { data: activationData } = await sdks.ActivationAddress({
@@ -88,6 +94,8 @@ export function useActivate(): ActivationFunction {
         activateData.actionTxQuery.activateAccount
       );
 
+      console.log(txData);
+
       if (!txData?.stageTransaction) {
         return {
           result: false,
@@ -103,6 +111,8 @@ export function useActivate(): ActivationFunction {
         txId: txData.stageTransaction,
       };
     } catch (e: unknown) {
+      console.log(step);
+
       return {
         result: false,
         error: {
