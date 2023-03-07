@@ -2,33 +2,10 @@ import { ipcRenderer } from "electron";
 import { GraphQLClient } from "graphql-request";
 import { NodeInfo } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
+import { ActivationFunction, ActivationStep } from "src/interfaces/activation";
 import { useTx } from "src/utils/useTx";
 import { useLoginSession } from "./useLoginSession";
 import { useStore } from "./useStore";
-
-type ActivationStep =
-  | "getActivationInfo"
-  | "getGraphQLClient"
-  | "getActivationAddress"
-  | "createActivateAccountTx"
-  | "stageTx";
-
-type ActivationSuccessResult = {
-  result: true;
-  txId: string;
-};
-
-type ActivationFailResult = {
-  result: false;
-  error: {
-    error: unknown;
-    step: ActivationStep;
-  };
-};
-
-type ActivationResult = ActivationSuccessResult | ActivationFailResult;
-
-type ActivationFunction = () => Promise<ActivationResult>;
 
 export function useActivate(): ActivationFunction {
   const tx = useTx();
