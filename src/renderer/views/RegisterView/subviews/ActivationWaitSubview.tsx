@@ -19,8 +19,6 @@ function ActivationWaitSubview({ setState }: Props) {
       const activationResult = await activate();
 
       if (!activationResult.result) {
-        console.log(activationResult);
-
         setState("activationFailed");
       }
     })();

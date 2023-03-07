@@ -71,7 +71,7 @@ export function useActivate(): ActivationFunction {
         activateData.actionTxQuery.activateAccount
       );
 
-      console.log(txData);
+      console.log(`Activation Transaction ID: ${txData?.stageTransaction}`);
 
       if (!txData?.stageTransaction) {
         return {
@@ -88,8 +88,6 @@ export function useActivate(): ActivationFunction {
         txId: txData.stageTransaction,
       };
     } catch (e: unknown) {
-      console.log(step);
-
       return {
         result: false,
         error: {
