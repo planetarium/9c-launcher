@@ -42,7 +42,7 @@ function ActivationSuccessSubview({ setState }: ResultProps) {
         layout
         variant="primary"
         centered
-        css={{ width: 200, marginTop: 160 }}
+        css={{ width: 200, marginTop: 180 }}
         onClick={() => history.push("/lobby")}
       >
         Start
@@ -55,8 +55,18 @@ function ActivationFailSubview({ setState }: ResultProps) {
   return (
     <>
       <H1>Activation has failed</H1>
-      {/* TODO: Add description here */}
-      <p>Whoa it failed</p>
+      <Text css={{ fontSize: 14 }}>
+        An error occurred for an unknown reason.
+        <br />
+        Please make sure your activation code is valid or try again later.
+      </Text>
+      <Text css={{ fontSize: 14 }}>
+        If you believe there is an issue, please contact via{" "}
+        <ExtLink href={get("DiscordUrl")} css={{ color: "#1EB9DB" }}>
+          Discord
+        </ExtLink>
+        .
+      </Text>
       <Button
         layout
         variant="primary"
