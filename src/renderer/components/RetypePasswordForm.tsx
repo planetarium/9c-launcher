@@ -62,7 +62,12 @@ export default function RetypePasswordForm({ onSubmit, address }: Props) {
           deps: ["password"],
         })}
       />
-      <Button layout variant="primary" centered css={{ width: 200 }}>
+      <Button
+        layout
+        variant="primary"
+        centered
+        css={{ width: 200, marginTop: "160px" }}
+      >
         NEXT
       </Button>
     </Form>

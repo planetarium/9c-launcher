@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ACTIVATION_DOCUMENTATION_LINK } from "src/config";
+import { get } from "src/config";
 import H1 from "src/renderer/components/ui/H1";
 import { ExtLink } from "src/renderer/components/ui/Link";
 import { useActivate } from "src/utils/useActivate";
@@ -45,7 +45,10 @@ function ActivationWaitSubview({ setState }: Props) {
       </p>
       <p>
         Here&apos;s&nbsp;
-        <ExtLink href={ACTIVATION_DOCUMENTATION_LINK}>
+        <ExtLink
+          href={get("ActivationDocumentationUrl")}
+          css={{ color: "#1EB9DB" }}
+        >
           the document for details.
         </ExtLink>
       </p>

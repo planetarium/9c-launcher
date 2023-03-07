@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { observer } from "mobx-react";
-import Layout from "src/renderer/components/core/Layout";
-import { useStore } from "src/utils/useStore";
-import { useHistory } from "react-router";
 import { ipcRenderer } from "electron";
-import H1 from "src/renderer/components/ui/H1";
-import { PasswordField } from "src/renderer/components/ui/TextField";
-import Button from "src/renderer/components/ui/Button";
-import { Select, SelectOption } from "src/renderer/components/ui/Select";
-import { Link } from "src/renderer/components/ui/Link";
-import { T } from "src/renderer/i18n";
-import Form from "src/renderer/components/ui/Form";
-import { get } from "src/config";
-import _refiner from "refiner-js";
-import { trackEvent } from "src/utils/mixpanel";
+import { observer } from "mobx-react";
+import React, { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useHistory } from "react-router";
+import _refiner from "refiner-js";
+import { get } from "src/config";
+import Layout from "src/renderer/components/core/Layout";
+import Button from "src/renderer/components/ui/Button";
+import Form from "src/renderer/components/ui/Form";
+import H1 from "src/renderer/components/ui/H1";
+import { Link } from "src/renderer/components/ui/Link";
+import { Select, SelectOption } from "src/renderer/components/ui/Select";
+import { PasswordField } from "src/renderer/components/ui/TextField";
+import { T } from "src/renderer/i18n";
+import { trackEvent } from "src/utils/mixpanel";
+import { useStore } from "src/utils/useStore";
 
 const transifexTags = "v2/login-view";
 

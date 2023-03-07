@@ -1,7 +1,8 @@
-import { ipcRenderer } from "electron";
+import { Box } from "@material-ui/core";
+import { ipcRenderer, shell } from "electron";
 import { GraphQLClient } from "graphql-request";
 import React, { useCallback, useEffect, useState } from "react";
-import { NodeInfo } from "src/config";
+import { get, NodeInfo } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
 import Button from "./ui/Button";
 import TextField from "./ui/TextField";
@@ -86,12 +87,21 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
         }}
         value={activationKey}
       />
+      <Box css={{ display: "flex", justifyContent: "end" }}>
+        <Button
+          variant="primary"
+          css={{ minWidth: 120, height: 40, fontSize: 14 }}
+          onClick={() => shell.openExternal(get("ActivationCodeUrl"))}
+        >
+          Get the code
+        </Button>
+      </Box>
       <Button
         layout
         variant="primary"
         disabled={status !== "Valid"}
         centered
-        css={{ width: 200 }}
+        css={{ width: 200, marginTop: 160 }}
         onClick={() => onSubmit({ activationKey })}
       >
         Activate

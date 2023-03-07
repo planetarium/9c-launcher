@@ -1,4 +1,5 @@
 import React from "react";
+import { get } from "src/config";
 import ActivationKeyForm, {
   FormData,
 } from "src/renderer/components/ActivationKeyForm";
@@ -30,9 +31,6 @@ function ActivationKeySubview({ setState }: Props) {
         You need an activation code to activate your Nine Chronicles address. If
         you already have one, you can paste it below and activate it now.
       </p>
-      <ExtLink target="_blank" href="">
-        Get the code
-      </ExtLink>
       <ActivationKeyForm onSubmit={onSubmit} />
     </>
   );
