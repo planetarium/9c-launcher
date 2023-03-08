@@ -94,7 +94,8 @@ export default class AccountStore implements IAccountStore {
     passphrase: string
   ): Promise<Account> => {
     const key = await this.findKeyByAddress(address);
-    // Short Key Pad Check Flow
+    // Padding the existing key with the short length, created by Libplanet's previous bug.
+    // see also: https://github.com/planetarium/9c-launcher/issues/2107
     await this.padShortKey(key, passphrase);
     return getAccountFromFile(key.keyId, passphrase);
   };
@@ -272,9 +273,10 @@ export default class AccountStore implements IAccountStore {
           ).encrypt(passphrase)
         )
           .replace(/"id":"[0-9A-z-]*"/, `"id":"${v.keyId}"`)
-          .replace("C", "c")
+          .replace("Crypto", "crypto")
       );
-      // Wipe Buffer
+      // Wipe Buffer for security concerns.
+      // See also: https://github.com/planetarium/9c-launcher/pull/2112#discussion_r1128982145
       key.fill(0);
     }
   };
