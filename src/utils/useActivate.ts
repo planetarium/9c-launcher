@@ -88,13 +88,16 @@ export function useActivate(): ActivationFunction {
         txId: txData.stageTransaction,
       };
     } catch (e: unknown) {
-      return {
-        result: false,
-        error: {
-          error: e,
-          step: step,
-        },
-      };
+      if (e instanceof Error) {
+        return {
+          result: false,
+          error: {
+            error: e,
+            step: step,
+          },
+        };
+      }
+      throw e;
     }
   };
 

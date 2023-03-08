@@ -13,7 +13,7 @@ export type ActivationSuccessResult = {
 export type ActivationFailResult = {
   result: false;
   error: {
-    error: unknown;
+    error: Error;
     step: ActivationStep;
   };
 };
