@@ -89,13 +89,14 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
-  getAccount = (address: Address, passphrase: string): Promise<Account> => {
-    return this.findKeyByAddress(address).then((key) => {
-      // Short Key Pad Check Flow
-      return this.padShortKey(key, passphrase).then((v) =>
-        getAccountFromFile(key.keyId, passphrase)
-      );
-    });
+  getAccount = async (
+    address: Address,
+    passphrase: string
+  ): Promise<Account> => {
+    const key = await this.findKeyByAddress(address);
+    // Short Key Pad Check Flow
+    await this.padShortKey(key, passphrase);
+    return getAccountFromFile(key.keyId, passphrase);
   };
 
   @action
