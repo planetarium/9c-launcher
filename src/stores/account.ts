@@ -246,6 +246,7 @@ export default class AccountStore implements IAccountStore {
     this.removeKeyByAddress(address);
     this.addKey(importedKey!);
 
+    // Wipe Buffer
     this._privateKeyToRecovery.fill(0);
     this._privateKeyToRecovery = null;
     return account;
@@ -272,6 +273,7 @@ export default class AccountStore implements IAccountStore {
           .replace(/"id":"[0-9A-z-]*"/, `"id":"${v.keyId}"`)
           .replace("C", "c")
       );
+      // Wipe Buffer
       key.fill(0);
     }
   };
