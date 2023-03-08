@@ -14,7 +14,9 @@ interface ActivationResult {
  * @returns {ActivationResult} A object with two properties: `loading` and `activated`. They are pretty self-explanatory.
  */
 
-export function useActivationStatus(usePolling?: boolean): ActivationResult {
+export function useActivationStatus(
+  usePolling: boolean = false
+): ActivationResult {
   const { address } = useLoginSession();
 
   const { loading, data, error } = useActivationAddressQuery({
