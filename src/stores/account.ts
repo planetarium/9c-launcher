@@ -92,7 +92,7 @@ export default class AccountStore implements IAccountStore {
   getAccount = (address: Address, passphrase: string): Promise<Account> => {
     return this.findKeyByAddress(address).then((key) => {
       // Short Key Pad Check Flow
-      return this.fixKeyLength(key, passphrase).then((v) =>
+      return this.padShortKey(key, passphrase).then((v) =>
         getAccountFromFile(key.keyId, passphrase)
       );
     });
@@ -251,7 +251,13 @@ export default class AccountStore implements IAccountStore {
     return account;
   };
 
-  fixKeyLength = async (v: ProtectedPrivateKey, passphrase: string) => {
+  // This function Basically Opens V3, Pad If Key Is Short, Switch V3 File Content Seamlessly With Padded Privkey.
+  // 1. Decipher V3, Length Check.
+  // 2. If Key Is Short, Zero-Pad Left Of Deciphered Key To Fill 32 byte.
+  // 3. Generate New V3 With Padded Key and Previous Passphrase,
+  // 4. Modify UUID of Newly Generated V3 to Previous UUID.
+  // 5. Write Newly Padded, Same Passworded V3 to Original Path.
+  padShortKey = async (v: ProtectedPrivateKey, passphrase: string) => {
     const key = V3toRaw(await fs.promises.readFile(v.path, "utf8"), passphrase);
     if (key.length < 32) {
       fs.promises.writeFile(
