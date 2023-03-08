@@ -31,7 +31,7 @@ export default function RetypePasswordForm({ onSubmit, address }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
   } = useForm<FormData & { __confirm: string }>({
     mode: "onChange",
@@ -66,6 +66,7 @@ export default function RetypePasswordForm({ onSubmit, address }: Props) {
         layout
         variant="primary"
         centered
+        disabled={!isValid}
         css={{ width: 200, marginTop: "160px" }}
       >
         NEXT

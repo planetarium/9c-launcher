@@ -1,10 +1,8 @@
 import React from "react";
-import { get } from "src/config";
 import ActivationKeyForm, {
   FormData,
 } from "src/renderer/components/ActivationKeyForm";
 import H1 from "src/renderer/components/ui/H1";
-import { ExtLink } from "src/renderer/components/ui/Link";
 import { trackEvent } from "src/utils/mixpanel";
 import { useStore } from "src/utils/useStore";
 import { RegisterState } from "..";

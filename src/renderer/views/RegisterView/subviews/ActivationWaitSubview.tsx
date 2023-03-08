@@ -40,7 +40,7 @@ function ActivationWaitSubview({ setState }: Props) {
     <>
       <H1>Activation is in progress...</H1>
       <p style={{ marginBlockEnd: 54 }}>
-        This process can take less than a minute. While you waiting, we strongly
+        This process can take upto a minute. While you are waiting, we strongly
         recommend you to backup your keystore file.
       </p>
       <p>

@@ -56,12 +56,12 @@ function ActivationFailSubview({ setState }: ResultProps) {
     <>
       <H1>Activation has failed</H1>
       <Text css={{ fontSize: 14 }}>
-        An error occurred for an unknown reason.
+        An unknown error has occurred.
         <br />
         Please make sure your activation code is valid or try again later.
       </Text>
       <Text css={{ fontSize: 14 }}>
-        If you believe there is an issue, please contact via{" "}
+        If you believe there is an issue, please contact via&nbsp;
         <ExtLink href={get("DiscordUrl")} css={{ color: "#1EB9DB" }}>
           Discord
         </ExtLink>
