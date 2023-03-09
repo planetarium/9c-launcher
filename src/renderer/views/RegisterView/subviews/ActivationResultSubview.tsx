@@ -45,7 +45,7 @@ function ActivationSuccessSubview({ setState }: ResultProps) {
         css={{ width: 200, marginTop: 180 }}
         onClick={() => history.push("/lobby")}
       >
-        Start
+        Done
       </Button>
     </>
   );

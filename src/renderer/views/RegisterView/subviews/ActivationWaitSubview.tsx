@@ -1,10 +1,13 @@
 import React, { useEffect } from "react";
 import { get } from "src/config";
+import Button from "src/renderer/components/ui/Button";
 import H1 from "src/renderer/components/ui/H1";
 import { ExtLink } from "src/renderer/components/ui/Link";
+import loading from "src/renderer/resources/icons/loading.png";
 import { useActivate } from "src/utils/useActivate";
 import { useActivationStatus } from "src/utils/useActivationStatus";
 import { RegisterState } from "..";
+import { LoadingImage } from "../../MonsterCollectionOverlay/base";
 
 interface Props {
   setState: (state: RegisterState) => void;
@@ -49,6 +52,15 @@ function ActivationWaitSubview({ setState }: Props) {
       >
         Please check the document for details.
       </ExtLink>
+      <Button
+        layout
+        variant="primary"
+        centered
+        css={{ width: 200, marginTop: 180 }}
+        disabled
+      >
+        <LoadingImage src={loading} />
+      </Button>
     </>
   );
 }

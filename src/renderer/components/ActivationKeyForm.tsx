@@ -49,8 +49,6 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
 
     const { data } = await sdks.CheckActivationKey({ activationKey });
 
-    console.log(data);
-
     if (data.activated) {
       setStatus("The code is already used");
     } else {
