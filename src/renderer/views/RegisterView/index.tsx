@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react";
+import React, { useState } from "react";
 import Layout from "src/renderer/components/core/Layout";
-import H1 from "src/renderer/components/ui/H1";
-import RetypePasswordForm, {
-  FormData,
-} from "src/renderer/components/RetypePasswordForm";
-import { useStore } from "src/utils/useStore";
-import { useHistory } from "react-router";
 import { CSS } from "src/renderer/stitches.config";
-import { trackEvent } from "src/utils/mixpanel";
-import { utils } from "@noble/secp256k1";
+import {
+  ActivationKeySubview,
+  ActivationResultSubview,
+  ActivationWaitSubview,
+  CreateKeySubview,
+} from "./subviews";
+
+export type RegisterState =
+  | "createKey"
+  | "enterActivationCode"
+  | "waitActivation"
+  | "activationSuccess"
+  | "activationFailed";
 
 const registerStyles: CSS = {
   padding: 52,
@@ -20,26 +25,23 @@ const registerStyles: CSS = {
 };
 
 function RegisterView() {
-  const accountStore = useStore("account");
-  const history = useHistory();
-
-  const onSubmit = async ({ password, activationKey }: FormData) => {
-    trackEvent("Launcher/CreatePrivateKey");
-    const account = await accountStore.importRaw(
-      utils.bytesToHex(utils.randomPrivateKey()),
-      password
-    );
-
-    await accountStore.login(account, password);
-    accountStore.setActivationKey(activationKey!);
-    history.push("/lobby?first");
-  };
+  const [state, setState] = useState<RegisterState>("createKey");
 
   return (
     <Layout sidebar css={registerStyles}>
-      <H1>Create your account</H1>
-      <p style={{ marginBlockEnd: 54 }}>Please set your password only.</p>
-      <RetypePasswordForm onSubmit={onSubmit} useActivationKey />
+      {state === "createKey" && <CreateKeySubview setState={setState} />}
+      {state === "enterActivationCode" && (
+        <ActivationKeySubview setState={setState} />
+      )}
+      {state === "waitActivation" && (
+        <ActivationWaitSubview setState={setState} />
+      )}
+      {state === "activationSuccess" && (
+        <ActivationResultSubview result={true} setState={setState} />
+      )}
+      {state === "activationFailed" && (
+        <ActivationResultSubview result={false} setState={setState} />
+      )}
     </Layout>
   );
 }

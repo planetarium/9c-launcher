@@ -1,18 +1,13 @@
 import React from "react";
-import { useRef } from "react";
-import { AnimateSharedLayout } from "framer-motion";
 import { useForm } from "react-hook-form";
 import zxcvbn from "zxcvbn";
+import { styled } from "../stitches.config";
 import Button from "./ui/Button";
 import TextField, { PasswordField } from "./ui/TextField";
-import { ExtLink } from "src/renderer/components/ui/Link";
-import { styled } from "../stitches.config";
 
 interface Props {
   onSubmit: (data: FormData) => void;
-  useActivationKey?: boolean;
   address?: string;
-  activationCodeUrl?: string;
 }
 
 export interface FormData {
@@ -32,17 +27,11 @@ const Form = styled("form", {
   },
 });
 
-export default function RetypePasswordForm({
-  onSubmit,
-  useActivationKey,
-  activationCodeUrl,
-  address,
-}: Props) {
+export default function RetypePasswordForm({ onSubmit, address }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    trigger,
+    formState: { errors, isValid },
     watch,
   } = useForm<FormData & { __confirm: string }>({
     mode: "onChange",
@@ -73,25 +62,13 @@ export default function RetypePasswordForm({
           deps: ["password"],
         })}
       />
-      {useActivationKey && (
-        <TextField
-          motion
-          type="text"
-          label="Activation Code"
-          message={errors.activationKey ? "Invalid code" : "Correct"}
-          invalid={errors.activationKey != null}
-          {...register("activationKey", {
-            required: true,
-            pattern: /^[0-9a-f]+\/[0-9a-f]{40}$/,
-          })}
-        />
-      )}
-      {activationCodeUrl && (
-        <ExtLink target="_blank" href={activationCodeUrl}>
-          Get the activation code
-        </ExtLink>
-      )}
-      <Button layout variant="primary" centered css={{ width: 200 }}>
+      <Button
+        layout
+        variant="primary"
+        centered
+        disabled={!isValid}
+        css={{ width: 200, marginTop: "160px" }}
+      >
         NEXT
       </Button>
     </Form>

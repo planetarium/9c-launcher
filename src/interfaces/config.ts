@@ -22,5 +22,8 @@ export interface IConfig {
   UseUpdate: boolean;
   OnboardingPortalUrl: string;
   ActivationCodeUrl: string;
+  ActivationDocumentationUrl: string;
+  KeystoreBackupDocumentationUrl: string;
   UnitySentrySampleRate: number;
+  DiscordUrl: string;
 }

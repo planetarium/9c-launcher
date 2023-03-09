@@ -1,11 +1,11 @@
-import React from "react";
 import { observer } from "mobx-react";
+import React from "react";
+import { T } from "src/renderer/i18n";
 import { styled } from "src/renderer/stitches.config";
+import { useActivationStatus } from "src/utils/useActivationStatus";
 import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 import { useStore } from "src/utils/useStore";
 import Button from "../../ui/Button";
-import { T } from "src/renderer/i18n";
-import { useActivation } from "src/utils/useActivation";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -26,7 +26,7 @@ const StatusMessage = styled("span", {
 function StatusBar() {
   const isAvailable = useIsHeadlessAvailable();
   const { account: accountStore, game } = useStore();
-  const { loading, activated } = useActivation(false);
+  const { loading, activated } = useActivationStatus();
   const loginSession = accountStore.loginSession;
 
   return (

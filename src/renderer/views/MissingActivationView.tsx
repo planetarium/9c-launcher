@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
-import { observer } from "mobx-react";
-import Layout from "src/renderer/components/core/Layout";
-import H1 from "src/renderer/components/ui/H1";
-import { T } from "src/renderer/i18n";
-import TextField from "src/renderer/components/ui/TextField";
 import { t } from "@transifex/native";
+import { observer } from "mobx-react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
+import Layout from "src/renderer/components/core/Layout";
+import Button from "src/renderer/components/ui/Button";
+import H1 from "src/renderer/components/ui/H1";
+import TextField from "src/renderer/components/ui/TextField";
+import { T } from "src/renderer/i18n";
+import { useActivationStatus } from "src/utils/useActivationStatus";
 import { useStore } from "src/utils/useStore";
 import { CSS } from "../stitches.config";
-import Button from "src/renderer/components/ui/Button";
-import { useActivation } from "src/utils/useActivation";
 
 const transifexTags = "v2/missing-activation-view";
 
@@ -35,10 +35,10 @@ function MissingActivationView() {
   const history = useHistory();
   const account = useStore("account");
 
-  const { activated } = useActivation(false);
+  const { activated } = useActivationStatus();
 
   const onSubmit = ({ activationKey }: { activationKey: string }) => {
-    account.setActivationKey(activationKey!);
+    account.setActivationKey(activationKey);
     history.push("/lobby");
   };
 
