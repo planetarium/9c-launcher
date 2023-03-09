@@ -1,8 +1,7 @@
 import { observer } from "mobx-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router";
 import Layout from "src/renderer/components/core/Layout";
-import OnboardingOverlay from "src/renderer/views/OnboardingOverlay";
 import { useActivationStatus } from "src/utils/useActivationStatus";
 import { useStore } from "src/utils/useStore";
 
@@ -26,16 +25,7 @@ function LobbyView() {
     if (error) history.push("/error/relaunch");
   }, [history, error]);
 
-  return (
-    <>
-      <Layout />
-      <OnboardingOverlay
-        // isOpen={onboardingRequired && showOnboarding}
-        isOpen={false}
-        onClose={() => {}}
-      />
-    </>
-  );
+  return <Layout />;
 }
 
 export default observer(LobbyView);
