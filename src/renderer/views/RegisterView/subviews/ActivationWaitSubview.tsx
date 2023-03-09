@@ -43,15 +43,12 @@ function ActivationWaitSubview({ setState }: Props) {
         This process can take upto a minute. While you are waiting, we strongly
         recommend you to backup your keystore file.
       </p>
-      <p>
-        Here&apos;s&nbsp;
-        <ExtLink
-          href={get("ActivationDocumentationUrl")}
-          css={{ color: "#1EB9DB" }}
-        >
-          the document for details.
-        </ExtLink>
-      </p>
+      <ExtLink
+        href={get("KeystoreBackupDocumentationUrl")}
+        css={{ color: "#1EB9DB" }}
+      >
+        Please check the document for details.
+      </ExtLink>
     </>
   );
 }
