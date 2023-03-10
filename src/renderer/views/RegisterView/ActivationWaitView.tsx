@@ -1,19 +1,20 @@
+import { observer } from "mobx-react";
 import React, { useEffect } from "react";
+import { useHistory } from "react-router";
 import { get } from "src/config";
+import Layout from "src/renderer/components/core/Layout";
 import Button from "src/renderer/components/ui/Button";
 import H1 from "src/renderer/components/ui/H1";
 import { ExtLink } from "src/renderer/components/ui/Link";
 import loading from "src/renderer/resources/icons/loading.png";
 import { useActivate } from "src/utils/useActivate";
 import { useActivationStatus } from "src/utils/useActivationStatus";
-import { RegisterState } from "..";
-import { LoadingImage } from "../../MonsterCollectionOverlay/base";
+import { registerStyles } from ".";
+import { LoadingImage } from "../MonsterCollectionOverlay/base";
 
-interface Props {
-  setState: (state: RegisterState) => void;
-}
+function ActivationWaitView() {
+  const history = useHistory();
 
-function ActivationWaitSubview({ setState }: Props) {
   const activate = useActivate();
   const { activated, error } = useActivationStatus(true);
 
@@ -22,7 +23,7 @@ function ActivationWaitSubview({ setState }: Props) {
       const activationResult = await activate();
 
       if (!activationResult.result) {
-        setState("activationFailed");
+        history.push("/register/activationFail");
       }
     })();
 
@@ -31,16 +32,16 @@ function ActivationWaitSubview({ setState }: Props) {
 
   useEffect(() => {
     if (activated) {
-      setState("activationSuccess");
+      history.push("/register/activationSuccess");
     }
 
     if (error) {
-      setState("activationFailed");
+      history.push("/register/activationFail");
     }
-  }, [activated, error, setState]);
+  }, [activated, error, history]);
 
   return (
-    <>
+    <Layout sidebar css={registerStyles}>
       <H1>Activation is in progress...</H1>
       <p style={{ marginBlockEnd: 54 }}>
         This process can take upto a minute. While you are waiting, we strongly
@@ -61,8 +62,8 @@ function ActivationWaitSubview({ setState }: Props) {
       >
         <LoadingImage src={loading} />
       </Button>
-    </>
+    </Layout>
   );
 }
 
-export default ActivationWaitSubview;
+export default observer(ActivationWaitView);

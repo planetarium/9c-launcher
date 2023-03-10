@@ -43,7 +43,7 @@ function MissingActivationView() {
   };
 
   useEffect(
-    () => void (activated && history.push("/lobby")),
+    () => void (activated && history.push("/register/activationWait")),
     [activated, history]
   );
 

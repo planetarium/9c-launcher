@@ -1,18 +1,19 @@
 import { utils } from "@noble/secp256k1";
+import { observer } from "mobx-react";
 import React from "react";
+import { useHistory } from "react-router";
+import Layout from "src/renderer/components/core/Layout";
 import RetypePasswordForm, {
   FormData,
 } from "src/renderer/components/RetypePasswordForm";
 import H1 from "src/renderer/components/ui/H1";
 import { trackEvent } from "src/utils/mixpanel";
 import { useStore } from "src/utils/useStore";
-import { RegisterState } from "..";
+import { registerStyles } from ".";
 
-type Props = {
-  setState: (state: RegisterState) => void;
-};
+function CreateKeySubview() {
+  const history = useHistory();
 
-function CreateKeySubview({ setState }: Props) {
   const accountStore = useStore("account");
 
   const onPasswordSubmit = async ({ password }: FormData) => {
@@ -24,19 +25,19 @@ function CreateKeySubview({ setState }: Props) {
 
     await accountStore.login(account, password);
 
-    setState("enterActivationCode");
+    history.push("/register/activationKey");
   };
 
   return (
-    <>
+    <Layout sidebar css={registerStyles}>
       <H1>Create your address </H1>
       <p style={{ marginBlockEnd: 54 }}>
         Please set a password for your address to continue. Your address will be
         generated after this step.
       </p>
       <RetypePasswordForm onSubmit={onPasswordSubmit} />
-    </>
+    </Layout>
   );
 }
 
-export default CreateKeySubview;
+export default observer(CreateKeySubview);
