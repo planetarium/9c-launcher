@@ -57,7 +57,13 @@ function ActivationWaitView() {
         layout
         variant="primary"
         centered
-        css={{ width: 200, marginTop: 180 }}
+        css={{
+          width: 200,
+          marginTop: 180,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
         disabled
       >
         <LoadingImage src={loading} />
