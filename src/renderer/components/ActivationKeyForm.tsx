@@ -20,7 +20,7 @@ const ACTIVATION_KEY_REGEX = /^[0-9a-f]+\/[0-9a-f]{40}$/;
 type ActivationStatus =
   | ""
   | "Valid"
-  | "The code is already used"
+  | "The code is already in use"
   | "The code is invalid";
 
 export default function ActivationKeyForm({ onSubmit }: Props) {
@@ -50,7 +50,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
     const { data } = await sdks.CheckActivationKey({ activationKey });
 
     if (data.activated) {
-      setStatus("The code is already used");
+      setStatus("The code is already in use");
     } else {
       setStatus("Valid");
     }
