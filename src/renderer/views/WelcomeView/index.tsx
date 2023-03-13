@@ -1,13 +1,11 @@
-import React from "react";
 import { observer } from "mobx-react";
-
-import { ButtonLink } from "src/renderer/components/ui/Button";
+import React from "react";
 import Layout from "src/renderer/components/core/Layout";
-
+import { ButtonLink } from "src/renderer/components/ui/Button";
+import { Link } from "src/renderer/components/ui/Link";
+import { T } from "src/renderer/i18n";
 import logo from "src/renderer/resources/logo.png";
 import { CSS, styled } from "src/renderer/stitches.config";
-import { T } from "src/renderer/i18n";
-import { Link } from "src/renderer/components/ui/Link";
 
 const welcomeStyles: CSS = {
   display: "flex",
@@ -46,7 +44,7 @@ function WelcomeView() {
           _tags={transifexTags}
         />
       </Summary>
-      <ButtonLink variant="primary" to="/register">
+      <ButtonLink variant="primary" to="/register/createKey">
         <T _str="Create New Account" _tags={transifexTags} />
       </ButtonLink>
       <Link to="/import">

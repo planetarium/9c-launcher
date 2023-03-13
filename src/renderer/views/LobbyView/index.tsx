@@ -12,7 +12,7 @@ function LobbyView() {
 
   useEffect(() => {
     if (loading || activated || account.activationKey) return;
-    history.push("/register/missing-activation");
+    history.push("/register/activationKey");
   }, [history, loading, activated, account.activationKey]);
 
   useEffect(() => {

@@ -1,7 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import loading from "src/renderer/resources/icons/loading.png";
 import zxcvbn from "zxcvbn";
 import { styled } from "../stitches.config";
+import { LoadingImage } from "../views/MonsterCollectionOverlay/base";
 import Button from "./ui/Button";
 import TextField, { PasswordField } from "./ui/TextField";
 
@@ -31,7 +33,7 @@ export default function RetypePasswordForm({ onSubmit, address }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isSubmitting },
     watch,
   } = useForm<FormData & { __confirm: string }>({
     mode: "onChange",
@@ -63,13 +65,20 @@ export default function RetypePasswordForm({ onSubmit, address }: Props) {
         })}
       />
       <Button
+        type="submit"
         layout
         variant="primary"
         centered
-        disabled={!isValid}
-        css={{ width: 200, marginTop: "160px" }}
+        disabled={!isValid || isSubmitting}
+        css={{
+          width: 200,
+          marginTop: "160px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
-        NEXT
+        {isSubmitting ? <LoadingImage src={loading} /> : "NEXT"}
       </Button>
     </Form>
   );
