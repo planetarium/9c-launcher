@@ -2,7 +2,7 @@ import { Box } from "@material-ui/core";
 import { ipcRenderer, shell } from "electron";
 import { GraphQLClient } from "graphql-request";
 import React, { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useLocation } from "react-router";
 import { get, NodeInfo } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
 import Button from "./ui/Button";
@@ -28,7 +28,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
   const [activationKey, setActivationKey] = useState("");
   const [status, setStatus] = useState<ActivationStatus>("");
 
-  const { code } = useParams<{ code?: string }>();
+  const location = useLocation();
 
   const handleInput = useCallback(async (activationKey: string) => {
     if (!ACTIVATION_KEY_REGEX.test(activationKey)) {
@@ -75,9 +75,13 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
   }, [handleInput]);
 
   useEffect(() => {
-    if (!code) {
+    const codeSegments = location.hash.split("?");
+
+    if (codeSegments.length !== 2) {
       return;
     }
+
+    const code = codeSegments[1];
 
     (async () => {
       if (ACTIVATION_KEY_REGEX.test(code)) {
@@ -85,7 +89,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
         await handleInput(code);
       }
     })();
-  }, [code, handleInput]);
+  }, [handleInput, location.hash]);
 
   return (
     <>
