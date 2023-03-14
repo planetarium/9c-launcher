@@ -3,8 +3,10 @@ import { ipcRenderer, shell } from "electron";
 import { GraphQLClient } from "graphql-request";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router";
+import { useHistory } from "react-router-dom";
 import { get, NodeInfo } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
+import { useLoginSession } from "src/utils/useLoginSession";
 import Button from "./ui/Button";
 import TextField from "./ui/TextField";
 
@@ -27,6 +29,9 @@ type ActivationStatus =
 export default function ActivationKeyForm({ onSubmit }: Props) {
   const [activationKey, setActivationKey] = useState("");
   const [status, setStatus] = useState<ActivationStatus>("");
+
+  const { account } = useLoginSession();
+  const history = useHistory();
 
   const location = useLocation();
 
@@ -74,7 +79,12 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
     return () => window.removeEventListener("focus", handleFocus);
   }, [handleInput]);
 
+  // TODO: More specific cases are needed - Activation code deep link -> keystore not created -> automatic activation?
   useEffect(() => {
+    if (!account) {
+      history.push("/register/createKey");
+    }
+
     const searchParams = location.search
       .substring(1)
       .split("&")
@@ -93,7 +103,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
         await handleInput(code);
       }
     })();
-  }, [handleInput, location]);
+  }, [account, handleInput, history, location]);
 
   return (
     <>
