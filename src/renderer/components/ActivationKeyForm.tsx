@@ -75,13 +75,17 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
   }, [handleInput]);
 
   useEffect(() => {
-    const codeSegments = location.hash.split("?");
+    const searchParams = location.search
+      .substring(1)
+      .split("&")
+      .map((s) => ({ key: s.split("=")[0], value: s.split("=")[1] }));
+    const codeSegment = searchParams.find((e) => e.key === "code");
 
-    if (codeSegments.length !== 2) {
+    if (!codeSegment) {
       return;
     }
 
-    const code = codeSegments[1];
+    const code = codeSegment.value;
 
     (async () => {
       if (ACTIVATION_KEY_REGEX.test(code)) {
@@ -89,7 +93,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
         await handleInput(code);
       }
     })();
-  }, [handleInput, location.hash]);
+  }, [handleInput, location]);
 
   return (
     <>
