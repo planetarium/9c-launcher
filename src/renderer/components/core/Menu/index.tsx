@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { observer } from "mobx-react";
-import MenuItem from "./MenuItem";
-import { useStore } from "src/utils/useStore";
-import { ipcRenderer, shell } from "electron";
 import { app } from "@electron/remote";
-import { styled } from "src/renderer/stitches.config";
-
-import settings from "src/renderer/resources/icons/settings.png";
-import refresh from "src/renderer/resources/icons/refresh.png";
-import discord from "src/renderer/resources/icons/discord.png";
+import { shell } from "electron";
+import { observer } from "mobx-react";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import logo from "src/renderer/resources/icons/9c.png";
-import staking from "src/renderer/resources/icons/staking.png";
-import ncgLogo from "src/renderer/resources/icons/ncgLogo.png";
+import discord from "src/renderer/resources/icons/discord.png";
 import exchange from "src/renderer/resources/icons/exchange.png";
-import SettingsOverlay from "src/renderer/views/SettingsOverlay";
+import ncgLogo from "src/renderer/resources/icons/ncgLogo.png";
+import refresh from "src/renderer/resources/icons/refresh.png";
+import settings from "src/renderer/resources/icons/settings.png";
+import staking from "src/renderer/resources/icons/staking.png";
+import { styled } from "src/renderer/stitches.config";
 import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverlay";
+import SettingsOverlay from "src/renderer/views/SettingsOverlay";
 import TransferAssetOverlay from "src/renderer/views/TransferAssetOverlay/main";
 import { useExternalURL } from "src/utils/useExternalURL";
+import { useStore } from "src/utils/useStore";
+import MenuItem from "./MenuItem";
 
 const MenuContainer = styled("div", {
   opacity: 0.9,
@@ -40,6 +40,7 @@ type Overlay = "settings" | "staking" | "transfer";
 function Menu() {
   const account = useStore("account");
   const [currentOverlay, openOverlay] = useState<Overlay | null>(null);
+  const history = useHistory();
 
   const url = useExternalURL();
   useEffect(() => {
@@ -50,7 +51,12 @@ function Menu() {
     if (url.pathname.startsWith("//open/transfer-asset")) {
       openOverlay("transfer");
     }
-  }, [url]);
+    if (url.pathname.startsWith("//open/activation")) {
+      history.push(
+        `/register/activationKey?code=${url.searchParams.get("code")}`
+      );
+    }
+  }, [url, history]);
 
   return (
     <MenuContainer>

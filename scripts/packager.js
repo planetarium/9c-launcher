@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // NOTE: This code has not been tested to work because the Xcode is not fully installed.
 
 const packager = require("electron-packager");
@@ -32,4 +33,10 @@ packager({
     appleId,
     appleIdPassword,
   },
+  protocols: [
+    {
+      name: "Nine Chronicles Launcher",
+      schemes: "ninechronicles-launcher",
+    },
+  ],
 });
