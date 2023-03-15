@@ -62,6 +62,8 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
   }, []);
 
   useEffect(() => {
+    console.log(account);
+
     if (!account) {
       history.push("/register/createKey");
       return;
