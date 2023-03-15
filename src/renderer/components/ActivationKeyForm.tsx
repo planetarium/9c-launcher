@@ -2,7 +2,6 @@ import { Box } from "@material-ui/core";
 import { ipcRenderer, shell } from "electron";
 import { GraphQLClient } from "graphql-request";
 import React, { useCallback, useEffect, useState } from "react";
-import { useLocation } from "react-router";
 import { useHistory } from "react-router-dom";
 import { get, NodeInfo } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
@@ -32,8 +31,6 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
 
   const { account } = useLoginSession();
   const history = useHistory();
-
-  const location = useLocation();
 
   const handleInput = useCallback(async (activationKey: string) => {
     if (!ACTIVATION_KEY_REGEX.test(activationKey)) {
@@ -65,6 +62,11 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
   }, []);
 
   useEffect(() => {
+    if (!account) {
+      history.push("/register/createKey");
+      return;
+    }
+
     const handleFocus = async () => {
       const data = (await navigator.clipboard.readText()).trim();
 
@@ -74,36 +76,11 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
       }
     };
 
+    handleFocus();
     window.addEventListener("focus", handleFocus);
 
     return () => window.removeEventListener("focus", handleFocus);
-  }, [handleInput]);
-
-  // TODO: More specific cases are needed - Activation code deep link -> keystore not created -> automatic activation?
-  useEffect(() => {
-    if (!account) {
-      history.push("/register/createKey");
-    }
-
-    const searchParams = location.search
-      .substring(1)
-      .split("&")
-      .map((s) => ({ key: s.split("=")[0], value: s.split("=")[1] }));
-    const codeSegment = searchParams.find((e) => e.key === "code");
-
-    if (!codeSegment) {
-      return;
-    }
-
-    const code = codeSegment.value;
-
-    (async () => {
-      if (ACTIVATION_KEY_REGEX.test(code)) {
-        setActivationKey(code);
-        await handleInput(code);
-      }
-    })();
-  }, [account, handleInput, history, location]);
+  }, [handleInput, history, account]);
 
   return (
     <>

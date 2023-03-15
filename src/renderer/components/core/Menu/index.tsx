@@ -52,9 +52,7 @@ function Menu() {
       openOverlay("transfer");
     }
     if (url.pathname.startsWith("//open/activation")) {
-      history.push(
-        `/register/activationKey?code=${url.searchParams.get("code")}`
-      );
+      history.push("/register/activationKey");
     }
   }, [url, history]);
 
