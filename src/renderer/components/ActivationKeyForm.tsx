@@ -76,8 +76,8 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
       }
     };
 
-    handleFocus();
     window.addEventListener("focus", handleFocus);
+    handleFocus();
 
     return () => window.removeEventListener("focus", handleFocus);
   }, [handleInput, history, account]);
