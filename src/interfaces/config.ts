@@ -25,4 +25,5 @@ export interface IConfig {
   KeystoreBackupDocumentationUrl: string;
   UnitySentrySampleRate: number;
   DiscordUrl: string;
+  MarketServiceUrl: string;
 }
