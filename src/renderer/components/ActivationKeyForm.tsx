@@ -80,7 +80,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
       <TextField
         motion
         type="text"
-        label={t("Activation code", { _tags: transifexTags })}
+        label={t("Activation Code", { _tags: transifexTags })}
         message={t(status, { _tags: transifexTags })}
         invalid={!["", "Valid"].includes(status)}
         onChange={async (e) => {
