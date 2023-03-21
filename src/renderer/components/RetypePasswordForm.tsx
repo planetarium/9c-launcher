@@ -1,3 +1,4 @@
+import { t } from "@transifex/native";
 import React from "react";
 import { useForm } from "react-hook-form";
 import loading from "src/renderer/resources/icons/loading.png";
@@ -29,6 +30,8 @@ const Form = styled("form", {
   },
 });
 
+const transifexTags = "v2/components/RetypePasswordForm";
+
 export default function RetypePasswordForm({ onSubmit, address }: Props) {
   const {
     register,
@@ -43,8 +46,10 @@ export default function RetypePasswordForm({ onSubmit, address }: Props) {
     <Form onSubmit={handleSubmit(onSubmit)}>
       {address && <TextField label="ID" readOnly value={address} />}
       <PasswordField
-        label="Password"
-        message={errors.password ? "Too weak" : "Strong"}
+        label={t("Password", { _tags: transifexTags })}
+        message={t(errors.password ? "Too weak" : "Strong", {
+          _tags: transifexTags,
+        })}
         invalid={!!errors.password}
         {...register("password", {
           required: true,
@@ -53,8 +58,10 @@ export default function RetypePasswordForm({ onSubmit, address }: Props) {
         })}
       />
       <PasswordField
-        label="Verify Password"
-        message={errors.__confirm ? "Passwords doesn't match" : "Correct"}
+        label={t("Verify Password", { _tags: transifexTags })}
+        message={t(errors.__confirm ? "Passwords doesn't match" : "Correct", {
+          _tags: transifexTags,
+        })}
         invalid={!!errors.__confirm}
         {...register("__confirm", {
           required: true,
@@ -78,7 +85,11 @@ export default function RetypePasswordForm({ onSubmit, address }: Props) {
           alignItems: "center",
         }}
       >
-        {isSubmitting ? <LoadingImage src={loading} /> : "NEXT"}
+        {isSubmitting ? (
+          <LoadingImage src={loading} />
+        ) : (
+          t("NEXT", { _tags: transifexTags })
+        )}
       </Button>
     </Form>
   );
