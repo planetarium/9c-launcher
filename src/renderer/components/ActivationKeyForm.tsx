@@ -1,9 +1,11 @@
 import { Box } from "@material-ui/core";
+import { t } from "@transifex/native";
 import { ipcRenderer, shell } from "electron";
 import { GraphQLClient } from "graphql-request";
 import React, { useCallback, useEffect, useState } from "react";
 import { get, NodeInfo } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
+import { T } from "../i18n";
 import Button from "./ui/Button";
 import TextField from "./ui/TextField";
 
@@ -22,6 +24,8 @@ type ActivationStatus =
   | "Valid"
   | "The code is already in use"
   | "The code is invalid";
+
+const transifexTags = "v2/components/ActivationKeyForm";
 
 export default function ActivationKeyForm({ onSubmit }: Props) {
   const [activationKey, setActivationKey] = useState("");
@@ -76,8 +80,8 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
       <TextField
         motion
         type="text"
-        label="Activation Code"
-        message={status}
+        label={t("Activation Code", { _tags: transifexTags })}
+        message={t(status, { _tags: transifexTags })}
         invalid={!["", "Valid"].includes(status)}
         onChange={async (e) => {
           setActivationKey(e.currentTarget.value);
@@ -91,7 +95,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
           css={{ minWidth: 120, height: 40, fontSize: 14 }}
           onClick={() => shell.openExternal(get("ActivationCodeUrl"))}
         >
-          Get the code
+          <T _str="Get the code" _tags={transifexTags} />
         </Button>
       </Box>
       <Button
@@ -102,7 +106,7 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
         css={{ width: 200, marginTop: 160 }}
         onClick={() => onSubmit({ activationKey })}
       >
-        Activate
+        <T _str="Activate" _tags={transifexTags} />
       </Button>
     </>
   );

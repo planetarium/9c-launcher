@@ -6,11 +6,14 @@ import Layout from "src/renderer/components/core/Layout";
 import Button from "src/renderer/components/ui/Button";
 import H1 from "src/renderer/components/ui/H1";
 import { ExtLink } from "src/renderer/components/ui/Link";
+import { T } from "src/renderer/i18n";
 import loading from "src/renderer/resources/icons/loading.png";
 import { useActivate } from "src/utils/useActivate";
 import { useActivationStatus } from "src/utils/useActivationStatus";
 import { registerStyles } from ".";
 import { LoadingImage } from "../MonsterCollectionOverlay/base";
+
+const transifexTags = "v2/views/register/ActivationWaitView";
 
 function ActivationWaitView() {
   const history = useHistory();
@@ -42,16 +45,23 @@ function ActivationWaitView() {
 
   return (
     <Layout sidebar css={registerStyles}>
-      <H1>Activation is in progress...</H1>
+      <H1>
+        <T _str="Activation is in progress..." _tags={transifexTags} />
+      </H1>
       <p style={{ marginBlockEnd: 54 }}>
-        This process can take upto a minute. While you are waiting, we strongly
-        recommend you to backup your keystore file.
+        <T
+          _str="This process can take upto a minute. While you are waiting, we strongly recommend you to backup your keystore file."
+          _tags={transifexTags}
+        />
       </p>
       <ExtLink
         href={get("KeystoreBackupDocumentationUrl")}
         css={{ color: "#1EB9DB" }}
       >
-        Please check the document for details.
+        <T
+          _str="Please check the document for details."
+          _tags={transifexTags}
+        />
       </ExtLink>
       <Button
         layout
