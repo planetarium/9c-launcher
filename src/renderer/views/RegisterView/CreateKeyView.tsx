@@ -7,11 +7,14 @@ import RetypePasswordForm, {
   FormData,
 } from "src/renderer/components/RetypePasswordForm";
 import H1 from "src/renderer/components/ui/H1";
+import { T } from "src/renderer/i18n";
 import { trackEvent } from "src/utils/mixpanel";
 import { useStore } from "src/utils/useStore";
 import { registerStyles } from ".";
 
-function CreateKeySubview() {
+const transifexTags = "v2/views/register/CreateKeyView";
+
+function CreateKeyView() {
   const history = useHistory();
 
   const accountStore = useStore("account");
@@ -32,12 +35,14 @@ function CreateKeySubview() {
     <Layout sidebar css={registerStyles}>
       <H1>Create your address </H1>
       <p style={{ marginBlockEnd: 54 }}>
-        Please set a password for your address to continue. Your address will be
-        generated after this step.
+        <T
+          _str="Please set a password for your address to continue. Your address will be generated after this step."
+          _tags={transifexTags}
+        />
       </p>
       <RetypePasswordForm onSubmit={onPasswordSubmit} />
     </Layout>
   );
 }
 
-export default observer(CreateKeySubview);
+export default observer(CreateKeyView);
