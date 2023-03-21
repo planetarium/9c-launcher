@@ -3,6 +3,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import loading from "src/renderer/resources/icons/loading.png";
 import zxcvbn from "zxcvbn";
+import { T } from "../i18n";
 import { styled } from "../stitches.config";
 import { LoadingImage } from "../views/MonsterCollectionOverlay/base";
 import Button from "./ui/Button";
@@ -88,7 +89,7 @@ export default function RetypePasswordForm({ onSubmit, address }: Props) {
         {isSubmitting ? (
           <LoadingImage src={loading} />
         ) : (
-          t("NEXT", { _tags: transifexTags })
+          <T _str="NEXT" _tags={transifexTags} />
         )}
       </Button>
     </Form>
