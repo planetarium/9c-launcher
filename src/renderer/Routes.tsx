@@ -1,20 +1,22 @@
-import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Redirect, Route, Switch, useHistory } from "react-router";
-import { ProtectedPrivateKey } from "../interfaces/keystore";
 import { useStore } from "src/utils/useStore";
-
-import LoginView from "./views/LoginView";
-import WelcomeView from "./views/WelcomeView";
-import RegisterView from "./views/RegisterView";
-import LobbyView from "./views/LobbyView";
-import MissingActivationView from "./views/MissingActivationView";
-import ImportView from "./views/ImportView";
-import RecoverView from "./views/RecoverView";
-import ForgotPasswordView from "./views/ForgotPasswordView";
 import ErrorView from "./views/ErrorView";
+import ForgotPasswordView from "./views/ForgotPasswordView";
+import ImportView from "./views/ImportView";
+import LobbyView from "./views/LobbyView";
+import LoginView from "./views/LoginView";
+import RecoverView from "./views/RecoverView";
+import {
+  ActivationFailView,
+  ActivationKeyView,
+  ActivationSuccessView,
+  ActivationWaitView,
+  CreateKeyView,
+} from "./views/RegisterView";
 import RevokeView from "./views/RevokeView";
+import WelcomeView from "./views/WelcomeView";
 
 const Redirector = observer(() => {
   const account = useStore("account");
@@ -34,11 +36,14 @@ export default function Routes() {
     <Switch>
       <Route path="/login" component={LoginView} />
       <Route path="/welcome" component={WelcomeView} />
+      <Route path="/register/createKey" component={CreateKeyView} />
+      <Route path="/register/activationKey" component={ActivationKeyView} />
+      <Route path="/register/activationWait" component={ActivationWaitView} />
       <Route
-        path="/register/missing-activation"
-        component={MissingActivationView}
+        path="/register/activationSuccess"
+        component={ActivationSuccessView}
       />
-      <Route path="/register" component={RegisterView} />
+      <Route path="/register/activationFail" component={ActivationFailView} />
       <Route path="/lobby" component={LobbyView} />
       <Route path="/import" component={ImportView} />
       <Route path="/forgot" component={ForgotPasswordView} />

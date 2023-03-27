@@ -1,18 +1,17 @@
+import { t } from "@transifex/native";
 import React from "react";
-import { useRef } from "react";
-import { AnimateSharedLayout } from "framer-motion";
 import { useForm } from "react-hook-form";
+import loading from "src/renderer/resources/icons/loading.png";
 import zxcvbn from "zxcvbn";
+import { T } from "../i18n";
+import { styled } from "../stitches.config";
+import { LoadingImage } from "../views/MonsterCollectionOverlay/base";
 import Button from "./ui/Button";
 import TextField, { PasswordField } from "./ui/TextField";
-import { ExtLink } from "src/renderer/components/ui/Link";
-import { styled } from "../stitches.config";
 
 interface Props {
   onSubmit: (data: FormData) => void;
-  useActivationKey?: boolean;
   address?: string;
-  activationCodeUrl?: string;
 }
 
 export interface FormData {
@@ -32,17 +31,13 @@ const Form = styled("form", {
   },
 });
 
-export default function RetypePasswordForm({
-  onSubmit,
-  useActivationKey,
-  activationCodeUrl,
-  address,
-}: Props) {
+const transifexTags = "v2/components/RetypePasswordForm";
+
+export default function RetypePasswordForm({ onSubmit, address }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    trigger,
+    formState: { errors, isValid, isSubmitting },
     watch,
   } = useForm<FormData & { __confirm: string }>({
     mode: "onChange",
@@ -52,8 +47,10 @@ export default function RetypePasswordForm({
     <Form onSubmit={handleSubmit(onSubmit)}>
       {address && <TextField label="ID" readOnly value={address} />}
       <PasswordField
-        label="Password"
-        message={errors.password ? "Too weak" : "Strong"}
+        label={t("Password", { _tags: transifexTags })}
+        message={t(errors.password ? "Too weak" : "Strong", {
+          _tags: transifexTags,
+        })}
         invalid={!!errors.password}
         {...register("password", {
           required: true,
@@ -62,8 +59,10 @@ export default function RetypePasswordForm({
         })}
       />
       <PasswordField
-        label="Verify Password"
-        message={errors.__confirm ? "Passwords doesn't match" : "Correct"}
+        label={t("Verify Password", { _tags: transifexTags })}
+        message={t(errors.__confirm ? "Passwords doesn't match" : "Correct", {
+          _tags: transifexTags,
+        })}
         invalid={!!errors.__confirm}
         {...register("__confirm", {
           required: true,
@@ -73,26 +72,25 @@ export default function RetypePasswordForm({
           deps: ["password"],
         })}
       />
-      {useActivationKey && (
-        <TextField
-          motion
-          type="text"
-          label="Activation Code"
-          message={errors.activationKey ? "Invalid code" : "Correct"}
-          invalid={errors.activationKey != null}
-          {...register("activationKey", {
-            required: true,
-            pattern: /^[0-9a-f]+\/[0-9a-f]{40}$/,
-          })}
-        />
-      )}
-      {activationCodeUrl && (
-        <ExtLink target="_blank" href={activationCodeUrl}>
-          Get the activation code
-        </ExtLink>
-      )}
-      <Button layout variant="primary" centered css={{ width: 200 }}>
-        NEXT
+      <Button
+        type="submit"
+        layout
+        variant="primary"
+        centered
+        disabled={!isValid || isSubmitting}
+        css={{
+          width: 200,
+          marginTop: "160px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {isSubmitting ? (
+          <LoadingImage src={loading} />
+        ) : (
+          <T _str="NEXT" _tags={transifexTags} />
+        )}
       </Button>
     </Form>
   );

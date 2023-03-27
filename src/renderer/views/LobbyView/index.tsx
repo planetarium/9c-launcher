@@ -1,29 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
 import { observer } from "mobx-react";
-import Layout from "src/renderer/components/core/Layout";
-import { useStore } from "src/utils/useStore";
-import { useActivation } from "src/utils/useActivation";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router";
-import OnboardingOverlay from "src/renderer/views/OnboardingOverlay";
-
-const isFirst = (state: string): boolean => {
-  return state.includes("first");
-};
+import Layout from "src/renderer/components/core/Layout";
+import { useActivationStatus } from "src/utils/useActivationStatus";
+import { useStore } from "src/utils/useStore";
 
 function LobbyView() {
   const { account, game } = useStore();
-  const { loading, activated, error } = useActivation(true);
+  const { loading, activated, error } = useActivationStatus();
   const history = useHistory();
-  const onboardingRequired = useMemo(
-    () => isFirst(history.location.search),
-    [history.location]
-  );
-  const [showOnboarding, setShowOnboarding] = useState(true);
 
   useEffect(() => {
     if (loading || activated || account.activationKey) return;
-    history.push("/register/missing-activation");
-  }, [loading, activated, account.activationKey]);
+    history.push("/register/activationKey");
+  }, [history, loading, activated, account.activationKey]);
 
   useEffect(() => {
     if (account.loginSession && activated) {
@@ -33,18 +23,9 @@ function LobbyView() {
 
   useEffect(() => {
     if (error) history.push("/error/relaunch");
-  }, [error]);
+  }, [history, error]);
 
-  return (
-    <>
-      <Layout />
-      <OnboardingOverlay
-        // isOpen={onboardingRequired && showOnboarding}
-        isOpen={false}
-        onClose={() => setShowOnboarding(false)}
-      />
-    </>
-  );
+  return <Layout />;
 }
 
 export default observer(LobbyView);

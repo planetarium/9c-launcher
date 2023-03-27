@@ -1,8 +1,8 @@
 import Store from "electron-store";
-import path from "path";
-import { IConfig } from "./interfaces/config";
 import { GraphQLClient } from "graphql-request";
+import path from "path";
 import { getSdk } from "./generated/graphql-request";
+import { IConfig } from "./interfaces/config";
 
 export const { app } =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -83,7 +83,7 @@ export class NodeInfo {
     const headlessGraphQLSDK = getSdk(this.GraphqlClient());
     try {
       const ended = await headlessGraphQLSDK.PreloadEnded();
-      if (ended.status == 200) {
+      if (ended.status === 200) {
         this.clientCount = ended.data!.rpcInformation.totalCount;
         this.tip = ended.data!.nodeStatus.tip.index;
         return ended.data!.nodeStatus.preloadEnded;
@@ -103,7 +103,7 @@ const NodeList = async (): Promise<NodeInfo[]> => {
       .sort(() => Math.random() - 0.5)
       .map(async (v, index) => {
         const rawInfos = v.split(",");
-        if (rawInfos.length != 3) {
+        if (rawInfos.length !== 3) {
           console.error(`${v} does not contained node info.`);
           return;
         }
@@ -159,7 +159,7 @@ const RpcServerHost = (): { host: string; notDefault: boolean } => {
 
 const RpcServerPort = (): { port: number; notDefault: boolean } => {
   const port = process.env.NC_RPC_SERVER_PORT;
-  if (port != null && port.match(/^\d+$/)) {
+  if (port?.match(/^\d+$/)) {
     return { port: +port, notDefault: true };
   }
 
@@ -176,7 +176,7 @@ const LocalServerHost = (): { host: string; notDefault: boolean } => {
 
 const LocalServerPort = (): { port: number; notDefault: boolean } => {
   const port = process.env.NC_GRAPHQL_SERVER_PORT;
-  if (port != null && port.match(/^\d+$/)) {
+  if (port?.match(/^\d+$/)) {
     return { port: +port, notDefault: true };
   }
 

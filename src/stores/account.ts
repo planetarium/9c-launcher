@@ -7,6 +7,7 @@ import {
   getDefaultKeystorePath,
   V3Keystore,
 } from "@planetarium/account-local";
+import { SigningKey, Wallet } from "ethers";
 import { createAccount } from "@planetarium/account-raw";
 import { Account, deriveAddress } from "@planetarium/sign";
 // FIXME these imports cause matter since file-system related features aren't
@@ -16,6 +17,7 @@ import fs from "fs";
 import path from "path";
 import { action, observable, makeObservable } from "mobx";
 import { Address, ProtectedPrivateKey } from "src/interfaces/keystore";
+import { V3toRaw } from "src/utils/web3key";
 import { utils } from "@noble/secp256k1";
 
 interface ILoginSession {
@@ -62,7 +64,9 @@ export default class AccountStore implements IAccountStore {
       account,
       publicKey: utils.bytesToHex(bs),
       address,
-      privateKey: await this.loadPrivateKeyFromAddress(address, password),
+      privateKey: (
+        await this.loadPrivateKeyFromAddress(address, password)
+      ).toString("hex"),
     };
   };
 
@@ -85,10 +89,15 @@ export default class AccountStore implements IAccountStore {
   };
 
   @action
-  getAccount = (address: Address, passphrase: string): Promise<Account> => {
-    return this.findKeyByAddress(address).then((key) => {
-      return getAccountFromFile(key.keyId, passphrase);
-    });
+  getAccount = async (
+    address: Address,
+    passphrase: string
+  ): Promise<Account> => {
+    const key = await this.findKeyByAddress(address);
+    // Padding the existing key with the short length, created by Libplanet's previous bug.
+    // see also: https://github.com/planetarium/9c-launcher/issues/2107
+    await this.padShortKey(key, passphrase);
+    return getAccountFromFile(key.keyId, passphrase);
   };
 
   @action
@@ -205,14 +214,12 @@ export default class AccountStore implements IAccountStore {
   loadPrivateKeyFromAddress = async (
     address: Address,
     password: string
-  ): Promise<string> => {
+  ): Promise<Buffer> => {
     const key = await this.findKeyByAddress(address);
-    const raw = decipherV3(
+    return decipherV3(
       await fs.promises.readFile(key.path, "utf8"),
       password
     ).getPrivateKey();
-
-    return utils.bytesToHex(raw);
   };
 
   beginRecovery = (privateKey: string) => {
@@ -241,8 +248,36 @@ export default class AccountStore implements IAccountStore {
     this.removeKeyByAddress(address);
     this.addKey(importedKey!);
 
+    // Wipe Buffer
     this._privateKeyToRecovery.fill(0);
     this._privateKeyToRecovery = null;
     return account;
+  };
+
+  // This function Basically Opens V3, Pad If Key Is Short, Switch V3 File Content Seamlessly With Padded Privkey.
+  // 1. Decipher V3, Length Check.
+  // 2. If Key Is Short, Zero-Pad Left Of Deciphered Key To Fill 32 byte.
+  // 3. Generate New V3 With Padded Key and Previous Passphrase,
+  // 4. Modify UUID of Newly Generated V3 to Previous UUID.
+  // 5. Write Newly Padded, Same Passworded V3 to Original Path.
+  padShortKey = async (v: ProtectedPrivateKey, passphrase: string) => {
+    const key = V3toRaw(await fs.promises.readFile(v.path, "utf8"), passphrase);
+    if (key.length < 32) {
+      fs.promises.writeFile(
+        v.path,
+        (
+          await new Wallet(
+            new SigningKey(
+              Buffer.concat([Buffer.alloc(32 - key.length), key], 32)
+            )
+          ).encrypt(passphrase)
+        )
+          .replace(/"id":"[0-9A-z-]*"/, `"id":"${v.keyId}"`)
+          .replace("Crypto", "crypto")
+      );
+      // Wipe Buffer for security concerns.
+      // See also: https://github.com/planetarium/9c-launcher/pull/2112#discussion_r1128982145
+      key.fill(0);
+    }
   };
 }
