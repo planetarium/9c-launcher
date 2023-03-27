@@ -53,6 +53,7 @@ export default class GameStore {
     const dataProviderUrl = getConfig("DataProviderUrl");
     const portalUrl = getConfig("OnboardingPortalUrl");
     const unitySentrySampleRate = getConfig("UnitySentrySampleRate", 0);
+    const marketServiceUrl = getConfig("MarketServiceUrl");
 
     ipcRenderer.send("launch game", {
       args: [
@@ -66,6 +67,7 @@ export default class GameStore {
         `--aws-sink-guid=${awsSinkGuid}`,
         `--on-boarding-host=${portalUrl}`,
         `--sentry-sample-rate=${unitySentrySampleRate}`,
+        `--market-service-host=${marketServiceUrl}`,
       ].concat(
         dataProviderUrl === undefined
           ? []
