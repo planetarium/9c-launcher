@@ -2107,6 +2107,66 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ethersproject/address@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "@ethersproject/address@npm:5.7.0"
+  dependencies:
+    "@ethersproject/bignumber": ^5.7.0
+    "@ethersproject/bytes": ^5.7.0
+    "@ethersproject/keccak256": ^5.7.0
+    "@ethersproject/logger": ^5.7.0
+    "@ethersproject/rlp": ^5.7.0
+  checksum: 64ea5ebea9cc0e845c413e6cb1e54e157dd9fc0dffb98e239d3a3efc8177f2ff798cd4e3206cf3660ee8faeb7bef1a47dc0ebef0d7b132c32e61e550c7d4c843
+  languageName: node
+  linkType: hard
+
+"@ethersproject/bignumber@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "@ethersproject/bignumber@npm:5.7.0"
+  dependencies:
+    "@ethersproject/bytes": ^5.7.0
+    "@ethersproject/logger": ^5.7.0
+    bn.js: ^5.2.1
+  checksum: 8c9a134b76f3feb4ec26a5a27379efb4e156b8fb2de0678a67788a91c7f4e30abe9d948638458e4b20f2e42380da0adacc7c9389d05fce070692edc6ae9b4904
+  languageName: node
+  linkType: hard
+
+"@ethersproject/bytes@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "@ethersproject/bytes@npm:5.7.0"
+  dependencies:
+    "@ethersproject/logger": ^5.7.0
+  checksum: 66ad365ceaab5da1b23b72225c71dce472cf37737af5118181fa8ab7447d696bea15ca22e3a0e8836fdd8cfac161afe321a7c67d0dde96f9f645ddd759676621
+  languageName: node
+  linkType: hard
+
+"@ethersproject/keccak256@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "@ethersproject/keccak256@npm:5.7.0"
+  dependencies:
+    "@ethersproject/bytes": ^5.7.0
+    js-sha3: 0.8.0
+  checksum: ff70950d82203aab29ccda2553422cbac2e7a0c15c986bd20a69b13606ed8bb6e4fdd7b67b8d3b27d4f841e8222cbaccd33ed34be29f866fec7308f96ed244c6
+  languageName: node
+  linkType: hard
+
+"@ethersproject/logger@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "@ethersproject/logger@npm:5.7.0"
+  checksum: 075ab2f605f1fd0813f2e39c3308f77b44a67732b36e712d9bc085f22a84aac4da4f71b39bee50fe78da3e1c812673fadc41180c9970fe5e486e91ea17befe0d
+  languageName: node
+  linkType: hard
+
+"@ethersproject/rlp@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "@ethersproject/rlp@npm:5.7.0"
+  dependencies:
+    "@ethersproject/bytes": ^5.7.0
+    "@ethersproject/logger": ^5.7.0
+  checksum: bce165b0f7e68e4d091c9d3cf47b247cac33252df77a095ca4281d32d5eeaaa3695d9bc06b2b057c5015353a68df89f13a4a54a72e888e4beeabbe56b15dda6e
+  languageName: node
+  linkType: hard
+
 "@evilmartians/lefthook@npm:^1.1.0":
   version: 1.1.0
   resolution: "@evilmartians/lefthook@npm:1.1.0"
@@ -3526,6 +3586,15 @@ __metadata:
     bencodex: ^0.1.2
     buffer: ^6.0.3
   checksum: fd8bf1f4ea990d10d07bfd43994662ce7d5e01f1475a01711053dc6e0510837f324f8d6eaa4dfc802df3f64fb16c67450df0e626f661f9485e55f28d90dbae59
+  languageName: node
+  linkType: hard
+
+"@planetarium/tx@npm:^0.51.3":
+  version: 0.51.3
+  resolution: "@planetarium/tx@npm:0.51.3"
+  dependencies:
+    bencodex: ^0.1.1
+  checksum: d42eb6a66bda4b02d8044cddd4cd1481e998b3a9615640d8e36c665b6d8fb8c42d6ddb2e61242336953836f990d65d7a6f8bd7a0b64d442fa401e450682dac10
   languageName: node
   linkType: hard
 
@@ -7137,6 +7206,7 @@ __metadata:
     "@planetarium/check-free-space": ^0.0.2
     "@planetarium/cli": ^0.40.0
     "@planetarium/sign": ^0.0.12
+    "@planetarium/tx": ^0.51.3
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
     "@radix-ui/react-radio-group": ^0.1.5
     "@radix-ui/react-scroll-area": ^0.1.4
@@ -7227,6 +7297,7 @@ __metadata:
     graphql-tag: ^2.10.3
     html-webpack-plugin: ^5.3.2
     jscodeshift: ^0.12.0
+    lib9c-wasm: "file:../lib9c-wasm"
     lockfile: ^1.0.4
     lodash.debounce: ^4.0.8
     material-ui-popup-state: ^1.6.1
@@ -8765,7 +8836,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bn.js@npm:^5.1.2, bn.js@npm:^5.2.0":
+"bn.js@npm:^5.1.2, bn.js@npm:^5.2.0, bn.js@npm:^5.2.1":
   version: 5.2.1
   resolution: "bn.js@npm:5.2.1"
   checksum: 3dd8c8d38055fedfa95c1d5fc3c99f8dd547b36287b37768db0abab3c239711f88ff58d18d155dd8ad902b0b0cee973747b7ae20ea12a09473272b0201c9edd3
@@ -16185,6 +16256,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-sha3@npm:0.8.0":
+  version: 0.8.0
+  resolution: "js-sha3@npm:0.8.0"
+  checksum: 75df77c1fc266973f06cce8309ce010e9e9f07ec35ab12022ed29b7f0d9c8757f5a73e1b35aa24840dced0dea7059085aa143d817aea9e188e2a80d569d9adce
+  languageName: node
+  linkType: hard
+
 "js-string-escape@npm:^1.0.1":
   version: 1.0.1
   resolution: "js-string-escape@npm:1.0.1"
@@ -16769,6 +16847,16 @@ __metadata:
     prelude-ls: ~1.1.2
     type-check: ~0.3.2
   checksum: 0d084a524231a8246bb10fec48cdbb35282099f6954838604f3c7fc66f2e16fa66fd9cc2f3f20a541a113c4dafdf181e822c887c8a319c9195444e6c64ac395e
+  languageName: node
+  linkType: hard
+
+"lib9c-wasm@file:../lib9c-wasm::locator=NineChronicles%40workspace%3A.":
+  version: 0.0.2
+  resolution: "lib9c-wasm@file:../lib9c-wasm#../lib9c-wasm::hash=2daac4&locator=NineChronicles%40workspace%3A."
+  dependencies:
+    "@ethersproject/address": ^5.7.0
+    uuid: ^9.0.0
+  checksum: 80655c1de62fe8c7a258f8d4c69a63105566f9bc137d1b60fc6eeeb4ffd161cd3d63380682dcc99c328a6dbe3ce33317fa3805484ef3d555a3f745b6794aa98c
   languageName: node
   linkType: hard
 

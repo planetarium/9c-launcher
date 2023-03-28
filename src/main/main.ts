@@ -57,6 +57,7 @@ import installExtension, {
   APOLLO_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
 import RemoteHeadless from "./headless/remoteHeadless";
+import AccountStore from "./account";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import {
   createWindow as createV2Window,
@@ -72,6 +73,8 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
+import { encodeUnsignedTxWithCustomActions } from "@planetarium/tx";
+import { hexToBytes } from "@noble/hashes/utils";
 
 initializeSentry();
 
@@ -91,6 +94,7 @@ let initializeHeadlessCts: {
   token: CancellationToken;
 } | null = null;
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
+const accountStore: AccountStore = new AccountStore();
 
 let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
@@ -469,6 +473,32 @@ function initializeIpc() {
     }
     return remoteNode;
   });
+
+  ipcMain.handle(
+    "stage-custom-action",
+    async (_, encodedAction: Uint8Array) => {
+
+      if (accountStore.loginSession !== null) {
+        const nextTxNonce: string = (
+          await getSdk(remoteNode.GraphqlClient()).GetNextTxNonce({
+            address: accountStore.loginSession.address,
+          })
+        ).data.transaction.nextTxNonce;
+
+        encodeUnsignedTxWithCustomActions({
+          nonce: BigInt(nextTxNonce),
+          publicKey: hexToBytes(accountStore.loginSession.publicKey),
+          signer: hexToBytes(accountStore.loginSession.address),
+          timestamp: new Date(Date.now()),
+          updatedAddresses: new Set(),
+          genesisHash: hexToBytes("4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce"),
+          customActions: [
+            encodedAction
+          ],
+        });
+      }
+    }
+  );
 }
 
 async function initializeRemoteHeadless(): Promise<void> {
