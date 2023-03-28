@@ -5,6 +5,8 @@ import { GraphQLClient } from "graphql-request";
 import { get as getConfig } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
 import { signTransaction, Account } from "@planetarium/sign";
+import { boot, transfer_asset3, Address, Currency } from "lib9c-wasm";
+import { encodeUnsignedTxWithCustomActions } from "@planetarium/tx"
 
 type GraphQLSDK = ReturnType<typeof getSdk>;
 
@@ -52,6 +54,7 @@ export default class TransferStore implements ITransferStore {
   @observable public graphqlSdk: GraphQLSDK = getSdk(new GraphQLClient(""));
   @observable public balance: Decimal = new Decimal(0);
   @observable public senderAddress: string = "";
+  @observable public senderPublicKey
 
   @action
   getBalance = async (senderAddress: string): Promise<Decimal> => {
@@ -93,48 +96,44 @@ export default class TransferStore implements ITransferStore {
     publickey: string,
     account: Account
   ): Promise<TxId> => {
-    if (sender.startsWith("0x")) {
-      sender = sender.replace("0x", "");
+    if (!sender.startsWith("0x")) {
+      sender = sender.padStart(2, "0x");
     }
-    if (recipient.startsWith("0x")) {
-      recipient = recipient.replace("0x", "");
+    if (!recipient.startsWith("0x")) {
+      recipient = recipient.padStart(2, "0x");
     }
 
     if (sender === "") {
       throw new Error("Sender address is empty");
     }
 
-    return this.graphqlSdk
-      .transferAsset({
-        publicKey: publickey,
-        sender: sender,
-        recipient: recipient,
-        amount: amount.toString(),
-        memo: memo,
-      })
-      .catch((e) => {
-        console.error(e);
-        throw new Error("Failed to create transfer asset action.");
-      })
-      .then(
-        (v) =>
-          v.data.actionTxQuery.transferAsset &&
-          signTransaction(v.data.actionTxQuery.transferAsset, account)
-      )
-      .catch((e) => {
-        console.error(e);
-        throw new Error("Failed to sign transaction.");
-      })
-      .then((v) => {
-        if (typeof v !== "string") {
-          throw new Error("Signed transaction not provided.");
-        }
-        return this.graphqlSdk.stageTransaction({ payload: v });
-      })
-      .then((v) => {
-        if (!v.data) throw new Error("Failed to stage transaction.");
-        return v.data.stageTransaction as string;
-      });
+    await boot();
+
+    const action = transfer_asset3({
+      amount: {
+        currency: new Currency({
+          ticker: "NCG",
+          decimalPlaces: 2,
+          minters: [],
+        }),
+        sign: 1,
+        majorUnit: "10",
+        minorUnit: "10",
+      },
+      sender: new Address(sender),
+      recipient: new Address(recipient),
+      memo: memo,
+    });
+
+    const unsigned = encodeUnsignedTxWithCustomActions({
+      nonce: 1,
+      publickey: await account.getPublicKey(),
+      signer: 
+      timestamp: new Date.now()
+      customActions: [
+        action
+      ]
+    })
   };
 
   @action

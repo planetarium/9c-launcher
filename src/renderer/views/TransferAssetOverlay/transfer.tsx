@@ -19,9 +19,9 @@ import SendingDialog from "src/renderer/components/SendingDialog/SendingDialog";
 import SuccessDialog from "src/renderer/components/SuccessDialog/SuccessDialog";
 import { TransactionConfirmationListener } from "src/stores/transfer";
 import refreshIcon from "src/renderer/resources/refreshIcon.png";
-import { useStore } from "src/utils/useStore";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
 import { useLoginSession } from "src/utils/useLoginSession";
+import { boot, transfer_asset3, Address, Currency } from "lib9c-wasm";
 
 const transifexTags = "Transfer/Transfer";
 
@@ -66,8 +66,7 @@ const CircularProgress = styled(OriginCircularProgress)({
 });
 
 function TransferPage() {
-  const { transfer } = useStore();
-  const { publicKey, account } = useLoginSession();
+  const { address, publicKey, account } = useLoginSession();
   const [recipient, setRecipient] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [amount, setAmount] = useState<Decimal>(new Decimal(0));
@@ -97,13 +96,15 @@ function TransferPage() {
     },
   };
 
-  const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleTransfer = async (event: React.MouseEvent<HTMLButtonElement>) => {
     ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
+    await boot();
+
     if (!addressVerify(recipient, true) || !amount.gt(0)) {
       return;
     }
 
-    if (recipient === transfer.senderAddress) {
+    if (recipient === address) {
       const errorMessage = "You can't transfer NCG to yourself.";
       alert(errorMessage);
       return;
@@ -112,18 +113,26 @@ function TransferPage() {
     if (!publicKey || !account) {
       return;
     }
+    ipcRenderer.invoke(
+      "stage-custom-action",
+      transfer_asset3({
+        amount: {
+          currency: new Currency({
+            ticker: "NCG",
+            decimalPlaces: 2,
+            minters: [new Address("47d082a115c63e7b58b1532d20e631538eafadde")],
+          }),
+          sign: 1,
+          majorUnit: amount.toString(),
+          minorUnit: "0",
+        },
+        sender: new Address(sender),
+        recipient: new Address(recipient),
+        memo: memo,
+      })
+    );
 
     setCurrentPhase(TransferPhase.SENDTX);
-
-    const tx = await transfer.transferAsset(
-      transfer.senderAddress,
-      recipient,
-      amount,
-      memo,
-      publicKey,
-      account
-    );
-    setTx(tx);
 
     setCurrentPhase(TransferPhase.SENDING);
 
@@ -215,7 +224,7 @@ function TransferPage() {
           <TransferButton
             variant="contained"
             color="primary"
-            onClick={handleButton}
+            onClick={handleTransfer}
             disabled={disabled}
           >
             {loading && <CircularProgress />}
