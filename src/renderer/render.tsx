@@ -11,8 +11,10 @@ import App from "./App";
 import { getCurrentWindow } from "@electron/remote";
 import _refiner from "refiner-js";
 import { t } from "@transifex/native";
+import { boot } from "lib9c-wasm";
 
 initializeSentry();
+boot();
 
 Object.assign(console, electronLog.functions);
 

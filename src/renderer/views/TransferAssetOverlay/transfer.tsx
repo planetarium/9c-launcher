@@ -21,7 +21,7 @@ import { TransactionConfirmationListener } from "src/stores/transfer";
 import refreshIcon from "src/renderer/resources/refreshIcon.png";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
 import { useLoginSession } from "src/utils/useLoginSession";
-import { boot, transfer_asset3, Address, Currency } from "lib9c-wasm";
+import { transfer_asset3, Address, Currency } from "lib9c-wasm";
 
 const transifexTags = "Transfer/Transfer";
 
@@ -98,7 +98,6 @@ function TransferPage() {
 
   const handleTransfer = async (event: React.MouseEvent<HTMLButtonElement>) => {
     ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
-    await boot();
 
     if (!addressVerify(recipient, true) || !amount.gt(0)) {
       return;
@@ -113,30 +112,37 @@ function TransferPage() {
     if (!publicKey || !account) {
       return;
     }
-    ipcRenderer.invoke(
+
+    if (!address) {
+      return;
+    }
+
+    const encodedAction = transfer_asset3({
+      amount: {
+        currency: new Currency({
+          ticker: "NCG",
+          decimalPlaces: 2,
+          minters: [new Address("47d082a115c63e7b58b1532d20e631538eafadde")],
+        }),
+        sign: 1,
+        majorUnit: amount.toString(),
+        minorUnit: "0",
+      },
+      sender: new Address(address.replace("0x", "")),
+      recipient: new Address(recipient.replace("0x", "")),
+      memo: memo,
+    });
+    console.log(`EncodedAction: ${encodedAction.buffer}`);
+
+    const Txid: string = await ipcRenderer.invoke(
       "stage-custom-action",
-      transfer_asset3({
-        amount: {
-          currency: new Currency({
-            ticker: "NCG",
-            decimalPlaces: 2,
-            minters: [new Address("47d082a115c63e7b58b1532d20e631538eafadde")],
-          }),
-          sign: 1,
-          majorUnit: amount.toString(),
-          minorUnit: "0",
-        },
-        sender: new Address(sender),
-        recipient: new Address(recipient),
-        memo: memo,
-      })
+      encodedAction
     );
 
     setCurrentPhase(TransferPhase.SENDTX);
-
+    console.log(Txid);
     setCurrentPhase(TransferPhase.SENDING);
 
-    await transfer.confirmTransaction(tx, undefined, listener);
     event.preventDefault();
   };
 
@@ -178,17 +184,11 @@ function TransferPage() {
           <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
           &nbsp;
           <b>
-            <T
-              _str="(Your balance: {ncg} NCG)"
-              _tags={transifexTags}
-              ncg={transfer.balance}
-            />
+            <T _str="(Your balance: {ncg} NCG)" _tags={transifexTags} ncg={0} />
           </b>
           <Button
             startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={async () =>
-              await transfer.updateBalance(transfer.senderAddress)
-            }
+            onClick={async () => {}}
           />
         </TransferSecondTitle>
         <FormControl fullWidth>

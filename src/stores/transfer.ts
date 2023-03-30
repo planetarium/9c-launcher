@@ -107,33 +107,38 @@ export default class TransferStore implements ITransferStore {
       throw new Error("Sender address is empty");
     }
 
-    await boot();
 
-    const action = transfer_asset3({
-      amount: {
-        currency: new Currency({
-          ticker: "NCG",
-          decimalPlaces: 2,
-          minters: [],
-        }),
-        sign: 1,
-        majorUnit: "10",
-        minorUnit: "10",
-      },
-      sender: new Address(sender),
-      recipient: new Address(recipient),
-      memo: memo,
-    });
-
-    const unsigned = encodeUnsignedTxWithCustomActions({
-      nonce: 1,
-      publickey: await account.getPublicKey(),
-      signer: 
-      timestamp: new Date.now()
-      customActions: [
-        action
-      ]
-    })
+    return this.graphqlSdk
+      .transferAsset({
+        publicKey: publickey,
+        sender: sender,
+        recipient: recipient,
+        amount: amount.toString(),
+        memo: memo,
+      })
+      .catch((e) => {
+        console.error(e);
+        throw new Error("Failed to create transfer asset action.");
+      })
+      .then(
+        (v) =>
+          v.data.actionTxQuery.transferAsset &&
+          signTransaction(v.data.actionTxQuery.transferAsset, account)
+      )
+      .catch((e) => {
+        console.error(e);
+        throw new Error("Failed to sign transaction.");
+      })
+      .then((v) => {
+        if (typeof v !== "string") {
+          throw new Error("Signed transaction not provided.");
+        }
+        return this.graphqlSdk.stageTransaction({ payload: v });
+      })
+      .then((v) => {
+        if (!v.data) throw new Error("Failed to stage transaction.");
+        return v.data.stageTransaction as string;
+      });
   };
 
   @action

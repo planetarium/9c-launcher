@@ -73,8 +73,10 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
+import { signTransaction } from "@planetarium/sign";
 import { encodeUnsignedTxWithCustomActions } from "@planetarium/tx";
-import { hexToBytes } from "@noble/hashes/utils";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
+import { encode, decode } from "bencodex";
 
 initializeSentry();
 
@@ -410,7 +412,11 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.on("login", async () => {
+  ipcMain.handle("login", async (_, [address, password]) => {
+    accountStore.login(
+      await accountStore.getAccount(address, password),
+      password
+    );
     mixpanel?.login();
   });
 
@@ -477,25 +483,41 @@ function initializeIpc() {
   ipcMain.handle(
     "stage-custom-action",
     async (_, encodedAction: Uint8Array) => {
-
       if (accountStore.loginSession !== null) {
         const nextTxNonce: string = (
           await getSdk(remoteNode.GraphqlClient()).GetNextTxNonce({
             address: accountStore.loginSession.address,
           })
         ).data.transaction.nextTxNonce;
+        
+        console.log(`NextTxNonce: ${nextTxNonce}`);
 
-        encodeUnsignedTxWithCustomActions({
-          nonce: BigInt(nextTxNonce),
-          publicKey: hexToBytes(accountStore.loginSession.publicKey),
-          signer: hexToBytes(accountStore.loginSession.address),
-          timestamp: new Date(Date.now()),
-          updatedAddresses: new Set(),
-          genesisHash: hexToBytes("4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce"),
-          customActions: [
-            encodedAction
-          ],
-        });
+        const signedPayload = await signTransaction(
+          encode(
+            encodeUnsignedTxWithCustomActions({
+              nonce: BigInt(nextTxNonce),
+              publicKey: hexToBytes(accountStore.loginSession.publicKey),
+              signer: hexToBytes(accountStore.loginSession.address.replace('0x', '')),
+              timestamp: new Date(Date.now()),
+              updatedAddresses: new Set(),
+              genesisHash: hexToBytes(
+                "4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce"
+              ),
+              customActions: [decode(Buffer.from(encodedAction))],
+            })
+          ).toString("hex"),
+          accountStore.loginSession.account
+        )
+
+        console.log(`SignedPayload: ${signedPayload}`);
+
+        const TxId = (
+          await getSdk(remoteNode.GraphqlClient()).stageTransaction({
+            payload: signedPayload
+          })
+        ).data.stageTransaction;
+
+        return TxId;
       }
     }
   );

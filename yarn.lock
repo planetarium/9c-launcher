@@ -16852,11 +16852,12 @@ __metadata:
 
 "lib9c-wasm@file:../lib9c-wasm::locator=NineChronicles%40workspace%3A.":
   version: 0.0.2
-  resolution: "lib9c-wasm@file:../lib9c-wasm#../lib9c-wasm::hash=2daac4&locator=NineChronicles%40workspace%3A."
+  resolution: "lib9c-wasm@file:../lib9c-wasm#../lib9c-wasm::hash=e9044b&locator=NineChronicles%40workspace%3A."
   dependencies:
     "@ethersproject/address": ^5.7.0
+    bencodex: ^0.1.2
     uuid: ^9.0.0
-  checksum: 80655c1de62fe8c7a258f8d4c69a63105566f9bc137d1b60fc6eeeb4ffd161cd3d63380682dcc99c328a6dbe3ce33317fa3805484ef3d555a3f745b6794aa98c
+  checksum: 4620eb4b6f2c2ec84125f54a13fb6376bfc415bff5f0f20f90ce7962f772a6dc1a02ba40e4a1176d207d2e4b65471adb49ba4869cc55ecaa82688b93703e5000
   languageName: node
   linkType: hard
 
