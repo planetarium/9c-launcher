@@ -1,6 +1,7 @@
 import { DownloadItem, app } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
+import { exec } from "child_process";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
 import fs from "fs";
 import extractZip from "extract-zip";
@@ -9,6 +10,34 @@ import { IUpdate } from "./check";
 import { configStore, playerPath, PLAYER_METAFILE_VERSION } from "src/config";
 import { createVersion } from "./metafile";
 
+type OSPlatform = "darwin" | "linux" | "win32";
+
+function getAvailableDiskSpace(path: string = "/"): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const platform = process.platform as OSPlatform;
+    let cmd: string;
+    if (platform === "darwin" || platform === "linux") {
+      cmd = `df -k ${path} | tail -1 | awk '{print $4}'`;
+    } else if (platform === "win32") {
+      cmd = `for /f "skip=1" %p in ('wmic logicaldisk get FreeSpace^,Size^,Caption /format:list ^| find /i "${path}"') do @echo %p`;
+    } else {
+      return reject(new Error(`Unsupported platform: ${platform}`));
+    }
+
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        return reject(err);
+      }
+      if (stderr) {
+        return reject(new Error(stderr));
+      }
+
+      const available = parseInt(stdout.trim(), 10);
+      resolve(available);
+    });
+  });
+}
+
 export async function playerUpdate(
   update: IUpdate,
   win: Electron.BrowserWindow
@@ -16,9 +45,22 @@ export async function playerUpdate(
   console.log("Start player update", update.projects.player);
   win.webContents.send("update player download started");
 
+  const available = await getAvailableDiskSpace(app.getPath("temp"));
+
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {
     onStarted: (downloadItem: DownloadItem) => {
+      const totalBytes = downloadItem.getTotalBytes();
+      const totalKB = totalBytes / 1024;
+
+      if (totalKB > available) {
+        downloadItem.cancel();
+        win.webContents.send("go to error page", "disk-space", {
+          size: totalBytes,
+        });
+        return;
+      }
+
       console.log("[player] Starts to download:", downloadItem);
     },
     onProgress: (status: IDownloadProgress) => {
@@ -64,13 +106,25 @@ export async function playerUpdate(
       playerPath
     );
 
-    await extractZip(dlPath, {
-      dir: playerPath,
-      onEntry: (_, zipfile) => {
-        const progress = zipfile.entriesRead / zipfile.entryCount;
-        win.webContents.send("update player extract progress", progress);
-      },
-    });
+    try {
+      await extractZip(dlPath, {
+        dir: playerPath,
+        onEntry: (_, zipfile) => {
+          const progress = zipfile.entriesRead / zipfile.entryCount;
+          win.webContents.send("update player extract progress", progress);
+        },
+      });
+    } catch (e) {
+      if (e.code === "ENOSPC") {
+        win.webContents.send("go to error page", "disk-space", {
+          size: e.size,
+        });
+        return;
+      }
+
+      console.error(`${e}:\n`, e.stderr);
+      throw e;
+    }
   } else if (process.platform == "darwin" || process.platform == "linux") {
     // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
@@ -90,8 +144,8 @@ export async function playerUpdate(
         { capture: ["stdout", "stderr"] }
       );
     } catch (e) {
-      console.error(`${e}:\n`, e.stderr);
-      throw e;
+      win.webContents.send("go to error page", "disk-space", { size: 0 });
+      return;
     }
     console.log("The tarball archive", dlPath, "has extracted to ", playerPath);
   } else {
