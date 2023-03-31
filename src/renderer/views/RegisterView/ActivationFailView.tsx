@@ -20,7 +20,7 @@ function ActivationFailView() {
       <H1>
         <T _str="Activation has failed" _tags={transifexTags} />
       </H1>
-      <Text css={{ fontSize: 14, whiteSpace: "pre-wrap" }}>
+      <Text css={{ fontSize: 14, whiteSpace: "pre" }}>
         <T
           _str="An unknown error has occurred.\nPlease make sure your activation code is valid or try again later."
           _tags={transifexTags}
