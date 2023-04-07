@@ -1,0 +1,86 @@
+name: Build and Release
+
+on:
+  push:
+    branches: []
+
+jobs:
+  build:
+    runs-on:
+      labels: ["linux", "8cores"]
+    strategy:
+      matrix:
+        targetPlatform:
+          - linux
+          - macos
+          - windows
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup OS variables
+        run: bash scripts/configure-artifact.sh ${{ matrix.os }}
+
+      - uses: "./.github/actions/yarn-install"
+      - name: Copy config.json from the last release
+        run: |
+          mkdir pack-dist
+          set -ex
+          mkdir -p dist
+          curl -o "dist/config.json" 'https://release.nine-chronicles.com/9c-launcher-config.json'
+
+      - run: |
+          if [[ "${{ github.ref }}" == "main" ]]
+          then
+            yarn release:${{ matrix.os }}
+          else
+            yarn run pack:${{ matrix.os }}
+          fi
+
+      - run: |
+          cd pack/Nine\ Chronicles-$OS_ALIAS-x64/
+          $ZIP_CMD ../../pack-dist/$ARTIFACT *
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: pack-dist
+
+      - run: aws s3 cp "pack-dist/$ARTIFACT" "s3://9c-artifacts/9c-launcher/${{ github.sha }}/$ARTIFACT"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  styles:
+    runs-on: ubuntu-latest
+    container:
+      image: node:lts
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: "./.github/actions/yarn-install"
+
+      - name: Check Formatting
+        run: yarn prettier --check "src/**/*.{ts,tsx,json}"
+
+      - run: yarn codegen
+
+      - name: Type Check
+        run: yarn tsc --noEmit
+
+      - name: ESLint Check
+        run: yarn eslint ./src --quiet
+
+  update-translations:
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+    container:
+      image: node:lts
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: "./.github/actions/yarn-install"
+
+      - name: Update Translations
+        run: yarn update-translations
+        env:
+          TRANSIFEX_SECRET: ${{ secrets.TRANSIFEX_SECRET }}
+          TRANSIFEX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN }}

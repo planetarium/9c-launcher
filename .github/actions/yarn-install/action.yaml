@@ -1,0 +1,20 @@
+name: yarn-install
+runs:
+  using: composite
+  steps:
+    - name: restore_cache
+      uses: actions/cache@v3.3.1
+      with:
+        key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+        restore-keys: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+
+    - run: yarn install --immutable
+      env:
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      shell: bash
+
+    - name: save_cache
+      uses: actions/cache@v3.3.1
+      with:
+        path: ".yarn/cache"
+        key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
