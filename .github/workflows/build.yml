@@ -1,0 +1,85 @@
+name: planetarium/9c-launcher/build
+on:
+  push:
+    branches:
+    - development
+env:
+  APV_SIGN_KEY: xxxx30ae
+  AWS_ACCESS_KEY: xxxxO2O2
+  AWS_SECRET_KEY: xxxxKPSZ
+  CHROMATIC_PROJECT_TOKEN: xxxx1bd9
+  DOCKER_PASSWORD: xxxxgq68
+  DOCKER_USERNAME: xxxxmbot
+  GITHUB_TOKEN: xxxxAY3D
+  SENTRY_AUTH_TOKEN: xxxx4480
+  SENTRY_ORG: xxxxumhq
+  SENTRY_PROJECT: xxxxcher
+  TRANSIFEX_SECRET: xxxxa848
+  TRANSIFEX_TOKEN: xxxxd358
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: planetariumhq/9c-launcher-circleci:git-6fa331fdef32d6f124d06b6c48d07e352cc11067
+      credentials:
+        username: "$DOCKER_USERNAME"
+        password: "$DOCKER_PASSWORD"
+    strategy:
+      matrix:
+        os:
+        - linux
+        - macos
+        - windows
+    steps:
+    - uses: actions/checkout@v3.5.0
+    - name: Setup OS variables
+      run: bash scripts/configure-artifact.sh ${{ matrix.os }}
+    - uses: "./.github/actions/yarn-install"
+    - name: Copy config.json from the last release
+      run: |-
+        mkdir pack-dist
+        set -ex
+        mkdir -p dist
+        curl -o "dist/config.json" 'https://release.nine-chronicles.com/9c-launcher-config.json'
+    - run: |-
+        if [[ "${{ github.ref }}" == "main" ]]
+        then
+          yarn release:${{ matrix.os }}
+        else
+          yarn run pack:${{ matrix.os }}
+        fi
+    - run: |-
+        cd pack/Nine\ Chronicles-$OS_ALIAS-x64/
+        $ZIP_CMD ../../pack-dist/$ARTIFACT *
+    - uses: actions/upload-artifact@v3.1.1
+      with:
+        path: pack-dist
+    - name: Set S3
+      run: |-
+        aws configure set aws_access_key_id $AWS_ACCESS_KEY
+        aws configure set aws_secret_access_key $AWS_SECRET_KEY
+    - run: aws s3 cp "pack-dist/$ARTIFACT" "s3://9c-artifacts/9c-launcher/${{ github.sha }}/$ARTIFACT"
+  styles:
+    runs-on: ubuntu-latest
+    container:
+      image: node:lts
+    steps:
+    - uses: actions/checkout@v3.5.0
+    - uses: "./.github/actions/yarn-install"
+    - name: Check Formatting
+      run: yarn prettier --check "src/**/*.{ts,tsx,json}"
+    - run: yarn codegen
+    - name: Type Check
+      run: yarn tsc --noEmit
+    - name: ESLint Check
+      run: yarn eslint ./src --quiet
+  update-translations:
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+    container:
+      image: node:lts
+    steps:
+    - uses: actions/checkout@v3.5.0
+    - uses: "./.github/actions/yarn-install"
+    - name: Update Translations
+      run: yarn update-translations
