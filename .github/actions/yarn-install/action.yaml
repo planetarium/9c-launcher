@@ -5,9 +5,9 @@ runs:
     - name: restore_cache
       uses: actions/cache@v3.3.1
       with:
-        key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+        key: yarn3-packages-${{ runner.arch }}-${{ hashFiles("yarn.lock") }}
         path: ".yarn/cache"
-        restore-keys: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+        restore-keys: yarn3-packages-${{ runner.arch }}-${{ hashFiles("yarn.lock") }}
 
     - run: yarn install --immutable
       env:
@@ -18,4 +18,4 @@ runs:
       uses: actions/cache@v3.3.1
       with:
         path: ".yarn/cache"
-        key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+        key: yarn3-packages-${{ runner.arch }}-${{ hashFiles("yarn.lock") }}

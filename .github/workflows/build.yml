@@ -2,7 +2,14 @@ name: Build and Release
 
 on:
   push:
-    branches: []
+    branches:
+      - main
+      - development
+      - rc-v*
+      - release/*
+      - hotfix/*
+    pull_request:
+      types: [ready_for_review, opened, reopened, auto_merge_enabled]
 
 jobs:
   build:
@@ -25,10 +32,12 @@ jobs:
           node-version: 16
           cache: 'yarn'
 
+      - name: Install
+        shell: bash
+        run: yarn
+
       - name: Setup OS variables
         run: bash scripts/configure-artifact.sh ${{ matrix.targetPlatform }}
-
-      - uses: "./.github/actions/yarn-install"
 
       - name: Copy config.json from the last release
         shell: bash
@@ -57,6 +66,9 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: pack-dist
+          name: Build-${{ matrix.targetPlatform }}
+          retention-days: 7
+          if-no-files-found: error
 
       - name: upload
         shell: bash
@@ -74,7 +86,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: "./.github/actions/yarn-install"
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+
+      - name: Install
+        shell: bash
+        run: yarn
 
       - name: Check Formatting
         run: yarn prettier --check "src/**/*.{ts,tsx,json}"
@@ -95,7 +114,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: "./.github/actions/yarn-install"
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+
+      - name: Install
+        shell: bash
+        run: yarn
 
       - name: Update Translations
         run: yarn update-translations
