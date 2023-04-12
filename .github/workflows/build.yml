@@ -6,37 +6,51 @@ on:
 
 jobs:
   build:
-    runs-on:
-      labels: ["linux", "8cores"]
     strategy:
       matrix:
-        targetPlatform:
-          - linux
-          - macos
-          - windows
+        include:
+          - targetPlatform: linux
+            os: ubuntu-latest
+          - targetPlatform: macos
+            os: ubuntu-latest
+          - targetPlatform: windows
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+
       - name: Setup OS variables
-        run: bash scripts/configure-artifact.sh ${{ matrix.os }}
+        run: bash scripts/configure-artifact.sh ${{ matrix.targetPlatform }}
 
       - uses: "./.github/actions/yarn-install"
+
       - name: Copy config.json from the last release
+        shell: bash
         run: |
           mkdir pack-dist
           set -ex
           mkdir -p dist
           curl -o "dist/config.json" 'https://release.nine-chronicles.com/9c-launcher-config.json'
 
-      - run: |
+      - name: build
+        shell: bash
+        run: |
           if [[ "${{ github.ref }}" == "main" ]]
           then
-            yarn release:${{ matrix.os }}
+            yarn release:${{ matrix.targetPlatform }}
           else
-            yarn run pack:${{ matrix.os }}
+            yarn run pack:${{ matrix.targetPlatform }}
           fi
 
-      - run: |
+      - name: zip
+        shell: bash
+        run: |
           cd pack/Nine\ Chronicles-$OS_ALIAS-x64/
           $ZIP_CMD ../../pack-dist/$ARTIFACT *
 
@@ -44,10 +58,14 @@ jobs:
         with:
           path: pack-dist
 
-      - run: aws s3 cp "pack-dist/$ARTIFACT" "s3://9c-artifacts/9c-launcher/${{ github.sha }}/$ARTIFACT"
+      - name: upload
+        shell: bash
+        run: |
+          aws s3 cp "pack-dist/$ARTIFACT" "s3://9c-artifacts/9c-launcher/${{ github.sha }}/$ARTIFACT"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
   styles:
     runs-on: ubuntu-latest

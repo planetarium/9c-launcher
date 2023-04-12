@@ -1,0 +1,49 @@
+version: 2.1
+
+orbs:
+  win: circleci/windows@4.1.1
+
+commands:
+  yarn-install:
+    steps:
+      - restore_cache:
+          keys:
+            - yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+      - run:
+          command: yarn install --immutable
+          environment:
+            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      - save_cache:
+          key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - .yarn/cache
+
+jobs:
+  e2e-test:
+    executor:
+      name: win/default
+      size: medium
+    steps:
+      - run: git config --global core.symlinks true # https://github.com/git-for-windows/git/wiki/Symbolic-Links
+      - run:
+          name: Restart local mstsc
+          command: psexec64.exe -accepteula -nobanner -i 0 mstsc /v:localhost /w:1920 /h:1080 # FHD
+          background: true
+      - checkout
+      - yarn-install
+      - run: scripts/create-key.ps1
+      - run: yarn build-prod
+      - run: scripts/copy-config.ps1
+      - run: yarn test
+      - store_artifacts:
+          path: __tests__/snapshots
+          destination: e2e-snapshots
+      - store_artifacts:
+          path: ~/AppData/Roaming/Nine Chronicles/logs
+          destination: e2e-logs
+
+workflows:
+  build:
+    jobs:
+      # FIXME we should restore this job after fixing system module import problems
+      # - chromatic
