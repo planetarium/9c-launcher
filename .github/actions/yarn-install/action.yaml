@@ -6,6 +6,7 @@ runs:
       uses: actions/cache@v3.3.1
       with:
         key: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
+        path: ".yarn/cache"
         restore-keys: yarn3-packages-{{ arch }}-{{ checksum "yarn.lock" }}
 
     - run: yarn install --immutable
