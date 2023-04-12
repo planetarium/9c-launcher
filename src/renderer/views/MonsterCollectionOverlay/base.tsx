@@ -1,18 +1,18 @@
+import { motion } from "framer-motion";
 import OverlayBase from "src/renderer/components/core/OverlayBase";
 import { keyframes, styled } from "src/renderer/stitches.config";
-import { motion } from "framer-motion";
 
 import background from "src/renderer/resources/collection/bg.png";
-import formImg from "src/renderer/resources/collection/deposit-bg.png";
-import activationButtonImg from "src/renderer/resources/collection/button-activation.png";
 import activationButtonHoverImg from "src/renderer/resources/collection/button-activation-over.png";
-import disabledButtonImg from "src/renderer/resources/collection/button-inactive.png";
-import cancelButtonImg from "src/renderer/resources/collection/button-cancel.png";
+import activationButtonImg from "src/renderer/resources/collection/button-activation.png";
 import cancelButtonHoverImg from "src/renderer/resources/collection/button-cancel-over.png";
-import rewardImg from "src/renderer/resources/collection/reward-bg.png";
-import dotImg from "src/renderer/resources/collection/dot.png";
+import cancelButtonImg from "src/renderer/resources/collection/button-cancel.png";
+import disabledButtonImg from "src/renderer/resources/collection/button-inactive.png";
 import darkTextBg from "src/renderer/resources/collection/dark-text-bg.png";
+import formImg from "src/renderer/resources/collection/deposit-bg.png";
+import dotImg from "src/renderer/resources/collection/dot.png";
 import itemBg from "src/renderer/resources/collection/item-bg.png";
+import rewardImg from "src/renderer/resources/collection/reward-bg.png";
 
 export const theme = {
   colors: {
@@ -147,6 +147,19 @@ export const DepositContent = styled("div", {
         "> sub": {
           color: "#b6aeab",
           fontSize: 24,
+        },
+      },
+    },
+    stacking: {
+      true: {
+        fontSize: 36,
+        backgroundColor: "white",
+        borderRadius: 5,
+        border: "1px solid #ccc",
+        color: "#44271c",
+        "> sub": {
+          color: "#b6aeab",
+          fontSize: 18,
         },
       },
     },
