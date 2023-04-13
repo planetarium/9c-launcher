@@ -147,6 +147,28 @@ export function MonsterCollectionContent({
   const currentRewards = useRewards(levels, currentIndex ?? 0);
   const selectedRewards = useRewards(levels, selectedIndex ?? 0);
 
+  const contentVariant = useMemo(() => {
+    const canvasMain = document.createElement("canvas");
+    const contextMain = canvasMain.getContext("2d");
+
+    const canvasSub = document.createElement("canvas");
+    const contextSub = canvasSub.getContext("2d");
+
+    if (!contextMain || !contextSub) {
+      return "large";
+    }
+
+    contextMain.font = "bold 46px Fira Sans Condensed";
+    contextSub.font = "bold 24px Fira Sans Condensed";
+
+    const width =
+      contextMain.measureText(amount).width +
+      contextSub.measureText(`/${availableNCG.toNumber().toLocaleString()}`)
+        .width;
+
+    return width > 350 ? "small" : "large";
+  }, [amount, availableNCG]);
+
   if (!levels) return null;
 
   return (
@@ -183,7 +205,7 @@ export function MonsterCollectionContent({
           {isEditing ? (
             <>
               <DepositContent
-                stacking
+                stacking={contentVariant}
                 onClick={() => inputRef.current?.focus()}
               >
                 <BareInput
@@ -199,7 +221,7 @@ export function MonsterCollectionContent({
                   max={availableNCG.toNumber()}
                   type="number"
                 />
-                <sub>/{availableNCG}</sub>
+                <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
               </DepositContent>
               <DepositCancelButton
                 type="button"
@@ -224,7 +246,7 @@ export function MonsterCollectionContent({
             <>
               <DepositContent>
                 {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
-                <sub>/{availableNCG.toString()}</sub>
+                <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
               </DepositContent>
               <DepositButton2
                 type="button"

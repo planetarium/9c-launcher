@@ -138,8 +138,9 @@ export const DepositContent = styled("div", {
     bottom: 0,
   },
   variants: {
-    editable: {
-      true: {
+    stacking: {
+      large: {
+        fontSize: 46,
         backgroundColor: "white",
         borderRadius: 5,
         border: "1px solid #ccc",
@@ -149,9 +150,8 @@ export const DepositContent = styled("div", {
           fontSize: 24,
         },
       },
-    },
-    stacking: {
-      true: {
+      small: {
+        lineHeight: "46px",
         fontSize: 36,
         backgroundColor: "white",
         borderRadius: 5,
