@@ -34,7 +34,9 @@ jobs:
 
       - name: Install
         shell: bash
-        run: yarn
+        run: yarn install --immutable
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
       - name: Setup OS variables
         run: bash scripts/configure-artifact.sh ${{ matrix.targetPlatform }}
