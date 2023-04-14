@@ -101,7 +101,6 @@ export async function launcherUpdate(
       });
     } catch (e) {
       win.webContents.send("go to error page", "player", {
-        size: e.size,
         url: "download-binary-failed-disk-error",
       });
 
