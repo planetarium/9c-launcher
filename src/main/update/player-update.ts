@@ -25,7 +25,7 @@ export async function playerUpdate(
       const totalBytes = downloadItem.getTotalBytes();
       const totalKB = totalBytes / 1024;
 
-      if (totalKB < available) {
+      if (totalKB > available) {
         win.webContents.send("go to error page", "player", {
           size: totalBytes,
           url: "download-binary-failed-disk-error",
