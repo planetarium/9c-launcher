@@ -17,11 +17,11 @@ interface ActivationResult {
 export function useActivationStatus(
   usePolling: boolean = false
 ): ActivationResult {
-  const { address } = useLoginSession();
+  const address = useLoginSession()?.address;
 
   const { loading, data, error } = useActivationAddressQuery({
     variables: {
-      address,
+      address: address?.toString(),
     },
     pollInterval: usePolling ? 1000 : undefined,
     skip: !address,

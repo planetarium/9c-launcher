@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { observer } from "mobx-react";
 
-import { useStore } from "src/utils/useStore";
 import { clipboard, ipcRenderer } from "electron";
 import { get as getConfig, NodeInfo } from "src/config";
 import { styled } from "src/renderer/stitches.config";
@@ -22,14 +21,14 @@ const InfoTextStyled = styled("div", {
 });
 
 function InfoText() {
-  const { address } = useLoginSession();
+  const address = useLoginSession()?.address;
   const [node, setNode] = useState<string>("loading");
 
   const debugValue = useMemo(
     () =>
       [
         `APV: ${getConfig("AppProtocolVersion")}`,
-        address && `Account: ${address}`,
+        address && `Account: ${address.toString()}`,
         `Node: ${node}`,
         awsSinkGuid && `Client ID: ${awsSinkGuid}`,
         `Commit: ${GIT_HASH}`,

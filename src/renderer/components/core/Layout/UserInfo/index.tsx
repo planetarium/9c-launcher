@@ -62,7 +62,7 @@ const UserInfoItem = styled(motion.li, {
 });
 
 export default function UserInfo() {
-  const { publicKey, address, account } = useLoginSession();
+  const loginSession = useLoginSession();
   const {
     canClaim,
     tip,
@@ -126,23 +126,23 @@ export default function UserInfo() {
   const gold = useBalance();
 
   const copyAddress = useCallback(() => {
-    if (address) {
-      clipboard.writeText(address);
+    if (loginSession) {
+      clipboard.writeText(loginSession.address.toString());
       toast("Copied!");
     }
-  }, [address]);
+  }, [loginSession]);
 
   const t = useT();
 
   const [isCollectionOpen, setCollectionOpen] = useState<boolean>(false);
 
-  if (account === null) return null;
+  if (!loginSession) return null;
 
   return (
     <UserInfoStyled>
       <UserInfoItem onClick={copyAddress}>
         <AccountBoxIcon />
-        <strong>{address}</strong>
+        <strong>{loginSession.address.toString()}</strong>
         <FileCopyIcon />
       </UserInfoItem>
       <UserInfoItem>
@@ -165,11 +165,11 @@ export default function UserInfo() {
           onClose={() => setOpenDialog(false)}
           tip={tip}
           onConfirm={(avatar) => {
-            if (publicKey) {
+            if (loginSession.publicKey) {
               claimedAvatar.current = avatar;
               requestClaimStakeRewardTx({
                 variables: {
-                  publicKey,
+                  publicKey: loginSession.publicKey.toHex("uncompressed"),
                   avatarAddress: avatar.address.replace(/^0x/, ""),
                 },
               });

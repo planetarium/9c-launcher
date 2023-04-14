@@ -12,7 +12,6 @@ import {
   CollectionSheetItem,
   CollectionItemTier,
 } from "src/interfaces/collection";
-import { useStore } from "../useStore";
 import { mapSheetResponseToSheet } from "./internal";
 import { useLoginSession } from "../useLoginSession";
 
@@ -28,10 +27,10 @@ const getTotalDepositedGold = (
 };
 
 export function useMonsterCollection() {
-  const { address } = useLoginSession();
+  const address = useLoginSession()?.address;
   const commonQuery = {
     variables: {
-      address,
+      address: address?.toString(),
     },
     skip: !address,
   };

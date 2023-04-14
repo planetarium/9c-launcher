@@ -9,13 +9,13 @@ import { useStore } from "./useStore";
 
 export function useActivate(): ActivationFunction {
   const tx = useTx();
-  const { address, publicKey } = useLoginSession();
+  const loginSession = useLoginSession();
   const { activationKey } = useStore("account");
 
   const activate: ActivationFunction = async () => {
     let step: ActivationStep = "getActivationInfo";
 
-    if (!(address && publicKey)) {
+    if (!loginSession) {
       return {
         result: false,
         error: {
@@ -47,7 +47,7 @@ export function useActivate(): ActivationFunction {
 
       step = "getActivationAddress";
       const { data: activationData } = await sdks.ActivationAddress({
-        address,
+        address: loginSession.address.toString(),
       });
 
       if (activationData.activationStatus.addressActivated) {
@@ -63,7 +63,7 @@ export function useActivate(): ActivationFunction {
       step = "createActivateAccountTx";
       const { data: activateData } = await sdks.ActivateAccount({
         activationCode: activationKey,
-        publicKey,
+        publicKey: loginSession.publicKey.toHex("uncompressed"),
       });
 
       step = "stageTx";

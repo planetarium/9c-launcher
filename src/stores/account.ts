@@ -1,48 +1,110 @@
 import {
-  decipherV3,
-  getAccountFromFile,
-  listKeystoreFiles,
-  rawPrivateKeyToV3,
-  sanitizeKeypath,
-  getDefaultKeystorePath,
-  V3Keystore,
-} from "@planetarium/account-local";
-import { SigningKey, Wallet } from "ethers";
-import { createAccount } from "@planetarium/account-raw";
-import { Account, deriveAddress } from "@planetarium/sign";
+  Address,
+  ExportableAccount,
+  PublicKey,
+  RawPrivateKey,
+} from "@planetarium/account";
+import {
+  KeyId,
+  PassphraseEntry,
+  Web3Account,
+  Web3KeyStore,
+  getDefaultWeb3KeyStorePath,
+} from "@planetarium/account-web3-secret-storage";
 // FIXME these imports cause matter since file-system related features aren't
 // possible on some targets (e.g., browser). thus we should extract them from
 // this store to the dedicated backend, and inject that into this.
 import fs from "fs";
 import path from "path";
-import { action, observable, makeObservable } from "mobx";
-import { Address, ProtectedPrivateKey } from "src/interfaces/keystore";
-import { V3toRaw } from "src/utils/web3key";
-import { utils } from "@noble/secp256k1";
+import { action, observable, makeObservable, computed } from "mobx";
+import { app } from "@electron/remote";
 
-interface ILoginSession {
-  account: Account;
-  publicKey: string;
-  address: string;
-  privateKey: string;
+export interface ILoginSession {
+  address: Address;
+  publicKey: PublicKey;
+  privateKey: RawPrivateKey;
 }
 
-export interface IAccountStore {
-  keyring: ProtectedPrivateKey[];
-  activationKey: string;
-  loginSession: ILoginSession | null;
+export async function getKeyStorePath(): Promise<string> {
+  const keyStorePath = getDefaultWeb3KeyStorePath();
+
+  if (process.platform === "darwin") {
+    // macOS: Migrate the keystore from the legacy path to the new path.
+    //   legacy path: $HOME/Library/Application Support/planetarium/keystore
+    //   new path:    $XDG_DATA_HOME/planetarium/keystore
+    const legacyPath = path.join(
+      app.getPath("appData"),
+      "planetarium",
+      "keystore"
+    );
+
+    // If the legacy keystore directory exists but is already migrated,
+    // just use the new keystore directory:
+    try {
+      await fs.promises.stat(path.join(legacyPath, "__MIGRATED__"));
+      return keyStorePath;
+    } catch (e) {
+      if (typeof e !== "object" || e.code !== "ENOENT") throw e;
+    }
+
+    let dir: fs.Dir;
+    try {
+      dir = await fs.promises.opendir(legacyPath);
+    } catch (e) {
+      if (typeof e === "object" && e.code === "ENOENT") {
+        return keyStorePath;
+      }
+
+      throw e;
+    }
+
+    const pattern =
+      /^(?:UTC--([0-9]{4}-[0-9]{2}-[0-9]{2})T([0-9]{2}-[0-9]{2}-[0-9]{2})Z--)?([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})(?:.json)?$/i;
+    for await (const dirEntry of dir) {
+      if (!dirEntry.isFile()) continue;
+      const match = pattern.exec(dirEntry.name);
+      if (match === null) continue;
+      await fs.promises.copyFile(
+        path.join(legacyPath, dirEntry.name),
+        path.join(keyStorePath, dirEntry.name)
+      );
+    }
+
+    // Mark the keystore as migrated:
+    await fs.promises.writeFile(
+      path.join(legacyPath, "__MIGRATED__"),
+      `All key files in this directory are migrated to the new path.
+This file is used to prevent the keystore from being migrated again.
+See also: ${keyStorePath}
+Migrated at: ${new Date().toISOString()}\n`
+    );
+  }
+
+  return keyStorePath;
 }
 
-export default class AccountStore implements IAccountStore {
-  private _privateKeyToRecovery: Buffer | null = null;
+export default class AccountStore {
+  private _privateKeyToRecovery: RawPrivateKey | null = null;
 
-  // Referenced mobxjs/mobx#669-comments
-  // https://git.io/JJv8j
-  @observable
-  public readonly keyring = observable<ProtectedPrivateKey>([]);
+  async getKeyStore(passphrase: string | undefined): Promise<Web3KeyStore> {
+    const passphraseEntry: PassphraseEntry = {
+      authenticate(keyId: string, firstAttempt: boolean): Promise<string> {
+        if (passphrase === undefined) throw new Error("No passphrase given.");
+        if (firstAttempt) return Promise.resolve(passphrase);
+        throw new Error("Incorrect passphrase.");
+      },
+      configurePassphrase(): Promise<string> {
+        if (passphrase === undefined) throw new Error("No passphrase given.");
+        return Promise.resolve(passphrase);
+      },
+    };
+    return new Web3KeyStore({ passphraseEntry, path: await getKeyStorePath() });
+  }
 
-  @observable
-  public isLogin: boolean = false;
+  @computed
+  public get isLogin(): boolean {
+    return this.loginSession != null;
+  }
 
   @observable
   public activationKey: string = "";
@@ -50,76 +112,55 @@ export default class AccountStore implements IAccountStore {
   @observable
   public loginSession: ILoginSession | null = null;
 
+  @observable
+  public addresses: Address[] = [];
+
   constructor() {
+    this.getKeyStore(undefined).then(async (keyStore) => {
+      for await (const keyMetadata of keyStore.list()) {
+        const address = keyMetadata.metadata.address;
+        if (address == null) continue;
+        this.addresses.push(address);
+      }
+    });
     makeObservable(this);
-    this.setKeys(this.listKeyFiles());
   }
 
   @action
-  login = async (account: Account, password: string) => {
-    const bs = await account.getPublicKey(false);
-    const address = await deriveAddress(account);
-
+  login = async (account: ExportableAccount, password: string) => {
+    const privateKey = await account.exportPrivateKey();
+    const publicKey = await privateKey.getPublicKey();
     this.loginSession = {
-      account,
-      publicKey: utils.bytesToHex(bs),
-      address,
-      privateKey: (
-        await this.loadPrivateKeyFromAddress(address, password)
-      ).toString("hex"),
+      privateKey,
+      publicKey,
+      address: Address.deriveFrom(publicKey),
     };
   };
 
-  @action
-  popKey = () => {
-    if (this.keyring.length < 0) return;
-    return this.keyring.pop();
-  };
-
-  @action
-  addKey = (protectedPrivateKey: ProtectedPrivateKey) => {
-    this.keyring.push(protectedPrivateKey);
-  };
-
-  @action
-  removeKey = (protectedPrivateKey: ProtectedPrivateKey) => {
-    fs.rmSync(protectedPrivateKey.path, { force: true });
-    //Is Key Object comparable?
-    this.keyring.remove(protectedPrivateKey);
-  };
-
-  @action
   getAccount = async (
-    address: Address,
+    address: string | Address,
     passphrase: string
-  ): Promise<Account> => {
-    const key = await this.findKeyByAddress(address);
-    // Padding the existing key with the short length, created by Libplanet's previous bug.
-    // see also: https://github.com/planetarium/9c-launcher/issues/2107
-    await this.padShortKey(key, passphrase);
-    return getAccountFromFile(key.keyId, passphrase);
+  ): Promise<RawPrivateKey | undefined> => {
+    const keyId = await this.findKeyIdByAddress(address);
+    if (keyId == null) return undefined;
+    const keyStore = await this.getKeyStore(passphrase);
+    const result = await keyStore.get(keyId);
+    if (result.result === "keyNotFound") return undefined;
+    else if (result.result === "error") {
+      console.error(result.message);
+      return undefined;
+    }
+    return await result.account.exportPrivateKey();
   };
 
   @action
-  removeKeyByAddress = (address: Address) => {
-    this.keyring.forEach((key) => {
-      if (
-        key.address.replace("0x", "").toLowerCase() ===
-        address.replace("0x", "").toLowerCase()
-      ) {
-        this.removeKey(key);
-      }
-    });
-  };
-
-  @action
-  setKeys = (keys: ProtectedPrivateKey[]) => {
-    this.keyring.replace(keys);
-  };
-
-  @action
-  setLoginStatus = (status: boolean) => {
-    this.isLogin = status;
+  removeKeyByAddress = async (address: Address) => {
+    const keyId = await this.findKeyIdByAddress(address);
+    if (keyId != null) {
+      const keyStore = await this.getKeyStore(undefined);
+      await keyStore.delete(keyId);
+      this.addresses = this.addresses.filter((a) => !a.equals(address));
+    }
   };
 
   @action
@@ -127,157 +168,97 @@ export default class AccountStore implements IAccountStore {
     this.activationKey = activationKey;
   };
 
-  @action
-  listKeyFiles = (): ProtectedPrivateKey[] => {
-    try {
-      return listKeystoreFiles().map((keyId: string) => {
-        const key: V3Keystore = JSON.parse(
-          fs.readFileSync(path.resolve(sanitizeKeypath(), keyId), "utf8")
-        );
-        const ppk: ProtectedPrivateKey = {
-          keyId: key.id,
-          address: key.address,
-          path: path.resolve(sanitizeKeypath(), keyId),
-        };
-        return ppk;
-      });
-    } catch (e) {
-      console.error(e);
-      return [];
-    }
+  isEmpty = async (): Promise<boolean> => {
+    const keyStore = await this.getKeyStore(undefined);
+    for await (const _ of keyStore.list()) return false;
+    return true;
   };
 
-  @action
-  findKeyByAddress = (address: Address): Promise<ProtectedPrivateKey> => {
-    return new Promise<ProtectedPrivateKey>((resolve, reject) => {
-      const key = this.keyring.find((key) => {
-        return (
-          key.address.replace("0x", "") ===
-          address.replace("0x", "").toLowerCase()
-        );
-      });
-      if (key !== undefined) {
-        resolve(key);
-      } else {
-        reject(
-          Error(`No key file found matching with provided address: ${address}`)
-        );
+  findKeyIdByAddress = async (
+    address: string | Address
+  ): Promise<KeyId | undefined> => {
+    if (typeof address === "string") {
+      try {
+        address = Address.fromHex(address, true);
+      } catch (e) {
+        // Invalid address
+        return undefined;
       }
-    });
+    }
+    const keyStore = await this.getKeyStore(undefined);
+    for await (const entry of keyStore.list()) {
+      if (entry.metadata.address?.equals(address)) return entry.keyId;
+    }
+    return undefined;
   };
 
   //TODO: This function solely depending on behavior that
   //addV3 push to end of the array, we need to fix that.
   @action
-  importRaw = async (privateKey: string, passphrase: string) => {
-    const keystorePath = getDefaultKeystorePath(process.platform);
-
-    if (!fs.existsSync(keystorePath)) {
-      await fs.promises.mkdir(keystorePath, { recursive: true });
+  importRaw = async (
+    privateKeyHex: string | RawPrivateKey,
+    passphrase: string
+  ): Promise<Web3Account> => {
+    const keyStore = await this.getKeyStore(passphrase);
+    const privateKey =
+      typeof privateKeyHex === "string"
+        ? RawPrivateKey.fromHex(privateKeyHex)
+        : privateKeyHex;
+    const result = await keyStore.import(privateKey);
+    if (result.result === "error") {
+      throw new Error(result.message);
     }
-
-    const v3 = await rawPrivateKeyToV3(privateKey, passphrase);
-
-    if (v3 !== undefined) {
-      const filePath = path.resolve(
-        keystorePath,
-        [
-          "UTC--",
-          new Date().toJSON().replace(/:/g, "-").slice(0, -5),
-          "Z",
-          "--",
-          v3.id,
-        ].join("")
+    const account = await keyStore.get(result.keyId);
+    if (account.result !== "success") {
+      // Must be unreachable
+      throw new Error(
+        account.result === "error"
+          ? account.message
+          : "Key not found; something went wrong"
       );
-      await fs.promises.writeFile(filePath, JSON.stringify(v3));
-      this.addKey({
-        keyId: v3.id,
-        address: v3.address,
-        path: filePath,
-      });
-      return await getAccountFromFile(v3.id, passphrase);
-    } else {
-      throw Error("Importing raw private key to V3 file failed.");
     }
+    this.addresses.push(await account.account.getAddress());
+    return account.account;
   };
 
-  @action
-  isValidPrivateKey = (privateKey: string): boolean => {
+  isValidPrivateKey = (privateKeyHex: string): boolean => {
     try {
-      createAccount(privateKey);
+      RawPrivateKey.fromHex(privateKeyHex);
     } catch (e) {
       return false;
     }
     return true;
   };
 
-  loadPrivateKeyFromAddress = async (
-    address: Address,
-    password: string
-  ): Promise<Buffer> => {
-    const key = await this.findKeyByAddress(address);
-    return decipherV3(
-      await fs.promises.readFile(key.path, "utf8"),
-      password
-    ).getPrivateKey();
-  };
-
-  beginRecovery = (privateKey: string) => {
+  beginRecovery = (privateKey: string | RawPrivateKey) => {
     if (this._privateKeyToRecovery) {
       throw new Error("There is another recovery in progress.");
     }
 
-    this._privateKeyToRecovery = Buffer.from(privateKey, "hex");
+    this._privateKeyToRecovery =
+      typeof privateKey === "string"
+        ? RawPrivateKey.fromHex(privateKey)
+        : privateKey;
   };
 
-  completeRecovery = async (passphrase: string) => {
+  completeRecovery = async (passphrase: string): Promise<Web3Account> => {
     if (!this._privateKeyToRecovery) {
       throw new Error("There is no recovery in progress.");
     }
 
+    const address = await Address.deriveFrom(this._privateKeyToRecovery);
+    const existingKeyId = await this.findKeyIdByAddress(address);
     const account = await this.importRaw(
-      this._privateKeyToRecovery.toString("hex"),
+      this._privateKeyToRecovery,
       passphrase
     );
-    const address = await deriveAddress(account);
-    if (this.keyring.length <= 0) {
-      throw new Error("There's no key in keyring despite we just generated.");
+
+    if (existingKeyId != null) {
+      const keyStore = await this.getKeyStore(undefined);
+      await keyStore.delete(existingKeyId);
     }
 
-    const importedKey = this.popKey();
-    this.removeKeyByAddress(address);
-    this.addKey(importedKey!);
-
-    // Wipe Buffer
-    this._privateKeyToRecovery.fill(0);
     this._privateKeyToRecovery = null;
     return account;
-  };
-
-  // This function Basically Opens V3, Pad If Key Is Short, Switch V3 File Content Seamlessly With Padded Privkey.
-  // 1. Decipher V3, Length Check.
-  // 2. If Key Is Short, Zero-Pad Left Of Deciphered Key To Fill 32 byte.
-  // 3. Generate New V3 With Padded Key and Previous Passphrase,
-  // 4. Modify UUID of Newly Generated V3 to Previous UUID.
-  // 5. Write Newly Padded, Same Passworded V3 to Original Path.
-  padShortKey = async (v: ProtectedPrivateKey, passphrase: string) => {
-    const key = V3toRaw(await fs.promises.readFile(v.path, "utf8"), passphrase);
-    if (key.length < 32) {
-      fs.promises.writeFile(
-        v.path,
-        (
-          await new Wallet(
-            new SigningKey(
-              Buffer.concat([Buffer.alloc(32 - key.length), key], 32)
-            )
-          ).encrypt(passphrase)
-        )
-          .replace(/"id":"[0-9A-z-]*"/, `"id":"${v.keyId}"`)
-          .replace("Crypto", "crypto")
-      );
-      // Wipe Buffer for security concerns.
-      // See also: https://github.com/planetarium/9c-launcher/pull/2112#discussion_r1128982145
-      key.fill(0);
-    }
   };
 }

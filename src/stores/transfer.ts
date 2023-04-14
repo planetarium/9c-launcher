@@ -4,7 +4,8 @@ import { sleep } from "src/utils";
 import { GraphQLClient } from "graphql-request";
 import { get as getConfig } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
-import { signTransaction, Account } from "@planetarium/sign";
+import { signTransactionHex } from "src/utils/sign";
+import { Account } from "@planetarium/account";
 
 type GraphQLSDK = ReturnType<typeof getSdk>;
 
@@ -21,14 +22,12 @@ export interface ITransferStore {
     recipient: string,
     amount: Decimal,
     memo: string,
-    publickey: string,
     account: Account
   ) => Promise<string>;
   swapToWNCG: (
     sender: string,
     recipient: string,
     amount: Decimal,
-    publickey: string,
     account: Account
   ) => Promise<string>;
   confirmTransaction: (
@@ -90,7 +89,6 @@ export default class TransferStore implements ITransferStore {
     recipient: string,
     amount: Decimal,
     memo: string,
-    publickey: string,
     account: Account
   ): Promise<TxId> => {
     if (sender.startsWith("0x")) {
@@ -106,7 +104,7 @@ export default class TransferStore implements ITransferStore {
 
     return this.graphqlSdk
       .transferAsset({
-        publicKey: publickey,
+        publicKey: (await account.getPublicKey()).toHex("uncompressed"),
         sender: sender,
         recipient: recipient,
         amount: amount.toString(),
@@ -119,7 +117,7 @@ export default class TransferStore implements ITransferStore {
       .then(
         (v) =>
           v.data.actionTxQuery.transferAsset &&
-          signTransaction(v.data.actionTxQuery.transferAsset, account)
+          signTransactionHex(v.data.actionTxQuery.transferAsset, account)
       )
       .catch((e) => {
         console.error(e);
@@ -142,7 +140,6 @@ export default class TransferStore implements ITransferStore {
     sender: string,
     recipient: string,
     amount: Decimal,
-    publickey: string,
     account: Account
   ): Promise<TxId> => {
     return await this.transferAsset(
@@ -150,7 +147,6 @@ export default class TransferStore implements ITransferStore {
       this.bridgeAddress,
       amount,
       recipient,
-      publickey,
       account
     );
   };

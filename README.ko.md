@@ -3,6 +3,7 @@
 ## 개요
 
 ### 이 리드미는 굉장히 오래전 내용이며 수정되지 않아 현재 상황을 반영하지 못합니다!
+
 [대신 위키를 읽어주세요!](https://github.com/planetarium/9c-launcher/wiki)
 
 Nine Chronicles를 구동하기 위한 일렉트론 기반의 멀티플랫폼 런처입니다.
@@ -42,7 +43,7 @@ yarn
 ./dist
 |   +-- 9c.(exe|app) // 9C Unity Player
 |   +-- publish // 9C Headless (Standalone)
-|   |   +-- Libpalnet.dll
+|   |   +-- Libplanet.dll
 |   |   +-- Grpc.Core.dll
 |   |   +-- ...
 |   |   +-- NineChronicles.Standalone.Executable(.exe)

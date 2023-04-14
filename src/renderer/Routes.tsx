@@ -26,9 +26,9 @@ const Redirector = observer(() => {
 
   useEffect(() => {
     history.replace("/login");
-    if (account.listKeyFiles().length < 1) {
-      history.replace("/welcome");
-    }
+    account.isEmpty().then((isEmpty: boolean) => {
+      if (isEmpty) history.replace("/welcome");
+    });
   });
   return null;
 });

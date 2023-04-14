@@ -6,7 +6,6 @@ import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { configStore, userConfigStore } from "src/config";
 import type { IConfig } from "src/interfaces/config";
 import { T } from "src/renderer/i18n";
-import path from "path";
 import log from "electron-log";
 import { shell, ipcRenderer } from "electron";
 import { app } from "@electron/remote";
@@ -28,6 +27,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import UpdateIcon from "@material-ui/icons/Update";
 import { OverlayProps } from "src/utils/types";
 import toast from "react-hot-toast";
+import { getKeyStorePath } from "src/stores/account";
 
 const SCROLLBAR_SIZE = 10;
 
@@ -93,9 +93,10 @@ type Languages = Array<Record<"code" | "name" | "localized_name", string>>;
 const transifexTags = "v2/configuration";
 
 function handleOpenKeyStorePath() {
-  const openpath = path.join(app.getPath("appData"), "planetarium", "keystore");
-  console.log(`Open keystore folder. ${openpath}`);
-  shell.showItemInFolder(openpath);
+  getKeyStorePath().then((keyStorPath) => {
+    console.log(`Open keystore folder. ${keyStorPath}`);
+    shell.showItemInFolder(keyStorPath);
+  });
 }
 
 function handleOpenLogPath() {
