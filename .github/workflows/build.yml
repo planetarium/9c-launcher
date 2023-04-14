@@ -71,6 +71,7 @@ jobs:
           if-no-files-found: error
 
       - name: upload
+        if: github.event_name == 'push'
         shell: bash
         run: |
           aws s3 cp "pack-dist/$ARTIFACT" "s3://9c-artifacts/9c-launcher/${{ github.sha }}/$ARTIFACT"
