@@ -1,6 +1,6 @@
 import React from "react";
 import { StateFrom } from "xstate";
-import type machine from "src/renderer/machines/updateMachine";
+import type { updateMachine } from "src/renderer/machines/updateMachine";
 import { styled } from "../../stitches.config";
 import background from "src/renderer/resources/bg-character.png";
 import StatusBar from "./StatusBar";
@@ -13,7 +13,7 @@ import WindowControls from "src/renderer/components/core/Layout/WindowControls";
 const transifexTags = "v2/update";
 
 interface UpdateViewProps {
-  state: StateFrom<typeof machine>;
+  state: StateFrom<typeof updateMachine>;
   progress?: number;
 }
 
@@ -31,7 +31,7 @@ const FixedStatusBar = styled(StatusBar, {
   left: 50,
 });
 
-function getMessage(state: StateFrom<typeof machine>): string {
+function getMessage(state: StateFrom<typeof updateMachine>): string {
   if (state.matches({ launcherUpdate: "download" })) {
     return t("Downloading the new version launcher...", {
       _tags: transifexTags,

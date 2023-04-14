@@ -10,6 +10,7 @@ import fs from "fs";
 import { spawn as spawnPromise } from "child-process-promise";
 import { IUpdate } from "./check";
 import { CONFIG_FILE_PATH } from "src/config";
+import { getAvailableDiskSpace } from "src/utils/file";
 
 export async function launcherUpdate(
   update: IUpdate,
@@ -19,8 +20,23 @@ export async function launcherUpdate(
 
   win.webContents.send("update download started");
   // TODO: It would be nice to have a continuous download feature.
+  const available = await getAvailableDiskSpace(app.getPath("temp"));
+
   const options: ElectronDLOptions = {
     onStarted: (downloadItem: DownloadItem) => {
+      const totalBytes = downloadItem.getTotalBytes();
+      const totalKB = totalBytes / 1024;
+
+      if (totalKB > available) {
+        win.webContents.send("go to error page", "launcher", {
+          size: totalBytes,
+          url: "download-binary-failed-disk-error",
+        });
+        downloadItem.cancel();
+
+        return;
+      }
+
       console.log("Starts to download:", downloadItem);
     },
     onProgress: (status: IDownloadProgress) => {
@@ -75,13 +91,22 @@ export async function launcherUpdate(
     // Unzip ZIP
     console.log("Start to extract the zip archive", dlPath, "to", tempDir);
 
-    await extractZip(dlPath, {
-      dir: tempDir,
-      onEntry: (_, zipfile) => {
-        const progress = zipfile.entriesRead / zipfile.entryCount;
-        win.webContents.send("update extract progress", progress);
-      },
-    });
+    try {
+      await extractZip(dlPath, {
+        dir: tempDir,
+        onEntry: (_, zipfile) => {
+          const progress = zipfile.entriesRead / zipfile.entryCount;
+          win.webContents.send("update extract progress", progress);
+        },
+      });
+    } catch (e) {
+      win.webContents.send("go to error page", "player", {
+        size: e.size,
+        url: "download-binary-failed-disk-error",
+      });
+
+      return;
+    }
     win.webContents.send("update extract complete");
     console.log("The zip archive", dlPath, "has extracted to", tempDir);
     win.webContents.send("update copying progress");
@@ -112,8 +137,11 @@ export async function launcherUpdate(
         { capture: ["stdout", "stderr"] }
       );
     } catch (e) {
-      console.error(`${e}:\n`, e.stderr);
-      throw e;
+      win.webContents.send("go to error page", "player", {
+        url: "download-binary-failed-disk-error",
+      });
+
+      return;
     }
     win.webContents.send("update extract complete");
     win.webContents.send("update copying progress");

@@ -1,7 +1,6 @@
 import { DownloadItem, app } from "electron";
 import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
-import { exec } from "child_process";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
 import fs from "fs";
 import extractZip from "extract-zip";
@@ -9,34 +8,7 @@ import { spawn as spawnPromise } from "child-process-promise";
 import { IUpdate } from "./check";
 import { configStore, playerPath, PLAYER_METAFILE_VERSION } from "src/config";
 import { createVersion } from "./metafile";
-
-type OSPlatform = "darwin" | "linux" | "win32";
-
-function getAvailableDiskSpace(path: string = "/"): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const platform = process.platform as OSPlatform;
-    let cmd: string;
-    if (platform === "darwin" || platform === "linux") {
-      cmd = `df -k ${path} | tail -1 | awk '{print $4}'`;
-    } else if (platform === "win32") {
-      cmd = `for /f "skip=1" %p in ('wmic logicaldisk get FreeSpace^,Size^,Caption /format:list ^| find /i "${path}"') do @echo %p`;
-    } else {
-      return reject(new Error(`Unsupported platform: ${platform}`));
-    }
-
-    exec(cmd, (err, stdout, stderr) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stderr) {
-        return reject(new Error(stderr));
-      }
-
-      const available = parseInt(stdout.trim(), 10);
-      resolve(available);
-    });
-  });
-}
+import { getAvailableDiskSpace } from "src/utils/file";
 
 export async function playerUpdate(
   update: IUpdate,
@@ -53,11 +25,13 @@ export async function playerUpdate(
       const totalBytes = downloadItem.getTotalBytes();
       const totalKB = totalBytes / 1024;
 
-      if (totalKB > available) {
-        downloadItem.cancel();
-        win.webContents.send("go to error page", "disk-space", {
+      if (totalKB < available) {
+        win.webContents.send("go to error page", "player", {
           size: totalBytes,
+          url: "download-binary-failed-disk-error",
         });
+        downloadItem.cancel();
+
         return;
       }
 
@@ -115,15 +89,12 @@ export async function playerUpdate(
         },
       });
     } catch (e) {
-      if (e.code === "ENOSPC") {
-        win.webContents.send("go to error page", "disk-space", {
-          size: e.size,
-        });
-        return;
-      }
+      win.webContents.send("go to error page", "player", {
+        size: e.size,
+        url: "download-binary-failed-disk-error",
+      });
 
-      console.error(`${e}:\n`, e.stderr);
-      throw e;
+      return;
     }
   } else if (process.platform == "darwin" || process.platform == "linux") {
     // untar .tar.{gz,bz2}
@@ -144,7 +115,10 @@ export async function playerUpdate(
         { capture: ["stdout", "stderr"] }
       );
     } catch (e) {
-      win.webContents.send("go to error page", "disk-space", { size: 0 });
+      win.webContents.send("go to error page", "player", {
+        url: "download-binary-failed-disk-error",
+      });
+
       return;
     }
     console.log("The tarball archive", dlPath, "has extracted to ", playerPath);

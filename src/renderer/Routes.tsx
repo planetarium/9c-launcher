@@ -1,5 +1,6 @@
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
+import { useActor } from "@xstate/react";
 import { Redirect, Route, Switch, useHistory } from "react-router";
 import { useStore } from "src/utils/useStore";
 import ErrorView from "./views/ErrorView";
@@ -17,6 +18,7 @@ import {
 } from "./views/RegisterView";
 import RevokeView from "./views/RevokeView";
 import WelcomeView from "./views/WelcomeView";
+import { updateService } from "src/renderer/machines/updateMachine";
 
 const Redirector = observer(() => {
   const account = useStore("account");
@@ -32,6 +34,16 @@ const Redirector = observer(() => {
 });
 
 export default function Routes() {
+  const history = useHistory();
+
+  const [state] = useActor(updateService);
+
+  useEffect(() => {
+    if (state.matches("error") && state.context.data?.url) {
+      history.push(`/error/${state.context.data.url}`);
+    }
+  }, [history, state]);
+
   return (
     <Switch>
       <Route path="/login" component={LoginView} />
