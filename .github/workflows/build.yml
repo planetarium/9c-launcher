@@ -8,8 +8,8 @@ on:
       - rc-v*
       - release/*
       - hotfix/*
-    pull_request:
-      types: [ready_for_review, opened, reopened, auto_merge_enabled]
+  pull_request:
+    types: [ready_for_review, opened, reopened, auto_merge_enabled]
 
 jobs:
   build:
