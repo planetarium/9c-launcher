@@ -26,6 +26,8 @@ import monster2Img from "src/renderer/resources/collection/monster-2.png";
 import monster3Img from "src/renderer/resources/collection/monster-3.png";
 import monster4Img from "src/renderer/resources/collection/monster-4.png";
 import monster5Img from "src/renderer/resources/collection/monster-5.png";
+import monster6Img from "src/renderer/resources/collection/monster-6.png";
+import monster7Img from "src/renderer/resources/collection/monster-7.png";
 import itemMetadata from "src/utils/monsterCollection/items";
 
 import systemRewards from "src/utils/monsterCollection/systemRewards";
@@ -61,6 +63,8 @@ const images = [
   monster3Img,
   monster4Img,
   monster5Img,
+  monster6Img,
+  monster7Img,
 ];
 
 type LevelList =
@@ -102,7 +106,7 @@ export function MonsterCollectionContent({
   current: {
     stateQuery: { stakeState },
   },
-  isEditing: initalEditing,
+  isEditing: initialEditing,
   currentNCG,
   onChangeAmount,
   children,
@@ -110,7 +114,7 @@ export function MonsterCollectionContent({
   tip,
   isLoading,
 }: MonsterCollectionOverlayProps) {
-  const [isEditing, setIsEditing] = useState(initalEditing ?? false);
+  const [isEditing, setIsEditing] = useState(initialEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [amount, setAmount] = useState("0");
   const [openedAlert, setIsAlertOpen] = useState<Alerts | null>(null);

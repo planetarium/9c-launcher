@@ -1,12 +1,5 @@
-import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
-import { MonsterCollectionOverlayBase } from "./base";
-import { MonsterCollectionContent } from "./MonsterCollectionContent";
-import { OverlayProps } from "src/utils/types";
-import { sleep } from "src/utils";
-import { useBalance } from "src/utils/useBalance";
-import { useStore } from "src/utils/useStore";
-import { useTx } from "src/utils/useTx";
+import React, { useEffect, useState } from "react";
 import {
   TxStatus,
   useCurrentStakingQuery,
@@ -15,10 +8,16 @@ import {
   useStakingSheetQuery,
   useTransactionResultLazyQuery,
 } from "src/generated/graphql";
-import Migration from "./Migration";
-import { useTip } from "src/utils/useTip";
+import { sleep } from "src/utils";
 import { trackEvent } from "src/utils/mixpanel";
+import { OverlayProps } from "src/utils/types";
+import { useBalance } from "src/utils/useBalance";
 import { useLoginSession } from "src/utils/useLoginSession";
+import { useTip } from "src/utils/useTip";
+import { useTx } from "src/utils/useTx";
+import Migration from "./Migration";
+import { MonsterCollectionContent } from "./MonsterCollectionContent";
+import { MonsterCollectionOverlayBase } from "./base";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const { address, publicKey } = useLoginSession();
