@@ -49,7 +49,7 @@ function createRenderConfig(isDev) {
     output: {
       filename: isDev ? "[name].js" : "[name].[contenthash].js",
       assetModuleFilename: "assets/[hash][ext][query]",
-      path: path.join(__dirname, "dist"),
+      path: path.join(__dirname, "build"),
       publicPath: isDev ? "/" : undefined,
       clean: {
         keep: /^9c$|\.(?:exe|dll|json|app|so|debug)$|(?:9c_Data|MonoBleedingEdge|publish|9c.app)[\\\/]/,
@@ -146,7 +146,7 @@ function createRenderConfig(isDev) {
 
     devServer: isDev
       ? {
-          contentBase: path.join(__dirname, "dist"),
+          contentBase: path.join(__dirname, "build"),
           compress: true,
           port: 9000,
           historyApiFallback: true,
@@ -222,7 +222,7 @@ function createMainConfig(isDev) {
 
     output: {
       filename: "[name].js",
-      path: path.join(__dirname, "dist"),
+      path: path.join(__dirname, "build"),
     },
 
     module: {
