@@ -8,6 +8,7 @@ import { spawn as spawnPromise } from "child-process-promise";
 import { IUpdate } from "./check";
 import { configStore, playerPath, PLAYER_METAFILE_VERSION } from "src/config";
 import { createVersion } from "./metafile";
+import { getAvailableDiskSpace } from "src/utils/file";
 
 export async function playerUpdate(
   update: IUpdate,
@@ -16,9 +17,24 @@ export async function playerUpdate(
   console.log("Start player update", update.projects.player);
   win.webContents.send("update player download started");
 
+  const available = await getAvailableDiskSpace(app.getPath("temp"));
+
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {
     onStarted: (downloadItem: DownloadItem) => {
+      const totalBytes = downloadItem.getTotalBytes();
+      const totalKB = totalBytes / 1024;
+
+      if (totalKB > available) {
+        win.webContents.send("go to error page", "player", {
+          size: totalBytes,
+          url: "download-binary-failed-disk-error",
+        });
+        downloadItem.cancel();
+
+        return;
+      }
+
       console.log("[player] Starts to download:", downloadItem);
     },
     onProgress: (status: IDownloadProgress) => {
@@ -64,13 +80,21 @@ export async function playerUpdate(
       playerPath
     );
 
-    await extractZip(dlPath, {
-      dir: playerPath,
-      onEntry: (_, zipfile) => {
-        const progress = zipfile.entriesRead / zipfile.entryCount;
-        win.webContents.send("update player extract progress", progress);
-      },
-    });
+    try {
+      await extractZip(dlPath, {
+        dir: playerPath,
+        onEntry: (_, zipfile) => {
+          const progress = zipfile.entriesRead / zipfile.entryCount;
+          win.webContents.send("update player extract progress", progress);
+        },
+      });
+    } catch (e) {
+      win.webContents.send("go to error page", "player", {
+        url: "download-binary-failed-disk-error",
+      });
+
+      return;
+    }
   } else if (process.platform == "darwin" || process.platform == "linux") {
     // untar .tar.{gz,bz2}
     const lowerFname = dlFname.toLowerCase();
@@ -90,8 +114,11 @@ export async function playerUpdate(
         { capture: ["stdout", "stderr"] }
       );
     } catch (e) {
-      console.error(`${e}:\n`, e.stderr);
-      throw e;
+      win.webContents.send("go to error page", "player", {
+        url: "download-binary-failed-disk-error",
+      });
+
+      return;
     }
     console.log("The tarball archive", dlPath, "has extracted to ", playerPath);
   } else {

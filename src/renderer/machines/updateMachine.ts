@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import { assign, createMachine } from "xstate";
+import { assign, createMachine, interpret } from "xstate";
 import { invokeIpcEvent } from "src/utils/ipcEvent";
 
 type MachineEvent =
@@ -8,15 +8,18 @@ type MachineEvent =
   | { type: "LAUNCHER_DOWNLOAD" }
   | { type: "EXTRACT" }
   | { type: "COPY" }
-  | { type: "DONE" };
+  | { type: "DONE" }
+  | { type: "ERROR"; error: string; data?: any };
 
 interface MachineContext {
+  error?: string;
+  data?: any;
   progress?: number;
 }
 
 type UpdateMachineState =
   | {
-      value: "download" | "extract";
+      value: "download" | "extract" | "error";
       context: Required<MachineContext>;
     }
   | {
@@ -112,10 +115,15 @@ const launcherUpdate = {
   },
 };
 
-export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
+export const updateMachine = createMachine<
+  MachineContext,
+  MachineEvent,
+  UpdateMachineState
+>(
   {
     id: "(machine)",
     initial: "ok",
+    context: {},
     states: {
       ok: {
         invoke: [
@@ -151,6 +159,22 @@ export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
       },
       playerUpdate,
       launcherUpdate,
+      error: {},
+    },
+    on: {
+      ERROR: {
+        target: "error",
+        actions: "setError",
+      },
+    },
+    invoke: {
+      id: "error",
+      src: () =>
+        invokeIpcEvent<MachineEvent>("go to error page", (error, data) => ({
+          type: "ERROR",
+          error,
+          data,
+        })),
     },
   },
   {
@@ -160,6 +184,14 @@ export default createMachine<MachineContext, MachineEvent, UpdateMachineState>(
         progress: (context, event) =>
           event.type === "UPDATE_PROGRESS" ? event.progress : context.progress,
       }),
+      setError: assign((context, event) => ({
+        error: event.type === "ERROR" ? event.error : context.error,
+        data: event.type === "ERROR" ? event.data : context.data,
+      })),
     },
   }
 );
+
+export const updateService = interpret(updateMachine, {
+  devTools: process.env.NODE_ENV !== "production",
+}).start();
