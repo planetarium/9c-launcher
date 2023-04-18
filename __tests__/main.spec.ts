@@ -26,7 +26,7 @@ describe("test", function () {
 
   beforeAll(async function () {
     app = await electron.launch({
-      args: ["./dist/"],
+      args: ["./build/"],
     });
 
     page = await app.firstWindow();

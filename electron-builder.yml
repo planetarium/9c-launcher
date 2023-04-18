@@ -1,8 +1,10 @@
 appId: "com.planetariumhq.nine-chronicles"
-asar: "false"
-directories:
-  output: "pack"
-  app: "dist"
+asar: true
+files:
+  - "!**/*"
+  - from: build
+    filter:
+      - '**/*'
 win:
   target:
     - target: "nsis"
@@ -11,7 +13,26 @@ win:
   icon: "app.ico"
 mac:
   icon: "AppIcon.icns"
+  target:
+    - "dmg"
+  category: "public.app-category.games"
+dmg:
+  icon: "AppIcon.icns"
+  iconSize: 75
+  contents:
+    - x: 130
+      y: 200
+    - x: 410
+      y: 200
+      type: "link"
+      path: "/Applications"
+linux:
+  target:
+    - "AppImage"
+    - "deb"
+    - "rpm"
 publish:
-  - provider: "generic"
-    url: "https://9c-test.s3.ap-northeast-2.amazonaws.com/electron-builder-test/"
-    channel: "v10000"
+  provider: "s3"
+  bucket: "9c-release.planetariumhq.com"
+  path: "builder-test/launcher"
+  acl: "private"
