@@ -31,8 +31,13 @@
     "pack:windows": "yarn build-prod && electron-builder --windows",
     "pack:linux": "yarn build-prod && electron-builder --linux",
     "pack:macos": "yarn build-prod && electron-builder --mac",
+<<<<<<< HEAD
     "pack:macos-arm": "yarn build-prod && electron-builder --mac --arm64",
     "release": "yarn build-prod && electron-builder -mwl --x64 --arm64 --publish always",
+=======
+    "release": "yarn build-release && electron-builder --publish always",
+    "test-jiwon": "yarn build-prod && electron-builder --publish always",
+>>>>>>> d1a64d34 (cleanup scripts)
     "dev": "concurrently --kill-others \"yarn server\" \"yarn start\"",
     "dev:v2": "concurrently --kill-others \"yarn server\" \"yarn start:v2\"",
     "codegen": "graphql-codegen",
