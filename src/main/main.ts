@@ -1,77 +1,74 @@
+import {
+  enable as remoteEnable,
+  initialize as remoteInitialize,
+  enable as webEnable,
+} from "@electron/remote/main";
 import axios from "axios";
+import CancellationToken from "cancellationtoken";
+import { ChildProcessWithoutNullStreams } from "child_process";
+import "core-js";
 import {
-  DEFAULT_DOWNLOAD_BASE_URL,
-  CUSTOM_SERVER,
-  LOCAL_SERVER_HOST,
-  LOCAL_SERVER_PORT,
-  configStore,
-  get as getConfig,
-  getBlockChainStorePath,
-  WIN_GAME_PATH,
-  EXECUTE_PATH,
-  RPC_SERVER_HOST,
-  RPC_SERVER_PORT,
-  MIXPANEL_TOKEN,
-  initializeNode,
-  NodeInfo,
-  userConfigStore,
-  baseUrl,
-  CONFIG_FILE_PATH,
-} from "../config";
-import {
-  app,
   BrowserWindow,
-  Tray,
   Menu,
-  nativeImage,
-  ipcMain,
+  Tray,
+  app,
   dialog,
+  ipcMain,
+  nativeImage,
   shell,
 } from "electron";
-import { enable as remoteEnable } from "@electron/remote/main";
-import path from "path";
-import fs from "fs";
-import { ChildProcessWithoutNullStreams } from "child_process";
-import logoImage from "./resources/logo.png";
-import { initializeSentry } from "src/utils/sentry";
-import "core-js";
+import installExtension, {
+  APOLLO_DEVELOPER_TOOLS,
+  MOBX_DEVTOOLS,
+  REACT_DEVELOPER_TOOLS,
+} from "electron-devtools-installer";
 import log from "electron-log";
-import { AppProtocolVersionType } from "../generated/graphql";
+import fg from "fast-glob";
+import fs from "fs";
+import { init as createMixpanel } from "mixpanel";
+import { Client as NTPClient } from "ntp-time";
+import path from "path";
+import { v4 as ipv4 } from "public-ip";
 import { getSdk } from "src/generated/graphql-request";
-import { decodeApvExtra, encodeTokenFromHex } from "src/utils/apv";
+import { IConfig } from "src/interfaces/config";
+import { IPC_OPEN_URL } from "src/renderer/ipcTokens";
 import * as utils from "src/utils";
+import { decodeApvExtra, encodeTokenFromHex } from "src/utils/apv";
+import { initializeSentry } from "src/utils/sentry";
+import { v4 as uuidv4 } from "uuid";
+import {
+  EXECUTE_PATH,
+  MIXPANEL_TOKEN,
+  NodeInfo,
+  WIN_GAME_PATH,
+  baseUrl,
+  configStore,
+  getBlockChainStorePath,
+  get as getConfig,
+  initializeNode,
+  userConfigStore,
+} from "../config";
+import { AppProtocolVersionType } from "../generated/graphql";
+import { IGameStartOptions } from "../interfaces/ipc";
 import {
   HeadlessExitedError,
   HeadlessInitializeError,
 } from "../main/exceptions";
-import CancellationToken from "cancellationtoken";
-import { IGameStartOptions } from "../interfaces/ipc";
-import { init as createMixpanel } from "mixpanel";
-import { v4 as ipv4 } from "public-ip";
-import { v4 as uuidv4 } from "uuid";
-import { Client as NTPClient } from "ntp-time";
-import { IConfig } from "src/interfaces/config";
-import installExtension, {
-  REACT_DEVELOPER_TOOLS,
-  MOBX_DEVTOOLS,
-  APOLLO_DEVELOPER_TOOLS,
-} from "electron-devtools-installer";
-import RemoteHeadless from "./headless/remoteHeadless";
-import { NineChroniclesMixpanel } from "./mixpanel";
 import {
   createWindow as createV2Window,
   setQuitting as setV2Quitting,
 } from "./application";
-import fg from "fast-glob";
-import { cleanUpLockfile, isUpdating, IUpdateOptions } from "./update/update";
-import { performUpdate } from "./update/update";
-import { checkForUpdate, checkForUpdateFromApv, IUpdate } from "./update/check";
+import RemoteHeadless from "./headless/remoteHeadless";
 import { send } from "./ipc";
-import { IPC_OPEN_URL } from "src/renderer/ipcTokens";
+import { NineChroniclesMixpanel } from "./mixpanel";
+import logoImage from "./resources/logo.png";
+import { IUpdate, checkForUpdate, checkForUpdateFromApv } from "./update/check";
 import {
-  initialize as remoteInitialize,
-  enable as webEnable,
-} from "@electron/remote/main";
+  IUpdateOptions,
+  cleanUpLockfile,
+  isUpdating,
+  performUpdate,
+} from "./update/update";
 
 initializeSentry();
 
@@ -255,6 +252,8 @@ async function initializeApp() {
       ipcMain.handle("start update", async () => {
         await performUpdate(update, updateOptions);
       });
+    } else {
+      ipcMain.handle("start update", () => {});
     }
 
     if (update) {
