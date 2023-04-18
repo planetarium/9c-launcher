@@ -76,7 +76,7 @@ const LevelCaption = styled(motion.div, {
         height: 30,
         borderRadius: 15,
         lineHeight: "30px",
-        padding: "0 1em",
+        padding: "0 0.25em",
         backgroundColor: "#402419",
       },
     },
