@@ -40,7 +40,7 @@ yarn
 
 ```
 ./src
-./dist
+./build
 |   +-- 9c.(exe|app) // 9C Unity Player
 |   +-- publish // 9C Headless (Standalone)
 |   |   +-- Libplanet.dll
