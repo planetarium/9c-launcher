@@ -21,16 +21,16 @@ import { trackEvent } from "src/utils/mixpanel";
 import { useLoginSession } from "src/utils/useLoginSession";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
-  const { address, publicKey } = useLoginSession();
+  const loginSession = useLoginSession();
   const { data: sheet } = useStakingSheetQuery();
   const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
-    variables: { address },
-    skip: !address,
+    variables: { address: loginSession?.address?.toString() },
+    skip: !loginSession,
   });
   const { data: collection, refetch: refetchCollection } =
     useLegacyCollectionStateQuery({
-      variables: { address },
-      skip: !address,
+      variables: { address: loginSession?.address?.toString() },
+      skip: !loginSession,
     });
   const balance = useBalance();
   const tip = useTip();
@@ -58,7 +58,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     }
   }, [txStatus]);
 
-  if (!sheet || !current || !collection || !tip || !publicKey) return null;
+  if (!sheet || !current || !collection || !tip || !loginSession) return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
@@ -75,7 +75,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
           try {
             stake({
               variables: {
-                publicKey,
+                publicKey: loginSession.publicKey.toHex("uncompressed"),
                 amount: amount.toNumber(),
               },
             });

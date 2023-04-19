@@ -1,13 +1,13 @@
 import { useCurrentStakingQuery } from "src/generated/graphql";
-import { useStore } from "./useStore";
 import { useTip } from "./useTip";
 import { useLoginSession } from "./useLoginSession";
+import { Address } from "@planetarium/account";
 
 export function useStaking() {
-  const { address } = useLoginSession();
+  const address: Address | undefined = useLoginSession()?.address;
   const commonQuery = {
     variables: {
-      address,
+      address: address?.toString(),
     },
     skip: !address,
   };

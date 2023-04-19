@@ -1,4 +1,12 @@
 {
-	"git.autoRepositoryDetection": false,
-	"git.detectSubmodulesLimit": 0
+  "git.autoRepositoryDetection": false,
+  "git.detectSubmodulesLimit": 0,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  }
 }

@@ -6,16 +6,16 @@ import {
 import { useLoginSession } from "./useLoginSession";
 
 export function useBalance() {
-  const { address } = useLoginSession();
+  const address = useLoginSession()?.address;
   const { data: ncgBalanceQuery } = useGetNcgBalanceQuery({
     variables: {
-      address,
+      address: address?.toString(),
     },
     skip: !address,
   });
   const { data: balance } = useBalanceByAgentSubscription({
     variables: {
-      address,
+      address: address?.toString(),
     },
     skip: !address,
   });

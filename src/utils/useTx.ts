@@ -1,7 +1,7 @@
-import { signTransaction } from "@planetarium/sign";
 import { useRef } from "react";
 import { useStageTransactionMutation } from "src/generated/graphql";
 import { useStore } from "./useStore";
+import { signTransactionHex } from "./sign";
 
 /**
  * A special placeholder value to provide the required value at call time.
@@ -26,14 +26,14 @@ export function useTx(): (tx: string) => Result {
   const inProgress = useRef(false);
   const [stage] = useStageTransactionMutation();
 
-  return async (tx: string) => {
-    const account = accountStore.loginSession?.account;
+  return async (txHex: string) => {
+    const privateKey = accountStore.loginSession?.privateKey;
     if (inProgress.current) throw new Error("Already in progress.");
-    if (!account) throw new Error("There is no logged in account.");
+    if (!privateKey) throw new Error("There is no logged in account.");
     else inProgress.current = true;
 
     try {
-      const encodedTx = await signTransaction(tx, account);
+      const encodedTx = await signTransactionHex(txHex, privateKey);
       return await stage({
         variables: {
           payload: encodedTx,

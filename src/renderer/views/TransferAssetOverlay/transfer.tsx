@@ -67,7 +67,7 @@ const CircularProgress = styled(OriginCircularProgress)({
 
 function TransferPage() {
   const { transfer } = useStore();
-  const { publicKey, account } = useLoginSession();
+  const privateKey = useLoginSession()?.privateKey;
   const [recipient, setRecipient] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [amount, setAmount] = useState<Decimal>(new Decimal(0));
@@ -109,7 +109,7 @@ function TransferPage() {
       return;
     }
 
-    if (!publicKey || !account) {
+    if (!privateKey) {
       return;
     }
 
@@ -120,8 +120,7 @@ function TransferPage() {
       recipient,
       amount,
       memo,
-      publicKey,
-      account
+      privateKey
     );
     setTx(tx);
 

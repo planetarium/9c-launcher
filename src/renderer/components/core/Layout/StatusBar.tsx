@@ -37,7 +37,12 @@ function StatusBar() {
             data-testid="play"
             variant="primary"
             disabled={loading || !activated}
-            onClick={() => game.startGame(loginSession.privateKey)}
+            onClick={() => {
+              const privateKeyBytes = loginSession.privateKey.toBytes();
+              return game.startGame(
+                Buffer.from(privateKeyBytes).toString("hex")
+              );
+            }}
           >
             <T _str="Start" _tags="v2/start-game" />
           </Button>

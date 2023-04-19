@@ -20,10 +20,10 @@ function ClaimCollectionRewardsOverlay({
   onClose,
   ...collectionData
 }: ClaimCollectionRewardsOverlayProps) {
-  const { address } = useLoginSession();
+  const address = useLoginSession()?.address;
   const { loading, data } = useGetAvatarAddressQuery({
     variables: {
-      address,
+      address: address?.toString(),
     },
     skip: !address,
   });

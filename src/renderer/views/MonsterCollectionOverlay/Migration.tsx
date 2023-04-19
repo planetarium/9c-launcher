@@ -3,7 +3,6 @@ import {
   LegacyCollectionStateQuery,
   useMigrateMonsterCollectionLazyQuery,
 } from "src/generated/graphql";
-import { useStore } from "src/utils/useStore";
 import { MigrationAlert, MigrationAlertItem } from "./dialog";
 import ncgIcon from "src/renderer/resources/collection/items/ncg.png";
 import ClaimCollectionRewardsOverlay from "../ClaimCollectionRewardsOverlay";
@@ -41,7 +40,7 @@ export default function Migration({
   onClose,
 }: MigrationProps) {
   const [isOpen, open] = useReducer(() => true, false);
-  const { publicKey } = useLoginSession();
+  const publicKey = useLoginSession()?.publicKey;
   const isClaimable = tip >= collectionState.claimableBlockIndex;
   const [requestMigrateMonsterCollectionTx] =
     useMigrateMonsterCollectionLazyQuery({
@@ -110,7 +109,7 @@ export default function Migration({
           if (publicKey) {
             requestMigrateMonsterCollectionTx({
               variables: {
-                publicKey: publicKey,
+                publicKey: publicKey.toHex("uncompressed"),
                 avatarAddress: avatar.address.replace("0x", ""),
               },
             });
