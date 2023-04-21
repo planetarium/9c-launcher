@@ -1,11 +1,5 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
 import Decimal from "decimal.js";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   DepositButton2,
   DepositCancelButton,
@@ -21,9 +15,9 @@ import {
 } from "./base";
 import { Item, ItemGroup, RewardSheet, RewardSheetPlaceholder } from "./reward";
 
+import BareInput from "src/renderer/components/ui/BareInput";
 import titleImg from "src/renderer/resources/collection/title.png";
 import { Level, Levels } from "./level";
-import BareInput from "src/renderer/components/ui/BareInput";
 
 import loadingImg from "src/renderer/resources/collection/loading.png";
 
@@ -32,16 +26,18 @@ import monster2Img from "src/renderer/resources/collection/monster-2.png";
 import monster3Img from "src/renderer/resources/collection/monster-3.png";
 import monster4Img from "src/renderer/resources/collection/monster-4.png";
 import monster5Img from "src/renderer/resources/collection/monster-5.png";
+import monster6Img from "src/renderer/resources/collection/monster-6.png";
+import monster7Img from "src/renderer/resources/collection/monster-7.png";
 import itemMetadata from "src/utils/monsterCollection/items";
 
 import systemRewards from "src/utils/monsterCollection/systemRewards";
 
-import { CurrentStakingQuery, StakingSheetQuery } from "src/generated/graphql";
-import { Alert } from "./dialog";
 import { AnimatePresence } from "framer-motion";
-import { useEvent } from "src/utils/useEvent";
+import { CurrentStakingQuery, StakingSheetQuery } from "src/generated/graphql";
 import { CloseButton } from "src/renderer/components/core/OverlayBase";
 import { getRemain } from "src/utils/monsterCollection/utils";
+import { useEvent } from "src/utils/useEvent";
+import { Alert } from "./dialog";
 
 declare global {
   interface Array<T> {
@@ -67,6 +63,8 @@ const images = [
   monster3Img,
   monster4Img,
   monster5Img,
+  monster6Img,
+  monster7Img,
 ];
 
 type LevelList =
@@ -82,13 +80,13 @@ function useRewardIndex(levels: LevelList, amount: Decimal = new Decimal(0)) {
 }
 
 function useRewards(levels: LevelList, index: number = 0) {
-  const rewards = levels?.[index!]?.rewards;
-  const bonusRewards = levels?.[index!]?.bonusRewards;
+  const rewards = levels?.[index]?.rewards;
+  const bonusRewards = levels?.[index]?.bonusRewards;
   const bonusRewardMap = useMemo(
     () =>
       bonusRewards &&
       new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
-    [levels, index]
+    [bonusRewards]
   );
 
   return rewards?.map((v) => ({
@@ -108,7 +106,7 @@ export function MonsterCollectionContent({
   current: {
     stateQuery: { stakeState },
   },
-  isEditing: initalEditing,
+  isEditing: initialEditing,
   currentNCG,
   onChangeAmount,
   children,
@@ -116,7 +114,7 @@ export function MonsterCollectionContent({
   tip,
   isLoading,
 }: MonsterCollectionOverlayProps) {
-  const [isEditing, setIsEditing] = useState(initalEditing ?? false);
+  const [isEditing, setIsEditing] = useState(initialEditing ?? false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [amount, setAmount] = useState("0");
   const [openedAlert, setIsAlertOpen] = useState<Alerts | null>(null);
@@ -141,8 +139,7 @@ export function MonsterCollectionContent({
   const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
   useEffect(() => {
-    if (stakeState && stakeState.deposit)
-      setAmount(stakeState.deposit.replace(/\.0+$/, ""));
+    if (stakeState?.deposit) setAmount(stakeState.deposit.replace(/\.0+$/, ""));
   }, [stakeState]);
 
   const changeAmount = useEvent(() => {
@@ -151,10 +148,30 @@ export function MonsterCollectionContent({
     setIsEditing(false);
   });
 
-  const currentAmount = isEditing || !deposit ? amountDecimal : deposit;
   const currentRewards = useRewards(levels, currentIndex ?? 0);
   const selectedRewards = useRewards(levels, selectedIndex ?? 0);
-  if (!levels) return null;
+
+  const contentVariant = useMemo(() => {
+    const canvasMain = document.createElement("canvas");
+    const contextMain = canvasMain.getContext("2d");
+
+    const canvasSub = document.createElement("canvas");
+    const contextSub = canvasSub.getContext("2d");
+
+    if (!contextMain || !contextSub) {
+      return "large";
+    }
+
+    contextMain.font = "bold 46px Fira Sans Condensed";
+    contextSub.font = "bold 24px Fira Sans Condensed";
+
+    const width =
+      contextMain.measureText(amount).width +
+      contextSub.measureText(`/${availableNCG.toNumber().toLocaleString()}`)
+        .width;
+
+    return width > 350 ? "small" : "large";
+  }, [amount, availableNCG]);
 
   if (!levels) return null;
 
@@ -192,7 +209,7 @@ export function MonsterCollectionContent({
           {isEditing ? (
             <>
               <DepositContent
-                editable
+                stacking={contentVariant}
                 onClick={() => inputRef.current?.focus()}
               >
                 <BareInput
@@ -208,7 +225,7 @@ export function MonsterCollectionContent({
                   max={availableNCG.toNumber()}
                   type="number"
                 />
-                <sub>/{availableNCG.toString()}</sub>
+                <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
               </DepositContent>
               <DepositCancelButton
                 type="button"
@@ -233,7 +250,7 @@ export function MonsterCollectionContent({
             <>
               <DepositContent>
                 {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
-                <sub>/{availableNCG.toString()}</sub>
+                <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
               </DepositContent>
               <DepositButton2
                 type="button"
@@ -299,19 +316,19 @@ export function MonsterCollectionContent({
                     updatedAmount={selectedAmount?.toString()}
                     isDiff
                   >
-                    <img src={itemMeta.img} />
+                    <img src={itemMeta.img} alt={itemMeta.name} />
                   </Item>
                 );
               })}
             </ItemGroup>
             <ItemGroup key="system" title="System Rewards">
-              {systemRewards.map((item, index) => {
+              {systemRewards.map((item) => {
                 const sysRewardSuffix = item.name === "stage" ? "% DC" : "%";
                 const amount = item.amount[currentIndex ?? 0];
                 const updatedAmount = item.amount[selectedIndex ?? 0];
                 return (
                   <Item
-                    key={index}
+                    key={item.title}
                     amount={isEditing ? "" : amount + sysRewardSuffix}
                     updatedAmount={
                       isEditing ? updatedAmount + sysRewardSuffix : ""
@@ -319,7 +336,7 @@ export function MonsterCollectionContent({
                     isUpgrade={updatedAmount >= amount}
                     title={item.title}
                   >
-                    <img src={item.img} height={48}></img>
+                    <img src={item.img} alt={item.title} height={48} />
                   </Item>
                 );
               })}
