@@ -64,6 +64,7 @@ import {
 } from "./application";
 import fg from "fast-glob";
 import { cleanUpLockfile, isUpdating, IUpdateOptions } from "./update/update";
+import AppUpdater from "./update/updater";
 import { performUpdate } from "./update/update";
 import { checkForUpdate, checkForUpdateFromApv, IUpdate } from "./update/check";
 import { send } from "./ipc";
@@ -155,7 +156,7 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
-  initializeConfig();
+  // initializeConfig();
   initializeApp();
   initializeIpc();
 }
@@ -214,6 +215,9 @@ async function initializeApp() {
   console.log("isProtocolSet", isProtocolSet);
 
   app.on("ready", async () => {
+    const appUpdaterInstance = new AppUpdater(updateOptions.getWindow());
+    appUpdaterInstance.checkForUpdate();
+
     remoteInitialize();
     if (process.env.NODE_ENV !== "production")
       await installExtension([
