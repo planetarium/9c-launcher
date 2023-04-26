@@ -10,7 +10,7 @@ function getCommandOfAvailableDisk(path: string): string {
   if (platform === "darwin" || platform === "linux") {
     cmd = `df -k ${path} | tail -1 | awk '{print $4}'`;
   } else if (platform === "win32") {
-    cmd = `echo "102400000"`; // should check real disk size
+    cmd = `echo 102400000`; // should check real disk size
   }
 
   return cmd;
