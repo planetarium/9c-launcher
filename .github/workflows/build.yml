@@ -17,15 +17,15 @@ jobs:
       matrix:
         include:
           - targetPlatform: linux
-            os: ubuntu-latest
           - targetPlatform: macos
-            os: ubuntu-latest
           - targetPlatform: windows
-            os: windows-latest
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: install wine
+        run: apt-get update && apt-get install -y wine64
 
       - uses: actions/setup-node@v3
         with:
