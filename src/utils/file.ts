@@ -10,7 +10,7 @@ function getCommandOfAvailableDisk(path: string): string {
   if (platform === "darwin" || platform === "linux") {
     cmd = `df -k ${path} | tail -1 | awk '{print $4}'`;
   } else if (platform === "win32") {
-    cmd = `for /f "skip=1" %p in ('wmic logicaldisk get FreeSpace^,Size^,Caption /format:list ^| find /i "${path}"') do @echo %p`;
+    cmd = `echo "102400000"`; // should check real disk size
   }
 
   return cmd;
