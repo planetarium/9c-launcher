@@ -79,6 +79,13 @@ function useRewardIndex(levels: LevelList, amount: Decimal = new Decimal(0)) {
   }, [amount, levels]);
 }
 
+type Rewards = {
+  count(amount: Decimal): Decimal;
+  __typename?: "StakeRegularRewardInfoType" | undefined;
+  itemId: number;
+  rate: number;
+}[];
+
 function useRewards(levels: LevelList, index: number = 0) {
   const rewards = levels?.[index]?.rewards;
   const bonusRewards = levels?.[index]?.bonusRewards;
@@ -150,6 +157,35 @@ export function MonsterCollectionContent({
 
   const currentRewards = useRewards(levels, currentIndex ?? 0);
   const selectedRewards = useRewards(levels, selectedIndex ?? 0);
+
+  function RecurringReward(currentRewards: Rewards, selectedRewards?: Rewards) {
+    const targetReward =
+      selectedRewards && selectedRewards.length > currentRewards.length
+        ? selectedRewards
+        : currentRewards;
+    return targetReward.map((item, index) => {
+      const itemMeta = itemMetadata[item.itemId] ?? {
+        name: "Unknown",
+      };
+      const itemAmount = item.count(deposit ?? new Decimal(0));
+      const selectedAmount = selectedRewards
+        ? selectedRewards?.[index].count(amountDecimal)
+        : null;
+
+      return (
+        <Item
+          key={item.itemId}
+          amount={itemAmount.toString()}
+          title={itemMeta.name}
+          isUpgrade={selectedAmount?.gte(itemAmount)}
+          updatedAmount={selectedAmount?.toString()}
+          isDiff
+        >
+          <img src={itemMeta.img} alt={itemMeta.name} />
+        </Item>
+      );
+    });
+  }
 
   const contentVariant = useMemo(() => {
     const canvasMain = document.createElement("canvas");
@@ -299,27 +335,7 @@ export function MonsterCollectionContent({
         {currentRewards ? (
           <RewardSheet>
             <ItemGroup key="recurring" title="Recurring Rewards">
-              {currentRewards.map((item, index) => {
-                const itemMeta = itemMetadata[item.itemId] ?? {
-                  name: "Unknown",
-                };
-                const selectedAmount = isEditing
-                  ? selectedRewards?.[index].count(amountDecimal)
-                  : null;
-                const itemAmount = item.count(deposit ?? new Decimal(0));
-                return (
-                  <Item
-                    key={item.itemId}
-                    amount={itemAmount.toString()}
-                    title={itemMeta.name}
-                    isUpgrade={selectedAmount?.gte(itemAmount)}
-                    updatedAmount={selectedAmount?.toString()}
-                    isDiff
-                  >
-                    <img src={itemMeta.img} alt={itemMeta.name} />
-                  </Item>
-                );
-              })}
+              {RecurringReward(currentRewards, selectedRewards)}
             </ItemGroup>
             <ItemGroup key="system" title="System Rewards">
               {systemRewards.map((item) => {
