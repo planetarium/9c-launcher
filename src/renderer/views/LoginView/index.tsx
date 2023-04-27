@@ -37,7 +37,7 @@ function LoginView() {
 
   function getLastLoggedinAddress() {
     const storedHex = localStorage.getItem("lastAddress");
-    const stored = storedHex && Address.fromHex(storedHex);
+    const stored = storedHex && Address.fromHex(storedHex, true);
 
     if (
       stored &&
