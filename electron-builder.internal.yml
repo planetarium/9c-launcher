@@ -1,5 +1,5 @@
 appId: "com.nine-chronicles"
-asar: false
+asar: true
 files:
   - "!**/*"
   - from: build

@@ -1,5 +1,5 @@
 appId: "com.nine-chronicles"
-asar: false
+asar: true
 files:
   - "!**/*"
   - from: build
@@ -17,6 +17,7 @@ mac:
   target:
     - "dmg"
     - "zip"
+    - "tar.gz"
   category: "public.app-category.games"
 dmg:
   icon: "AppIcon.icns"
@@ -30,11 +31,13 @@ dmg:
       path: "/Applications"
 linux:
   target:
+    - "tar.gz"
     - "zip"
     - "AppImage"
+    - "deb"
+    - "rpm"
 publish:
   provider: "s3"
   bucket: "9c-test"
-  path: "internal/launcher"
+  path: "main/launcher"
   acl: "private"
-  channel: "internal"

@@ -1,5 +1,5 @@
 appId: "com.nine-chronicles"
-asar: false
+asar: true
 files:
   - "!**/*"
   - from: build
@@ -35,6 +35,6 @@ linux:
 publish:
   provider: "s3"
   bucket: "9c-test"
-  path: "internal/launcher"
+  path: "preview/launcher"
   acl: "private"
-  channel: "internal"
+  channel: "preview"
