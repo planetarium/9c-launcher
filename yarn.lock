@@ -3419,26 +3419,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planetarium/account-web3-secret-storage@npm:0.54.0-dev.20234147332":
-  version: 0.54.0-dev.20234147332
-  resolution: "@planetarium/account-web3-secret-storage@npm:0.54.0-dev.20234147332"
+"@planetarium/account-web3-secret-storage@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@planetarium/account-web3-secret-storage@npm:1.0.0"
   dependencies:
     "@noble/hashes": ^1.3.0
     "@peculiar/webcrypto": ^1.4.3
     scrypt-js: ^3.0.1
   peerDependencies:
-    "@planetarium/account": ^0.54.0-dev.20234147332
-  checksum: 3da73ec2f883a226f70e32988bd097f1e84fabf20af62f5666bc525fbaee5b625d8c54301f62cb19ba4c4868db14078b237a7d353efca229c14d9fa7c0472dde
+    "@planetarium/account": ^1.0.0
+  checksum: 56f281863151b61fcba56e3853bd0993d8511067cb3a6d5d6ff87d7e2a6890988744966e373d07f16152e486bad245e41996b5791ab78c1b754d17ddfa6a9ea4
   languageName: node
   linkType: hard
 
-"@planetarium/account@npm:0.54.0-dev.20234147332":
-  version: 0.54.0-dev.20234147332
-  resolution: "@planetarium/account@npm:0.54.0-dev.20234147332"
+"@planetarium/account@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@planetarium/account@npm:1.0.0"
   dependencies:
     "@noble/hashes": ^1.2.0
     "@noble/secp256k1": ^1.7.1
-  checksum: 19fa500adc08649aa9a60390d319c4aedfeec133ba74383ba876dfde8b6c5279eaf5d1110d73bbb22029bfb993c658350256db7bc9a63188514066dcd48d4699
+  checksum: 6af9998f7e18201dd6949ed91e000303754e4f73b69f9a0548e180cd11a710d91059fc53dbaf1bdb7e22b066615497cda32e9712f9152da9688db9d95281a998
   languageName: node
   linkType: hard
 
@@ -7106,8 +7106,8 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.56
     "@material-ui/styles": ^4.10.0
     "@noble/secp256k1": ^1.7.0
-    "@planetarium/account": 0.54.0-dev.20234147332
-    "@planetarium/account-web3-secret-storage": 0.54.0-dev.20234147332
+    "@planetarium/account": ^1.0.0
+    "@planetarium/account-web3-secret-storage": ^1.0.0
     "@planetarium/bencodex": ^0.2.2
     "@planetarium/check-free-space": ^0.0.2
     "@planetarium/cli": ^0.40.0
