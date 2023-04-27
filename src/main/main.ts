@@ -1,22 +1,15 @@
 import axios from "axios";
 import {
-  DEFAULT_DOWNLOAD_BASE_URL,
-  CUSTOM_SERVER,
-  LOCAL_SERVER_HOST,
-  LOCAL_SERVER_PORT,
   configStore,
   get as getConfig,
   getBlockChainStorePath,
   WIN_GAME_PATH,
   EXECUTE_PATH,
-  RPC_SERVER_HOST,
-  RPC_SERVER_PORT,
   MIXPANEL_TOKEN,
   initializeNode,
   NodeInfo,
   userConfigStore,
   baseUrl,
-  CONFIG_FILE_PATH,
 } from "../config";
 import {
   app,
@@ -36,9 +29,6 @@ import logoImage from "./resources/logo.png";
 import { initializeSentry } from "src/utils/sentry";
 import "core-js";
 import log from "electron-log";
-import { AppProtocolVersionType } from "../generated/graphql";
-import { getSdk } from "src/generated/graphql-request";
-import { decodeApvExtra, encodeTokenFromHex } from "src/utils/apv";
 import * as utils from "src/utils";
 import {
   HeadlessExitedError,
@@ -63,10 +53,8 @@ import {
   setQuitting as setV2Quitting,
 } from "./application";
 import fg from "fast-glob";
-import { cleanUpLockfile, isUpdating, IUpdateOptions } from "./update/update";
+import { cleanUpLockfile, isUpdating } from "./update/update";
 import AppUpdater from "./update/updater";
-import { performUpdate } from "./update/update";
-import { checkForUpdate, checkForUpdateFromApv, IUpdate } from "./update/check";
 import { send } from "./ipc";
 import { IPC_OPEN_URL } from "src/renderer/ipcTokens";
 import {
@@ -106,12 +94,6 @@ const mixpanel: NineChroniclesMixpanel | undefined =
   getConfig("Mixpanel") && process.env.NODE_ENV === "production"
     ? new NineChroniclesMixpanel(createMixpanel(MIXPANEL_TOKEN), mixpanelUUID)
     : undefined;
-
-const updateOptions: IUpdateOptions = {
-  downloadStarted: quitAllProcesses,
-  relaunchRequired: relaunch,
-  getWindow: () => win,
-};
 
 client
   .syncTime()
@@ -215,9 +197,6 @@ async function initializeApp() {
   console.log("isProtocolSet", isProtocolSet);
 
   app.on("ready", async () => {
-    const appUpdaterInstance = new AppUpdater(updateOptions.getWindow());
-    appUpdaterInstance.checkForUpdate();
-
     remoteInitialize();
     if (process.env.NODE_ENV !== "production")
       await installExtension([
@@ -229,6 +208,9 @@ async function initializeApp() {
         .catch((err) => console.log("An error occurred: ", err));
 
     win = await createV2Window();
+
+    const appUpdaterInstance = new AppUpdater(win);
+    appUpdaterInstance.checkForUpdate();
 
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
@@ -247,58 +229,12 @@ async function initializeApp() {
       app.exit();
     }
 
-    const update: IUpdate | null = await checkForUpdate(
-      getSdk(remoteNode.GraphqlClient()),
-      process.platform
-    ).catch((e) => {
-      console.error("An error has occurred while checking updates", e);
-      return null;
-    });
-
-    if (useUpdate && update) {
-      ipcMain.handle("start update", async () => {
-        await performUpdate(update, updateOptions);
-      });
-    }
-
-    if (update) {
-      ipcMain.handle("start player update", async () => {
-        await performUpdate(
-          {
-            ...update,
-            projects: {
-              ...update.projects,
-              player: { ...update.projects.player, updateRequired: true },
-            },
-          },
-          updateOptions
-        );
-      });
-
-      ipcMain.handle("start launcher update", async () => {
-        await performUpdate(
-          {
-            ...update,
-            projects: {
-              ...update.projects,
-              launcher: { ...update.projects.launcher, updateRequired: true },
-            },
-          },
-          updateOptions
-        );
-      });
-    }
-
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
 
     mixpanel?.track("Launcher/Start", {
       isV2: true,
       useRemoteHeadless,
-      updateAvailable: update
-        ? update.projects.launcher.updateRequired ||
-          update.projects.player.updateRequired
-        : false,
     });
 
     // Detects and move old snapshot caches as they're unused.
@@ -321,39 +257,6 @@ async function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on(
-    "encounter different version",
-    async (
-      _event,
-      apv: Pick<
-        AppProtocolVersionType,
-        "version" | "extra" | "signer" | "signature"
-      >
-    ) => {
-      if (!useUpdate || !apv.extra) return;
-
-      const extra = decodeApvExtra(apv.extra);
-
-      const simpleApv = {
-        raw: encodeTokenFromHex(
-          apv.version,
-          apv.signer,
-          apv.signature,
-          apv.extra
-        ),
-        version: apv.version,
-        extra: extra ? Object.fromEntries(extra) : {},
-      };
-
-      try {
-        const update = await checkForUpdateFromApv(simpleApv, process.platform);
-        await performUpdate(update, updateOptions);
-      } catch (e) {
-        console.error("An error has occurred while checking updates", e);
-      }
-    }
-  );
-
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {
       console.error("Game is already running.");

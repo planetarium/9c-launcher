@@ -105,11 +105,6 @@ function handleOpenLogPath() {
   shell.showItemInFolder(openpath);
 }
 
-async function handleLauncherUpdate() {
-  const result = await ipcRenderer.invoke("start launcher update");
-  return result;
-}
-
 async function handlePlayerUpdate() {
   const result = await ipcRenderer.invoke("start player update", true);
   return result;
@@ -195,11 +190,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 link
                 onClick={handleOpenKeyStorePath}
                 text={t("Open keystore Folder")}
-              />
-              <AdvancedAction
-                icon={<UpdateIcon />}
-                onClick={handleLauncherUpdate}
-                text={t("Manual Launcher Update")}
               />
               <AdvancedAction
                 icon={<UpdateIcon />}
