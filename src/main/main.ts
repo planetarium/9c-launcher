@@ -61,6 +61,7 @@ import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
+import { fork } from "child_process";
 
 initializeSentry();
 
@@ -138,7 +139,7 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
-  // initializeConfig();
+  initializeConfig();
   initializeApp();
   initializeIpc();
 }
@@ -211,6 +212,13 @@ async function initializeApp() {
 
     const appUpdaterInstance = new AppUpdater(win);
     appUpdaterInstance.checkForUpdate();
+
+    const playerUpdateWorker = fork(
+      path.join(__dirname, "playerUpdateWorker.js")
+    );
+    playerUpdateWorker.on("start player update", (message) => {
+      console.log(message);
+    });
 
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));

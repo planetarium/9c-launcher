@@ -195,6 +195,7 @@ function createMainConfig(isDev) {
 
     entry: {
       main: "./main/main.ts",
+      playerUpdateWorker: './worker/playerUpdateWorker.js',
     },
 
     resolve: {
