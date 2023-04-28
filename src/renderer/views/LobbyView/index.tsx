@@ -17,7 +17,8 @@ function LobbyView() {
 
   useEffect(() => {
     if (account.loginSession && activated) {
-      game.startGame(account.loginSession.privateKey);
+      const privateKeyBytes = account.loginSession.privateKey.toBytes();
+      game.startGame(Buffer.from(privateKeyBytes).toString("hex"));
     }
   }, [account.loginSession, activated, game]);
 

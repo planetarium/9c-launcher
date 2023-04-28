@@ -1,8 +1,8 @@
-import React from "react";
-import { theme } from "./base";
-import { styled } from "src/renderer/stitches.config";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { motion } from "framer-motion";
+import React from "react";
+import { styled } from "src/renderer/stitches.config";
+import { theme } from "./base";
 
 import lineBg from "src/renderer/resources/collection/division-line.png";
 

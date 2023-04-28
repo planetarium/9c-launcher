@@ -1,11 +1,8 @@
 import { useStore } from "./useStore";
+import { ILoginSession } from "src/stores/account";
 
-export function useLoginSession() {
+export function useLoginSession(): ILoginSession | null {
   const accountStore = useStore("account");
 
-  return {
-    address: accountStore.loginSession?.address,
-    account: accountStore.loginSession?.account,
-    publicKey: accountStore.loginSession?.publicKey,
-  };
+  return accountStore.loginSession;
 }

@@ -18,7 +18,7 @@ const transifexTags = "v2/views/register/ActivationSuccessView";
 function ActivationSuccessView() {
   const history = useHistory();
 
-  const account = useLoginSession();
+  const address = useLoginSession()?.address;
 
   return (
     <Layout sidebar css={registerStyles}>
@@ -33,7 +33,7 @@ function ActivationSuccessView() {
       </Text>
       <TextField
         label={t("Your Nine Chronicles address", { _tags: transifexTags })}
-        value={account.address}
+        value={address?.toString()}
       />
       <Text css={{ fontSize: 14 }}>
         <T

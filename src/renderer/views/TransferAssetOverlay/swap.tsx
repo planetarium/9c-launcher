@@ -72,7 +72,7 @@ const SwapButton = styled(Button)({
 
 function SwapPage() {
   const transfer = useStore("transfer");
-  const { publicKey, account } = useLoginSession();
+  const loginSession = useLoginSession();
   const [recipient, setRecipient] = useState<string>("");
   const [amount, setAmount] = useState<Decimal>(new Decimal(0));
   const [recipientWarning, setRecipientWarning] = useState<boolean>(false);
@@ -108,7 +108,7 @@ function SwapPage() {
       return;
     }
 
-    if (!publicKey || !account) {
+    if (!loginSession) {
       return;
     }
 
@@ -118,8 +118,7 @@ function SwapPage() {
       transfer.senderAddress,
       recipient,
       amount,
-      publicKey,
-      account
+      loginSession.privateKey
     );
     setTx(tx);
 

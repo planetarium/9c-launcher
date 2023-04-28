@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react";
-import { isValidPrivateKey } from "@planetarium/account-raw";
+import { RawPrivateKey } from "@planetarium/account";
 import Layout from "src/renderer/components/core/Layout";
 import { T } from "src/renderer/i18n";
 import H1 from "src/renderer/components/ui/H1";
@@ -22,12 +22,16 @@ function ImportView() {
 
   const handleSubmit = () => {
     if (!key.key) return;
-    if (!isValidPrivateKey(key.key)) {
+
+    let privateKey: RawPrivateKey;
+    try {
+      privateKey = RawPrivateKey.fromHex(key.key);
+    } catch (e) {
       setError(t("Invalid private key"));
       return;
     }
 
-    account.beginRecovery(key.key);
+    account.beginRecovery(privateKey);
     history.push("/recover");
   };
 

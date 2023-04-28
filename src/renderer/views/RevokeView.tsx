@@ -5,18 +5,18 @@ import H1 from "src/renderer/components/ui/H1";
 import { T } from "src/renderer/i18n";
 import { Select, SelectOption } from "src/renderer/components/ui/Select";
 import { useStore } from "src/utils/useStore";
-import { Address } from "src/interfaces/keystore";
 import Button from "src/renderer/components/ui/Button";
 import { useHistory } from "react-router";
 import { useLoginSession } from "src/utils/useLoginSession";
+import { Address } from "@planetarium/account";
 
 const transifexTags = "v2/revoke-view";
 
 function RevokeView() {
   const accountStore = useStore("account");
-  const { address: loggedinAddress } = useLoginSession();
+  const loggedinAddress = useLoginSession()?.address;
   const [address, setAddress] = useState<Address>(
-    loggedinAddress ?? accountStore.keyring[0].address
+    loggedinAddress ?? accountStore.addresses[0]
   );
   const history = useHistory();
 
@@ -34,10 +34,13 @@ function RevokeView() {
         }
         _tags={transifexTags}
       />
-      <Select value={address} onChange={(v) => setAddress(v)}>
-        {accountStore.keyring.map((key) => (
-          <SelectOption key={key.address} value={key.address}>
-            {key.address}
+      <Select
+        value={address.toHex()}
+        onChange={(v) => setAddress(Address.fromHex(v))}
+      >
+        {accountStore.addresses.map((address) => (
+          <SelectOption key={address.toHex()} value={address.toHex()}>
+            {address.toString()}
           </SelectOption>
         ))}
       </Select>
@@ -45,8 +48,9 @@ function RevokeView() {
         variant="primary"
         centered
         onClick={() => {
-          accountStore.removeKeyByAddress(address);
-          history.push("/");
+          accountStore.removeKeyByAddress(address).then(() => {
+            history.push("/");
+          });
         }}
       >
         <T _str="Revoke this key" _tags={transifexTags} />

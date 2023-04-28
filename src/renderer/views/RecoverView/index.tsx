@@ -7,7 +7,6 @@ import RetypePasswordForm from "src/renderer/components/RetypePasswordForm";
 import { useHistory } from "react-router";
 import H2 from "src/renderer/components/ui/H2";
 import { T } from "src/renderer/i18n";
-import { ProtectedPrivateKey } from "src/interfaces/keystore";
 
 const transifexTags = "v2/recover-view";
 

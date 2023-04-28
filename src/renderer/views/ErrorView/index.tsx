@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
 import { observer } from "mobx-react";
-import { preloadService } from "src/renderer/machines/preloadMachine";
 import { useActor } from "@xstate/react";
 import { Redirect, Route, Switch, useRouteMatch } from "react-router";
 import { t } from "@transifex/native";
@@ -16,6 +15,7 @@ import {
   app,
   installerUrl,
 } from "src/config";
+import { updateService } from "src/renderer/machines/updateMachine";
 
 const transifexTags = "v2/ErrorView";
 
@@ -36,7 +36,7 @@ function handleRestart() {
 
 function ErrorView() {
   const { path } = useRouteMatch();
-  const [state] = useActor(preloadService);
+  const [state] = useActor(updateService);
   const checkboxRef = useRef<HTMLInputElement>(null);
 
   const handleRestartClick = useCallback(() => {
@@ -81,6 +81,30 @@ function ErrorView() {
           </Button>
         </ErrorContent>
       </Route>
+
+      <Route path={`${path}/download-binary-failed-disk-error`}>
+        <ErrorContent
+          title={t("Download binary failed", { _tags: transifexTags })}
+        >
+          {/* FIXME: Multi-language support is required. */}
+          <>
+            {`Not enough storage space to update the ${state.context.error}`}{" "}
+            <br />
+            {state.context.data?.size
+              ? `You need a free space of ${bytes.format(
+                  Number(state.context.data.size),
+                  {
+                    unitSeparator: " ",
+                  }
+                )}.`
+              : ""}
+          </>
+          <Button variant="primary" centered onClick={handleRestart}>
+            <T _str="Restart" _tags={transifexTags} />
+          </Button>
+        </ErrorContent>
+      </Route>
+
       <Route path={`${path}/download-binary-failed-error`}>
         <ErrorContent
           title={t("Download binary failed", { _tags: transifexTags })}

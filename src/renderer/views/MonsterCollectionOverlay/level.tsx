@@ -1,15 +1,15 @@
+import { LayoutGroup, motion } from "framer-motion";
 import React from "react";
-import { AnimatePresence, LayoutGroup, Variants, motion } from "framer-motion";
 import { styled } from "src/renderer/stitches.config";
 
-import stepIcon from "src/renderer/resources/collection/icon-step.png";
-import currentBackground from "src/renderer/resources/collection/current-status-round.png";
 import currentLeaf from "src/renderer/resources/collection/current-status-leaf.gif";
+import currentBackground from "src/renderer/resources/collection/current-status-round.png";
+import stepIcon from "src/renderer/resources/collection/icon-step.png";
 import selectArrow from "src/renderer/resources/collection/select-arrow.gif";
 import ncgIcon from "src/renderer/resources/ui-main-icon-gold.png";
 
 const LevelsLine = styled("div", {
-  width: 800,
+  width: "940px",
   height: 6,
   backgroundColor: "rgba(0, 0, 0, 0.5)",
   border: "1px solid black",
@@ -25,7 +25,7 @@ const LevelContainer = styled("ol", {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  width: 820,
+  width: "960px",
   marginTop: "auto",
 });
 
@@ -63,7 +63,7 @@ const LevelCaption = styled(motion.div, {
   transition: "background-color 0.2s ease-in-out, font-size 0.2s ease-in-out",
 
   "> img": {
-    height: "1em",
+    height: 21,
     verticalAlign: "middle",
   },
 
@@ -72,11 +72,11 @@ const LevelCaption = styled(motion.div, {
       true: {
         top: "unset",
         bottom: 0,
-        fontSize: 21,
+        fontSize: 18,
         height: 30,
         borderRadius: 15,
         lineHeight: "30px",
-        padding: "0 1em",
+        padding: "0 0.25em",
         backgroundColor: "#402419",
       },
     },
@@ -158,7 +158,7 @@ export const Level = ({
       transformTemplate={(_, transform) => `translateX(-50%) ${transform}`}
       expanded={!!expandedImage}
     >
-      <img src={ncgIcon} alt="NCG" /> {amount}
+      <img src={ncgIcon} alt="NCG" /> {amount.toLocaleString()}
     </LevelCaption>
     {current && expandedImage && (
       <CurrentMarker

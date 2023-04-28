@@ -1,25 +1,25 @@
-import crystalImg from "src/renderer/resources/collection/items/crystal.png";
 import apImg from "src/renderer/resources/collection/icon-action-power.webp";
+import crystalImg from "src/renderer/resources/collection/items/crystal.png";
 import ncgImg from "src/renderer/resources/collection/items/ncg.png";
 
 const systemRewards: Reward[] = [
   {
     name: "crystal",
     img: crystalImg,
-    title: `Crystal Grinding`,
-    amount: [0, 50, 100, 200, 300],
+    title: "Crystal Grinding",
+    amount: [0, 50, 100, 200, 200, 200, 200, 200],
   },
   {
     name: "arena",
     img: ncgImg,
-    title: `Arena Reward`,
-    amount: [0, 100, 200, 200, 200],
+    title: "Arena Reward",
+    amount: [0, 100, 200, 300, 300, 300, 300, 300],
   },
   {
     name: "stage",
     img: apImg,
     title: "Stage AP",
-    amount: [0, 0, 20, 20, 40],
+    amount: [0, 0, 20, 20, 40, 40, 40, 40],
   },
 ];
 

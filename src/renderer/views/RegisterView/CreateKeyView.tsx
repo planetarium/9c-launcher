@@ -11,6 +11,7 @@ import { T } from "src/renderer/i18n";
 import { trackEvent } from "src/utils/mixpanel";
 import { useStore } from "src/utils/useStore";
 import { registerStyles } from ".";
+import { Web3Account } from "@planetarium/account-web3-secret-storage";
 
 const transifexTags = "v2/views/register/CreateKeyView";
 
@@ -21,7 +22,7 @@ function CreateKeyView() {
 
   const onPasswordSubmit = async ({ password }: FormData) => {
     trackEvent("Launcher/CreatePrivateKey");
-    const account = await accountStore.importRaw(
+    const account: Web3Account = await accountStore.importRaw(
       utils.bytesToHex(utils.randomPrivateKey()),
       password
     );

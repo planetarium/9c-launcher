@@ -1,3 +1,4 @@
+import { Address } from "@planetarium/account";
 import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
 import React, { useState } from "react";
@@ -26,7 +27,6 @@ interface FormData {
 function LoginView() {
   const { account: accountStore, transfer } = useStore();
   const [invalid, setInvalid] = useState(false);
-  const keyringAddresses = accountStore.keyring.map((k) => k.address);
   const defaultAddress = getLastLoggedinAddress();
   const {
     register,
@@ -36,13 +36,17 @@ function LoginView() {
   } = useForm();
 
   function getLastLoggedinAddress() {
-    const stored = localStorage.getItem("lastAddress");
+    const storedHex = localStorage.getItem("lastAddress");
+    const stored = storedHex && Address.fromHex(storedHex, true);
 
-    if (stored && keyringAddresses.filter((a) => a === stored).length > 0) {
+    if (
+      stored &&
+      accountStore.addresses.filter((a) => a.equals(stored)).length > 0
+    ) {
       return stored;
     }
 
-    return keyringAddresses[0];
+    return accountStore.addresses[0];
   }
 
   const history = useHistory();
@@ -53,9 +57,8 @@ function LoginView() {
   }) => {
     try {
       localStorage.setItem("lastAddress", address);
-      const account = await accountStore.getAccount(address, password);
+      const account = (await accountStore.getAccount(address, password))!;
       await accountStore.login(account, password);
-      accountStore.setLoginStatus(true);
       ipcRenderer.send("mixpanel-alias", address);
       trackEvent("Launcher/Login");
 
@@ -89,13 +92,13 @@ function LoginView() {
       <Form onSubmit={handleSubmit(handleLogin)}>
         <Controller
           control={control}
-          defaultValue={defaultAddress}
+          defaultValue={defaultAddress?.toHex()}
           {...register("address")}
           render={({ field }) => (
             <Select {...field}>
-              {keyringAddresses.map((address) => (
-                <SelectOption key={address} value={address}>
-                  {"0x" + address}
+              {accountStore.addresses.map((address) => (
+                <SelectOption key={address.toHex()} value={address.toHex()}>
+                  {address.toString()}
                 </SelectOption>
               ))}
             </Select>

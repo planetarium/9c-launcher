@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { observer } from "mobx-react";
-import MenuItem from "./MenuItem";
-import { useStore } from "src/utils/useStore";
-import { ipcRenderer, shell } from "electron";
 import { app } from "@electron/remote";
+import { shell } from "electron";
+import { observer } from "mobx-react";
+import React, { useEffect, useState } from "react";
 import { styled } from "src/renderer/stitches.config";
+import { useStore } from "src/utils/useStore";
+import MenuItem from "./MenuItem";
 
-import settings from "src/renderer/resources/icons/settings.png";
-import refresh from "src/renderer/resources/icons/refresh.png";
-import discord from "src/renderer/resources/icons/discord.png";
 import logo from "src/renderer/resources/icons/9c.png";
-import staking from "src/renderer/resources/icons/staking.png";
-import ncgLogo from "src/renderer/resources/icons/ncgLogo.png";
+import discord from "src/renderer/resources/icons/discord.png";
 import exchange from "src/renderer/resources/icons/exchange.png";
-import SettingsOverlay from "src/renderer/views/SettingsOverlay";
+import ncgLogo from "src/renderer/resources/icons/ncgLogo.png";
+import refresh from "src/renderer/resources/icons/refresh.png";
+import settings from "src/renderer/resources/icons/settings.png";
+import staking from "src/renderer/resources/icons/staking.png";
 import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverlay";
+import SettingsOverlay from "src/renderer/views/SettingsOverlay";
 import TransferAssetOverlay from "src/renderer/views/TransferAssetOverlay/main";
 import { useExternalURL } from "src/utils/useExternalURL";
 
