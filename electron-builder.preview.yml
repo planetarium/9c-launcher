@@ -34,7 +34,7 @@ linux:
     - "AppImage"
 publish:
   provider: "s3"
-  bucket: "9c-test"
+  bucket: "9c-release.planetariumhq.com"
   path: "preview/launcher"
   acl: "private"
   channel: "preview"

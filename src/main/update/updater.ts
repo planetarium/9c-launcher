@@ -4,14 +4,12 @@ import log from "electron-log";
 class AppUpdater {
   win: Electron.BrowserWindow | null;
 
-  constructor(win: Electron.BrowserWindow | null) {
+  constructor(win: Electron.BrowserWindow | null, baseUrl: string) {
     this.win = win;
     log.transports.file.level = "debug";
     autoUpdater.logger = log;
 
-    autoUpdater.setFeedURL(
-      "https://drfoj4ogb5dwf.cloudfront.net/builder-test/launcher"
-    );
+    autoUpdater.setFeedURL(`${baseUrl}/launcher`);
 
     autoUpdater.on("update-available", (updateInfo) =>
       this.handleUpdateAvailable(updateInfo)

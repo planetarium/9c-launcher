@@ -4,10 +4,12 @@ import {
   get as getConfig,
   getBlockChainStorePath,
   WIN_GAME_PATH,
+  playerPath,
   EXECUTE_PATH,
   MIXPANEL_TOKEN,
   initializeNode,
   NodeInfo,
+  netenv,
   userConfigStore,
   baseUrl,
 } from "../config";
@@ -21,6 +23,8 @@ import {
   dialog,
   shell,
 } from "electron";
+import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-platform";
+import { PLATFORM2OS_MAP } from "src/utils/os";
 import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import fs from "fs";
@@ -210,15 +214,10 @@ async function initializeApp() {
 
     win = await createV2Window();
 
-    const appUpdaterInstance = new AppUpdater(win);
+    const appUpdaterInstance = new AppUpdater(win, baseUrl);
     appUpdaterInstance.checkForUpdate();
 
-    const playerUpdateWorker = fork(
-      path.join(__dirname, "playerUpdateWorker.js")
-    );
-    playerUpdateWorker.on("start player update", (message) => {
-      console.log(message);
-    });
+    initPlayerUpdater(appUpdaterInstance);
 
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
@@ -587,4 +586,39 @@ function relaunch() {
     app.relaunch();
     app.exit();
   }
+}
+
+function initPlayerUpdater(appUpdaterInstance: AppUpdater) {
+  interface Message {
+    type: string;
+    path: string;
+    size: number;
+  }
+
+  const os = PLATFORM2OS_MAP[process.platform];
+  const publishedStorageBaseUrl = `${baseUrl}/${netenv}`;
+
+  if (os == null) {
+    throw new NotSupportedPlatformError(process.platform);
+  }
+
+  const checkForUpdateWorker = fork(
+    path.join(__dirname, "checkForUpdateWorker.js"),
+    [],
+    {
+      env: {
+        playerPath,
+        os,
+        baseUrl: publishedStorageBaseUrl,
+      },
+    }
+  );
+  checkForUpdateWorker.on("message", (message: Message) => {
+    if (message.type === "player update") {
+      console.log("Encountered player update", message.path, message.size);
+    }
+    if (message.type === "launcher update") {
+      console.log(message.path, message.size);
+    }
+  });
 }
