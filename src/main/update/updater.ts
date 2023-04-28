@@ -1,15 +1,16 @@
 import { UpdateInfo, autoUpdater } from "electron-updater";
 import log from "electron-log";
+import { netenv } from "src/config";
 
 class AppUpdater {
   win: Electron.BrowserWindow | null;
 
   constructor(win: Electron.BrowserWindow | null, baseUrl: string) {
     this.win = win;
-    log.transports.file.level = "debug";
+    log.transports.file.level = process.env.NODE_ENV === "production" ? "info" : "debug";
     autoUpdater.logger = log;
 
-    autoUpdater.setFeedURL(`${baseUrl}/launcher`);
+    autoUpdater.setFeedURL(`${baseUrl}/${netenv}/launcher`);
 
     autoUpdater.on("update-available", (updateInfo) =>
       this.handleUpdateAvailable(updateInfo)

@@ -218,10 +218,11 @@ async function initializeApp() {
 
     win = await createV2Window();
 
-    const appUpdaterInstance = new AppUpdater(win, baseUrl);
-    appUpdaterInstance.checkForUpdate();
-
-    initPlayerUpdater(win, appUpdaterInstance);
+    if (useUpdate) {
+      const appUpdaterInstance = new AppUpdater(win, baseUrl);
+      appUpdaterInstance.checkForUpdate();
+      initPlayerUpdater(win, appUpdaterInstance);
+    }
 
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
