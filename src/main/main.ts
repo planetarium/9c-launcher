@@ -57,7 +57,11 @@ import {
   setQuitting as setV2Quitting,
 } from "./application";
 import fg from "fast-glob";
-import { cleanUpLockfile, isUpdating } from "./update/update";
+import {
+  performPlayerUpdate,
+  cleanUpLockfile,
+  isUpdating,
+} from "./update/player-update";
 import AppUpdater from "./update/updater";
 import { send } from "./ipc";
 import { IPC_OPEN_URL } from "src/renderer/ipcTokens";
@@ -217,7 +221,7 @@ async function initializeApp() {
     const appUpdaterInstance = new AppUpdater(win, baseUrl);
     appUpdaterInstance.checkForUpdate();
 
-    initPlayerUpdater(appUpdaterInstance);
+    initPlayerUpdater(win, appUpdaterInstance);
 
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
@@ -481,25 +485,7 @@ async function createWindow(): Promise<BrowserWindow> {
  * Clean up the byproducts from the previous runs at the start of the program.
  */
 function cleanUp() {
-  cleanUpAfterUpdate();
   cleanUpLockfile();
-}
-
-function cleanUpAfterUpdate() {
-  const executable = app.getPath("exe");
-  const basename = path.basename(executable);
-  const dirname = path.dirname(executable);
-  const bakExecutable = path.join(dirname, "bak_" + basename);
-
-  if (fs.existsSync(bakExecutable)) {
-    console.log(
-      "The result from updating process, ",
-      bakExecutable,
-      ", was found."
-    );
-    fs.unlinkSync(bakExecutable);
-    console.log("Removed ", bakExecutable);
-  }
 }
 
 function loadInstallerMixpanelUUID(): string {
@@ -588,7 +574,7 @@ function relaunch() {
   }
 }
 
-function initPlayerUpdater(appUpdaterInstance: AppUpdater) {
+function initPlayerUpdater(win: BrowserWindow, appUpdaterInstance: AppUpdater) {
   interface Message {
     type: string;
     path: string;
@@ -616,6 +602,7 @@ function initPlayerUpdater(appUpdaterInstance: AppUpdater) {
   checkForUpdateWorker.on("message", (message: Message) => {
     if (message.type === "player update") {
       console.log("Encountered player update", message.path, message.size);
+      performPlayerUpdate(win, message.path, message.size);
     }
     if (message.type === "launcher update") {
       console.log(message.path, message.size);

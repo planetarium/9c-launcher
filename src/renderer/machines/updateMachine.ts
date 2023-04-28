@@ -86,10 +86,6 @@ export const updateMachine = createMachine<
                 "PLAYER_DOWNLOAD"
               ),
           },
-          {
-            id: "triggerUpdate",
-            src: () => ipcRenderer.invoke("start update"),
-          },
         ],
         on: {
           PLAYER_DOWNLOAD: {

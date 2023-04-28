@@ -10,6 +10,8 @@ const playerVersionFilePath = path.join(playerPath, VERSION_FILE_NAME);
 console.log("base", `${baseUrl}/player/latest.json`);
 
 setInterval(() => {
+  console.log("Check for player update");
+
   https
     .get(`${baseUrl}/player/latest.json`, (response) => {
       let data = "";
