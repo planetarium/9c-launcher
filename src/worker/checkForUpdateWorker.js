@@ -49,3 +49,11 @@ setInterval(() => {
       console.error("Error: ", error.message);
     });
 }, 60000);
+
+setInterval(() => {
+  process.send?.({
+    type: "launcher update",
+    path: "",
+    size: 0,
+  });
+}, 300000);

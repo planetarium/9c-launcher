@@ -606,7 +606,7 @@ function initPlayerUpdater(win: BrowserWindow, appUpdaterInstance: AppUpdater) {
       performPlayerUpdate(win, message.path, message.size);
     }
     if (message.type === "launcher update") {
-      console.log(message.path, message.size);
+      appUpdaterInstance.checkForUpdate();
     }
   });
 }
