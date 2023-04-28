@@ -43,8 +43,15 @@ yarn dev
 
 ## 배포를 위한 패키징 준비
 
-대부분의 경우에는 CI 빌드를 통해 배포되기 때문에 본 과정이 필요치 않습니다. 다만 필요한 경우 아래 명령어를 실행하여 배포를 위한 패키징을 준비할 수 있습니다:
+대부분의 경우에는 CI 빌드를 통해 배포되기 때문에 본 과정이 필요치 않습니다. 다만 필요한 경우 아래 명령어를 실행하여 배포를 위한 패키징을 준비할 수 있습니다.
+패키징을 위해 electron-builder.{network}.yml 파일 중 원하는 채널을 선택해 복사한 후 .{network} 부분을 지워 `electron-builder.yml`이 되도록 수정해주세요.
 
-```
+```sh
 yarn run pack
+```
+
+s3에 업로드 하기 위해선 인증 과정이 필요합니다. [aws 인증](https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/cli-configure-files.html) 과정을 거쳐 먼저 세팅해주세요. 이후 아래 명령을 실행합니다.
+
+```sh
+yarn run release
 ```
