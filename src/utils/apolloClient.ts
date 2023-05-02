@@ -45,17 +45,6 @@ export default function useApolloClient(): Client | null {
         uri: `ws://${headlessUrl}/graphql`,
         options: {
           reconnect: true,
-          connectionCallback() {
-            client
-              .query<PreloadEndedQuery>({
-                query: PreloadEndedDocument,
-              })
-              .then(({ data }) => {
-                const apv = data!.nodeStatus.appProtocolVersion;
-                if (!apv) return;
-                ipcRenderer.send("encounter different version", apv);
-              });
-          },
         },
       });
 

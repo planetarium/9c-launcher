@@ -4,6 +4,7 @@ build
 pack
 .DS_Store
 .blockstore
+electron-builder.yml
 
 # ignore generated file by graphql-code-generator.
 src/generated

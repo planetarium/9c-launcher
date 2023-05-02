@@ -1,4 +1,4 @@
-appId: "com.planetariumhq.nine-chronicles"
+appId: "com.nine-chronicles"
 asar: true
 files:
   - "!**/*"
@@ -7,6 +7,7 @@ files:
       - '**/*'
 win:
   target:
+    - "zip"
     - target: "nsis"
       arch:
         - "x64"
@@ -15,6 +16,7 @@ mac:
   icon: "AppIcon.icns"
   target:
     - "dmg"
+    - "zip"
   category: "public.app-category.games"
 dmg:
   icon: "AppIcon.icns"
@@ -28,11 +30,11 @@ dmg:
       path: "/Applications"
 linux:
   target:
+    - "zip"
     - "AppImage"
-    - "deb"
-    - "rpm"
 publish:
   provider: "s3"
   bucket: "9c-release.planetariumhq.com"
-  path: "builder-test/launcher"
+  path: "preview/launcher"
   acl: "private"
+  channel: "preview"
