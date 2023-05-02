@@ -5,7 +5,7 @@ elif [ $1 == "windows" ]; then
   echo "OS_ALIAS=win32" >> $GITHUB_ENV
   echo "ARTIFACT=Windows.zip" >> $GITHUB_ENV
   echo "EXECUTABLE=." >> $GITHUB_ENV
-  echo "ZIP_CMD=7z a -r" >> $GITHUB_ENV
+  echo "ZIP_CMD=7z a -r -t7z" >> $GITHUB_ENV
 elif [ $1 == "macos" ]; then
   echo "OS_ALIAS=darwin" >> $GITHUB_ENV
   echo "ARTIFACT=macOS.tar.gz" >> $GITHUB_ENV
