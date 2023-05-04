@@ -7,10 +7,22 @@ const playerPath = process.env.playerPath;
 const baseUrl = process.env.baseUrl;
 const os = process.env.os;
 const playerVersionFilePath = path.join(playerPath, VERSION_FILE_NAME);
-console.log("base", `${baseUrl}/player/latest.json`);
+const defaultVersionData = { version: 1 };
+let retryCount = 0;
+
+checkForPlayerUpdate();
+checkForLauncherUpdate();
 
 setInterval(() => {
-  console.log("Check for player update");
+  checkForPlayerUpdate();
+}, 60000);
+
+setInterval(() => {
+  checkForLauncherUpdate();
+}, 300000);
+
+function checkForPlayerUpdate() {
+  sendLog("debug", "Check for player update");
 
   https
     .get(`${baseUrl}/player/latest.json`, (response) => {
@@ -24,36 +36,71 @@ setInterval(() => {
         const latest = JSON.parse(data);
 
         fs.readFile(playerVersionFilePath, (err, playerVersionData) => {
-          if (err) {
-            console.error("Error reading local version file:", err);
-            return;
-          }
+          const local = readLocalPlayerVersionFile(err, playerVersionData);
 
-          const local = JSON.parse(playerVersionData);
-
-          if (latest.version > local.version) {
-            for (const file of latest.files) {
-              if (file.os === os) {
-                process.send?.({
-                  type: "player update",
-                  path: `${baseUrl}/player/${file.path}`,
-                  size: file.size,
-                });
-              }
-            }
-          }
+          checkPlayerVersion(latest, local);
         });
       });
     })
     .on("error", (error) => {
-      console.error("Error: ", error.message);
+      sendLog("error", error.message);
     });
-}, 60000);
+}
 
-setInterval(() => {
+function checkForLauncherUpdate() {
+  sendUpdateInfo("launcher", "", 0);
+}
+
+function readLocalPlayerVersionFile(err, playerVersionData) {
+  if (err) {
+    if (err.code === "ENOENT") {
+      sendLog("log", `Not found version file Start update, err: ${err}`);
+      return defaultVersionData;
+    } else {
+      sendLog("error", `Error reading local version file:, ${err}`);
+      throw err;
+    }
+  }
+
+  return JSON.parse(playerVersionData);
+}
+
+function checkPlayerVersion(latest, local) {
+  if (latest.version > local.version || isOldVersionFile(local)) {
+    for (const file of latest.files) {
+      if (file.os === os) {
+        handleTooManyRetry();
+        sendUpdateInfo("player", `${baseUrl}/player/${file.path}`, file.size);
+        retryCount += 1;
+      }
+    }
+  }
+}
+
+function isOldVersionFile(local) {
+  if (local.apvVersion && local.schemaVersion) return true;
+  return false;
+}
+
+function handleTooManyRetry() {
+  if (retryCount > 10) {
+    const errorMessage = `The checkForPlayerUpdate function has been called more than ${retryCount} times, hence it will be skipped.`;
+    sendLog("error", errorMessage);
+    throw Error(errorMessage);
+  }
+}
+
+function sendLog(level, body) {
+  sendMessage("log", { level, body });
+}
+
+function sendUpdateInfo(target, path, size) {
+  sendMessage(`${target} update`, { path, size });
+}
+
+function sendMessage(type, extra) {
   process.send?.({
-    type: "launcher update",
-    path: "",
-    size: 0,
+    type,
+    ...extra,
   });
-}, 300000);
+}
