@@ -220,8 +220,7 @@ async function initializeApp() {
 
     if (useUpdate) {
       const appUpdaterInstance = new AppUpdater(win, baseUrl);
-      appUpdaterInstance.checkForUpdate();
-      initPlayerUpdater(win, appUpdaterInstance);
+      initCheckForUpdateWorker(win, appUpdaterInstance);
     }
 
     webEnable(win.webContents);
@@ -575,11 +574,13 @@ function relaunch() {
   }
 }
 
-function initPlayerUpdater(win: BrowserWindow, appUpdaterInstance: AppUpdater) {
+function initCheckForUpdateWorker(
+  win: BrowserWindow,
+  appUpdaterInstance: AppUpdater
+) {
   interface Message {
     type: string;
-    path: string;
-    size: number;
+    [key: string]: any;
   }
 
   const os = PLATFORM2OS_MAP[process.platform];
@@ -590,23 +591,38 @@ function initPlayerUpdater(win: BrowserWindow, appUpdaterInstance: AppUpdater) {
   }
 
   const checkForUpdateWorker = fork(
-    path.join(__dirname, "checkForUpdateWorker.js"),
+    path.join(__dirname, "./checkForUpdateWorker.js"),
     [],
     {
       env: {
+        ELECTRON_RUN_AS_NODE: "1",
         playerPath,
         os,
         baseUrl: publishedStorageBaseUrl,
       },
     }
   );
+
   checkForUpdateWorker.on("message", (message: Message) => {
     if (message.type === "player update") {
-      console.log("Encountered player update", message.path, message.size);
+      console.log("Encountered player update", message);
       performPlayerUpdate(win, message.path, message.size);
     }
     if (message.type === "launcher update") {
       appUpdaterInstance.checkForUpdate();
     }
+    if (message.type === "log") {
+      console[message.level as "debug" | "error" | "log"](
+        "[checkForUpdateWorker]" + message.body
+      );
+    }
+  });
+
+  checkForUpdateWorker.on("error", (error) => {
+    console.error("Error in child process:", error);
+  });
+
+  checkForUpdateWorker.on("exit", (code) => {
+    console.log(`Child process exited with code ${code}`);
   });
 }
