@@ -10,10 +10,12 @@ const playerVersionFilePath = path.join(playerPath, VERSION_FILE_NAME);
 const defaultVersionData = { version: 1 };
 let retryCount = 0;
 
-setTimeout(() => {
+sendLog("info", "initialized update worker");
+
+setTimeout(async () => {
   checkForLauncherUpdate();
   checkForPlayerUpdate();
-}, 1 * 1000);
+}, 4 * 1000);
 
 setInterval(() => {
   checkForPlayerUpdate();
@@ -24,31 +26,28 @@ setInterval(() => {
 }, 60 * 5 * 1000);
 
 async function checkForPlayerUpdate() {
-  sendLog("debug", "Check for player update");
+  sendLog("info", "Check for player update");
+  https
+    .get(`${baseUrl}/player/latest.json`, (response) => {
+      let data = "";
 
-  let response;
-  try {
-    response = await https.get(`${baseUrl}/player/latest.json`);
-  } catch(err) {
-    sendLog("error", err.message);
-    return;
-  }
-  let data = "";
+      response.on("data", (chunk) => {
+        data += chunk;
+      });
 
-  response.on("data", (chunk) => {
-    data += chunk;
-  });
-
-  response.on("end", () => {
-    const latest = JSON.parse(data);
-
-    readLocalPlayerVersionFile().then((local) => {
-      checkPlayerVersion(latest, local);
+      response.on("end", () => {
+        const latest = JSON.parse(data);
+        readLocalPlayerVersionFile().then((local) => {
+          checkPlayerVersion(latest, local);
+        });
+      });
+    })
+    .on("error", (error) => {
+      sendLog("error", error.message);
     });
-  });
 }
-
-function checkForLauncherUpdate() {
+async function checkForLauncherUpdate() {
+  sendLog("info", "Check for launcher update");
   sendUpdateInfo("launcher", "", 0);
 }
 
@@ -57,7 +56,7 @@ async function readLocalPlayerVersionFile() {
   try {
     const playerVersionData = await fs.promises.readFile(playerVersionFilePath);
     local = JSON.parse(playerVersionData);
-  } catch(err) {
+  } catch (err) {
     local = handleLocalPlayerVersionFileNotExistsError(err);
   }
   return local;
@@ -87,7 +86,6 @@ function checkPlayerVersion(latest, local) {
     }
   }
 }
-
 function isOldVersionFile(local) {
   if (local.apvVersion && local.schemaVersion) return true;
   return false;
