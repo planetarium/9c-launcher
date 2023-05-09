@@ -10,16 +10,18 @@ const playerVersionFilePath = path.join(playerPath, VERSION_FILE_NAME);
 const defaultVersionData = { version: 1 };
 let retryCount = 0;
 
-checkForPlayerUpdate();
-checkForLauncherUpdate();
+setTimeout(() => {
+  checkForLauncherUpdate();
+  checkForPlayerUpdate();
+}, 1 * 1000);
 
 setInterval(() => {
   checkForPlayerUpdate();
-}, 60000);
+}, 60 * 1000);
 
 setInterval(() => {
   checkForLauncherUpdate();
-}, 300000);
+}, 60 * 5 * 1000);
 
 function checkForPlayerUpdate() {
   sendLog("debug", "Check for player update");

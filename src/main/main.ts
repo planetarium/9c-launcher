@@ -78,6 +78,7 @@ Object.assign(console, log.functions);
 const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
+let appUpdaterInstance: AppUpdater | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
@@ -219,7 +220,7 @@ async function initializeApp() {
     win = await createV2Window();
 
     if (useUpdate) {
-      const appUpdaterInstance = new AppUpdater(win, baseUrl);
+      appUpdaterInstance = new AppUpdater(win, baseUrl);
       initCheckForUpdateWorker(win, appUpdaterInstance);
     }
 
@@ -310,6 +311,11 @@ function initializeIpc() {
       await initializeRemoteHeadless();
     }
     return true;
+  });
+
+  ipcMain.handle("execute launcher update", async (event) => {
+    if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
+    appUpdaterInstance.execute();
   });
 
   ipcMain.on("select-directory", async (event) => {
