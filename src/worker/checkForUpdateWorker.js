@@ -23,37 +23,47 @@ setInterval(() => {
   checkForLauncherUpdate();
 }, 60 * 5 * 1000);
 
-function checkForPlayerUpdate() {
+async function checkForPlayerUpdate() {
   sendLog("debug", "Check for player update");
 
-  https
-    .get(`${baseUrl}/player/latest.json`, (response) => {
-      let data = "";
+  let response;
+  try {
+    response = await https.get(`${baseUrl}/player/latest.json`);
+  } catch(err) {
+    sendLog("error", err.message);
+    return;
+  }
+  let data = "";
 
-      response.on("data", (chunk) => {
-        data += chunk;
-      });
+  response.on("data", (chunk) => {
+    data += chunk;
+  });
 
-      response.on("end", () => {
-        const latest = JSON.parse(data);
+  response.on("end", () => {
+    const latest = JSON.parse(data);
 
-        fs.readFile(playerVersionFilePath, (err, playerVersionData) => {
-          const local = readLocalPlayerVersionFile(err, playerVersionData);
-
-          checkPlayerVersion(latest, local);
-        });
-      });
-    })
-    .on("error", (error) => {
-      sendLog("error", error.message);
+    readLocalPlayerVersionFile().then((local) => {
+      checkPlayerVersion(latest, local);
     });
+  });
 }
 
 function checkForLauncherUpdate() {
   sendUpdateInfo("launcher", "", 0);
 }
 
-function readLocalPlayerVersionFile(err, playerVersionData) {
+async function readLocalPlayerVersionFile() {
+  let local;
+  try {
+    const playerVersionData = await fs.promises.readFile(playerVersionFilePath);
+    local = JSON.parse(playerVersionData);
+  } catch(err) {
+    local = handleLocalPlayerVersionFileNotExistsError(err);
+  }
+  return local;
+}
+
+function handleLocalPlayerVersionFileNotExistsError(err) {
   if (err) {
     if (err.code === "ENOENT") {
       sendLog("log", `Not found version file Start update, err: ${err}`);
@@ -63,8 +73,7 @@ function readLocalPlayerVersionFile(err, playerVersionData) {
       throw err;
     }
   }
-
-  return JSON.parse(playerVersionData);
+  throw err;
 }
 
 function checkPlayerVersion(latest, local) {
