@@ -619,7 +619,7 @@ function initCheckForUpdateWorker(
     }
     if (message.type === "log") {
       console[message.level as "debug" | "error" | "log"](
-        "[checkForUpdateWorker]" + message.body
+        "[checkForUpdateWorker] " + message.body
       );
     }
   });
