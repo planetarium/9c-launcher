@@ -78,6 +78,7 @@ Object.assign(console, log.functions);
 const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
+let appUpdaterInstance: AppUpdater | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
@@ -219,9 +220,8 @@ async function initializeApp() {
     win = await createV2Window();
 
     if (useUpdate) {
-      const appUpdaterInstance = new AppUpdater(win, baseUrl);
-      appUpdaterInstance.checkForUpdate();
-      initPlayerUpdater(win, appUpdaterInstance);
+      appUpdaterInstance = new AppUpdater(win, baseUrl);
+      initCheckForUpdateWorker(win, appUpdaterInstance);
     }
 
     webEnable(win.webContents);
@@ -311,6 +311,11 @@ function initializeIpc() {
       await initializeRemoteHeadless();
     }
     return true;
+  });
+
+  ipcMain.handle("execute launcher update", async (event) => {
+    if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
+    appUpdaterInstance.execute();
   });
 
   ipcMain.on("select-directory", async (event) => {
@@ -575,11 +580,13 @@ function relaunch() {
   }
 }
 
-function initPlayerUpdater(win: BrowserWindow, appUpdaterInstance: AppUpdater) {
+function initCheckForUpdateWorker(
+  win: BrowserWindow,
+  appUpdaterInstance: AppUpdater
+) {
   interface Message {
     type: string;
-    path: string;
-    size: number;
+    [key: string]: any;
   }
 
   const os = PLATFORM2OS_MAP[process.platform];
@@ -590,23 +597,38 @@ function initPlayerUpdater(win: BrowserWindow, appUpdaterInstance: AppUpdater) {
   }
 
   const checkForUpdateWorker = fork(
-    path.join(__dirname, "checkForUpdateWorker.js"),
+    path.join(__dirname, "./checkForUpdateWorker.js"),
     [],
     {
       env: {
+        ELECTRON_RUN_AS_NODE: "1",
         playerPath,
         os,
         baseUrl: publishedStorageBaseUrl,
       },
     }
   );
+
   checkForUpdateWorker.on("message", (message: Message) => {
     if (message.type === "player update") {
-      console.log("Encountered player update", message.path, message.size);
+      console.log("Encountered player update", message);
       performPlayerUpdate(win, message.path, message.size);
     }
     if (message.type === "launcher update") {
       appUpdaterInstance.checkForUpdate();
     }
+    if (message.type === "log") {
+      console[message.level as "debug" | "error" | "log"](
+        "[checkForUpdateWorker]" + message.body
+      );
+    }
+  });
+
+  checkForUpdateWorker.on("error", (error) => {
+    console.error("Error in child process:", error);
+  });
+
+  checkForUpdateWorker.on("exit", (code) => {
+    console.log(`Child process exited with code ${code}`);
   });
 }

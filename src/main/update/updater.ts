@@ -3,11 +3,12 @@ import log from "electron-log";
 import { netenv } from "src/config";
 
 class AppUpdater {
-  win: Electron.BrowserWindow | null;
+  win: Electron.BrowserWindow;
 
-  constructor(win: Electron.BrowserWindow | null, baseUrl: string) {
+  constructor(win: Electron.BrowserWindow, baseUrl: string) {
     this.win = win;
-    log.transports.file.level = process.env.NODE_ENV === "production" ? "info" : "debug";
+    log.transports.file.level =
+      process.env.NODE_ENV === "production" ? "info" : "debug";
     autoUpdater.logger = log;
 
     autoUpdater.setFeedURL(`${baseUrl}/${netenv}/launcher`);
@@ -25,12 +26,18 @@ class AppUpdater {
     autoUpdater.checkForUpdates();
   }
 
+  execute() {
+    autoUpdater.quitAndInstall();
+  }
+
   handleUpdateAvailable(updateInfo: UpdateInfo) {
     console.log("Found update", updateInfo);
   }
 
   handleUpdateDownloaded(updateInfo: UpdateInfo) {
-    autoUpdater.quitAndInstall();
+    this.win.webContents.executeJavaScript(
+      `window.location.hash = '/confirm-update'`
+    );
   }
 
   handleError(error: Error) {
