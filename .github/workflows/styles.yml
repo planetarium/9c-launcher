@@ -2,7 +2,7 @@ name: Styles
 
 on:
   push:
-    branches: []
+    branches: ["*"]
 
 jobs:
   styles:
