@@ -56,13 +56,13 @@ jobs:
           fi
 
       - name: pack
-        if: ${{ startsWith(github.event.inputs.from_branch, 'ci-test/') == "false" }}
+        if: ${{ startsWith(github.event.inputs.from_branch, 'release/') == false }}
         shell: bash
         run: |
           yarn run pack:${{ matrix.targetPlatform }}
 
       - name: release
-        if: startsWith(github.event.inputs.from_branch, 'ci-test/') || startsWith(github.event.ref, 'refs/tags/')
+        if: startsWith(github.event.inputs.from_branch, 'release/') || startsWith(github.event.ref, 'refs/tags/')
         shell: bash
         run: |
           yarn run release:${{ matrix.targetPlatform }}
