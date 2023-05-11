@@ -48,21 +48,23 @@ jobs:
       - name: Copy builder config
         shell: bash
         run: |
-          if [[ "${{ startsWith(github.event.ref, 'refs/tags/') == 'true' }}" ]]
+          if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
           then
             mv electron-builder.main.yml electron-builder.yml
           else
             mv electron-builder.internal.yml electron-builder.yml
+            timestamp=$(date +%s)
+            jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
           fi
 
       - name: pack
-        if: ${{ startsWith(github.event.inputs.from_branch, 'release/') == false }}
+        if: ${{ !startsWith(github.event.inputs.from_branch, 'release/') }}
         shell: bash
         run: |
           yarn run pack:${{ matrix.targetPlatform }}
 
       - name: release
-        if: startsWith(github.event.inputs.from_branch, 'release/') || startsWith(github.event.ref, 'refs/tags/')
+        if: ${{ startsWith(github.event.inputs.from_branch, 'release/') || startsWith(github.event.ref, 'refs/tags/') }}
         shell: bash
         run: |
           yarn run release:${{ matrix.targetPlatform }}
