@@ -1,0 +1,29 @@
+name: Update Translations
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  update-translations:
+    runs-on: ubuntu-latest
+    container:
+      image: node:lts
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+
+      - name: Install
+        shell: bash
+        run: yarn
+
+      - name: Update Translations
+        run: yarn update-translations
+        env:
+          TRANSIFEX_SECRET: ${{ secrets.TRANSIFEX_SECRET }}
+          TRANSIFEX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN }}

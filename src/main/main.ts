@@ -1,22 +1,17 @@
 import axios from "axios";
 import {
-  DEFAULT_DOWNLOAD_BASE_URL,
-  CUSTOM_SERVER,
-  LOCAL_SERVER_HOST,
-  LOCAL_SERVER_PORT,
   configStore,
   get as getConfig,
   getBlockChainStorePath,
   WIN_GAME_PATH,
+  playerPath,
   EXECUTE_PATH,
-  RPC_SERVER_HOST,
-  RPC_SERVER_PORT,
   MIXPANEL_TOKEN,
   initializeNode,
   NodeInfo,
+  netenv,
   userConfigStore,
   baseUrl,
-  CONFIG_FILE_PATH,
 } from "../config";
 import {
   app,
@@ -28,6 +23,8 @@ import {
   dialog,
   shell,
 } from "electron";
+import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-platform";
+import { PLATFORM2OS_MAP } from "src/utils/os";
 import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import fs from "fs";
@@ -36,9 +33,6 @@ import logoImage from "./resources/logo.png";
 import { initializeSentry } from "src/utils/sentry";
 import "core-js";
 import log from "electron-log";
-import { AppProtocolVersionType } from "../generated/graphql";
-import { getSdk } from "src/generated/graphql-request";
-import { decodeApvExtra, encodeTokenFromHex } from "src/utils/apv";
 import * as utils from "src/utils";
 import {
   HeadlessExitedError,
@@ -63,15 +57,19 @@ import {
   setQuitting as setV2Quitting,
 } from "./application";
 import fg from "fast-glob";
-import { cleanUpLockfile, isUpdating, IUpdateOptions } from "./update/update";
-import { performUpdate } from "./update/update";
-import { checkForUpdate, checkForUpdateFromApv, IUpdate } from "./update/check";
+import {
+  performPlayerUpdate,
+  cleanUpLockfile,
+  isUpdating,
+} from "./update/player-update";
+import AppUpdater from "./update/updater";
 import { send } from "./ipc";
 import { IPC_OPEN_URL } from "src/renderer/ipcTokens";
 import {
   initialize as remoteInitialize,
   enable as webEnable,
 } from "@electron/remote/main";
+import { fork } from "child_process";
 
 initializeSentry();
 
@@ -80,6 +78,7 @@ Object.assign(console, log.functions);
 const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
 
 let win: BrowserWindow | null = null;
+let appUpdaterInstance: AppUpdater | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
@@ -105,12 +104,6 @@ const mixpanel: NineChroniclesMixpanel | undefined =
   getConfig("Mixpanel") && process.env.NODE_ENV === "production"
     ? new NineChroniclesMixpanel(createMixpanel(MIXPANEL_TOKEN), mixpanelUUID)
     : undefined;
-
-const updateOptions: IUpdateOptions = {
-  downloadStarted: quitAllProcesses,
-  relaunchRequired: relaunch,
-  getWindow: () => win,
-};
 
 client
   .syncTime()
@@ -226,6 +219,11 @@ async function initializeApp() {
 
     win = await createV2Window();
 
+    if (useUpdate) {
+      appUpdaterInstance = new AppUpdater(win, baseUrl);
+      initCheckForUpdateWorker(win, appUpdaterInstance);
+    }
+
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
@@ -243,58 +241,12 @@ async function initializeApp() {
       app.exit();
     }
 
-    const update: IUpdate | null = await checkForUpdate(
-      getSdk(remoteNode.GraphqlClient()),
-      process.platform
-    ).catch((e) => {
-      console.error("An error has occurred while checking updates", e);
-      return null;
-    });
-
-    if (useUpdate && update) {
-      ipcMain.handle("start update", async () => {
-        await performUpdate(update, updateOptions);
-      });
-    }
-
-    if (update) {
-      ipcMain.handle("start player update", async () => {
-        await performUpdate(
-          {
-            ...update,
-            projects: {
-              ...update.projects,
-              player: { ...update.projects.player, updateRequired: true },
-            },
-          },
-          updateOptions
-        );
-      });
-
-      ipcMain.handle("start launcher update", async () => {
-        await performUpdate(
-          {
-            ...update,
-            projects: {
-              ...update.projects,
-              launcher: { ...update.projects.launcher, updateRequired: true },
-            },
-          },
-          updateOptions
-        );
-      });
-    }
-
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
 
     mixpanel?.track("Launcher/Start", {
       isV2: true,
       useRemoteHeadless,
-      updateAvailable: update
-        ? update.projects.launcher.updateRequired ||
-          update.projects.player.updateRequired
-        : false,
     });
 
     // Detects and move old snapshot caches as they're unused.
@@ -317,39 +269,6 @@ async function initializeApp() {
 }
 
 function initializeIpc() {
-  ipcMain.on(
-    "encounter different version",
-    async (
-      _event,
-      apv: Pick<
-        AppProtocolVersionType,
-        "version" | "extra" | "signer" | "signature"
-      >
-    ) => {
-      if (!useUpdate || !apv.extra) return;
-
-      const extra = decodeApvExtra(apv.extra);
-
-      const simpleApv = {
-        raw: encodeTokenFromHex(
-          apv.version,
-          apv.signer,
-          apv.signature,
-          apv.extra
-        ),
-        version: apv.version,
-        extra: extra ? Object.fromEntries(extra) : {},
-      };
-
-      try {
-        const update = await checkForUpdateFromApv(simpleApv, process.platform);
-        await performUpdate(update, updateOptions);
-      } catch (e) {
-        console.error("An error has occurred while checking updates", e);
-      }
-    }
-  );
-
   ipcMain.on("launch game", (_, info: IGameStartOptions) => {
     if (gameNode !== null) {
       console.error("Game is already running.");
@@ -392,6 +311,11 @@ function initializeIpc() {
       await initializeRemoteHeadless();
     }
     return true;
+  });
+
+  ipcMain.handle("execute launcher update", async (event) => {
+    if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
+    appUpdaterInstance.execute();
   });
 
   ipcMain.on("select-directory", async (event) => {
@@ -567,25 +491,7 @@ async function createWindow(): Promise<BrowserWindow> {
  * Clean up the byproducts from the previous runs at the start of the program.
  */
 function cleanUp() {
-  cleanUpAfterUpdate();
   cleanUpLockfile();
-}
-
-function cleanUpAfterUpdate() {
-  const executable = app.getPath("exe");
-  const basename = path.basename(executable);
-  const dirname = path.dirname(executable);
-  const bakExecutable = path.join(dirname, "bak_" + basename);
-
-  if (fs.existsSync(bakExecutable)) {
-    console.log(
-      "The result from updating process, ",
-      bakExecutable,
-      ", was found."
-    );
-    fs.unlinkSync(bakExecutable);
-    console.log("Removed ", bakExecutable);
-  }
 }
 
 function loadInstallerMixpanelUUID(): string {
@@ -672,4 +578,57 @@ function relaunch() {
     app.relaunch();
     app.exit();
   }
+}
+
+function initCheckForUpdateWorker(
+  win: BrowserWindow,
+  appUpdaterInstance: AppUpdater
+) {
+  interface Message {
+    type: string;
+    [key: string]: any;
+  }
+
+  const os = PLATFORM2OS_MAP[process.platform];
+  const publishedStorageBaseUrl = `${baseUrl}/${netenv}`;
+
+  if (os == null) {
+    throw new NotSupportedPlatformError(process.platform);
+  }
+
+  const checkForUpdateWorker = fork(
+    path.join(__dirname, "./checkForUpdateWorker.js"),
+    [],
+    {
+      env: {
+        ELECTRON_RUN_AS_NODE: "1",
+        playerPath,
+        os,
+        baseUrl: publishedStorageBaseUrl,
+      },
+    }
+  );
+
+  checkForUpdateWorker.on("message", (message: Message) => {
+    if (message.type === "player update") {
+      console.log("Encountered player update", message);
+      performPlayerUpdate(win, message.path, message.size);
+    }
+    if (message.type === "launcher update") {
+      appUpdaterInstance.checkForUpdate();
+    }
+    if (message.type === "log") {
+      console[message.level as "debug" | "error" | "log"](
+        "[checkForUpdateWorker] " + message.body
+      );
+    }
+  });
+
+  checkForUpdateWorker.on("error", (error) => {
+    console.error("Error in child process:", error);
+  });
+
+  checkForUpdateWorker.on("exit", (code) => {
+    console.log(`Child process exited with code ${code}`);
+  });
 }

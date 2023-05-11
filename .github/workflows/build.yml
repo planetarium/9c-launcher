@@ -14,18 +14,19 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - targetPlatform: linux
-          - targetPlatform: macos
+            os: ubuntu-latest
+          # - targetPlatform: macos
+          #   os: ubuntu-latest
           - targetPlatform: windows
-    runs-on: ubuntu-latest
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: install wine
-        run: sudo apt-get update && sudo apt-get install -y wine64
 
       - uses: actions/setup-node@v3
         with:
@@ -42,90 +43,38 @@ jobs:
       - name: Copy config.json from the last release
         shell: bash
         run: |
-          mkdir pack-dist
-          set -ex
-          mkdir -p dist
-          curl -o "dist/config.json" 'https://release.nine-chronicles.com/9c-launcher-config.json'
+          mkdir build && yarn download-config
 
-      - name: build
+      - name: Copy builder config
         shell: bash
         run: |
-          if [[ "${{ github.ref }}" == "main" ]]
+          if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
           then
-            yarn release:${{ matrix.targetPlatform }}
+            mv electron-builder.main.yml electron-builder.yml
           else
-            yarn run pack:${{ matrix.targetPlatform }}
+            mv electron-builder.internal.yml electron-builder.yml
+            timestamp=$(date +%s)
+            jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
           fi
 
-      - name: zip
+      - name: pack
+        if: ${{ !startsWith(github.event.inputs.from_branch, 'release/') }}
         shell: bash
         run: |
-          cd pack/Nine\ Chronicles-$OS_ALIAS-x64/
-          $ZIP_CMD ../../pack-dist/$ARTIFACT *
+          yarn run pack:${{ matrix.targetPlatform }}
 
-      - uses: actions/upload-artifact@v3
-        with:
-          path: pack-dist
-          name: Build-${{ matrix.targetPlatform }}
-          retention-days: 7
-          if-no-files-found: error
-
-      - name: upload
-        if: github.event_name == 'push'
+      - name: release
+        if: ${{ startsWith(github.event.inputs.from_branch, 'release/') || startsWith(github.event.ref, 'refs/tags/') }}
         shell: bash
         run: |
-          aws s3 cp "pack-dist/$ARTIFACT" "s3://9c-artifacts/9c-launcher/${{ github.sha }}/$ARTIFACT"
+          yarn run release:${{ matrix.targetPlatform }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
 
-  styles:
-    runs-on: ubuntu-latest
-    container:
-      image: node:lts
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
+      - uses: actions/upload-artifact@v3
         with:
-          node-version: 16
-          cache: 'yarn'
-
-      - name: Install
-        shell: bash
-        run: yarn
-
-      - name: Check Formatting
-        run: yarn prettier --check "src/**/*.{ts,tsx,json}"
-
-      - run: yarn codegen
-
-      - name: Type Check
-        run: yarn tsc --noEmit
-
-      - name: ESLint Check
-        run: yarn eslint ./src --quiet
-
-  update-translations:
-    if: github.ref == 'refs/heads/development'
-    runs-on: ubuntu-latest
-    container:
-      image: node:lts
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'yarn'
-
-      - name: Install
-        shell: bash
-        run: yarn
-
-      - name: Update Translations
-        run: yarn update-translations
-        env:
-          TRANSIFEX_SECRET: ${{ secrets.TRANSIFEX_SECRET }}
-          TRANSIFEX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN }}
+          path: dist
+          name: Dist-${{ matrix.targetPlatform }}
+          retention-days: 3
+          if-no-files-found: error

@@ -33,7 +33,7 @@ yarn build-prod  # 프로덕션 빌드
 
 ## 실행하기
 
-실행하기 전 런처를 사용하기 위해 최신 버전의 `config.json` 파일이 필요합니다. 없는 경우 이곳에서 다운로드 한 뒤 `dist` 폴더 내에 `config.json`이라는 이름으로 저장해주세요: https://release.nine-chronicles.com/9c-launcher-config.json.
+실행하기 전 런처를 사용하기 위해 최신 버전의 `config.json` 파일이 필요합니다. 없는 경우 이곳에서 다운로드 한 뒤 `build` 폴더 내에 `config.json`이라는 이름으로 저장해주세요: https://release.nine-chronicles.com/9c-launcher-config.json.
 
 그 이후에는 다음 명령어를 통해 런처를 실행하실 수 있습니다.
 
@@ -43,8 +43,15 @@ yarn dev
 
 ## 배포를 위한 패키징 준비
 
-대부분의 경우에는 CI 빌드를 통해 배포되기 때문에 본 과정이 필요치 않습니다. 다만 필요한 경우 아래 명령어를 실행하여 배포를 위한 패키징을 준비할 수 있습니다:
+대부분의 경우에는 CI 빌드를 통해 배포되기 때문에 본 과정이 필요치 않습니다. 다만 필요한 경우 아래 명령어를 실행하여 배포를 위한 패키징을 준비할 수 있습니다.
+패키징을 위해 electron-builder.{network}.yml 파일 중 원하는 채널을 선택해 복사한 후 .{network} 부분을 지워 `electron-builder.yml`이 되도록 수정해주세요.
 
-```
+```sh
 yarn run pack
+```
+
+s3에 업로드 하기 위해선 인증 과정이 필요합니다. [aws 인증](https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/cli-configure-files.html) 과정을 거쳐 먼저 세팅해주세요. 이후 아래 명령을 실행합니다.
+
+```sh
+yarn run release
 ```

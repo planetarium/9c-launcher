@@ -5,19 +5,11 @@ import { ipcRenderer } from "electron";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import UpdateView from "src/renderer/views/UpdateView";
 import { updateMachine } from "src/renderer/machines/updateMachine";
-import { useEncounteredAPV } from "./useEncounteredAPV";
 
 export default function APVSubscriptionProvider({
   children,
 }: React.PropsWithChildren<{}>) {
   const [state, send] = useMachine(updateMachine, { devTools: true });
-  const apv = useEncounteredAPV();
-
-  useEffect(() => {
-    if (apv) {
-      ipcRenderer.send("encounter different version", apv);
-    }
-  }, [apv]);
 
   useEffect(() => {
     // Progress updates

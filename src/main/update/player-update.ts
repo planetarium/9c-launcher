@@ -5,54 +5,88 @@ import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed"
 import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
-import { IUpdate } from "./check";
-import { configStore, playerPath, PLAYER_METAFILE_VERSION } from "src/config";
-import { createVersion } from "./metafile";
+import { playerPath } from "src/config";
 import { getAvailableDiskSpace } from "src/utils/file";
+import lockfile from "lockfile";
+import path from "path";
 
-export async function playerUpdate(
-  update: IUpdate,
-  win: Electron.BrowserWindow
+export async function performPlayerUpdate(
+  win: Electron.BrowserWindow,
+  downloadUrl: string,
+  size: number
 ) {
-  console.log("Start player update", update.projects.player);
+  const lockfilePath = getLockfilePath();
+
+  if (lockfile.checkSync(lockfilePath)) {
+    console.log(
+      "'encounter different version' event seems running already. Stop this flow."
+    );
+    return;
+  }
+
+  try {
+    lockfile.lockSync(lockfilePath);
+    console.log(
+      "Created 'encounter different version' lockfile at ",
+      lockfilePath
+    );
+  } catch (e) {
+    console.error("Error occurred during trying lock.");
+    throw e;
+  }
+  await playerUpdate(win, downloadUrl, size);
+
+  lockfile.unlockSync(lockfilePath);
+  console.log(
+    "Removed 'encounter different version' lockfile at ",
+    lockfilePath
+  );
+}
+
+async function playerUpdate(
+  win: Electron.BrowserWindow,
+  downloadUrl: string,
+  size: number
+) {
+  console.log("Start player update, from: ", downloadUrl);
   win.webContents.send("update player download started");
 
-  const available = await getAvailableDiskSpace(app.getPath("temp"));
+  // const available = await getAvailableDiskSpace(app.getPath("temp"));
 
   // TODO: It would be nice to have a continuous download feature.
   const options: ElectronDLOptions = {
     onStarted: (downloadItem: DownloadItem) => {
-      const totalBytes = downloadItem.getTotalBytes();
-      const totalKB = totalBytes / 1024;
+      // const totalBytes = downloadItem.getTotalBytes();
+      // const totalKB = totalBytes / 1024;
 
-      if (totalKB > available) {
-        win.webContents.send("go to error page", "player", {
-          size: totalBytes,
-          url: "download-binary-failed-disk-error",
-        });
-        downloadItem.cancel();
+      // if (totalKB > available) {
+      //   win.webContents.send("go to error page", "player", {
+      //     size: totalBytes,
+      //     url: "download-binary-failed-disk-error",
+      //   });
+      //   downloadItem.cancel();
 
-        return;
-      }
+      //   return;
+      // }
 
-      console.log("[player] Starts to download:", downloadItem);
+      console.log("[player] Starts to download");
     },
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `[player] Downloading ${update.projects.player.url}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `[player] Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
       );
       win.webContents.send("update player download progress", status);
     },
     directory: app.getPath("temp"),
   };
-  console.log("[player] Starts to download:", update.projects.player.url);
+  console.log("[player] Starts to download:", downloadUrl);
   let dl: DownloadItem | null | undefined;
   try {
-    dl = await download(win, update.projects.player.url, options);
+    dl = await download(win, downloadUrl, options);
   } catch (error) {
     win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(update.projects.player.url);
+    throw new DownloadBinaryFailedError(downloadUrl);
   }
 
   win.webContents.send("update player download complete");
@@ -126,23 +160,29 @@ export async function playerUpdate(
     return;
   }
 
-  update.projects.launcher.updateRequired
-    ? win.webContents.send("update download started")
-    : win.webContents.send("update player extract complete");
-
+  win.webContents.send("update player extract complete");
   await fs.promises.unlink(dlPath);
+}
 
-  if (
-    !update.projects.launcher.updateRequired &&
-    update.projects.player.updateRequired
-  ) {
-    configStore.set("AppProtocolVersion", update.newApv.raw);
+export function isUpdating() {
+  const lockfilePath = getLockfilePath();
+  return lockfile.checkSync(lockfilePath);
+}
+
+/**
+ * unlock if lockfile locked.
+ */
+export function cleanUpLockfile() {
+  const lockfilePath = getLockfilePath();
+  if (lockfile.checkSync(lockfilePath)) {
+    lockfile.unlockSync(lockfilePath);
   }
+}
 
-  await createVersion(playerPath, {
-    apvVersion: update.newApv.version,
-    projectVersion: update.projects.player.projectVersion,
-    timestamp: new Date().toISOString(),
-    schemaVersion: PLAYER_METAFILE_VERSION,
-  });
+function getLockfilePath(): string {
+  let lockfilePath: string;
+  if (process.platform === "darwin")
+    lockfilePath = path.join(path.dirname(app.getPath("userData")), "lockfile");
+  else lockfilePath = path.join(path.dirname(app.getPath("exe")), "lockfile");
+  return lockfilePath;
 }
