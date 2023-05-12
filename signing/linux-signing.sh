@@ -1,0 +1,33 @@
+#!/bin/bash
+
+ESIGNER_CREDENTIAL_ID=$1
+ESIGNER_USERNAME=$2
+ESIGNER_PASSWORD=$3
+ESIGNER_TOTP_SECRET=$4
+ROOT_DIR_PATH=$5
+INPUT_FILE_PATH=$6
+OUTPUT_DIR_PATH=$7
+
+if [ ! -d "$ROOT_DIR_PATH/tmp/beforeSign" ]; then
+  mkdir "$ROOT_DIR_PATH/tmp/beforeSign"
+fi
+
+INPUT_FILE_NAME=$(basename "$INPUT_FILE_PATH")
+BEFORE_SIGN_FILE_NAME="forsigning.${INPUT_FILE_NAME##*.}"
+BEFORE_SIGN_FILE_PATH="$ROOT_DIR_PATH/tmp/beforeSign/$BEFORE_SIGN_FILE_NAME"
+mv "$INPUT_FILE_PATH" "$BEFORE_SIGN_FILE_PATH"
+
+echo "Copy to before folder: $BEFORE_SIGN_FILE_PATH"
+echo ""
+
+cd "$ROOT_DIR_PATH/tmp/codesign"
+./CodeSignTool.sh sign -credential_id="$ESIGNER_CREDENTIAL_ID" -username="$ESIGNER_USERNAME" -password="$ESIGNER_PASSWORD" -totp_secret="$ESIGNER_TOTP_SECRET" -output_dir_path="$OUTPUT_DIR_PATH" -input_file_path="$BEFORE_SIGN_FILE_PATH"
+
+echo "Finish signing: $OUTPUT_DIR_PATH/$BEFORE_SIGN_FILE_NAME"
+echo ""
+
+AFTER_SIGN_FILE_PATH="$OUTPUT_DIR_PATH/$BEFORE_SIGN_FILE_NAME"
+mv "$AFTER_SIGN_FILE_PATH" "$INPUT_FILE_PATH"
+
+echo "Rename to final file: $AFTER_SIGN_FILE_PATH -> $INPUT_FILE_PATH"
+echo ""
