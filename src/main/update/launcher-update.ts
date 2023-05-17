@@ -91,6 +91,7 @@ export async function launcherUpdate(
     // Unzip ZIP
     console.log("Start to extract the zip archive", dlPath, "to", tempDir);
 
+    process.noAsar = true;
     await extractZip(dlPath, {
       dir: tempDir,
       onEntry: (_, zipfile) => {
