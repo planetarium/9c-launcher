@@ -243,13 +243,43 @@ async function initializeApp() {
       app.exit();
     }
 
-    const update: IUpdate | null = await checkForUpdate(
-      getSdk(remoteNode.GraphqlClient()),
-      process.platform
-    ).catch((e) => {
-      console.error("An error has occurred while checking updates", e);
-      return null;
-    });
+    // const update: IUpdate | null = await checkForUpdate(
+    //   getSdk(remoteNode.GraphqlClient()),
+    //   process.platform
+    // ).catch((e) => {
+    //   console.error("An error has occurred while checking updates", e);
+    //   return null;
+    // });
+    const update: IUpdate = {
+      oldApv: {
+        raw: "200010/AB2da648b9154F2cCcAFBD85e0Bc3d51f97330Fc/MEQCIAUCNU9yTZk4onxrkT8uxdfB3XFRfpxEyGzbj9BZTBlpAiBT987Kgqxnbg7yvyRn86w2c3j6.KtNsWwGKveBxMgTzw==/ZHU4OmxhdW5jaGVydTQyOjEvZGZkNTI1MDQ3Yjc4ZWY4NjNmOGFkMzJkMDIzZjk0ZjBhZTU5YmI3ZXU2OnBsYXllcnU0MjoyL2Q3MjA2OGEwODEwZjcyYzg5MDE2MzQ0N2I5YjRkYjg2NjMzYWE0ZTJ1OTp0aW1lc3RhbXB1MTA6MjAyMy0wNS0wNGU=",
+        version: 200010,
+        extra: {
+          launcher: "1/dfd525047b78ef863f8ad32d023f94f0ae59bb7e",
+          player: "2/d72068a0810f72c890163447b9b4db86633aa4e2",
+        },
+      },
+      newApv: {
+        raw: "200020/AB2da648b9154F2cCcAFBD85e0Bc3d51f97330Fc/MEQCIAUCNU9yTZk4onxrkT8uxdfB3XFRfpxEyGzbj9BZTBlpAiBT987Kgqxnbg7yvyRn86w2c3j6.KtNsWwGKveBxMgTzw==/ZHU4OmxhdW5jaGVydTQyOjEvZGZkNTI1MDQ3Yjc4ZWY4NjNmOGFkMzJkMDIzZjk0ZjBhZTU5YmI3ZXU2OnBsYXllcnU0MjoyL2Q3MjA2OGEwODEwZjcyYzg5MDE2MzQ0N2I5YjRkYjg2NjMzYWE0ZTJ1OTp0aW1lc3RhbXB1MTA6MjAyMy0wNS0wNGU=",
+        version: 200020,
+        extra: {
+          launcher: "1/dfd525047b78ef863f8ad32d023f94f0ae59bb7e",
+          player: "2/d72068a0810f72c890163447b9b4db86633aa4e2",
+        },
+      },
+      projects: {
+        launcher: {
+          updateRequired: true,
+          projectVersion: "1",
+          url: "https://release.nine-chronicles.com/main/200020-1-to-1/Windows.zip",
+        },
+        player: {
+          updateRequired: false,
+          projectVersion: "1",
+          url: "",
+        },
+      },
+    };
 
     if (useUpdate && update) {
       ipcMain.handle("start update", async () => {

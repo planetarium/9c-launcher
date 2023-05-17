@@ -77,7 +77,7 @@ export async function performUpdate(
     if (update.projects.player.updateRequired) {
       console.log(`player update required. start player update`);
 
-      await playerUpdate(update, win);
+      // await playerUpdate(update, win);
     }
 
     if (update.projects.launcher.updateRequired) {
