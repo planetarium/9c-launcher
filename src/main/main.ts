@@ -271,7 +271,7 @@ async function initializeApp() {
         launcher: {
           updateRequired: true,
           projectVersion: "1",
-          url: "https://release.nine-chronicles.com/main/200020-1-to-1/Windows.zip",
+          url: "https://release.nine-chronicles.com/main/launcher/Nine Chronicles-0.0.1-win.zip",
         },
         player: {
           updateRequired: false,
