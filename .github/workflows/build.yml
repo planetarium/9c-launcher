@@ -51,6 +51,8 @@ jobs:
           jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
           jq --arg suffix " Internal" '.name += $suffix | .productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
           yarn
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
       - name: pack
         shell: bash
