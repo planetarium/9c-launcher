@@ -17,6 +17,7 @@ export async function launcherUpdate(
   win: Electron.BrowserWindow
 ) {
   console.log("Start launcher update", update.projects.player);
+  process.noAsar = true;
 
   win.webContents.send("update download started");
   // TODO: It would be nice to have a continuous download feature.
@@ -91,21 +92,14 @@ export async function launcherUpdate(
     // Unzip ZIP
     console.log("Start to extract the zip archive", dlPath, "to", tempDir);
 
-    try {
-      await extractZip(dlPath, {
-        dir: tempDir,
-        onEntry: (_, zipfile) => {
-          const progress = zipfile.entriesRead / zipfile.entryCount;
-          win.webContents.send("update extract progress", progress);
-        },
-      });
-    } catch (e) {
-      win.webContents.send("go to error page", "player", {
-        url: "download-binary-failed-disk-error",
-      });
+    await extractZip(dlPath, {
+      dir: tempDir,
+      onEntry: (_, zipfile) => {
+        const progress = zipfile.entriesRead / zipfile.entryCount;
+        win.webContents.send("update extract progress", progress);
+      },
+    });
 
-      return;
-    }
     win.webContents.send("update extract complete");
     console.log("The zip archive", dlPath, "has extracted to", tempDir);
     win.webContents.send("update copying progress");
