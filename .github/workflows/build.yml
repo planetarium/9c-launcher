@@ -1,12 +1,10 @@
-name: Build and Release
+name: Build
 
 on:
   push:
     branches:
       - main
       - development
-      - rc-v*
-      - release/*
       - hotfix/*
   pull_request:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]
@@ -48,29 +46,19 @@ jobs:
       - name: Copy builder config
         shell: bash
         run: |
-          if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
-          then
-            mv electron-builder.main.yml electron-builder.yml
-          else
-            mv electron-builder.internal.yml electron-builder.yml
-            timestamp=$(date +%s)
-            jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
-          fi
+          mv electron-builder.internal.yml electron-builder.yml
+          timestamp=$(date +%s)
+          jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          yarn
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
       - name: pack
-        if: ${{ !startsWith(github.event.inputs.from_branch, 'release/') }}
         shell: bash
         run: |
           yarn run pack:${{ matrix.targetPlatform }}
-
-      - name: release
-        if: ${{ startsWith(github.event.inputs.from_branch, 'release/') || startsWith(github.event.ref, 'refs/tags/') }}
-        shell: bash
-        run: |
-          yarn run release:${{ matrix.targetPlatform }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - uses: actions/upload-artifact@v3
         with:
