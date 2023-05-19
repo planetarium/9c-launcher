@@ -29,6 +29,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Copy builder config
+        shell: bash
+        run: |
+          if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
+          then
+            mv electron-builder.main.yml electron-builder.yml
+          else
+            mv electron-builder.internal.yml electron-builder.yml
+            timestamp=$(date +%s)
+            jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+            # jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+            # jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          fi
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -46,26 +60,16 @@ jobs:
         run: |
           mkdir build && yarn download-config
 
-      - name: Copy builder config
+      - name: release
         shell: bash
         run: |
           if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
           then
-            mv electron-builder.main.yml electron-builder.yml
+            yarn run build-main
           else
-            mv electron-builder.internal.yml electron-builder.yml
-            timestamp=$(date +%s)
-            jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            yarn
+            yarn run build-internal
           fi
-        env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
-      - name: release
-        shell: bash
-        run: |
           yarn run release:${{ matrix.targetPlatform }}
         env:
           OS: ${{ matrix.targetPlatform }}

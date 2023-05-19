@@ -12,6 +12,7 @@ import {
   netenv,
   userConfigStore,
   baseUrl,
+  CONFIG_FILE_PATH,
 } from "../config";
 import {
   app,
@@ -75,7 +76,7 @@ initializeSentry();
 
 Object.assign(console, log.functions);
 
-const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
+const REMOTE_CONFIG_URL = `${baseUrl}/${netenv}/config.json`;
 
 let win: BrowserWindow | null = null;
 let appUpdaterInstance: AppUpdater | null = null;
@@ -158,18 +159,14 @@ async function initializeConfig() {
     const res = await axios(REMOTE_CONFIG_URL);
     const remoteConfig: IConfig = res.data;
 
-    const localApv = getConfig("AppProtocolVersion");
-    const remoteApv = remoteConfig.AppProtocolVersion;
+    const exists = await fs.promises.stat(CONFIG_FILE_PATH).catch(() => false);
 
-    if (localApv == null) {
-      configStore.store = remoteConfig;
-      return;
-    }
-
-    if (localApv !== remoteApv) {
+    if (!exists) {
       console.log(
-        `APVs are different, ignore. (local: ${localApv}, remote: ${remoteApv})`
+        "Remote not exists, Replace config with remote config:",
+        remoteConfig
       );
+      configStore.store = remoteConfig;
       return;
     }
 

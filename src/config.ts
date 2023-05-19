@@ -13,8 +13,7 @@ export const { app } =
 if (process.type === "browser") Store.initRenderer();
 
 export function getConfigPath() {
-  if (process.platform === "darwin") return app.getPath("userData");
-  else return app.getAppPath();
+  return app.getPath("userData");
 }
 export const configFileName = "config.json";
 export const CONFIG_FILE_PATH = path.join(getConfigPath(), configFileName);
@@ -23,7 +22,10 @@ export const configStore = new Store<IConfig>({
   cwd: getConfigPath(),
 });
 
-const network = configStore.get("Network");
+const network = configStore.get(
+  "Network",
+  process.env.DEFAULT_NETWORK || "main"
+);
 // Removed 9c prefix
 export const netenv = network === "9c-main" ? "main" : network;
 export const userConfigStore = new Store<IConfig>({
