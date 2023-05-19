@@ -1,6 +1,5 @@
 appId: "com.nine-chronicles"
 asar: true
-artifactName: "${productName}Internal-v${version}-${os}.${ext}"
 files:
   - "!**/*"
   - from: build
