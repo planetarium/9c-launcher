@@ -13,8 +13,7 @@ export const { app } =
 if (process.type === "browser") Store.initRenderer();
 
 export function getConfigPath() {
-  if (process.platform === "darwin") return app.getPath("userData");
-  else return app.getAppPath();
+  return app.getPath("userData");
 }
 export const configFileName = "config.json";
 export const CONFIG_FILE_PATH = path.join(getConfigPath(), configFileName);
