@@ -1,5 +1,6 @@
 appId: "com.nine-chronicles"
 asar: true
+productName: "Nine Chronicles Internal"
 files:
   - "!**/*"
   - from: build

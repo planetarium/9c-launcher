@@ -39,8 +39,8 @@ jobs:
             mv electron-builder.internal.yml electron-builder.yml
             timestamp=$(date +%s)
             jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+            # jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+            # jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
           fi
 
       - uses: actions/setup-node@v3
