@@ -24,7 +24,12 @@ export const configStore = new Store<IConfig>({
 
 const network = configStore.get("Network");
 // Removed 9c prefix
-export const netenv = network === "9c-main" ? "main" : network;
+export const netenv =
+  network === null
+    ? process.env.DEFAULT_NETWORK
+    : network === "9c-main"
+    ? "main"
+    : network;
 export const userConfigStore = new Store<IConfig>({
   name: network === "9c-main" ? "config" : `config.${network}`,
 });
