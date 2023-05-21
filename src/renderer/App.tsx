@@ -12,6 +12,7 @@ import { ExternalURLProvider } from "src/utils/useExternalURL";
 import { getSdk } from "src/generated/graphql-request";
 import { NodeInfo } from "src/config";
 import { GraphQLClient } from "graphql-request";
+import { boot } from "@planetarium/lib9c-wasm";
 
 function App() {
   const { transfer } = useStore();
@@ -25,6 +26,7 @@ function App() {
   });
 
   const client = useApolloClient();
+  boot();
 
   if (!client) return null;
 
