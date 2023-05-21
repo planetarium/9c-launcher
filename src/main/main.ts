@@ -33,6 +33,7 @@ import logoImage from "./resources/logo.png";
 import { initializeSentry } from "src/utils/sentry";
 import "core-js";
 import log from "electron-log";
+import { getSdk } from "src/generated/graphql-request";
 import * as utils from "src/utils";
 import {
   HeadlessExitedError,
@@ -56,6 +57,7 @@ import {
   createWindow as createV2Window,
   setQuitting as setV2Quitting,
 } from "./application";
+import AccountStore from "./account";
 import fg from "fast-glob";
 import {
   performPlayerUpdate,
@@ -70,6 +72,10 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
+import { signTransactionDictionary } from "src/utils/sign";
+import { encodeUnsignedTxWithCustomActions } from "@planetarium/tx";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
+import { encode } from "@planetarium/bencodex";
 
 initializeSentry();
 
@@ -94,6 +100,7 @@ const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
 let remoteNode: NodeInfo;
+let accountStore: AccountStore;
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
@@ -330,7 +337,8 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.on("login", async () => {
+  ipcMain.handle("login", async (_, [address, password]) => {
+    await accountStore.getAccount(address, password)!;
     mixpanel?.login();
   });
 
@@ -393,6 +401,51 @@ function initializeIpc() {
     }
     return remoteNode;
   });
+
+  ipcMain.handle(
+    "stage-custom-action",
+    async (_, encodedAction: Uint8Array) => {
+      if (accountStore.loginSession !== null) {
+        const nextTxNonce: string = (
+          await getSdk(remoteNode.GraphqlClient()).GetNextTxNonce({
+            address: accountStore.loginSession.address.toString(),
+          })
+        ).data.transaction.nextTxNonce;
+
+        console.log(`NextTxNonce: ${nextTxNonce}`);
+        const signedTx = bytesToHex(
+          encode(
+            await signTransactionDictionary(
+              encodeUnsignedTxWithCustomActions({
+                nonce: BigInt(nextTxNonce),
+                publicKey:
+                  accountStore.loginSession.publicKey.toBytes("uncompressed"),
+                signer: hexToBytes(
+                  accountStore.loginSession.address.toString()
+                ),
+                timestamp: new Date(Date.now()),
+                updatedAddresses: new Set(),
+                genesisHash: hexToBytes(
+                  "4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce"
+                ),
+                customActions: [encodedAction],
+              }),
+              accountStore.loginSession.privateKey
+            )
+          )
+        );
+        console.log(`SignedPayload: ${signedTx}`);
+
+        const TxId = (
+          await getSdk(remoteNode.GraphqlClient()).stageTransaction({
+            payload: signedTx,
+          })
+        ).data.stageTransaction;
+
+        return TxId;
+      }
+    }
+  );
 }
 
 async function initializeRemoteHeadless(): Promise<void> {
@@ -444,47 +497,6 @@ async function initializeRemoteHeadless(): Promise<void> {
     console.log("initialize remote headless() finished.");
     initializeHeadlessCts = null;
   }
-}
-
-async function createWindow(): Promise<BrowserWindow> {
-  const _win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true,
-      preload: path.join(app.getAppPath(), "preload.js"),
-    },
-    frame: true,
-    autoHideMenuBar: true,
-    icon: path.join(app.getAppPath(), logoImage),
-  });
-  remoteEnable(_win.webContents);
-
-  _win.setResizable(false); // see: https://github.com/electron/electron/issues/19565#issuecomment-867283465
-
-  console.log(app.getAppPath());
-
-  if (process.env.NODE_ENV !== "production") {
-    await _win.loadURL("http://localhost:9000");
-    await _win.webContents.openDevTools();
-  } else {
-    _win.loadFile("index.html");
-  }
-
-  _win.on("close", function (event: any) {
-    if (!isQuiting) {
-      event.preventDefault();
-      _win?.hide();
-    }
-  });
-
-  _win.webContents.on("new-window", function (event: any, url: string) {
-    event.preventDefault();
-    shell.openExternal(url);
-  });
-
-  return _win;
 }
 
 /**
