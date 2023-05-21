@@ -61,7 +61,7 @@
     "@planetarium/account-web3-secret-storage": "^1.2.0",
     "@planetarium/bencodex": "^0.2.2",
     "@planetarium/check-free-space": "^0.0.2",
-    "@planetarium/lib9c-wasm": "^0.0.1",
+    "@planetarium/lib9c-wasm": "^0.0.2",
     "@planetarium/sign": "^0.0.12",
     "@planetarium/tx": "^1.2.0",
     "@radix-ui/react-radio-group": "^0.1.5",

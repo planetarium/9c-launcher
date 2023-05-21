@@ -3705,13 +3705,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planetarium/lib9c-wasm@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "@planetarium/lib9c-wasm@npm:0.0.1"
+"@planetarium/lib9c-wasm@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "@planetarium/lib9c-wasm@npm:0.0.2"
   dependencies:
     "@ethersproject/address": ^5.7.0
     uuid: ^9.0.0
-  checksum: 087d8469a89e89b0ab611830686abcacae1bf4db70929adcb0f85c764123acd918d49301a39942ed8dfc110cb18f20b65781e4040ef74191bbf84d5970d9f6f7
+  checksum: e0da9005f110c5751bbd4017c7a4e9e243b14acbed8b7b28c20ce4f9fab0990799f00136ce99cff23c756d9a651abc5518f1ec0fc077e74d6be49e08406c22d5
   languageName: node
   linkType: hard
 
@@ -7414,7 +7414,7 @@ __metadata:
     "@planetarium/bencodex": ^0.2.2
     "@planetarium/check-free-space": ^0.0.2
     "@planetarium/cli": ^0.40.0
-    "@planetarium/lib9c-wasm": ^0.0.1
+    "@planetarium/lib9c-wasm": ^0.0.2
     "@planetarium/sign": ^0.0.12
     "@planetarium/tx": ^1.2.0
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
