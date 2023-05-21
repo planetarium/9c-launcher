@@ -1,4 +1,4 @@
-import { encode, decode, BencodexDict } from "bencodex";
+import { encode, decode, Dictionary } from "@planetarium/bencodex";
 import { AppProtocolVersionType } from "src/generated/graphql-request";
 import { IApv } from "src/interfaces/apv";
 import { verify, Signature } from "@noble/secp256k1";
@@ -69,18 +69,18 @@ export function verifyApv(
   });
 }
 
-export function decodeApv(token: string): BencodexDict | undefined {
+export function decodeApv(token: string): Dictionary | undefined {
   return decodeApvExtra(token.split("/")[1]);
 }
 
-export function decodeApvExtra(rawExtra: string): BencodexDict {
+export function decodeApvExtra(rawExtra: string): Dictionary {
   const extra = Buffer.from(rawExtra, "hex");
 
-  return decode(extra) as BencodexDict;
+  return decode(extra) as Dictionary;
 }
 
-export function encodeExtra(extra: { [key: string]: string }): string {
-  return encode(extra).toString("hex");
+export function encodeExtra(extra: Dictionary): string {
+  return Buffer.from(encode(extra)).toString("hex");
 }
 
 export function parseVersionNumber(apv: string): number {

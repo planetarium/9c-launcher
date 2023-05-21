@@ -1,8 +1,8 @@
-import { BencodexValue } from "bencodex";
+import { Value } from "@planetarium/bencodex";
 import { IExtra } from "../interfaces/apv";
 
 export function flatBencodexValue(
-  value: BencodexValue,
+  value: Value,
   table: IExtra,
   key: string
 ): IExtra {

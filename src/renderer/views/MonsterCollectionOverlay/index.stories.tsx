@@ -1,6 +1,5 @@
 import React, { ComponentPropsWithRef, useState } from "react";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
-import { noop } from "lodash";
 
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { MonsterCollectionOverlayBase } from "./base";
@@ -119,7 +118,7 @@ function MonsterCollectionOverlay(
         current={current}
         currentNCG={500}
         isLoading={loading}
-        onClose={noop}
+        onClose={() => {}}
         tip={100}
         {...props}
         onChangeAmount={async (amount) => {
