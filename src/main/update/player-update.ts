@@ -10,10 +10,15 @@ import { getAvailableDiskSpace } from "src/utils/file";
 import lockfile from "lockfile";
 import path from "path";
 
+export interface IUpdateOptions {
+  downloadStarted(): Promise<void>;
+}
+
 export async function performPlayerUpdate(
   win: Electron.BrowserWindow,
   downloadUrl: string,
-  size: number
+  size: number,
+  updateOptions: IUpdateOptions
 ) {
   const lockfilePath = getLockfilePath();
 
@@ -34,6 +39,8 @@ export async function performPlayerUpdate(
     console.error("Error occurred during trying lock.");
     throw e;
   }
+
+  await updateOptions.downloadStarted();
   await playerUpdate(win, downloadUrl, size);
 
   lockfile.unlockSync(lockfilePath);

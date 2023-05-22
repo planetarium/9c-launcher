@@ -62,6 +62,7 @@ import {
   performPlayerUpdate,
   cleanUpLockfile,
   isUpdating,
+  IUpdateOptions,
 } from "./update/player-update";
 import AppUpdater from "./update/updater";
 import { send } from "./ipc";
@@ -97,6 +98,10 @@ let useRemoteHeadless: boolean;
 let remoteNode: NodeInfo;
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
+
+const updateOptions: IUpdateOptions = {
+  downloadStarted: quitAllProcesses,
+};
 
 ipv4().then((value) => (ip = value));
 
@@ -609,7 +614,7 @@ function initCheckForUpdateWorker(
   checkForUpdateWorker.on("message", (message: Message) => {
     if (message.type === "player update") {
       console.log("Encountered player update", message);
-      performPlayerUpdate(win, message.path, message.size);
+      performPlayerUpdate(win, message.path, message.size, updateOptions);
     }
     if (message.type === "launcher update") {
       appUpdaterInstance.checkForUpdate();
