@@ -1,12 +1,19 @@
 import { UpdateInfo, autoUpdater } from "electron-updater";
 import log from "electron-log";
 import { netenv } from "src/config";
+import { IUpdateOptions } from "./types";
 
 class AppUpdater {
   win: Electron.BrowserWindow;
+  updateOptions: IUpdateOptions;
 
-  constructor(win: Electron.BrowserWindow, baseUrl: string) {
+  constructor(
+    win: Electron.BrowserWindow,
+    baseUrl: string,
+    updateOptions: IUpdateOptions
+  ) {
     this.win = win;
+    this.updateOptions = updateOptions;
     log.transports.file.level =
       process.env.NODE_ENV === "production" ? "info" : "debug";
     autoUpdater.logger = log;
@@ -26,7 +33,8 @@ class AppUpdater {
     autoUpdater.checkForUpdates();
   }
 
-  execute() {
+  async execute() {
+    await this.updateOptions.downloadStarted();
     autoUpdater.quitAndInstall();
   }
 
