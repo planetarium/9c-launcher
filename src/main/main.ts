@@ -62,8 +62,8 @@ import {
   performPlayerUpdate,
   cleanUpLockfile,
   isUpdating,
-  IUpdateOptions,
 } from "./update/player-update";
+import { IUpdateOptions } from "./update/types";
 import AppUpdater from "./update/updater";
 import { send } from "./ipc";
 import { IPC_OPEN_URL } from "src/renderer/ipcTokens";
@@ -222,7 +222,7 @@ async function initializeApp() {
     win = await createV2Window();
 
     if (useUpdate) {
-      appUpdaterInstance = new AppUpdater(win, baseUrl);
+      appUpdaterInstance = new AppUpdater(win, baseUrl, updateOptions);
       initCheckForUpdateWorker(win, appUpdaterInstance);
     }
 
@@ -317,7 +317,7 @@ function initializeIpc() {
 
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
-    appUpdaterInstance.execute();
+    await appUpdaterInstance.execute();
   });
 
   ipcMain.on("select-directory", async (event) => {

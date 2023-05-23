@@ -9,10 +9,7 @@ import { playerPath } from "src/config";
 import { getAvailableDiskSpace } from "src/utils/file";
 import lockfile from "lockfile";
 import path from "path";
-
-export interface IUpdateOptions {
-  downloadStarted(): Promise<void>;
-}
+import { IUpdateOptions } from "./types";
 
 export async function performPlayerUpdate(
   win: Electron.BrowserWindow,
