@@ -1,5 +1,6 @@
 appId: "com.nine-chronicles"
 asar: true
+productName: "Nine Chronicles Local"
 files:
   - "!**/*"
   - from: build
@@ -16,7 +17,7 @@ mac:
   icon: "AppIcon.icns"
   target:
     - "dmg"
-    - "zip"
+    - "tar.gz"
   category: "public.app-category.games"
 dmg:
   icon: "AppIcon.icns"
@@ -30,10 +31,5 @@ dmg:
       path: "/Applications"
 linux:
   target:
-    - "zip"
+    - "tar.gz"
     - "AppImage"
-publish:
-  provider: "s3"
-  bucket: "9c-release.planetariumhq.com"
-  path: "preview/launcher"
-  acl: "private"
