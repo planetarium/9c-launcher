@@ -11,29 +11,10 @@ on:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - targetPlatform: linux
-            os: ubuntu-latest
-          # - targetPlatform: macos
-          #   os: ubuntu-latest
-          - targetPlatform: windows
-            os: windows-latest
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Copy builder config
-        shell: bash
-        run: |
-          mv electron-builder.internal.yml electron-builder.yml
-          timestamp=$(date +%s)
-          jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
-          # jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
-          # jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
 
       - uses: actions/setup-node@v3
         with:
@@ -44,17 +25,20 @@ jobs:
         shell: bash
         run: yarn
 
-      - name: Setup OS variables
-        run: bash scripts/configure-artifact.sh ${{ matrix.targetPlatform }}
-
-      - name: pack
+      - name: build
         shell: bash
         run: |
-          yarn run pack:${{ matrix.targetPlatform }}
+          yarn run pack-local
+
+      - name: Cache electron-gyp
+        uses: actions/cache@v2
+        with:
+          path: ~/.electron-gyp
+          key: ${{ runner.os }}-electron-gyp-${{ hashFiles('**/package-lock.json') }}
 
       - uses: actions/upload-artifact@v3
         with:
           path: dist
-          name: Dist-${{ matrix.targetPlatform }}
+          name: Dist
           retention-days: 3
           if-no-files-found: error

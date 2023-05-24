@@ -8,6 +8,7 @@ files:
 win:
   target:
     - "zip"
+    - "7z"
     - target: "nsis"
       arch:
         - "x64"
