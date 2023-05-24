@@ -29,6 +29,7 @@ jobs:
         shell: bash
         run: |
           yarn run pack-local
+          rm -R ./dist/*-unpacked
 
       - name: Cache electron-gyp
         uses: actions/cache@v2
