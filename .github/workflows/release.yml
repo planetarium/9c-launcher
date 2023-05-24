@@ -54,9 +54,15 @@ jobs:
           ESIGNER_PASSWORD: ${{ secrets.ESIGNER_PASSWORD }}
           ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_TOTP_SECRET }}
 
+      - name: Cache electron-gyp
+        uses: actions/cache@v2
+        with:
+          path: ~/.electron-gyp
+          key: ${{ runner.os }}-electron-gyp-${{ hashFiles('**/package-lock.json') }}
+
       - uses: actions/upload-artifact@v3
         with:
           path: dist
-          name: Dist-${{ matrix.targetPlatform }}
+          name: Dist
           retention-days: 3
           if-no-files-found: error
