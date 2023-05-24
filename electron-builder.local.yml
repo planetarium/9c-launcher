@@ -9,27 +9,9 @@ files:
 win:
   target:
     - "zip"
-    - target: "nsis"
-      arch:
-        - "x64"
   icon: "app.ico"
 mac:
   icon: "AppIcon.icns"
   target:
-    - "dmg"
     - "tar.gz"
   category: "public.app-category.games"
-dmg:
-  icon: "AppIcon.icns"
-  iconSize: 75
-  contents:
-    - x: 130
-      y: 200
-    - x: 410
-      y: 200
-      type: "link"
-      path: "/Applications"
-linux:
-  target:
-    - "tar.gz"
-    - "AppImage"
