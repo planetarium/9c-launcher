@@ -14,6 +14,9 @@ win:
         - "x64"
   icon: "app.ico"
   sign: "./scripts/sign.js"
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
 mac:
   icon: "AppIcon.icns"
   target:
