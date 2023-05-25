@@ -23,9 +23,12 @@ jobs:
       - name: Copy builder config
         shell: bash
         run: |
+          sh scripts/download-codesigner.sh
+
           if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" != true ]]
             timestamp=$(date +%s)
             jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+            mv ./signing/sandbox_code_sign_tool.properties ./tmp/codesign/conf/code_sign_tool.properties
           fi
 
       - uses: actions/setup-node@v3

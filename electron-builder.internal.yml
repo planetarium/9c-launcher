@@ -13,6 +13,7 @@ win:
       arch:
         - "x64"
   icon: "app.ico"
+  sign: "./scripts/sign.js"
 mac:
   icon: "AppIcon.icns"
   target:
