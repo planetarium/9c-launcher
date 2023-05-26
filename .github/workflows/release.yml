@@ -29,6 +29,7 @@ jobs:
           then
             timestamp=$(date +%s)
             jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+            jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
             mv ./signing/sandbox_code_sign_tool.properties ./tmp/codesign/conf/code_sign_tool.properties
           fi
 
