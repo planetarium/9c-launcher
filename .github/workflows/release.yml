@@ -20,6 +20,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
       - name: Copy builder config
         shell: bash
         run: |
