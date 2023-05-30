@@ -41,7 +41,7 @@ function ActivationFailView() {
         layout
         variant="primary"
         centered
-        css={{ width: 200, marginTop: 160 }}
+        css={{ marginTop: 160 }}
         onClick={() => history.push("/register/activationKey")}
       >
         <T _str="Retry" _tags={transifexTags} />

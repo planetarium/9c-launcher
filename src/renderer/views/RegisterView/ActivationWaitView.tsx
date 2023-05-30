@@ -48,7 +48,7 @@ function ActivationWaitView() {
       <H1>
         <T _str="Activation is in progress..." _tags={transifexTags} />
       </H1>
-      <p style={{ marginBlockEnd: 54 }}>
+      <p>
         <T
           _str="This process can take upto a minute. While you are waiting, we strongly recommend you to backup your keystore file."
           _tags={transifexTags}
@@ -68,10 +68,7 @@ function ActivationWaitView() {
         variant="primary"
         centered
         css={{
-          width: 200,
-          marginTop: 180,
-          display: "flex",
-          justifyContent: "center",
+          marginTop: 160,
         }}
         disabled
       >

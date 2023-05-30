@@ -54,7 +54,7 @@ function ActivationSuccessView() {
         layout
         variant="primary"
         centered
-        css={{ width: 200, marginTop: 180 }}
+        css={{ marginTop: 160 }}
         onClick={() => history.push("/lobby")}
       >
         <T _str="Done" _tags={transifexTags} />

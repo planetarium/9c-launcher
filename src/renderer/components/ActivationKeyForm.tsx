@@ -77,6 +77,14 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
 
   return (
     <>
+      <Button
+        variant="primary"
+        centered
+        css={{ width: 300 }}
+        onClick={() => {}}
+      >
+        <T _str="Get the code" _tags={transifexTags} />
+      </Button>
       <TextField
         motion
         type="text"
@@ -89,25 +97,6 @@ export default function ActivationKeyForm({ onSubmit }: Props) {
         }}
         value={activationKey}
       />
-      <Box css={{ display: "flex", justifyContent: "end" }}>
-        <Button
-          variant="primary"
-          css={{ minWidth: 120, height: 40, fontSize: 14 }}
-          onClick={() => shell.openExternal(get("ActivationCodeUrl"))}
-        >
-          <T _str="Get the code" _tags={transifexTags} />
-        </Button>
-      </Box>
-      <Button
-        layout
-        variant="primary"
-        disabled={status !== "Valid"}
-        centered
-        css={{ width: 200, marginTop: 160 }}
-        onClick={() => onSubmit({ activationKey })}
-      >
-        <T _str="Activate" _tags={transifexTags} />
-      </Button>
     </>
   );
 }

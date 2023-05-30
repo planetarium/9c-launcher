@@ -26,11 +26,11 @@ function ActivationKeyView() {
   };
 
   return (
-    <Layout sidebar css={registerStyles}>
+    <Layout sidebar flex css={registerStyles}>
       <H1>
         <T _str="Activate your address" _tags={transifexTags} />
       </H1>
-      <p style={{ marginBlockEnd: 54 }}>
+      <p style={{ margin: 0 }}>
         <T
           _str="You need an activation code to activate your Nine Chronicles address. If you already have one, you can paste it below and activate it now."
           _tags={transifexTags}
