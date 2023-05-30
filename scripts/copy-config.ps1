@@ -1,1 +1,1 @@
-Copy-Item "__tests__\fixture\config.json" -Destination "dist"
+Copy-Item "__tests__\fixture\config.json" -Destination "build"

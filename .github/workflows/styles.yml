@@ -1,0 +1,33 @@
+name: Styles
+
+on:
+  push:
+    branches: ["*"]
+
+jobs:
+  styles:
+    runs-on: ubuntu-latest
+    container:
+      image: node:lts
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+
+      - name: Install
+        shell: bash
+        run: yarn
+
+      - name: Check Formatting
+        run: yarn prettier --check "src/**/*.{ts,tsx,json}"
+
+      - run: yarn codegen
+
+      - name: Type Check
+        run: yarn tsc --noEmit
+
+      - name: ESLint Check
+        run: yarn eslint ./src --quiet

@@ -1,0 +1,44 @@
+appId: "com.nine-chronicles"
+asar: true
+productName: "Nine Chronicles Internal"
+files:
+  - "!**/*"
+  - from: build
+    filter:
+      - '**/*'
+win:
+  target:
+    - "zip"
+    - target: "nsis"
+      arch:
+        - "x64"
+  icon: "app.ico"
+  sign: "./scripts/sign.js"
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+mac:
+  icon: "AppIcon.icns"
+  target:
+    - "dmg"
+    - "zip"
+  category: "public.app-category.games"
+dmg:
+  icon: "AppIcon.icns"
+  iconSize: 75
+  contents:
+    - x: 130
+      y: 200
+    - x: 410
+      y: 200
+      type: "link"
+      path: "/Applications"
+linux:
+  target:
+    - "zip"
+    - "AppImage"
+publish:
+  provider: "s3"
+  bucket: "9c-release.planetariumhq.com"
+  path: "internal/launcher"
+  acl: "private"

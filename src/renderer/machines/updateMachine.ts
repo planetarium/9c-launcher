@@ -5,7 +5,6 @@ import { invokeIpcEvent } from "src/utils/ipcEvent";
 type MachineEvent =
   | { type: "UPDATE_PROGRESS"; progress: number }
   | { type: "PLAYER_DOWNLOAD" }
-  | { type: "LAUNCHER_DOWNLOAD" }
   | { type: "EXTRACT" }
   | { type: "COPY" }
   | { type: "DONE" }
@@ -59,55 +58,7 @@ const playerUpdate = {
               "DONE"
             ),
         },
-        {
-          src: () =>
-            invokeIpcEvent<MachineEvent>(
-              "update download started",
-              "LAUNCHER_DOWNLOAD"
-            ),
-        },
       ],
-    },
-  },
-  on: {
-    DONE: { target: "ok" },
-    LAUNCHER_DOWNLOAD: { target: "launcherUpdate" },
-  },
-};
-
-const launcherUpdate = {
-  key: "launcherUpdate",
-  context: { progress: 0 },
-  initial: "download",
-  states: {
-    download: {
-      entry: "resetProgress",
-      on: {
-        EXTRACT: { target: "extract" },
-        UPDATE_PROGRESS: { actions: "updateProgress" },
-      },
-      invoke: {
-        src: () =>
-          invokeIpcEvent<MachineEvent>("update download complete", "EXTRACT"),
-      },
-    },
-    extract: {
-      entry: "resetProgress",
-      on: {
-        COPY: { target: "copy" },
-        UPDATE_PROGRESS: { actions: "updateProgress" },
-      },
-      invoke: {
-        src: () =>
-          invokeIpcEvent<MachineEvent>("update extract complete", "COPY"),
-      },
-    },
-    copy: {
-      entry: "resetProgress",
-      invoke: {
-        src: () =>
-          invokeIpcEvent<MachineEvent>("update copying complete", "DONE"),
-      },
     },
   },
   on: {
@@ -135,30 +86,14 @@ export const updateMachine = createMachine<
                 "PLAYER_DOWNLOAD"
               ),
           },
-          {
-            id: "launcherDownload",
-            src: () =>
-              invokeIpcEvent<MachineEvent>(
-                "update download started",
-                "LAUNCHER_DOWNLOAD"
-              ),
-          },
-          {
-            id: "triggerUpdate",
-            src: () => ipcRenderer.invoke("start update"),
-          },
         ],
         on: {
           PLAYER_DOWNLOAD: {
             target: "playerUpdate",
           },
-          LAUNCHER_DOWNLOAD: {
-            target: "launcherUpdate",
-          },
         },
       },
       playerUpdate,
-      launcherUpdate,
       error: {},
     },
     on: {

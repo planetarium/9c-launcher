@@ -1,8 +1,10 @@
 node_modules
 dist
+build
 pack
 .DS_Store
 .blockstore
+electron-builder.yml
 
 # ignore generated file by graphql-code-generator.
 src/generated
@@ -24,3 +26,6 @@ report.html
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# tmp dir
+/tmp

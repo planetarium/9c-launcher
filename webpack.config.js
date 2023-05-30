@@ -20,7 +20,7 @@ const gitHash = child_process.execSync("git rev-parse HEAD", {
 });
 
 /** @returns {import('webpack').Configuration} */
-function createRenderConfig(isDev) {
+function createRenderConfig(isDev, DEFAULT_NETWORK) {
   return {
     context: path.join(__dirname, "src"),
 
@@ -49,7 +49,7 @@ function createRenderConfig(isDev) {
     output: {
       filename: isDev ? "[name].js" : "[name].[contenthash].js",
       assetModuleFilename: "assets/[hash][ext][query]",
-      path: path.join(__dirname, "dist"),
+      path: path.join(__dirname, "build"),
       publicPath: isDev ? "/" : undefined,
       clean: {
         keep: /^9c$|\.(?:exe|dll|json|app|so|debug)$|(?:9c_Data|MonoBleedingEdge|publish|9c.app)[\\\/]/,
@@ -133,6 +133,7 @@ function createRenderConfig(isDev) {
       new DefinePlugin({
         GIT_HASH: JSON.stringify(gitHash),
         "process.type": JSON.stringify("renderer"),
+        "process.env.DEFAULT_NETWORK": JSON.stringify(DEFAULT_NETWORK),
       }),
 
       new HtmlPlugin({
@@ -146,7 +147,7 @@ function createRenderConfig(isDev) {
 
     devServer: isDev
       ? {
-          contentBase: path.join(__dirname, "dist"),
+          contentBase: path.join(__dirname, "build"),
           compress: true,
           port: 9000,
           historyApiFallback: true,
@@ -185,7 +186,7 @@ function createRenderConfig(isDev) {
 }
 
 /** @returns {import('webpack').Configuration} */
-function createMainConfig(isDev) {
+function createMainConfig(isDev, DEFAULT_NETWORK) {
   return {
     context: path.join(__dirname, "src"),
 
@@ -195,6 +196,7 @@ function createMainConfig(isDev) {
 
     entry: {
       main: "./main/main.ts",
+      checkForUpdateWorker: "./worker/checkForUpdateWorker.js",
     },
 
     resolve: {
@@ -222,7 +224,7 @@ function createMainConfig(isDev) {
 
     output: {
       filename: "[name].js",
-      path: path.join(__dirname, "dist"),
+      path: path.join(__dirname, "build"),
     },
 
     module: {
@@ -285,6 +287,7 @@ function createMainConfig(isDev) {
       new DefinePlugin({
         ENVIRONMENT: JSON.stringify(isDev ? DEVELOPMENT : PRODUCTION), // this variable name must match the one declared in the main process file.
         "process.type": JSON.stringify("browser"),
+        "process.env.DEFAULT_NETWORK": JSON.stringify(DEFAULT_NETWORK),
       }),
 
       // electron-packager needs the package.json file. the "../" is because context is set to the ./src folder
@@ -307,11 +310,11 @@ function createMainConfig(isDev) {
 module.exports = (env) => {
   // env variable is passed by webpack through the cli. see package.json scripts.
   const isDev = env.NODE_ENV === DEVELOPMENT;
-  const { target, release } = env;
+  const { target, release, DEFAULT_NETWORK } = env;
 
   const configFactory =
     target === "main" ? createMainConfig : createRenderConfig;
-  const config = configFactory(isDev);
+  const config = configFactory(isDev, DEFAULT_NETWORK);
   if (release) {
     config.plugins.push(
       new SentryWebpackPlugin({

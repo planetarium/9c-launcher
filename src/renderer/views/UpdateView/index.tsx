@@ -32,15 +32,7 @@ const FixedStatusBar = styled(StatusBar, {
 });
 
 function getMessage(state: StateFrom<typeof updateMachine>): string {
-  if (state.matches({ launcherUpdate: "download" })) {
-    return t("Downloading the new version launcher...", {
-      _tags: transifexTags,
-    });
-  } else if (state.matches({ launcherUpdate: "extract" })) {
-    return t("Extracting the new version launcher...", {
-      _tags: transifexTags,
-    });
-  } else if (state.matches({ playerUpdate: "download" })) {
+  if (state.matches({ playerUpdate: "download" })) {
     return t("Downloading the new version player...", {
       _tags: transifexTags,
     });
@@ -48,8 +40,6 @@ function getMessage(state: StateFrom<typeof updateMachine>): string {
     return t("Extracting the new version player...", {
       _tags: transifexTags,
     });
-  } else if (state.matches({ launcherUpdate: "copy" })) {
-    return t("Copying files...", { _tags: transifexTags });
   } else {
     throw new Error("unreachable");
   }
