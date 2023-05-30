@@ -26,3 +26,6 @@ report.html
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# tmp dir
+/tmp

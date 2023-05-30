@@ -12,6 +12,7 @@ import {
   netenv,
   userConfigStore,
   baseUrl,
+  CONFIG_FILE_PATH,
 } from "../config";
 import {
   app,
@@ -62,6 +63,7 @@ import {
   cleanUpLockfile,
   isUpdating,
 } from "./update/player-update";
+import { IUpdateOptions } from "./update/types";
 import AppUpdater from "./update/updater";
 import { send } from "./ipc";
 import { IPC_OPEN_URL } from "src/renderer/ipcTokens";
@@ -75,7 +77,7 @@ initializeSentry();
 
 Object.assign(console, log.functions);
 
-const REMOTE_CONFIG_URL = `${baseUrl}/9c-launcher-config.json`;
+const REMOTE_CONFIG_URL = `${baseUrl}/${netenv}/config.json`;
 
 let win: BrowserWindow | null = null;
 let appUpdaterInstance: AppUpdater | null = null;
@@ -96,6 +98,10 @@ let useRemoteHeadless: boolean;
 let remoteNode: NodeInfo;
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
+
+const updateOptions: IUpdateOptions = {
+  downloadStarted: quitAllProcesses,
+};
 
 ipv4().then((value) => (ip = value));
 
@@ -158,18 +164,14 @@ async function initializeConfig() {
     const res = await axios(REMOTE_CONFIG_URL);
     const remoteConfig: IConfig = res.data;
 
-    const localApv = getConfig("AppProtocolVersion");
-    const remoteApv = remoteConfig.AppProtocolVersion;
+    const exists = await fs.promises.stat(CONFIG_FILE_PATH).catch(() => false);
 
-    if (localApv == null) {
-      configStore.store = remoteConfig;
-      return;
-    }
-
-    if (localApv !== remoteApv) {
+    if (!exists) {
       console.log(
-        `APVs are different, ignore. (local: ${localApv}, remote: ${remoteApv})`
+        "Remote not exists, Replace config with remote config:",
+        remoteConfig
       );
+      configStore.store = remoteConfig;
       return;
     }
 
@@ -220,7 +222,7 @@ async function initializeApp() {
     win = await createV2Window();
 
     if (useUpdate) {
-      appUpdaterInstance = new AppUpdater(win, baseUrl);
+      appUpdaterInstance = new AppUpdater(win, baseUrl, updateOptions);
       initCheckForUpdateWorker(win, appUpdaterInstance);
     }
 
@@ -315,7 +317,7 @@ function initializeIpc() {
 
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
-    appUpdaterInstance.execute();
+    await appUpdaterInstance.execute();
   });
 
   ipcMain.on("select-directory", async (event) => {
@@ -612,7 +614,7 @@ function initCheckForUpdateWorker(
   checkForUpdateWorker.on("message", (message: Message) => {
     if (message.type === "player update") {
       console.log("Encountered player update", message);
-      performPlayerUpdate(win, message.path, message.size);
+      performPlayerUpdate(win, message.path, message.size, updateOptions);
     }
     if (message.type === "launcher update") {
       appUpdaterInstance.checkForUpdate();

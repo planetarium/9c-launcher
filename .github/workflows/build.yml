@@ -1,32 +1,33 @@
-name: Build and Release
+name: Build
 
 on:
   push:
     branches:
       - main
       - development
-      - rc-v*
-      - release/*
       - hotfix/*
   pull_request:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - targetPlatform: linux
-            os: ubuntu-latest
-          # - targetPlatform: macos
-          #   os: ubuntu-latest
-          - targetPlatform: windows
-            os: windows-latest
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Copy builder config
+        shell: bash
+        run: |
+          timestamp=$(date +%s)
+          jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+
+      - name: Cache electron-gyp
+        uses: actions/cache@v2
+        with:
+          path: ~/.electron-gyp
+          key: ${{ runner.os }}-electron-gyp-${{ hashFiles('**/package-lock.json') }}
 
       - uses: actions/setup-node@v3
         with:
@@ -37,44 +38,15 @@ jobs:
         shell: bash
         run: yarn
 
-      - name: Setup OS variables
-        run: bash scripts/configure-artifact.sh ${{ matrix.targetPlatform }}
-
-      - name: Copy config.json from the last release
+      - name: build
         shell: bash
         run: |
-          mkdir build && yarn download-config
-
-      - name: Copy builder config
-        shell: bash
-        run: |
-          if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
-          then
-            mv electron-builder.main.yml electron-builder.yml
-          else
-            mv electron-builder.internal.yml electron-builder.yml
-            timestamp=$(date +%s)
-            jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
-          fi
-
-      - name: pack
-        if: ${{ !startsWith(github.event.inputs.from_branch, 'release/') }}
-        shell: bash
-        run: |
-          yarn run pack:${{ matrix.targetPlatform }}
-
-      - name: release
-        if: ${{ startsWith(github.event.inputs.from_branch, 'release/') || startsWith(github.event.ref, 'refs/tags/') }}
-        shell: bash
-        run: |
-          yarn run release:${{ matrix.targetPlatform }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          yarn run pack-local
+          rm -R ./dist/*-unpacked
 
       - uses: actions/upload-artifact@v3
         with:
           path: dist
-          name: Dist-${{ matrix.targetPlatform }}
+          name: Dist
           retention-days: 3
           if-no-files-found: error

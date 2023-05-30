@@ -42,13 +42,6 @@ export async function createWindow(): Promise<BrowserWindow> {
     }
   });
 
-  win.on("close", function (event: any) {
-    if (!isQuitting) {
-      event.preventDefault();
-      win.hide();
-    }
-  });
-
   if (process.env.NODE_ENV !== "production") {
     await win.loadURL("http://localhost:9000/index.html");
     await win.webContents.openDevTools({ mode: "detach" });

@@ -1,0 +1,17 @@
+appId: "com.nine-chronicles"
+asar: true
+productName: "Nine Chronicles Local"
+files:
+  - "!**/*"
+  - from: build
+    filter:
+      - '**/*'
+win:
+  target:
+    - "zip"
+  icon: "app.ico"
+mac:
+  icon: "AppIcon.icns"
+  target:
+    - "tar.gz"
+  category: "public.app-category.games"

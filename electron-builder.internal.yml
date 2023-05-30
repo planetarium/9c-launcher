@@ -1,5 +1,6 @@
 appId: "com.nine-chronicles"
 asar: true
+productName: "Nine Chronicles Internal"
 files:
   - "!**/*"
   - from: build
@@ -12,6 +13,10 @@ win:
       arch:
         - "x64"
   icon: "app.ico"
+  sign: "./scripts/sign.js"
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
 mac:
   icon: "AppIcon.icns"
   target:
@@ -37,4 +42,3 @@ publish:
   bucket: "9c-release.planetariumhq.com"
   path: "internal/launcher"
   acl: "private"
-  channel: "internal"
