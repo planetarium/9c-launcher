@@ -38,6 +38,7 @@ linux:
   target:
     - "tar.gz"
     - "zip"
+    - "deb"
     - "AppImage"
     - "deb"
     - "rpm"
