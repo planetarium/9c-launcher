@@ -38,9 +38,8 @@ linux:
   target:
     - "tar.gz"
     - "zip"
-    - "AppImage"
     - "deb"
-    - "rpm"
+    - "AppImage"
 publish:
   provider: "s3"
   bucket: "9c-release.planetariumhq.com"
