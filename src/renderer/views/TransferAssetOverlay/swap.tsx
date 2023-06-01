@@ -199,7 +199,7 @@ function SwapPage() {
         <li>
           <SwapNoticeLabel>
             <T
-              _str="* 1% fee deducted to operate bridge (ETH gas fee & development cost)"
+              _str="* 1% fee deducted to operate bridge (ETH gas fee & development cost) NYANG"
               _tags={transifexTags}
             />
           </SwapNoticeLabel>
