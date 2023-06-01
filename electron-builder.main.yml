@@ -40,8 +40,6 @@ linux:
     - "zip"
     - "deb"
     - "AppImage"
-    - "deb"
-    - "rpm"
 publish:
   provider: "s3"
   bucket: "9c-release.planetariumhq.com"
