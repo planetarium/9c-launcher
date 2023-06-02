@@ -448,3 +448,11 @@ query MigrateMonsterCollection($publicKey: String!, $avatarAddress: Address) {
 query CheckActivationKey($activationKey: String!) {
   activated(invitationCode: $activationKey)
 }
+
+query CheckContracted($agentAddress: Address!){
+  stateQuery{
+    contracted(agentAddress: $agentAddress){
+			contracted
+    }
+  }
+}
