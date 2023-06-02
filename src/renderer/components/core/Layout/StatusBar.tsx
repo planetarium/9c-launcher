@@ -6,6 +6,7 @@ import { useActivationStatus } from "src/utils/useActivationStatus";
 import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 import { useStore } from "src/utils/useStore";
 import Button from "../../ui/Button";
+import { useCheckContract } from "src/utils/useCheckContract";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -26,7 +27,9 @@ const StatusMessage = styled("span", {
 function StatusBar() {
   const isAvailable = useIsHeadlessAvailable();
   const { account: accountStore, game } = useStore();
-  const { loading, activated } = useActivationStatus();
+  const { loading: activationLoad, activated } = useActivationStatus();
+  const { loading: contractLoad, contracted } = useCheckContract();
+
   const loginSession = accountStore.loginSession;
 
   return (
@@ -36,7 +39,9 @@ function StatusBar() {
           <Button
             data-testid="play"
             variant="primary"
-            disabled={loading || !activated}
+            disabled={
+              activationLoad || contractLoad || !activated || !contracted
+            }
             onClick={() => {
               const privateKeyBytes = loginSession.privateKey.toBytes();
               return game.startGame(
