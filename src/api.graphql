@@ -85,18 +85,6 @@ subscription DifferentAppProtocolVersionEncounter {
   }
 }
 
-query ActivationAddress($address: Address!) {
-  activationStatus {
-    addressActivated(address: $address)
-  }
-}
-
-mutation Activate($encodedActivationKey: String!) {
-  activationStatus {
-    activateAccount(encodedActivationKey: $encodedActivationKey)
-  }
-}
-
 subscription Notification {
   notification {
     type
@@ -276,11 +264,6 @@ query CollectionStatusQuery($address: Address) {
   }
 }
 
-query ActivationKeyNonce($encodedActivationKey: String!) {
-  activationKeyNonce(invitationCode: $encodedActivationKey)
-  activated(invitationCode: $encodedActivationKey)
-}
-
 mutation StageTx($encodedTx: String!) {
   stageTx(payload: $encodedTx)
 }
@@ -403,12 +386,6 @@ mutation stageTransaction($payload: String!) {
   stageTransaction(payload: $payload)
 }
 
-query ActivateAccount($publicKey: String!, $activationCode: String!) {
-  actionTxQuery(publicKey: $publicKey) {
-    activateAccount(activationCode: $activationCode)
-  }
-}
-
 query transferAsset(
   $publicKey: String!
   $sender: Address!
@@ -445,14 +422,16 @@ query MigrateMonsterCollection($publicKey: String!, $avatarAddress: Address) {
   }
 }
 
-query CheckActivationKey($activationKey: String!) {
-  activated(invitationCode: $activationKey)
-}
-
 query CheckContracted($agentAddress: Address!){
   stateQuery{
     contracted(agentAddress: $agentAddress){
 			contracted
     }
+  }
+}
+
+query approvePledge($publicKey: String!){
+	actionTxQuery(publicKey: $publicKey){
+    approvePledge(patronAddress: "0x441Ad1fD834BaB75c6E5859e5Bf736c97Ffa6cc5")
   }
 }

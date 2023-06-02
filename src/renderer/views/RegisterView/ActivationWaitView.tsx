@@ -8,40 +8,59 @@ import H1 from "src/renderer/components/ui/H1";
 import { ExtLink } from "src/renderer/components/ui/Link";
 import { T } from "src/renderer/i18n";
 import loading from "src/renderer/resources/icons/loading.png";
-import { useActivate } from "src/utils/useActivate";
-import { useActivationStatus } from "src/utils/useActivationStatus";
 import { registerStyles } from ".";
 import { LoadingImage } from "../MonsterCollectionOverlay/base";
+import { useStore } from "src/utils/useStore";
+import { TxStatus, useTransactionResultLazyQuery } from "src/generated/graphql";
 
 const transifexTags = "v2/views/register/ActivationWaitView";
 
 function ActivationWaitView() {
   const history = useHistory();
-
-  const activate = useActivate();
-  const { activated, error } = useActivationStatus(true);
+  const account = useStore("account");
+  const [fetchStatus, { data: txStatus, stopPolling }] =
+    useTransactionResultLazyQuery({
+      pollInterval: 1000,
+      fetchPolicy: "no-cache",
+    });
 
   useEffect(() => {
-    (async () => {
-      const activationResult = await activate();
-
-      if (!activationResult.result) {
-        history.push("/register/activationFail");
+    fetch(
+      get("OnboardingPortalUrl") +
+        "/api/account/contract?" +
+        new URLSearchParams({
+          address: account.loginSession!.address.toHex(),
+          activationCode: account.activationKey,
+        }).toString(),
+      {
+        method: "POST",
+        mode: "no-cors",
       }
-    })();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- multiple calls to activate() when fully populated
+    )
+      .then((res) => {
+        if (!res.ok) {
+          history.push("/register/activationFail");
+        } else {
+          return res.text()!;
+        }
+      })
+      .then((TxId) => {
+        TxId
+          ? fetchStatus({ variables: { txId: TxId! } })
+          : history.push("/register/activationFail");
+      });
   }, []);
 
   useEffect(() => {
-    if (activated) {
+    if (!txStatus) return;
+    if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
       history.push("/register/activationSuccess");
     }
-
-    if (error) {
+    if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
+      stopPolling?.();
       history.push("/register/activationFail");
     }
-  }, [activated, error, history]);
+  }, [txStatus]);
 
   return (
     <Layout sidebar css={registerStyles}>

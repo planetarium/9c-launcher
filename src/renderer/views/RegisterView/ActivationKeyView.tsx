@@ -19,10 +19,9 @@ function ActivationKeyView() {
 
   const onSubmit = async ({ activationKey }: FormData) => {
     trackEvent("Launcher/EnterActivationCode");
+    accountStore.setActivationKey(activationKey);
 
     history.push("/register/activationWait");
-
-    accountStore.setActivationKey(activationKey);
   };
 
   return (
