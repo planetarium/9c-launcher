@@ -11,9 +11,9 @@ function LobbyView() {
   const history = useHistory();
 
   useEffect(() => {
-    if (loading || contracted || account.activationKey) return;
-    history.push("/register/activationKey");
-  }, [history, loading, contracted, account.activationKey]);
+    if (loading || contracted || account.activationCode) return;
+    history.push("/register/activationCode");
+  }, [history, loading, contracted, account.activationCode]);
 
   useEffect(() => {
     if (account.loginSession && contracted) {

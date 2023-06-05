@@ -42,7 +42,7 @@ function ActivationFailView() {
         variant="primary"
         centered
         css={{ marginTop: 160 }}
-        onClick={() => history.push("/register/activationKey")}
+        onClick={() => history.push("/register/activationCode")}
       >
         <T _str="Retry" _tags={transifexTags} />
       </Button>

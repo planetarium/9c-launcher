@@ -1,9 +1,9 @@
 import { observer } from "mobx-react";
 import React from "react";
 import { useHistory } from "react-router";
-import ActivationKeyForm, {
+import ActivationCodeForm, {
   FormData,
-} from "src/renderer/components/ActivationKeyForm";
+} from "src/renderer/components/ActivationCodeForm";
 import Layout from "src/renderer/components/core/Layout";
 import H1 from "src/renderer/components/ui/H1";
 import { T } from "src/renderer/i18n";
@@ -11,15 +11,15 @@ import { trackEvent } from "src/utils/mixpanel";
 import { useStore } from "src/utils/useStore";
 import { registerStyles } from ".";
 
-const transifexTags = "v2/views/register/ActivationKeyView";
+const transifexTags = "v2/views/register/ActivationCodeView";
 
-function ActivationKeyView() {
+function ActivationCodeView() {
   const accountStore = useStore("account");
   const history = useHistory();
 
-  const onSubmit = async ({ activationKey }: FormData) => {
+  const onSubmit = async ({ activationCode }: FormData) => {
     trackEvent("Launcher/EnterActivationCode");
-    accountStore.setActivationKey(activationKey);
+    accountStore.setActivationCode(activationCode);
 
     history.push("/register/activationWait");
   };
@@ -35,9 +35,9 @@ function ActivationKeyView() {
           _tags={transifexTags}
         />
       </p>
-      <ActivationKeyForm onSubmit={onSubmit} />
+      <ActivationCodeForm onSubmit={onSubmit} />
     </Layout>
   );
 }
 
-export default observer(ActivationKeyView);
+export default observer(ActivationCodeView);

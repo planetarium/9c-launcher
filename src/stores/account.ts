@@ -107,7 +107,7 @@ export default class AccountStore {
   }
 
   @observable
-  public activationKey: string = "";
+  public activationCode: string = "";
 
   @observable
   public loginSession: ILoginSession | null = null;
@@ -164,8 +164,8 @@ export default class AccountStore {
   };
 
   @action
-  setActivationKey = (activationKey: string) => {
-    this.activationKey = activationKey;
+  setActivationCode = (activationCode: string) => {
+    this.activationCode = activationCode;
   };
 
   isEmpty = async (): Promise<boolean> => {

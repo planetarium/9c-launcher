@@ -1,6 +1,6 @@
 import { CSS } from "src/renderer/stitches.config";
 import ActivationFailView from "./ActivationFailView";
-import ActivationKeyView from "./ActivationKeyView";
+import ActivationCodeView from "./ActivationCodeView";
 import ActivationSuccessView from "./ActivationSuccessView";
 import ActivationWaitView from "./ActivationWaitView";
 import CreateKeyView from "./CreateKeyView";
@@ -15,7 +15,7 @@ const registerStyles: CSS = {
 
 export {
   ActivationFailView,
-  ActivationKeyView,
+  ActivationCodeView,
   ActivationSuccessView,
   ActivationWaitView,
   CreateKeyView,

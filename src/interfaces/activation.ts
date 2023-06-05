@@ -1,8 +1,8 @@
 export type ActivationStep =
-  | "getActivationInfo"
-  | "getGraphQLClient"
-  | "getActivationAddress"
-  | "createActivateAccountTx"
+  | "preflightCheck"
+  | "requestPortalPledge"
+  | "checkPledgeRequestTx"
+  | "createApprovePledgeTx"
   | "stageTx";
 
 export type ActivationSuccessResult = {

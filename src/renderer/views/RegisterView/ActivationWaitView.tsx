@@ -10,57 +10,25 @@ import { T } from "src/renderer/i18n";
 import loading from "src/renderer/resources/icons/loading.png";
 import { registerStyles } from ".";
 import { LoadingImage } from "../MonsterCollectionOverlay/base";
-import { useStore } from "src/utils/useStore";
-import { TxStatus, useTransactionResultLazyQuery } from "src/generated/graphql";
+import { usePledge } from "src/utils/usePledge";
 
 const transifexTags = "v2/views/register/ActivationWaitView";
 
 function ActivationWaitView() {
   const history = useHistory();
-  const account = useStore("account");
-  const [fetchStatus, { data: txStatus, stopPolling }] =
-    useTransactionResultLazyQuery({
-      pollInterval: 1000,
-      fetchPolicy: "no-cache",
-    });
+  const pledge = usePledge();
 
   useEffect(() => {
-    fetch(
-      get("OnboardingPortalUrl") +
-        "/api/account/contract?" +
-        new URLSearchParams({
-          address: account.loginSession!.address.toHex(),
-          activationCode: account.activationKey,
-        }).toString(),
-      {
-        method: "POST",
-        mode: "no-cors",
+    (async () => {
+      const result = await pledge();
+      console.log(result.result);
+      if (result.result === true) {
+        history.push("/register/activationSuccess");
+      } else if (result.result === false) {
+        history.push("/register/activationFail");
       }
-    )
-      .then((res) => {
-        if (!res.ok) {
-          history.push("/register/activationFail");
-        } else {
-          return res.text()!;
-        }
-      })
-      .then((TxId) => {
-        TxId
-          ? fetchStatus({ variables: { txId: TxId! } })
-          : history.push("/register/activationFail");
-      });
+    })();
   }, []);
-
-  useEffect(() => {
-    if (!txStatus) return;
-    if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
-      history.push("/register/activationSuccess");
-    }
-    if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
-      stopPolling?.();
-      history.push("/register/activationFail");
-    }
-  }, [txStatus]);
 
   return (
     <Layout sidebar css={registerStyles}>
