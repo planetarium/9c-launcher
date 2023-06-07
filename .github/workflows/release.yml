@@ -24,10 +24,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Install RPMBuilder
+      - name: Setup Linux build dependencies
         run: |
           brew update
-          brew install fpm
+          brew install rpm squashfs
+          sudo gem install fpm
+          export USE_SYSTEM_FPM="true"
       - name: Copy builder config
         shell: bash
         run: |
