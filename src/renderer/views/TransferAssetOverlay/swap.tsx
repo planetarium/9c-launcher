@@ -178,28 +178,32 @@ function SwapPage() {
           defaultValue={100}
         />
       </FormControl>
-      <SwapNoticeTitle>
-        <T _str="Notice" _tags={transifexTags} />
-      </SwapNoticeTitle>
       <ul style={{ listStyleType: "none", padding: 0, marginTop: "5px" }}>
         <li>
+          <SwapSecondTitle>Bridge Transfer Limit</SwapSecondTitle>
           <SwapNoticeLabel>
-            <T _str="* Minimum 100 NCG per transfer" _tags={transifexTags} />
+            <T _str="ᐧ Minimum 100 NCG per transfer" _tags={transifexTags} />
           </SwapNoticeLabel>
         </li>
         <li>
           <SwapNoticeLabel>
             <T
-              _str="* Maximum {max, number, integer} NCG per day"
+              _str="ᐧ Maximum {max, number, integer} NCG per day"
               _tags={transifexTags}
               max={5000}
             />
           </SwapNoticeLabel>
         </li>
+        <SwapSecondTitle>Bridge Fee</SwapSecondTitle>
+        <li>
+          <SwapNoticeLabel>
+            <T _str="ᐧ <1,000 NCG: 10 NCG fixed" _tags={transifexTags} />
+          </SwapNoticeLabel>
+        </li>
         <li>
           <SwapNoticeLabel>
             <T
-              _str="* 1% fee deducted to operate bridge (ETH gas fee & development cost)"
+              _str="ᐧ ≥1,000 NCG: 1% of the transfer amount"
               _tags={transifexTags}
             />
           </SwapNoticeLabel>

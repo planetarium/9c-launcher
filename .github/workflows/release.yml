@@ -19,13 +19,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '11'
-
+      - name: Setup Linux build dependencies
+        run: |
+          brew update
+          brew install rpm squashfs
+          sudo gem install fpm
+          export USE_SYSTEM_FPM="true"
       - name: Copy builder config
         shell: bash
         run: |
@@ -43,7 +47,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.electron-gyp
-          key: ${{ runner.os }}-electron-gyp-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-electron-gyp-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/setup-node@v3
         with:
@@ -63,6 +67,7 @@ jobs:
           else
             yarn run release-internal
           fi
+          rm -R ./dist/*-unpacked
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
