@@ -27,7 +27,7 @@ jobs:
       - name: Setup Linux build dependencies
         run: |
           brew update
-          brew install rpm squashfs
+          brew install squashfs
           sudo gem install fpm
           export USE_SYSTEM_FPM="true"
       - name: Copy builder config
