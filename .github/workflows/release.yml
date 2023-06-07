@@ -3,9 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - rc-v*
       - release/*
-    tags: ["*"]
 
 concurrency:
   group: release
