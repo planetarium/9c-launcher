@@ -42,8 +42,3 @@ linux:
     - "rpm"
     - "pacman"
     - "AppImage"
-publish:
-  provider: "s3"
-  bucket: "9c-release.planetariumhq.com"
-  path: "main/launcher"
-  acl: "private"

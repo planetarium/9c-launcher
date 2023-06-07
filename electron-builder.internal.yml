@@ -37,8 +37,4 @@ linux:
   target:
     - "zip"
     - "AppImage"
-publish:
-  provider: "s3"
-  bucket: "9c-release.planetariumhq.com"
-  path: "internal/launcher"
-  acl: "private"
+
