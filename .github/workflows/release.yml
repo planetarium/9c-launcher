@@ -24,12 +24,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Setup Linux build dependencies
-        run: |
-          brew update
-          brew install squashfs
-          sudo gem install fpm
-          export USE_SYSTEM_FPM="true"
       - name: Copy builder config
         shell: bash
         run: |
