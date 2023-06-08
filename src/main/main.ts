@@ -32,6 +32,7 @@ import fs from "fs";
 import fetch from "node-fetch";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
+import * as Sentry from "@sentry/electron/main";
 import { initializeSentry } from "src/utils/sentry";
 import "core-js";
 import log from "electron-log";
@@ -43,7 +44,6 @@ import {
 import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
-import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
@@ -92,7 +92,6 @@ let appUpdaterInstance: AppUpdater | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
-let ip: string | null = null;
 let relaunched: boolean = false;
 
 let initializeHeadlessCts: {
@@ -110,8 +109,6 @@ const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 const updateOptions: IUpdateOptions = {
   downloadStarted: quitAllProcesses,
 };
-
-ipv4().then((value) => (ip = value));
 
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: NineChroniclesMixpanel | undefined =

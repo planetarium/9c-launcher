@@ -1,6 +1,7 @@
 import electronLog from "electron-log";
 import React from "react";
 import * as DOM from "react-dom";
+import * as Sentry from "@sentry/electron/";
 
 import "core-js";
 import "core-js/proposals/array-find-from-last";

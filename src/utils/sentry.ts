@@ -1,10 +1,10 @@
-import { get, app } from "src/config";
-import { version } from "../../package.json";
+import { get } from "src/config";
+import version from "../../package.json";
 
 const { init } =
   process.type === "browser"
-    ? require("@sentry/electron/dist/main")
-    : require("@sentry/electron/dist/renderer");
+    ? require("@sentry/electron/main")
+    : require("@sentry/electron/renderer");
 
 const dsn =
   "https://5bd08f483a254487b7540c04898c8c8f@o195672.ingest.sentry.io/5289089";
