@@ -1,15 +1,15 @@
-const path = require("path");
-const HtmlPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { DefinePlugin, IgnorePlugin } = require("webpack");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const SentryWebpackPlugin = require("@sentry/webpack-plugin");
-const { version } = require("./package.json");
-const TerserPlugin = require("terser-webpack-plugin");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+import path from "path";
+import fs from "fs";
+import HtmlPlugin from "html-webpack-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import { DefinePlugin, IgnorePlugin } from "webpack";
+import { sentryWebpackPlugin } from "@sentry/webpack-plugin";
+import { version } from "./package.json";
+import TerserPlugin from "terser-webpack-plugin";
+import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 
-const child_process = require("child_process");
+import child_process from "child_process";
 
 // const to avoid typos
 const DEVELOPMENT = "development";
@@ -20,7 +20,10 @@ const gitHash = child_process.execSync("git rev-parse HEAD", {
 });
 
 /** @returns {import('webpack').Configuration} */
-function createRenderConfig(isDev, DEFAULT_NETWORK) {
+function createRenderConfig(
+  isDev: boolean,
+  DEFAULT_NETWORK: "main" | "internal" | "previewnet"
+) {
   return {
     context: path.join(__dirname, "src"),
 
@@ -52,7 +55,7 @@ function createRenderConfig(isDev, DEFAULT_NETWORK) {
       path: path.join(__dirname, "build"),
       publicPath: isDev ? "/" : undefined,
       clean: {
-        keep: /^9c$|\.(?:exe|dll|json|app|so|debug)$|(?:9c_Data|MonoBleedingEdge|publish|9c.app)[\\\/]/,
+        keep: /^9c$|\.(?:exe|dll|json|app|so|debug)$|(?:9c_Data|MonoBleedingEdge|publish|9c.app)[\\/]/,
       },
     },
 
@@ -150,7 +153,7 @@ function createRenderConfig(isDev, DEFAULT_NETWORK) {
 
     devServer: isDev
       ? {
-          contentBase: path.join(__dirname, "build"),
+          static: path.join(__dirname, "build"),
           compress: true,
           port: 9000,
           historyApiFallback: true,
@@ -189,7 +192,10 @@ function createRenderConfig(isDev, DEFAULT_NETWORK) {
 }
 
 /** @returns {import('webpack').Configuration} */
-function createMainConfig(isDev, DEFAULT_NETWORK) {
+function createMainConfig(
+  isDev: boolean,
+  DEFAULT_NETWORK: "main" | "internal" | "previewnet"
+) {
   return {
     context: path.join(__dirname, "src"),
 
@@ -268,10 +274,6 @@ function createMainConfig(isDev, DEFAULT_NETWORK) {
             options: {},
           },
         },
-        {
-          test: /\.node$/,
-          loader: "node-loader",
-        },
       ],
     },
 
@@ -293,11 +295,6 @@ function createMainConfig(isDev, DEFAULT_NETWORK) {
         "process.env.DEFAULT_NETWORK": JSON.stringify(DEFAULT_NETWORK),
       }),
 
-      // electron-packager needs the package.json file. the "../" is because context is set to the ./src folder
-      new CopyWebpackPlugin({
-        patterns: [{ from: "package.json", to: "./", context: "../" }],
-      }),
-
       new IgnorePlugin({
         resourceRegExp: /^(utf-8-validate|bufferutil)/, // fix intended missing dependencies
       }),
@@ -310,7 +307,7 @@ function createMainConfig(isDev, DEFAULT_NETWORK) {
   };
 }
 
-module.exports = (env) => {
+module.exports = (env: any) => {
   // env variable is passed by webpack through the cli. see package.json scripts.
   const isDev = env.NODE_ENV === DEVELOPMENT;
   const { target, release, DEFAULT_NETWORK } = env;
@@ -320,19 +317,25 @@ module.exports = (env) => {
   const config = configFactory(isDev, DEFAULT_NETWORK);
   if (release) {
     config.plugins.push(
-      new SentryWebpackPlugin({
+      sentryWebpackPlugin({
         // sentry-cli configuration
         authToken: process.env.SENTRY_AUTH_TOKEN,
         org: "planetariumhq",
         project: "9c-launcher",
         // webpack specific configuration
-        include: ".",
-        ignore: ["node_modules", "webpack.config.js"],
-        release: version,
+        sourcemaps: {
+          ignore: ["node_modules", "webpack.config.ts"],
+        },
+        release: {
+          name: version,
+        },
         debug: true,
       })
     );
   }
+
+  // electron-packager needs the package.json file.
+  fs.cpSync("package.json", "./build/package.json");
 
   console.log(
     `\n##\n## BUILDING BUNDLE FOR: ${
