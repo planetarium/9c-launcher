@@ -36,7 +36,9 @@ jobs:
 
       - name: Install
         shell: bash
-        run: yarn
+        run: yarn install --immutable
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
       - name: build
         shell: bash
