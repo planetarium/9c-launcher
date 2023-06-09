@@ -3,11 +3,12 @@ export type ActivationStep =
   | "requestPortalPledge"
   | "checkPledgeRequestTx"
   | "createApprovePledgeTx"
-  | "stageTx";
+  | "stageTx"
+  | "exceptionError";
 
 export type ActivationSuccessResult = {
   result: true;
-  txId: string;
+  txId?: string;
 };
 
 export type ActivationFailResult = {
