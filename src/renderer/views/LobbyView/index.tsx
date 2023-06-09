@@ -7,20 +7,25 @@ import { useStore } from "src/utils/useStore";
 
 function LobbyView() {
   const { account, game } = useStore();
-  const { loading, contracted, error } = useCheckContract();
+  const { loading, error, approved, requested } = useCheckContract();
   const history = useHistory();
 
   useEffect(() => {
-    if (loading || contracted || account.activationCode) return;
-    history.push("/register/activationCode");
-  }, [history, loading, contracted, account.activationCode]);
+    if (!approved) {
+      if (!requested) {
+        history.push("/register/activationCode");
+      } else {
+        history.push("/register/activationWait");
+      }
+    }
+  }, [history, loading, approved, requested]);
 
   useEffect(() => {
-    if (account.loginSession && contracted) {
+    if (account.loginSession && approved) {
       const privateKeyBytes = account.loginSession.privateKey.toBytes();
       game.startGame(Buffer.from(privateKeyBytes).toString("hex"));
     }
-  }, [account.loginSession, contracted, game]);
+  }, [account.loginSession, approved, game]);
 
   useEffect(() => {
     if (error) history.push("/error/relaunch");

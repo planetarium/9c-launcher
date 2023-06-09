@@ -5,7 +5,8 @@ import { useLoginSession } from "./useLoginSession";
 interface ContractResult {
   loading: boolean;
   error?: ApolloError;
-  contracted: boolean;
+  approved: boolean;
+  requested: boolean;
 }
 
 export function useCheckContract(usePolling: boolean = false): ContractResult {
@@ -20,6 +21,7 @@ export function useCheckContract(usePolling: boolean = false): ContractResult {
   return {
     loading,
     error,
-    contracted: data?.stateQuery.contracted.contracted ?? false,
+    approved: data?.stateQuery.contracted.contracted ?? false,
+    requested: data?.stateQuery.contracted.patronAddress !== null,
   };
 }

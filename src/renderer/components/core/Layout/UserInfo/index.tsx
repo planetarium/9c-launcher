@@ -33,9 +33,7 @@ import { useStaking } from "src/utils/staking";
 import { useTx } from "src/utils/useTx";
 import { trackEvent } from "src/utils/mixpanel";
 import { useLoginSession } from "src/utils/useLoginSession";
-import { useCheckContract } from "src/utils/useCheckContract";
 import { Avatar } from "src/renderer/views/ClaimCollectionRewardsOverlay/ClaimContent";
-import { GetPatronButton } from "./GetPatronButton";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -77,7 +75,6 @@ export default function UserInfo() {
     useTransactionResultLazyQuery({
       pollInterval: 1000,
     });
-  const { contracted } = useCheckContract();
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
   useEffect(() => {
     const txStatus = result?.transaction.transactionResult.txStatus;
@@ -146,7 +143,6 @@ export default function UserInfo() {
         <AccountBoxIcon />
         <strong onClick={copyAddress}>{loginSession.address.toString()}</strong>
         <FileCopyIcon />
-        {!contracted && <GetPatronButton />}
       </UserInfoItem>
       <UserInfoItem>
         <img src={goldIconUrl} alt="gold" />

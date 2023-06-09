@@ -6,6 +6,7 @@ import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 import { useStore } from "src/utils/useStore";
 import Button from "../../ui/Button";
 import { useCheckContract } from "src/utils/useCheckContract";
+import { useHistory } from "react-router";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -26,7 +27,7 @@ const StatusMessage = styled("span", {
 function StatusBar() {
   const isAvailable = useIsHeadlessAvailable();
   const { account: accountStore, game } = useStore();
-  const { loading, contracted } = useCheckContract();
+  const { loading, approved, requested } = useCheckContract();
 
   const loginSession = accountStore.loginSession;
 
@@ -37,7 +38,7 @@ function StatusBar() {
           <Button
             data-testid="play"
             variant="primary"
-            disabled={loading || !contracted}
+            disabled={loading || approved || requested}
             onClick={() => {
               const privateKeyBytes = loginSession.privateKey.toBytes();
               return game.startGame(
