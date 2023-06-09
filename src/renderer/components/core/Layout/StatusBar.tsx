@@ -5,8 +5,7 @@ import { styled } from "src/renderer/stitches.config";
 import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 import { useStore } from "src/utils/useStore";
 import Button from "../../ui/Button";
-import { useCheckContract } from "src/utils/useCheckContract";
-import { useHistory } from "react-router";
+import { useCheckContractedQuery } from "src/generated/graphql";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -26,10 +25,12 @@ const StatusMessage = styled("span", {
 
 function StatusBar() {
   const isAvailable = useIsHeadlessAvailable();
-  const { account: accountStore, game } = useStore();
-  const { loading, approved, requested } = useCheckContract();
+  const { account, game } = useStore();
+  const { loading, data } = useCheckContractedQuery({
+    variables: { agentAddress: account.loginSession?.address.toHex() },
+  });
 
-  const loginSession = accountStore.loginSession;
+  const loginSession = account.loginSession;
 
   return (
     <StatusBarStyled>
@@ -38,7 +39,7 @@ function StatusBar() {
           <Button
             data-testid="play"
             variant="primary"
-            disabled={loading || approved || requested}
+            disabled={loading || !data?.stateQuery.contracted.contracted}
             onClick={() => {
               const privateKeyBytes = loginSession.privateKey.toBytes();
               return game.startGame(
