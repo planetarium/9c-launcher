@@ -46,7 +46,7 @@ export function usePledge(): ActivationFunction {
       });
       const { contracted, patronAddress } = data.stateQuery.contracted;
       if (!contracted) {
-        if (!patronAddress === null) {
+        if (patronAddress === null) {
           if (!account.activationCode) {
             return {
               result: false,
