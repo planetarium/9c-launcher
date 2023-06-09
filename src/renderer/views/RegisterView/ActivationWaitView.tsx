@@ -21,7 +21,7 @@ function ActivationWaitView() {
   useEffect(() => {
     (async () => {
       const { result } = await pledge();
-      if (!!result) {
+      if (result) {
         history.push("/register/activationSuccess");
       } else {
         history.push("/register/activationFail");
