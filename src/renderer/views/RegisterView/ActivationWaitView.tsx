@@ -11,6 +11,7 @@ import loading from "src/renderer/resources/icons/loading.png";
 import { registerStyles } from ".";
 import { LoadingImage } from "../MonsterCollectionOverlay/base";
 import { usePledge } from "src/utils/usePledge";
+import { ActivationResult } from "src/interfaces/activation";
 
 const transifexTags = "v2/views/register/ActivationWaitView";
 
@@ -20,10 +21,11 @@ function ActivationWaitView() {
 
   useEffect(() => {
     (async () => {
-      const { result } = await pledge();
-      if (result) {
+      const result: ActivationResult = await pledge();
+      if (result.result) {
         history.push("/register/activationSuccess");
       } else {
+        console.log(result.error);
         history.push("/register/activationFail");
       }
     })();
