@@ -8,7 +8,7 @@ import { useStore } from "./useStore";
 import { useTransactionResultLazyQuery } from "src/generated/graphql";
 import { sleep } from "src/utils";
 
-export function usePledge(): ActivationFunction {
+export function usePledge() {
   const tx = useTx();
   const account = useStore("account");
 
@@ -18,7 +18,7 @@ export function usePledge(): ActivationFunction {
       fetchPolicy: "no-cache",
     });
 
-  const activate: ActivationFunction = async () => {
+  const activate: ActivationFunction = async (requestPledgeTxId: string) => {
     let step: ActivationStep = "preflightCheck";
 
     if (!account.loginSession) {
@@ -47,42 +47,9 @@ export function usePledge(): ActivationFunction {
       const { contracted, patronAddress } = data.stateQuery.contracted;
       if (!contracted) {
         if (patronAddress === null) {
-          if (!account.activationCode) {
-            return {
-              result: false,
-              error: {
-                error: new Error("No activation key"),
-                step,
-              },
-            };
-          }
-          step = "requestPortalPledge";
-          const res = await fetch(
-            get("OnboardingPortalUrl") + "/api/account/contract",
-            {
-              method: "POST",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                activationCode: account.activationCode,
-                address: account.loginSession!.address.toHex(),
-              }),
-            }
-          );
-          if (!res.ok) {
-            return {
-              result: false,
-              error: {
-                error: new Error("RequestPledge to Portal Failed"),
-                step,
-              },
-            };
-          }
           step = "checkPledgeRequestTx";
 
-          fetchStatus({ variables: { txId: await res.text() } });
+          fetchStatus({ variables: { txId: requestPledgeTxId } });
 
           while (
             loading ||

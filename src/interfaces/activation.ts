@@ -1,7 +1,6 @@
 export type ActivationStep =
   | "preflightCheck"
   | "getGraphQLClient"
-  | "requestPortalPledge"
   | "checkPledgeRequestTx"
   | "createApprovePledgeTx"
   | "stageTx"
@@ -22,4 +21,4 @@ export type ActivationFailResult = {
 
 export type ActivationResult = ActivationSuccessResult | ActivationFailResult;
 
-export type ActivationFunction = () => Promise<ActivationResult>;
+export type ActivationFunction = (txId: string) => Promise<ActivationResult>;

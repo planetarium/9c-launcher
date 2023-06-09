@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { get } from "src/config";
 import Layout from "src/renderer/components/core/Layout";
 import Button from "src/renderer/components/ui/Button";
@@ -15,18 +15,25 @@ import { ActivationResult } from "src/interfaces/activation";
 
 const transifexTags = "v2/views/register/ActivationWaitView";
 
+interface TxId {
+  TxId: string;
+}
+
 function ActivationWaitView() {
   const history = useHistory();
+  const param = useLocation().state as TxId;
   const pledge = usePledge();
 
   useEffect(() => {
     (async () => {
-      const result: ActivationResult = await pledge();
-      if (result.result) {
-        history.push("/register/activationSuccess");
-      } else {
-        console.log(result.error);
-        history.push("/register/activationFail");
+      if (param.TxId) {
+        const result: ActivationResult = await pledge(param.TxId);
+        if (result.result) {
+          history.push("/register/activationSuccess");
+        } else {
+          console.log(result.error);
+          history.push("/register/activationFail");
+        }
       }
     })();
   }, []);
