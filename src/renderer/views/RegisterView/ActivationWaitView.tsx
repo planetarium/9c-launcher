@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useHistory } from "react-router";
 import { get } from "src/config";
 import Layout from "src/renderer/components/core/Layout";
 import Button from "src/renderer/components/ui/Button";
@@ -12,22 +12,21 @@ import { registerStyles } from ".";
 import { LoadingImage } from "../MonsterCollectionOverlay/base";
 import { usePledge } from "src/utils/usePledge";
 import { ActivationResult } from "src/interfaces/activation";
+import { useExternalURL } from "src/utils/useExternalURL";
 
 const transifexTags = "v2/views/register/ActivationWaitView";
 
-interface TxId {
-  TxId: string;
-}
-
 function ActivationWaitView() {
   const history = useHistory();
-  const param = useLocation().state as TxId;
   const pledge = usePledge();
 
+  const url = useExternalURL();
   useEffect(() => {
     (async () => {
-      if (param.TxId) {
-        const result: ActivationResult = await pledge(param.TxId);
+      if (url?.searchParams.has("txid")) {
+        const result: ActivationResult = await pledge(
+          url.searchParams.get("txid")!
+        );
         if (result.result) {
           history.push("/register/activationSuccess");
         } else {
