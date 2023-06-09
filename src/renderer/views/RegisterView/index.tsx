@@ -6,6 +6,8 @@ import ActivationWaitView from "./ActivationWaitView";
 import CreateKeyView from "./CreateKeyView";
 
 const registerStyles: CSS = {
+  display: "flex",
+  flexDirection: "column",
   padding: 52,
   boxSizing: "border-box",
   "& > * + *": {

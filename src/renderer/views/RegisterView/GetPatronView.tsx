@@ -8,6 +8,7 @@ import { T } from "src/renderer/i18n";
 import { useStore } from "src/utils/useStore";
 import { registerStyles } from ".";
 import TextField from "src/renderer/components/ui/TextField";
+import { ExtLink } from "src/renderer/components/ui/Link";
 import Button from "src/renderer/components/ui/Button";
 
 const transifexTags = "v2/views/register/GetPatronView";
@@ -51,6 +52,19 @@ function GetPatronView() {
       >
         <T _str="Sign up for the portal" _tags={transifexTags} />
       </Button>
+      <ExtLink
+        centered
+        style={{
+          color: "#74f4bc",
+          fontWeight: 300,
+        }}
+        href="https://docs.nine-chronicles.com/introduction/guide/nine-chronicles-portal/patron" // will be embedded in config.json. or else?
+      >
+        <T
+          _str="Can I have a different patron, not Planetarium?"
+          _tags={transifexTags}
+        />
+      </ExtLink>
     </Layout>
   );
 }
