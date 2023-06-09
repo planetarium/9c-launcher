@@ -426,6 +426,7 @@ query CheckContracted($agentAddress: Address!){
   stateQuery{
     contracted(agentAddress: $agentAddress){
 			contracted
+      patronAddress
     }
   }
 }
