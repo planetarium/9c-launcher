@@ -13,7 +13,7 @@ function LobbyView() {
   useEffect(() => {
     if (!approved) {
       if (!requested) {
-        history.push("/register/activationCode");
+        history.push("/register/getPatron");
       } else {
         history.push("/register/activationWait");
       }

@@ -29,7 +29,7 @@ function CreateKeyView() {
 
     await accountStore.login(account, password);
 
-    history.push("/register/activationCode");
+    history.push("/register/getPatron");
   };
 
   return (

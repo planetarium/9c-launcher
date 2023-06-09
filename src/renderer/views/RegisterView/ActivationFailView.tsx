@@ -47,7 +47,7 @@ function ActivationFailView() {
         disabled={loading}
         onClick={() => {
           if (!requested) {
-            history.push("/register/activationCode");
+            history.push("/register/getPatron");
           } else {
             history.push("/register/activationWait");
           }

@@ -12,10 +12,10 @@ import RecoverView from "./views/RecoverView";
 import ConfirmUpdateView from "./views/ConfirmUpdateView";
 import {
   ActivationFailView,
-  ActivationCodeView,
   ActivationSuccessView,
   ActivationWaitView,
   CreateKeyView,
+  GetPatronView,
 } from "./views/RegisterView";
 import RevokeView from "./views/RevokeView";
 import WelcomeView from "./views/WelcomeView";
@@ -51,7 +51,7 @@ export default function Routes() {
       <Route path="/welcome" component={WelcomeView} />
       <Route path="/confirm-update" component={ConfirmUpdateView} />
       <Route path="/register/createKey" component={CreateKeyView} />
-      <Route path="/register/activationCode" component={ActivationCodeView} />
+      <Route path="/register/getPatron" component={GetPatronView} />
       <Route path="/register/activationWait" component={ActivationWaitView} />
       <Route
         path="/register/activationSuccess"
