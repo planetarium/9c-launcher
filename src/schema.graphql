@@ -87,8 +87,13 @@ type StandaloneQuery {
     timestamp: DateTimeOffset
 
     # The gas limit for Transaction.
-    gasLimit: Long
-    maxGasPrice: FungibleAssetValueInputType
+    gasLimit: Long = 4
+    maxGasPrice: FungibleAssetValueInputType = {
+      quantity: 1000000000000000000
+      ticker: "Mead"
+      decimalPlaces: 18
+      minters: []
+    }
   ): ActionTxQuery!
 
   # Query to get derived address.
@@ -1432,8 +1437,13 @@ type TransactionHeadlessQuery {
     nonce: Long
 
     # The gas limit for Transaction.
-    gasLimit: Long
-    maxGasPrice: FungibleAssetValueInputType
+    gasLimit: Long = 4
+    maxGasPrice: FungibleAssetValueInputType = {
+      quantity: 1000000000000000000
+      ticker: "Mead"
+      decimalPlaces: 18
+      minters: []
+    }
   ): ByteString!
   signTransaction(
     # The hexadecimal string of unsigned transaction to attach the given signature.
@@ -1442,6 +1452,13 @@ type TransactionHeadlessQuery {
     # The hexadecimal string of signature of the given unsigned transaction.
     signature: String!
   ): ByteString!
+}
+
+input FungibleAssetValueInputType {
+  quantity: BigInt!
+  ticker: String!
+  decimalPlaces: Byte!
+  minters: [Address!]
 }
 
 type RpcInformationQuery {
@@ -1695,6 +1712,11 @@ type ActionQuery {
   requestPledge(agentAddress: Address!, mead: Int = 4): ByteString!
   approvePledge(patronAddress: Address!): ByteString!
   endPledge(agentAddress: Address!): ByteString!
+  createPledge(
+    patronAddress: Address!
+    agentAddresses: [Address!]!
+    mead: Int = 4
+  ): ByteString!
 
   # Query to craft/enhance items/foods
   craftQuery: CraftQuery!
@@ -1709,13 +1731,6 @@ enum CurrencyEnum {
 input RuneSlotInfoInputType {
   slotIndex: Int!
   runeId: Int!
-}
-
-input FungibleAssetValueInputType {
-  quantity: BigInt!
-  ticker: String!
-  decimalPlaces: Byte!
-  minters: [Address!]
 }
 
 input RecipientsInputType {
@@ -2003,6 +2018,11 @@ type ActionTxQuery {
   requestPledge(agentAddress: Address!, mead: Int = 4): ByteString!
   approvePledge(patronAddress: Address!): ByteString!
   endPledge(agentAddress: Address!): ByteString!
+  createPledge(
+    patronAddress: Address!
+    agentAddresses: [Address!]!
+    mead: Int = 4
+  ): ByteString!
 
   # Query to craft/enhance items/foods
   craftQuery: CraftQuery!
