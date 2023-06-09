@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { styled } from "src/renderer/stitches.config";
 import { useStore } from "src/utils/useStore";
+import { useHistory } from "react-router";
 import MenuItem from "./MenuItem";
 
 import logo from "src/renderer/resources/icons/9c.png";
@@ -40,6 +41,7 @@ type Overlay = "settings" | "staking" | "transfer";
 function Menu() {
   const account = useStore("account");
   const [currentOverlay, openOverlay] = useState<Overlay | null>(null);
+  const history = useHistory();
 
   const url = useExternalURL();
   useEffect(() => {
@@ -50,7 +52,15 @@ function Menu() {
     if (url.pathname.startsWith("//open/transfer-asset")) {
       openOverlay("transfer");
     }
-  }, [url]);
+    if (
+      url.pathname.startsWith("//request-pledge") &&
+      url.searchParams.has("txid")
+    ) {
+      history.push("/register/activationWait", {
+        TxId: url.searchParams.get("txid"),
+      });
+    }
+  }, [url, history]);
 
   return (
     <MenuContainer>
