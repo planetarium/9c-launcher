@@ -1,29 +1,22 @@
-import { get } from "src/config";
-import {
-  ActivationFunction,
-  ActivationStep,
-  ActivationSuccessResult,
-} from "src/interfaces/activation";
+import { ipcRenderer } from "electron";
+import { GraphQLClient } from "graphql-request";
+import { getSdk } from "src/generated/graphql-request";
+import { get, NodeInfo } from "src/config";
+import { ActivationFunction, ActivationStep } from "src/interfaces/activation";
 import { useTx } from "src/utils/useTx";
 import { useStore } from "./useStore";
-import {
-  useApprovePledgeLazyQuery,
-  useTransactionResultLazyQuery,
-} from "src/generated/graphql";
+import { useTransactionResultLazyQuery } from "src/generated/graphql";
 import { sleep } from "src/utils";
-import { useCheckContract } from "./useCheckContract";
 
 export function usePledge(): ActivationFunction {
   const tx = useTx();
   const account = useStore("account");
-  const { approved, requested } = useCheckContract();
 
   const [fetchStatus, { loading, data: txState, stopPolling }] =
     useTransactionResultLazyQuery({
       pollInterval: 1000,
       fetchPolicy: "no-cache",
     });
-  const [approve, { data }] = useApprovePledgeLazyQuery();
 
   const activate: ActivationFunction = async () => {
     let step: ActivationStep = "preflightCheck";
@@ -38,19 +31,31 @@ export function usePledge(): ActivationFunction {
       };
     }
 
-    if (!account.activationCode) {
-      return {
-        result: false,
-        error: {
-          error: new Error("No activation key"),
-          step,
-        },
-      };
-    }
+    step = "getGraphQLClient";
+    const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
+
+    const sdks = getSdk(
+      new GraphQLClient(
+        `http://${nodeInfo.host}:${nodeInfo.graphqlPort}/graphql`
+      )
+    );
 
     try {
-      if (!approved) {
-        if (!requested) {
+      const { data } = await sdks.CheckContracted({
+        agentAddress: account.loginSession.address.toHex(),
+      });
+      const { contracted, patronAddress } = data.stateQuery.contracted;
+      if (!contracted) {
+        if (!patronAddress === null) {
+          if (!account.activationCode) {
+            return {
+              result: false,
+              error: {
+                error: new Error("No activation key"),
+                step,
+              },
+            };
+          }
           step = "requestPortalPledge";
           const res = await fetch(
             get("OnboardingPortalUrl") + "/api/account/contract",
@@ -101,11 +106,10 @@ export function usePledge(): ActivationFunction {
           }
         }
         step = "createApprovePledgeTx";
-        await approve({
-          variables: {
-            publicKey: account.loginSession!.publicKey.toHex("uncompressed"),
-          },
+        const { data } = await sdks.approvePledge({
+          publicKey: account.loginSession.publicKey.toHex("uncompressed"),
         });
+
         if (!data?.actionTxQuery.approvePledge) {
           return {
             result: false,
@@ -117,8 +121,8 @@ export function usePledge(): ActivationFunction {
         }
 
         step = "stageTx";
-        const txData = await tx(data?.actionTxQuery.approvePledge);
-        if (!txData?.data?.stageTransaction) {
+        const { data: txData } = await tx(data?.actionTxQuery.approvePledge);
+        if (!txData?.stageTransaction) {
           return {
             result: false,
             error: {
@@ -129,7 +133,7 @@ export function usePledge(): ActivationFunction {
         }
         return {
           result: true,
-          txId: txData.data.stageTransaction,
+          txId: txData.stageTransaction,
         };
       }
       return {
