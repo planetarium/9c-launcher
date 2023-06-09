@@ -6,6 +6,7 @@ import { T } from "../i18n";
 import Button from "./ui/Button";
 import TextField from "./ui/TextField";
 import { URLSearchParams } from "url";
+import debounce from "lodash.debounce";
 
 interface Props {
   onSubmit: (data: FormData) => void;
@@ -22,21 +23,23 @@ const transifexTags = "v2/components/ActivationKeyForm";
 export default function ActivationCodeForm({ onSubmit }: Props) {
   const [activationCode, setActivationCode] = useState("");
   const [status, setStatus] = useState<ActivationStatus>("");
-
-  const handleInput = useCallback(async (activationCode: string) => {
-    const res = await fetch(
-      get("OnboardingPortalUrl") +
-        "/api/account/contract?" +
-        new URLSearchParams({
-          activationCode: activationCode,
-        })
-    ).catch((e) => e);
-    if (res && res.status === 200) {
-      setStatus("Valid");
-    } else {
-      setStatus("The code is invalid");
-    }
-  }, []);
+  const handleInput = useCallback(
+    debounce(async (activationCode: string) => {
+      const res = await fetch(
+        get("OnboardingPortalUrl") +
+          "/api/account/contract?" +
+          new URLSearchParams({
+            activationCode: activationCode,
+          })
+      ).catch((e) => e);
+      if (res && res.status === 200) {
+        setStatus("Valid");
+      } else {
+        setStatus("The code is invalid");
+      }
+    }, 300),
+    []
+  );
 
   useEffect(() => {
     const handleFocus = async () => {
