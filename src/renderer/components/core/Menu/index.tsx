@@ -56,7 +56,7 @@ function Menu() {
       url.pathname.startsWith("//request-pledge") &&
       url.searchParams.has("txid")
     ) {
-      history.push("/register/activationWait");
+      history.push("/register/pledgeWait");
     }
   }, [url, history]);
 

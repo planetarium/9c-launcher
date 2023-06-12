@@ -14,9 +14,9 @@ import { usePledge } from "src/utils/usePledge";
 import { ActivationResult } from "src/interfaces/activation";
 import { useExternalURL } from "src/utils/useExternalURL";
 
-const transifexTags = "v2/views/register/ActivationWaitView";
+const transifexTags = "v2/views/register/PledgeWaitView";
 
-function ActivationWaitView() {
+function PledgeWaitView() {
   const history = useHistory();
   const pledge = usePledge();
 
@@ -28,10 +28,10 @@ function ActivationWaitView() {
           url.searchParams.get("txid")!
         );
         if (result.result) {
-          history.push("/register/activationSuccess");
+          history.push("/register/pledgeSuccess");
         } else {
           console.log(result.error);
-          history.push("/register/activationFail");
+          history.push("/register/pledgeFail");
         }
       }
     })();
@@ -40,7 +40,7 @@ function ActivationWaitView() {
   return (
     <Layout sidebar css={registerStyles}>
       <H1>
-        <T _str="Activation is in progress..." _tags={transifexTags} />
+        <T _str="Pledge in progress..." _tags={transifexTags} />
       </H1>
       <p>
         <T
@@ -72,4 +72,4 @@ function ActivationWaitView() {
   );
 }
 
-export default observer(ActivationWaitView);
+export default observer(PledgeWaitView);

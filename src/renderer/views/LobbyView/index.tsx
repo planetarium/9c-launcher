@@ -15,7 +15,7 @@ function LobbyView() {
       if (!requested) {
         history.push("/register/getPatron");
       } else {
-        history.push("/register/activationWait");
+        history.push("/register/pledgeWait");
       }
     }
   }, [history, loading, approved, requested]);

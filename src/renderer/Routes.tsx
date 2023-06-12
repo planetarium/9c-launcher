@@ -11,9 +11,9 @@ import LoginView from "./views/LoginView";
 import RecoverView from "./views/RecoverView";
 import ConfirmUpdateView from "./views/ConfirmUpdateView";
 import {
-  ActivationFailView,
-  ActivationSuccessView,
-  ActivationWaitView,
+  PledgeFailView,
+  PledgeSuccessView,
+  PledgeWaitView,
   CreateKeyView,
   GetPatronView,
 } from "./views/RegisterView";
@@ -52,12 +52,9 @@ export default function Routes() {
       <Route path="/confirm-update" component={ConfirmUpdateView} />
       <Route path="/register/createKey" component={CreateKeyView} />
       <Route path="/register/getPatron" component={GetPatronView} />
-      <Route path="/register/activationWait" component={ActivationWaitView} />
-      <Route
-        path="/register/activationSuccess"
-        component={ActivationSuccessView}
-      />
-      <Route path="/register/activationFail" component={ActivationFailView} />
+      <Route path="/register/pledgeWait" component={PledgeWaitView} />
+      <Route path="/register/pledgeSuccess" component={PledgeSuccessView} />
+      <Route path="/register/pledgeFail" component={PledgeFailView} />
       <Route path="/lobby" component={LobbyView} />
       <Route path="/import" component={ImportView} />
       <Route path="/forgot" component={ForgotPasswordView} />

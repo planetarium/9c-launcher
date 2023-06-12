@@ -11,20 +11,21 @@ import { T } from "src/renderer/i18n";
 import { registerStyles } from ".";
 import { useCheckContract } from "src/utils/useCheckContract";
 
-const transifexTags = "v2/views/register/ActivationFailView";
+const transifexTags = "v2/views/register/PledgeFailView";
 
-function ActivationFailView() {
+function PledgeFailView() {
   const history = useHistory();
   const { loading, requested } = useCheckContract();
 
   return (
     <Layout sidebar css={registerStyles}>
       <H1>
-        <T _str="Activation has failed" _tags={transifexTags} />
+        <T _str="Pledge has failed" _tags={transifexTags} />
       </H1>
       <Text css={{ fontSize: 14, whiteSpace: "pre" }}>
         <T
-          _str="An unknown error has occurred.\nPlease make sure your activation code is valid or try again later."
+          _str="An unknown error has occurred.
+          Please make sure your portal account is valid."
           _tags={transifexTags}
         />
       </Text>
@@ -49,7 +50,7 @@ function ActivationFailView() {
           if (!requested) {
             history.push("/register/getPatron");
           } else {
-            history.push("/register/activationWait");
+            history.push("/register/pledgeWait");
           }
         }}
       >
@@ -59,4 +60,4 @@ function ActivationFailView() {
   );
 }
 
-export default observer(ActivationFailView);
+export default observer(PledgeFailView);

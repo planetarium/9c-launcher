@@ -1,8 +1,8 @@
 import { CSS } from "src/renderer/stitches.config";
-import ActivationFailView from "./ActivationFailView";
+import PledgeFailView from "./PledgeFailView";
 import GetPatronView from "./GetPatronView";
-import ActivationSuccessView from "./ActivationSuccessView";
-import ActivationWaitView from "./ActivationWaitView";
+import PledgeSuccessView from "./PledgeSuccessView";
+import PledgeWaitView from "./PledgeWaitView";
 import CreateKeyView from "./CreateKeyView";
 
 const registerStyles: CSS = {
@@ -16,9 +16,9 @@ const registerStyles: CSS = {
 };
 
 export {
-  ActivationFailView,
-  ActivationSuccessView,
-  ActivationWaitView,
+  PledgeFailView,
+  PledgeSuccessView,
+  PledgeWaitView,
   CreateKeyView,
   GetPatronView,
   registerStyles,
