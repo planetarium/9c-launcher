@@ -36,7 +36,7 @@ function GetPatronView() {
       <Button
         variant="primary"
         centered
-        css={{ fontSize: 32, width: 300, marginTop: 50 }}
+        css={{ fontSize: 24, width: 360, marginTop: 50, fontWeight: 600 }}
         disabled={disable}
         onClick={() => {
           shell.openExternal(
