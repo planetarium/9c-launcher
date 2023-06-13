@@ -18,7 +18,9 @@ export function usePledge() {
       fetchPolicy: "no-cache",
     });
 
-  const activate: ActivationFunction = async (requestPledgeTxId: string) => {
+  const activate: ActivationFunction = async (
+    requestPledgeTxId: string | null
+  ) => {
     let step: ActivationStep = "preflightCheck";
 
     if (!account.loginSession) {
@@ -46,7 +48,8 @@ export function usePledge() {
       });
       const { contracted, patronAddress } = data.stateQuery.contracted;
       if (!contracted) {
-        if (patronAddress === null) {
+        if (patronAddress === null && requestPledgeTxId !== null) {
+          //If requestPledgeTxId is null, consider it's approve scenario
           step = "checkPledgeRequestTx";
 
           fetchStatus({ variables: { txId: requestPledgeTxId } });
@@ -69,7 +72,6 @@ export function usePledge() {
                 break;
             }
             await sleep(1000);
-            //TODO: Timeout
           }
           stopPolling?.();
         }

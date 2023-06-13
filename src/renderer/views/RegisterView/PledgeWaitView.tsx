@@ -23,16 +23,13 @@ function PledgeWaitView() {
   const url = useExternalURL();
   useEffect(() => {
     (async () => {
-      if (url?.searchParams.has("txid")) {
-        const result: ActivationResult = await pledge(
-          url.searchParams.get("txid")!
-        );
-        if (result.result) {
-          history.push("/register/pledgeSuccess");
-        } else {
-          console.log(result.error);
-          history.push("/register/pledgeFail");
-        }
+      const txid = url?.searchParams?.get("txid") ?? null;
+      const result: ActivationResult = await pledge(txid);
+      if (result.result) {
+        history.push("/register/pledgeSuccess");
+      } else {
+        console.log(result.error);
+        history.push("/register/pledgeFail");
       }
     })();
   }, []);

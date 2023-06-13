@@ -21,4 +21,6 @@ export type ActivationFailResult = {
 
 export type ActivationResult = ActivationSuccessResult | ActivationFailResult;
 
-export type ActivationFunction = (txId: string) => Promise<ActivationResult>;
+export type ActivationFunction = (
+  txId: string | null
+) => Promise<ActivationResult>;
