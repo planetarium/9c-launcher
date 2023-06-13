@@ -11,11 +11,13 @@ function LobbyView() {
   const history = useHistory();
 
   useEffect(() => {
-    if (!approved) {
-      if (!requested) {
-        history.push("/register/getPatron");
-      } else {
-        history.push("/register/pledgeWait");
+    if (!loading) {
+      if (!approved) {
+        if (!requested) {
+          history.push("/register/getPatron");
+        } else {
+          history.push("/register/pledgeWait");
+        }
       }
     }
   }, [history, loading, approved, requested]);
