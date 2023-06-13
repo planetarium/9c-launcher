@@ -54,12 +54,12 @@ export function usePledge() {
 
           fetchStatus({ variables: { txId: requestPledgeTxId } });
           let pollCount = 0;
-          while (
-            loading ||
-            txState?.transaction.transactionResult.txStatus !== "SUCCESS"
-          ) {
+          while (loading) {
             pollCount++;
             switch (txState?.transaction.transactionResult.txStatus) {
+              case "SUCCESS":
+                stopPolling?.();
+                break;
               case "FAILURE":
                 return {
                   result: false,
@@ -86,7 +86,6 @@ export function usePledge() {
               };
             }
           }
-          stopPolling?.();
         }
         step = "createApprovePledgeTx";
         const { data } = await sdks.approvePledge({
