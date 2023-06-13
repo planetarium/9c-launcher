@@ -53,11 +53,12 @@ export function usePledge() {
           step = "checkPledgeRequestTx";
 
           fetchStatus({ variables: { txId: requestPledgeTxId } });
-
+          let pollCount = 0;
           while (
             loading ||
             txState?.transaction.transactionResult.txStatus !== "SUCCESS"
           ) {
+            pollCount++;
             switch (txState?.transaction.transactionResult.txStatus) {
               case "FAILURE":
                 return {
@@ -72,6 +73,18 @@ export function usePledge() {
                 break;
             }
             await sleep(1000);
+            if (pollCount >= 60) {
+              stopPolling?.();
+              return {
+                result: false,
+                error: {
+                  error: new Error(
+                    "RequestPledge Tx Staging Confirmation Timeout."
+                  ),
+                  step: step,
+                },
+              };
+            }
           }
           stopPolling?.();
         }
