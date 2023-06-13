@@ -6028,6 +6028,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bwip-js@npm:^3":
+  version: 3.2.0
+  resolution: "@types/bwip-js@npm:3.2.0"
+  dependencies:
+    "@types/node": "*"
+  checksum: 6ece16d6ef2294e6f4eee098c377e63bac662f7418f7a74386cc10ff573860e45226c5938053fcc13027145f2f9330c316a8051a9f27e732e1505c5901c8baa0
+  languageName: node
+  linkType: hard
+
 "@types/bytes@npm:^3.1.1":
   version: 3.1.1
   resolution: "@types/bytes@npm:3.1.1"
@@ -7292,6 +7301,7 @@ __metadata:
     "@transifex/cli": ^3.0.0
     "@transifex/native": ^3.0.0
     "@transifex/react": ^3.0.0
+    "@types/bwip-js": ^3
     "@types/bytes": ^3.1.1
     "@types/child-process-promise": ^2.2.1
     "@types/dotenv": ^8.2.0
@@ -7323,6 +7333,7 @@ __metadata:
     babel-loader: ^8.2.2
     bencodex: ^0.1.1
     buffer: ^5.6.0
+    bwip-js: ^3.4.3
     bytes: ^3.1.2
     cancellationtoken: ^2.2.0
     child-process-promise: ^2.2.1
@@ -9228,6 +9239,15 @@ __metadata:
   version: 3.0.0
   resolution: "builtin-status-codes@npm:3.0.0"
   checksum: 1119429cf4b0d57bf76b248ad6f529167d343156ebbcc4d4e4ad600484f6bc63002595cbb61b67ad03ce55cd1d3c4711c03bbf198bf24653b8392420482f3773
+  languageName: node
+  linkType: hard
+
+"bwip-js@npm:^3.4.3":
+  version: 3.4.3
+  resolution: "bwip-js@npm:3.4.3"
+  bin:
+    bwip-js: bin/bwip-js.js
+  checksum: 5841db0de0db3b673df73383cdbc9c5174f83489c7e1485cce704a73d0c954fc2e06f358486845fc08a5ab5e2053057ffa1e76e8d3e4ee8c2470a9f283e6280a
   languageName: node
   linkType: hard
 
