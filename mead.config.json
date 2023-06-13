@@ -1,0 +1,47 @@
+{
+  "ActivationCodeUrl": "https://feat-mead.d1ycbn804ra69z.amplifyapp.com/start?step=2",
+  "AppProtocolVersion": "1/54684Ac4ee5B933e72144C4968BEa26056880d71/MEUCIQDFvvGTtUSSRj524xJf0EcxmmU6UaXVDAfp3fsb7P6fkwIgdSicMlCnEUZwsPr+W6VLg+2ReY4+FIRC2vB1Yssz7EU=/ZHU5OnRpbWVzdGFtcHUxMDoyMDIzLTA1LTE5ZQ==",
+  "AwsAccessKey": "AKIAUU3S3PEZFVKH626P",
+  "AwsRegion": "ap-northeast-2",
+  "AwsSecretKey": "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",
+  "BlockchainStoreDirName": "9c-internal-rc-v1166-2023-05-19",
+  "BlockchainStoreDirParent": "",
+  "Confirmations": 0,
+  "DataProviderUrl": "http://9c-internal-data-provider.nine-chronicles.com/graphql",
+  "DiscordUrl": "https://discord.com/invite/planetarium",
+  "GenesisBlockPath": "https://release.nine-chronicles.com/internal/genesis-block",
+  "HeadlessArgs": [
+    "--tip-timeout=120",
+    "--minimum-broadcast-target=30",
+    "--bucket-size=20",
+    "--chain-tip-stale-behavior-type=reboot",
+    "--network-type=Internal"
+  ],
+  "IceServerStrings": [
+    "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us.planetarium.dev:3478"
+  ],
+  "KeystoreBackupDocumentationUrl": "https://docs.nine-chronicles.com/introduction/guide/back-up-your-private-key",
+  "MarketServiceUrl": "http://k8s-9cnetwor-marketse-5a0aff7e14-6e661de319d8d2d4.elb.us-east-2.amazonaws.com",
+  "Mixpanel": true,
+  "MuteTeaser": true,
+  "Network": "internal-mead",
+  "NoMiner": true,
+  "NoTrustedStateValidators": true,
+  "OnboardingPortalUrl": "https://feat-mead-with-activation.d3mkl7om8mgjhs.amplifyapp.com",
+  "PeerStrings": [
+    "033369e95dbfd970dd9a7b4df31dcf5004d7cfd63289d26cc42bbdd01e25675b6f,9c-internal-mead-tcp.planetarium.dev,31234"
+  ],
+  "RemoteNodeList": [
+    "9c-internal-mead-rpc-1.nine-chronicles.com,80,31238"
+  ],
+  "Sentry": true,
+  "SnapshotPaths": [
+    "https://snapshots.nine-chronicles.com/internal"
+  ],
+  "StoreType": "rocksdb",
+  "TrustedAppProtocolVersionSigners": [
+    "02529a61b9002ba8f21c858224234af971e962cac9bd7e6b365e71e125c6463478"
+  ],
+  "UseRemoteHeadless": true,
+  "UnitySentrySampleRate": 0.5
+}
