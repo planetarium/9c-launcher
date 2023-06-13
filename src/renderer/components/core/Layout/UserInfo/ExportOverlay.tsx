@@ -1,5 +1,5 @@
-import { Button, Container, styled, Typography } from "@material-ui/core";
-import React, { useEffect, useMemo } from "react";
+import { styled } from "@material-ui/core";
+import React, { useMemo } from "react";
 import bwipjs from "bwip-js";
 import { useStore } from "src/utils/useStore";
 import OverlayBase, { CloseButton } from "../../OverlayBase";
@@ -20,10 +20,11 @@ const MainPageContainer = styled(OverlayBase)({
 
 export function ExportOverlay({ isOpen, onClose }: OverlayProps) {
   const account = useStore("account");
-  account.exportKeystore().then((keystoreString) => {
+  const renderDMX = async () => {
+    const keystoreString = await account.exportKeystore();
     if (keystoreString) {
       try {
-        bwipjs.toCanvas("keystoreDMX", {
+        return bwipjs.toCanvas("keystoreDMX", {
           bcid: "datamatrix", // Barcode type
           text: keystoreString, // Text to encode
           scale: 3, // 3x scaling factor
@@ -32,7 +33,8 @@ export function ExportOverlay({ isOpen, onClose }: OverlayProps) {
         console.error(e);
       }
     }
-  });
+  };
+  useMemo(renderDMX, [renderDMX]);
 
   return (
     <MainPageContainer isOpen={isOpen} onDismiss={onClose}>
