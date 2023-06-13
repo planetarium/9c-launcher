@@ -71,8 +71,8 @@ export function usePledge() {
             await sleep(1000);
             //TODO: Timeout
           }
+          stopPolling?.();
         }
-        stopPolling?.();
         step = "createApprovePledgeTx";
         const { data } = await sdks.approvePledge({
           publicKey: account.loginSession.publicKey.toHex("uncompressed"),
