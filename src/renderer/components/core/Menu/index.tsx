@@ -58,7 +58,7 @@ function Menu() {
     ) {
       history.push("/register/pledgeWait");
     }
-  }, [url, history]);
+  }, [url]);
 
   return (
     <MenuContainer>
