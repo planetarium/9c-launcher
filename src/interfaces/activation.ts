@@ -1,6 +1,6 @@
 export type ActivationStep =
-  | "preflightCheck"
   | "getGraphQLClient"
+  | "preflightCheck"
   | "checkPledgeRequestTx"
   | "createApprovePledgeTx"
   | "stageTx"

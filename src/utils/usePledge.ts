@@ -21,19 +21,7 @@ export function usePledge() {
   const activate: ActivationFunction = async (
     requestPledgeTxId: string | null
   ) => {
-    let step: ActivationStep = "preflightCheck";
-
-    if (!account.loginSession) {
-      return {
-        result: false,
-        error: {
-          error: new Error("No private key"),
-          step,
-        },
-      };
-    }
-
-    step = "getGraphQLClient";
+    let step: ActivationStep = "getGraphQLClient";
     const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
 
     const sdks = getSdk(
@@ -43,6 +31,12 @@ export function usePledge() {
     );
 
     try {
+      step = "preflightCheck";
+
+      if (!account.loginSession) {
+        throw new Error("No private key");
+      }
+
       const { data } = await sdks.CheckContracted({
         agentAddress: account.loginSession.address.toHex(),
       });
@@ -61,13 +55,7 @@ export function usePledge() {
                 stopPolling?.();
                 break;
               case "FAILURE":
-                return {
-                  result: false,
-                  error: {
-                    error: new Error("RequestPledge Tx Staging Failed."),
-                    step,
-                  },
-                };
+                throw Error("RequestPledge Tx Staging Failed.");
               case "INVALID":
               case "STAGING":
                 break;
@@ -75,43 +63,25 @@ export function usePledge() {
             await sleep(1000);
             if (pollCount >= 60) {
               stopPolling?.();
-              return {
-                result: false,
-                error: {
-                  error: new Error(
-                    "RequestPledge Tx Staging Confirmation Timeout."
-                  ),
-                  step: step,
-                },
-              };
+              throw Error("RequestPledge Tx Staging Confirmation Timeout.");
             }
           }
         }
         step = "createApprovePledgeTx";
-        const { data } = await sdks.approvePledge({
+        const { data: approvePledgeTx } = await sdks.approvePledge({
           publicKey: account.loginSession.publicKey.toHex("uncompressed"),
         });
 
-        if (!data?.actionTxQuery.approvePledge) {
-          return {
-            result: false,
-            error: {
-              error: new Error("ApprovePledge ActionTxQuery Failed"),
-              step,
-            },
-          };
+        if (!approvePledgeTx?.actionTxQuery.approvePledge) {
+          throw new Error("ApprovePledge ActionTxQuery Failed");
         }
 
         step = "stageTx";
-        const { data: txData } = await tx(data?.actionTxQuery.approvePledge);
+        const { data: txData } = await tx(
+          approvePledgeTx?.actionTxQuery.approvePledge
+        );
         if (!txData?.stageTransaction) {
-          return {
-            result: false,
-            error: {
-              error: new Error("Tx Staging Failed"),
-              step,
-            },
-          };
+          throw Error("Tx Staging Failed");
         }
         return {
           result: true,
