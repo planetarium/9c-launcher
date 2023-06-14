@@ -58,8 +58,10 @@ jobs:
           if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
           then
             yarn run release-main
+            aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest.yml"
           else
             yarn run release-internal
+            aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest.yml"
           fi
           rm -R ./dist/*-unpacked
         env:
