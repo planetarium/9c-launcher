@@ -55,7 +55,7 @@ function PledgeSuccessView() {
         variant="primary"
         centered
         css={{ marginTop: 160 }}
-        onClick={() => history.push("/lobby")}
+        onClick={() => history.push("/lobby?success")}
       >
         <T _str="Done" _tags={transifexTags} />
       </Button>

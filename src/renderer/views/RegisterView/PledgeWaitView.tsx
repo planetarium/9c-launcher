@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useHistory } from "react-router";
 import { get } from "src/config";
 import Layout from "src/renderer/components/core/Layout";
 import Button from "src/renderer/components/ui/Button";
@@ -17,7 +17,6 @@ const transifexTags = "v2/views/register/PledgeWaitView";
 
 function PledgeWaitView() {
   const history = useHistory();
-  const { search } = useLocation();
   const pledge = usePledge();
 
   useEffect(() => {

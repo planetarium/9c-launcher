@@ -7,14 +7,16 @@ interface ContractResult {
   error?: ApolloError;
   approved: boolean;
   requested: boolean;
+  stopPolling: () => void;
 }
 
 export function useCheckContract(usePolling: boolean = false): ContractResult {
   const address = useLoginSession()?.address;
 
-  const { loading, data, error } = useCheckContractedQuery({
+  const { loading, data, error, stopPolling } = useCheckContractedQuery({
     variables: { agentAddress: address?.toHex() },
     pollInterval: usePolling ? 1000 : undefined,
+    fetchPolicy: "no-cache",
     skip: !address,
   });
 
@@ -24,5 +26,6 @@ export function useCheckContract(usePolling: boolean = false): ContractResult {
     approved: data?.stateQuery.contracted.contracted ?? false,
     requested:
       data?.stateQuery.contracted.patronAddress !== (undefined || null),
+    stopPolling,
   };
 }
