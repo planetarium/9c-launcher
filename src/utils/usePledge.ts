@@ -1,7 +1,7 @@
 import { ipcRenderer } from "electron";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "src/generated/graphql-request";
-import { get, NodeInfo } from "src/config";
+import { NodeInfo } from "src/config";
 import { ActivationFunction, ActivationStep } from "src/interfaces/activation";
 import { useTx } from "src/utils/useTx";
 import { useStore } from "./useStore";
@@ -17,6 +17,31 @@ export function usePledge() {
       pollInterval: 1000,
       fetchPolicy: "no-cache",
     });
+
+  const TxIdConfirmator = async (txType: string, txId: string) => {
+    fetchStatus({ variables: { txId: txId } });
+    console.log(`Staging Tx ${txType}: ${txId}`);
+    let pollCount = 0;
+    while (loading) {
+      pollCount++;
+      switch (txState?.transaction.transactionResult.txStatus) {
+        case "SUCCESS":
+          console.log(`${txType} Tx Staging Success.`);
+          stopPolling?.();
+          break;
+        case "FAILURE":
+          throw Error(`${txType} Tx Staging Failed.`);
+        case "INVALID":
+        case "STAGING":
+          break;
+      }
+      await sleep(1000);
+      if (pollCount >= 60) {
+        stopPolling?.();
+        throw Error(`${txType} Staging Confirmation Timeout.`);
+      }
+    }
+  };
 
   const activate: ActivationFunction = async (
     requestPledgeTxId: string | null
@@ -46,26 +71,7 @@ export function usePledge() {
           //If requestPledgeTxId is null, consider it's approve scenario
           step = "checkPledgeRequestTx";
 
-          fetchStatus({ variables: { txId: requestPledgeTxId } });
-          let pollCount = 0;
-          while (loading) {
-            pollCount++;
-            switch (txState?.transaction.transactionResult.txStatus) {
-              case "SUCCESS":
-                stopPolling?.();
-                break;
-              case "FAILURE":
-                throw Error("RequestPledge Tx Staging Failed.");
-              case "INVALID":
-              case "STAGING":
-                break;
-            }
-            await sleep(1000);
-            if (pollCount >= 60) {
-              stopPolling?.();
-              throw Error("RequestPledge Tx Staging Confirmation Timeout.");
-            }
-          }
+          await TxIdConfirmator("requestPledge", requestPledgeTxId);
         }
         step = "createApprovePledgeTx";
         const { data: approvePledgeTx } = await sdks.approvePledge({
@@ -83,9 +89,9 @@ export function usePledge() {
         if (!txData?.stageTransaction) {
           throw Error("Tx Staging Failed");
         }
+        await TxIdConfirmator("approvePledge", txData.stageTransaction);
         return {
           result: true,
-          txId: txData.stageTransaction,
         };
       }
       return {

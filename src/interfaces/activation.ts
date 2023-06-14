@@ -8,7 +8,6 @@ export type ActivationStep =
 
 export type ActivationSuccessResult = {
   result: true;
-  txId?: string;
 };
 
 export type ActivationFailResult = {
