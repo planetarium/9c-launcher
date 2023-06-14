@@ -73,6 +73,7 @@ export default function UserInfo() {
     useTransactionResultLazyQuery({
       pollInterval: 1000,
     });
+
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
   useEffect(() => {
     const txStatus = result?.transaction.transactionResult.txStatus;
@@ -137,9 +138,9 @@ export default function UserInfo() {
 
   return (
     <UserInfoStyled>
-      <UserInfoItem>
+      <UserInfoItem onClick={copyAddress}>
         <AccountBoxIcon />
-        <strong onClick={copyAddress}>{loginSession.address.toString()}</strong>
+        <strong>{loginSession.address.toString()}</strong>
         <FileCopyIcon />
       </UserInfoItem>
       <UserInfoItem>

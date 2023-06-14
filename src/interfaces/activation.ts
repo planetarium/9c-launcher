@@ -1,9 +1,9 @@
 export type ActivationStep =
   | "getGraphQLClient"
   | "preflightCheck"
-  | "checkPledgeRequestTx"
+  | "checkRequestPledge"
   | "createApprovePledgeTx"
-  | "stageTx"
+  | "stageApprovePledgeTx"
   | "exceptionError";
 
 export type ActivationSuccessResult = {

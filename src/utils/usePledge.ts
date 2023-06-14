@@ -39,7 +39,7 @@ export function usePledge() {
 
       if (!contracted) {
         if (patronAddress === null) {
-          step = "checkPledgeRequestTx";
+          step = "checkRequestPledge";
           for (let i = 0; i <= 60; i++) {
             const { data } = await sdks.CheckContracted({
               agentAddress: account.loginSession.address.toHex(),
@@ -61,7 +61,7 @@ export function usePledge() {
           throw new Error("ApprovePledge ActionTxQuery Failed");
         }
 
-        step = "stageTx";
+        step = "stageApprovePledgeTx";
         const { data: txData } = await tx(
           approvePledgeTx?.actionTxQuery.approvePledge
         );
@@ -69,18 +69,18 @@ export function usePledge() {
           throw Error("Tx Staging Failed");
         }
         fetchStatus({ variables: { txId: txData.stageTransaction } });
-        console.log(`Staging Tx approvePledge: ${txData.stageTransaction}`);
+        console.log(`Staging approvePledge Tx: ${txData.stageTransaction}`);
         let pollCount = 0;
         while (loading) {
           pollCount++;
           if (txState?.transaction.transactionResult.txStatus !== undefined) {
             switch (txState?.transaction.transactionResult.txStatus) {
               case "SUCCESS":
-                console.log(`approvePledge Tx Staging Success.`);
+                console.log("approvePledge Tx Staging Success.");
                 stopPolling?.();
                 break;
               case "FAILURE":
-                throw Error(`approvePledge Tx Staging Failed.`);
+                throw Error("approvePledge Tx Staging Failed.");
               case "INVALID":
               case "STAGING":
                 break;
@@ -89,7 +89,7 @@ export function usePledge() {
           await sleep(1000);
           if (pollCount >= 60) {
             stopPolling?.();
-            throw Error(`approvePledge Staging Confirmation Timeout.`);
+            throw Error("approvePledge Staging Confirmation Timeout.");
           }
         }
         return {
