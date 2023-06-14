@@ -20,6 +20,4 @@ export type ActivationFailResult = {
 
 export type ActivationResult = ActivationSuccessResult | ActivationFailResult;
 
-export type ActivationFunction = (
-  txId: string | null
-) => Promise<ActivationResult>;
+export type ActivationFunction = () => Promise<ActivationResult>;

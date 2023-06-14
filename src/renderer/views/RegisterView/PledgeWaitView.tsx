@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { get } from "src/config";
 import Layout from "src/renderer/components/core/Layout";
 import Button from "src/renderer/components/ui/Button";
@@ -12,19 +12,17 @@ import { registerStyles } from ".";
 import { LoadingImage } from "../MonsterCollectionOverlay/base";
 import { usePledge } from "src/utils/usePledge";
 import { ActivationResult } from "src/interfaces/activation";
-import { useExternalURL } from "src/utils/useExternalURL";
 
 const transifexTags = "v2/views/register/PledgeWaitView";
 
 function PledgeWaitView() {
   const history = useHistory();
+  const { search } = useLocation();
   const pledge = usePledge();
 
-  const url = useExternalURL();
   useEffect(() => {
     (async () => {
-      const txid = url?.searchParams?.get("txid") ?? null;
-      const result: ActivationResult = await pledge(txid);
+      const result: ActivationResult = await pledge();
       if (result.result) {
         history.push("/register/pledgeSuccess");
       } else {

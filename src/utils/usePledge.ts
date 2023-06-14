@@ -18,37 +18,9 @@ export function usePledge() {
       fetchPolicy: "no-cache",
     });
 
-  const TxIdConfirmator = async (txType: string, txId: string) => {
-    fetchStatus({ variables: { txId: txId } });
-    console.log(`Staging Tx ${txType}: ${txId}`);
-    let pollCount = 0;
-    while (loading) {
-      pollCount++;
-      switch (txState?.transaction.transactionResult.txStatus) {
-        case "SUCCESS":
-          console.log(`${txType} Tx Staging Success.`);
-          stopPolling?.();
-          break;
-        case "FAILURE":
-          throw Error(`${txType} Tx Staging Failed.`);
-        case "INVALID":
-        case "STAGING":
-          break;
-      }
-      await sleep(1000);
-      if (pollCount >= 60) {
-        stopPolling?.();
-        throw Error(`${txType} Staging Confirmation Timeout.`);
-      }
-    }
-  };
-
-  const activate: ActivationFunction = async (
-    requestPledgeTxId: string | null
-  ) => {
+  const activate: ActivationFunction = async () => {
     let step: ActivationStep = "getGraphQLClient";
     const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
-
     const sdks = getSdk(
       new GraphQLClient(
         `http://${nodeInfo.host}:${nodeInfo.graphqlPort}/graphql`
@@ -57,22 +29,29 @@ export function usePledge() {
 
     try {
       step = "preflightCheck";
-
       if (!account.loginSession) {
         throw new Error("No private key");
       }
-
       const { data } = await sdks.CheckContracted({
         agentAddress: account.loginSession.address.toHex(),
       });
       const { contracted, patronAddress } = data.stateQuery.contracted;
-      if (!contracted) {
-        if (patronAddress === null && requestPledgeTxId !== null) {
-          //If requestPledgeTxId is null, consider it's approve scenario
-          step = "checkPledgeRequestTx";
 
-          await TxIdConfirmator("requestPledge", requestPledgeTxId);
+      if (!contracted) {
+        if (patronAddress === null) {
+          step = "checkPledgeRequestTx";
+          for (let i = 0; i <= 60; i++) {
+            const { data } = await sdks.CheckContracted({
+              agentAddress: account.loginSession.address.toHex(),
+            });
+            if (data.stateQuery.contracted.patronAddress !== null) {
+              break;
+            }
+            if (i === 60) throw new Error("Contract Check Timeout.");
+            sleep(1000); // timeout 1 minutes
+          }
         }
+
         step = "createApprovePledgeTx";
         const { data: approvePledgeTx } = await sdks.approvePledge({
           publicKey: account.loginSession.publicKey.toHex("uncompressed"),
@@ -89,14 +68,38 @@ export function usePledge() {
         if (!txData?.stageTransaction) {
           throw Error("Tx Staging Failed");
         }
-        await TxIdConfirmator("approvePledge", txData.stageTransaction);
+        fetchStatus({ variables: { txId: txData.stageTransaction } });
+        console.log(`Staging Tx approvePledge: ${txData.stageTransaction}`);
+        let pollCount = 0;
+        while (loading) {
+          pollCount++;
+          if (txState?.transaction.transactionResult.txStatus !== undefined) {
+            switch (txState?.transaction.transactionResult.txStatus) {
+              case "SUCCESS":
+                console.log(`approvePledge Tx Staging Success.`);
+                stopPolling?.();
+                break;
+              case "FAILURE":
+                throw Error(`approvePledge Tx Staging Failed.`);
+              case "INVALID":
+              case "STAGING":
+                break;
+            }
+          }
+          await sleep(1000);
+          if (pollCount >= 60) {
+            stopPolling?.();
+            throw Error(`approvePledge Staging Confirmation Timeout.`);
+          }
+        }
+        return {
+          result: true,
+        };
+      } else {
         return {
           result: true,
         };
       }
-      return {
-        result: true,
-      };
     } catch (e: unknown) {
       if (e instanceof Error) {
         return {

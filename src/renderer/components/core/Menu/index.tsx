@@ -43,7 +43,7 @@ function Menu() {
   const [currentOverlay, openOverlay] = useState<Overlay | null>(null);
   const history = useHistory();
 
-  const url = useExternalURL();
+  const { url, resetURL } = useExternalURL();
   useEffect(() => {
     if (!url) return;
     if (url.pathname.startsWith("//open/monster-collection")) {
@@ -52,13 +52,11 @@ function Menu() {
     if (url.pathname.startsWith("//open/transfer-asset")) {
       openOverlay("transfer");
     }
-    if (
-      url.pathname.startsWith("//request-pledge") &&
-      url.searchParams.has("txid")
-    ) {
+    if (url.pathname.startsWith("//request-pledge")) {
+      resetURL();
       history.push("/register/pledgeWait");
     }
-  }, [url]);
+  }, [url, history]);
 
   return (
     <MenuContainer>
