@@ -424,8 +424,8 @@ query MigrateMonsterCollection($publicKey: String!, $avatarAddress: Address) {
 
 query CheckContracted($agentAddress: Address!){
   stateQuery{
-    contracted(agentAddress: $agentAddress){
-			contracted
+    pledge(agentAddress: $agentAddress){
+			approved
       patronAddress
     }
   }

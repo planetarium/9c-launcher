@@ -52,7 +52,7 @@ type StandaloneQuery {
   getTx(
     # transaction id.
     txId: TxId!
-  ): TransactionType_1
+  ): TransactionType
     @deprecated(
       reason: "The root query is not the best place for getTx so it was moved. Use transaction.getTx()"
     )
@@ -204,7 +204,7 @@ type StateQuery {
   # raider address list by world boss season.
   raiderList(raiderListAddress: Address!): [Address!]
   orderDigestList(avatarAddress: Address!): OrderDigestListStateType
-  contracted(agentAddress: Address!): MeadContractType!
+  pledge(agentAddress: Address!): MeadPledgeType!
 }
 
 type AvatarStateType {
@@ -323,6 +323,7 @@ type ConsumableType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
   itemId: Guid!
   mainStat: StatType!
 }
@@ -380,6 +381,8 @@ enum StatType {
   DRV
   DRR
   CDMG
+  ARMOR_PENETRATION
+  THORN
 }
 
 type MaterialType {
@@ -397,6 +400,7 @@ type MaterialType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
   itemId: ByteString!
 }
 
@@ -417,6 +421,7 @@ type EquipmentType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
   setId: Int!
   stat: DecimalStatType!
   equipped: Boolean!
@@ -428,8 +433,10 @@ type EquipmentType {
 }
 
 type DecimalStatType {
-  type: StatType!
-  value: Decimal!
+  statType: StatType!
+  baseValue: Decimal!
+  additionalValue: Decimal!
+  totalValue: Decimal!
 }
 
 scalar Decimal
@@ -439,6 +446,8 @@ type SkillType {
   elementalType: ElementalType!
   power: Int!
   chance: Int!
+  statPowerRatio: Int!
+  referencedStatType: StatType!
 }
 
 type StatsMapType {
@@ -465,6 +474,7 @@ type CostumeType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
 
   # Guid of costume.
   itemId: Guid!
@@ -614,6 +624,7 @@ type ItemUsableType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
 
   # Guid of item.
   itemId: Guid!
@@ -702,6 +713,15 @@ type AgentStateType {
 
   # Current CRYSTAL.
   crystal: String!
+
+  # mead pledge information.
+  pledge: MeadPledgeType!
+}
+
+type MeadPledgeType {
+  patronAddress: Address
+  approved: Boolean!
+  mead: Int!
 }
 
 type StakeStateType {
@@ -889,12 +909,6 @@ input CurrencyInputType {
 type OrderDigestListStateType {
   address: Address
   orderDigestList: [OrderDigestType]!
-}
-
-type MeadContractType {
-  patronAddress: Address
-  contracted: Boolean!
-  mead: Int!
 }
 
 type TransferNCGHistoryType {
@@ -1357,7 +1371,7 @@ type PeerChainStateQuery {
   state: [String]!
 }
 
-type TransactionType_1 {
+type TransactionType {
   # A unique identifier derived from this transaction content.
   id: TxId!
 
@@ -1403,7 +1417,7 @@ type TransactionHeadlessQuery {
   getTx(
     # transaction id.
     txId: TxId!
-  ): TransactionType_1
+  ): TransactionType
   createUnsignedTx(
     # The base64-encoded public key for Transaction.
     publicKey: String!
@@ -2245,7 +2259,7 @@ type StandaloneSubscription {
   differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
   notification: NotificationType!
   nodeException: NodeExceptionType!
-  monsterCollectionState: MonsterCollectionStateType!
+    monsterCollectionState: MonsterCollectionStateType!
   monsterCollectionStatus: MonsterCollectionStatusType!
   monsterCollectionStatusByAgent(
     # A hex-encoded address of agent.

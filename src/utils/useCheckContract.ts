@@ -23,9 +23,8 @@ export function useCheckContract(usePolling: boolean = false): ContractResult {
   return {
     loading,
     error,
-    approved: data?.stateQuery.contracted.contracted ?? false,
-    requested:
-      data?.stateQuery.contracted.patronAddress !== (undefined || null),
+    approved: data?.stateQuery.pledge.approved ?? false,
+    requested: data?.stateQuery.pledge.patronAddress !== (undefined || null),
     stopPolling,
   };
 }

@@ -35,16 +35,16 @@ export function usePledge() {
       const { data } = await sdks.CheckContracted({
         agentAddress: account.loginSession.address.toHex(),
       });
-      const { contracted, patronAddress } = data.stateQuery.contracted;
+      const { approved, patronAddress } = data.stateQuery.pledge;
 
-      if (!contracted) {
+      if (!approved) {
         if (patronAddress === null) {
           step = "checkRequestPledge";
           for (let i = 0; i <= 60; i++) {
             const { data } = await sdks.CheckContracted({
               agentAddress: account.loginSession.address.toHex(),
             });
-            if (data.stateQuery.contracted.patronAddress !== null) {
+            if (data.stateQuery.pledge.patronAddress !== null) {
               break;
             }
             if (i === 60) throw new Error("Contract Check Timeout.");

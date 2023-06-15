@@ -39,7 +39,7 @@ function StatusBar() {
           <Button
             data-testid="play"
             variant="primary"
-            disabled={loading || !data?.stateQuery.contracted.contracted}
+            disabled={loading || !data?.stateQuery.pledge.approved}
             onClick={() => {
               const privateKeyBytes = loginSession.privateKey.toBytes();
               return game.startGame(
