@@ -99,7 +99,7 @@ function createRenderConfig(
                 [
                   "@babel/preset-env",
                   {
-                    targets: { electron: "20.0.1" },
+                    targets: { electron: "25.1.1" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -249,7 +249,7 @@ function createMainConfig(
                 [
                   "@babel/preset-env",
                   {
-                    targets: { node: "16.15.0" },
+                    targets: { node: "18.15.0" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -269,10 +269,7 @@ function createMainConfig(
         {
           test: /\.(svg|jpg|png)$/,
           exclude: /node_modules/,
-          use: {
-            loader: "file-loader",
-            options: {},
-          },
+          type: "asset/resource",
         },
       ],
     },
