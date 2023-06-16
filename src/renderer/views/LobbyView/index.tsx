@@ -14,13 +14,8 @@ function LobbyView() {
 
   useEffect(() => {
     if (loading || approved || search !== "") return;
-    if (!requested) {
-      stopPolling();
-      history.push("/register/getPatron");
-    } else {
-      stopPolling();
-      history.push("/register/pledgeWait");
-    }
+    stopPolling();
+    history.push(!requested ? "/register/getPatron" : "/register/pledgeWait");
   }, [history, loading, approved, requested]);
 
   useEffect(() => {

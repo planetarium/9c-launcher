@@ -6,6 +6,7 @@ import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 import { useStore } from "src/utils/useStore";
 import Button from "../../ui/Button";
 import { useCheckContractedQuery } from "src/generated/graphql";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -25,12 +26,14 @@ const StatusMessage = styled("span", {
 
 function StatusBar() {
   const isAvailable = useIsHeadlessAvailable();
-  const { account, game } = useStore();
-  const { loading, data } = useCheckContractedQuery({
-    variables: { agentAddress: account.loginSession?.address.toHex() },
-  });
+  const {
+    account: { loginSession },
+    game,
+  } = useStore();
 
-  const loginSession = account.loginSession;
+  const { loading, data } = useCheckContractedQuery({
+    variables: { agentAddress: loginSession?.address.toHex() },
+  });
 
   return (
     <StatusBarStyled>
