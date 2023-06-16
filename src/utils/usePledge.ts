@@ -85,11 +85,13 @@ export function usePledge() {
                   console.log(
                     `approvePledge Tx Staging Success: ${txData.stageTransaction}`
                   );
+                  stopPolling?.();
                   clearTimeout(timeoutId);
                   clearInterval(intervalId);
                   resolve();
                   break;
                 case "FAILURE":
+                  stopPolling?.();
                   clearTimeout(timeoutId);
                   clearInterval(intervalId);
                   reject(
@@ -104,6 +106,7 @@ export function usePledge() {
           }, 1000);
 
           const timeoutId = setTimeout(() => {
+            stopPolling?.();
             clearInterval(intervalId);
             reject("approvePledge Staging Confirmation Timeout.");
           }, 60000);
