@@ -31,7 +31,7 @@ function GetPatronView() {
       <TextField
         label="Address"
         readOnly
-        value={account.loginSession?.address.toHex()}
+        value={account.loginSession?.address.toString()}
       />
       <Button
         variant="primary"
