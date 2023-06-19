@@ -2259,16 +2259,6 @@ type StandaloneSubscription {
   differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
   notification: NotificationType!
   nodeException: NodeExceptionType!
-    monsterCollectionState: MonsterCollectionStateType!
-  monsterCollectionStatus: MonsterCollectionStatusType!
-  monsterCollectionStatusByAgent(
-    # A hex-encoded address of agent.
-    address: Address!
-  ): MonsterCollectionStatusType!
-  monsterCollectionStateByAgent(
-    # A hex-encoded address of agent.
-    address: Address!
-  ): MonsterCollectionStateType!
   balanceByAgent(
     # A hex-encoded address of agent.
     address: Address!

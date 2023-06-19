@@ -207,17 +207,6 @@ mutation Transfer(
   )
 }
 
-subscription CollectionState {
-  monsterCollectionState {
-    address
-    expiredBlockIndex
-    level
-    rewardLevel
-    receivedBlockIndex
-    startedBlockIndex
-    claimableBlockIndex
-  }
-}
 
 query StagedTx($address: Address!) {
   nodeStatus {
@@ -225,74 +214,9 @@ query StagedTx($address: Address!) {
   }
 }
 
-subscription CurrentGold {
-  monsterCollectionStatus {
-    fungibleAssetValue {
-      quantity
-      currency
-    }
-  }
-}
-
-subscription CollectionStatus {
-  monsterCollectionStatus {
-    lockup
-    fungibleAssetValue {
-      quantity
-      currency
-    }
-    rewardInfos {
-      itemId
-      quantity
-    }
-    tipIndex
-  }
-}
-
-query CollectionStatusQuery($address: Address) {
-  monsterCollectionStatus(address: $address) {
-    lockup
-    fungibleAssetValue {
-      quantity
-      currency
-    }
-    rewardInfos {
-      itemId
-      quantity
-    }
-    tipIndex
-  }
-}
 
 mutation StageTx($encodedTx: String!) {
   stageTx(payload: $encodedTx)
-}
-
-subscription CollectionStateByAgent($address: Address!) {
-  monsterCollectionStateByAgent(address: $address) {
-    address
-    expiredBlockIndex
-    level
-    rewardLevel
-    receivedBlockIndex
-    startedBlockIndex
-    claimableBlockIndex
-  }
-}
-
-subscription CollectionStatusByAgent($address: Address!) {
-  monsterCollectionStatusByAgent(address: $address) {
-    lockup
-    fungibleAssetValue {
-      quantity
-      currency
-    }
-    rewardInfos {
-      itemId
-      quantity
-    }
-    tipIndex
-  }
 }
 
 mutation StageTxV2($encodedTx: String!) {
