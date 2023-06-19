@@ -12,8 +12,6 @@ import {
   useClaimStakeRewardLazyQuery,
   useTransactionResultLazyQuery,
 } from "src/generated/graphql";
-import { useStore } from "src/utils/useStore";
-import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LaunchIcon from "@material-ui/icons/Launch";

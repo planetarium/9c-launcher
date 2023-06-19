@@ -52,7 +52,7 @@ type StandaloneQuery {
   getTx(
     # transaction id.
     txId: TxId!
-  ): TransactionType_1
+  ): TransactionType
     @deprecated(
       reason: "The root query is not the best place for getTx so it was moved. Use transaction.getTx()"
     )
@@ -85,6 +85,15 @@ type StandaloneQuery {
 
     # The time this transaction is created.
     timestamp: DateTimeOffset
+
+    # The gas limit for Transaction.
+    gasLimit: Long = 4
+    maxGasPrice: FungibleAssetValueInputType = {
+      quantity: 1000000000000000000
+      ticker: "Mead"
+      decimalPlaces: 18
+      minters: []
+    }
   ): ActionTxQuery!
 
   # Query to get derived address.
@@ -195,6 +204,7 @@ type StateQuery {
   # raider address list by world boss season.
   raiderList(raiderListAddress: Address!): [Address!]
   orderDigestList(avatarAddress: Address!): OrderDigestListStateType
+  pledge(agentAddress: Address!): MeadPledgeType!
 }
 
 type AvatarStateType {
@@ -313,6 +323,7 @@ type ConsumableType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
   itemId: Guid!
   mainStat: StatType!
 }
@@ -389,6 +400,7 @@ type MaterialType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
   itemId: ByteString!
 }
 
@@ -409,6 +421,7 @@ type EquipmentType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
   setId: Int!
   stat: DecimalStatType!
   equipped: Boolean!
@@ -461,6 +474,7 @@ type CostumeType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
 
   # Guid of costume.
   itemId: Guid!
@@ -610,6 +624,7 @@ type ItemUsableType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
 
   # Guid of item.
   itemId: Guid!
@@ -698,6 +713,15 @@ type AgentStateType {
 
   # Current CRYSTAL.
   crystal: String!
+
+  # mead pledge information.
+  pledge: MeadPledgeType!
+}
+
+type MeadPledgeType {
+  patronAddress: Address
+  approved: Boolean!
+  mead: Int!
 }
 
 type StakeStateType {
@@ -1347,7 +1371,7 @@ type PeerChainStateQuery {
   state: [String]!
 }
 
-type TransactionType_1 {
+type TransactionType {
   # A unique identifier derived from this transaction content.
   id: TxId!
 
@@ -1393,7 +1417,7 @@ type TransactionHeadlessQuery {
   getTx(
     # transaction id.
     txId: TxId!
-  ): TransactionType_1
+  ): TransactionType
   createUnsignedTx(
     # The base64-encoded public key for Transaction.
     publicKey: String!
@@ -1425,6 +1449,15 @@ type TransactionHeadlessQuery {
 
     # The nonce for Transaction.
     nonce: Long
+
+    # The gas limit for Transaction.
+    gasLimit: Long = 4
+    maxGasPrice: FungibleAssetValueInputType = {
+      quantity: 1000000000000000000
+      ticker: "Mead"
+      decimalPlaces: 18
+      minters: []
+    }
   ): ByteString!
   signTransaction(
     # The hexadecimal string of unsigned transaction to attach the given signature.
@@ -1433,6 +1466,13 @@ type TransactionHeadlessQuery {
     # The hexadecimal string of signature of the given unsigned transaction.
     signature: String!
   ): ByteString!
+}
+
+input FungibleAssetValueInputType {
+  quantity: BigInt!
+  ticker: String!
+  decimalPlaces: Byte!
+  minters: [Address!]
 }
 
 type RpcInformationQuery {
@@ -1683,6 +1723,14 @@ type ActionQuery {
     # Recipe ID to combine consumable
     recipeId: Int!
   ): ByteString!
+  requestPledge(agentAddress: Address!, mead: Int = 4): ByteString!
+  approvePledge(patronAddress: Address!): ByteString!
+  endPledge(agentAddress: Address!): ByteString!
+  createPledge(
+    patronAddress: Address!
+    agentAddresses: [Address!]!
+    mead: Int = 4
+  ): ByteString!
 
   # Query to craft/enhance items/foods
   craftQuery: CraftQuery!
@@ -1697,13 +1745,6 @@ enum CurrencyEnum {
 input RuneSlotInfoInputType {
   slotIndex: Int!
   runeId: Int!
-}
-
-input FungibleAssetValueInputType {
-  quantity: BigInt!
-  ticker: String!
-  decimalPlaces: Byte!
-  minters: [Address!]
 }
 
 input RecipientsInputType {
@@ -1987,6 +2028,14 @@ type ActionTxQuery {
 
     # Recipe ID to combine consumable
     recipeId: Int!
+  ): ByteString!
+  requestPledge(agentAddress: Address!, mead: Int = 4): ByteString!
+  approvePledge(patronAddress: Address!): ByteString!
+  endPledge(agentAddress: Address!): ByteString!
+  createPledge(
+    patronAddress: Address!
+    agentAddresses: [Address!]!
+    mead: Int = 4
   ): ByteString!
 
   # Query to craft/enhance items/foods

@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router";
 import { get } from "src/config";
 import Layout from "src/renderer/components/core/Layout";
@@ -9,20 +9,23 @@ import { ExtLink } from "src/renderer/components/ui/Link";
 import Text from "src/renderer/components/ui/Text";
 import { T } from "src/renderer/i18n";
 import { registerStyles } from ".";
+import { useCheckContract } from "src/utils/useCheckContract";
 
-const transifexTags = "v2/views/register/ActivationFailView";
+const transifexTags = "v2/views/register/PledgeFailView";
 
-function ActivationFailView() {
+function PledgeFailView() {
   const history = useHistory();
+  const { loading, requested } = useCheckContract();
 
   return (
     <Layout sidebar css={registerStyles}>
       <H1>
-        <T _str="Activation has failed" _tags={transifexTags} />
+        <T _str="Pledge has failed" _tags={transifexTags} />
       </H1>
       <Text css={{ fontSize: 14, whiteSpace: "pre" }}>
         <T
-          _str="An unknown error has occurred.\nPlease make sure your activation code is valid or try again later."
+          _str="An unknown error has occurred.
+          Please make sure your portal account is valid."
           _tags={transifexTags}
         />
       </Text>
@@ -41,8 +44,15 @@ function ActivationFailView() {
         layout
         variant="primary"
         centered
-        css={{ width: 200, marginTop: 160 }}
-        onClick={() => history.push("/register/activationKey")}
+        css={{ marginTop: 160 }}
+        disabled={loading}
+        onClick={() => {
+          if (!requested) {
+            history.push("/register/getPatron");
+          } else {
+            history.push("/register/pledgeWait");
+          }
+        }}
       >
         <T _str="Retry" _tags={transifexTags} />
       </Button>
@@ -50,4 +60,4 @@ function ActivationFailView() {
   );
 }
 
-export default observer(ActivationFailView);
+export default observer(PledgeFailView);

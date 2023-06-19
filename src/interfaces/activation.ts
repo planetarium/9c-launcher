@@ -1,13 +1,13 @@
 export type ActivationStep =
-  | "getActivationInfo"
   | "getGraphQLClient"
-  | "getActivationAddress"
-  | "createActivateAccountTx"
-  | "stageTx";
+  | "preflightCheck"
+  | "checkRequestPledge"
+  | "createApprovePledgeTx"
+  | "stageApprovePledgeTx"
+  | "exceptionError";
 
 export type ActivationSuccessResult = {
   result: true;
-  txId: string;
 };
 
 export type ActivationFailResult = {

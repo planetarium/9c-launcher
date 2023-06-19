@@ -2,10 +2,11 @@ import { observer } from "mobx-react";
 import React from "react";
 import { T } from "src/renderer/i18n";
 import { styled } from "src/renderer/stitches.config";
-import { useActivationStatus } from "src/utils/useActivationStatus";
 import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 import { useStore } from "src/utils/useStore";
 import Button from "../../ui/Button";
+import { useCheckContractedQuery } from "src/generated/graphql";
+import { useLoginSession } from "src/utils/useLoginSession";
 
 const StatusBarStyled = styled("div", {
   display: "flex",
@@ -25,9 +26,14 @@ const StatusMessage = styled("span", {
 
 function StatusBar() {
   const isAvailable = useIsHeadlessAvailable();
-  const { account: accountStore, game } = useStore();
-  const { loading, activated } = useActivationStatus();
-  const loginSession = accountStore.loginSession;
+  const {
+    account: { loginSession },
+    game,
+  } = useStore();
+
+  const { loading, data } = useCheckContractedQuery({
+    variables: { agentAddress: loginSession?.address.toHex() },
+  });
 
   return (
     <StatusBarStyled>
@@ -36,7 +42,7 @@ function StatusBar() {
           <Button
             data-testid="play"
             variant="primary"
-            disabled={loading || !activated}
+            disabled={loading || !data?.stateQuery.pledge.approved}
             onClick={() => {
               const privateKeyBytes = loginSession.privateKey.toBytes();
               return game.startGame(

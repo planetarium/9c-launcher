@@ -8,47 +8,35 @@ import H1 from "src/renderer/components/ui/H1";
 import { ExtLink } from "src/renderer/components/ui/Link";
 import { T } from "src/renderer/i18n";
 import loading from "src/renderer/resources/icons/loading.png";
-import { useActivate } from "src/utils/useActivate";
-import { useActivationStatus } from "src/utils/useActivationStatus";
 import { registerStyles } from ".";
 import { LoadingImage } from "../MonsterCollectionOverlay/base";
+import { usePledge } from "src/utils/usePledge";
+import { ActivationResult } from "src/interfaces/activation";
 
-const transifexTags = "v2/views/register/ActivationWaitView";
+const transifexTags = "v2/views/register/PledgeWaitView";
 
-function ActivationWaitView() {
+function PledgeWaitView() {
   const history = useHistory();
-
-  const activate = useActivate();
-  const { activated, error } = useActivationStatus(true);
+  const pledge = usePledge();
 
   useEffect(() => {
     (async () => {
-      const activationResult = await activate();
-
-      if (!activationResult.result) {
-        history.push("/register/activationFail");
+      const result: ActivationResult = await pledge();
+      if (result.result) {
+        history.push("/register/pledgeSuccess");
+      } else {
+        console.log(result.error);
+        history.push("/register/pledgeFail");
       }
     })();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- multiple calls to activate() when fully populated
   }, []);
-
-  useEffect(() => {
-    if (activated) {
-      history.push("/register/activationSuccess");
-    }
-
-    if (error) {
-      history.push("/register/activationFail");
-    }
-  }, [activated, error, history]);
 
   return (
     <Layout sidebar css={registerStyles}>
       <H1>
-        <T _str="Activation is in progress..." _tags={transifexTags} />
+        <T _str="Pledge in progress..." _tags={transifexTags} />
       </H1>
-      <p style={{ marginBlockEnd: 54 }}>
+      <p>
         <T
           _str="This process can take upto a minute. While you are waiting, we strongly recommend you to backup your keystore file."
           _tags={transifexTags}
@@ -68,10 +56,7 @@ function ActivationWaitView() {
         variant="primary"
         centered
         css={{
-          width: 200,
-          marginTop: 180,
-          display: "flex",
-          justifyContent: "center",
+          marginTop: 160,
         }}
         disabled
       >
@@ -81,4 +66,4 @@ function ActivationWaitView() {
   );
 }
 
-export default observer(ActivationWaitView);
+export default observer(PledgeWaitView);

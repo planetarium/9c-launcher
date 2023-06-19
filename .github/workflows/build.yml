@@ -6,6 +6,7 @@ on:
       - main
       - development
       - hotfix/*
+      - mead/*
   pull_request:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]
 
