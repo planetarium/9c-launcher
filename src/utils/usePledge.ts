@@ -1,7 +1,7 @@
 import { ipcRenderer } from "electron";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "src/generated/graphql-request";
-import { NodeInfo } from "src/config";
+import { NodeInfo, get } from "src/config";
 import { ActivationFunction, ActivationStep } from "src/interfaces/activation";
 import { useTx } from "src/utils/useTx";
 import { useStore } from "./useStore";
@@ -54,7 +54,7 @@ export function usePledge() {
 
             const timeoutId = setTimeout(() => {
               clearInterval(intervalId);
-              reject("Contract Check Timeout.");
+              reject(new Error("Contract Check Timeout."));
             }, 60000);
           });
         }
@@ -62,6 +62,7 @@ export function usePledge() {
         step = "createApprovePledgeTx";
         const { data: approvePledgeTx } = await sdks.approvePledge({
           publicKey: account.loginSession.publicKey.toHex("uncompressed"),
+          patronAddress: get("PatronAddress") as string,
         });
 
         if (!approvePledgeTx?.actionTxQuery.approvePledge) {
@@ -95,7 +96,9 @@ export function usePledge() {
                   clearTimeout(timeoutId);
                   clearInterval(intervalId);
                   reject(
-                    `approvePledge Tx Staging Failed: ${txData.stageTransaction}`
+                    new Error(
+                      `approvePledge Tx Staging Failed: ${txData.stageTransaction}`
+                    )
                   );
                   break;
                 case "INVALID":
@@ -108,7 +111,7 @@ export function usePledge() {
           const timeoutId = setTimeout(() => {
             stopPolling?.();
             clearInterval(intervalId);
-            reject("approvePledge Staging Confirmation Timeout.");
+            reject(new Error("approvePledge Staging Confirmation Timeout."));
           }, 60000);
         });
         return {

@@ -1,5 +1,4 @@
 import { Address } from "@planetarium/account";
-import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
 import React, { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -14,7 +13,6 @@ import { Link } from "src/renderer/components/ui/Link";
 import { Select, SelectOption } from "src/renderer/components/ui/Select";
 import { PasswordField } from "src/renderer/components/ui/TextField";
 import { T } from "src/renderer/i18n";
-import { trackEvent } from "src/utils/mixpanel";
 import { useStore } from "src/utils/useStore";
 
 const transifexTags = "v2/login-view";
@@ -59,8 +57,6 @@ function LoginView() {
       localStorage.setItem("lastAddress", address);
       const account = (await accountStore.getAccount(address, password))!;
       await accountStore.login(account, password);
-      ipcRenderer.send("mixpanel-alias", address);
-      trackEvent("Launcher/Login");
 
       await transfer.trySetSenderAddress(address);
       await transfer.updateBalance(address);
@@ -76,7 +72,6 @@ function LoginView() {
       history.push("/lobby");
     } catch (error) {
       setInvalid(true);
-      trackEvent("Launcher/LoginFailed");
       console.error(error);
     }
   };

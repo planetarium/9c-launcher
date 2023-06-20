@@ -8,7 +8,6 @@ import RetypePasswordForm, {
 } from "src/renderer/components/RetypePasswordForm";
 import H1 from "src/renderer/components/ui/H1";
 import { T } from "src/renderer/i18n";
-import { trackEvent } from "src/utils/mixpanel";
 import { useStore } from "src/utils/useStore";
 import { registerStyles } from ".";
 import { Web3Account } from "@planetarium/account-web3-secret-storage";
@@ -21,7 +20,6 @@ function CreateKeyView() {
   const accountStore = useStore("account");
 
   const onPasswordSubmit = async ({ password }: FormData) => {
-    trackEvent("Launcher/CreatePrivateKey");
     const account: Web3Account = await accountStore.importRaw(
       utils.bytesToHex(utils.randomPrivateKey()),
       password

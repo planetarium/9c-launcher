@@ -201,12 +201,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
               <GroupTitle>
                 <T _str="Send Information" _tags={transifexTags} />
               </GroupTitle>
-              <Checkbox {...register("Mixpanel")}>
-                <T
-                  _str="Send anonymous usage information"
-                  _tags={transifexTags}
-                />
-              </Checkbox>
               <Checkbox {...register("Sentry")}>
                 <T _str="Report errors and bugs" _tags={transifexTags} />
               </Checkbox>

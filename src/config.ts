@@ -22,19 +22,18 @@ export const configStore = new Store<IConfig>({
   cwd: getConfigPath(),
 });
 
-const network = configStore.get(
+export const network = configStore.get(
   "Network",
   process.env.DEFAULT_NETWORK || "main"
 );
 // Removed 9c prefix
-export const netenv = network === "9c-main" ? "main" : network;
 export const userConfigStore = new Store<IConfig>({
-  name: network === "9c-main" ? "config" : `config.${network}`,
+  name: network === ("main" || "9c-main") ? "config" : `config.${network}`,
 });
 
 export const playerPath = path.join(
   app.getPath("userData"),
-  `player/${netenv}`
+  `player/${network}`
 );
 
 const LocalServerUrl = (): string => {
@@ -193,11 +192,6 @@ const getLocalApplicationDataPath = (): string => {
   return path.join(app.getPath("home"), "AppData", "Local");
 };
 
-export const blockchainStoreDirParent =
-  get("BlockchainStoreDirParent") === ""
-    ? path.join(getLocalApplicationDataPath(), "planetarium")
-    : get("BlockchainStoreDirParent");
-
 export function get<K extends keyof IConfig>(
   key: K,
   defaultValue?: Required<IConfig>[K]
@@ -208,10 +202,6 @@ export function get<K extends keyof IConfig>(
 
   // @ts-expect-error - The overload doesn't work well with optional arguments.
   return configStore.get(key, defaultValue);
-}
-
-export function getBlockChainStorePath(): string {
-  return path.join(blockchainStoreDirParent, get("BlockchainStoreDirName"));
 }
 
 export const REQUIRED_DISK_SPACE = 20n * 1000n * 1000n * 1000n;

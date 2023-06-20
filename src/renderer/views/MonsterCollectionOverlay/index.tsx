@@ -9,7 +9,6 @@ import {
   useTransactionResultLazyQuery,
 } from "src/generated/graphql";
 import { sleep } from "src/utils";
-import { trackEvent } from "src/utils/mixpanel";
 import { OverlayProps } from "src/utils/types";
 import { useBalance } from "src/utils/useBalance";
 import { useLoginSession } from "src/utils/useLoginSession";
@@ -67,10 +66,6 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         currentNCG={balance}
         onChangeAmount={(amount) => {
           setLoading(true);
-          trackEvent("Staking/AmountChange", {
-            amount: amount.toString(),
-            previousAmount: current.stateQuery.stakeState?.deposit,
-          });
           try {
             stake({
               variables: {
@@ -102,11 +97,6 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             collectionSheet={collection.stateQuery.monsterCollectionSheet}
             onActionTxId={(txId) => {
               setLoading(true);
-              trackEvent("Staking/Migration", {
-                txId,
-                tip,
-                level: collection.stateQuery.monsterCollectionState?.level,
-              });
               fetchStatus({ variables: { txId } });
             }}
             onClose={onClose}

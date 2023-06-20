@@ -43,7 +43,7 @@ function PledgeWaitView() {
         />
       </p>
       <ExtLink
-        href={get("KeystoreBackupDocumentationUrl")}
+        href={get("GuideDocsUrl") + "/back-up-your-private-key"}
         css={{ color: "#1EB9DB" }}
       >
         <T
