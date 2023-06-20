@@ -54,7 +54,7 @@ export function usePledge() {
 
             const timeoutId = setTimeout(() => {
               clearInterval(intervalId);
-              reject("Contract Check Timeout.");
+              reject(new Error("Contract Check Timeout."));
             }, 60000);
           });
         }
@@ -95,7 +95,9 @@ export function usePledge() {
                   clearTimeout(timeoutId);
                   clearInterval(intervalId);
                   reject(
-                    `approvePledge Tx Staging Failed: ${txData.stageTransaction}`
+                    new Error(
+                      `approvePledge Tx Staging Failed: ${txData.stageTransaction}`
+                    )
                   );
                   break;
                 case "INVALID":
@@ -108,7 +110,7 @@ export function usePledge() {
           const timeoutId = setTimeout(() => {
             stopPolling?.();
             clearInterval(intervalId);
-            reject("approvePledge Staging Confirmation Timeout.");
+            reject(new Error("approvePledge Staging Confirmation Timeout."));
           }, 60000);
         });
         return {
