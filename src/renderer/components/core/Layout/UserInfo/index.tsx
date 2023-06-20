@@ -29,7 +29,6 @@ import { useBalance } from "src/utils/useBalance";
 import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverlay";
 import { useStaking } from "src/utils/staking";
 import { useTx } from "src/utils/useTx";
-import { trackEvent } from "src/utils/mixpanel";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { Avatar } from "src/renderer/views/ClaimCollectionRewardsOverlay/ClaimContent";
 
@@ -102,10 +101,6 @@ export default function UserInfo() {
           fetchResult({
             variables: { txId: txId!.data.stageTransaction },
           });
-        trackEvent("Staking/Claim", {
-          txId,
-          avatar: avatar.address,
-        });
         toast.success(
           t("Successfully sent rewards to {name} #{address}", {
             _tags: "v2/monster-collection",

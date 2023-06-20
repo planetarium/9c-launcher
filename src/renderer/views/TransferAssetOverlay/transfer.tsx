@@ -98,7 +98,6 @@ function TransferPage() {
   };
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
     if (!addressVerify(recipient, true) || !amount.gt(0)) {
       return;
     }

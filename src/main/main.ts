@@ -2,14 +2,12 @@ import axios from "axios";
 import {
   configStore,
   get as getConfig,
-  getBlockChainStorePath,
   WIN_GAME_PATH,
   playerPath,
   EXECUTE_PATH,
-  MIXPANEL_TOKEN,
+  network,
   initializeNode,
   NodeInfo,
-  netenv,
   userConfigStore,
   baseUrl,
   CONFIG_FILE_PATH,
@@ -41,7 +39,6 @@ import {
 } from "../main/exceptions";
 import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
-import { init as createMixpanel } from "mixpanel";
 import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
 import { Client as NTPClient } from "ntp-time";
@@ -52,7 +49,6 @@ import installExtension, {
   APOLLO_DEVELOPER_TOOLS,
 } from "electron-devtools-installer";
 import RemoteHeadless from "./headless/remoteHeadless";
-import { NineChroniclesMixpanel } from "./mixpanel";
 import {
   createWindow as createV2Window,
   setQuitting as setV2Quitting,
@@ -77,7 +73,7 @@ initializeSentry();
 
 Object.assign(console, log.functions);
 
-const REMOTE_CONFIG_URL = `${baseUrl}/${netenv}/config.json`;
+const REMOTE_CONFIG_URL = `${baseUrl}/${network}/config.json`;
 
 let win: BrowserWindow | null = null;
 let appUpdaterInstance: AppUpdater | null = null;
@@ -85,7 +81,6 @@ let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 let ip: string | null = null;
-let relaunched: boolean = false;
 
 let initializeHeadlessCts: {
   cancel: (reason?: any) => void;
@@ -104,12 +99,6 @@ const updateOptions: IUpdateOptions = {
 };
 
 ipv4().then((value) => (ip = value));
-
-const mixpanelUUID = loadInstallerMixpanelUUID();
-const mixpanel: NineChroniclesMixpanel | undefined =
-  getConfig("Mixpanel") && process.env.NODE_ENV === "production"
-    ? new NineChroniclesMixpanel(createMixpanel(MIXPANEL_TOKEN), mixpanelUUID)
-    : undefined;
 
 client
   .syncTime()
@@ -141,15 +130,9 @@ if (!app.requestSingleInstanceLock()) {
 
   app.on("open-url", (_, url) => win && send(win, IPC_OPEN_URL, url));
 
-  let quitTracked = false;
   app.on("before-quit", (event) => {
-    if (mixpanel != null && !quitTracked) {
-      event.preventDefault();
-      mixpanel?.track("Launcher/Quit", undefined, () => {
-        quitTracked = true;
-        app.quit();
-      });
-    }
+    event.preventDefault();
+    app.quit();
   });
 
   cleanUp();
@@ -246,11 +229,6 @@ async function initializeApp() {
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
 
-    mixpanel?.track("Launcher/Start", {
-      isV2: true,
-      useRemoteHeadless,
-    });
-
     // Detects and move old snapshot caches as they're unused.
     // Ignores any failure as they're not critical.
     fg("snapshot-*", { cwd: app.getPath("userData") }).then((files) =>
@@ -305,9 +283,7 @@ function initializeIpc() {
 
   ipcMain.handle("clear cache", async (event, rerun: boolean) => {
     console.log(`Clear cache is requested. (rerun: ${rerun})`);
-    mixpanel?.track("Launcher/Clear Cache");
     await quitAllProcesses("clear-cache");
-    utils.deleteBlockchainStoreSync(getBlockChainStorePath());
     if (rerun) {
       console.log("main clear cache call initializeRemoteHeadless");
       await initializeRemoteHeadless();
@@ -332,17 +308,10 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.on("login", async () => {
-    mixpanel?.login();
-  });
+  ipcMain.on("login", async () => {});
 
   ipcMain.on("relaunch standalone", async (event, param: object) => {
-    mixpanel?.track("Launcher/Relaunch Headless", {
-      relaunched,
-      ...param,
-    });
     await relaunchHeadless();
-    relaunched = true;
     event.returnValue = true;
   });
 
@@ -367,19 +336,6 @@ function initializeIpc() {
     }
 
     event.returnValue = "Not supported platform.";
-  });
-
-  ipcMain.on(
-    "mixpanel-track-event",
-    async (_, eventName: string, param: object) => {
-      mixpanel?.track(eventName, {
-        ...param,
-      });
-    }
-  );
-
-  ipcMain.on("mixpanel-alias", async (_, alias: string) => {
-    mixpanel?.alias(alias);
   });
 
   ipcMain.on("online-status-changed", (event, status: "online" | "offline") => {
@@ -496,32 +452,6 @@ function cleanUp() {
   cleanUpLockfile();
 }
 
-function loadInstallerMixpanelUUID(): string {
-  const planetariumPath =
-    process.platform === "win32"
-      ? path.join(process.env.LOCALAPPDATA as string, "planetarium")
-      : app.getPath("userData");
-  if (!fs.existsSync(planetariumPath)) {
-    fs.mkdirSync(planetariumPath, {
-      recursive: true,
-    });
-  }
-
-  const guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
-
-  if (!fs.existsSync(guidPath)) {
-    const newUUID = uuidv4();
-    console.log(`The installer mixpanel UUID doesn't exist at '${guidPath}'.`);
-    fs.writeFileSync(guidPath, newUUID);
-    console.log(`Created new UUID ${newUUID} and stored.`);
-    return newUUID;
-  } else {
-    return fs.readFileSync(guidPath, {
-      encoding: "utf-8",
-    });
-  }
-}
-
 async function relaunchHeadless(reason: string = "default") {
   await initializeRemoteHeadless();
 }
@@ -571,15 +501,8 @@ function createTray(iconPath: string) {
 }
 
 function relaunch() {
-  if (mixpanel !== undefined) {
-    mixpanel.track("Launcher/Relaunch", undefined, () => {
-      app.relaunch();
-      app.exit();
-    });
-  } else {
-    app.relaunch();
-    app.exit();
-  }
+  app.relaunch();
+  app.exit();
 }
 
 function initCheckForUpdateWorker(
@@ -592,7 +515,7 @@ function initCheckForUpdateWorker(
   }
 
   const os = PLATFORM2OS_MAP[process.platform];
-  const publishedStorageBaseUrl = `${baseUrl}/${netenv}`;
+  const publishedStorageBaseUrl = `${baseUrl}/${network}`;
 
   if (os == null) {
     throw new NotSupportedPlatformError(process.platform);
