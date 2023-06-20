@@ -42,7 +42,7 @@ function PledgeSuccessView() {
         />
       </Text>
       <ExtLink
-        href={get("KeystoreBackupDocumentationUrl")}
+        href={get("GuideDocsUrl") + "/back-up-your-private-key"}
         css={{ color: "#1EB9DB", fontSize: 14 }}
       >
         <T

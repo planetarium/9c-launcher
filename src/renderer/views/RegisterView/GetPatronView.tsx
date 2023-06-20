@@ -41,7 +41,7 @@ function GetPatronView() {
         onClick={() => {
           shell.openExternal(
             get("ActivationCodeUrl") +
-              "&address=" +
+              "/start?step=2&address=" +
               account.loginSession!.address.toHex()
           );
           setDisable(true);
@@ -58,7 +58,7 @@ function GetPatronView() {
           color: "#74f4bc",
           fontWeight: 300,
         }}
-        href="https://docs.nine-chronicles.com/introduction/guide/nine-chronicles-portal/patron" // will be embedded in config.json. or else?
+        href={get("GuideDocsUrl") + "/nine-chronicles-portal/patron"} // will be embedded in config.json. or else?
       >
         <T
           _str="Can I have a different patron, not Planetarium?"

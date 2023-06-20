@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef } from "react";
 import { observer } from "mobx-react";
 import { useActor } from "@xstate/react";
 import { Redirect, Route, Switch, useRouteMatch } from "react-router";
@@ -9,12 +9,7 @@ import { T } from "src/renderer/i18n";
 import Button from "src/renderer/components/ui/Button";
 import Checkbox from "src/renderer/components/ui/Checkbox";
 import bytes from "bytes";
-import {
-  getBlockChainStorePath,
-  userConfigStore,
-  app,
-  installerUrl,
-} from "src/config";
+import { userConfigStore, app, installerUrl } from "src/config";
 import { updateService } from "src/renderer/machines/updateMachine";
 
 const transifexTags = "v2/ErrorView";
@@ -144,31 +139,6 @@ function ErrorView() {
           <Button variant="primary" centered onClick={handleRestart}>
             <T _str="Restart" _tags={transifexTags} />
           </Button>
-        </ErrorContent>
-      </Route>
-      <Route path={`${path}/no-permission`}>
-        <ErrorContent title={t("No permission", { _tags: transifexTags })}>
-          <T
-            _str={
-              "Application does not have permission at: {path}.\n\nPlease change chain directory by following steps below."
-            }
-            _tags={transifexTags}
-            path={getBlockChainStorePath()}
-          />
-          <ol>
-            <li>
-              <T
-                _str="Open SETTINGS page by clicking the button at the right side."
-                _tags={transifexTags}
-              />
-            </li>
-            <li>
-              <T
-                _str='Change \"Root chain store path\" by click \"SELECT PATH\" Button'
-                _tags={transifexTags}
-              />
-            </li>
-          </ol>
         </ErrorContent>
       </Route>
       <Route path={`${path}/reinstall`}>

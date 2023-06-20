@@ -1,7 +1,7 @@
 import { ipcRenderer } from "electron";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "src/generated/graphql-request";
-import { NodeInfo } from "src/config";
+import { NodeInfo, get } from "src/config";
 import { ActivationFunction, ActivationStep } from "src/interfaces/activation";
 import { useTx } from "src/utils/useTx";
 import { useStore } from "./useStore";
@@ -62,6 +62,7 @@ export function usePledge() {
         step = "createApprovePledgeTx";
         const { data: approvePledgeTx } = await sdks.approvePledge({
           publicKey: account.loginSession.publicKey.toHex("uncompressed"),
+          patronAddress: get("PatronAddress") as string,
         });
 
         if (!approvePledgeTx?.actionTxQuery.approvePledge) {
