@@ -6097,6 +6097,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/dompurify@npm:^3":
+  version: 3.0.2
+  resolution: "@types/dompurify@npm:3.0.2"
+  dependencies:
+    "@types/trusted-types": "*"
+  checksum: dc017e16a46bcc77086af7d4dc5d2bf4102f16bf1a11b2937e90380da50e77716a2a608ff52990b1293250fefc2ad7593a1378fe07e3a7e21f200d702f0a7878
+  languageName: node
+  linkType: hard
+
 "@types/dotenv@npm:^8.2.0":
   version: 8.2.0
   resolution: "@types/dotenv@npm:8.2.0"
@@ -6503,6 +6512,13 @@ __metadata:
   version: 2.4.0
   resolution: "@types/textfit@npm:2.4.0"
   checksum: 03eccdb59c97a50199d5416fd0946dace696f050c108db682c27f03dee67b04b8e25b86cea22a1c03b85bb02c6633fa39cb34de4a155341c297006d3df73ca6a
+  languageName: node
+  linkType: hard
+
+"@types/trusted-types@npm:*":
+  version: 2.0.3
+  resolution: "@types/trusted-types@npm:2.0.3"
+  checksum: 4794804bc4a4a173d589841b6d26cf455ff5dc4f3e704e847de7d65d215f2e7043d8757e4741ce3a823af3f08260a8d04a1a6e9c5ec9b20b7b04586956a6b005
   languageName: node
   linkType: hard
 
@@ -7294,6 +7310,7 @@ __metadata:
     "@transifex/react": ^3.0.0
     "@types/bytes": ^3.1.1
     "@types/child-process-promise": ^2.2.1
+    "@types/dompurify": ^3
     "@types/dotenv": ^8.2.0
     "@types/electron-devtools-installer": ^2.2.0
     "@types/lockfile": ^1.0.1
@@ -7322,6 +7339,7 @@ __metadata:
     axios: ^0.21.2
     babel-loader: ^8.2.2
     bencodex: ^0.1.1
+    bitgener: ^1.2.12
     buffer: ^5.6.0
     bytes: ^3.1.2
     cancellationtoken: ^2.2.0
@@ -7335,6 +7353,7 @@ __metadata:
     css-loader: ^5.2.6
     decimal.js: ^10.3.1
     destr: ^1.1.0
+    dompurify: ^3.0.3
     dotenv: ^8.2.0
     eip55: ^2.1.0
     electron: 20.0.1
@@ -7376,6 +7395,7 @@ __metadata:
     public-ip: ^4.0.3
     react: ^17.0.2
     react-apollo: ^3.1.5
+    react-datamatrix-svg: ^1.0.7
     react-dom: ^17.0.2
     react-dropzone: ^11.4.2
     react-hook-form: ^7.14.1
@@ -8821,6 +8841,13 @@ __metadata:
   dependencies:
     file-uri-to-path: 1.0.0
   checksum: 65b6b48095717c2e6105a021a7da4ea435aa8d3d3cd085cb9e85bcb6e5773cf318c4745c3f7c504412855940b585bdf9b918236612a1c7a7942491de176f1ae7
+  languageName: node
+  linkType: hard
+
+"bitgener@npm:^1.2.12":
+  version: 1.2.12
+  resolution: "bitgener@npm:1.2.12"
+  checksum: 589896bf4f2f57fb99c72ec4b90ffb0435c0af4ee8d052d6aedd033fbf7d777be8f427ca7111cec1823a4e0e1d3d45c919538af2677dc0df3d48fd9a6a20a236
   languageName: node
   linkType: hard
 
@@ -11498,6 +11525,13 @@ __metadata:
   dependencies:
     domelementtype: ^2.2.0
   checksum: 7921ac317d6899525a4e6a6038137307271522175a73db58233e13c7860987e15e86654583b2c0fd02fc46a602f9bd86fd2671af13b9068b72e8b229f07b3d03
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "dompurify@npm:3.0.3"
+  checksum: 02242f2fe6a5c078fd0cb04efc93079d73a2fe886bebb5e33100b7e52f4b9bfe5f2afb0b69cae39d9a13d7bbf54435df41494890c4abe7740429828b2dbb94d9
   languageName: node
   linkType: hard
 
@@ -20514,6 +20548,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-datamatrix-svg@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "react-datamatrix-svg@npm:1.0.7"
+  dependencies:
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: cd3a31d1d5ed65cd9b6a63e6da86adcdf7dde991cbaf8b76a38c3505d36be728ea45ee6eba0d777d9c3bd5b7e3bfee2bef6c7336324b764458b3e5686959b2ca
+  languageName: node
+  linkType: hard
+
 "react-docgen-typescript@npm:^2.0.0":
   version: 2.0.0
   resolution: "react-docgen-typescript@npm:2.0.0"
@@ -20551,6 +20595,18 @@ __metadata:
   peerDependencies:
     react: 17.0.2
   checksum: 1c1eaa3bca7c7228d24b70932e3d7c99e70d1d04e13bb0843bbf321582bc25d7961d6b8a6978a58a598af2af496d1cedcfb1bf65f6b0960a0a8161cb8dab743c
+  languageName: node
+  linkType: hard
+
+"react-dom@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "react-dom@npm:18.2.0"
+  dependencies:
+    loose-envify: ^1.1.0
+    scheduler: ^0.23.0
+  peerDependencies:
+    react: ^18.2.0
+  checksum: 7d323310bea3a91be2965f9468d552f201b1c27891e45ddc2d6b8f717680c95a75ae0bc1e3f5cf41472446a2589a75aed4483aee8169287909fcd59ad149e8cc
   languageName: node
   linkType: hard
 
@@ -20911,6 +20967,15 @@ __metadata:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: b254cc17ce3011788330f7bbf383ab653c6848902d7936a87b09d835d091e3f295f7e9dd1597c6daac5dc80f90e778c8230218ba8ad599f74adcc11e33b9d61b
+  languageName: node
+  linkType: hard
+
+"react@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "react@npm:18.2.0"
+  dependencies:
+    loose-envify: ^1.1.0
+  checksum: 88e38092da8839b830cda6feef2e8505dec8ace60579e46aa5490fc3dc9bba0bd50336507dc166f43e3afc1c42939c09fe33b25fae889d6f402721dcd78fca1b
   languageName: node
   linkType: hard
 
@@ -21926,6 +21991,15 @@ __metadata:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: c4b35cf967c8f0d3e65753252d0f260271f81a81e427241295c5a7b783abf4ea9e905f22f815ab66676f5313be0a25f47be582254db8f9241b259213e999b8fc
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.23.0":
+  version: 0.23.0
+  resolution: "scheduler@npm:0.23.0"
+  dependencies:
+    loose-envify: ^1.1.0
+  checksum: d79192eeaa12abef860c195ea45d37cbf2bbf5f66e3c4dcd16f54a7da53b17788a70d109ee3d3dde1a0fd50e6a8fc171f4300356c5aee4fc0171de526bf35f8a
   languageName: node
   linkType: hard
 
