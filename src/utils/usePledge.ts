@@ -5,18 +5,10 @@ import { NodeInfo } from "src/config";
 import { ActivationFunction, ActivationStep } from "src/interfaces/activation";
 import { useTx } from "src/utils/useTx";
 import { useStore } from "./useStore";
-import { useTransactionResultLazyQuery } from "src/generated/graphql";
-import { sleep } from "src/utils";
 
 export function usePledge() {
   const tx = useTx();
   const account = useStore("account");
-
-  const [fetchStatus, { loading, data: txState, stopPolling }] =
-    useTransactionResultLazyQuery({
-      pollInterval: 1000,
-      fetchPolicy: "no-cache",
-    });
 
   const activate: ActivationFunction = async () => {
     let step: ActivationStep = "getGraphQLClient";
@@ -75,40 +67,40 @@ export function usePledge() {
         if (!txData?.stageTransaction) {
           throw Error("Tx Staging Failed");
         }
-        fetchStatus({ variables: { txId: txData.stageTransaction } });
         console.log(`Staging approvePledge Tx: ${txData.stageTransaction}`);
         await new Promise<void>((resolve, reject) => {
           const intervalId = setInterval(() => {
-            if (txState?.transaction.transactionResult.txStatus !== undefined) {
-              switch (txState?.transaction.transactionResult.txStatus) {
-                case "SUCCESS":
-                  console.log(
-                    `approvePledge Tx Staging Success: ${txData.stageTransaction}`
-                  );
-                  stopPolling?.();
-                  clearTimeout(timeoutId);
-                  clearInterval(intervalId);
-                  resolve();
-                  break;
-                case "FAILURE":
-                  stopPolling?.();
-                  clearTimeout(timeoutId);
-                  clearInterval(intervalId);
-                  reject(
-                    new Error(
-                      `approvePledge Tx Staging Failed: ${txData.stageTransaction}`
-                    )
-                  );
-                  break;
-                case "INVALID":
-                case "STAGING":
-                  break;
-              }
-            }
+            sdks
+              .TransactionResult({
+                txId: txData.stageTransaction,
+              })
+              .then(({ data }) => {
+                switch (data.transaction.transactionResult.txStatus) {
+                  case "SUCCESS":
+                    console.log(
+                      `approvePledge Tx Staging Success: ${txData.stageTransaction}`
+                    );
+                    clearTimeout(timeoutId);
+                    clearInterval(intervalId);
+                    resolve();
+                    break;
+                  case "FAILURE":
+                    clearTimeout(timeoutId);
+                    clearInterval(intervalId);
+                    reject(
+                      new Error(
+                        `approvePledge Tx Staging Failed: ${txData.stageTransaction}`
+                      )
+                    );
+                    break;
+                  case "INVALID":
+                  case "STAGING":
+                    break;
+                }
+              });
           }, 1000);
 
           const timeoutId = setTimeout(() => {
-            stopPolling?.();
             clearInterval(intervalId);
             reject(new Error("approvePledge Staging Confirmation Timeout."));
           }, 120000);
