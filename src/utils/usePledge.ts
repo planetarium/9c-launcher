@@ -55,7 +55,7 @@ export function usePledge() {
             const timeoutId = setTimeout(() => {
               clearInterval(intervalId);
               reject(new Error("Contract Check Timeout."));
-            }, 60000);
+            }, 120000);
           });
         }
 
@@ -111,7 +111,7 @@ export function usePledge() {
             stopPolling?.();
             clearInterval(intervalId);
             reject(new Error("approvePledge Staging Confirmation Timeout."));
-          }, 60000);
+          }, 120000);
         });
         return {
           result: true,
