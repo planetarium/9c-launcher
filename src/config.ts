@@ -241,6 +241,7 @@ export const EXECUTE_PATH: {
   netbsd: null,
 };
 export const baseUrl = get("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
+export const genesisUrl = path.join(baseUrl, get("Network"), "genesis-block");
 export const installerUrl = path.join(DEFAULT_DOWNLOAD_BASE_URL, installerName);
 
 export async function initializeNode(): Promise<NodeInfo> {

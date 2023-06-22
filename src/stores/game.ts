@@ -1,6 +1,6 @@
 import { observable, action, computed, makeObservable } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { userConfigStore, get as getConfig, NodeInfo } from "src/config";
+import { userConfigStore, get as getConfig, genesisUrl } from "src/config";
 
 export default class GameStore {
   @observable
@@ -22,9 +22,7 @@ export default class GameStore {
     ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
       this._isGameStarted = false;
     });
-    this._genesisBlockPath = `${getConfig("DownloadBaseURL")}/${getConfig(
-      "Network"
-    )}/genesis-block`;
+    this._genesisBlockPath = genesisUrl;
     this._language = getConfig("Locale", "en") as string;
     this._appProtocolVersion = getConfig("AppProtocolVersion") as string;
     ipcRenderer.invoke("get-node-info").then((node) => {
