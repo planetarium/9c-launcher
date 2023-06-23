@@ -16,6 +16,8 @@ win:
   sign: "./scripts/sign.js"
 nsis:
   oneClick: false
+  perMachine: false
+  allowElevation: false
   allowToChangeInstallationDirectory: true
 mac:
   icon: "AppIcon.icns"
