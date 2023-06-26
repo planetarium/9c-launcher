@@ -85,14 +85,11 @@ type StandaloneQuery {
 
     # The time this transaction is created.
     timestamp: DateTimeOffset
-
-    # The gas limit for Transaction.
-    gasLimit: Long = 4
     maxGasPrice: FungibleAssetValueInputType = {
       quantity: 1000000000000000000
       ticker: "Mead"
       decimalPlaces: 18
-      minters: []
+      minters: null
     }
   ): ActionTxQuery!
 
@@ -797,6 +794,7 @@ type StakeRegularRewardInfoType {
 enum StakeRewardType {
   ITEM
   RUNE
+  CURRENCY
 }
 
 type StakeRegularFixedRewardInfoType {
@@ -1449,14 +1447,11 @@ type TransactionHeadlessQuery {
 
     # The nonce for Transaction.
     nonce: Long
-
-    # The gas limit for Transaction.
-    gasLimit: Long = 4
     maxGasPrice: FungibleAssetValueInputType = {
       quantity: 1000000000000000000
       ticker: "Mead"
       decimalPlaces: 18
-      minters: []
+      minters: null
     }
   ): ByteString!
   signTransaction(
@@ -2078,6 +2073,12 @@ type AddressQuery {
     # A currency type. see also: https://github.com/planetarium/NineChronicles.Headless/blob/main/NineChronicles.Headless/GraphTypes/CurrencyEnumType.cs
     currency: CurrencyEnum!
   ): [Address!]
+
+  # pledge information address.
+  pledgeAddress(
+    # address of agent state.
+    agentAddress: Address!
+  ): Address!
 }
 
 type StandaloneMutation {
