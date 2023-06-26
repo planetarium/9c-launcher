@@ -1,4 +1,4 @@
-appId: "com.nine-chronicles"
+appId: "com.nine-chronicles-internal"
 asar: true
 productName: "Nine Chronicles Internal"
 files:
@@ -16,6 +16,8 @@ win:
   sign: "./scripts/sign.js"
 nsis:
   oneClick: false
+  perMachine: false
+  allowElevation: false
   allowToChangeInstallationDirectory: true
 mac:
   icon: "AppIcon.icns"

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { styled } from "src/renderer/stitches.config";
 import { useLanguages } from "@transifex/react";
@@ -9,13 +9,10 @@ import { T } from "src/renderer/i18n";
 import log from "electron-log";
 import { shell, ipcRenderer } from "electron";
 import { app } from "@electron/remote";
-import { preloadService } from "src/renderer/machines/preloadMachine";
 
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import H1 from "src/renderer/components/ui/H1";
-import TextField from "src/renderer/components/ui/TextField";
 import { Select, SelectOption } from "src/renderer/components/ui/Select";
-import FolderChooser from "./FolderChooser";
 import { t } from "@transifex/native";
 import Button from "src/renderer/components/ui/Button";
 import OverlayBase, {
@@ -23,11 +20,12 @@ import OverlayBase, {
 } from "src/renderer/components/core/OverlayBase";
 import Checkbox from "src/renderer/components/ui/Checkbox";
 import AdvancedAction from "./AdvancedAction";
-import DeleteIcon from "@material-ui/icons/Delete";
 import UpdateIcon from "@material-ui/icons/Update";
+import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import { OverlayProps } from "src/utils/types";
-import toast from "react-hot-toast";
 import { getKeyStorePath } from "src/stores/account";
+import { ExportOverlay } from "src/renderer/components/core/Layout/UserInfo/ExportOverlay";
+import { useStore } from "src/utils/useStore";
 
 const SCROLLBAR_SIZE = 10;
 
@@ -141,6 +139,9 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
     if (Object.keys(errors).length === 0) return;
   }, []);
 
+  const [exportOverlayOpened, setExportOverlayOpened] = useState(false);
+  const { isLogin } = useStore("account");
+
   useEffect(
     () => () => void handleSubmit(onSubmit, onError)(), // Submit a form when exits.
     []
@@ -191,6 +192,15 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 onClick={handleOpenKeyStorePath}
                 text={t("Open keystore Folder")}
               />
+              {isLogin && (
+                <AdvancedAction
+                  icon={<AccountBoxIcon />}
+                  text={t("Export keystore")}
+                  onClick={() => {
+                    setExportOverlayOpened(true);
+                  }}
+                />
+              )}
               <AdvancedAction
                 icon={<UpdateIcon />}
                 onClick={handlePlayerUpdate}
@@ -226,6 +236,10 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
           <ScrollAreaThumb />
         </ScrollAreaScrollbar>
       </ScrollAreaRoot>
+      <ExportOverlay
+        isOpen={exportOverlayOpened}
+        onClose={() => setExportOverlayOpened(false)}
+      />
     </OverlayBase>
   );
 }
