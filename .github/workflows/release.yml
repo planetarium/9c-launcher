@@ -76,7 +76,9 @@ jobs:
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest.yml"
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest-mac.yml"
           fi
-          rm -R ./dist/*-unpacked
+          rm -fR ./dist/*-unpacked
+          rm -fR ./dist/mac
+          rm -fR ./dist/mac-arm64
         env:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_ID: ${{ secrets.APPLE_ID }}

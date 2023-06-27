@@ -45,7 +45,9 @@ jobs:
         shell: bash
         run: |
           yarn run pack-local
-          rm -R ./dist/*-unpacked
+          rm -fR ./dist/*-unpacked
+          rm -fR ./dist/mac
+          rm -fR ./dist/mac-arm64
 
       - uses: actions/upload-artifact@v3
         with:
