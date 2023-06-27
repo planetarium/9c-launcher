@@ -14,6 +14,14 @@ jobs:
   release:
     runs-on: macos-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          - m
+          - l
+          - w
+
     environment:
       name: ${{ startsWith(github.event.ref, 'refs/tags/') && 'main' || 'internal' }}
 
@@ -60,11 +68,11 @@ jobs:
         run: |
           if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
           then
-            yarn run release-main
+            sh ./scripts/release.sh main ${{ matrix.targetPlatform }}
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest.yml"
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest-mac.yml"
           else
-            yarn run release-internal
+            sh ./scripts/release.sh internal ${{ matrix.targetPlatform }}
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest.yml"
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest-mac.yml"
           fi
@@ -85,6 +93,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: dist
-          name: Dist
+          name: Dist-${{ matrix.targetPlatform }}
           retention-days: 3
           if-no-files-found: error
