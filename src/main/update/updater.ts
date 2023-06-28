@@ -19,6 +19,7 @@ class AppUpdater {
     autoUpdater.logger = log;
 
     autoUpdater.setFeedURL(`${baseUrl}/${netenv}/launcher`);
+    autoUpdater.autoInstallOnAppQuit = false;
 
     autoUpdater.on("update-available", (updateInfo) =>
       this.handleUpdateAvailable(updateInfo)
