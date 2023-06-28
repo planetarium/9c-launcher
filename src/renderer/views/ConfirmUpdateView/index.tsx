@@ -14,7 +14,7 @@ async function handleConfirm() {
 
 function ConfirmUpdateView() {
   return (
-    <Layout flex sidebar>
+    <Layout sidebar flex>
       <H1>Launcher Update Detected</H1>
       <T
         _str="A new launcher update has been detected within the game launcher. Please proceed with the update"

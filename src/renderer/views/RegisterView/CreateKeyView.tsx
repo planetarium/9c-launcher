@@ -29,13 +29,13 @@ function CreateKeyView() {
 
     await accountStore.login(account, password);
 
-    history.push("/register/activationKey");
+    history.push("/register/getPatron");
   };
 
   return (
-    <Layout sidebar css={registerStyles}>
+    <Layout sidebar flex css={registerStyles}>
       <H1>Create your address </H1>
-      <p style={{ marginBlockEnd: 54 }}>
+      <p>
         <T
           _str="Please set a password for your address to continue. Your address will be generated after this step."
           _tags={transifexTags}

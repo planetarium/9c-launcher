@@ -12,8 +12,6 @@ import {
   useClaimStakeRewardLazyQuery,
   useTransactionResultLazyQuery,
 } from "src/generated/graphql";
-import { useStore } from "src/utils/useStore";
-import { useIsHeadlessAvailable } from "src/utils/useIsHeadlessAvailable";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LaunchIcon from "@material-ui/icons/Launch";
@@ -34,6 +32,7 @@ import { useTx } from "src/utils/useTx";
 import { trackEvent } from "src/utils/mixpanel";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { Avatar } from "src/renderer/views/ClaimCollectionRewardsOverlay/ClaimContent";
+import { ExportOverlay } from "./ExportOverlay";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -135,12 +134,18 @@ export default function UserInfo() {
   const t = useT();
 
   const [isCollectionOpen, setCollectionOpen] = useState<boolean>(false);
+  const [isExportKeyOpen, setExportKeyOpen] = useState<boolean>(false);
 
   if (!loginSession) return null;
 
   return (
     <UserInfoStyled>
-      <UserInfoItem onClick={copyAddress}>
+      <UserInfoItem
+        onClick={() => {
+          copyAddress();
+          setExportKeyOpen(true);
+        }}
+      >
         <AccountBoxIcon />
         <strong>{loginSession.address.toString()}</strong>
         <FileCopyIcon />
@@ -182,6 +187,10 @@ export default function UserInfo() {
       <MonsterCollectionOverlay
         isOpen={isCollectionOpen}
         onClose={() => setCollectionOpen(false)}
+      />
+      <ExportOverlay
+        isOpen={isExportKeyOpen}
+        onClose={() => setExportKeyOpen(false)}
       />
     </UserInfoStyled>
   );

@@ -6,6 +6,7 @@ on:
       - main
       - development
       - hotfix/*
+      - mead/*
   pull_request:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]
 
@@ -27,7 +28,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.electron-gyp
-          key: ${{ runner.os }}-electron-gyp-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-electron-gyp
 
       - uses: actions/setup-node@v3
         with:

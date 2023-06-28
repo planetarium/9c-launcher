@@ -1,11 +1,13 @@
 import { CSS } from "src/renderer/stitches.config";
-import ActivationFailView from "./ActivationFailView";
-import ActivationKeyView from "./ActivationKeyView";
-import ActivationSuccessView from "./ActivationSuccessView";
-import ActivationWaitView from "./ActivationWaitView";
+import PledgeFailView from "./PledgeFailView";
+import GetPatronView from "./GetPatronView";
+import PledgeSuccessView from "./PledgeSuccessView";
+import PledgeWaitView from "./PledgeWaitView";
 import CreateKeyView from "./CreateKeyView";
 
 const registerStyles: CSS = {
+  display: "flex",
+  flexDirection: "column",
   padding: 52,
   boxSizing: "border-box",
   "& > * + *": {
@@ -14,10 +16,10 @@ const registerStyles: CSS = {
 };
 
 export {
-  ActivationFailView,
-  ActivationKeyView,
-  ActivationSuccessView,
-  ActivationWaitView,
+  PledgeFailView,
+  PledgeSuccessView,
+  PledgeWaitView,
   CreateKeyView,
+  GetPatronView,
   registerStyles,
 };

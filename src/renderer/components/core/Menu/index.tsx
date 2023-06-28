@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { styled } from "src/renderer/stitches.config";
 import { useStore } from "src/utils/useStore";
+import { useHistory } from "react-router";
 import MenuItem from "./MenuItem";
 
 import logo from "src/renderer/resources/icons/9c.png";
@@ -40,8 +41,9 @@ type Overlay = "settings" | "staking" | "transfer";
 function Menu() {
   const account = useStore("account");
   const [currentOverlay, openOverlay] = useState<Overlay | null>(null);
+  const history = useHistory();
 
-  const url = useExternalURL();
+  const { url, resetURL } = useExternalURL();
   useEffect(() => {
     if (!url) return;
     if (url.pathname.startsWith("//open/monster-collection")) {
@@ -50,7 +52,11 @@ function Menu() {
     if (url.pathname.startsWith("//open/transfer-asset")) {
       openOverlay("transfer");
     }
-  }, [url]);
+    if (url.pathname.startsWith("//request-pledge")) {
+      resetURL();
+      history.push("/register/pledgeWait");
+    }
+  }, [url, history]);
 
   return (
     <MenuContainer>

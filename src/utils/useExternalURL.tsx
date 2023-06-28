@@ -5,7 +5,15 @@ import { IPC_OPEN_URL } from "src/renderer/ipcTokens";
 let urlBeforeReact: string | null = null;
 once(IPC_OPEN_URL, (_, url) => (urlBeforeReact = url));
 
-const context = createContext<URL | null>(null);
+type URLContext = {
+  url: URL | null;
+  resetURL: () => void;
+};
+
+const context = createContext<URLContext>({
+  url: null,
+  resetURL: () => {},
+});
 
 const { Provider } = context;
 
@@ -13,6 +21,10 @@ export function ExternalURLProvider({ children }: React.PropsWithChildren<{}>) {
   const [url, setUrl] = useState<URL | null>(
     urlBeforeReact !== null ? new URL(urlBeforeReact) : null
   );
+
+  const resetURL = () => {
+    setUrl(null);
+  };
 
   useEffect(
     () =>
@@ -22,9 +34,9 @@ export function ExternalURLProvider({ children }: React.PropsWithChildren<{}>) {
     []
   );
 
-  return <Provider value={url}>{children}</Provider>;
+  return <Provider value={{ url, resetURL }}>{children}</Provider>;
 }
 
-export function useExternalURL(): URL | null {
+export function useExternalURL(): URLContext {
   return useContext(context);
 }

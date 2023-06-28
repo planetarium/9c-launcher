@@ -52,7 +52,7 @@ type StandaloneQuery {
   getTx(
     # transaction id.
     txId: TxId!
-  ): TransactionType_1
+  ): TransactionType
     @deprecated(
       reason: "The root query is not the best place for getTx so it was moved. Use transaction.getTx()"
     )
@@ -73,6 +73,8 @@ type StandaloneQuery {
 
   # Query for rpc mode information.
   rpcInformation: RpcInformationQuery!
+
+  # Query to create action transaction.
   actionQuery: ActionQuery!
   actionTxQuery(
     # The hexadecimal string of public key for Transaction.
@@ -83,6 +85,12 @@ type StandaloneQuery {
 
     # The time this transaction is created.
     timestamp: DateTimeOffset
+    maxGasPrice: FungibleAssetValueInputType = {
+      quantity: 1000000000000000000
+      ticker: "Mead"
+      decimalPlaces: 18
+      minters: null
+    }
   ): ActionTxQuery!
 
   # Query to get derived address.
@@ -192,6 +200,8 @@ type StateQuery {
 
   # raider address list by world boss season.
   raiderList(raiderListAddress: Address!): [Address!]
+  orderDigestList(avatarAddress: Address!): OrderDigestListStateType
+  pledge(agentAddress: Address!): MeadPledgeType!
 }
 
 type AvatarStateType {
@@ -288,7 +298,10 @@ type InventoryType {
   # List of Inventory Item.
   items(
     # An Id to find Inventory Item
-    inventoryItemId: Int!
+    inventoryItemId: Int
+
+    # filter locked Inventory Item
+    locked: Boolean
   ): [InventoryItemType!]!
 }
 
@@ -307,6 +320,7 @@ type ConsumableType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
   itemId: Guid!
   mainStat: StatType!
 }
@@ -363,6 +377,9 @@ enum StatType {
   SPD
   DRV
   DRR
+  CDMG
+  ARMOR_PENETRATION
+  THORN
 }
 
 type MaterialType {
@@ -380,6 +397,7 @@ type MaterialType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
   itemId: ByteString!
 }
 
@@ -400,6 +418,7 @@ type EquipmentType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
   setId: Int!
   stat: DecimalStatType!
   equipped: Boolean!
@@ -411,8 +430,10 @@ type EquipmentType {
 }
 
 type DecimalStatType {
-  type: StatType!
-  value: Decimal!
+  statType: StatType!
+  baseValue: Decimal!
+  additionalValue: Decimal!
+  totalValue: Decimal!
 }
 
 scalar Decimal
@@ -422,6 +443,8 @@ type SkillType {
   elementalType: ElementalType!
   power: Int!
   chance: Int!
+  statPowerRatio: Int!
+  referencedStatType: StatType!
 }
 
 type StatsMapType {
@@ -448,6 +471,7 @@ type CostumeType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
 
   # Guid of costume.
   itemId: Guid!
@@ -465,6 +489,9 @@ type InventoryItemType {
 
   # An ItemType of item
   itemType: ItemType!
+  locked: Boolean!
+  lockId: Guid
+  tradableId: Guid
 }
 
 type CollectionMapType {
@@ -594,6 +621,7 @@ type ItemUsableType {
 
   # Item elemental.
   elementalType: ElementalType!
+  requiredBlockIndex: Long
 
   # Guid of item.
   itemId: Guid!
@@ -682,6 +710,15 @@ type AgentStateType {
 
   # Current CRYSTAL.
   crystal: String!
+
+  # mead pledge information.
+  pledge: MeadPledgeType!
+}
+
+type MeadPledgeType {
+  patronAddress: Address
+  approved: Boolean!
+  mead: Int!
 }
 
 type StakeStateType {
@@ -757,6 +794,7 @@ type StakeRegularRewardInfoType {
 enum StakeRewardType {
   ITEM
   RUNE
+  CURRENCY
 }
 
 type StakeRegularFixedRewardInfoType {
@@ -864,6 +902,11 @@ input CurrencyInputType {
   ticker: String!
   decimalPlaces: Byte!
   minters: [Address!]
+}
+
+type OrderDigestListStateType {
+  address: Address
+  orderDigestList: [OrderDigestType]!
 }
 
 type TransferNCGHistoryType {
@@ -981,7 +1024,6 @@ type ExplorerQuery {
   transactionQuery: TransactionQuery
   stateQuery: LibplanetStateQuery
   nodeState: NodeState!
-  blockPolicy: BlockPolicy!
 }
 
 type BlockQuery {
@@ -1002,15 +1044,6 @@ type Block {
   # The height of the block.
   index: Long!
 
-  # The mining difficulty that the block's nonce has to satisfy.
-  difficulty: Long!
-
-  # The total mining difficulty since the genesis including the block's difficulty.
-  totalDifficulty: BigInt!
-
-  # The proof-of-work nonce which satisfies the required difficulty.
-  nonce: ByteString!
-
   # The address of the miner.
   miner: Address!
 
@@ -1029,6 +1062,21 @@ type Block {
 
   # Transactions belonging to the block.
   transactions: [Transaction!]!
+
+  # The LastCommit of the block.
+  lastCommit: BlockCommit
+
+  # The mining difficulty that the block's nonce has to satisfy.
+  difficulty: Long!
+    @deprecated(reason: "Block does not have Difficulty field in PBFT.")
+
+  # The total mining difficulty since the genesis including the block's difficulty.
+  totalDifficulty: BigInt!
+    @deprecated(reason: "Block does not have TotalDifficulty field in PBFT.")
+
+  # The proof-of-work nonce which satisfies the required difficulty.
+  nonce: ByteString!
+    @deprecated(reason: "Block does not have Nonce field in PBFT.")
 }
 
 scalar PublicKey
@@ -1065,7 +1113,7 @@ type Transaction {
   serializedPayload: String!
 
   # The block including the transaction.
-  blockRef: [Block!]
+  blockRef: Block!
 }
 
 type Action {
@@ -1078,6 +1126,45 @@ type Action {
   # A JSON representaion of action data
   json: String!
 }
+
+type BlockCommit {
+  # The height of the block commit.
+  height: Long!
+
+  # The round of the block commit.
+  round: Int!
+
+  # The hash of the block which contains block commit.
+  blockHash: ID!
+
+  # Total votes of the block commit.
+  votes: [Vote!]!
+}
+
+type Vote {
+  # Height of the consensus voted.
+  height: Long!
+
+  # Round of the consensus voted.
+  round: Int!
+
+  # Hash of the block voted.
+  blockHash: String!
+
+  # The time this vote was created and signed.
+  timestamp: DateTimeOffset!
+
+  # Public key of the validator which is subject of the vote.
+  validatorPublicKey: PublicKey!
+
+  # Flag of the vote
+  flag: VoteFlag!
+
+  # A digital signature of the content of this vote.
+  signature: ByteString!
+}
+
+scalar VoteFlag
 
 type TransactionQuery {
   transactions(
@@ -1142,6 +1229,7 @@ type TxResultType {
   updatedStates: [UpdatedStateType!]
   updatedFungibleAssets: [FungibleAssetBalancesType!]
   fungibleAssetsDelta: [FungibleAssetBalancesType!]
+  actionsLogsList: [[String!]!]
 }
 
 enum TxStatus {
@@ -1185,7 +1273,7 @@ type Currency {
   ticker: String!
 
   # The number of digits to treat as minor units (i.e., exponents).
-  decimalPlaces: UInt!
+  decimalPlaces: Byte!
 
   # The addresses who can mint this currency.  If this is null anyone can mint the currency.  On the other hand, unlike null, an empty set means no one can mint the currency.
   minters: [Address!]
@@ -1200,27 +1288,60 @@ type Currency {
   hash: ByteString!
 }
 
-scalar UInt
-
 type LibplanetStateQuery {
+  states(addresses: [Address!]!, offsetBlockHash: ID!): [BencodexValue]!
   balance(
     owner: Address!
-    currencyHash: ByteString!
+    currency: CurrencyInput!
     offsetBlockHash: ID!
   ): FungibleAssetValue!
   totalSupply(
-    currencyHash: ByteString!
+    currency: CurrencyInput!
     offsetBlockHash: ID!
   ): FungibleAssetValue
+  validators(offsetBlockHash: ID!): [Validator!]
+}
+
+input CurrencyInput {
+  # The ticker symbol, e.g., USD.
+  ticker: String!
+
+  # The number of digits to treat as minor units (i.e., exponents).
+  decimalPlaces: Byte!
+
+  # The addresses who can mint this currency.  If this is null anyone can mint the currency.  On the other hand, unlike null, an empty set means no one can mint the currency.
+  minters: [Address!]
+  maximumSupplyMajorUnit: BigInt
+  maximumSupplyMinorUnit: BigInt
+
+  # Whether the total supply of this currency is trackable.
+  totalSupplyTrackable: Boolean
+}
+
+# A data type holds validator's public key and its voting power.
+type Validator {
+  # The public key of the validator.
+  publicKey: PublicKey!
+
+  # Gets the voting power of the validator.
+  power: BigInt!
 }
 
 type NodeState {
   preloaded: Boolean!
+  peers: [BoundPeer!]
+  validators: [BoundPeer!]
 }
 
-type BlockPolicy {
-  # A fixed set of native tokens, which are supported by the blockchain as first-class assets.
-  nativeTokens: [Currency!]!
+type BoundPeer {
+  # The public key of the peer.
+  publicKey: PublicKey!
+
+  # The endpoint of the peer.
+  endPoint: String!
+
+  # The address of the miner.
+  publicIpAddress: String
 }
 
 type ValidationQuery {
@@ -1248,7 +1369,7 @@ type PeerChainStateQuery {
   state: [String]!
 }
 
-type TransactionType_1 {
+type TransactionType {
   # A unique identifier derived from this transaction content.
   id: TxId!
 
@@ -1271,7 +1392,7 @@ type TransactionType_1 {
   updatedAddresses: [Address]!
 
   # A list of actions in this transaction.
-  customActions: [Action]!
+  actions: [Action]!
 }
 
 type MonsterCollectionStatusType {
@@ -1294,7 +1415,7 @@ type TransactionHeadlessQuery {
   getTx(
     # transaction id.
     txId: TxId!
-  ): TransactionType_1
+  ): TransactionType
   createUnsignedTx(
     # The base64-encoded public key for Transaction.
     publicKey: String!
@@ -1326,6 +1447,12 @@ type TransactionHeadlessQuery {
 
     # The nonce for Transaction.
     nonce: Long
+    maxGasPrice: FungibleAssetValueInputType = {
+      quantity: 1000000000000000000
+      ticker: "Mead"
+      decimalPlaces: 18
+      minters: null
+    }
   ): ByteString!
   signTransaction(
     # The hexadecimal string of unsigned transaction to attach the given signature.
@@ -1334,6 +1461,13 @@ type TransactionHeadlessQuery {
     # The hexadecimal string of signature of the given unsigned transaction.
     signature: String!
   ): ByteString!
+}
+
+input FungibleAssetValueInputType {
+  quantity: BigInt!
+  ticker: String!
+  decimalPlaces: Byte!
+  minters: [Address!]
 }
 
 type RpcInformationQuery {
@@ -1481,6 +1615,120 @@ type ActionQuery {
     # The try count to enhance rune
     tryCount: Int
   ): ByteString!
+  hackAndSlash(
+    # Avatar address.
+    avatarAddress: Address!
+
+    # World ID containing the stage ID.
+    worldId: Int!
+
+    # Stage ID.
+    stageId: Int!
+
+    # List of costume id for equip.
+    costumeIds: [Guid]
+
+    # List of equipment id for equip.
+    equipmentIds: [Guid]
+
+    # List of consumable id for use.
+    consumableIds: [Guid]
+
+    # List of rune slot info for equip.
+    runeSlotInfos: [RuneSlotInfoInputType!] = []
+
+    # Buff ID for this stage
+    stageBuffId: Int
+  ): ByteString!
+  hackAndSlashSweep(
+    # Avatar address.
+    avatarAddress: Address!
+
+    # World ID containing the stage ID.
+    worldId: Int!
+
+    # Stage ID.
+    stageId: Int!
+
+    # List of costume id for equip.
+    costumeIds: [Guid]
+
+    # List of equipment id for equip.
+    equipmentIds: [Guid]
+
+    # List of rune slot info for equip.
+    runeSlotInfos: [RuneSlotInfoInputType!] = []
+
+    # Action point usage to sweep
+    actionPoint: Int!
+
+    # AP stone usage to sweep
+    apStoneCount: Int
+  ): ByteString!
+  dailyReward(
+    # Avatar address to get daily reward
+    avatarAddress: Address!
+  ): ByteString!
+  combinationEquipment(
+    # Avatar address to combine equipment
+    avatarAddress: Address!
+
+    # Slot index to combine equipment
+    slotIndex: Int!
+
+    # Combination recipe ID
+    recipeId: Int!
+
+    # Sub-recipe ID of this combination
+    subRecipeId: Int
+
+    # Pay crystal co combine equipment?
+    payByCrystal: Boolean
+
+    # Use hammer point to combine equipment?
+    useHammerPoint: Boolean
+  ): ByteString!
+  itemEnhancement(
+    # Avatar address to enhance item
+    avatarAddress: Address!
+
+    # Slot index to enhance item
+    slotIndex: Int!
+
+    # Target item ID to enhance
+    itemId: Guid!
+
+    # Material ID to enhance
+    materialId: Guid!
+  ): ByteString!
+  rapidCombination(
+    # Avatar address to execute rapid combination
+    avatarAddress: Address!
+
+    # Slot index to execute rapid
+    slotIndex: Int!
+  ): ByteString!
+  combinationConsumable(
+    # Avatar address to combine consumable
+    avatarAddress: Address!
+
+    # Slot index to combine
+    slotIndex: Int!
+
+    # Recipe ID to combine consumable
+    recipeId: Int!
+  ): ByteString!
+  requestPledge(agentAddress: Address!, mead: Int = 4): ByteString!
+  approvePledge(patronAddress: Address!): ByteString!
+  endPledge(agentAddress: Address!): ByteString!
+  createPledge(
+    patronAddress: Address!
+    agentAddresses: [Address!]!
+    mead: Int = 4
+  ): ByteString!
+
+  # Query to craft/enhance items/foods
+  craftQuery: CraftQuery!
 }
 
 # The currency type.
@@ -1494,16 +1742,46 @@ input RuneSlotInfoInputType {
   runeId: Int!
 }
 
-input FungibleAssetValueInputType {
-  quantity: BigInt!
-  ticker: String!
-  decimalPlaces: Byte!
-  minters: [Address!]
-}
-
 input RecipientsInputType {
   recipient: Address!
   amount: FungibleAssetValueInputType!
+}
+
+type CraftQuery {
+  eventConsumableItemCrafts(
+    # Avatar address to craft event item
+    avatarAddress: Address!
+
+    # The ID of event schedule
+    eventScheduleId: Int!
+
+    # Recipe ID of event item to craft
+    eventConsumableItemRecipeId: Int!
+
+    # Target slot index to craft item
+    slotIndex: Int!
+  ): ByteString!
+  eventMaterialItemCrafts(
+    # Avatar address to craft item
+    avatarAddress: Address!
+
+    # The ID of event schedule
+    eventScheduleId: Int!
+
+    # Recipe ID of event item to craft
+    eventMaterialItemRecipeId: Int!
+
+    # Materials to be used to craft
+    materialsToUse: [MaterialsToUseInputType!]!
+  ): ByteString!
+}
+
+input MaterialsToUseInputType {
+  # Material ID to be used.
+  materialId: Int!
+
+  # Item quantity to be used.
+  quantity: Int!
 }
 
 type ActionTxQuery {
@@ -1643,6 +1921,120 @@ type ActionTxQuery {
     # The try count to enhance rune
     tryCount: Int
   ): ByteString!
+  hackAndSlash(
+    # Avatar address.
+    avatarAddress: Address!
+
+    # World ID containing the stage ID.
+    worldId: Int!
+
+    # Stage ID.
+    stageId: Int!
+
+    # List of costume id for equip.
+    costumeIds: [Guid]
+
+    # List of equipment id for equip.
+    equipmentIds: [Guid]
+
+    # List of consumable id for use.
+    consumableIds: [Guid]
+
+    # List of rune slot info for equip.
+    runeSlotInfos: [RuneSlotInfoInputType!] = []
+
+    # Buff ID for this stage
+    stageBuffId: Int
+  ): ByteString!
+  hackAndSlashSweep(
+    # Avatar address.
+    avatarAddress: Address!
+
+    # World ID containing the stage ID.
+    worldId: Int!
+
+    # Stage ID.
+    stageId: Int!
+
+    # List of costume id for equip.
+    costumeIds: [Guid]
+
+    # List of equipment id for equip.
+    equipmentIds: [Guid]
+
+    # List of rune slot info for equip.
+    runeSlotInfos: [RuneSlotInfoInputType!] = []
+
+    # Action point usage to sweep
+    actionPoint: Int!
+
+    # AP stone usage to sweep
+    apStoneCount: Int
+  ): ByteString!
+  dailyReward(
+    # Avatar address to get daily reward
+    avatarAddress: Address!
+  ): ByteString!
+  combinationEquipment(
+    # Avatar address to combine equipment
+    avatarAddress: Address!
+
+    # Slot index to combine equipment
+    slotIndex: Int!
+
+    # Combination recipe ID
+    recipeId: Int!
+
+    # Sub-recipe ID of this combination
+    subRecipeId: Int
+
+    # Pay crystal co combine equipment?
+    payByCrystal: Boolean
+
+    # Use hammer point to combine equipment?
+    useHammerPoint: Boolean
+  ): ByteString!
+  itemEnhancement(
+    # Avatar address to enhance item
+    avatarAddress: Address!
+
+    # Slot index to enhance item
+    slotIndex: Int!
+
+    # Target item ID to enhance
+    itemId: Guid!
+
+    # Material ID to enhance
+    materialId: Guid!
+  ): ByteString!
+  rapidCombination(
+    # Avatar address to execute rapid combination
+    avatarAddress: Address!
+
+    # Slot index to execute rapid
+    slotIndex: Int!
+  ): ByteString!
+  combinationConsumable(
+    # Avatar address to combine consumable
+    avatarAddress: Address!
+
+    # Slot index to combine
+    slotIndex: Int!
+
+    # Recipe ID to combine consumable
+    recipeId: Int!
+  ): ByteString!
+  requestPledge(agentAddress: Address!, mead: Int = 4): ByteString!
+  approvePledge(patronAddress: Address!): ByteString!
+  endPledge(agentAddress: Address!): ByteString!
+  createPledge(
+    patronAddress: Address!
+    agentAddresses: [Address!]!
+    mead: Int = 4
+  ): ByteString!
+
+  # Query to craft/enhance items/foods
+  craftQuery: CraftQuery!
 }
 
 type AddressQuery {
@@ -1681,6 +2073,12 @@ type AddressQuery {
     # A currency type. see also: https://github.com/planetarium/NineChronicles.Headless/blob/main/NineChronicles.Headless/GraphTypes/CurrencyEnumType.cs
     currency: CurrencyEnum!
   ): [Address!]
+
+  # pledge information address.
+  pledgeAddress(
+    # address of agent state.
+    agentAddress: Address!
+  ): Address!
 }
 
 type StandaloneMutation {
@@ -1862,16 +2260,6 @@ type StandaloneSubscription {
   differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
   notification: NotificationType!
   nodeException: NodeExceptionType!
-  monsterCollectionState: MonsterCollectionStateType!
-  monsterCollectionStatus: MonsterCollectionStatusType!
-  monsterCollectionStatusByAgent(
-    # A hex-encoded address of agent.
-    address: Address!
-  ): MonsterCollectionStatusType!
-  monsterCollectionStateByAgent(
-    # A hex-encoded address of agent.
-    address: Address!
-  ): MonsterCollectionStateType!
   balanceByAgent(
     # A hex-encoded address of agent.
     address: Address!

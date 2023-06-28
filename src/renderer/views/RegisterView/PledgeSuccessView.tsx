@@ -13,9 +13,9 @@ import { T } from "src/renderer/i18n";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { registerStyles } from ".";
 
-const transifexTags = "v2/views/register/ActivationSuccessView";
+const transifexTags = "v2/views/register/PledgeSuccessView";
 
-function ActivationSuccessView() {
+function PledgeSuccessView() {
   const history = useHistory();
 
   const address = useLoginSession()?.address;
@@ -23,7 +23,7 @@ function ActivationSuccessView() {
   return (
     <Layout sidebar css={registerStyles}>
       <H1>
-        <T _str="Activation completed" _tags={transifexTags} />
+        <T _str="Pledge completed" _tags={transifexTags} />
       </H1>
       <Text css={{ fontSize: 14 }}>
         <T
@@ -54,8 +54,8 @@ function ActivationSuccessView() {
         layout
         variant="primary"
         centered
-        css={{ width: 200, marginTop: 180 }}
-        onClick={() => history.push("/lobby")}
+        css={{ marginTop: 160 }}
+        onClick={() => history.push("/lobby?success")}
       >
         <T _str="Done" _tags={transifexTags} />
       </Button>
@@ -63,4 +63,4 @@ function ActivationSuccessView() {
   );
 }
 
-export default observer(ActivationSuccessView);
+export default observer(PledgeSuccessView);

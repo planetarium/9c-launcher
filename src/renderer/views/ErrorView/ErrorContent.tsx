@@ -14,7 +14,7 @@ export default function ErrorContent({
   children,
 }: ErrorContentProps) {
   return (
-    <Layout flex sidebar>
+    <Layout sidebar flex>
       <H1>{title}</H1>
       {content && <p>{content}</p>}
       {children}

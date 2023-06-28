@@ -85,18 +85,6 @@ subscription DifferentAppProtocolVersionEncounter {
   }
 }
 
-query ActivationAddress($address: Address!) {
-  activationStatus {
-    addressActivated(address: $address)
-  }
-}
-
-mutation Activate($encodedActivationKey: String!) {
-  activationStatus {
-    activateAccount(encodedActivationKey: $encodedActivationKey)
-  }
-}
-
 subscription Notification {
   notification {
     type
@@ -219,17 +207,6 @@ mutation Transfer(
   )
 }
 
-subscription CollectionState {
-  monsterCollectionState {
-    address
-    expiredBlockIndex
-    level
-    rewardLevel
-    receivedBlockIndex
-    startedBlockIndex
-    claimableBlockIndex
-  }
-}
 
 query StagedTx($address: Address!) {
   nodeStatus {
@@ -237,79 +214,9 @@ query StagedTx($address: Address!) {
   }
 }
 
-subscription CurrentGold {
-  monsterCollectionStatus {
-    fungibleAssetValue {
-      quantity
-      currency
-    }
-  }
-}
-
-subscription CollectionStatus {
-  monsterCollectionStatus {
-    lockup
-    fungibleAssetValue {
-      quantity
-      currency
-    }
-    rewardInfos {
-      itemId
-      quantity
-    }
-    tipIndex
-  }
-}
-
-query CollectionStatusQuery($address: Address) {
-  monsterCollectionStatus(address: $address) {
-    lockup
-    fungibleAssetValue {
-      quantity
-      currency
-    }
-    rewardInfos {
-      itemId
-      quantity
-    }
-    tipIndex
-  }
-}
-
-query ActivationKeyNonce($encodedActivationKey: String!) {
-  activationKeyNonce(invitationCode: $encodedActivationKey)
-  activated(invitationCode: $encodedActivationKey)
-}
 
 mutation StageTx($encodedTx: String!) {
   stageTx(payload: $encodedTx)
-}
-
-subscription CollectionStateByAgent($address: Address!) {
-  monsterCollectionStateByAgent(address: $address) {
-    address
-    expiredBlockIndex
-    level
-    rewardLevel
-    receivedBlockIndex
-    startedBlockIndex
-    claimableBlockIndex
-  }
-}
-
-subscription CollectionStatusByAgent($address: Address!) {
-  monsterCollectionStatusByAgent(address: $address) {
-    lockup
-    fungibleAssetValue {
-      quantity
-      currency
-    }
-    rewardInfos {
-      itemId
-      quantity
-    }
-    tipIndex
-  }
 }
 
 mutation StageTxV2($encodedTx: String!) {
@@ -403,12 +310,6 @@ mutation stageTransaction($payload: String!) {
   stageTransaction(payload: $payload)
 }
 
-query ActivateAccount($publicKey: String!, $activationCode: String!) {
-  actionTxQuery(publicKey: $publicKey) {
-    activateAccount(activationCode: $activationCode)
-  }
-}
-
 query transferAsset(
   $publicKey: String!
   $sender: Address!
@@ -445,6 +346,17 @@ query MigrateMonsterCollection($publicKey: String!, $avatarAddress: Address) {
   }
 }
 
-query CheckActivationKey($activationKey: String!) {
-  activated(invitationCode: $activationKey)
+query CheckContracted($agentAddress: Address!){
+  stateQuery{
+    pledge(agentAddress: $agentAddress){
+			approved
+      patronAddress
+    }
+  }
+}
+
+query approvePledge($publicKey: String!){
+	actionTxQuery(publicKey: $publicKey){
+    approvePledge(patronAddress: "0xc64c7cBf29BF062acC26024D5b9D1648E8f8D2e1")
+  }
 }

@@ -107,7 +107,7 @@ export default class AccountStore {
   }
 
   @observable
-  public activationKey: string = "";
+  public activationCode: string = "";
 
   @observable
   public loginSession: ILoginSession | null = null;
@@ -164,8 +164,8 @@ export default class AccountStore {
   };
 
   @action
-  setActivationKey = (activationKey: string) => {
-    this.activationKey = activationKey;
+  setActivationCode = (activationCode: string) => {
+    this.activationCode = activationCode;
   };
 
   isEmpty = async (): Promise<boolean> => {
@@ -260,5 +260,35 @@ export default class AccountStore {
 
     this._privateKeyToRecovery = null;
     return account;
+  };
+
+  @action
+  exportKeystore = async () => {
+    if (this.isLogin) {
+      const address = this.loginSession!.address.toHex();
+      const keyId = await this.findKeyIdByAddress(address);
+      const dir = await getKeyStorePath();
+      try {
+        if (typeof keyId !== "string") {
+          throw Error("Failed to get keyId from address");
+        }
+        const files = await fs.promises.readdir(dir);
+
+        for (const file of files) {
+          if (file.includes(keyId)) {
+            const filePath = path.join(dir, file);
+            const data = JSON.stringify(
+              JSON.parse(await fs.promises.readFile(filePath, "ascii"))
+            ); // parse -> stringify trip to minimize.
+            return data;
+          }
+        }
+        throw Error("No matching keyFile exists in keystore.");
+      } catch (err) {
+        console.error("Failed to load Web3 Secret Storage: ", err);
+      }
+    } else {
+      console.error("Not logged in.");
+    }
   };
 }

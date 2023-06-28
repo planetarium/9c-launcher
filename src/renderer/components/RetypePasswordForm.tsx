@@ -16,7 +16,6 @@ interface Props {
 
 export interface FormData {
   password: string;
-  activationKey?: string;
 }
 
 const passwordStrengthValidator = (password: string) =>
