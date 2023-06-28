@@ -85,13 +85,7 @@ async function playerUpdate(
     directory: app.getPath("temp"),
   };
   console.log("[player] Starts to download:", downloadUrl);
-  let dl: DownloadItem | null | undefined;
-  try {
-    dl = await download(win, downloadUrl, options);
-  } catch (error) {
-    win.webContents.send("go to error page", "download-binary-failed");
-    throw new DownloadBinaryFailedError(downloadUrl);
-  }
+  const dl = await download(win, downloadUrl, options);
 
   win.webContents.send("update player download complete");
   const dlFname = dl?.getFilename();
