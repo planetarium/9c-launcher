@@ -8,6 +8,7 @@ import { MonsterCollectionOverlayBase } from "./base";
 import {
   CurrentStakingDocument,
   CurrentStakingQuery,
+  StakeRewardType,
   StakingSheetDocument,
   StakingSheetQuery,
   useCurrentStakingQuery,
@@ -27,6 +28,7 @@ const result = {
               {
                 itemId: 10121000,
                 rate: 20,
+                type: StakeRewardType.Item,
               },
             ],
             bonusRewards: [],
@@ -38,6 +40,7 @@ const result = {
               {
                 itemId: 10121000,
                 rate: 20,
+                type: StakeRewardType.Item,
               },
             ],
             bonusRewards: [],
@@ -49,6 +52,7 @@ const result = {
               {
                 itemId: 10121000,
                 rate: 20,
+                type: StakeRewardType.Item,
               },
             ],
             bonusRewards: [],
