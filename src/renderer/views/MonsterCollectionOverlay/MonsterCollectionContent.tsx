@@ -96,12 +96,14 @@ function useRewards(levels: LevelList, index: number = 0) {
     [bonusRewards]
   );
 
-  return rewards?.map((v) => ({
-    ...v,
-    count(amount: Decimal) {
-      return amount.divToInt(v.rate).add(bonusRewardMap?.get(v.itemId) || 0);
-    },
-  }));
+  return rewards
+    ?.filter((v) => v.type !== "CURRENCY") // For filtering GARAGE Token temporarily.
+    .map((v) => ({
+      ...v,
+      count(amount: Decimal) {
+        return amount.divToInt(v.rate).add(bonusRewardMap?.get(v.itemId) || 0);
+      },
+    }));
 }
 
 type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
