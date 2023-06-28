@@ -21,7 +21,8 @@ jobs:
         shell: bash
         run: |
           timestamp=$(date +%s)
-          jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
+          jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
           jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
 
       - name: Cache electron-gyp
