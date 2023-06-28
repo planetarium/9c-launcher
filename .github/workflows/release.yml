@@ -31,8 +31,9 @@ jobs:
 
           if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" != true ]]
           then
-            timestamp=$(date +%s)
-            jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          timestamp=$(date +%s)
+          version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
+          jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
             jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
             jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
             sed 's/NineChronicles@workspace/NineChroniclesInternal@workspace/g' yarn.lock > temp.txt
