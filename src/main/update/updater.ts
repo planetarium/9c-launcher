@@ -15,8 +15,7 @@ class AppUpdater {
   ) {
     this.win = win;
     this.updateOptions = updateOptions;
-    log.transports.file.level =
-      process.env.NODE_ENV === "production" ? "info" : "debug";
+    log.transports.file.level = "debug";
     autoUpdater.logger = log;
 
     autoUpdater.setFeedURL(`${baseUrl}/${netenv}/launcher`);
