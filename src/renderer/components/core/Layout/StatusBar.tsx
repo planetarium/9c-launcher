@@ -32,7 +32,8 @@ function StatusBar() {
   } = useStore();
 
   const { loading, data } = useCheckContractedQuery({
-    variables: { agentAddress: loginSession?.address.toHex() },
+    variables: { agentAddress: loginSession?.address.toHex() ?? "" },
+    skip: !loginSession?.address,
   });
 
   return (

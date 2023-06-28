@@ -1,4 +1,4 @@
-appId: "com.nine-chronicles"
+appId: "com.nine-chronicles-local"
 asar: true
 productName: "Nine Chronicles Local"
 files:
