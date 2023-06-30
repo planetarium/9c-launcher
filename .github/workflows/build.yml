@@ -21,12 +21,19 @@ jobs:
           - packCmd: m
             os: macos-latest
           - packCmd: w
-            os: ubuntu-latest
+            os: window-latest
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install requirements on linux
+        if: matrix.packCmd == 'l'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libopenjp2-tools
+          sudo apt-get install --no-install-recommends -y gcc-multilib g++-multilib
 
       - name: Copy builder config
         shell: bash
@@ -59,7 +66,8 @@ jobs:
       - name: build
         shell: bash
         run: |
-          yarn run build-internal && yarn run electron-builder -${{ matrix.packCmd }} --x64 --config ./electron-builder.local.yml
+          yarn run build-internal && yarn run electron-builder -${{ matrix.packCmd }} --x64 --config ./electron-builder.local.yml --publish never
+
           rm -fR ./dist/*-unpacked
           rm -fR ./dist/mac
           rm -fR ./dist/mac-arm64
