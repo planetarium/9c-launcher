@@ -12,7 +12,18 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - packCmd: l
+            os: ubuntu-latest
+          - packCmd: m
+            os: macos-latest
+          - packCmd: w
+            os: ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -24,6 +35,8 @@ jobs:
           version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
           jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
           jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          sed 's/NineChronicles@workspace/NineChroniclesInternal@workspace/g' yarn.lock > temp.txt
+          mv temp.txt yarn.lock
 
       - name: Cache electron-gyp
         uses: actions/cache@v2
@@ -45,7 +58,7 @@ jobs:
       - name: build
         shell: bash
         run: |
-          yarn run pack-local
+          yarn run build-internal && yarn run electron-builder -${{ matrix.packCmd }} --x64 --config ./electron-builder.local.yml
           rm -fR ./dist/*-unpacked
           rm -fR ./dist/mac
           rm -fR ./dist/mac-arm64
@@ -53,6 +66,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: dist
-          name: Dist
+          name: Dist-${{ matrix.packCmd }}
           retention-days: 3
           if-no-files-found: error
