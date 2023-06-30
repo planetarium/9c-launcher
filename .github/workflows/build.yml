@@ -21,7 +21,7 @@ jobs:
           - packCmd: m
             os: macos-latest
           - packCmd: w
-            os: window-latest
+            os: windows-latest
 
     runs-on: ${{ matrix.os }}
 
