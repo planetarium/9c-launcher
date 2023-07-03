@@ -27,7 +27,7 @@
     "server": "yarn webpack serve --env NODE_ENV=development --env target=render --hot",
     "start": "yarn webpack --env NODE_ENV=development --env target=main && electron ./build/.",
     "start:v2": "yarn webpack --env NODE_ENV=development --env target=main && electron ./build/. --v2",
-    "pack-local": "yarn run build-main && yarn run electron-builder -mw --x64 --config ./electron-builder.local.yml",
+    "pack-local": "yarn run build-internal && yarn run electron-builder -mw --x64 --config ./electron-builder.local.yml",
     "pack-internal": "yarn run build-internal && yarn run electron-builder -mwl --arm64 --x64 --config ./electron-builder.internal.yml",
     "pack-main": "yarn run build-main && yarn run electron-builder -mwl --arm64 --x64 --config ./electron-builder.main.yml",
     "release-internal": "sh ./scripts/release.sh internal",
