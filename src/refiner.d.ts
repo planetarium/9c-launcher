@@ -18,6 +18,9 @@ declare module "refiner-js" {
     onDismiss(surveyId: string): void;
     onClose(surveyId: string): void;
     onComplete(surveyId: string, data: any): void;
+    onRequestResponse(httpCode, functionName, responseData): void;
+    onBeforeShow(formId, formConfig, next):void;
+    onNavigation(formId, formElement, progress):void;
   }
 
   function _refiner<T extends keyof Methods>(

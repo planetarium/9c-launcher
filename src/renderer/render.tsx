@@ -16,6 +16,23 @@ initializeSentry();
 
 Object.assign(console, electronLog.functions);
 
+
+_refiner("onBeforeShow", (formId, formConfig, next) => {
+  console.log('onBeforeShow', formId, formConfig, next)
+})
+
+_refiner("onDismiss", (formId) => {
+  console.log('onDismiss', formId)
+})
+
+_refiner("onNavigation", (formId, formElement, progress) => {
+  console.log('onNavigation', formId, formElement, progress)
+})
+
+_refiner("onRequestResponse", (httpCode, functionName, responseData) => {
+  console.log('onRequestResponse', httpCode, functionName, responseData)
+})
+
 _refiner("onShow", () => {
   if (getCurrentWindow().isVisible() && getCurrentWindow().isFocused()) return;
   _refiner("addToResponse", {
