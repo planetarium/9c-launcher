@@ -159,12 +159,6 @@ export default function UserInfo() {
         <strong>{deposit?.replace(/\.0+$/, "") || "0"}</strong>
         {isCollecting ? ` (Remaining ${remainingText})` : " (-)"}
         <LaunchIcon />
-        {canClaim && (
-          <ClaimButton
-            loading={claimLoading}
-            onClick={() => setOpenDialog(true)}
-          />
-        )}
         <ClaimCollectionRewardsOverlay
           isOpen={openDialog}
           onClose={() => setOpenDialog(false)}
