@@ -7,7 +7,7 @@ import { configStore, userConfigStore } from "src/config";
 import type { IConfig } from "src/interfaces/config";
 import { T } from "src/renderer/i18n";
 import log from "electron-log";
-import { clipboard,shell, ipcRenderer } from "electron";
+import { clipboard, shell, ipcRenderer } from "electron";
 import { app } from "@electron/remote";
 import toast from "react-hot-toast";
 
@@ -28,6 +28,7 @@ import { getKeyStorePath } from "src/stores/account";
 import { ExportOverlay } from "src/renderer/components/core/Layout/UserInfo/ExportOverlay";
 import { useStore } from "src/utils/useStore";
 import { useLoginSession } from "src/utils/useLoginSession";
+
 declare const CURRENT_VERSION: string;
 
 const SCROLLBAR_SIZE = 10;
@@ -115,7 +116,6 @@ const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid"
 );
 const InfoTextStyled = styled("div", {
- 
   bottom: 50,
   left: 50,
   dragable: false,
@@ -126,7 +126,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
   try {
     versionToDisplay = CURRENT_VERSION;
   } catch (error) {
-    console.log("The error "+error)
+    console.log("The error " + error);
     console.log("Cannot get version of application.");
   }
   const {
@@ -282,8 +282,8 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
         onClose={() => setExportOverlayOpened(false)}
       />
       <InfoTextStyled onClick={onClick}>
-      {`Launcher version: ${versionToDisplay}`}
-    </InfoTextStyled>
+        {`Launcher version: ${versionToDisplay}`}
+      </InfoTextStyled>
     </OverlayBase>
   );
 }
