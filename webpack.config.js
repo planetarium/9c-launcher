@@ -141,6 +141,9 @@ function createRenderConfig(isDev, DEFAULT_NETWORK) {
         filename: "index.html", // output HTML files
         chunks: ["render"], // respective JS files
       }),
+      new DefinePlugin({
+        CURRENT_VERSION: JSON.stringify(require("./package.json").version),
+      }),
 
       isDev && new ReactRefreshWebpackPlugin(),
     ].filter(Boolean),
