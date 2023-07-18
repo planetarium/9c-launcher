@@ -171,7 +171,7 @@ function SwapPage() {
           onChange={(e) =>
             setAmount(new Decimal(e.target.value === "" ? -1 : e.target.value))
           }
-          onBlur={() => setAmountWarning(!amount.gte(100))}
+          onBlur={() => setAmountWarning(!amount.gt(100))}
           onFocus={() => setAmountWarning(false)}
           error={amountWarning}
           endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
