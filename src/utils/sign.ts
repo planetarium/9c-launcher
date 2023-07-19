@@ -55,17 +55,15 @@ export async function addUpdatedAddressesToTransactionHex(
   txHex: string,
   addresses: Key[]
 ): Promise<string> {
-  const txBytes = new Uint8Array(Buffer.from(txHex, "hex"));
+  const txBytes = Buffer.from(txHex, "hex");
   const txDict = decode(txBytes);
   const pairs: [Key, Value][] = [];
-  const updatedAddresses = encode(addresses);
 
   if (!isDictionary(txDict)) {
     throw new Error("Invalid transaction format");
   }
   for (const [key, value] of txDict.entries()) {
-    if (areKeysEqual(key, UPDATED_ADDRESSES))
-      pairs.push([key, updatedAddresses]);
+    if (areKeysEqual(key, UPDATED_ADDRESSES)) pairs.push([key, addresses]);
     else pairs.push([key, value]);
   }
   return Buffer.from(encode(new BencodexDictionary(pairs))).toString("hex");

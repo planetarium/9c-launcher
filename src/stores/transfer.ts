@@ -116,13 +116,11 @@ export default class TransferStore implements ITransferStore {
       if (typeof data.actionTxQuery.transferAsset !== "string") {
         throw new Error("ActionTxQuery Failed.");
       }
-      const updatedAddresses: Uint8Array[] = [];
-      updatedAddresses.push(
+      const updatedAddresses: Uint8Array[] = [
         Address.fromHex(sender, true).toBytes(),
-        Address.fromHex(
-          Address.fromHex(recipient, true).toHex("checksum")
-        ).toBytes()
-      );
+        Address.fromHex(recipient, true).toBytes(),
+      ];
+
       const signedTx = await signTransactionHex(
         await addUpdatedAddressesToTransactionHex(
           data.actionTxQuery.transferAsset,
