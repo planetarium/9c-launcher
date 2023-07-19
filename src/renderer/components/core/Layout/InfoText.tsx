@@ -23,11 +23,12 @@ const InfoTextStyled = styled("div", {
 function InfoText() {
   const address = useLoginSession()?.address;
   const [node, setNode] = useState<string>("loading");
+  const [apv, setApv] = useState<number>(0);
 
   const debugValue = useMemo(
     () =>
       [
-        `APV: ${getConfig("AppProtocolVersion")}`,
+        `APV: ${apv}`,
         address && `Account: ${address.toString()}`,
         `Node: ${node}`,
         awsSinkGuid && `Client ID: ${awsSinkGuid}`,
@@ -54,6 +55,7 @@ function InfoText() {
         if (node !== "loading") return;
         const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
         setNode(nodeInfo.host);
+        setApv(nodeInfo.apv);
       })(),
     [node]
   );
@@ -64,7 +66,7 @@ function InfoText() {
       <br />
       tip: {blockTip}
       <br />
-      {`version: v${getConfig("AppProtocolVersion").split("/")[0]}`}
+      {`version: v${apv}`}
     </InfoTextStyled>
   );
 }

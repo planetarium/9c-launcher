@@ -62,6 +62,7 @@ export class NodeInfo {
   readonly graphqlPort: number;
   readonly rpcPort: number;
   readonly nodeNumber: number;
+  apv = 0;
   clientCount = 0;
   tip = 0;
 
@@ -88,6 +89,7 @@ export class NodeInfo {
       if (ended.status === 200) {
         this.clientCount = ended.data!.rpcInformation.totalCount;
         this.tip = ended.data!.nodeStatus.tip.index;
+        this.apv = ended.data!.nodeStatus.appProtocolVersion?.version ?? 0;
         return ended.data!.nodeStatus.preloadEnded;
       }
     } catch (e) {
