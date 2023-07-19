@@ -4,8 +4,11 @@ import { sleep } from "src/utils";
 import { GraphQLClient } from "graphql-request";
 import { get as getConfig } from "src/config";
 import { getSdk } from "src/generated/graphql-request";
-import { signTransactionHex } from "src/utils/sign";
-import { Account } from "@planetarium/account";
+import {
+  addUpdatedAddressesToTransactionHex,
+  signTransactionHex,
+} from "src/utils/sign";
+import { Account, Address } from "@planetarium/account";
 
 type GraphQLSDK = ReturnType<typeof getSdk>;
 
@@ -102,37 +105,38 @@ export default class TransferStore implements ITransferStore {
       throw new Error("Sender address is empty");
     }
 
-    return this.graphqlSdk
-      .transferAsset({
+    try {
+      const { data } = await this.graphqlSdk.transferAsset({
         publicKey: (await account.getPublicKey()).toHex("uncompressed"),
         sender: sender,
         recipient: recipient,
         amount: amount.toString(),
         memo: memo,
-      })
-      .catch((e) => {
-        console.error(e);
-        throw new Error("Failed to create transfer asset action.");
-      })
-      .then(
-        (v) =>
-          v.data.actionTxQuery.transferAsset &&
-          signTransactionHex(v.data.actionTxQuery.transferAsset, account)
-      )
-      .catch((e) => {
-        console.error(e);
-        throw new Error("Failed to sign transaction.");
-      })
-      .then((v) => {
-        if (typeof v !== "string") {
-          throw new Error("Signed transaction not provided.");
-        }
-        return this.graphqlSdk.stageTransaction({ payload: v });
-      })
-      .then((v) => {
-        if (!v.data) throw new Error("Failed to stage transaction.");
-        return v.data.stageTransaction as string;
       });
+      if (typeof data.actionTxQuery.transferAsset !== "string") {
+        throw new Error("ActionTxQuery Failed.");
+      }
+      const updatedAddresses: Uint8Array[] = [
+        Address.fromHex(sender, true).toBytes(),
+        Address.fromHex(recipient, true).toBytes(),
+      ];
+
+      const signedTx = await signTransactionHex(
+        await addUpdatedAddressesToTransactionHex(
+          data.actionTxQuery.transferAsset,
+          updatedAddresses
+        ),
+        account
+      );
+      const TxResult = await this.graphqlSdk.stageTransaction({
+        payload: signedTx,
+      });
+      if (!TxResult.data) throw new Error("Failed to stage transaction.");
+      return TxResult.data.stageTransaction as TxId;
+    } catch (e: unknown) {
+      console.error(e);
+    }
+    throw new Error("Unknown TransferAsset Failure");
   };
 
   @action

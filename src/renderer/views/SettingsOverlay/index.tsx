@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { observer } from "mobx-react";
 import { styled } from "src/renderer/stitches.config";
 import { useLanguages } from "@transifex/react";
@@ -7,8 +7,9 @@ import { configStore, userConfigStore } from "src/config";
 import type { IConfig } from "src/interfaces/config";
 import { T } from "src/renderer/i18n";
 import log from "electron-log";
-import { shell, ipcRenderer } from "electron";
+import { clipboard, shell, ipcRenderer } from "electron";
 import { app } from "@electron/remote";
+import toast from "react-hot-toast";
 
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import H1 from "src/renderer/components/ui/H1";
@@ -26,6 +27,9 @@ import { OverlayProps } from "src/utils/types";
 import { getKeyStorePath } from "src/stores/account";
 import { ExportOverlay } from "src/renderer/components/core/Layout/UserInfo/ExportOverlay";
 import { useStore } from "src/utils/useStore";
+import { useLoginSession } from "src/utils/useLoginSession";
+
+declare const CURRENT_VERSION: string;
 
 const SCROLLBAR_SIZE = 10;
 
@@ -108,7 +112,23 @@ async function handlePlayerUpdate() {
   return result;
 }
 
+const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
+  "get-aws-sink-cloudwatch-guid"
+);
+const InfoTextStyled = styled("div", {
+  bottom: 50,
+  left: 50,
+  dragable: false,
+});
+
 function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
+  let versionToDisplay = "unknown";
+  try {
+    versionToDisplay = CURRENT_VERSION;
+  } catch (error) {
+    console.log("The error " + error);
+    console.log("Cannot get version of application.");
+  }
   const {
     register,
     control,
@@ -146,6 +166,27 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
     () => () => void handleSubmit(onSubmit, onError)(), // Submit a form when exits.
     []
   );
+
+  const address = useLoginSession()?.address;
+
+  const debugValue = useMemo(
+    () =>
+      [
+        `LAUNCHER_VERSION: ${versionToDisplay}`,
+        address && `Account: ${address.toString()}`,
+        `Commit: ${GIT_HASH}`,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    [address]
+  );
+  const onClick = () => {
+    clipboard.writeText(debugValue);
+    toast(<T _str="Copied version information." _tags="v2/diagnostics" />, {
+      position: "bottom-left",
+      id: "version-copied",
+    });
+  };
 
   return (
     <OverlayBase isOpen={isOpen} onDismiss={onClose}>
@@ -240,6 +281,9 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
         isOpen={exportOverlayOpened}
         onClose={() => setExportOverlayOpened(false)}
       />
+      <InfoTextStyled onClick={onClick}>
+        {`Launcher version: ${versionToDisplay}`}
+      </InfoTextStyled>
     </OverlayBase>
   );
 }

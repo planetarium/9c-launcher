@@ -12,17 +12,39 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - packCmd: l
+            os: ubuntu-latest
+          - packCmd: m
+            os: macos-latest
+          - packCmd: w
+            os: windows-latest
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install requirements on linux
+        if: matrix.packCmd == 'l'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libopenjp2-tools
+          sudo apt-get install --no-install-recommends -y gcc-multilib g++-multilib
 
       - name: Copy builder config
         shell: bash
         run: |
           timestamp=$(date +%s)
-          jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
+          jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
           jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          sed 's/NineChronicles@workspace/NineChroniclesInternal@workspace/g' yarn.lock > temp.txt
+          mv temp.txt yarn.lock
 
       - name: Cache electron-gyp
         uses: actions/cache@v2
@@ -44,12 +66,15 @@ jobs:
       - name: build
         shell: bash
         run: |
-          yarn run pack-local
-          rm -R ./dist/*-unpacked
+          yarn run build-internal && yarn run electron-builder -${{ matrix.packCmd }} --x64 --config ./electron-builder.local.yml --publish never
+
+          rm -fR ./dist/*-unpacked
+          rm -fR ./dist/mac
+          rm -fR ./dist/mac-arm64
 
       - uses: actions/upload-artifact@v3
         with:
           path: dist
-          name: Dist
+          name: Dist-${{ matrix.packCmd }}
           retention-days: 3
           if-no-files-found: error

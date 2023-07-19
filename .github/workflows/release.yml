@@ -14,16 +14,34 @@ jobs:
   release:
     runs-on: macos-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - packCmd: l
+            os: ubuntu-latest
+          - packCmd: mw
+            os: macos-latest
+
     environment:
       name: ${{ startsWith(github.event.ref, 'refs/tags/') && 'main' || 'internal' }}
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install requirements on linux
+        if: matrix.packCmd == 'l'
+        run: |
+          sudo apt update
+          sudo apt install --no-install-recommends -y libopenjp2-tools
+          sudo apt install --no-install-recommends -y gcc-multilib g++-multilib
+
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '11'
+
       - name: Copy builder config
         shell: bash
         run: |
@@ -31,8 +49,9 @@ jobs:
 
           if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" != true ]]
           then
-            timestamp=$(date +%s)
-            jq --arg version "0.0.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          timestamp=$(date +%s)
+          version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
+          jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
             jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
             jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
             sed 's/NineChronicles@workspace/NineChroniclesInternal@workspace/g' yarn.lock > temp.txt
@@ -44,7 +63,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.electron-gyp
-          key: ${{ runner.os }}-electron-gyp-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-electron-gyp
 
       - uses: actions/setup-node@v3
         with:
@@ -60,14 +79,21 @@ jobs:
         run: |
           if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
           then
-            yarn run release-main
+            sh ./scripts/release.sh main ${{ matrix.packCmd }}
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest.yml"
+            aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest-mac.yml"
           else
-            yarn run release-internal
+            sh ./scripts/release.sh internal ${{ matrix.packCmd }}
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest.yml"
+            aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest-mac.yml"
           fi
-          rm -R ./dist/*-unpacked
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"[Launcher] Had success releasing with '${{ matrix.packCmd }}' pack-cmd"}' ${{ secrets.SLACK_WEBHOOK }}
+
+          rm -fR ./dist/*-unpacked
+          rm -fR ./dist/mac
+          rm -fR ./dist/mac-arm64
         env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           ESIGNER_CREDENTIAL_ID: ${{ secrets.ESIGNER_CREDENTIAL_ID }}
@@ -78,6 +104,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: dist
-          name: Dist
+          name: Dist-${{ matrix.packCmd }}
           retention-days: 3
           if-no-files-found: error
