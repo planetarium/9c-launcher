@@ -32,9 +32,9 @@ jobs:
       - name: Install requirements on linux
         if: matrix.packCmd == 'l'
         run: |
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y libopenjp2-tools
-          sudo apt-get install --no-install-recommends -y gcc-multilib g++-multilib
+          sudo apt update
+          sudo apt install --no-install-recommends -y libopenjp2-tools
+          sudo apt install --no-install-recommends -y gcc-multilib g++-multilib
 
       - name: Set up Java
         uses: actions/setup-java@v2
@@ -93,11 +93,7 @@ jobs:
           rm -fR ./dist/mac
           rm -fR ./dist/mac-arm64
         env:
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           ESIGNER_CREDENTIAL_ID: ${{ secrets.ESIGNER_CREDENTIAL_ID }}
