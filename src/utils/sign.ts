@@ -14,6 +14,7 @@ import {
 } from "@planetarium/bencodex";
 
 const SIGNATURE_KEY = new Uint8Array([0x53]); // 'S'
+const UPDATED_ADDRESSES = new Uint8Array([0x75]); // 'u'
 
 export async function signTransactionDictionary(
   txDict: Dictionary,
@@ -48,4 +49,24 @@ export async function signTransactionHex(
   const txBytes = new Uint8Array(Buffer.from(txHex, "hex"));
   const signedTxBytes = await signTransactionBytes(txBytes, account);
   return Buffer.from(signedTxBytes).toString("hex");
+}
+
+export async function addUpdatedAddressesToTransactionHex(
+  txHex: string,
+  addresses: Key[]
+): Promise<string> {
+  const txBytes = new Uint8Array(Buffer.from(txHex, "hex"));
+  const txDict = decode(txBytes);
+  const pairs: [Key, Value][] = [];
+  const updatedAddresses = encode(addresses);
+
+  if (!isDictionary(txDict)) {
+    throw new Error("Invalid transaction format");
+  }
+  for (const [key, value] of txDict.entries()) {
+    if (areKeysEqual(key, UPDATED_ADDRESSES))
+      pairs.push([key, updatedAddresses]);
+    else pairs.push([key, value]);
+  }
+  return Buffer.from(encode(new BencodexDictionary(pairs))).toString("hex");
 }
