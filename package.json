@@ -97,7 +97,7 @@
     "file-loader": "^6.0.0",
     "framer-motion": "^6.3.3",
     "graphql": "15.7.2",
-    "graphql-request": "^6.1.0",
+    "graphql-request": "5.1.0",
     "graphql-tag": "^2.10.3",
     "lockfile": "^1.0.4",
     "lodash.debounce": "^4.0.8",

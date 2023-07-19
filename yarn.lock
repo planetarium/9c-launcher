@@ -2849,7 +2849,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-typed-document-node/core@npm:^3.1.1, @graphql-typed-document-node/core@npm:^3.2.0":
+"@graphql-typed-document-node/core@npm:^3.1.1":
   version: 3.2.0
   resolution: "@graphql-typed-document-node/core@npm:3.2.0"
   peerDependencies:
@@ -7439,7 +7439,7 @@ __metadata:
     file-loader: ^6.0.0
     framer-motion: ^6.3.3
     graphql: 15.7.2
-    graphql-request: ^6.1.0
+    graphql-request: 5.1.0
     graphql-tag: ^2.10.3
     html-webpack-plugin: ^5.3.2
     jscodeshift: ^0.12.0
@@ -13119,6 +13119,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"extract-files@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "extract-files@npm:9.0.0"
+  checksum: c31781d090f8d8f62cc541f1023b39ea863f24bd6fb3d4011922d71cbded70cef8191f2b70b43ec6cb5c5907cdad1dc5e9f29f78228936c10adc239091d8ab64
+  languageName: node
+  linkType: hard
+
 "extract-stack@npm:^2.0.0":
   version: 2.0.0
   resolution: "extract-stack@npm:2.0.0"
@@ -14412,24 +14419,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql-request@npm:5.1.0":
+  version: 5.1.0
+  resolution: "graphql-request@npm:5.1.0"
+  dependencies:
+    "@graphql-typed-document-node/core": ^3.1.1
+    cross-fetch: ^3.1.5
+    extract-files: ^9.0.0
+    form-data: ^3.0.0
+  peerDependencies:
+    graphql: 14 - 16
+  checksum: 8b65d5c1b0cad8996a843b52305b2712ffbf842c700487d4cee1ed719f22baacaacfddafb65572bcddd67d57fd1d2d389dee2430ffba4b34c3ab542d079446c7
+  languageName: node
+  linkType: hard
+
 "graphql-request@npm:^1.5.0":
   version: 1.8.2
   resolution: "graphql-request@npm:1.8.2"
   dependencies:
     cross-fetch: 2.2.2
   checksum: 6cc391e9f502774e9cf0277ac61c5d5b075bad0fefe100776491c0ad548a7513d00a7fcb0f1ad08323032f3c2c0df2b9dc1a69862cf064f860ac114750a1e671
-  languageName: node
-  linkType: hard
-
-"graphql-request@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "graphql-request@npm:6.1.0"
-  dependencies:
-    "@graphql-typed-document-node/core": ^3.2.0
-    cross-fetch: ^3.1.5
-  peerDependencies:
-    graphql: 14 - 16
-  checksum: 6d62630a0169574442320651c1f7626c0c602025c3c46b19e09417c9579bb209306ee63de9793a03be2e1701bb7f13971f8545d99bc6573e340f823af0ad35b2
   languageName: node
   linkType: hard
 
