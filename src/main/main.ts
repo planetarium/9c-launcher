@@ -182,9 +182,10 @@ if (!app.requestSingleInstanceLock()) {
     if (mixpanel != null && !quitTracked) {
       mixpanel?.track("Launcher/Quit", undefined, () => {
         quitTracked = true;
-        app.quit();
       });
     }
+
+    app.quit();
   });
 
   cleanUp();
