@@ -72,6 +72,14 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
+import { removeSubscribe } from "src/utils/monsterCollection/removeSubscription";
+import {
+  KeyId,
+  PassphraseEntry,
+  Web3Account,
+  Web3KeyStore,
+  getDefaultWeb3KeyStorePath,
+} from "@planetarium/account-web3-secret-storage";
 
 initializeSentry();
 
@@ -142,9 +150,36 @@ if (!app.requestSingleInstanceLock()) {
   app.on("open-url", (_, url) => win && send(win, IPC_OPEN_URL, url));
 
   let quitTracked = false;
-  app.on("before-quit", (event) => {
+  app.on("before-quit", async (event) => {
+    event.preventDefault();
+
+    const passphraseEntry: PassphraseEntry = {
+      authenticate(keyId: string, firstAttempt: boolean): Promise<string> {
+        if (firstAttempt) return Promise.resolve("temp");
+        throw new Error("Incorrect passphrase.");
+      },
+      configurePassphrase(): Promise<string> {
+        return Promise.resolve("temp");
+      },
+    };
+    const tempKeystore = new Web3KeyStore({
+      passphraseEntry,
+      path: await getDefaultWeb3KeyStorePath(),
+    });
+
+    try {
+      for await (const keyMetadata of tempKeystore.list()) {
+        const address = keyMetadata.metadata.address;
+        if (address == null) continue;
+
+        await removeSubscribe(`https://${remoteNode.host}`, address.toString());
+        console.log(`Finish remove subscribe! address: ${address.toString()}`);
+      }
+    } catch (error) {
+      console.log(`Failed remove subscribe! error: ${error}`);
+    }
+
     if (mixpanel != null && !quitTracked) {
-      event.preventDefault();
       mixpanel?.track("Launcher/Quit", undefined, () => {
         quitTracked = true;
         app.quit();
