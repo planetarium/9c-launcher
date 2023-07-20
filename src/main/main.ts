@@ -153,6 +153,12 @@ if (!app.requestSingleInstanceLock()) {
   app.on("before-quit", async (event) => {
     event.preventDefault();
 
+    if (mixpanel != null && !quitTracked) {
+      mixpanel?.track("Launcher/Quit", undefined, () => {
+        quitTracked = true;
+      });
+    }
+
     const passphraseEntry: PassphraseEntry = {
       authenticate(keyId: string, firstAttempt: boolean): Promise<string> {
         if (firstAttempt) return Promise.resolve("temp");
@@ -177,12 +183,6 @@ if (!app.requestSingleInstanceLock()) {
       }
     } catch (error) {
       console.log(`Failed remove subscribe! error: ${error}`);
-    }
-
-    if (mixpanel != null && !quitTracked) {
-      mixpanel?.track("Launcher/Quit", undefined, () => {
-        quitTracked = true;
-      });
     }
 
     app.quit();
