@@ -28,13 +28,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install requirements on linux
-        if: matrix.packCmd == 'l'
-        run: |
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y libopenjp2-tools
-          sudo apt-get install --no-install-recommends -y gcc-multilib g++-multilib
-
       - name: Copy builder config
         shell: bash
         run: |

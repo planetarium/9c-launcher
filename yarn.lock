@@ -7421,7 +7421,6 @@ __metadata:
     eip55: ^2.1.0
     electron: 20.0.1
     electron-builder: ^24.2.1
-    electron-builder-notarize: ^1.5.1
     electron-devtools-installer: ^3.2.0
     electron-dl: ^3.0.2
     electron-download: ^4.1.1
@@ -11757,20 +11756,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder-notarize@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "electron-builder-notarize@npm:1.5.1"
-  dependencies:
-    dotenv: ^8.2.0
-    electron-notarize: ^1.1.1
-    js-yaml: ^3.14.0
-    read-pkg-up: ^7.0.0
-  peerDependencies:
-    electron-builder: ">= 20.44.4"
-  checksum: a5d1e34bda4ec7ab2cb7b421f4c0013b434e350fa79b20c5ed74ff200f582f9e6bdef870b32b4a7febf2fc4535021150d2c3f01aaf57309ea0b225900c65b2c8
-  languageName: node
-  linkType: hard
-
 "electron-builder@npm:^24.2.1":
   version: 24.4.0
   resolution: "electron-builder@npm:24.4.0"
@@ -11857,16 +11842,6 @@ __metadata:
   peerDependencies:
     electron: ">=6.0.0"
   checksum: a95872906d6e42f87748accc7f9e6b5b6d7fc513a72b091c043bdcf638b7835d42c0a9d1533946a883c2e1446d331e98f4f290d1ed8ea0370baed085d6628916
-  languageName: node
-  linkType: hard
-
-"electron-notarize@npm:^1.1.1":
-  version: 1.2.2
-  resolution: "electron-notarize@npm:1.2.2"
-  dependencies:
-    debug: ^4.1.1
-    fs-extra: ^9.0.1
-  checksum: 98909bc90f0840a4bd3da0edc6895d719eb0d17942812a8c8f5a130d323c7fbaafd819245cfe9a6c5b5abfa8dd3b0eb2bd8ee9c0b2dcf0c3b238b6845730c368
   languageName: node
   linkType: hard
 
@@ -16344,7 +16319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^3.10.0, js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.0, js-yaml@npm:^3.14.1":
+"js-yaml@npm:^3.10.0, js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.1":
   version: 3.14.1
   resolution: "js-yaml@npm:3.14.1"
   dependencies:
@@ -21124,7 +21099,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"read-pkg-up@npm:^7.0.0, read-pkg-up@npm:^7.0.1":
+"read-pkg-up@npm:^7.0.1":
   version: 7.0.1
   resolution: "read-pkg-up@npm:7.0.1"
   dependencies:

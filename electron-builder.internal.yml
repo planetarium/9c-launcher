@@ -25,8 +25,13 @@ mac:
     - "dmg"
     - "zip"
   category: "public.app-category.games"
+  hardenedRuntime: true
+  entitlements: "./signing/entitlements.plist"
+  entitlementsInherit: "./signing/entitlements.inherit.plist"
+  notarize: { teamId: "Please replace it" }
 dmg:
   icon: "AppIcon.icns"
+  sign: false
   iconSize: 75
   contents:
     - x: 130
