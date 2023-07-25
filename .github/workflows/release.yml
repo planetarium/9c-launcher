@@ -7,12 +7,15 @@ on:
       - release/*
     tags: ["*"]
 
+permissions:
+  id-token: write
+  contents: read
+
 concurrency:
   group: release
 
 jobs:
   release:
-    runs-on: macos-latest
 
     strategy:
       fail-fast: false
@@ -23,11 +26,21 @@ jobs:
           - packCmd: mw
             os: macos-latest
 
+    runs-on: ${{ matrix.os }}
+
     environment:
       name: ${{ startsWith(github.event.ref, 'refs/tags/') && 'main' || 'internal' }}
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GitHubActions-${{ github.run_id }}
+          role-duration-seconds: 1200
+          aws-region: ap-northeast-2
 
       - name: Set up Java
         uses: actions/setup-java@v2
@@ -93,10 +106,8 @@ jobs:
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           ESIGNER_CREDENTIAL_ID: ${{ secrets.ESIGNER_CREDENTIAL_ID }}
           ESIGNER_USERNAME: ${{ secrets.ESIGNER_USERNAME }}
           ESIGNER_PASSWORD: ${{ secrets.ESIGNER_PASSWORD }}
