@@ -42,6 +42,11 @@ export async function createWindow(): Promise<BrowserWindow> {
     }
   });
 
+  win.on("minimize", function (event: any) {
+    event.preventDefault();
+    win.hide();
+  });
+
   if (process.env.NODE_ENV !== "production") {
     await win.loadURL("http://localhost:9000/index.html");
     await win.webContents.openDevTools({ mode: "detach" });
