@@ -5,6 +5,7 @@ on:
     branches:
       - rc-v*
       - release/*
+      - ci-test/*
     tags: ["*"]
 
 permissions:
