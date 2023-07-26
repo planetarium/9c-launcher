@@ -29,7 +29,8 @@ import { PLATFORM2OS_MAP } from "src/utils/os";
 import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import fs from "fs";
-import { ChildProcess, ChildProcessWithoutNullStreams } from "child_process";
+import fetch from "node-fetch";
+import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
 import { initializeSentry } from "src/utils/sentry";
 import "core-js";
@@ -89,7 +90,6 @@ const REMOTE_CONFIG_URL = `${baseUrl}/${netenv}/config.json`;
 
 let win: BrowserWindow | null = null;
 let appUpdaterInstance: AppUpdater | null = null;
-let checkForUpdateWorker: ChildProcess | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
@@ -267,7 +267,6 @@ async function initializeApp() {
     if (useUpdate) {
       appUpdaterInstance = new AppUpdater(win, baseUrl, updateOptions);
       initCheckForUpdateWorker(win, appUpdaterInstance);
-      console.log("initCheckForUpdateWorker", checkForUpdateWorker);
     }
 
     webEnable(win.webContents);
@@ -441,9 +440,26 @@ function initializeIpc() {
   });
 
   ipcMain.handle("manual player update", async () => {
-    if (checkForUpdateWorker === null)
-      throw Error("Update check worker is not initialized or killed.");
-    checkForUpdateWorker.send("manual player update");
+    console.log("MANUAL PLAYER UPDATE TRIGGERED");
+    const targetOS = PLATFORM2OS_MAP[process.platform];
+    const updateUrl = `${baseUrl}/${netenv}`;
+    try {
+      const updateData: {
+        files: { path: string; size: number; os: string }[];
+      } = await (await fetch(`${updateUrl}/player/latest.json`)).json();
+      for (const file of updateData.files) {
+        if (file.os === targetOS) {
+          performPlayerUpdate(
+            win!,
+            `${updateUrl}/player/${file.path}`,
+            file.size,
+            updateOptions
+          );
+        }
+      }
+    } catch (e: unknown) {
+      console.error(e);
+    }
   });
 }
 
@@ -648,7 +664,7 @@ function initCheckForUpdateWorker(
     throw new NotSupportedPlatformError(process.platform);
   }
 
-  checkForUpdateWorker = fork(
+  const checkForUpdateWorker = fork(
     path.join(__dirname, "./checkForUpdateWorker.js"),
     [],
     {
