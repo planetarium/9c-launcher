@@ -42,9 +42,11 @@ export async function createWindow(): Promise<BrowserWindow> {
     }
   });
 
-  win.on("minimize", function (event: any) {
-    event.preventDefault();
-    win.hide();
+  win.on("close", function (event: any) {
+    if (!isQuitting) {
+      event.preventDefault();
+      win.hide();
+    }
   });
 
   if (process.env.NODE_ENV !== "production") {

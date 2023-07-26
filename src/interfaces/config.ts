@@ -26,4 +26,5 @@ export interface IConfig {
   UnitySentrySampleRate: number;
   DiscordUrl: string;
   MarketServiceUrl: string;
+  TrayOnClose: boolean;
 }
