@@ -23,9 +23,9 @@ function PledgeFailView() {
         <T _str="Pledge has failed" _tags={transifexTags} />
       </H1>
       <Text css={{ fontSize: 14, whiteSpace: "pre" }}>
+        <T _str="An unknown error has occurred." _tags={transifexTags} />
         <T
-          _str="An unknown error has occurred.
-          Please make sure your portal account is valid."
+          _str="Please make sure your portal account is valid."
           _tags={transifexTags}
         />
       </Text>
