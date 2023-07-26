@@ -108,7 +108,7 @@ function handleOpenLogPath() {
 }
 
 async function handlePlayerUpdate() {
-  const result = await ipcRenderer.invoke("start player update", true);
+  const result = await ipcRenderer.invoke("manual player update", true);
   return result;
 }
 

@@ -29,6 +29,7 @@ import { PLATFORM2OS_MAP } from "src/utils/os";
 import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import fs from "fs";
+import fetch from "node-fetch";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
 import { initializeSentry } from "src/utils/sentry";
@@ -440,6 +441,29 @@ function initializeIpc() {
       await utils.sleep(100);
     }
     return remoteNode;
+  });
+
+  ipcMain.handle("manual player update", async () => {
+    console.log("MANUAL PLAYER UPDATE TRIGGERED");
+    const targetOS = PLATFORM2OS_MAP[process.platform];
+    const updateUrl = `${baseUrl}/${netenv}/player`;
+    try {
+      const updateData: {
+        files: { path: string; size: number; os: string }[];
+      } = await (await fetch(`${updateUrl}/latest.json`)).json();
+      for (const file of updateData.files) {
+        if (file.os === targetOS) {
+          performPlayerUpdate(
+            win!,
+            `${updateUrl}/${file.path}`,
+            file.size,
+            updateOptions
+          );
+        }
+      }
+    } catch (e: unknown) {
+      console.error(e);
+    }
   });
 }
 
