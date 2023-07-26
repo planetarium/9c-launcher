@@ -150,6 +150,7 @@ if (!app.requestSingleInstanceLock()) {
   app.on("open-url", (_, url) => win && send(win, IPC_OPEN_URL, url));
 
   let quitTracked = false;
+  // eslint-disable-next-line prefer-const
   let removedAddresses: Array<string> = [];
   app.on("before-quit", async (event) => {
     event.preventDefault();
@@ -225,6 +226,8 @@ async function initializeConfig() {
 
     // Replace config
     console.log("Replace config with remote config:", remoteConfig);
+    remoteConfig.Locale = getConfig("Locale");
+    console.log(remoteConfig.Locale);
     configStore.store = remoteConfig;
   } catch (error) {
     console.error(
