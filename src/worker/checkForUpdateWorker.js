@@ -25,7 +25,12 @@ setInterval(() => {
   checkForLauncherUpdate();
 }, 60 * 5 * 1000);
 
-async function checkForPlayerUpdate() {
+process.on("manual player update", async () => {
+  sendLog("info", "Manual player update triggered");
+  await checkForPlayerUpdate(true);
+});
+
+async function checkForPlayerUpdate(force = false) {
   sendLog("info", "Check for player update");
   https
     .get(`${baseUrl}/player/latest.json`, (response) => {
@@ -38,7 +43,7 @@ async function checkForPlayerUpdate() {
       response.on("end", () => {
         const latest = JSON.parse(data);
         readLocalPlayerVersionFile().then((local) => {
-          checkPlayerVersion(latest, local);
+          checkPlayerVersion(latest, local, force);
         });
       });
     })
@@ -75,8 +80,9 @@ function handleLocalPlayerVersionFileNotExistsError(err) {
   throw err;
 }
 
-function checkPlayerVersion(latest, local) {
-  if (latest.version > local.version || isOldVersionFile(local)) {
+function checkPlayerVersion(latest, local, force = false) {
+  sendLog("log", force);
+  if (force || latest.version > local.version || isOldVersionFile(local)) {
     for (const file of latest.files) {
       if (file.os === os) {
         handleTooManyRetry();
