@@ -442,16 +442,16 @@ function initializeIpc() {
   ipcMain.handle("manual player update", async () => {
     console.log("MANUAL PLAYER UPDATE TRIGGERED");
     const targetOS = PLATFORM2OS_MAP[process.platform];
-    const updateUrl = `${baseUrl}/${netenv}`;
+    const updateUrl = `${baseUrl}/${netenv}/player`;
     try {
       const updateData: {
         files: { path: string; size: number; os: string }[];
-      } = await (await fetch(`${updateUrl}/player/latest.json`)).json();
+      } = await (await fetch(`${updateUrl}/latest.json`)).json();
       for (const file of updateData.files) {
         if (file.os === targetOS) {
           performPlayerUpdate(
             win!,
-            `${updateUrl}/player/${file.path}`,
+            `${updateUrl}/${file.path}`,
             file.size,
             updateOptions
           );
