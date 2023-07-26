@@ -227,6 +227,7 @@ async function initializeConfig() {
     // Replace config
     console.log("Replace config with remote config:", remoteConfig);
     remoteConfig.Locale = getConfig("Locale");
+    remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
     console.log(remoteConfig.Locale);
     configStore.store = remoteConfig;
   } catch (error) {
@@ -262,6 +263,8 @@ async function initializeApp() {
         .catch((err) => console.log("An error occurred: ", err));
 
     win = await createV2Window();
+
+    setV2Quitting(!getConfig("TrayOnClose"));
 
     if (useUpdate) {
       appUpdaterInstance = new AppUpdater(win, baseUrl, updateOptions);
@@ -359,6 +362,7 @@ function initializeIpc() {
 
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
+    setV2Quitting(true);
     await appUpdaterInstance.execute();
   });
 
