@@ -7402,7 +7402,6 @@ __metadata:
     axios: ^0.21.2
     babel-loader: ^8.2.2
     bencodex: ^0.1.1
-    bitgener: ^1.2.12
     buffer: ^5.6.0
     bytes: ^3.1.2
     cancellationtoken: ^2.2.0
@@ -7459,7 +7458,6 @@ __metadata:
     ra-data-graphql: ^4.12.1
     react: ^17.0.2
     react-apollo: ^3.1.5
-    react-datamatrix-svg: ^1.0.7
     react-dom: ^17.0.2
     react-dropzone: ^11.4.2
     react-hook-form: ^7.14.1
@@ -8905,13 +8903,6 @@ __metadata:
   dependencies:
     file-uri-to-path: 1.0.0
   checksum: 65b6b48095717c2e6105a021a7da4ea435aa8d3d3cd085cb9e85bcb6e5773cf318c4745c3f7c504412855940b585bdf9b918236612a1c7a7942491de176f1ae7
-  languageName: node
-  linkType: hard
-
-"bitgener@npm:^1.2.12":
-  version: 1.2.12
-  resolution: "bitgener@npm:1.2.12"
-  checksum: 589896bf4f2f57fb99c72ec4b90ffb0435c0af4ee8d052d6aedd033fbf7d777be8f427ca7111cec1823a4e0e1d3d45c919538af2677dc0df3d48fd9a6a20a236
   languageName: node
   linkType: hard
 
@@ -20644,16 +20635,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-datamatrix-svg@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "react-datamatrix-svg@npm:1.0.7"
-  dependencies:
-    react: ^18.2.0
-    react-dom: ^18.2.0
-  checksum: cd3a31d1d5ed65cd9b6a63e6da86adcdf7dde991cbaf8b76a38c3505d36be728ea45ee6eba0d777d9c3bd5b7e3bfee2bef6c7336324b764458b3e5686959b2ca
-  languageName: node
-  linkType: hard
-
 "react-docgen-typescript@npm:^2.0.0":
   version: 2.0.0
   resolution: "react-docgen-typescript@npm:2.0.0"
@@ -20691,18 +20672,6 @@ __metadata:
   peerDependencies:
     react: 17.0.2
   checksum: 1c1eaa3bca7c7228d24b70932e3d7c99e70d1d04e13bb0843bbf321582bc25d7961d6b8a6978a58a598af2af496d1cedcfb1bf65f6b0960a0a8161cb8dab743c
-  languageName: node
-  linkType: hard
-
-"react-dom@npm:^18.2.0":
-  version: 18.2.0
-  resolution: "react-dom@npm:18.2.0"
-  dependencies:
-    loose-envify: ^1.1.0
-    scheduler: ^0.23.0
-  peerDependencies:
-    react: ^18.2.0
-  checksum: 7d323310bea3a91be2965f9468d552f201b1c27891e45ddc2d6b8f717680c95a75ae0bc1e3f5cf41472446a2589a75aed4483aee8169287909fcd59ad149e8cc
   languageName: node
   linkType: hard
 
@@ -21063,15 +21032,6 @@ __metadata:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: b254cc17ce3011788330f7bbf383ab653c6848902d7936a87b09d835d091e3f295f7e9dd1597c6daac5dc80f90e778c8230218ba8ad599f74adcc11e33b9d61b
-  languageName: node
-  linkType: hard
-
-"react@npm:^18.2.0":
-  version: 18.2.0
-  resolution: "react@npm:18.2.0"
-  dependencies:
-    loose-envify: ^1.1.0
-  checksum: 88e38092da8839b830cda6feef2e8505dec8ace60579e46aa5490fc3dc9bba0bd50336507dc166f43e3afc1c42939c09fe33b25fae889d6f402721dcd78fca1b
   languageName: node
   linkType: hard
 
@@ -22094,15 +22054,6 @@ __metadata:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: c4b35cf967c8f0d3e65753252d0f260271f81a81e427241295c5a7b783abf4ea9e905f22f815ab66676f5313be0a25f47be582254db8f9241b259213e999b8fc
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.23.0":
-  version: 0.23.0
-  resolution: "scheduler@npm:0.23.0"
-  dependencies:
-    loose-envify: ^1.1.0
-  checksum: d79192eeaa12abef860c195ea45d37cbf2bbf5f66e3c4dcd16f54a7da53b17788a70d109ee3d3dde1a0fd50e6a8fc171f4300356c5aee4fc0171de526bf35f8a
   languageName: node
   linkType: hard
 
