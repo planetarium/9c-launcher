@@ -18,6 +18,7 @@ import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverla
 import SettingsOverlay from "src/renderer/views/SettingsOverlay";
 import TransferAssetOverlay from "src/renderer/views/TransferAssetOverlay/main";
 import { useExternalURL } from "src/utils/useExternalURL";
+import { useCheckContractedQuery } from "src/generated/graphql";
 
 const MenuContainer = styled("div", {
   opacity: 0.9,
@@ -40,6 +41,10 @@ type Overlay = "settings" | "staking" | "transfer";
 
 function Menu() {
   const account = useStore("account");
+  const { loading, data } = useCheckContractedQuery({
+    variables: { agentAddress: account.loginSession?.address.toHex() ?? "" },
+    skip: !account.loginSession?.address,
+  });
   const [currentOverlay, openOverlay] = useState<Overlay | null>(null);
   const history = useHistory();
 
@@ -63,7 +68,11 @@ function Menu() {
       <MenuItem
         icon={staking}
         text="Staking"
-        disabled={!account.isLogin || currentOverlay === "staking"}
+        disabled={
+          !account.isLogin ||
+          !data?.stateQuery.pledge.approved ||
+          currentOverlay === "staking"
+        }
         onClick={() => openOverlay("staking")}
       />
       <MenuItem
@@ -76,7 +85,11 @@ function Menu() {
       <MenuItem
         icon={exchange}
         text="Send NCG"
-        disabled={!account.isLogin || currentOverlay === "transfer"}
+        disabled={
+          !account.isLogin ||
+          !data?.stateQuery.pledge.approved ||
+          currentOverlay === "transfer"
+        }
         onClick={() => openOverlay("transfer")}
       />
       <MenuItem
