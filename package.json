@@ -50,6 +50,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/styles": "^4.10.0",
     "@noble/secp256k1": "^1.7.0",
+    "@paulmillr/qr": "^0.1.1",
     "@planetarium/account": "^1.0.0",
     "@planetarium/account-web3-secret-storage": "^1.0.0",
     "@planetarium/bencodex": "^0.2.2",

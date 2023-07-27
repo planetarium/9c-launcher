@@ -3523,6 +3523,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@paulmillr/qr@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@paulmillr/qr@npm:0.1.1"
+  checksum: e17a5e3785ad539c944ed52ad7dec366c577ec79a368c1787b6d6f63206b1f04ffe2712e89c0cef0e8f89617c54833b508f5bcf9cbbdce3d9aeee32aea41100b
+  languageName: node
+  linkType: hard
+
 "@peculiar/asn1-schema@npm:^2.3.6":
   version: 2.3.6
   resolution: "@peculiar/asn1-schema@npm:2.3.6"
@@ -7345,6 +7352,7 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.56
     "@material-ui/styles": ^4.10.0
     "@noble/secp256k1": ^1.7.0
+    "@paulmillr/qr": ^0.1.1
     "@planetarium/account": ^1.0.0
     "@planetarium/account-web3-secret-storage": ^1.0.0
     "@planetarium/bencodex": ^0.2.2
