@@ -73,7 +73,6 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
-import { removeSubscribe } from "src/utils/monsterCollection/removeSubscription";
 import {
   KeyId,
   PassphraseEntry,
@@ -151,46 +150,14 @@ if (!app.requestSingleInstanceLock()) {
   app.on("open-url", (_, url) => win && send(win, IPC_OPEN_URL, url));
 
   let quitTracked = false;
-  // eslint-disable-next-line prefer-const
-  let removedAddresses: Array<string> = [];
-  app.on("before-quit", async (event) => {
-    event.preventDefault();
-
-    if (!quitTracked) {
-      if (mixpanel != null) {
-        mixpanel?.track("Launcher/Quit", undefined, () => {});
-      }
-
-      const keyStorePath = getDefaultWeb3KeyStorePath();
-
-      try {
-        const files = await fs.promises.readdir(keyStorePath);
-
-        const addresses = [];
-        for (const file of files) {
-          const filePath = path.join(keyStorePath, file);
-          const content = await fs.promises.readFile(filePath, "utf-8");
-
-          const data = JSON.parse(content);
-          if (data.address) {
-            addresses.push(data.address);
-          }
-        }
-
-        for (const address of addresses) {
-          if (!removedAddresses.includes(address)) {
-            await removeSubscribe(`https://${remoteNode.host}`, `0x${address}`);
-            console.info("Finish Subscribe address:", address);
-            removedAddresses.push(address);
-          }
-        }
-      } catch (error) {
-        console.info("Remove Subscribe Error occurred:", error);
-      }
+  app.on("before-quit", (event) => {
+    if (mixpanel != null && !quitTracked) {
+      event.preventDefault();
+      mixpanel?.track("Launcher/Quit", undefined, () => {
+        quitTracked = true;
+        app.quit();
+      });
     }
-
-    app.quit();
-    quitTracked = true;
   });
 
   cleanUp();
