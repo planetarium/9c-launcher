@@ -41,7 +41,7 @@
     "update-translations": "txjs-cli push src --key-generator=hash"
   },
   "dependencies": {
-    "@apollo/client": "^3.3.21",
+    "@apollo/client": "^3.7.17",
     "@apollo/react-testing": "3.1.4",
     "@electron/remote": "^2.0.8",
     "@lifeomic/attempt": "^3.0.0",
