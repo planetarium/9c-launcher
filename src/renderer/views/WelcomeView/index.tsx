@@ -32,7 +32,7 @@ const transifexTags = "v2/welcome";
 function WelcomeView() {
   return (
     <Layout sidebar css={welcomeStyles}>
-      <img alt="Logo" src={logo} />
+      <img alt="Logo" src={logo} width="100%" />
       <Header>
         <T _str="Welcome to Nine Chronicles!" _tags={transifexTags} />
       </Header>

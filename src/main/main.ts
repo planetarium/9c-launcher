@@ -29,6 +29,7 @@ import { PLATFORM2OS_MAP } from "src/utils/os";
 import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import fs from "fs";
+import fetch from "node-fetch";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
 import { initializeSentry } from "src/utils/sentry";
@@ -72,7 +73,6 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
-import { removeSubscribe } from "src/utils/monsterCollection/removeSubscription";
 import {
   KeyId,
   PassphraseEntry,
@@ -150,45 +150,14 @@ if (!app.requestSingleInstanceLock()) {
   app.on("open-url", (_, url) => win && send(win, IPC_OPEN_URL, url));
 
   let quitTracked = false;
-  let removedAddresses: Array<string> = [];
-  app.on("before-quit", async (event) => {
-    event.preventDefault();
-
-    if (!quitTracked) {
-      if (mixpanel != null) {
-        mixpanel?.track("Launcher/Quit", undefined, () => {});
-      }
-
-      const keyStorePath = getDefaultWeb3KeyStorePath();
-
-      try {
-        const files = await fs.promises.readdir(keyStorePath);
-
-        const addresses = [];
-        for (const file of files) {
-          const filePath = path.join(keyStorePath, file);
-          const content = await fs.promises.readFile(filePath, "utf-8");
-
-          const data = JSON.parse(content);
-          if (data.address) {
-            addresses.push(data.address);
-          }
-        }
-
-        for (const address of addresses) {
-          if (!removedAddresses.includes(address)) {
-            await removeSubscribe(`https://${remoteNode.host}`, `0x${address}`);
-            console.info("Finish Subscribe address:", address);
-            removedAddresses.push(address);
-          }
-        }
-      } catch (error) {
-        console.info("Remove Subscribe Error occurred:", error);
-      }
+  app.on("before-quit", (event) => {
+    if (mixpanel != null && !quitTracked) {
+      event.preventDefault();
+      mixpanel?.track("Launcher/Quit", undefined, () => {
+        quitTracked = true;
+        app.quit();
+      });
     }
-
-    app.quit();
-    quitTracked = true;
   });
 
   cleanUp();
@@ -225,6 +194,9 @@ async function initializeConfig() {
 
     // Replace config
     console.log("Replace config with remote config:", remoteConfig);
+    remoteConfig.Locale = getConfig("Locale");
+    remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
+    console.log(remoteConfig.Locale);
     configStore.store = remoteConfig;
   } catch (error) {
     console.error(
@@ -259,6 +231,8 @@ async function initializeApp() {
         .catch((err) => console.log("An error occurred: ", err));
 
     win = await createV2Window();
+
+    setV2Quitting(!getConfig("TrayOnClose"));
 
     if (useUpdate) {
       appUpdaterInstance = new AppUpdater(win, baseUrl, updateOptions);
@@ -356,6 +330,7 @@ function initializeIpc() {
 
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
+    setV2Quitting(true);
     await appUpdaterInstance.execute();
   });
 
@@ -433,6 +408,29 @@ function initializeIpc() {
       await utils.sleep(100);
     }
     return remoteNode;
+  });
+
+  ipcMain.handle("manual player update", async () => {
+    console.log("MANUAL PLAYER UPDATE TRIGGERED");
+    const targetOS = PLATFORM2OS_MAP[process.platform];
+    const updateUrl = `${baseUrl}/${netenv}/player`;
+    try {
+      const updateData: {
+        files: { path: string; size: number; os: string }[];
+      } = await (await fetch(`${updateUrl}/latest.json`)).json();
+      for (const file of updateData.files) {
+        if (file.os === targetOS) {
+          performPlayerUpdate(
+            win!,
+            `${updateUrl}/${file.path}`,
+            file.size,
+            updateOptions
+          );
+        }
+      }
+    } catch (e: unknown) {
+      console.error(e);
+    }
   });
 }
 
