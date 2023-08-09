@@ -26,7 +26,6 @@ import {
 } from "electron";
 import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-platform";
 import { PLATFORM2OS_MAP } from "src/utils/os";
-import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import fs from "fs";
 import fetch from "node-fetch";
@@ -45,11 +44,6 @@ import { init as createMixpanel } from "mixpanel";
 import { v4 as uuidv4 } from "uuid";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
-import installExtension, {
-  REACT_DEVELOPER_TOOLS,
-  MOBX_DEVTOOLS,
-  APOLLO_DEVELOPER_TOOLS,
-} from "electron-devtools-installer";
 import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import {
@@ -71,7 +65,6 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
-import { detach } from "retry-axios";
 
 Object.assign(console, log.functions);
 
@@ -208,14 +201,6 @@ async function initializeApp() {
 
   app.on("ready", async () => {
     remoteInitialize();
-    if (process.env.NODE_ENV !== "production")
-      await installExtension([
-        REACT_DEVELOPER_TOOLS,
-        MOBX_DEVTOOLS,
-        APOLLO_DEVELOPER_TOOLS,
-      ])
-        .then((name) => console.log(`Added Extension:  ${name}`))
-        .catch((err) => console.log("An error occurred: ", err));
 
     win = await createV2Window();
 
@@ -314,6 +299,9 @@ function initializeIpc() {
     }
     return true;
   });
+
+  ipcMain.on("min", () => win?.minimize());
+  ipcMain.on("max", () => win?.maximize());
 
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
@@ -470,54 +458,6 @@ async function initializeRemoteHeadless(): Promise<void> {
     console.log("initialize remote headless() finished.");
     initializeHeadlessCts = null;
   }
-}
-
-async function createWindow(): Promise<BrowserWindow> {
-  const _win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true,
-      preload: path.join(app.getAppPath(), "preload.js"),
-    },
-    frame: true,
-    autoHideMenuBar: true,
-    icon: path.join(app.getAppPath(), logoImage),
-  });
-  remoteEnable(_win.webContents);
-
-  _win.setResizable(false); // see: https://github.com/electron/electron/issues/19565#issuecomment-867283465
-
-  console.log(app.getAppPath());
-
-  if (process.env.NODE_ENV !== "production") {
-    await _win.loadURL("http://localhost:9000");
-    await _win.webContents.openDevTools();
-  } else {
-    _win.loadFile("index.html");
-  }
-
-  _win.on("close", function (event: any) {
-    if (!isQuiting) {
-      event.preventDefault();
-      _win?.hide();
-    }
-  });
-
-  _win.webContents.setWindowOpenHandler((details) => {
-    if (details.disposition === "new-window") {
-      shell.openExternal(details.url);
-      return {
-        action: "allow",
-      };
-    }
-    return {
-      action: "deny",
-    };
-  });
-
-  return _win;
 }
 
 /**

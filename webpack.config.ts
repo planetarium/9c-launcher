@@ -3,8 +3,7 @@ import fs from "fs";
 import HtmlPlugin from "html-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
-import { DefinePlugin, IgnorePlugin } from "webpack";
-import { sentryWebpackPlugin } from "@sentry/webpack-plugin";
+import webpack, { DefinePlugin, IgnorePlugin } from "webpack";
 import { version } from "./package.json";
 import TerserPlugin from "terser-webpack-plugin";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
@@ -19,10 +18,9 @@ const gitHash = child_process.execSync("git rev-parse HEAD", {
   encoding: "utf8",
 });
 
-/** @returns {import('webpack').Configuration} */
 function createRenderConfig(
   isDev: boolean,
-  DEFAULT_NETWORK: "main" | "internal" | "previewnet"
+  DEFAULT_NETWORK: "main" | "internal" | "previewnet",
 ) {
   return {
     context: path.join(__dirname, "src"),
@@ -55,7 +53,7 @@ function createRenderConfig(
       path: path.join(__dirname, "build"),
       publicPath: isDev ? "/" : undefined,
       clean: {
-        keep: /^9c$|\.(?:exe|dll|json|app|so|debug)$|(?:9c_Data|MonoBleedingEdge|publish|9c.app)[\\/]/,
+        keep: /^9c$|\.(?:exe|dll|json|app|so|debug)$|(?:9c_Data|MonoBleedingEdge|publish|9c.app)[\\\\/]/,
       },
     },
 
@@ -99,7 +97,7 @@ function createRenderConfig(
                 [
                   "@babel/preset-env",
                   {
-                    targets: { electron: "25.1.1" },
+                    targets: { electron: "25" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -144,8 +142,9 @@ function createRenderConfig(
         filename: "index.html", // output HTML files
         chunks: ["render"], // respective JS files
       }),
+
       new DefinePlugin({
-        CURRENT_VERSION: JSON.stringify(require("./package.json").version),
+        CURRENT_VERSION: JSON.stringify(version),
       }),
 
       isDev && new ReactRefreshWebpackPlugin(),
@@ -153,11 +152,12 @@ function createRenderConfig(
 
     devServer: isDev
       ? {
-          static: path.join(__dirname, "build"),
+          static: {
+            directory: path.join(__dirname, "build"),
+          },
           compress: true,
           port: 9000,
           historyApiFallback: true,
-          hot: true,
         }
       : undefined,
 
@@ -191,10 +191,9 @@ function createRenderConfig(
   };
 }
 
-/** @returns {import('webpack').Configuration} */
 function createMainConfig(
   isDev: boolean,
-  DEFAULT_NETWORK: "main" | "internal" | "previewnet"
+  DEFAULT_NETWORK: "main" | "internal" | "previewnet",
 ) {
   return {
     context: path.join(__dirname, "src"),
@@ -249,7 +248,7 @@ function createMainConfig(
                 [
                   "@babel/preset-env",
                   {
-                    targets: { node: "18.15.0" },
+                    targets: { node: "20.5.0" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -304,32 +303,14 @@ function createMainConfig(
   };
 }
 
-module.exports = (env: any) => {
+module.exports = (env: any): webpack.Configuration => {
   // env variable is passed by webpack through the cli. see package.json scripts.
   const isDev = env.NODE_ENV === DEVELOPMENT;
-  const { target, release, DEFAULT_NETWORK } = env;
+  const { target, DEFAULT_NETWORK } = env;
 
   const configFactory =
     target === "main" ? createMainConfig : createRenderConfig;
   const config = configFactory(isDev, DEFAULT_NETWORK);
-  if (release) {
-    config.plugins.push(
-      sentryWebpackPlugin({
-        // sentry-cli configuration
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: "planetariumhq",
-        project: "9c-launcher",
-        // webpack specific configuration
-        sourcemaps: {
-          ignore: ["node_modules", "webpack.config.ts"],
-        },
-        release: {
-          name: version,
-        },
-        debug: true,
-      })
-    );
-  }
 
   // electron-packager needs the package.json file.
   fs.cpSync("package.json", "./build/package.json");
@@ -339,8 +320,8 @@ module.exports = (env: any) => {
       target === "main" ? "main process" : "render process"
     }\n## CONFIGURATION: ${
       isDev ? DEVELOPMENT : PRODUCTION
-    }\n## VERSION: ${version}\n##\n`
+    }\n## VERSION: ${version}\n##\n`,
   );
 
-  return config;
+  return config as webpack.Configuration;
 };
