@@ -273,6 +273,7 @@ query StakingSheet {
           itemId
           rate
           type
+          currencyTicker
         }
         bonusRewards {
           itemId

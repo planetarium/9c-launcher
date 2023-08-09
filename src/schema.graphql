@@ -789,6 +789,7 @@ type StakeRegularRewardInfoType {
   itemId: Int!
   rate: Int!
   type: StakeRewardType!
+  currencyTicker: String!
 }
 
 enum StakeRewardType {
