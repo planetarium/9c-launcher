@@ -113,7 +113,7 @@ async function handlePlayerUpdate() {
 }
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
-  "get-aws-sink-cloudwatch-guid"
+  "get-aws-sink-cloudwatch-guid",
 );
 const InfoTextStyled = styled("div", {
   bottom: 50,
@@ -152,7 +152,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
       app.relaunch();
       app.exit();
     },
-    [isDirty, dirtyFields]
+    [isDirty, dirtyFields],
   );
 
   const onError = useCallback((errors: FieldErrors<IConfig>) => {
@@ -164,7 +164,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
 
   useEffect(
     () => () => void handleSubmit(onSubmit, onError)(), // Submit a form when exits.
-    []
+    [],
   );
 
   const address = useLoginSession()?.address;
@@ -178,7 +178,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
       ]
         .filter(Boolean)
         .join("\n"),
-    [address]
+    [address],
   );
   const onClick = () => {
     clipboard.writeText(debugValue);
@@ -266,9 +266,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                   _str="Send anonymous usage information"
                   _tags={transifexTags}
                 />
-              </Checkbox>
-              <Checkbox {...register("Sentry")}>
-                <T _str="Report errors and bugs" _tags={transifexTags} />
               </Checkbox>
             </FormSection>
           </Form>

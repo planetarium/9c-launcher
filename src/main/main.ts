@@ -32,8 +32,6 @@ import fs from "fs";
 import fetch from "node-fetch";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
-import * as Sentry from "@sentry/electron/main";
-import { initializeSentry } from "src/utils/sentry";
 import "core-js";
 import log from "electron-log";
 import * as utils from "src/utils";
@@ -73,15 +71,7 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
-import {
-  KeyId,
-  PassphraseEntry,
-  Web3Account,
-  Web3KeyStore,
-  getDefaultWeb3KeyStorePath,
-} from "@planetarium/account-web3-secret-storage";
-
-initializeSentry();
+import { detach } from "retry-axios";
 
 Object.assign(console, log.functions);
 
@@ -126,7 +116,7 @@ client
     if (delta > 15000) {
       dialog.showErrorBox(
         "Computer Time Incorrect",
-        "The current computer time is incorrect. Please sync your computer's time correctly."
+        "The current computer time is incorrect. Please sync your computer's time correctly.",
       );
     }
   })
@@ -174,7 +164,7 @@ async function initializeConfig() {
     if (!exists) {
       console.log(
         "Remote not exists, Replace config with remote config:",
-        remoteConfig
+        remoteConfig,
       );
       configStore.store = remoteConfig;
       return;
@@ -184,7 +174,7 @@ async function initializeConfig() {
     const remoteConfigVersion = remoteConfig.ConfigVersion;
     if (localConfigVersion > remoteConfigVersion) {
       console.log(
-        `Local config is newer than remote, ignore. (local: ${localConfigVersion}, remote: ${remoteConfigVersion})`
+        `Local config is newer than remote, ignore. (local: ${localConfigVersion}, remote: ${remoteConfigVersion})`,
       );
       return;
     }
@@ -197,7 +187,7 @@ async function initializeConfig() {
     configStore.store = remoteConfig;
   } catch (error) {
     console.error(
-      `An unexpected error occurred during fetching remote config. ${error}`
+      `An unexpected error occurred during fetching remote config. ${error}`,
     );
   }
 
@@ -211,8 +201,8 @@ async function initializeApp() {
     "ninechronicles-launcher",
     process.execPath,
     [!app.isPackaged && path.resolve(process.argv[1]), "--protocol"].filter(
-      Boolean
-    )
+      Boolean,
+    ),
   );
   console.log("isProtocolSet", isProtocolSet);
 
@@ -264,7 +254,7 @@ async function initializeApp() {
     // Detects and move old snapshot caches as they're unused.
     // Ignores any failure as they're not critical.
     fg("snapshot-*", { cwd: app.getPath("userData") }).then((files) =>
-      Promise.allSettled(files.map((file) => fs.promises.unlink(file)))
+      Promise.allSettled(files.map((file) => fs.promises.unlink(file))),
     );
     console.log("main initializeApp call initializeRemoteHeadless");
     initializeRemoteHeadless();
@@ -294,7 +284,7 @@ function initializeIpc() {
 
     const node = utils.execute(
       EXECUTE_PATH[process.platform] || WIN_GAME_PATH,
-      info.args
+      info.args,
     );
 
     node.on("close", (code) => {
@@ -363,7 +353,7 @@ function initializeIpc() {
       const guidPath = path.join(
         localAppData,
         "planetarium",
-        ".aws_sink_cloudwatch_guid"
+        ".aws_sink_cloudwatch_guid",
       );
 
       if (fs.existsSync(guidPath)) {
@@ -386,7 +376,7 @@ function initializeIpc() {
       mixpanel?.track(eventName, {
         ...param,
       });
-    }
+    },
   );
 
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
@@ -421,7 +411,7 @@ function initializeIpc() {
             win!,
             `${updateUrl}/${file.path}`,
             file.size,
-            updateOptions
+            updateOptions,
           );
         }
       }
@@ -440,14 +430,14 @@ async function initializeRemoteHeadless(): Promise<void> {
 
   if (initializeHeadlessCts !== null) {
     console.error(
-      "Cannot initialize remote headless while initializing headless."
+      "Cannot initialize remote headless while initializing headless.",
     );
     return;
   }
 
   if (isUpdating()) {
     console.error(
-      "Cannot initialize remote headless while updater is running."
+      "Cannot initialize remote headless while updater is running.",
     );
     return;
   }
@@ -462,7 +452,7 @@ async function initializeRemoteHeadless(): Promise<void> {
     await remoteHeadless.execute();
   } catch (error) {
     console.error(
-      `Error occurred during initialize remote headless(). ${error}`
+      `Error occurred during initialize remote headless(). ${error}`,
     );
     if (
       error instanceof HeadlessInitializeError ||
@@ -515,9 +505,16 @@ async function createWindow(): Promise<BrowserWindow> {
     }
   });
 
-  _win.webContents.on("new-window", function (event: any, url: string) {
-    event.preventDefault();
-    shell.openExternal(url);
+  _win.webContents.setWindowOpenHandler((details) => {
+    if (details.disposition === "new-window") {
+      shell.openExternal(details.url);
+      return {
+        action: "allow",
+      };
+    }
+    return {
+      action: "deny",
+    };
   });
 
   return _win;
@@ -596,7 +593,7 @@ function createTray(iconPath: string) {
           app.quit();
         },
       },
-    ])
+    ]),
   );
   tray.on("click", function () {
     win?.show();
@@ -618,7 +615,7 @@ function relaunch() {
 
 function initCheckForUpdateWorker(
   win: BrowserWindow,
-  appUpdaterInstance: AppUpdater
+  appUpdaterInstance: AppUpdater,
 ) {
   interface Message {
     type: string;
@@ -642,7 +639,7 @@ function initCheckForUpdateWorker(
         os,
         baseUrl: publishedStorageBaseUrl,
       },
-    }
+    },
   );
 
   checkForUpdateWorker.on("message", (message: Message) => {
@@ -655,7 +652,7 @@ function initCheckForUpdateWorker(
     }
     if (message.type === "log") {
       console[message.level as "debug" | "error" | "log"](
-        "[checkForUpdateWorker] " + message.body
+        "[checkForUpdateWorker] " + message.body,
       );
     }
   });
