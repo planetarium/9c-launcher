@@ -96,8 +96,14 @@ function useRewards(levels: LevelList, index: number = 0) {
     [bonusRewards]
   );
 
-  return rewards
-    ?.filter((v) => v.type !== "CURRENCY") // For filtering GARAGE Token temporarily.
+  return rewards!
+    .map((v) => {
+      if (v.type === "CURRENCY") {
+        if (v.currencyTicker === "CRYSTAL") v.itemId = 1;
+        if (v.currencyTicker === "GARAGE") v.itemId = 2;
+      }
+      return v;
+    })
     .map((v) => ({
       ...v,
       count(amount: Decimal) {
