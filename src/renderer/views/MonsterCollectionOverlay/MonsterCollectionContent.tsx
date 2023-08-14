@@ -83,7 +83,7 @@ type Rewards = {
   count(amount: Decimal): Decimal;
   __typename?: "StakeRegularRewardInfoType" | undefined;
   itemId: number;
-  rate: number;
+  decimalRate: number;
 }[];
 
 function useRewards(levels: LevelList, index: number = 0) {
@@ -96,14 +96,22 @@ function useRewards(levels: LevelList, index: number = 0) {
     [bonusRewards]
   );
 
-  return rewards
-    ?.filter((v) => v.type !== "CURRENCY") // For filtering GARAGE Token temporarily.
-    .map((v) => ({
+  return rewards!.map((v) => {
+    let itemID = v.itemId;
+    if (v.type === "CURRENCY") {
+      if (v.currencyTicker === "CRYSTAL") itemID = 1;
+      if (v.currencyTicker === "GARAGE") itemID = 2;
+    }
+    return {
       ...v,
+      itemId: itemID,
       count(amount: Decimal) {
-        return amount.divToInt(v.rate).add(bonusRewardMap?.get(v.itemId) || 0);
+        return amount
+          .divToInt(v.decimalRate)
+          .add(bonusRewardMap?.get(v.itemId) || 0);
       },
-    }));
+    };
+  });
 }
 
 type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
@@ -183,7 +191,7 @@ export function MonsterCollectionContent({
           updatedAmount={selectedAmount?.toString()}
           isDiff
         >
-          <img src={itemMeta.img} alt={itemMeta.name} />
+          <img src={itemMeta.img} alt={itemMeta.name} height={48} />
         </Item>
       );
     });
