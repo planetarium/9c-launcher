@@ -32,6 +32,7 @@ type StandaloneQuery {
 
   # Check if the provided address is activated.
   activationStatus: ActivationStatusQuery!
+    @deprecated(reason: "Since NCIP-15, it doesn't care account activation.")
 
   # Get the peer's block chain state
   peerChainState: PeerChainStateQuery!
@@ -69,7 +70,9 @@ type StandaloneQuery {
   # Query for transaction.
   transaction: TransactionHeadlessQuery!
   activated(invitationCode: String!): Boolean!
+    @deprecated(reason: "Since NCIP-15, it doesn't care account activation.")
   activationKeyNonce(invitationCode: String!): String!
+    @deprecated(reason: "Since NCIP-15, it doesn't care account activation.")
 
   # Query for rpc mode information.
   rpcInformation: RpcInformationQuery!
@@ -104,6 +107,12 @@ type StateQuery {
     avatarAddress: Address!
   ): AvatarStateType
 
+  # Avatar states having some order as addresses
+  avatars(
+    # Addresses of avatars to query.
+    addresses: [Address!]!
+  ): [AvatarStateType]!
+
   # State for avatar EXP record.
   rankingMap(
     # RankingMapState index. 0 ~ 99
@@ -130,6 +139,18 @@ type StateQuery {
     # WeeklyArenaState index. It increases every 56,000 blocks.
     index: Int!
   ): WeeklyArenaStateType
+
+  # List of arena information of requested arena and avatar list
+  arenaInformation(
+    # Championship ID to get arena information
+    championshipId: Int!
+
+    # Round of championship to get arena information
+    round: Int!
+
+    # List of avatar address to get arena information
+    avatarAddresses: [Address!]!
+  ): [ArenaInformationType!]!
 
   # State for agent.
   agent(
@@ -195,13 +216,29 @@ type StateQuery {
   # asset balance by currency.
   balance(
     address: Address!
-    currency: CurrencyInputType!
+    currency: CurrencyInput!
   ): FungibleAssetValueWithCurrencyType!
 
   # raider address list by world boss season.
   raiderList(raiderListAddress: Address!): [Address!]
   orderDigestList(avatarAddress: Address!): OrderDigestListStateType
   pledge(agentAddress: Address!): MeadPledgeType!
+
+  # Get balances and fungible items in garages.
+  # Use either `currencyEnums` or `currencyTickers` to get balances.
+  garages(
+    # Agent address to get balances and fungible items in garages
+    agentAddr: Address!
+
+    # List of currency enums to get balances in garages
+    currencyEnums: [CurrencyEnum!]
+
+    # List of currency tickers to get balances in garages
+    currencyTickers: [String!]
+
+    # List of fungible item IDs to get fungible item in garages
+    fungibleItemIds: [String!]
+  ): GaragesType
 }
 
 type AvatarStateType {
@@ -253,8 +290,14 @@ type AvatarStateType {
   # Avatar inventory.
   inventory: InventoryType!
 
+  # Rune list of avatar
+  runes: [RuneStateType!]!
+
   # Address list of combination slot.
   combinationSlotAddresses: [Address!]!
+
+  # Combination slots.
+  combinationSlots: [CombinationSlotStateType!]!
 
   # List of acquired item ID.
   itemMap: CollectionMapType!
@@ -290,7 +333,10 @@ type InventoryType {
   materials: [MaterialType!]!
 
   # List of Equipments.
-  equipments: [EquipmentType!]!
+  equipments(
+    # filter equipped inventory item
+    equipped: Boolean
+  ): [EquipmentType!]!
 
   # List of Costumes.
   costumes: [CostumeType!]!
@@ -355,6 +401,7 @@ enum ItemSubType {
       reason: "ItemSubType.Chest has never been used outside the MaterialItemSheet. And we won't use it in the future until we have a specific reason."
     )
   TITLE
+  AURA
 }
 
 enum ElementalType {
@@ -492,6 +539,31 @@ type InventoryItemType {
   locked: Boolean!
   lockId: Guid
   tradableId: Guid
+}
+
+type RuneStateType {
+  # ID of rune.
+  runeId: Int!
+
+  # Level of this rune.
+  level: Int!
+}
+
+type CombinationSlotStateType {
+  # Address of combination slot.
+  address: Address!
+
+  # Block index at the combination slot can be usable.
+  unlockBlockIndex: Long!
+
+  # Stage id at the combination slot unlock.
+  unlockStage: Int!
+
+  # Block index at the combination started.
+  startBlockIndex: Long!
+
+  # Pet id used in equipment
+  petId: Int
 }
 
 type CollectionMapType {
@@ -691,6 +763,17 @@ type ArenaRecordType {
   draw: Int
 }
 
+type ArenaInformationType {
+  avatarAddress: Address!
+  address: Address!
+  win: Int!
+  lose: Int!
+  ticket: Int!
+  ticketResetCount: Int!
+  purchasedTicketCount: Int!
+  score: Int!
+}
+
 type AgentStateType {
   # Address of agent.
   address: Address!
@@ -789,7 +872,9 @@ type StakeRegularRewardInfoType {
   itemId: Int!
   rate: Int!
   type: StakeRewardType!
-  currencyTicker: String!
+  currencyTicker: String
+  currencyDecimalPlaces: Int
+  decimalRate: Decimal!
 }
 
 enum StakeRewardType {
@@ -899,15 +984,92 @@ type CurrencyType {
 
 scalar Byte
 
-input CurrencyInputType {
+input CurrencyInput {
+  # The ticker symbol, e.g., USD.
   ticker: String!
+
+  # The number of digits to treat as minor units (i.e., exponents).
   decimalPlaces: Byte!
+
+  # The addresses who can mint this currency.  If this is null anyone can mint the currency.  On the other hand, unlike null, an empty set means no one can mint the currency.
   minters: [Address!]
+  maximumSupplyMajorUnit: BigInt
+  maximumSupplyMinorUnit: BigInt
+
+  # Whether the total supply of this currency is trackable.
+  totalSupplyTrackable: Boolean
 }
 
 type OrderDigestListStateType {
   address: Address
   orderDigestList: [OrderDigestType]!
+}
+
+type GaragesType {
+  agentAddr: Address
+  garageBalancesAddr: Address
+  garageBalances: [FungibleAssetValue]
+  fungibleItemGarages: [FungibleItemGarageWithAddressType]
+}
+
+# Holds a fungible asset value which holds its currency together.
+type FungibleAssetValue {
+  # The currency of the fungible asset.
+  currency: Currency!
+
+  # Gets a number that indicates the sign (-1: negative, 1: positive, or 0: zero) of the value.
+  sign: Int!
+  majorUnit: BigInt!
+  minorUnit: BigInt!
+
+  # The value quantity without its currency in string, e.g., "123.45".
+  quantity: String!
+
+  # The value quantity with its currency in string, e.g., "123.45 ABC".
+  string: String!
+}
+
+type Currency {
+  # The ticker symbol, e.g., USD.
+  ticker: String!
+
+  # The number of digits to treat as minor units (i.e., exponents).
+  decimalPlaces: Byte!
+
+  # The addresses who can mint this currency.  If this is null anyone can mint the currency.  On the other hand, unlike null, an empty set means no one can mint the currency.
+  minters: [Address!]
+
+  # The uppermost quantity of currency allowed to exist.  null means unlimited supply.
+  maximumSupply: FungibleAssetValue
+
+  # Whether the total supply of this currency is trackable.
+  totalSupplyTrackable: Boolean!
+
+  # The deterministic hash derived from other fields.
+  hash: ByteString!
+}
+
+type FungibleItemGarageWithAddressType {
+  fungibleItemId: String
+  addr: Address
+  item: FungibleItemType
+  count: Int
+}
+
+type FungibleItemType {
+  # Item category.
+  itemType: ItemType!
+
+  # Item sub category.
+  itemSubType: ItemSubType!
+  fungibleItemId: String!
+}
+
+# The currency type.
+enum CurrencyEnum {
+  CRYSTAL
+  NCG
+  GARAGE
 }
 
 type TransferNCGHistoryType {
@@ -1078,6 +1240,9 @@ type Block {
   # The proof-of-work nonce which satisfies the required difficulty.
   nonce: ByteString!
     @deprecated(reason: "Block does not have Nonce field in PBFT.")
+
+  # The hash of PreEvaluationBlock.
+  preEvaluationHash: ByteString!
 }
 
 scalar PublicKey
@@ -1124,7 +1289,7 @@ type Action {
   # A readable representation for debugging.
   inspection: String!
 
-  # A JSON representaion of action data
+  # A JSON representation of action data
   json: String!
 }
 
@@ -1230,7 +1395,6 @@ type TxResultType {
   updatedStates: [UpdatedStateType!]
   updatedFungibleAssets: [FungibleAssetBalancesType!]
   fungibleAssetsDelta: [FungibleAssetBalancesType!]
-  actionsLogsList: [[String!]!]
 }
 
 enum TxStatus {
@@ -1252,43 +1416,6 @@ type FungibleAssetBalancesType {
   fungibleAssetValues: [FungibleAssetValue!]!
 }
 
-# Holds a fungible asset value which holds its currency together.
-type FungibleAssetValue {
-  # The currency of the fungible asset.
-  currency: Currency!
-
-  # Gets a number that indicates the sign (-1: negative, 1: positive, or 0: zero) of the value.
-  sign: Int!
-  majorUnit: BigInt!
-  minorUnit: BigInt!
-
-  # The value quantity without its currency in string, e.g., "123.45".
-  quantity: String!
-
-  # The value quantity with its currency in string, e.g., "123.45 ABC".
-  string: String!
-}
-
-type Currency {
-  # The ticker symbol, e.g., USD.
-  ticker: String!
-
-  # The number of digits to treat as minor units (i.e., exponents).
-  decimalPlaces: Byte!
-
-  # The addresses who can mint this currency.  If this is null anyone can mint the currency.  On the other hand, unlike null, an empty set means no one can mint the currency.
-  minters: [Address!]
-
-  # The uppermost quantity of currency allowed to exist.  null means unlimited supply.
-  maximumSupply: FungibleAssetValue
-
-  # Whether the total supply of this currency is trackable.
-  totalSupplyTrackable: Boolean!
-
-  # The deterministic hash derived from other fields.
-  hash: ByteString!
-}
-
 type LibplanetStateQuery {
   states(addresses: [Address!]!, offsetBlockHash: ID!): [BencodexValue]!
   balance(
@@ -1301,22 +1428,6 @@ type LibplanetStateQuery {
     offsetBlockHash: ID!
   ): FungibleAssetValue
   validators(offsetBlockHash: ID!): [Validator!]
-}
-
-input CurrencyInput {
-  # The ticker symbol, e.g., USD.
-  ticker: String!
-
-  # The number of digits to treat as minor units (i.e., exponents).
-  decimalPlaces: Byte!
-
-  # The addresses who can mint this currency.  If this is null anyone can mint the currency.  On the other hand, unlike null, an empty set means no one can mint the currency.
-  minters: [Address!]
-  maximumSupplyMajorUnit: BigInt
-  maximumSupplyMinorUnit: BigInt
-
-  # Whether the total supply of this currency is trackable.
-  totalSupplyTrackable: Boolean
 }
 
 # A data type holds validator's public key and its voting power.
@@ -1362,7 +1473,9 @@ type ValidationQuery {
 
 type ActivationStatusQuery {
   activated: Boolean!
+    @deprecated(reason: "Since NCIP-15, it doesn't care account activation.")
   addressActivated(address: Address!): Boolean!
+    @deprecated(reason: "Since NCIP-15, it doesn't care account activation.")
 }
 
 type PeerChainStateQuery {
@@ -1477,6 +1590,12 @@ type RpcInformationQuery {
 
   # List of address connected to this node.
   clients: [Address]!
+
+  # total count by connected to this node.
+  totalCountByDevice(device: String!): Int!
+
+  # clients connected to this node by device.
+  clientsByDevice(device: String!): [Address!]!
 }
 
 type ActionQuery {
@@ -1587,6 +1706,7 @@ type ActionQuery {
     # Activation code that you've get.
     activationCode: String!
   ): ByteString!
+    @deprecated(reason: "Since NCIP-15, it doesn't care account activation.")
   createAvatar(
     # index of avatar in `AgentState.avatarAddresses`.(0~2)
     index: Int!
@@ -1727,15 +1847,48 @@ type ActionQuery {
     agentAddresses: [Address!]!
     mead: Int = 4
   ): ByteString!
+  loadIntoMyGarages(
+    # Array of balance address and currency ticker and quantity.
+    fungibleAssetValues: [BalanceInput!]
+
+    # Inventory Address
+    inventoryAddr: Address
+
+    # Array of fungible ID and count
+    fungibleIdAndCounts: [FungibleIdAndCountInput!]
+
+    # Memo
+    memo: String
+  ): ByteString!
+  deliverToOthersGarages(
+    # Recipient agent address
+    recipientAgentAddr: Address!
+
+    # Array of currency ticket and quantity to deliver.
+    fungibleAssetValues: [SimplifyFungibleAssetValueInput!]
+
+    # Array of Fungible ID and count to deliver.
+    fungibleIdAndCounts: [FungibleIdAndCountInput!]
+
+    # Memo
+    memo: String
+  ): ByteString!
+  unloadFromMyGarages(
+    # Recipient avatar address
+    recipientAvatarAddr: Address!
+
+    # Array of balance address and currency ticker and quantity to send.
+    fungibleAssetValues: [BalanceInput!]
+
+    # Array of fungible ID and count to send.
+    fungibleIdAndCounts: [FungibleIdAndCountInput!]
+
+    # Memo
+    memo: String
+  ): ByteString!
 
   # Query to craft/enhance items/foods
   craftQuery: CraftQuery!
-}
-
-# The currency type.
-enum CurrencyEnum {
-  CRYSTAL
-  NCG
 }
 
 input RuneSlotInfoInputType {
@@ -1746,6 +1899,34 @@ input RuneSlotInfoInputType {
 input RecipientsInputType {
   recipient: Address!
   amount: FungibleAssetValueInputType!
+}
+
+input BalanceInput {
+  # Balance Address.
+  balanceAddr: Address
+
+  # Fungible asset value ticker and amount.
+  value: SimplifyFungibleAssetValueInput
+}
+
+# A fungible asset value ticker and amount.You can specify either currencyEnum or currencyTicker.
+input SimplifyFungibleAssetValueInput {
+  # A currency type to be loaded.
+  currencyEnum: CurrencyEnum
+
+  # A currency ticker to be loaded.
+  currencyTicker: String
+
+  # A numeric string to parse.  Can consist of digits, plus (+), minus (-), and decimal separator (.). <see cref="FungibleAssetValue.Parse(Currency, string)" />
+  value: String!
+}
+
+input FungibleIdAndCountInput {
+  # Fungible ID
+  fungibleId: String!
+
+  # Count
+  count: Int!
 }
 
 type CraftQuery {
@@ -1893,6 +2074,7 @@ type ActionTxQuery {
     # Activation code that you've get.
     activationCode: String!
   ): ByteString!
+    @deprecated(reason: "Since NCIP-15, it doesn't care account activation.")
   createAvatar(
     # index of avatar in `AgentState.avatarAddresses`.(0~2)
     index: Int!
@@ -2033,6 +2215,45 @@ type ActionTxQuery {
     agentAddresses: [Address!]!
     mead: Int = 4
   ): ByteString!
+  loadIntoMyGarages(
+    # Array of balance address and currency ticker and quantity.
+    fungibleAssetValues: [BalanceInput!]
+
+    # Inventory Address
+    inventoryAddr: Address
+
+    # Array of fungible ID and count
+    fungibleIdAndCounts: [FungibleIdAndCountInput!]
+
+    # Memo
+    memo: String
+  ): ByteString!
+  deliverToOthersGarages(
+    # Recipient agent address
+    recipientAgentAddr: Address!
+
+    # Array of currency ticket and quantity to deliver.
+    fungibleAssetValues: [SimplifyFungibleAssetValueInput!]
+
+    # Array of Fungible ID and count to deliver.
+    fungibleIdAndCounts: [FungibleIdAndCountInput!]
+
+    # Memo
+    memo: String
+  ): ByteString!
+  unloadFromMyGarages(
+    # Recipient avatar address
+    recipientAvatarAddr: Address!
+
+    # Array of balance address and currency ticker and quantity to send.
+    fungibleAssetValues: [BalanceInput!]
+
+    # Array of fungible ID and count to send.
+    fungibleIdAndCounts: [FungibleIdAndCountInput!]
+
+    # Memo
+    memo: String
+  ): ByteString!
 
   # Query to craft/enhance items/foods
   craftQuery: CraftQuery!
@@ -2088,6 +2309,7 @@ type StandaloneMutation {
       reason: "Use `planet key` command instead.  https://www.npmjs.com/package/@planetarium/cli"
     )
   activationStatus: ActivationStatusMutation
+    @deprecated(reason: "Since NCIP-15, it doesn't care account activation.")
   action: ActionMutation
 
   # Add a new transaction to staging
@@ -2139,6 +2361,7 @@ type KeyStoreMutation {
 
 type ActivationStatusMutation {
   activateAccount(encodedActivationKey: String!): Boolean!
+    @deprecated(reason: "Since NCIP-15, it doesn't care account activation.")
 }
 
 type ActionMutation {

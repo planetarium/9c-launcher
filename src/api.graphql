@@ -271,7 +271,7 @@ query StakingSheet {
         requiredGold
         rewards {
           itemId
-          rate
+          decimalRate
           type
           currencyTicker
         }
