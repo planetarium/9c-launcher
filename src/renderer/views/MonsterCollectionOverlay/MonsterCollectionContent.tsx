@@ -191,7 +191,7 @@ export function MonsterCollectionContent({
           updatedAmount={selectedAmount?.toString()}
           isDiff
         >
-          <img src={itemMeta.img} alt={itemMeta.name} />
+          <img src={itemMeta.img} alt={itemMeta.name} height={48} />
         </Item>
       );
     });
