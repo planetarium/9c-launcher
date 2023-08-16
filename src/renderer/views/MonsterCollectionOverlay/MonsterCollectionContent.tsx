@@ -96,7 +96,7 @@ function useRewards(levels: LevelList, index: number = 0) {
     [bonusRewards]
   );
 
-  return rewards!.map((v) => {
+  return rewards?.map((v) => {
     let itemID = v.itemId;
     if (v.type === "CURRENCY") {
       if (v.currencyTicker === "CRYSTAL") itemID = 1;
