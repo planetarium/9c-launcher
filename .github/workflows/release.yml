@@ -16,7 +16,6 @@ concurrency:
 
 jobs:
   release:
-
     strategy:
       fail-fast: false
       matrix:
@@ -47,8 +46,8 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          distribution: 'temurin'
-          java-version: '11'
+          distribution: "temurin"
+          java-version: "11"
 
       - name: Copy builder config
         shell: bash
@@ -81,11 +80,17 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install
         shell: bash
         run: yarn
+
+      - name: Set environment variables for Mac
+        if: matrix.packCmd == 'm'
+        run: |
+          echo "CSC_LINK=${{ secrets.CSC_LINK }}" >> $GITHUB_ENV
+          echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
 
       - name: release
         shell: bash
@@ -113,8 +118,6 @@ jobs:
           ESIGNER_USERNAME: ${{ secrets.ESIGNER_USERNAME }}
           ESIGNER_PASSWORD: ${{ secrets.ESIGNER_PASSWORD }}
           ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_TOTP_SECRET }}
-          ${{ matrix.packCmd == 'm' && ('CSC_LINK: ' + secrets.CSC_LINK) || '' }}
-          ${{ matrix.packCmd == 'm' && ('CSC_KEY_PASSWORD: ' + secrets.CSC_KEY_PASSWORD) || '' }}
 
       - uses: actions/upload-artifact@v3
         with:
