@@ -8,7 +8,6 @@ files:
 win:
   target:
     - "zip"
-    - "7z"
     - target: "nsis"
       arch:
         - "x64"
@@ -24,7 +23,6 @@ mac:
   target:
     - "dmg"
     - "zip"
-    - "tar.gz"
   category: "public.app-category.games"
   hardenedRuntime: true
   entitlements: "./signing/entitlements.plist"
@@ -43,7 +41,6 @@ dmg:
       path: "/Applications"
 linux:
   target:
-    - "tar.gz"
     - "zip"
     - "AppImage"
 publish:

@@ -3,8 +3,8 @@ name: Release
 on:
   push:
     branches:
-      - rc-v*
       - release/*
+      - hotfix/*
     tags: ["*"]
 
 permissions:
