@@ -51,9 +51,9 @@ function Menu() {
   const { url, resetURL } = useExternalURL();
   useEffect(() => {
     if (!url) return;
-    //if (url.pathname.startsWith("//open/monster-collection")) {
-    //  openOverlay("staking");
-    //}
+    if (url.pathname.startsWith("//open/monster-collection")) {
+      openOverlay("staking");
+    }
     if (url.pathname.startsWith("//open/transfer-asset")) {
       openOverlay("transfer");
     }
@@ -65,6 +65,16 @@ function Menu() {
 
   return (
     <MenuContainer>
+      <MenuItem
+        icon={staking}
+        text="Staking"
+        disabled={
+          !account.isLogin ||
+          !data?.stateQuery.pledge.approved ||
+          currentOverlay === "staking"
+        }
+        onClick={() => openOverlay("staking")}
+      />
       <MenuItem
         icon={ncgLogo}
         text="WNCG Staking"
@@ -109,6 +119,10 @@ function Menu() {
       />
       <SettingsOverlay
         isOpen={currentOverlay === "settings"}
+        onClose={() => openOverlay(null)}
+      />
+      <MonsterCollectionOverlay
+        isOpen={currentOverlay === "staking"}
         onClose={() => openOverlay(null)}
       />
       <TransferAssetOverlay

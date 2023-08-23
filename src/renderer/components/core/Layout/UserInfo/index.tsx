@@ -75,7 +75,7 @@ export default function UserInfo() {
       pollInterval: 1000,
     });
 
-  /*const [claimLoading, setClaimLoading] = useState<boolean>(false);
+  const [claimLoading, setClaimLoading] = useState<boolean>(false);
   useEffect(() => {
     const txStatus = result?.transaction.transactionResult.txStatus;
     if (!txStatus || txStatus === TxStatus.Staging) return;
@@ -118,7 +118,6 @@ export default function UserInfo() {
       });
     },
   });
-  */
   const tx = useTx();
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -155,6 +154,40 @@ export default function UserInfo() {
         <img src={goldIconUrl} alt="gold" />
         <strong>{Number(gold)}</strong>
       </UserInfoItem>
+      <UserInfoItem onClick={() => setCollectionOpen(true)}>
+        <img src={monsterIconUrl} width={28} alt="monster collection icon" />
+        <strong>{deposit?.replace(/\.0+$/, "") || "0"}</strong>
+        {isCollecting ? ` (Remaining ${remainingText})` : " (-)"}
+        <LaunchIcon />
+        {canClaim && (
+          <ClaimButton
+            loading={claimLoading}
+            onClick={() => setOpenDialog(true)}
+          />
+        )}
+        <ClaimCollectionRewardsOverlay
+          isOpen={openDialog}
+          onClose={() => setOpenDialog(false)}
+          tip={tip}
+          onConfirm={(avatar) => {
+            if (loginSession.publicKey) {
+              claimedAvatar.current = avatar;
+              requestClaimStakeRewardTx({
+                variables: {
+                  publicKey: loginSession.publicKey.toHex("uncompressed"),
+                  avatarAddress: avatar.address.replace(/^0x/, ""),
+                },
+              });
+            }
+
+            setOpenDialog(false);
+          }}
+        />
+      </UserInfoItem>
+      <MonsterCollectionOverlay
+        isOpen={isCollectionOpen}
+        onClose={() => setCollectionOpen(false)}
+      />
       <ExportOverlay
         isOpen={isExportKeyOpen}
         onClose={() => setExportKeyOpen(false)}
