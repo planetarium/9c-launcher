@@ -3,8 +3,8 @@ name: Release
 on:
   push:
     branches:
-      - rc-v*
       - release/*
+      - hotfix/*
     tags: ["*"]
 
 permissions:
@@ -16,7 +16,6 @@ concurrency:
 
 jobs:
   release:
-
     strategy:
       fail-fast: false
       matrix:
@@ -47,8 +46,8 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          distribution: 'temurin'
-          java-version: '11'
+          distribution: "temurin"
+          java-version: "11"
 
       - name: Copy builder config
         shell: bash
@@ -81,11 +80,17 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install
         shell: bash
         run: yarn
+
+      - name: Set environment variables for Mac
+        if: matrix.packCmd == 'm'
+        run: |
+          echo "CSC_LINK=${{ secrets.CSC_LINK }}" >> $GITHUB_ENV
+          echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
 
       - name: release
         shell: bash
@@ -108,8 +113,6 @@ jobs:
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          CSC_LINK: ${{ matrix.packCmd == 'm' && secrets.CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ matrix.packCmd == 'm' && secrets.CSC_KEY_PASSWORD || '' }}
           ESIGNER_CREDENTIAL_ID: ${{ secrets.ESIGNER_CREDENTIAL_ID }}
           ESIGNER_USERNAME: ${{ secrets.ESIGNER_USERNAME }}
           ESIGNER_PASSWORD: ${{ secrets.ESIGNER_PASSWORD }}
