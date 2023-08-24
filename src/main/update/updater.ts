@@ -35,7 +35,7 @@ class AppUpdater {
 
   async execute() {
     await this.updateOptions.downloadStarted();
-    autoUpdater.quitAndInstall(true);
+    autoUpdater.quitAndInstall(true, true);
   }
 
   handleUpdateAvailable(updateInfo: UpdateInfo) {
