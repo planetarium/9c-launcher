@@ -295,6 +295,10 @@ function initializeIpc() {
       return;
     }
 
+    if (utils.getExecutePath() === "PLAYER_UPDATE") {
+      return manualPlayerUpdate();
+    }
+
     const node = utils.execute(utils.getExecutePath(), info.args);
 
     node.on("close", (code) => {
@@ -409,25 +413,7 @@ function initializeIpc() {
 
   ipcMain.handle("manual player update", async () => {
     console.log("MANUAL PLAYER UPDATE TRIGGERED");
-    const targetOS = PLATFORM2OS_MAP[process.platform];
-    const updateUrl = `${baseUrl}/${netenv}/player`;
-    try {
-      const updateData: {
-        files: { path: string; size: number; os: string }[];
-      } = await (await fetch(`${updateUrl}/latest.json`)).json();
-      for (const file of updateData.files) {
-        if (file.os === targetOS) {
-          performPlayerUpdate(
-            win!,
-            `${updateUrl}/${file.path}`,
-            file.size,
-            updateOptions
-          );
-        }
-      }
-    } catch (e: unknown) {
-      console.error(e);
-    }
+    manualPlayerUpdate();
   });
 }
 
@@ -667,4 +653,26 @@ function initCheckForUpdateWorker(
   checkForUpdateWorker.on("exit", (code) => {
     console.log(`Child process exited with code ${code}`);
   });
+}
+
+async function manualPlayerUpdate() {
+  const targetOS = PLATFORM2OS_MAP[process.platform];
+  const updateUrl = `${baseUrl}/${netenv}/player`;
+  try {
+    const updateData: {
+      files: { path: string; size: number; os: string }[];
+    } = await (await fetch(`${updateUrl}/latest.json`)).json();
+    for (const file of updateData.files) {
+      if (file.os === targetOS) {
+        performPlayerUpdate(
+          win!,
+          `${updateUrl}/${file.path}`,
+          file.size,
+          updateOptions
+        );
+      }
+    }
+  } catch (e) {
+    console.error("Manual Player Update Failed:", e);
+  }
 }

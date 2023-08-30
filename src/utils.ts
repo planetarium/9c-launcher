@@ -287,5 +287,6 @@ export function getExecutePath() {
   if (fs.existsSync(defaultPath)) return defaultPath;
   if (fs.existsSync(legacyPath)) return legacyPath;
 
-  throw new Error("Player Binary Not Exists.");
+  console.error("Player Binary Not Exists. Trigger Player Update.");
+  return "PLAYER_UPDATE";
 }
