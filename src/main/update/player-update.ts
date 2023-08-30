@@ -5,7 +5,7 @@ import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed"
 import fs from "fs";
 import extractZip from "extract-zip";
 import { spawn as spawnPromise } from "child-process-promise";
-import { playerPath } from "src/config";
+import { get, playerPath } from "src/config";
 import { getAvailableDiskSpace } from "src/utils/file";
 import lockfile from "lockfile";
 import path from "path";
@@ -23,6 +23,14 @@ export async function performPlayerUpdate(
     console.log(
       "'encounter different version' event seems running already. Stop this flow."
     );
+    return;
+  }
+
+  if (get("PlayerUpdateRetryCount", 0) > 3) {
+    console.error("[ERROR] Player Update Failed 3 Times.");
+    win.webContents.send("go to error page", "player", {
+      url: "reinstall",
+    });
     return;
   }
 
