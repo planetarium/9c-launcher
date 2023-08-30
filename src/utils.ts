@@ -11,6 +11,12 @@ import extractZip from "extract-zip";
 import { CancellableDownloadFailedError } from "./main/exceptions/cancellable-download-failed";
 import { CancellableExtractFailedError } from "./main/exceptions/cancellable-extract-failed";
 import destr from "destr";
+import {
+  EXECUTE_PATH,
+  LEGACY_EXECUTE_PATH,
+  LEGACY_WIN_GAME_PATH,
+  WIN_GAME_PATH,
+} from "./config";
 
 const pipeline = promisify(stream.pipeline);
 
@@ -271,4 +277,15 @@ export function getType(target: any) {
 export function getVersionNumberFromAPV(apv: string): number {
   const [version] = apv.split("/");
   return parseInt(version, 10);
+}
+
+export function getExecutePath() {
+  const defaultPath = EXECUTE_PATH[process.platform] ?? WIN_GAME_PATH;
+  const legacyPath =
+    LEGACY_EXECUTE_PATH[process.platform] ?? LEGACY_WIN_GAME_PATH;
+
+  if (fs.existsSync(defaultPath)) return defaultPath;
+  if (fs.existsSync(legacyPath)) return legacyPath;
+
+  throw new Error("Player Binary Not Exists.");
 }
