@@ -218,6 +218,12 @@ export function getBlockChainStorePath(): string {
 
 export const REQUIRED_DISK_SPACE = 20n * 1000n * 1000n * 1000n;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
+export const LEGACY_MAC_GAME_PATH = path.join(
+  playerPath,
+  "9c.app/Contents/MacOS/9c"
+);
+export const LEGACY_WIN_GAME_PATH = path.join(playerPath, "9c.exe");
+export const LEGACY_LINUX_GAME_PATH = path.join(playerPath, "9c");
 export const MAC_GAME_PATH = path.join(
   playerPath,
   "NineChronicles.app/Contents/MacOS/NineChronicles"
@@ -253,6 +259,21 @@ export const EXECUTE_PATH: {
   sunos: null,
   win32: WIN_GAME_PATH,
   cygwin: WIN_GAME_PATH,
+  netbsd: null,
+};
+export const LEGACY_EXECUTE_PATH: {
+  [k in NodeJS.Platform]: string | null;
+} = {
+  aix: null,
+  android: null,
+  darwin: LEGACY_MAC_GAME_PATH,
+  freebsd: null,
+  haiku: null,
+  linux: LEGACY_LINUX_GAME_PATH,
+  openbsd: null,
+  sunos: null,
+  win32: LEGACY_WIN_GAME_PATH,
+  cygwin: LEGACY_WIN_GAME_PATH,
   netbsd: null,
 };
 export const baseUrl = get("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
