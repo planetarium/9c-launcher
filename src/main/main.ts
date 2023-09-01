@@ -3,9 +3,7 @@ import {
   configStore,
   get as getConfig,
   getBlockChainStorePath,
-  WIN_GAME_PATH,
   playerPath,
-  EXECUTE_PATH,
   MIXPANEL_TOKEN,
   initializeNode,
   NodeInfo,
@@ -175,6 +173,10 @@ async function initializeConfig() {
     // Replace config
     console.log("Replace config with remote config:", remoteConfig);
     remoteConfig.Locale = getConfig("Locale");
+    remoteConfig.PlayerUpdateRetryCount = getConfig(
+      "PlayerUpdateRetryCount",
+      0
+    );
     remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
     console.log(remoteConfig.Locale);
     configStore.store = remoteConfig;
@@ -267,11 +269,19 @@ function initializeIpc() {
       return;
     }
 
-    const node = utils.execute(
-      EXECUTE_PATH[process.platform] || WIN_GAME_PATH,
-      info.args,
-    );
+    if (utils.getExecutePath() === "PLAYER_UPDATE") {
+      configStore.set(
+        // Update Retry Counter
+        "PlayerUpdateRetryCount",
+        configStore.get("PlayerUpdateRetryCount") + 1
+      );
+      return manualPlayerUpdate();
+    }
 
+    const node = utils.execute(utils.getExecutePath(), info.args);
+    if (node !== null) {
+      configStore.set("PlayerUpdateRetryCount", 0);
+    }
     node.on("close", (code) => {
       // Code 21: ERROR_NOT_READY
       if (code === 21) {
@@ -306,6 +316,7 @@ function initializeIpc() {
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
     setV2Quitting(true);
+    configStore.set("PlayerUpdateRetryCount", 0);
     await appUpdaterInstance.execute();
   });
 
@@ -387,25 +398,7 @@ function initializeIpc() {
 
   ipcMain.handle("manual player update", async () => {
     console.log("MANUAL PLAYER UPDATE TRIGGERED");
-    const targetOS = PLATFORM2OS_MAP[process.platform];
-    const updateUrl = `${baseUrl}/${netenv}/player`;
-    try {
-      const updateData: {
-        files: { path: string; size: number; os: string }[];
-      } = await (await fetch(`${updateUrl}/latest.json`)).json();
-      for (const file of updateData.files) {
-        if (file.os === targetOS) {
-          performPlayerUpdate(
-            win!,
-            `${updateUrl}/${file.path}`,
-            file.size,
-            updateOptions,
-          );
-        }
-      }
-    } catch (e: unknown) {
-      console.error(e);
-    }
+    manualPlayerUpdate();
   });
 }
 
@@ -604,4 +597,26 @@ function initCheckForUpdateWorker(
   checkForUpdateWorker.on("exit", (code) => {
     console.log(`Child process exited with code ${code}`);
   });
+}
+
+async function manualPlayerUpdate() {
+  const targetOS = PLATFORM2OS_MAP[process.platform];
+  const updateUrl = `${baseUrl}/${netenv}/player`;
+  try {
+    const updateData: {
+      files: { path: string; size: number; os: string }[];
+    } = await (await fetch(`${updateUrl}/latest.json`)).json();
+    for (const file of updateData.files) {
+      if (file.os === targetOS) {
+        performPlayerUpdate(
+          win!,
+          `${updateUrl}/${file.path}`,
+          file.size,
+          updateOptions
+        );
+      }
+    }
+  } catch (e) {
+    console.error("Manual Player Update Failed:", e);
+  }
 }

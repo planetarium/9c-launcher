@@ -3,8 +3,8 @@ name: Release
 on:
   push:
     branches:
-      - rc-v*
       - release/*
+      - hotfix/*
     tags: ["*"]
 
 permissions:
@@ -16,14 +16,15 @@ concurrency:
 
 jobs:
   release:
-
     strategy:
       fail-fast: false
       matrix:
         include:
           - packCmd: l
             os: ubuntu-latest
-          - packCmd: mw
+          - packCmd: m
+            os: macos-latest
+          - packCmd: w
             os: macos-latest
 
     runs-on: ${{ matrix.os }}
@@ -32,21 +33,21 @@ jobs:
       name: ${{ startsWith(github.event.ref, 'refs/tags/') && 'main' || 'internal' }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.6.0
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: GitHubActions-${{ github.run_id }}
-          role-duration-seconds: 1200
+          role-duration-seconds: 3000
           aws-region: ap-northeast-2
 
       - name: Set up Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3.12.0
         with:
-          distribution: 'temurin'
-          java-version: '11'
+          distribution: "temurin"
+          java-version: "11"
 
       - name: Copy builder config
         shell: bash
@@ -71,12 +72,12 @@ jobs:
           fi
 
       - name: Cache electron-gyp
-        uses: actions/cache@v2
+        uses: actions/cache@v3.3.1
         with:
           path: ~/.electron-gyp
           key: ${{ runner.os }}-electron-gyp
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3.8.1
         with:
           node-version: 20
           cache: 'yarn'
@@ -84,6 +85,12 @@ jobs:
       - name: Install
         shell: bash
         run: yarn
+
+      - name: Set environment variables for Mac
+        if: matrix.packCmd == 'm'
+        run: |
+          echo "CSC_LINK=${{ secrets.CSC_LINK }}" >> $GITHUB_ENV
+          echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
 
       - name: release
         shell: bash
@@ -106,14 +113,12 @@ jobs:
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           ESIGNER_CREDENTIAL_ID: ${{ secrets.ESIGNER_CREDENTIAL_ID }}
           ESIGNER_USERNAME: ${{ secrets.ESIGNER_USERNAME }}
           ESIGNER_PASSWORD: ${{ secrets.ESIGNER_PASSWORD }}
           ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_TOTP_SECRET }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3.1.2
         with:
           path: dist
           name: Dist-${{ matrix.packCmd }}
