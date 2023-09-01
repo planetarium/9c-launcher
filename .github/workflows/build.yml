@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - development
+      - release/*
       - hotfix/*
       - mead/*
   pull_request:

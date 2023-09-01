@@ -27,4 +27,5 @@ export interface IConfig {
   DiscordUrl: string;
   MarketServiceUrl: string;
   TrayOnClose: boolean;
+  PlayerUpdateRetryCount: number;
 }
