@@ -79,8 +79,8 @@ jobs:
 
       - uses: actions/setup-node@v3.8.1
         with:
-          node-version: 16
-          cache: "yarn"
+          node-version: 20
+          cache: 'yarn'
 
       - name: Install
         shell: bash

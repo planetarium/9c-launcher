@@ -24,13 +24,11 @@ import {
 } from "electron";
 import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-platform";
 import { PLATFORM2OS_MAP } from "src/utils/os";
-import { enable as remoteEnable } from "@electron/remote/main";
 import path from "path";
 import fs from "fs";
 import fetch from "node-fetch";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
-import { initializeSentry } from "src/utils/sentry";
 import "core-js";
 import log from "electron-log";
 import * as utils from "src/utils";
@@ -41,15 +39,9 @@ import {
 import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
-import { v4 as ipv4 } from "public-ip";
 import { v4 as uuidv4 } from "uuid";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
-import installExtension, {
-  REACT_DEVELOPER_TOOLS,
-  MOBX_DEVTOOLS,
-  APOLLO_DEVELOPER_TOOLS,
-} from "electron-devtools-installer";
 import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import {
@@ -72,8 +64,6 @@ import {
 } from "@electron/remote/main";
 import { fork } from "child_process";
 
-initializeSentry();
-
 Object.assign(console, log.functions);
 
 const REMOTE_CONFIG_URL = `${baseUrl}/${netenv}/config.json`;
@@ -83,7 +73,6 @@ let appUpdaterInstance: AppUpdater | null = null;
 let tray: Tray;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
-let ip: string | null = null;
 let relaunched: boolean = false;
 
 let initializeHeadlessCts: {
@@ -102,8 +91,6 @@ const updateOptions: IUpdateOptions = {
   downloadStarted: quitAllProcesses,
 };
 
-ipv4().then((value) => (ip = value));
-
 const mixpanelUUID = loadInstallerMixpanelUUID();
 const mixpanel: NineChroniclesMixpanel | undefined =
   getConfig("Mixpanel") && process.env.NODE_ENV === "production"
@@ -120,7 +107,7 @@ client
     if (delta > 15000) {
       dialog.showErrorBox(
         "Computer Time Incorrect",
-        "The current computer time is incorrect. Please sync your computer's time correctly."
+        "The current computer time is incorrect. Please sync your computer's time correctly.",
       );
     }
   })
@@ -168,7 +155,7 @@ async function initializeConfig() {
     if (!exists) {
       console.log(
         "Remote not exists, Replace config with remote config:",
-        remoteConfig
+        remoteConfig,
       );
       configStore.store = remoteConfig;
       return;
@@ -178,7 +165,7 @@ async function initializeConfig() {
     const remoteConfigVersion = remoteConfig.ConfigVersion;
     if (localConfigVersion > remoteConfigVersion) {
       console.log(
-        `Local config is newer than remote, ignore. (local: ${localConfigVersion}, remote: ${remoteConfigVersion})`
+        `Local config is newer than remote, ignore. (local: ${localConfigVersion}, remote: ${remoteConfigVersion})`,
       );
       return;
     }
@@ -195,7 +182,7 @@ async function initializeConfig() {
     configStore.store = remoteConfig;
   } catch (error) {
     console.error(
-      `An unexpected error occurred during fetching remote config. ${error}`
+      `An unexpected error occurred during fetching remote config. ${error}`,
     );
   }
 
@@ -209,21 +196,13 @@ async function initializeApp() {
     "ninechronicles-launcher",
     process.execPath,
     [!app.isPackaged && path.resolve(process.argv[1]), "--protocol"].filter(
-      Boolean
-    )
+      Boolean,
+    ),
   );
   console.log("isProtocolSet", isProtocolSet);
 
   app.on("ready", async () => {
     remoteInitialize();
-    if (process.env.NODE_ENV !== "production")
-      await installExtension([
-        REACT_DEVELOPER_TOOLS,
-        MOBX_DEVTOOLS,
-        APOLLO_DEVELOPER_TOOLS,
-      ])
-        .then((name) => console.log(`Added Extension:  ${name}`))
-        .catch((err) => console.log("An error occurred: ", err));
 
     win = await createV2Window();
 
@@ -262,7 +241,7 @@ async function initializeApp() {
     // Detects and move old snapshot caches as they're unused.
     // Ignores any failure as they're not critical.
     fg("snapshot-*", { cwd: app.getPath("userData") }).then((files) =>
-      Promise.allSettled(files.map((file) => fs.promises.unlink(file)))
+      Promise.allSettled(files.map((file) => fs.promises.unlink(file))),
     );
     console.log("main initializeApp call initializeRemoteHeadless");
     initializeRemoteHeadless();
@@ -331,6 +310,9 @@ function initializeIpc() {
     return true;
   });
 
+  ipcMain.on("min", () => win?.minimize());
+  ipcMain.on("max", () => win?.maximize());
+
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
     setV2Quitting(true);
@@ -370,7 +352,7 @@ function initializeIpc() {
       const guidPath = path.join(
         localAppData,
         "planetarium",
-        ".aws_sink_cloudwatch_guid"
+        ".aws_sink_cloudwatch_guid",
       );
 
       if (fs.existsSync(guidPath)) {
@@ -393,7 +375,7 @@ function initializeIpc() {
       mixpanel?.track(eventName, {
         ...param,
       });
-    }
+    },
   );
 
   ipcMain.on("mixpanel-alias", async (_, alias: string) => {
@@ -429,14 +411,14 @@ async function initializeRemoteHeadless(): Promise<void> {
 
   if (initializeHeadlessCts !== null) {
     console.error(
-      "Cannot initialize remote headless while initializing headless."
+      "Cannot initialize remote headless while initializing headless.",
     );
     return;
   }
 
   if (isUpdating()) {
     console.error(
-      "Cannot initialize remote headless while updater is running."
+      "Cannot initialize remote headless while updater is running.",
     );
     return;
   }
@@ -451,7 +433,7 @@ async function initializeRemoteHeadless(): Promise<void> {
     await remoteHeadless.execute();
   } catch (error) {
     console.error(
-      `Error occurred during initialize remote headless(). ${error}`
+      `Error occurred during initialize remote headless(). ${error}`,
     );
     if (
       error instanceof HeadlessInitializeError ||
@@ -469,47 +451,6 @@ async function initializeRemoteHeadless(): Promise<void> {
     console.log("initialize remote headless() finished.");
     initializeHeadlessCts = null;
   }
-}
-
-async function createWindow(): Promise<BrowserWindow> {
-  const _win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true,
-      preload: path.join(app.getAppPath(), "preload.js"),
-    },
-    frame: true,
-    autoHideMenuBar: true,
-    icon: path.join(app.getAppPath(), logoImage),
-  });
-  remoteEnable(_win.webContents);
-
-  _win.setResizable(false); // see: https://github.com/electron/electron/issues/19565#issuecomment-867283465
-
-  console.log(app.getAppPath());
-
-  if (process.env.NODE_ENV !== "production") {
-    await _win.loadURL("http://localhost:9000");
-    await _win.webContents.openDevTools();
-  } else {
-    _win.loadFile("index.html");
-  }
-
-  _win.on("close", function (event: any) {
-    if (!isQuiting) {
-      event.preventDefault();
-      _win?.hide();
-    }
-  });
-
-  _win.webContents.on("new-window", function (event: any, url: string) {
-    event.preventDefault();
-    shell.openExternal(url);
-  });
-
-  return _win;
 }
 
 /**
@@ -585,7 +526,7 @@ function createTray(iconPath: string) {
           app.quit();
         },
       },
-    ])
+    ]),
   );
   tray.on("click", function () {
     win?.show();
@@ -607,7 +548,7 @@ function relaunch() {
 
 function initCheckForUpdateWorker(
   win: BrowserWindow,
-  appUpdaterInstance: AppUpdater
+  appUpdaterInstance: AppUpdater,
 ) {
   interface Message {
     type: string;
@@ -631,7 +572,7 @@ function initCheckForUpdateWorker(
         os,
         baseUrl: publishedStorageBaseUrl,
       },
-    }
+    },
   );
 
   checkForUpdateWorker.on("message", (message: Message) => {
@@ -644,7 +585,7 @@ function initCheckForUpdateWorker(
     }
     if (message.type === "log") {
       console[message.level as "debug" | "error" | "log"](
-        "[checkForUpdateWorker] " + message.body
+        "[checkForUpdateWorker] " + message.body,
       );
     }
   });

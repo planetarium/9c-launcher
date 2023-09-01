@@ -1,15 +1,14 @@
-const path = require("path");
-const HtmlPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { DefinePlugin, IgnorePlugin } = require("webpack");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const SentryWebpackPlugin = require("@sentry/webpack-plugin");
-const { version } = require("./package.json");
-const TerserPlugin = require("terser-webpack-plugin");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+import path from "path";
+import fs from "fs";
+import HtmlPlugin from "html-webpack-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import webpack, { DefinePlugin, IgnorePlugin } from "webpack";
+import { version } from "./package.json";
+import TerserPlugin from "terser-webpack-plugin";
+import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 
-const child_process = require("child_process");
+import child_process from "child_process";
 
 // const to avoid typos
 const DEVELOPMENT = "development";
@@ -19,8 +18,10 @@ const gitHash = child_process.execSync("git rev-parse HEAD", {
   encoding: "utf8",
 });
 
-/** @returns {import('webpack').Configuration} */
-function createRenderConfig(isDev, DEFAULT_NETWORK) {
+function createRenderConfig(
+  isDev: boolean,
+  DEFAULT_NETWORK: "main" | "internal" | "previewnet",
+) {
   return {
     context: path.join(__dirname, "src"),
 
@@ -52,7 +53,7 @@ function createRenderConfig(isDev, DEFAULT_NETWORK) {
       path: path.join(__dirname, "build"),
       publicPath: isDev ? "/" : undefined,
       clean: {
-        keep: /^9c$|\.(?:exe|dll|json|app|so|debug)$|(?:9c_Data|MonoBleedingEdge|publish|9c.app)[\\\/]/,
+        keep: /^9c$|\.(?:exe|dll|json|app|so|debug)$|(?:9c_Data|MonoBleedingEdge|publish|9c.app)[\\\\/]/,
       },
     },
 
@@ -96,7 +97,7 @@ function createRenderConfig(isDev, DEFAULT_NETWORK) {
                 [
                   "@babel/preset-env",
                   {
-                    targets: { electron: "20.0.1" },
+                    targets: { electron: "25" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -141,8 +142,9 @@ function createRenderConfig(isDev, DEFAULT_NETWORK) {
         filename: "index.html", // output HTML files
         chunks: ["render"], // respective JS files
       }),
+
       new DefinePlugin({
-        CURRENT_VERSION: JSON.stringify(require("./package.json").version),
+        CURRENT_VERSION: JSON.stringify(version),
       }),
 
       isDev && new ReactRefreshWebpackPlugin(),
@@ -150,11 +152,12 @@ function createRenderConfig(isDev, DEFAULT_NETWORK) {
 
     devServer: isDev
       ? {
-          contentBase: path.join(__dirname, "build"),
+          static: {
+            directory: path.join(__dirname, "build"),
+          },
           compress: true,
           port: 9000,
           historyApiFallback: true,
-          hot: true,
         }
       : undefined,
 
@@ -188,8 +191,10 @@ function createRenderConfig(isDev, DEFAULT_NETWORK) {
   };
 }
 
-/** @returns {import('webpack').Configuration} */
-function createMainConfig(isDev, DEFAULT_NETWORK) {
+function createMainConfig(
+  isDev: boolean,
+  DEFAULT_NETWORK: "main" | "internal" | "previewnet",
+) {
   return {
     context: path.join(__dirname, "src"),
 
@@ -243,7 +248,7 @@ function createMainConfig(isDev, DEFAULT_NETWORK) {
                 [
                   "@babel/preset-env",
                   {
-                    targets: { node: "16.15.0" },
+                    targets: { node: "20.5.0" },
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -263,14 +268,7 @@ function createMainConfig(isDev, DEFAULT_NETWORK) {
         {
           test: /\.(svg|jpg|png)$/,
           exclude: /node_modules/,
-          use: {
-            loader: "file-loader",
-            options: {},
-          },
-        },
-        {
-          test: /\.node$/,
-          loader: "node-loader",
+          type: "asset/resource",
         },
       ],
     },
@@ -293,11 +291,6 @@ function createMainConfig(isDev, DEFAULT_NETWORK) {
         "process.env.DEFAULT_NETWORK": JSON.stringify(DEFAULT_NETWORK),
       }),
 
-      // electron-packager needs the package.json file. the "../" is because context is set to the ./src folder
-      new CopyWebpackPlugin({
-        patterns: [{ from: "package.json", to: "./", context: "../" }],
-      }),
-
       new IgnorePlugin({
         resourceRegExp: /^(utf-8-validate|bufferutil)/, // fix intended missing dependencies
       }),
@@ -310,37 +303,25 @@ function createMainConfig(isDev, DEFAULT_NETWORK) {
   };
 }
 
-module.exports = (env) => {
+module.exports = (env: any): webpack.Configuration => {
   // env variable is passed by webpack through the cli. see package.json scripts.
   const isDev = env.NODE_ENV === DEVELOPMENT;
-  const { target, release, DEFAULT_NETWORK } = env;
+  const { target, DEFAULT_NETWORK } = env;
 
   const configFactory =
     target === "main" ? createMainConfig : createRenderConfig;
   const config = configFactory(isDev, DEFAULT_NETWORK);
-  if (release) {
-    config.plugins.push(
-      new SentryWebpackPlugin({
-        // sentry-cli configuration
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: "planetariumhq",
-        project: "9c-launcher",
-        // webpack specific configuration
-        include: ".",
-        ignore: ["node_modules", "webpack.config.js"],
-        release: version,
-        debug: true,
-      })
-    );
-  }
+
+  // electron-packager needs the package.json file.
+  fs.cpSync("package.json", "./build/package.json");
 
   console.log(
     `\n##\n## BUILDING BUNDLE FOR: ${
       target === "main" ? "main process" : "render process"
     }\n## CONFIGURATION: ${
       isDev ? DEVELOPMENT : PRODUCTION
-    }\n## VERSION: ${version}\n##\n`
+    }\n## VERSION: ${version}\n##\n`,
   );
 
-  return config;
+  return config as webpack.Configuration;
 };

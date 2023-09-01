@@ -35,7 +35,7 @@ export async function getKeyStorePath(): Promise<string> {
     const legacyPath = path.join(
       app.getPath("appData"),
       "planetarium",
-      "keystore"
+      "keystore",
     );
 
     // If the legacy keystore directory exists but is already migrated,
@@ -66,7 +66,7 @@ export async function getKeyStorePath(): Promise<string> {
       if (match === null) continue;
       await fs.promises.copyFile(
         path.join(legacyPath, dirEntry.name),
-        path.join(keyStorePath, dirEntry.name)
+        path.join(keyStorePath, dirEntry.name),
       );
     }
 
@@ -76,7 +76,7 @@ export async function getKeyStorePath(): Promise<string> {
       `All key files in this directory are migrated to the new path.
 This file is used to prevent the keystore from being migrated again.
 See also: ${keyStorePath}
-Migrated at: ${new Date().toISOString()}\n`
+Migrated at: ${new Date().toISOString()}\n`,
     );
   }
 
@@ -139,7 +139,7 @@ export default class AccountStore {
 
   getAccount = async (
     address: string | Address,
-    passphrase: string
+    passphrase: string,
   ): Promise<RawPrivateKey | undefined> => {
     const keyId = await this.findKeyIdByAddress(address);
     if (keyId == null) return undefined;
@@ -175,7 +175,7 @@ export default class AccountStore {
   };
 
   findKeyIdByAddress = async (
-    address: string | Address
+    address: string | Address,
   ): Promise<KeyId | undefined> => {
     if (typeof address === "string") {
       try {
@@ -197,7 +197,7 @@ export default class AccountStore {
   @action
   importRaw = async (
     privateKeyHex: string | RawPrivateKey,
-    passphrase: string
+    passphrase: string,
   ): Promise<Web3Account> => {
     const keyStore = await this.getKeyStore(passphrase);
     const privateKey =
@@ -214,7 +214,7 @@ export default class AccountStore {
       throw new Error(
         account.result === "error"
           ? account.message
-          : "Key not found; something went wrong"
+          : "Key not found; something went wrong",
       );
     }
     this.addresses.push(await account.account.getAddress());
@@ -250,7 +250,7 @@ export default class AccountStore {
     const existingKeyId = await this.findKeyIdByAddress(address);
     const account = await this.importRaw(
       this._privateKeyToRecovery,
-      passphrase
+      passphrase,
     );
 
     if (existingKeyId != null) {
@@ -278,7 +278,7 @@ export default class AccountStore {
           if (file.includes(keyId)) {
             const filePath = path.join(dir, file);
             const data = JSON.stringify(
-              JSON.parse(await fs.promises.readFile(filePath, "ascii"))
+              JSON.parse(await fs.promises.readFile(filePath, "ascii")),
             ); // parse -> stringify trip to minimize.
             return data;
           }
