@@ -3,6 +3,7 @@
   "exclude": [
     "node_modules/**/*",
     "src/generated/**/*",
+    "**/storybook-static/**",
   ],
   "compilerOptions": {
     /* Basic Options */

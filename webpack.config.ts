@@ -99,14 +99,13 @@ function createRenderConfig(
                   {
                     targets: { electron: "25" },
                     useBuiltIns: "entry",
-                    corejs: 3,
+                    corejs: 3.32,
                   },
                 ],
               ],
               plugins: [
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
                 ["@babel/plugin-transform-class-properties"],
-
                 isDev && "react-refresh/babel",
               ].filter(Boolean),
               sourceMaps: isDev,
