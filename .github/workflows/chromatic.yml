@@ -24,4 +24,4 @@ jobs:
       - run: yarn codegen
 
       - name: Run Chromatic
-        run: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN} --exit-zero-on-changes
+        run: yarn chromatic --project-token=${{secrets.CHROMATIC_PROJECT_TOKEN}} --exit-zero-on-changes

@@ -12,7 +12,6 @@ module.exports = {
     "@storybook/preset-scss",
     "storybook-addon-apollo-client",
   ],
-
   webpackFinal: async (config, { configType }) => {
     const custom = rendererConfig({
       NODE_ENV: process.env.NODE_ENV || "development",
@@ -48,7 +47,6 @@ module.exports = {
 
   framework: {
     name: "@storybook/react-webpack5",
-
     options: {
       fastRefresh: true,
     },
