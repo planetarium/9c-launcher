@@ -5,7 +5,6 @@ pack
 .DS_Store
 .blockstore
 electron-builder.yml
-storybook-static
 
 # ignore generated file by graphql-code-generator.
 src/generated
@@ -30,3 +29,7 @@ report.html
 
 # tmp dir
 /tmp
+
+#Ignore storybook build file
+storybook-static
+

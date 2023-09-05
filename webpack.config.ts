@@ -7,13 +7,10 @@ import webpack, { DefinePlugin, IgnorePlugin } from "webpack";
 import { version } from "./package.json";
 import TerserPlugin from "terser-webpack-plugin";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
-
 import child_process from "child_process";
-
 // const to avoid typos
 const DEVELOPMENT = "development";
 const PRODUCTION = "production";
-
 const gitHash = child_process.execSync("git rev-parse HEAD", {
   encoding: "utf8",
 });
@@ -24,9 +21,7 @@ function createRenderConfig(
 ) {
   return {
     context: path.join(__dirname, "src"),
-
     target: "electron-renderer",
-
     resolve: {
       extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
       alias: {
@@ -38,15 +33,11 @@ function createRenderConfig(
         fs: false,
       },
     },
-
     mode: isDev ? DEVELOPMENT : PRODUCTION,
-
     devtool: isDev && "eval-cheap-module-source-map",
-
     entry: {
       render: "./renderer/render.tsx",
     },
-
     output: {
       filename: isDev ? "[name].js" : "[name].[contenthash].js",
       assetModuleFilename: "assets/[hash][ext][query]",
@@ -56,15 +47,12 @@ function createRenderConfig(
         keep: /^9c$|\.(?:exe|dll|json|app|so|debug)$|(?:9c_Data|MonoBleedingEdge|publish|9c.app)[\\\\/]/,
       },
     },
-
     externalsPresets: {
       electronRenderer: true,
     },
-
     externals: {
       "spawn-sync": "require('child_process').spawnSync", // fix child-process-promise/cross
     },
-
     module: {
       rules: [
         {
@@ -120,31 +108,25 @@ function createRenderConfig(
         },
       ],
     },
-
     plugins: [
       new MiniCssExtractPlugin({
         filename: "main.css",
       }),
-
       new DefinePlugin({
         GIT_HASH: JSON.stringify(gitHash),
         "process.type": JSON.stringify("renderer"),
         "process.env.DEFAULT_NETWORK": JSON.stringify(DEFAULT_NETWORK),
       }),
-
       new HtmlPlugin({
         template: "index.html", // relative path to the HTML files
         filename: "index.html", // output HTML files
         chunks: ["render"], // respective JS files
       }),
-
       new DefinePlugin({
         CURRENT_VERSION: JSON.stringify(version),
       }),
-
       isDev && new ReactRefreshWebpackPlugin(),
     ].filter(Boolean),
-
     devServer: isDev
       ? {
           static: {
@@ -155,7 +137,6 @@ function createRenderConfig(
           historyApiFallback: true,
         }
       : undefined,
-
     optimization: {
       minimize: !isDev,
       minimizer: [new TerserPlugin()],
@@ -192,16 +173,12 @@ function createMainConfig(
 ) {
   return {
     context: path.join(__dirname, "src"),
-
     target: "electron-main",
-
     mode: isDev ? DEVELOPMENT : PRODUCTION,
-
     entry: {
       main: "./main/main.ts",
       checkForUpdateWorker: "./worker/checkForUpdateWorker.js",
     },
-
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
       alias: {
@@ -209,27 +186,21 @@ function createMainConfig(
         src: path.resolve(__dirname, "src"),
       },
     },
-
     ignoreWarnings: [
       /^Critical dependency:/, // fix keyv and got using weird tricks to avoid webpack
     ],
-
     devtool: "source-map",
-
     externalsPresets: {
       node: true,
       electronMain: true,
     },
-
     externals: {
       "spawn-sync": "require('child_process').spawnSync", // fix child-process-promise/cross
     },
-
     output: {
       filename: "[name].js",
       path: path.join(__dirname, "build"),
     },
-
     module: {
       rules: [
         {
@@ -260,30 +231,24 @@ function createMainConfig(
         },
       ],
     },
-
     stats: {
       warningsFilter: [
         /Can't resolve '(@planetarium|\.)\/check-free-space-/, // Rust bindings tries to import everything by default
       ],
     },
-
     plugins: [
       new CleanWebpackPlugin({
         cleanOnceBeforeBuildPatterns: ["main-process.*.js"],
-      }),
-
-      // inject this becaus the main process uses different logic for prod and dev.
+      }), // inject this becaus the main process uses different logic for prod and dev.
       new DefinePlugin({
         ENVIRONMENT: JSON.stringify(isDev ? DEVELOPMENT : PRODUCTION), // this variable name must match the one declared in the main process file.
         "process.type": JSON.stringify("browser"),
         "process.env.DEFAULT_NETWORK": JSON.stringify(DEFAULT_NETWORK),
       }),
-
       new IgnorePlugin({
         resourceRegExp: /^(utf-8-validate|bufferutil)/, // fix intended missing dependencies
       }),
     ],
-
     optimization: {
       minimize: !isDev,
       minimizer: [new TerserPlugin()],
