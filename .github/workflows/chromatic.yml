@@ -13,6 +13,8 @@ jobs:
       image: node:lts
     steps:
       - uses: actions/checkout@v3.6.0
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v3.8.1
         with:
