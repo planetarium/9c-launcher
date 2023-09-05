@@ -1,12 +1,11 @@
-name: Update Translations
+name: Chromatic
 
 on:
   push:
-    branches:
-      - development
+    branches: ["*"]
 
 jobs:
-  update-translations:
+  styles:
     runs-on: ubuntu-latest
     container:
       image: node:lts
@@ -22,8 +21,7 @@ jobs:
         shell: bash
         run: yarn
 
-      - name: Update Translations
-        run: yarn update-translations
-        env:
-          TRANSIFEX_SECRET: ${{ secrets.TRANSIFEX_SECRET }}
-          TRANSIFEX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN }}
+      - run: yarn codegen
+
+      - name: Run Chromatic
+        run: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN} --exit-zero-on-changes
