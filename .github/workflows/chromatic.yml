@@ -5,7 +5,7 @@ on:
     branches: ["*"]
 
 jobs:
-  styles:
+  chromatic:
     runs-on: ubuntu-latest
     container:
       image: node:lts
