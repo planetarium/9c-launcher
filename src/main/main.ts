@@ -175,7 +175,7 @@ async function initializeConfig() {
     remoteConfig.Locale = getConfig("Locale");
     remoteConfig.PlayerUpdateRetryCount = getConfig(
       "PlayerUpdateRetryCount",
-      0
+      0,
     );
     remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
     console.log(remoteConfig.Locale);
@@ -273,7 +273,7 @@ function initializeIpc() {
       configStore.set(
         // Update Retry Counter
         "PlayerUpdateRetryCount",
-        configStore.get("PlayerUpdateRetryCount") + 1
+        configStore.get("PlayerUpdateRetryCount") + 1,
       );
       return manualPlayerUpdate();
     }
@@ -612,7 +612,7 @@ async function manualPlayerUpdate() {
           win!,
           `${updateUrl}/${file.path}`,
           file.size,
-          updateOptions
+          updateOptions,
         );
       }
     }

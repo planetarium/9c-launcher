@@ -93,7 +93,7 @@ function useRewards(levels: LevelList, index: number = 0) {
     () =>
       bonusRewards &&
       new Map(bonusRewards.map((v) => [v.itemId, v.count] as const)),
-    [bonusRewards]
+    [bonusRewards],
   );
 
   return rewards?.map((v) => {
@@ -138,17 +138,17 @@ export function MonsterCollectionContent({
 
   const deposit = useMemo(
     () => stakeState && new Decimal(stakeState.deposit),
-    [stakeState]
+    [stakeState],
   );
   const amountDecimal = useMemo(() => new Decimal(amount || 0), [amount]);
   const levels = useMemo(
     () => sheet?.orderedList.filter((v) => v.level !== 0),
-    [sheet]
+    [sheet],
   );
 
   const availableNCG = useMemo(
     () => deposit?.add(currentNCG) ?? new Decimal(currentNCG),
-    [deposit, currentNCG]
+    [deposit, currentNCG],
   );
 
   const currentIndex = useRewardIndex(levels, deposit ?? new Decimal(0));

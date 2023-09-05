@@ -47,7 +47,7 @@ function StatusBar() {
             onClick={() => {
               const privateKeyBytes = loginSession.privateKey.toBytes();
               return game.startGame(
-                Buffer.from(privateKeyBytes).toString("hex")
+                Buffer.from(privateKeyBytes).toString("hex"),
               );
             }}
           >

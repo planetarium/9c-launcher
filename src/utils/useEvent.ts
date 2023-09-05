@@ -7,7 +7,7 @@ import { useRef, useLayoutEffect, useCallback } from "react";
  * @returns An event handler with an always-stable function identity.
  */
 export function useEvent<F extends (...args: unknown[]) => unknown>(
-  handler: F
+  handler: F,
 ): F {
   const handlerRef = useRef<F>();
 

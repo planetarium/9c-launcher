@@ -49,7 +49,7 @@ export default function Migration({
           .then(
             (txId) =>
               txId.data?.stageTransaction &&
-              onActionTxId(txId.data.stageTransaction)
+              onActionTxId(txId.data.stageTransaction),
           )
           .catch((e) => console.error(e));
       },
@@ -60,10 +60,10 @@ export default function Migration({
     () =>
       collectionSheet?.orderedList
         ?.flatMap((item) =>
-          item && item.level <= collectionState.level ? item.requiredGold : []
+          item && item.level <= collectionState.level ? item.requiredGold : [],
         )
         .reduce((a, b) => a + b, 0),
-    [collectionState, collectionSheet]
+    [collectionState, collectionSheet],
   );
   const elapsedBlocks = tip - collectionState.startedBlockIndex;
   const elapsed = getRemain(elapsedBlocks);

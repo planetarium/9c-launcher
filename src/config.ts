@@ -24,7 +24,7 @@ export const configStore = new Store<IConfig>({
 
 const network = configStore.get(
   "Network",
-  process.env.DEFAULT_NETWORK || "main"
+  process.env.DEFAULT_NETWORK || "main",
 );
 // Removed 9c prefix
 export const netenv = network === "9c-main" ? "main" : network;
@@ -34,7 +34,7 @@ export const userConfigStore = new Store<IConfig>({
 
 export const playerPath = path.join(
   app.getPath("userData"),
-  `player/${netenv}`
+  `player/${netenv}`,
 );
 
 const LocalServerUrl = (): string => {
@@ -50,7 +50,7 @@ export class NodeInfo {
     host: string,
     graphqlPort: number,
     rpcPort: number,
-    nodeNumber: number
+    nodeNumber: number,
   ) {
     this.host = host;
     this.graphqlPort = graphqlPort;
@@ -121,14 +121,14 @@ const NodeList = async (): Promise<NodeInfo[]> => {
         } catch (e) {
           console.error(e);
         }
-      })
+      }),
   );
   return nodeList;
 };
 
 const NonStaleNodeList = (
   nodeList: NodeInfo[],
-  staleThreshold: number
+  staleThreshold: number,
 ): NodeInfo[] => {
   if (staleThreshold < 0) {
     return nodeList;
@@ -149,7 +149,7 @@ const clientWeightedSelector = (nodeList: NodeInfo[]): NodeInfo => {
   let weightSum = 0;
   return nodeList[
     weightList.findIndex(
-      (weight) => (weightSum += weight) && weightSum >= target
+      (weight) => (weightSum += weight) && weightSum >= target,
     )
   ];
 };
@@ -202,7 +202,7 @@ export const blockchainStoreDirParent =
 
 export function get<K extends keyof IConfig>(
   key: K,
-  defaultValue?: Required<IConfig>[K]
+  defaultValue?: Required<IConfig>[K],
 ): IConfig[K] {
   if (userConfigStore.has(key)) {
     return userConfigStore.get(key);
@@ -220,13 +220,13 @@ export const REQUIRED_DISK_SPACE = 20n * 1000n * 1000n * 1000n;
 export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
 export const LEGACY_MAC_GAME_PATH = path.join(
   playerPath,
-  "9c.app/Contents/MacOS/9c"
+  "9c.app/Contents/MacOS/9c",
 );
 export const LEGACY_WIN_GAME_PATH = path.join(playerPath, "9c.exe");
 export const LEGACY_LINUX_GAME_PATH = path.join(playerPath, "9c");
 export const MAC_GAME_PATH = path.join(
   playerPath,
-  "NineChronicles.app/Contents/MacOS/NineChronicles"
+  "NineChronicles.app/Contents/MacOS/NineChronicles",
 );
 export const WIN_GAME_PATH = path.join(playerPath, "NineChronicles.exe");
 export const LINUX_GAME_PATH = path.join(playerPath, "NineChronicles");
@@ -289,7 +289,9 @@ export async function initializeNode(): Promise<NodeInfo> {
   console.log("config initialize complete");
   const nodeInfo = clientWeightedSelector(nodeList);
   console.log(
-    `selected node: ${nodeInfo.HeadlessUrl()}, clients: ${nodeInfo.clientCount}`
+    `selected node: ${nodeInfo.HeadlessUrl()}, clients: ${
+      nodeInfo.clientCount
+    }`,
   );
   return nodeInfo;
 }

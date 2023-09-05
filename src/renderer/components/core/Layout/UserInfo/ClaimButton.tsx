@@ -27,7 +27,7 @@ export function ClaimButton({ loading, onClick }: ClaimButtonProps) {
       e.stopPropagation();
       onClick();
     },
-    [onClick]
+    [onClick],
   );
 
   return (

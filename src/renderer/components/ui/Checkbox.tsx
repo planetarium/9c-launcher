@@ -37,7 +37,7 @@ function Checkbox(
     children,
     ...props
   }: React.PropsWithChildren<React.HTMLAttributes<HTMLInputElement>>,
-  ref: React.Ref<HTMLInputElement>
+  ref: React.Ref<HTMLInputElement>,
 ) {
   return (
     <Label>

@@ -24,7 +24,7 @@ function CreateKeyView() {
     trackEvent("Launcher/CreatePrivateKey");
     const account: Web3Account = await accountStore.importRaw(
       utils.bytesToHex(utils.randomPrivateKey()),
-      password
+      password,
     );
 
     await accountStore.login(account, password);

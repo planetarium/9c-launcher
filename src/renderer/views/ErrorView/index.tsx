@@ -95,7 +95,7 @@ function ErrorView() {
                   Number(state.context.data.size),
                   {
                     unitSeparator: " ",
-                  }
+                  },
                 )}.`
               : ""}
           </>

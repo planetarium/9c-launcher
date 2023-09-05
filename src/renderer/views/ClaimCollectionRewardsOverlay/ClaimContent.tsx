@@ -58,16 +58,16 @@ function ClaimContent({
         name: x.name,
         updatedAt: x.updatedAt,
       })),
-    [data]
+    [data],
   );
 
   const [currentAvatarIndex, setCurrentAvatarIndex] = useReducer(
     (_: number, action: string) => Number(action),
-    0
+    0,
   );
   const currentAvatar = useMemo(
     () => avatars?.[currentAvatarIndex],
-    [avatars, currentAvatarIndex]
+    [avatars, currentAvatarIndex],
   );
   const hasMultipleAvatars = !avatars || avatars.length !== 1;
 

@@ -25,7 +25,7 @@ export function useTip() {
               offset = Date.now() + TIMEOUT;
               setTip(tip);
             },
-            { timeout: offset - Date.now() }
+            { timeout: offset - Date.now() },
           );
         },
         error(error) {
