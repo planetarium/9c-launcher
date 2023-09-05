@@ -8,7 +8,7 @@ export const handleDetailView = (tx: string) => {
         shell.openExternal(`https://9cscan.com/tx/${tx}`);
       else
         shell.openExternal(
-          `https://explorer.libplanet.io/${network}/transaction/?${tx}`
+          `https://explorer.libplanet.io/${network}/transaction/?${tx}`,
         );
     });
   }

@@ -18,7 +18,7 @@ const UPDATED_ADDRESSES = new Uint8Array([0x75]); // 'u'
 
 export async function signTransactionDictionary(
   txDict: Dictionary,
-  account: Account
+  account: Account,
 ): Promise<Dictionary> {
   const pairs: [Key, Value][] = [];
   for (const [key, value] of txDict.entries()) {
@@ -32,7 +32,7 @@ export async function signTransactionDictionary(
 
 export async function signTransactionBytes(
   txBytes: Uint8Array,
-  account: Account
+  account: Account,
 ): Promise<Uint8Array> {
   const txDict = decode(txBytes);
   if (!isDictionary(txDict)) {
@@ -44,7 +44,7 @@ export async function signTransactionBytes(
 
 export async function signTransactionHex(
   txHex: string,
-  account: Account
+  account: Account,
 ): Promise<string> {
   const txBytes = new Uint8Array(Buffer.from(txHex, "hex"));
   const signedTxBytes = await signTransactionBytes(txBytes, account);
@@ -53,7 +53,7 @@ export async function signTransactionHex(
 
 export async function addUpdatedAddressesToTransactionHex(
   txHex: string,
-  addresses: Key[]
+  addresses: Key[],
 ): Promise<string> {
   const txBytes = Buffer.from(txHex, "hex");
   const txDict = decode(txBytes);

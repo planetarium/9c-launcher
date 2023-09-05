@@ -41,7 +41,7 @@ const playerUpdate = {
         src: () =>
           invokeIpcEvent<MachineEvent>(
             "update player download complete",
-            "EXTRACT"
+            "EXTRACT",
           ),
       },
     },
@@ -55,7 +55,7 @@ const playerUpdate = {
           src: () =>
             invokeIpcEvent<MachineEvent>(
               "update player extract complete",
-              "DONE"
+              "DONE",
             ),
         },
       ],
@@ -83,7 +83,7 @@ export const updateMachine = createMachine<
             src: () =>
               invokeIpcEvent<MachineEvent>(
                 "update player download started",
-                "PLAYER_DOWNLOAD"
+                "PLAYER_DOWNLOAD",
               ),
           },
         ],
@@ -124,7 +124,7 @@ export const updateMachine = createMachine<
         data: event.type === "ERROR" ? event.data : context.data,
       })),
     },
-  }
+  },
 );
 
 export const updateService = interpret(updateMachine, {

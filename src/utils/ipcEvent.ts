@@ -9,7 +9,7 @@ import type { EventName, ArgumentOf } from "src/renderer/ipcTokens";
 
 export function listenIpcEvent(
   eventName: string,
-  callback: (event: IpcRendererEvent, ...args: any[]) => void
+  callback: (event: IpcRendererEvent, ...args: any[]) => void,
 ) {
   return () => {
     ipcRenderer.on(eventName, callback);
@@ -23,18 +23,18 @@ type EventThunk<E extends EventObject, Arguments extends Array<any> = any[]> =
 
 export function invokeIpcEvent<
   E extends EventObject,
-  IPCEvent extends EventName
+  IPCEvent extends EventName,
 >(
   eventName: IPCEvent,
-  eventThunk: EventThunk<E, ArgumentOf<IPCEvent>>
+  eventThunk: EventThunk<E, ArgumentOf<IPCEvent>>,
 ): InvokeCallback<AnyEventObject, E>;
 export function invokeIpcEvent<E extends EventObject>(
   eventName: string,
-  eventThunk: EventThunk<E>
+  eventThunk: EventThunk<E>,
 ): InvokeCallback<AnyEventObject, E>;
 export function invokeIpcEvent<E extends EventObject>(
   eventName: string,
-  ev: EventThunk<E>
+  ev: EventThunk<E>,
 ): InvokeCallback<AnyEventObject, E> {
   return (cb) => {
     const handler = (...args: any[]) => {

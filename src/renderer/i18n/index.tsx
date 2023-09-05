@@ -24,7 +24,7 @@ export function LocaleProvider({ children }: React.PropsWithChildren<{}>) {
 
   useEffect(() => {
     const unsubscribe = userConfigStore.onDidChange("Locale", (v) =>
-      setLocale(v ?? "en")
+      setLocale(v ?? "en"),
     );
     return () => void unsubscribe();
   }, []);

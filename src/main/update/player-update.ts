@@ -15,13 +15,13 @@ export async function performPlayerUpdate(
   win: Electron.BrowserWindow,
   downloadUrl: string,
   size: number,
-  updateOptions: IUpdateOptions
+  updateOptions: IUpdateOptions,
 ) {
   const lockfilePath = getLockfilePath();
 
   if (lockfile.checkSync(lockfilePath)) {
     console.log(
-      "'encounter different version' event seems running already. Stop this flow."
+      "'encounter different version' event seems running already. Stop this flow.",
     );
     return;
   }
@@ -38,7 +38,7 @@ export async function performPlayerUpdate(
     lockfile.lockSync(lockfilePath);
     console.log(
       "Created 'encounter different version' lockfile at ",
-      lockfilePath
+      lockfilePath,
     );
   } catch (e) {
     console.error("Error occurred during trying lock.");
@@ -51,14 +51,14 @@ export async function performPlayerUpdate(
   lockfile.unlockSync(lockfilePath);
   console.log(
     "Removed 'encounter different version' lockfile at ",
-    lockfilePath
+    lockfilePath,
   );
 }
 
 async function playerUpdate(
   win: Electron.BrowserWindow,
   downloadUrl: string,
-  size: number
+  size: number,
 ) {
   console.log("Start player update, from: ", downloadUrl);
   win.webContents.send("update player download started");
@@ -86,7 +86,7 @@ async function playerUpdate(
     onProgress: (status: IDownloadProgress) => {
       const percent = (status.percent * 100) | 0;
       console.log(
-        `[player] Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`
+        `[player] Downloading ${downloadUrl}: ${status.transferredBytes}/${status.totalBytes} (${percent}%)`,
       );
       win.webContents.send("update player download progress", status);
     },
@@ -117,7 +117,7 @@ async function playerUpdate(
       "[player] Start to extract the zip archive",
       dlPath,
       "to",
-      playerPath
+      playerPath,
     );
 
     try {
@@ -143,7 +143,7 @@ async function playerUpdate(
       "[player] Start to extract the tarball archive",
       dlPath,
       "to",
-      playerPath
+      playerPath,
     );
     win.webContents.send("update player extract progress", 50);
 
@@ -151,7 +151,7 @@ async function playerUpdate(
       await spawnPromise(
         "tar",
         [`xvf${bz2 ? "j" : "z"}`, dlPath, "-C", playerPath],
-        { capture: ["stdout", "stderr"] }
+        { capture: ["stdout", "stderr"] },
       );
     } catch (e) {
       win.webContents.send("go to error page", "player", {

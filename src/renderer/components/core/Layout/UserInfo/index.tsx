@@ -112,7 +112,7 @@ export default function UserInfo() {
             _tags: "v2/monster-collection",
             name: avatar.name,
             address: avatar.address.slice(2),
-          })
+          }),
         );
         setClaimLoading(true);
       });

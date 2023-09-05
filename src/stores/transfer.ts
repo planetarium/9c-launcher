@@ -25,18 +25,18 @@ export interface ITransferStore {
     recipient: string,
     amount: Decimal,
     memo: string,
-    account: Account
+    account: Account,
   ) => Promise<string>;
   swapToWNCG: (
     sender: string,
     recipient: string,
     amount: Decimal,
-    account: Account
+    account: Account,
   ) => Promise<string>;
   confirmTransaction: (
     txId: TxId,
     timeout: number | undefined,
-    listener: TransactionConfirmationListener
+    listener: TransactionConfirmationListener,
   ) => Promise<void>;
   updateBalance: (senderAddress: string) => Promise<Decimal>;
   updateSdk: (sdk: GraphQLSDK) => void;
@@ -92,7 +92,7 @@ export default class TransferStore implements ITransferStore {
     recipient: string,
     amount: Decimal,
     memo: string,
-    account: Account
+    account: Account,
   ): Promise<TxId> => {
     if (sender.startsWith("0x")) {
       sender = sender.replace("0x", "");
@@ -124,9 +124,9 @@ export default class TransferStore implements ITransferStore {
       const signedTx = await signTransactionHex(
         await addUpdatedAddressesToTransactionHex(
           data.actionTxQuery.transferAsset,
-          updatedAddresses
+          updatedAddresses,
         ),
-        account
+        account,
       );
       const TxResult = await this.graphqlSdk.stageTransaction({
         payload: signedTx,
@@ -144,14 +144,14 @@ export default class TransferStore implements ITransferStore {
     sender: string,
     recipient: string,
     amount: Decimal,
-    account: Account
+    account: Account,
   ): Promise<TxId> => {
     return await this.transferAsset(
       sender,
       this.bridgeAddress,
       amount,
       recipient,
-      account
+      account,
     );
   };
 
@@ -163,7 +163,7 @@ export default class TransferStore implements ITransferStore {
       onSuccess: TxExecutionCallback;
       onFailure: TxExecutionCallback;
       onTimeout: TxExecutionCallback;
-    }
+    },
   ): Promise<void> => {
     const txStatus = await this.graphqlSdk.TransactionResult({ txId });
     if (!txStatus.data) {

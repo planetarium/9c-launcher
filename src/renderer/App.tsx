@@ -19,8 +19,8 @@ function App() {
   ipcRenderer.invoke("get-node-info").then((node: NodeInfo) => {
     transfer.updateSdk(
       getSdk(
-        new GraphQLClient(`http://${node.host}:${node.graphqlPort}/graphql`)
-      )
+        new GraphQLClient(`http://${node.host}:${node.graphqlPort}/graphql`),
+      ),
     );
   });
 

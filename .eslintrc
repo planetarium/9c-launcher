@@ -4,10 +4,12 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier",
+    "prettier"
   ],
   "ignorePatterns": [
-    "**/generated/**"
+    "**/generated/**",
+    "**/storybook-static/**",
+    "**/src/worker/**"
   ],
   "rules": {
     "jsx-a11y/alt-text": 0,
@@ -30,7 +32,6 @@
         "extendDefaults": true
       }
     ]
-    
   },
   "globals": {
     "window": true,

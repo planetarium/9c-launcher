@@ -15,7 +15,7 @@ type FolderChooserProps<T extends FieldValues = FieldValues> =
   UseControllerProps<T>;
 
 export default function FolderChooser<T extends FieldValues = FieldValues>(
-  props: FolderChooserProps<T>
+  props: FolderChooserProps<T>,
 ) {
   const { field } = useController(props);
   const [value, setValue] = useState<string>(field.value);

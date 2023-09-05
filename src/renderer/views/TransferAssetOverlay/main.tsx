@@ -105,7 +105,7 @@ function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
           },
         },
       }),
-    []
+    [],
   );
 
   const getMenuItem = (menuItem: MenuItems) => {

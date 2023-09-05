@@ -76,7 +76,7 @@ function TransferPage() {
   const [tx, setTx] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
   const [currentPhase, setCurrentPhase] = useState<TransferPhase>(
-    TransferPhase.READY
+    TransferPhase.READY,
   );
 
   const listener: TransactionConfirmationListener = {
@@ -120,7 +120,7 @@ function TransferPage() {
       recipient,
       amount,
       memo,
-      privateKey
+      privateKey,
     );
     setTx(tx);
 
@@ -187,7 +187,7 @@ function TransferPage() {
             name="amount"
             onChange={(e) =>
               setAmount(
-                new Decimal(e.target.value === "" ? -1 : e.target.value)
+                new Decimal(e.target.value === "" ? -1 : e.target.value),
               )
             }
             onBlur={() => setAmountWarning(!amount.gt(0))}

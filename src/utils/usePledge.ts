@@ -15,8 +15,8 @@ export function usePledge() {
     const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
     const sdks = getSdk(
       new GraphQLClient(
-        `http://${nodeInfo.host}:${nodeInfo.graphqlPort}/graphql`
-      )
+        `http://${nodeInfo.host}:${nodeInfo.graphqlPort}/graphql`,
+      ),
     );
 
     try {
@@ -62,7 +62,7 @@ export function usePledge() {
 
         step = "stageApprovePledgeTx";
         const { data: txData } = await tx(
-          approvePledgeTx?.actionTxQuery.approvePledge
+          approvePledgeTx?.actionTxQuery.approvePledge,
         );
         if (!txData?.stageTransaction) {
           throw Error("Tx Staging Failed");
@@ -78,7 +78,7 @@ export function usePledge() {
                 switch (data.transaction.transactionResult.txStatus) {
                   case "SUCCESS":
                     console.log(
-                      `approvePledge Tx Staging Success: ${txData.stageTransaction}`
+                      `approvePledge Tx Staging Success: ${txData.stageTransaction}`,
                     );
                     clearTimeout(timeoutId);
                     clearInterval(intervalId);
@@ -89,8 +89,8 @@ export function usePledge() {
                     clearInterval(intervalId);
                     reject(
                       new Error(
-                        `approvePledge Tx Staging Failed: ${txData.stageTransaction}`
-                      )
+                        `approvePledge Tx Staging Failed: ${txData.stageTransaction}`,
+                      ),
                     );
                     break;
                   case "INVALID":

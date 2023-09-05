@@ -99,18 +99,13 @@ function createRenderConfig(
                   {
                     targets: { electron: "25" },
                     useBuiltIns: "entry",
-                    corejs: 3,
+                    corejs: 3.32,
                   },
                 ],
               ],
               plugins: [
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
-                ["@babel/plugin-proposal-class-properties", { loose: true }],
-                ["@babel/plugin-proposal-private-methods", { loose: true }],
-                [
-                  "@babel/plugin-proposal-private-property-in-object",
-                  { loose: true },
-                ],
+                ["@babel/plugin-transform-class-properties"],
                 isDev && "react-refresh/babel",
               ].filter(Boolean),
               sourceMaps: isDev,
@@ -250,18 +245,11 @@ function createMainConfig(
                   {
                     targets: { node: "20.5.0" },
                     useBuiltIns: "entry",
-                    corejs: 3,
+                    corejs: 3.32,
                   },
                 ],
               ],
-              plugins: [
-                ["@babel/plugin-proposal-class-properties", { loose: true }],
-                ["@babel/plugin-proposal-private-methods", { loose: true }],
-                [
-                  "@babel/plugin-proposal-private-property-in-object",
-                  { loose: true },
-                ],
-              ],
+              plugins: [],
             },
           },
         },

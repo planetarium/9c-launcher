@@ -26,7 +26,7 @@ declare module "refiner-js" {
   ): ReturnType<Methods[T]>;
   function _refiner<T extends keyof Callbacks>(
     callback: T,
-    fn: Callbacks[T]
+    fn: Callbacks[T],
   ): void;
 
   export = _refiner;

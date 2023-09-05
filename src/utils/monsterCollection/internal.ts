@@ -8,7 +8,7 @@ type SheetResponse = NonNullable<
 >[0];
 
 export function mapSheetResponseToSheet(
-  response: SheetResponse
+  response: SheetResponse,
 ): CollectionSheetItem {
   if (!response) throw new Error("response is null");
   return {

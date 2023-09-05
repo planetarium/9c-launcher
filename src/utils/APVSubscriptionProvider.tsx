@@ -17,25 +17,25 @@ export default function APVSubscriptionProvider({
       "update extract progress",
       (_event, progress: IDownloadProgress) => {
         send({ type: "UPDATE_PROGRESS", progress: progress.percent * 100 });
-      }
+      },
     );
     ipcRenderer.on(
       "update download progress",
       (_event, progress: IDownloadProgress) => {
         send({ type: "UPDATE_PROGRESS", progress: progress.percent * 100 });
-      }
+      },
     );
     ipcRenderer.on(
       "update player extract progress",
       (_event, progress: IDownloadProgress) => {
         send({ type: "UPDATE_PROGRESS", progress: progress.percent * 100 });
-      }
+      },
     );
     ipcRenderer.on(
       "update player download progress",
       (_event, progress: IDownloadProgress) => {
         send({ type: "UPDATE_PROGRESS", progress: progress.percent * 100 });
-      }
+      },
     );
   }, []);
 

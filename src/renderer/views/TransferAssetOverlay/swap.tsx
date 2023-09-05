@@ -80,7 +80,7 @@ function SwapPage() {
   const [tx, setTx] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
   const [currentPhase, setCurrentPhase] = useState<TransferPhase>(
-    TransferPhase.READY
+    TransferPhase.READY,
   );
 
   const listener: TransactionConfirmationListener = {
@@ -118,7 +118,7 @@ function SwapPage() {
       transfer.senderAddress,
       recipient,
       amount,
-      loginSession.privateKey
+      loginSession.privateKey,
     );
     setTx(tx);
 

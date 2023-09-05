@@ -59,7 +59,7 @@ export const preloadMachine = createMachine<
             src: () =>
               invokeIpcEvent<PreloadMachineEvent>(
                 "start remote headless",
-                "REMOTE_HEADLESS"
+                "REMOTE_HEADLESS",
               ),
           },
         ],
@@ -92,7 +92,7 @@ export const preloadMachine = createMachine<
             type: "ERROR",
             error,
             data,
-          })
+          }),
         ),
     },
   },
@@ -109,7 +109,7 @@ export const preloadMachine = createMachine<
         data: event.type === "ERROR" ? event.data : context.data,
       })),
     },
-  }
+  },
 );
 
 export const preloadService = interpret(preloadMachine, {

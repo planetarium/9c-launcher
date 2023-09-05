@@ -3,7 +3,7 @@ import { ArgumentOf, EventName } from "src/renderer/ipcTokens";
 
 export function on<T extends EventName>(
   channel: T,
-  listener: (event: IpcRendererEvent, ...args: ArgumentOf<T>) => void
+  listener: (event: IpcRendererEvent, ...args: ArgumentOf<T>) => void,
 ) {
   // @ts-expect-error - ipcRenderer.on is not typed
   ipcRenderer.on(channel, listener);
@@ -13,7 +13,7 @@ export function on<T extends EventName>(
 
 export function once<T extends EventName>(
   channel: T,
-  listener: (event: IpcRendererEvent, ...args: ArgumentOf<T>) => void
+  listener: (event: IpcRendererEvent, ...args: ArgumentOf<T>) => void,
 ) {
   // @ts-expect-error - ipcRenderer.on is not typed
   ipcRenderer.once(channel, listener);
