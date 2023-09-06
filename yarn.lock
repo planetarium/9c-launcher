@@ -9160,7 +9160,7 @@ __metadata:
     dompurify: ^3.0.3
     dotenv: ^8.2.0
     eip55: ^2.1.1
-    electron: ^25.3.2
+    electron: ^25.5.0
     electron-builder: ^24.2.1
     electron-devtools-installer: ^3.2.0
     electron-dl: ^3.0.2
@@ -13287,16 +13287,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^25.3.2":
-  version: 25.3.2
-  resolution: "electron@npm:25.3.2"
+"electron@npm:^25.5.0":
+  version: 25.8.0
+  resolution: "electron@npm:25.8.0"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^18.11.18
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: ea30c161cbebc505752d2f7d9ee34a671fbab4b6c140220e1e66c06effdee6cf3295aaadefafa96a1e35b1bb87ddb8fcf7e9d9e3cd4b7c0fd264961793bb7133
+  checksum: 3d9c3dbf299ce4e0f2cd81f7836574d199b8fb5a3bab3f98c052f212f895183bc15c1509acf64b356cb4ea29f559cbd51ae456fc4caa66dae0cf224b3c987973
   languageName: node
   linkType: hard
 
