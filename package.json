@@ -64,6 +64,7 @@
     "@stitches/react": "^1.2.8",
     "@transifex/native": "^3.0.0",
     "@transifex/react": "^3.0.0",
+    "@types/deep-equal": "^1.0.1",
     "@types/lockfile": "^1.0.1",
     "@types/react-router": "^5.1.7",
     "@types/react-router-dom": "^5.1.5",
