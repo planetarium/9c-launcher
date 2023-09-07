@@ -313,9 +313,14 @@ export function MonsterCollectionContent({
               </DepositLeftButton>
               <DepositRightButton
                 disabled={
-                  amountDecimal.gt(availableNCG) ||
-                  (deposit && deposit.eq(0) && amountDecimal.eq(0)) ||
-                  (isLockedUp && amountDecimal.lt(stakeState.deposit))
+                  amountDecimal.gt(availableNCG) || // exceed balance
+                  (deposit && deposit.eq(0) && amountDecimal.eq(0)) || // 0 to 0
+                  (isLockedUp &&
+                    isMigratable &&
+                    amountDecimal.lt(stakeState.deposit)) || // lockup limit handle on migratable
+                  (isLockedUp &&
+                    !isMigratable &&
+                    amountDecimal.lte(stakeState.deposit)) // lockup limit handle on non-migratable
                 }
               >
                 Save
