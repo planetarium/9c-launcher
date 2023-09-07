@@ -620,16 +620,16 @@ function MonsterCollectionOverlay(
   return (
     <MonsterCollectionOverlayBase as="main">
       <MonsterCollectionContent
-        sheet={sheet}
+        latestSheet={sheet}
         current={current}
         currentNCG={500}
         isLoading={loading}
         onClose={() => {}}
         tip={100}
         {...props}
-        onChangeAmount={async (amount) => {
+        onStake={async (amount) => {
           setLoading(true);
-          await props.onChangeAmount?.(amount);
+          await props.onStake?.(amount);
           await new Promise((res) => setTimeout(res, 1000));
           client.writeQuery({
             query: UserStakingDocument,

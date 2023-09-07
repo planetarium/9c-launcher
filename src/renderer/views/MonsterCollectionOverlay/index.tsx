@@ -70,10 +70,10 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
       <MonsterCollectionContent
-        sheet={latestSheet}
+        latestSheet={latestSheet}
         current={userStaking}
         currentNCG={balance}
-        onChangeAmount={(amount) => {
+        onStake={(amount) => {
           setLoading(true);
           trackEvent("Staking/AmountChange", {
             amount: amount.toString(),
