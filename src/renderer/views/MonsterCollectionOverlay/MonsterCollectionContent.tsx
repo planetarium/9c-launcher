@@ -1,5 +1,7 @@
 import Decimal from "decimal.js";
+import deepEqual from "deep-equal";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import {
   DepositRightButton,
   DepositLeftButton,
@@ -14,14 +16,11 @@ import {
   Title,
 } from "./base";
 import { Item, ItemGroup, RewardSheet, RewardSheetPlaceholder } from "./reward";
-import deepEqual from "deep-equal";
+import { Level, Levels } from "./level";
 
 import BareInput from "src/renderer/components/ui/BareInput";
 import titleImg from "src/renderer/resources/collection/title.png";
-import { Level, Levels } from "./level";
-
 import loadingImg from "src/renderer/resources/collection/loading.png";
-
 import monster1Img from "src/renderer/resources/collection/monster-1.png";
 import monster2Img from "src/renderer/resources/collection/monster-2.png";
 import monster3Img from "src/renderer/resources/collection/monster-3.png";
@@ -29,19 +28,19 @@ import monster4Img from "src/renderer/resources/collection/monster-4.png";
 import monster5Img from "src/renderer/resources/collection/monster-5.png";
 import monster6Img from "src/renderer/resources/collection/monster-6.png";
 import monster7Img from "src/renderer/resources/collection/monster-7.png";
-import itemMetadata from "src/utils/monsterCollection/items";
 
+import itemMetadata from "src/utils/monsterCollection/items";
 import systemRewards from "src/utils/monsterCollection/systemRewards";
 
-import { AnimatePresence } from "framer-motion";
-import {
-  UserStakingQuery,
-  LatestStakingSheetQuery,
-} from "src/generated/graphql";
 import { CloseButton } from "src/renderer/components/core/OverlayBase";
 import { getRemain } from "src/utils/monsterCollection/utils";
 import { useEvent } from "src/utils/useEvent";
 import { Alert } from "./dialog";
+
+import {
+  UserStakingQuery,
+  LatestStakingSheetQuery,
+} from "src/generated/graphql";
 
 declare global {
   interface Array<T> {
@@ -61,6 +60,22 @@ interface MonsterCollectionOverlayProps {
   children?: React.ReactNode;
 }
 
+type LevelList =
+  | NonNullable<
+      LatestStakingSheetQuery["stateQuery"]["latestStakeRewards"]
+    >["orderedList"]
+  | null
+  | undefined;
+
+type Rewards = {
+  count(amount: Decimal): Decimal;
+  __typename?: "StakeRegularRewardInfoType" | undefined;
+  itemId: number;
+  decimalRate: Decimal;
+}[];
+
+type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
+
 const images = [
   monster1Img,
   monster2Img,
@@ -71,26 +86,12 @@ const images = [
   monster7Img,
 ];
 
-type LevelList =
-  | NonNullable<
-      LatestStakingSheetQuery["stateQuery"]["latestStakeRewards"]
-    >["orderedList"]
-  | null
-  | undefined;
-
 function useRewardIndex(levels: LevelList, amount: Decimal = new Decimal(0)) {
   return useMemo(() => {
     const index = levels?.findLastIndex((v) => amount?.gte(v.requiredGold));
     return index != null && index !== -1 ? index : null;
   }, [amount, levels]);
 }
-
-type Rewards = {
-  count(amount: Decimal): Decimal;
-  __typename?: "StakeRegularRewardInfoType" | undefined;
-  itemId: number;
-  decimalRate: Decimal;
-}[];
 
 function useRewards(levels: LevelList, index: number = 0) {
   const rewards = levels?.[index]?.rewards;
@@ -119,8 +120,6 @@ function useRewards(levels: LevelList, index: number = 0) {
     };
   });
 }
-
-type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
 
 export function MonsterCollectionContent({
   sheet: {
