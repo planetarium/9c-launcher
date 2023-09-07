@@ -27,7 +27,7 @@ import { toast } from "react-hot-toast";
 import { useT } from "@transifex/react";
 import { useBalance } from "src/utils/useBalance";
 import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverlay";
-import { useStaking } from "src/utils/staking";
+import { useUserStaking } from "src/utils/staking";
 import { useTx } from "src/utils/useTx";
 import { trackEvent } from "src/utils/mixpanel";
 import { useLoginSession } from "src/utils/useLoginSession";
@@ -69,7 +69,7 @@ export default function UserInfo() {
     claimableBlockIndex,
     deposit,
     refetch,
-  } = useStaking();
+  } = useUserStaking();
   const [fetchResult, { data: result, stopPolling }] =
     useTransactionResultLazyQuery({
       pollInterval: 1000,

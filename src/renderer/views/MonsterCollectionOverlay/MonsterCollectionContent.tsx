@@ -33,7 +33,10 @@ import itemMetadata from "src/utils/monsterCollection/items";
 import systemRewards from "src/utils/monsterCollection/systemRewards";
 
 import { AnimatePresence } from "framer-motion";
-import { CurrentStakingQuery, StakingSheetQuery } from "src/generated/graphql";
+import {
+  UserStakingQuery,
+  LatestStakingSheetQuery,
+} from "src/generated/graphql";
 import { CloseButton } from "src/renderer/components/core/OverlayBase";
 import { getRemain } from "src/utils/monsterCollection/utils";
 import { useEvent } from "src/utils/useEvent";
@@ -46,8 +49,8 @@ declare global {
 }
 
 interface MonsterCollectionOverlayProps {
-  sheet: StakingSheetQuery;
-  current: CurrentStakingQuery;
+  sheet: LatestStakingSheetQuery;
+  current: UserStakingQuery;
   isEditing?: boolean;
   currentNCG: number;
   onChangeAmount(amount: Decimal): void;
@@ -68,7 +71,9 @@ const images = [
 ];
 
 type LevelList =
-  | NonNullable<StakingSheetQuery["stateQuery"]["stakeRewards"]>["orderedList"]
+  | NonNullable<
+      LatestStakingSheetQuery["stateQuery"]["latestStakeRewards"]
+    >["orderedList"]
   | null
   | undefined;
 
@@ -118,7 +123,7 @@ type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
 
 export function MonsterCollectionContent({
   sheet: {
-    stateQuery: { stakeRewards: sheet },
+    stateQuery: { latestStakeRewards: sheet },
   },
   current: {
     stateQuery: { stakeState },

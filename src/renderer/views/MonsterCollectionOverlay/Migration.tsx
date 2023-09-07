@@ -1,6 +1,6 @@
 import React, { useMemo, useReducer } from "react";
 import {
-  LegacyCollectionStateQuery,
+  V1CollectionStateQuery,
   useMigrateMonsterCollectionLazyQuery,
 } from "src/generated/graphql";
 import { MigrationAlert, MigrationAlertItem } from "./dialog";
@@ -12,9 +12,9 @@ import { useLoginSession } from "src/utils/useLoginSession";
 interface MigrationProps {
   tip: number;
   collectionState: NonNullable<
-    LegacyCollectionStateQuery["stateQuery"]["monsterCollectionState"]
+    V1CollectionStateQuery["stateQuery"]["monsterCollectionState"]
   >;
-  collectionSheet: LegacyCollectionStateQuery["stateQuery"]["monsterCollectionSheet"];
+  collectionSheet: V1CollectionStateQuery["stateQuery"]["monsterCollectionSheet"];
   onActionTxId(txId: string): void;
   onClose?(): void;
 }

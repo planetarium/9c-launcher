@@ -2,10 +2,10 @@ import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import {
   TxStatus,
-  useCurrentStakingQuery,
-  useLegacyCollectionStateQuery,
+  useUserStakingQuery,
+  useV1CollectionStateQuery,
   useStakeLazyQuery,
-  useStakingSheetQuery,
+  useLatestStakingSheetQuery,
   useTransactionResultLazyQuery,
 } from "src/generated/graphql";
 import { sleep } from "src/utils";
@@ -21,13 +21,14 @@ import { MonsterCollectionOverlayBase } from "./base";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const loginSession = useLoginSession();
-  const { data: sheet } = useStakingSheetQuery();
-  const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
-    variables: { address: loginSession?.address?.toString() },
-    skip: !loginSession,
-  });
-  const { data: collection, refetch: refetchCollection } =
-    useLegacyCollectionStateQuery({
+  const { data: latestSheet } = useLatestStakingSheetQuery();
+  const { data: userStaking, refetch: refetchUserStaking } =
+    useUserStakingQuery({
+      variables: { address: loginSession?.address?.toString() },
+      skip: !loginSession,
+    });
+  const { data: V1Collection, refetch: refetchV1Collection } =
+    useV1CollectionStateQuery({
       variables: { address: loginSession?.address?.toString() },
       skip: !loginSession,
     });
@@ -48,8 +49,8 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   useEffect(() => {
     if (!txStatus) return;
     if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
-      refetchStaking();
-      refetchCollection();
+      refetchUserStaking();
+      refetchV1Collection();
     }
     if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
@@ -57,19 +58,20 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     }
   }, [txStatus]);
 
-  if (!sheet || !current || !collection || !tip || !loginSession) return null;
+  if (!latestSheet || !userStaking || !V1Collection || !tip || !loginSession)
+    return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
       <MonsterCollectionContent
-        sheet={sheet}
-        current={current}
+        sheet={latestSheet}
+        current={userStaking}
         currentNCG={balance}
         onChangeAmount={(amount) => {
           setLoading(true);
           trackEvent("Staking/AmountChange", {
             amount: amount.toString(),
-            previousAmount: current.stateQuery.stakeState?.deposit,
+            previousAmount: userStaking.stateQuery.stakeState?.deposit,
           });
           try {
             stake({
@@ -95,17 +97,17 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         tip={tip}
         isLoading={isLoading}
       >
-        {collection.stateQuery.monsterCollectionState && !isLoading && (
+        {V1Collection.stateQuery.monsterCollectionState && !isLoading && (
           <Migration
             tip={tip}
-            collectionState={collection.stateQuery.monsterCollectionState}
-            collectionSheet={collection.stateQuery.monsterCollectionSheet}
+            collectionState={V1Collection.stateQuery.monsterCollectionState}
+            collectionSheet={V1Collection.stateQuery.monsterCollectionSheet}
             onActionTxId={(txId) => {
               setLoading(true);
               trackEvent("Staking/Migration", {
                 txId,
                 tip,
-                level: collection.stateQuery.monsterCollectionState?.level,
+                level: V1Collection.stateQuery.monsterCollectionState?.level,
               });
               fetchStatus({ variables: { txId } });
             }}
