@@ -14,6 +14,7 @@ import {
   LoadingDescription,
   LoadingImage,
   Title,
+  MigrateLeftButton,
 } from "./base";
 import { Item, ItemGroup, RewardSheet, RewardSheetPlaceholder } from "./reward";
 import { Level, Levels } from "./level";
@@ -161,11 +162,18 @@ export function MonsterCollectionContent({
   const selectedIndex = useRewardIndex(levels, amountDecimal);
   const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
+  const [isMigratable, setIsMigratable] = useState<boolean>(
+    !!deposit &&
+      deposit.gt(0) &&
+      !deepEqual(stakeState?.stakeRewards, sheet, { strict: true }),
+  );
+
   useEffect(() => {
     if (stakeState?.deposit) setAmount(stakeState.deposit.replace(/\.0+$/, ""));
   }, [stakeState]);
 
   const changeAmount = useEvent(() => {
+    if (amountDecimal.eq(deposit!)) setIsMigratable(false);
     onChangeAmount(amountDecimal);
     setIsAlertOpen(null);
     setIsEditing(false);
@@ -293,7 +301,7 @@ export function MonsterCollectionContent({
               <DepositRightButton
                 disabled={
                   amountDecimal.gt(availableNCG) ||
-                  (deposit && amountDecimal.eq(deposit)) ||
+                  (deposit && deposit.eq(0) && amountDecimal.eq(0)) ||
                   (isLockedUp && amountDecimal.lt(stakeState.deposit))
                 }
               >
@@ -302,10 +310,16 @@ export function MonsterCollectionContent({
             </>
           ) : (
             <>
-              <DepositContent>
+              <DepositContent onClick={() => inputRef.current?.focus()}>
                 {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
                 <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
+                {isMigratable && (
+                  <input hidden value={stakeState?.deposit} type="number" />
+                )}
               </DepositContent>
+              {isMigratable && (
+                <MigrateLeftButton type="submit">Migrate</MigrateLeftButton>
+              )}
               <DepositRightButton
                 type="button"
                 onClick={(e) => {
@@ -400,9 +414,10 @@ export function MonsterCollectionContent({
         onConfirm={changeAmount}
         isOpen={openedAlert === "confirm-changes"}
       >
-        When the deposit amount is modified, the daily count is initialized to
-        0. <br />
-        The reward is given every week and cannot be changed to a small amount
+        When you create new stake contract,
+        <br />
+        the daily count is initialized to 0. <br />
+        The reward is given every week and cannot be changed to a less amount
         within 28 days.
         <br />
         Do you want to proceed?
