@@ -12868,21 +12868,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dns-packet@npm:^5.1.2":
-  version: 5.2.1
-  resolution: "dns-packet@npm:5.2.1"
-  dependencies:
-    ip: ^1.1.5
-  checksum: d8b0f541318c12e404b86faf3e66db1c7641ef02102f6b5eb5f1a1600f5e57d543b132ebc1cea7da6075bb4390f565d31ebfd36da5476efbcf8c19ec7f8ba12d
-  languageName: node
-  linkType: hard
-
-"dns-packet@npm:^5.2.2":
-  version: 5.6.0
-  resolution: "dns-packet@npm:5.6.0"
+"dns-packet@npm:^5.1.2, dns-packet@npm:^5.2.2":
+  version: 5.6.1
+  resolution: "dns-packet@npm:5.6.1"
   dependencies:
     "@leichtgewicht/ip-codec": ^2.0.1
-  checksum: 1b643814e5947a87620f8a906287079347492282964ce1c236d52c414e3e3941126b96581376b180ba6e66899e70b86b587bc1aa23e3acd9957765be952d83fc
+  checksum: 64c06457f0c6e143f7a0946e0aeb8de1c5f752217cfa143ef527467c00a6d78db1835cfdb6bb68333d9f9a4963cf23f410439b5262a8935cce1236f45e344b81
   languageName: node
   linkType: hard
 
