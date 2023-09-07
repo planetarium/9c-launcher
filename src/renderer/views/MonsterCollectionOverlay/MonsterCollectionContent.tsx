@@ -230,6 +230,7 @@ export function MonsterCollectionContent({
     <>
       <CloseButton onClick={() => onClose()} />
       <Title src={titleImg} />
+      // Loading Part
       <AnimatePresence>
         {isLoading && (
           <LoadingBackdrop
@@ -242,6 +243,7 @@ export function MonsterCollectionContent({
           </LoadingBackdrop>
         )}
       </AnimatePresence>
+      // Input Part
       <DepositHolder>
         <DepositForm
           onSubmit={(e) => {
@@ -331,6 +333,7 @@ export function MonsterCollectionContent({
           </DepositDescription>
         )}
       </DepositHolder>
+      // Levels in "Latest Sheet"
       <Levels>
         {levels.map((item, index) => (
           <Level
@@ -346,6 +349,7 @@ export function MonsterCollectionContent({
           />
         ))}
       </Levels>
+      // Reward Enumerate
       <AnimatePresence exitBeforeEnter>
         {currentRewards ? (
           <RewardSheet>
@@ -377,6 +381,7 @@ export function MonsterCollectionContent({
           <RewardSheetPlaceholder />
         )}
       </AnimatePresence>
+      // Alert Overlays
       <Alert
         title="Information"
         onCancel={() => setIsAlertOpen(null)}
