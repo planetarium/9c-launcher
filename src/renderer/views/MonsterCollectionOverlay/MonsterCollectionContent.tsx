@@ -1,8 +1,8 @@
 import Decimal from "decimal.js";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  DepositButton2,
-  DepositCancelButton,
+  DepositRightButton,
+  DepositLeftButton,
   DepositContent,
   DepositDescription,
   DepositForm,
@@ -14,6 +14,7 @@ import {
   Title,
 } from "./base";
 import { Item, ItemGroup, RewardSheet, RewardSheetPlaceholder } from "./reward";
+import deepEqual from "deep-equal";
 
 import BareInput from "src/renderer/components/ui/BareInput";
 import titleImg from "src/renderer/resources/collection/title.png";
@@ -146,6 +147,7 @@ export function MonsterCollectionContent({
     [stakeState],
   );
   const amountDecimal = useMemo(() => new Decimal(amount || 0), [amount]);
+
   const levels = useMemo(
     () => sheet?.orderedList.filter((v) => v.level !== 0),
     [sheet],
@@ -280,7 +282,7 @@ export function MonsterCollectionContent({
                 />
                 <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
               </DepositContent>
-              <DepositCancelButton
+              <DepositLeftButton
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -288,8 +290,8 @@ export function MonsterCollectionContent({
                 }}
               >
                 Cancel
-              </DepositCancelButton>
-              <DepositButton2
+              </DepositLeftButton>
+              <DepositRightButton
                 disabled={
                   amountDecimal.gt(availableNCG) ||
                   (deposit && amountDecimal.eq(deposit)) ||
@@ -297,7 +299,7 @@ export function MonsterCollectionContent({
                 }
               >
                 Save
-              </DepositButton2>
+              </DepositRightButton>
             </>
           ) : (
             <>
@@ -305,7 +307,7 @@ export function MonsterCollectionContent({
                 {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
                 <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
               </DepositContent>
-              <DepositButton2
+              <DepositRightButton
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -313,7 +315,7 @@ export function MonsterCollectionContent({
                 }}
               >
                 Edit
-              </DepositButton2>
+              </DepositRightButton>
             </>
           )}
         </DepositForm>

@@ -166,7 +166,7 @@ export const DepositContent = styled("div", {
   },
 });
 
-export const DepositButton2 = styled("button", {
+export const DepositRightButton = styled("button", {
   appearance: "none",
   border: "none",
   backgroundColor: "transparent",
@@ -202,7 +202,7 @@ export const DepositButton2 = styled("button", {
   },
 });
 
-export const DepositCancelButton = styled("button", {
+export const DepositLeftButton = styled("button", {
   appearance: "none",
   border: "none",
   backgroundColor: "transparent",
