@@ -15,7 +15,7 @@ import { useBalance } from "src/utils/useBalance";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { useTip } from "src/utils/useTip";
 import { useTx } from "src/utils/useTx";
-import Migration from "./Migration";
+// import Migration from "./Migration";
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { MonsterCollectionOverlayBase } from "./base";
 
@@ -27,11 +27,12 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
       variables: { address: loginSession?.address?.toString() },
       skip: !loginSession,
     });
-  const { data: V1Collection, refetch: refetchV1Collection } =
+  /*  const { data: V1Collection, refetch: refetchV1Collection } =
     useV1CollectionStateQuery({
       variables: { address: loginSession?.address?.toString() },
       skip: !loginSession,
     });
+*/
   const balance = useBalance();
   const tip = useTip();
 
@@ -50,7 +51,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     if (!txStatus) return;
     if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
       refetchUserStaking();
-      refetchV1Collection();
+      //refetchV1Collection();
     }
     if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
@@ -58,7 +59,12 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     }
   }, [txStatus]);
 
-  if (!latestSheet || !userStaking || !V1Collection || !tip || !loginSession)
+  if (
+    !latestSheet ||
+    !userStaking /* || !V1Collection */ ||
+    !tip ||
+    !loginSession
+  )
     return null;
 
   return (
@@ -96,25 +102,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         onClose={onClose}
         tip={tip}
         isLoading={isLoading}
-      >
-        {V1Collection.stateQuery.monsterCollectionState && !isLoading && (
-          <Migration
-            tip={tip}
-            collectionState={V1Collection.stateQuery.monsterCollectionState}
-            collectionSheet={V1Collection.stateQuery.monsterCollectionSheet}
-            onActionTxId={(txId) => {
-              setLoading(true);
-              trackEvent("Staking/Migration", {
-                txId,
-                tip,
-                level: V1Collection.stateQuery.monsterCollectionState?.level,
-              });
-              fetchStatus({ variables: { txId } });
-            }}
-            onClose={onClose}
-          />
-        )}
-      </MonsterCollectionContent>
+      ></MonsterCollectionContent>
     </MonsterCollectionOverlayBase>
   );
 }
