@@ -3,6 +3,8 @@ name: Chromatic
 on:
   push:
     branches: ["*"]
+  pull_request:
+    types: [ready_for_review, opened, reopened, auto_merge_enabled]
 
 jobs:
   chromatic:
@@ -10,12 +12,14 @@ jobs:
     container:
       image: node:lts
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.6.0
+        with:
+          fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3.8.1
         with:
           node-version: 20
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install
         shell: bash
@@ -24,4 +28,7 @@ jobs:
       - run: yarn codegen
 
       - name: Run Chromatic
-        run: yarn chromatic --project-token=${{secrets.CHROMATIC_PROJECT_TOKEN}} --exit-zero-on-changes
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          exitZeroOnChanges: true

@@ -207,13 +207,11 @@ mutation Transfer(
   )
 }
 
-
 query StagedTx($address: Address!) {
   nodeStatus {
     stagedTxIds(address: $address)
   }
 }
-
 
 mutation StageTx($encodedTx: String!) {
   stageTx(payload: $encodedTx)
@@ -251,7 +249,7 @@ subscription Tip {
   }
 }
 
-query CurrentStaking($address: Address!) {
+query UserStaking($address: Address!) {
   stateQuery {
     stakeState(address: $address) {
       deposit
@@ -259,6 +257,43 @@ query CurrentStaking($address: Address!) {
       receivedBlockIndex
       cancellableBlockIndex
       claimableBlockIndex
+      stakeRewards {
+        orderedList {
+          level
+          requiredGold
+          rewards {
+            itemId
+            decimalRate
+            type
+            currencyTicker
+          }
+          bonusRewards {
+            itemId
+            count
+          }
+        }
+      }
+    }
+  }
+}
+
+query LatestStakingSheet {
+  stateQuery {
+    latestStakeRewards {
+      orderedList {
+        level
+        requiredGold
+        rewards {
+          itemId
+          decimalRate
+          type
+          currencyTicker
+        }
+        bonusRewards {
+          itemId
+          count
+        }
+      }
     }
   }
 }
@@ -284,7 +319,7 @@ query StakingSheet {
   }
 }
 
-query LegacyCollectionState($address: Address!) {
+query V1CollectionState($address: Address!) {
   stateQuery {
     monsterCollectionSheet {
       orderedList {
@@ -348,17 +383,17 @@ query MigrateMonsterCollection($publicKey: String!, $avatarAddress: Address) {
   }
 }
 
-query CheckContracted($agentAddress: Address!){
-  stateQuery{
-    pledge(agentAddress: $agentAddress){
-			approved
+query CheckContracted($agentAddress: Address!) {
+  stateQuery {
+    pledge(agentAddress: $agentAddress) {
+      approved
       patronAddress
     }
   }
 }
 
-query approvePledge($publicKey: String!){
-	actionTxQuery(publicKey: $publicKey){
+query approvePledge($publicKey: String!) {
+  actionTxQuery(publicKey: $publicKey) {
     approvePledge(patronAddress: "0xc64c7cBf29BF062acC26024D5b9D1648E8f8D2e1")
   }
 }

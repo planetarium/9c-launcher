@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { styled } from "src/renderer/stitches.config";
 import {
   TxStatus,
+  useLatestStakingSheetQuery,
   useClaimStakeRewardLazyQuery,
   useTransactionResultLazyQuery,
 } from "src/generated/graphql";
@@ -27,12 +28,14 @@ import { toast } from "react-hot-toast";
 import { useT } from "@transifex/react";
 import { useBalance } from "src/utils/useBalance";
 import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverlay";
-import { useStaking } from "src/utils/staking";
+import { useUserStaking } from "src/utils/staking";
 import { useTx } from "src/utils/useTx";
 import { trackEvent } from "src/utils/mixpanel";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { Avatar } from "src/renderer/views/ClaimCollectionRewardsOverlay/ClaimContent";
 import { ExportOverlay } from "./ExportOverlay";
+import deepEqual from "deep-equal";
+import { StakeStatusButton } from "./StakeStatus";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -62,20 +65,30 @@ const UserInfoItem = styled(motion.li, {
 
 export default function UserInfo() {
   const loginSession = useLoginSession();
+  const { data: latestSheet } = useLatestStakingSheetQuery();
   const {
     canClaim,
     tip,
     startedBlockIndex,
+    receivedBlockIndex,
+    cancellableBlockIndex,
     claimableBlockIndex,
     deposit,
+    stakeRewards,
     refetch,
-  } = useStaking();
+  } = useUserStaking();
   const [fetchResult, { data: result, stopPolling }] =
     useTransactionResultLazyQuery({
       pollInterval: 1000,
     });
-
+  const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
+  const [isMigratable, setIsMigratable] = useState<boolean>(
+    isCollecting &&
+      !deepEqual(stakeRewards, latestSheet?.stateQuery.latestStakeRewards, {
+        strict: true,
+      }),
+  );
   useEffect(() => {
     const txStatus = result?.transaction.transactionResult.txStatus;
     if (!txStatus || txStatus === TxStatus.Staging) return;
@@ -85,11 +98,10 @@ export default function UserInfo() {
     if (txStatus === TxStatus.Success) refetch();
     else console.error("Claim transaction failed: ", result);
   }, [result]);
-  const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
   const remainingText = useMemo(() => {
     if (!claimableBlockIndex) return 0;
     const minutes = Math.round((claimableBlockIndex - tip) / 5);
-    return getRemain(minutes);
+    return `${getRemain(minutes)} (${claimableBlockIndex - tip} Blocks)`;
   }, [claimableBlockIndex, tip]);
 
   const claimedAvatar = useRef<Avatar>();
@@ -131,6 +143,38 @@ export default function UserInfo() {
     }
   }, [loginSession]);
 
+  const stakingStastics = useCallback(() => {
+    if (isCollecting) {
+      clipboard.writeText(`
+      Tip: ${tip}
+      Staking Status: ${
+        isCollecting
+          ? isMigratable
+            ? canClaim
+              ? "Claimable"
+              : "Migratable"
+            : "Staked"
+          : "Not Staking"
+      }
+      isLocked : ${
+        cancellableBlockIndex !== undefined && tip >= cancellableBlockIndex!
+          ? "true"
+          : "false"
+      }
+      {
+      "stakeState": {
+        "deposit": "${deposit}",
+        "startedBlockIndex": ${startedBlockIndex},
+        "receivedBlockIndex": ${receivedBlockIndex},
+        "cancellableBlockIndex": ${cancellableBlockIndex},
+        "claimableBlockIndex": ${claimableBlockIndex},
+      }
+    }
+    `);
+      toast("Staking Status Copied!");
+    }
+  }, [isCollecting]);
+
   const t = useT();
 
   const [isCollectionOpen, setCollectionOpen] = useState<boolean>(false);
@@ -157,13 +201,16 @@ export default function UserInfo() {
       <UserInfoItem onClick={() => setCollectionOpen(true)}>
         <img src={monsterIconUrl} width={28} alt="monster collection icon" />
         <strong>{deposit?.replace(/\.0+$/, "") || "0"}</strong>
-        {isCollecting ? ` (Remaining ${remainingText})` : " (-)"}
+        {isCollecting ? ` - Remaining: ${remainingText}` : " (-)"}
         <LaunchIcon />
         {canClaim && (
           <ClaimButton
             loading={claimLoading}
             onClick={() => setOpenDialog(true)}
           />
+        )}
+        {isCollecting && (
+          <StakeStatusButton onClick={() => stakingStastics()} />
         )}
         <ClaimCollectionRewardsOverlay
           isOpen={openDialog}
