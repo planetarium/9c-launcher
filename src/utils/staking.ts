@@ -1,9 +1,9 @@
-import { useUserStakingQuery } from "src/generated/graphql";
+import { useCurrentStakingQuery } from "src/generated/graphql";
 import { useTip } from "./useTip";
 import { useLoginSession } from "./useLoginSession";
 import { Address } from "@planetarium/account";
 
-export function useUserStaking() {
+export function useStaking() {
   const address: Address | undefined = useLoginSession()?.address;
   const commonQuery = {
     variables: {
@@ -12,15 +12,15 @@ export function useUserStaking() {
     skip: !address,
   };
 
-  const { data: userStake, refetch } = useUserStakingQuery(commonQuery);
+  const { data: current, refetch } = useCurrentStakingQuery(commonQuery);
   const tip = useTip();
 
   return {
-    ...userStake?.stateQuery.stakeState,
+    ...current?.stateQuery.stakeState,
     tip,
     canClaim:
-      !!userStake?.stateQuery.stakeState?.claimableBlockIndex &&
-      userStake.stateQuery.stakeState.claimableBlockIndex <= tip,
+      !!current?.stateQuery.stakeState?.claimableBlockIndex &&
+      current.stateQuery.stakeState.claimableBlockIndex <= tip,
     refetch,
   };
 }

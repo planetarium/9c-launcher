@@ -176,13 +176,7 @@ type StateQuery {
     agentAddress: Address!
   ): MonsterCollectionStateType
   monsterCollectionSheet: MonsterCollectionSheetType
-
-  # The latest stake rewards based on StakePolicySheet.
-  latestStakeRewards: StakeRewardsType
   stakeRewards: StakeRewardsType
-    @deprecated(
-      reason: "Since stake3, claim_stake_reward9 actions, each stakers have their own contracts."
-    )
   crystalMonsterCollectionMultiplierSheet: CrystalMonsterCollectionMultiplierSheetType
 
   # List of unlocked equipment recipe sheet row ids.
@@ -296,9 +290,6 @@ type AvatarStateType {
   # Avatar inventory.
   inventory: InventoryType!
 
-  # Avatar inventory address.
-  inventoryAddress: Address!
-
   # Rune list of avatar
   runes: [RuneStateType!]!
 
@@ -345,15 +336,6 @@ type InventoryType {
   equipments(
     # filter equipped inventory item
     equipped: Boolean
-
-    # An item subtype for fetching only equipment where its subtype is the same. If it wasn't given, you'll get all equipment without relationship to the subtype.
-    itemSubType: ItemSubType
-
-    # ItemIds for fetching only equipment where itemId (Guid) is in the given argument.
-    itemIds: [Guid!]
-
-    # Ids for fetching only equipment where id (number) is in the given argument.
-    ids: [Int!]
   ): [EquipmentType!]!
 
   # List of Costumes.
@@ -489,7 +471,6 @@ type EquipmentType {
   equipped: Boolean!
   itemId: Guid!
   level: Int!
-  exp: Int!
   skills: [SkillType]
   buffSkills: [SkillType]
   statsMap: StatsMapType!
@@ -831,10 +812,10 @@ type StakeStateType {
   deposit: String!
 
   # The block index the user started to stake.
-  startedBlockIndex: Long!
+  startedBlockIndex: Int!
 
   # The block index the user received rewards.
-  receivedBlockIndex: Long!
+  receivedBlockIndex: Int!
 
   # The block index the user can cancel the staking.
   cancellableBlockIndex: Long!
@@ -843,14 +824,37 @@ type StakeStateType {
   claimableBlockIndex: Long!
 
   # The staking achievements.
-  achievements: StakeAchievementsType
-    @deprecated(reason: "Since StakeStateV2, the achievement became removed.")
-  stakeRewards: StakeRewardsType!
+  achievements: StakeAchievementsType!
 }
 
 type StakeAchievementsType {
   # The address of current state.
   achievementsByLevel(level: Int!): Int!
+}
+
+type MonsterCollectionStateType {
+  address: Address!
+  level: Long!
+  expiredBlockIndex: Long!
+  startedBlockIndex: Long!
+  receivedBlockIndex: Long!
+  rewardLevel: Long!
+  claimableBlockIndex: Long!
+}
+
+type MonsterCollectionSheetType {
+  orderedList: [MonsterCollectionRowType]
+}
+
+type MonsterCollectionRowType {
+  level: Int!
+  requiredGold: Int!
+  rewards: [MonsterCollectionRewardInfoType]!
+}
+
+type MonsterCollectionRewardInfoType {
+  itemId: Int!
+  quantity: Int!
 }
 
 type StakeRewardsType {
@@ -882,31 +886,6 @@ enum StakeRewardType {
 type StakeRegularFixedRewardInfoType {
   itemId: Int!
   count: Int!
-}
-
-type MonsterCollectionStateType {
-  address: Address!
-  level: Long!
-  expiredBlockIndex: Long!
-  startedBlockIndex: Long!
-  receivedBlockIndex: Long!
-  rewardLevel: Long!
-  claimableBlockIndex: Long!
-}
-
-type MonsterCollectionSheetType {
-  orderedList: [MonsterCollectionRowType]
-}
-
-type MonsterCollectionRowType {
-  level: Int!
-  requiredGold: Int!
-  rewards: [MonsterCollectionRewardInfoType]!
-}
-
-type MonsterCollectionRewardInfoType {
-  itemId: Int!
-  quantity: Int!
 }
 
 type CrystalMonsterCollectionMultiplierSheetType {
@@ -1091,7 +1070,6 @@ enum CurrencyEnum {
   CRYSTAL
   NCG
   GARAGE
-  MEAD
 }
 
 type TransferNCGHistoryType {
@@ -1552,16 +1530,6 @@ type TransactionHeadlessQuery {
     # transaction id.
     txId: TxId!
   ): TransactionType
-  ncTransactions(
-    # start block index for query tx.
-    startingBlockIndex: Long!
-
-    # number of block to query.
-    limit: Long!
-
-    # filter tx by having actions' type
-    actionType: String!
-  ): [TransactionType]
   createUnsignedTx(
     # The base64-encoded public key for Transaction.
     publicKey: String!
@@ -1851,8 +1819,8 @@ type ActionQuery {
     # Target item ID to enhance
     itemId: Guid!
 
-    # Material IDs to enhance
-    materialIds: [Guid!]!
+    # Material ID to enhance
+    materialId: Guid!
   ): ByteString!
   rapidCombination(
     # Avatar address to execute rapid combination
@@ -2219,8 +2187,8 @@ type ActionTxQuery {
     # Target item ID to enhance
     itemId: Guid!
 
-    # Material IDs to enhance
-    materialIds: [Guid!]!
+    # Material ID to enhance
+    materialId: Guid!
   ): ByteString!
   rapidCombination(
     # Avatar address to execute rapid combination
@@ -2465,8 +2433,8 @@ type ActionMutation {
     # Equipment Guid for upgrade.
     itemId: Guid!
 
-    # Material Guids for equipment upgrade.
-    materialIds: [Guid!]!
+    # Material Guid for equipment upgrade.
+    materialId: Guid!
 
     # The empty combination slot index to upgrade equipment. 0 ~ 3
     slotIndex: Int!
@@ -2511,10 +2479,6 @@ type ActionMutation {
 
 type StandaloneSubscription {
   tipChanged: TipChanged
-  tx(
-    # A type of action in transaction.
-    actionType: String!
-  ): TxType
   preloadProgress: PreloadStateType
   nodeStatus: NodeStatusType
   differentAppProtocolVersionEncounter: DifferentAppProtocolVersionEncounterType!
@@ -2529,11 +2493,6 @@ type StandaloneSubscription {
 type TipChanged {
   index: Long!
   hash: ByteString
-}
-
-type TxType {
-  transaction: TransactionType!
-  txResult: TxResultType
 }
 
 type PreloadStateType {

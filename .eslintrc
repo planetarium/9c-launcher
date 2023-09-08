@@ -16,7 +16,6 @@
     "react/prop-types": 0,
     "no-underscore-dangle": 0,
     "no-constant-condition": 0,
-    "no-irregular-whitespace": 0,
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/prefer-default-export": 0,
