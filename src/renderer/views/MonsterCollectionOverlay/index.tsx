@@ -2,10 +2,10 @@ import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import {
   TxStatus,
-  useCurrentStakingQuery,
-  useLegacyCollectionStateQuery,
+  useUserStakingQuery,
+  useV1CollectionStateQuery,
   useStakeLazyQuery,
-  useStakingSheetQuery,
+  useLatestStakingSheetQuery,
   useTransactionResultLazyQuery,
 } from "src/generated/graphql";
 import { sleep } from "src/utils";
@@ -15,22 +15,24 @@ import { useBalance } from "src/utils/useBalance";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { useTip } from "src/utils/useTip";
 import { useTx } from "src/utils/useTx";
-import Migration from "./Migration";
+// import Migration from "./Migration";
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { MonsterCollectionOverlayBase } from "./base";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const loginSession = useLoginSession();
-  const { data: sheet } = useStakingSheetQuery();
-  const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
-    variables: { address: loginSession?.address?.toString() },
-    skip: !loginSession,
-  });
-  const { data: collection, refetch: refetchCollection } =
-    useLegacyCollectionStateQuery({
+  const { data: latestSheet } = useLatestStakingSheetQuery();
+  const { data: userStaking, refetch: refetchUserStaking } =
+    useUserStakingQuery({
       variables: { address: loginSession?.address?.toString() },
       skip: !loginSession,
     });
+  /*  const { data: V1Collection, refetch: refetchV1Collection } =
+    useV1CollectionStateQuery({
+      variables: { address: loginSession?.address?.toString() },
+      skip: !loginSession,
+    });
+*/
   const balance = useBalance();
   const tip = useTip();
 
@@ -48,8 +50,8 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   useEffect(() => {
     if (!txStatus) return;
     if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
-      refetchStaking();
-      refetchCollection();
+      refetchUserStaking();
+      //refetchV1Collection();
     }
     if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
@@ -57,19 +59,25 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     }
   }, [txStatus]);
 
-  if (!sheet || !current || !collection || !tip || !loginSession) return null;
+  if (
+    !latestSheet ||
+    !userStaking /* || !V1Collection */ ||
+    !tip ||
+    !loginSession
+  )
+    return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
       <MonsterCollectionContent
-        sheet={sheet}
-        current={current}
+        latestSheet={latestSheet}
+        current={userStaking}
         currentNCG={balance}
-        onChangeAmount={(amount) => {
+        onStake={(amount) => {
           setLoading(true);
           trackEvent("Staking/AmountChange", {
             amount: amount.toString(),
-            previousAmount: current.stateQuery.stakeState?.deposit,
+            previousAmount: userStaking.stateQuery.stakeState?.deposit,
           });
           try {
             stake({
@@ -94,25 +102,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         onClose={onClose}
         tip={tip}
         isLoading={isLoading}
-      >
-        {collection.stateQuery.monsterCollectionState && !isLoading && (
-          <Migration
-            tip={tip}
-            collectionState={collection.stateQuery.monsterCollectionState}
-            collectionSheet={collection.stateQuery.monsterCollectionSheet}
-            onActionTxId={(txId) => {
-              setLoading(true);
-              trackEvent("Staking/Migration", {
-                txId,
-                tip,
-                level: collection.stateQuery.monsterCollectionState?.level,
-              });
-              fetchStatus({ variables: { txId } });
-            }}
-            onClose={onClose}
-          />
-        )}
-      </MonsterCollectionContent>
+      ></MonsterCollectionContent>
     </MonsterCollectionOverlayBase>
   );
 }

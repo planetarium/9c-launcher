@@ -1,8 +1,10 @@
 import Decimal from "decimal.js";
+import deepEqual from "deep-equal";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import {
-  DepositButton2,
-  DepositCancelButton,
+  DepositRightButton,
+  DepositLeftButton,
   DepositContent,
   DepositDescription,
   DepositForm,
@@ -12,15 +14,14 @@ import {
   LoadingDescription,
   LoadingImage,
   Title,
+  MigrateLeftButton,
 } from "./base";
 import { Item, ItemGroup, RewardSheet, RewardSheetPlaceholder } from "./reward";
+import { Level, Levels } from "./level";
 
 import BareInput from "src/renderer/components/ui/BareInput";
 import titleImg from "src/renderer/resources/collection/title.png";
-import { Level, Levels } from "./level";
-
 import loadingImg from "src/renderer/resources/collection/loading.png";
-
 import monster1Img from "src/renderer/resources/collection/monster-1.png";
 import monster2Img from "src/renderer/resources/collection/monster-2.png";
 import monster3Img from "src/renderer/resources/collection/monster-3.png";
@@ -28,16 +29,19 @@ import monster4Img from "src/renderer/resources/collection/monster-4.png";
 import monster5Img from "src/renderer/resources/collection/monster-5.png";
 import monster6Img from "src/renderer/resources/collection/monster-6.png";
 import monster7Img from "src/renderer/resources/collection/monster-7.png";
-import itemMetadata from "src/utils/monsterCollection/items";
 
+import itemMetadata from "src/utils/monsterCollection/items";
 import systemRewards from "src/utils/monsterCollection/systemRewards";
 
-import { AnimatePresence } from "framer-motion";
-import { CurrentStakingQuery, StakingSheetQuery } from "src/generated/graphql";
 import { CloseButton } from "src/renderer/components/core/OverlayBase";
 import { getRemain } from "src/utils/monsterCollection/utils";
 import { useEvent } from "src/utils/useEvent";
 import { Alert } from "./dialog";
+
+import {
+  UserStakingQuery,
+  LatestStakingSheetQuery,
+} from "src/generated/graphql";
 
 declare global {
   interface Array<T> {
@@ -46,16 +50,35 @@ declare global {
 }
 
 interface MonsterCollectionOverlayProps {
-  sheet: StakingSheetQuery;
-  current: CurrentStakingQuery;
+  latestSheet: LatestStakingSheetQuery;
+  current: UserStakingQuery;
   isEditing?: boolean;
   currentNCG: number;
-  onChangeAmount(amount: Decimal): void;
+  onStake(amount: Decimal): void;
   onClose(): void;
   tip: number;
   isLoading: boolean;
   children?: React.ReactNode;
 }
+
+type LevelList =
+  | NonNullable<
+      LatestStakingSheetQuery["stateQuery"]["latestStakeRewards"]
+    >["orderedList"]
+  | NonNullable<
+      UserStakingQuery["stateQuery"]["stakeState"]
+    >["stakeRewards"]["orderedList"]
+  | null
+  | undefined;
+
+type Rewards = {
+  count(amount: Decimal): Decimal;
+  __typename?: "StakeRegularRewardInfoType" | undefined;
+  itemId: number;
+  decimalRate: Decimal;
+}[];
+
+type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
 
 const images = [
   monster1Img,
@@ -67,24 +90,12 @@ const images = [
   monster7Img,
 ];
 
-type LevelList =
-  | NonNullable<StakingSheetQuery["stateQuery"]["stakeRewards"]>["orderedList"]
-  | null
-  | undefined;
-
 function useRewardIndex(levels: LevelList, amount: Decimal = new Decimal(0)) {
   return useMemo(() => {
     const index = levels?.findLastIndex((v) => amount?.gte(v.requiredGold));
     return index != null && index !== -1 ? index : null;
   }, [amount, levels]);
 }
-
-type Rewards = {
-  count(amount: Decimal): Decimal;
-  __typename?: "StakeRegularRewardInfoType" | undefined;
-  itemId: number;
-  decimalRate: Decimal;
-}[];
 
 function useRewards(levels: LevelList, index: number = 0) {
   const rewards = levels?.[index]?.rewards;
@@ -114,18 +125,16 @@ function useRewards(levels: LevelList, index: number = 0) {
   });
 }
 
-type Alerts = "lower-deposit" | "confirm-changes" | "unclaimed" | "minimum";
-
 export function MonsterCollectionContent({
-  sheet: {
-    stateQuery: { stakeRewards: sheet },
+  latestSheet: {
+    stateQuery: { latestStakeRewards: latestSheet },
   },
   current: {
     stateQuery: { stakeState },
   },
   isEditing: initialEditing,
   currentNCG,
-  onChangeAmount,
+  onStake,
   children,
   onClose,
   tip,
@@ -140,33 +149,51 @@ export function MonsterCollectionContent({
     () => stakeState && new Decimal(stakeState.deposit),
     [stakeState],
   );
-  const amountDecimal = useMemo(() => new Decimal(amount || 0), [amount]);
-  const levels = useMemo(
-    () => sheet?.orderedList.filter((v) => v.level !== 0),
-    [sheet],
+
+  const [isMigratable, setIsMigratable] = useState<boolean>(
+    !!deposit &&
+      deposit.gt(0) &&
+      !deepEqual(stakeState?.stakeRewards, latestSheet, { strict: true }),
   );
+
+  const amountDecimal = useMemo(() => new Decimal(amount || 0), [amount]);
+
+  // latestSheet always exists.
+  const latestLevels = useMemo(
+    () => latestSheet?.orderedList.filter((v) => v.level !== 0),
+    [latestSheet],
+  );
+  // but userSheet not. if not exists, coalescent to latestSheet
+  const userLevels = useMemo(() => {
+    if (isMigratable) {
+      return stakeState?.stakeRewards.orderedList.filter((v) => v.level !== 0);
+    } else {
+      return latestLevels;
+    }
+  }, [isMigratable]);
 
   const availableNCG = useMemo(
     () => deposit?.add(currentNCG) ?? new Decimal(currentNCG),
     [deposit, currentNCG],
   );
 
-  const currentIndex = useRewardIndex(levels, deposit ?? new Decimal(0));
-  const selectedIndex = useRewardIndex(levels, amountDecimal);
-  const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
-
   useEffect(() => {
     if (stakeState?.deposit) setAmount(stakeState.deposit.replace(/\.0+$/, ""));
   }, [stakeState]);
 
-  const changeAmount = useEvent(() => {
-    onChangeAmount(amountDecimal);
+  const Stake = useEvent(() => {
+    if (amountDecimal.eq(deposit!)) setIsMigratable(false);
+    onStake(amountDecimal);
     setIsAlertOpen(null);
     setIsEditing(false);
   });
 
-  const currentRewards = useRewards(levels, currentIndex ?? 0);
-  const selectedRewards = useRewards(levels, selectedIndex ?? 0);
+  const userIndex = useRewardIndex(userLevels, deposit ?? new Decimal(0));
+  const deltaIndex = useRewardIndex(latestLevels, amountDecimal);
+  const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
+
+  const currentRewards = useRewards(latestLevels, userIndex ?? 0);
+  const deltaRewards = useRewards(latestLevels, deltaIndex ?? 0);
 
   function RecurringReward(currentRewards: Rewards, selectedRewards?: Rewards) {
     const targetReward =
@@ -219,12 +246,13 @@ export function MonsterCollectionContent({
     return width > 350 ? "small" : "large";
   }, [amount, availableNCG]);
 
-  if (!levels) return null;
+  if (!latestLevels) return null;
 
   return (
     <>
       <CloseButton onClick={() => onClose()} />
       <Title src={titleImg} />
+      // Loading Part
       <AnimatePresence>
         {isLoading && (
           <LoadingBackdrop
@@ -237,6 +265,7 @@ export function MonsterCollectionContent({
           </LoadingBackdrop>
         )}
       </AnimatePresence>
+      // Input Part
       <DepositHolder>
         <DepositForm
           onSubmit={(e) => {
@@ -245,10 +274,10 @@ export function MonsterCollectionContent({
               setIsAlertOpen("lower-deposit");
             else if (stakeState && tip >= stakeState.claimableBlockIndex)
               setIsAlertOpen("unclaimed");
-            else if (amountDecimal.lt(levels[0].requiredGold))
+            else if (amountDecimal.lt(latestLevels[0].requiredGold))
               setIsAlertOpen("minimum");
             else if (stakeState) setIsAlertOpen("confirm-changes");
-            else changeAmount();
+            else Stake();
           }}
         >
           <DepositTitle>Deposit</DepositTitle>
@@ -273,7 +302,7 @@ export function MonsterCollectionContent({
                 />
                 <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
               </DepositContent>
-              <DepositCancelButton
+              <DepositLeftButton
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -281,24 +310,35 @@ export function MonsterCollectionContent({
                 }}
               >
                 Cancel
-              </DepositCancelButton>
-              <DepositButton2
+              </DepositLeftButton>
+              <DepositRightButton
                 disabled={
-                  amountDecimal.gt(availableNCG) ||
-                  (deposit && amountDecimal.eq(deposit)) ||
-                  (isLockedUp && amountDecimal.lt(stakeState.deposit))
+                  amountDecimal.gt(availableNCG) || // exceed balance
+                  (deposit && deposit.eq(0) && amountDecimal.eq(0)) || // 0 to 0
+                  (isLockedUp &&
+                    isMigratable &&
+                    amountDecimal.lt(stakeState.deposit)) || // lockup limit handle on migratable
+                  (isLockedUp &&
+                    !isMigratable &&
+                    amountDecimal.lte(stakeState.deposit)) // lockup limit handle on non-migratable
                 }
               >
                 Save
-              </DepositButton2>
+              </DepositRightButton>
             </>
           ) : (
             <>
-              <DepositContent>
+              <DepositContent onClick={() => inputRef.current?.focus()}>
                 {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
                 <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
+                {isMigratable && (
+                  <input hidden value={stakeState?.deposit} type="number" />
+                )}
               </DepositContent>
-              <DepositButton2
+              {isMigratable && (
+                <MigrateLeftButton type="submit">Migrate</MigrateLeftButton>
+              )}
+              <DepositRightButton
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -306,7 +346,7 @@ export function MonsterCollectionContent({
                 }}
               >
                 Edit
-              </DepositButton2>
+              </DepositRightButton>
             </>
           )}
         </DepositForm>
@@ -326,32 +366,34 @@ export function MonsterCollectionContent({
           </DepositDescription>
         )}
       </DepositHolder>
+      // Levels in "Latest Sheet"
       <Levels>
-        {levels.map((item, index) => (
+        {latestLevels.map((item, index) => (
           <Level
             key={item.level}
             amount={item.requiredGold}
             expandedImage={
-              isEditing || currentIndex === index ? images[index] : undefined
+              isEditing || userIndex === index ? images[index] : undefined
             }
-            current={currentIndex === index}
-            selected={isEditing && selectedIndex === index}
+            current={userIndex === index}
+            selected={isEditing && deltaIndex === index}
             disabled={isEditing && availableNCG.lt(item.requiredGold)}
             onClick={() => setAmount(String(item.requiredGold))}
           />
         ))}
       </Levels>
+      // Reward Enumerate
       <AnimatePresence exitBeforeEnter>
         {currentRewards ? (
           <RewardSheet>
             <ItemGroup key="recurring" title="Recurring Rewards">
-              {RecurringReward(currentRewards, selectedRewards)}
+              {RecurringReward(currentRewards, deltaRewards)}
             </ItemGroup>
             <ItemGroup key="system" title="System Rewards">
               {systemRewards.map((item) => {
                 const sysRewardSuffix = item.name === "stage" ? "% DC" : "%";
-                const amount = item.amount[currentIndex ?? 0];
-                const updatedAmount = item.amount[selectedIndex ?? 0];
+                const amount = item.amount[userIndex ?? 0];
+                const updatedAmount = item.amount[deltaIndex ?? 0];
                 return (
                   <Item
                     key={item.title}
@@ -372,10 +414,11 @@ export function MonsterCollectionContent({
           <RewardSheetPlaceholder />
         )}
       </AnimatePresence>
+      // Alert Overlays
       <Alert
         title="Information"
         onCancel={() => setIsAlertOpen(null)}
-        onConfirm={changeAmount}
+        onConfirm={Stake}
         isOpen={openedAlert === "lower-deposit"}
       >
         Do you really want to reduce your deposit?
@@ -386,12 +429,13 @@ export function MonsterCollectionContent({
       <Alert
         title="Confirmation"
         onCancel={() => setIsAlertOpen(null)}
-        onConfirm={changeAmount}
+        onConfirm={Stake}
         isOpen={openedAlert === "confirm-changes"}
       >
-        When the deposit amount is modified, the daily count is initialized to
-        0. <br />
-        The reward is given every week and cannot be changed to a small amount
+        When you create new stake contract,
+        <br />
+        the daily count is initialized to 0. <br />
+        The reward is given every week and cannot be changed to a less amount
         within 28 days.
         <br />
         Do you want to proceed?
@@ -409,7 +453,7 @@ export function MonsterCollectionContent({
         onConfirm={() => setIsAlertOpen(null)}
         isOpen={openedAlert === "minimum"}
       >
-        You can't stake less than {levels[0].requiredGold} NCG.
+        You can't stake less than {latestLevels[0].requiredGold} NCG.
       </Alert>
       {children}
     </>
