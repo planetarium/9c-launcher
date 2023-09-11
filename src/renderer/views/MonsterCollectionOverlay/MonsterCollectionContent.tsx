@@ -158,12 +158,10 @@ export function MonsterCollectionContent({
 
   const amountDecimal = useMemo(() => new Decimal(amount || 0), [amount]);
 
-  // latestSheet always exists.
   const latestLevels = useMemo(
     () => latestSheet?.orderedList.filter((v) => v.level !== 0),
     [latestSheet],
   );
-  // but userSheet not. if not exists, coalescent to latestSheet
   const userLevels = useMemo(() => {
     if (isMigratable) {
       return stakeState?.stakeRewards.orderedList.filter((v) => v.level !== 0);
@@ -252,7 +250,6 @@ export function MonsterCollectionContent({
     <>
       <CloseButton onClick={() => onClose()} />
       <Title src={titleImg} />
-      // Loading Part
       <AnimatePresence>
         {isLoading && (
           <LoadingBackdrop
@@ -265,7 +262,6 @@ export function MonsterCollectionContent({
           </LoadingBackdrop>
         )}
       </AnimatePresence>
-      // Input Part
       <DepositHolder>
         <DepositForm
           onSubmit={(e) => {
@@ -313,14 +309,14 @@ export function MonsterCollectionContent({
               </DepositLeftButton>
               <DepositRightButton
                 disabled={
-                  amountDecimal.gt(availableNCG) || // exceed balance
-                  (deposit && deposit.eq(0) && amountDecimal.eq(0)) || // 0 to 0
+                  amountDecimal.gt(availableNCG) ||
+                  (deposit && deposit.eq(0) && amountDecimal.eq(0)) ||
                   (isLockedUp &&
                     isMigratable &&
-                    amountDecimal.lt(stakeState.deposit)) || // lockup limit handle on migratable
+                    amountDecimal.lt(stakeState.deposit)) ||
                   (isLockedUp &&
                     !isMigratable &&
-                    amountDecimal.lte(stakeState.deposit)) // lockup limit handle on non-migratable
+                    amountDecimal.lte(stakeState.deposit))
                 }
               >
                 Save
@@ -366,7 +362,6 @@ export function MonsterCollectionContent({
           </DepositDescription>
         )}
       </DepositHolder>
-      // Levels in "Latest Sheet"
       <Levels>
         {latestLevels.map((item, index) => (
           <Level
@@ -382,7 +377,6 @@ export function MonsterCollectionContent({
           />
         ))}
       </Levels>
-      // Reward Enumerate
       <AnimatePresence exitBeforeEnter>
         {currentRewards ? (
           <RewardSheet>
@@ -414,7 +408,6 @@ export function MonsterCollectionContent({
           <RewardSheetPlaceholder />
         )}
       </AnimatePresence>
-      // Alert Overlays
       <Alert
         title="Information"
         onCancel={() => setIsAlertOpen(null)}
