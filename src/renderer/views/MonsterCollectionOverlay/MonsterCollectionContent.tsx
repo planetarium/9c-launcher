@@ -180,7 +180,7 @@ export function MonsterCollectionContent({
   }, [stakeState]);
 
   const Stake = useEvent(() => {
-    if (amountDecimal.eq(deposit!)) setIsMigratable(false);
+    if (deposit?.eq(amountDecimal)) setIsMigratable(false);
     onStake(amountDecimal);
     setIsAlertOpen(null);
     setIsEditing(false);
