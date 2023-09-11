@@ -72,14 +72,11 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
                 publicKey: loginSession.publicKey.toHex("uncompressed"),
                 amount: amount.toNumber(),
               },
-            });
-            while (loading) {
-              sleep(500);
-            }
-            if (!staked?.actionTxQuery) throw error;
-            return tx(staked.actionTxQuery.stake).then((v) => {
-              if (!v.data) throw error;
-              fetchStatus({ variables: { txId: v.data.stageTransaction } });
+            }).then((v) => {
+              tx(v.data?.actionTxQuery.stake).then((v) => {
+                if (!v.data) throw error;
+                fetchStatus({ variables: { txId: v.data.stageTransaction } });
+              });
             });
           } catch (e) {
             setLoading(false);

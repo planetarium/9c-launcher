@@ -201,7 +201,7 @@ export default function UserInfo() {
       <UserInfoItem onClick={() => setCollectionOpen(true)}>
         <img src={monsterIconUrl} width={28} alt="monster collection icon" />
         <strong>{deposit?.replace(/\.0+$/, "") || "0"}</strong>
-        {isCollecting ? ` - Remaining: ${remainingText}` : " (-)"}
+        {isCollecting && !canClaim ? ` - Remaining: ${remainingText}` : " (-)"}
         <LaunchIcon />
         {canClaim && (
           <ClaimButton

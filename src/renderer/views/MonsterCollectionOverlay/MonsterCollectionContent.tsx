@@ -180,7 +180,7 @@ export function MonsterCollectionContent({
   }, [stakeState]);
 
   const Stake = useEvent(() => {
-    if (amountDecimal.eq(deposit!)) setIsMigratable(false);
+    if (deposit?.eq(amountDecimal)) setIsMigratable(false);
     onStake(amountDecimal);
     setIsAlertOpen(null);
     setIsEditing(false);
@@ -193,18 +193,18 @@ export function MonsterCollectionContent({
   const currentRewards = useRewards(latestLevels, userIndex ?? 0);
   const deltaRewards = useRewards(latestLevels, deltaIndex ?? 0);
 
-  function RecurringReward(currentRewards: Rewards, selectedRewards?: Rewards) {
+  function RecurringReward(currentRewards: Rewards, deltaRewards?: Rewards) {
     const targetReward =
-      selectedRewards && selectedRewards.length > currentRewards.length
-        ? selectedRewards
+      deltaRewards && deltaRewards.length > currentRewards.length
+        ? deltaRewards
         : currentRewards;
     return targetReward.map((item, index) => {
       const itemMeta = itemMetadata[item.itemId] ?? {
         name: "Unknown",
       };
       const itemAmount = item.count(deposit ?? new Decimal(0));
-      const selectedAmount = selectedRewards?.[index]
-        ? selectedRewards?.[index].count(amountDecimal)
+      const selectedAmount = deltaRewards?.[index]
+        ? deltaRewards?.[index].count(amountDecimal)
         : new Decimal(0);
 
       return (
@@ -214,7 +214,7 @@ export function MonsterCollectionContent({
           title={itemMeta.name}
           isUpgrade={selectedAmount.gt(itemAmount)}
           updatedAmount={selectedAmount.toString()}
-          isDiff
+          isDiff={!selectedAmount.eq(itemAmount)}
         >
           <img src={itemMeta.img} alt={itemMeta.name} height={48} />
         </Item>
@@ -324,7 +324,7 @@ export function MonsterCollectionContent({
             </>
           ) : (
             <>
-              <DepositContent onClick={() => inputRef.current?.focus()}>
+              <DepositContent>
                 {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
                 <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
                 {isMigratable && (
