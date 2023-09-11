@@ -105,10 +105,6 @@ function SwapPage() {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setDebounce(true);
-    setTimeout(() => {
-      setDebounce(false);
-    }, 15000);
     ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
     if (!addressVerify(recipient, true) || !amount.gte(100)) {
       return;
@@ -119,6 +115,10 @@ function SwapPage() {
     }
 
     setCurrentPhase(TransferPhase.SENDTX);
+    setDebounce(true);
+    setTimeout(() => {
+      setDebounce(false);
+    }, 15000);
 
     const tx = await transfer.swapToWNCG(
       transfer.senderAddress,
