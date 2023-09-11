@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   Container,
   FormControl,
   InputAdornment,
@@ -79,6 +80,7 @@ function SwapPage() {
   const [amountWarning, setAmountWarning] = useState<boolean>(false);
   const [tx, setTx] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
+  const [debounce, setDebounce] = useState<boolean>(false);
   const [currentPhase, setCurrentPhase] = useState<TransferPhase>(
     TransferPhase.READY,
   );
@@ -103,6 +105,10 @@ function SwapPage() {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    setDebounce(true);
+    setTimeout(() => {
+      setDebounce(false);
+    }, 15000);
     ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
     if (!addressVerify(recipient, true) || !amount.gte(100)) {
       return;
@@ -126,6 +132,10 @@ function SwapPage() {
 
     await transfer.confirmTransaction(tx, undefined, listener);
   };
+
+  const loading =
+    currentPhase === TransferPhase.SENDTX ||
+    currentPhase === TransferPhase.SENDING;
 
   return (
     <SwapContainer>
@@ -215,8 +225,8 @@ function SwapPage() {
         onClick={handleButton}
         disabled={amountWarning || recipientWarning}
       >
-        {" "}
-        Send{" "}
+        {(loading || debounce) && <CircularProgress />}
+        Send
       </SwapButton>
 
       <SendingDialog

@@ -71,6 +71,7 @@ function TransferPage() {
   const [recipient, setRecipient] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [amount, setAmount] = useState<Decimal>(new Decimal(0));
+  const [debounce, setDebounce] = useState<boolean>(false);
   const [recipientWarning, setRecipientWarning] = useState<boolean>(false);
   const [amountWarning, setAmountWarning] = useState<boolean>(false);
   const [tx, setTx] = useState<string>("");
@@ -98,6 +99,10 @@ function TransferPage() {
   };
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    setDebounce(true);
+    setTimeout(() => {
+      setDebounce(false);
+    }, 15000);
     ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
     if (!addressVerify(recipient, true) || !amount.gt(0)) {
       return;
@@ -134,7 +139,7 @@ function TransferPage() {
     currentPhase === TransferPhase.SENDTX ||
     currentPhase === TransferPhase.SENDING;
 
-  const disabled = amountWarning || recipientWarning || loading;
+  const disabled = amountWarning || recipientWarning || loading || debounce;
 
   return (
     <TransferContainer>
@@ -217,7 +222,7 @@ function TransferPage() {
             onClick={handleButton}
             disabled={disabled}
           >
-            {loading && <CircularProgress />}
+            {(loading || debounce) && <CircularProgress />}
             Send
           </TransferButton>
         </FormControl>
