@@ -237,7 +237,7 @@ export const Item = ({
       {children}
       <ItemAmount>
         {amount}
-        {isUpgrade != null && (
+        {isUpgrade != null && isDiff && (
           <ItemUpdatedAmount isUpgrade={isUpgrade} isDiff={isDiff ?? false}>
             {updatedAmount}
           </ItemUpdatedAmount>
