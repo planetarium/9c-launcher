@@ -15,7 +15,6 @@ import { useBalance } from "src/utils/useBalance";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { useTip } from "src/utils/useTip";
 import { useTx } from "src/utils/useTx";
-// import Migration from "./Migration";
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { MonsterCollectionOverlayBase } from "./base";
 
@@ -27,12 +26,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
       variables: { address: loginSession?.address?.toString() },
       skip: !loginSession,
     });
-  /*  const { data: V1Collection, refetch: refetchV1Collection } =
-    useV1CollectionStateQuery({
-      variables: { address: loginSession?.address?.toString() },
-      skip: !loginSession,
-    });
-*/
+
   const balance = useBalance();
   const tip = useTip();
 
@@ -51,7 +45,6 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     if (!txStatus) return;
     if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
       refetchUserStaking();
-      //refetchV1Collection();
     }
     if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
@@ -59,13 +52,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     }
   }, [txStatus]);
 
-  if (
-    !latestSheet ||
-    !userStaking /* || !V1Collection */ ||
-    !tip ||
-    !loginSession
-  )
-    return null;
+  if (!latestSheet || !userStaking || !tip || !loginSession) return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
