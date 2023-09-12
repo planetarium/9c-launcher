@@ -41,7 +41,6 @@
     "update-translations": "txjs-cli push src --key-generator=hash"
   },
   "dependencies": {
-    "7zip-min": "^1.4.4",
     "@apollo/client": "^3.7.17",
     "@apollo/react-testing": "3.1.4",
     "@electron/get": "^2.0.2",
@@ -150,7 +149,6 @@
     "@storybook/react": "^7.4.0",
     "@storybook/react-webpack5": "^7.4.0",
     "@transifex/cli": "^3.0.0",
-    "@types/7zip-min": "^1",
     "@types/bytes": "^3.1.1",
     "@types/child-process-promise": "^2.2.1",
     "@types/dompurify": "^3",

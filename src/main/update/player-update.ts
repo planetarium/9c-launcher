@@ -3,7 +3,6 @@ import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
 import fs from "fs";
-import { unpack } from "7zip-min";
 import { spawn as spawnPromise } from "child-process-promise";
 import { get, playerPath } from "src/config";
 import { getAvailableDiskSpace } from "src/utils/file";
@@ -121,9 +120,10 @@ async function playerUpdate(
     );
 
     try {
-      await unpack(dlPath, playerPath, (err) => {
-        throw err;
-      });
+      await spawnPromise("powershell", [
+        "-Command",
+        `Expand-Archive -Path "${dlPath}" -DestinationPath "${playerPath}"`,
+      ]);
     } catch (e) {
       win.webContents.send("go to error page", "player", {
         url: "download-binary-failed-disk-error",

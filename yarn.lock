@@ -5,19 +5,10 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"7zip-bin@npm:5.1.1, 7zip-bin@npm:~5.1.1":
+"7zip-bin@npm:~5.1.1":
   version: 5.1.1
   resolution: "7zip-bin@npm:5.1.1"
   checksum: 1e58ba3742ac86daa84d2e60c46fd545f235c9f60a00cd36a87a70bf824cc0c821fdc418994f1745081b17e7bc83d155e1e82bd44b06996e7cab0a491ce644c1
-  languageName: node
-  linkType: hard
-
-"7zip-min@npm:^1.4.4":
-  version: 1.4.4
-  resolution: "7zip-min@npm:1.4.4"
-  dependencies:
-    7zip-bin: 5.1.1
-  checksum: a9005511840402b5f6c3ae27e773fd20263500424cb6c1095e36bbfa64a6ce8000a0758195df5e6412cb72efe2f11854d4bdbc61f3880254fc65899b8fd1ff62
   languageName: node
   linkType: hard
 
@@ -7448,13 +7439,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/7zip-min@npm:^1":
-  version: 1.3.1
-  resolution: "@types/7zip-min@npm:1.3.1"
-  checksum: c2c8ee2a2606448ce50de1a4be6819c708fe5ce4973927a078038cfc27fa9d79ebf1edce3357f3919e2f7f3bea287ff16f2126cb606fde3a5b9cb56d41940aa8
-  languageName: node
-  linkType: hard
-
 "@types/babel__core@npm:^7.0.0":
   version: 7.20.1
   resolution: "@types/babel__core@npm:7.20.1"
@@ -8909,7 +8893,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "NineChronicles@workspace:."
   dependencies:
-    7zip-min: ^1.4.4
     "@apollo/client": ^3.7.17
     "@apollo/react-testing": 3.1.4
     "@babel/core": 7.12
@@ -8954,7 +8937,6 @@ __metadata:
     "@transifex/cli": ^3.0.0
     "@transifex/native": ^3.0.0
     "@transifex/react": ^3.0.0
-    "@types/7zip-min": ^1
     "@types/bytes": ^3.1.1
     "@types/child-process-promise": ^2.2.1
     "@types/deep-equal": ^1.0.1
