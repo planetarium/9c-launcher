@@ -167,6 +167,7 @@ async function playerUpdate(
   }
 
   win.webContents.send("update player extract complete");
+  console.log("[player] player extract complete.");
   await fs.promises.unlink(dlPath);
 }
 
