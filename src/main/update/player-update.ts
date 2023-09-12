@@ -3,7 +3,7 @@ import { download, Options as ElectronDLOptions } from "electron-dl";
 import { IDownloadProgress } from "src/interfaces/ipc";
 import { DownloadBinaryFailedError } from "../exceptions/download-binary-failed";
 import fs from "fs";
-import extractZip from "extract-zip";
+import { unpack } from "7zip-min";
 import { spawn as spawnPromise } from "child-process-promise";
 import { get, playerPath } from "src/config";
 import { getAvailableDiskSpace } from "src/utils/file";
@@ -103,7 +103,7 @@ async function playerUpdate(
   const exists = await fs.promises.stat(playerPath).catch(() => false);
 
   if (exists) {
-    await fs.promises.rmdir(playerPath, { recursive: true });
+    await fs.promises.rm(playerPath, { recursive: true });
   }
 
   await fs.promises.mkdir(playerPath, { recursive: true });
@@ -121,12 +121,8 @@ async function playerUpdate(
     );
 
     try {
-      await extractZip(dlPath, {
-        dir: playerPath,
-        onEntry: (_, zipfile) => {
-          const progress = zipfile.entriesRead / zipfile.entryCount;
-          win.webContents.send("update player extract progress", progress);
-        },
+      await unpack(dlPath, playerPath, (err) => {
+        throw err;
       });
     } catch (e) {
       win.webContents.send("go to error page", "player", {

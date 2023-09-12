@@ -41,6 +41,7 @@
     "update-translations": "txjs-cli push src --key-generator=hash"
   },
   "dependencies": {
+    "7zip-min": "^1.4.4",
     "@apollo/client": "^3.7.17",
     "@apollo/react-testing": "3.1.4",
     "@electron/get": "^2.0.2",
@@ -92,7 +93,6 @@
     "electron-log": "^4.4.8",
     "electron-store": "8.0.2",
     "electron-updater": "^5.3.0",
-    "extract-zip": "^2.0.1",
     "fast-glob": "^3.2.11",
     "framer-motion": "^6.3.3",
     "graphql": "15.7.2",
@@ -150,6 +150,7 @@
     "@storybook/react": "^7.4.0",
     "@storybook/react-webpack5": "^7.4.0",
     "@transifex/cli": "^3.0.0",
+    "@types/7zip-min": "^1",
     "@types/bytes": "^3.1.1",
     "@types/child-process-promise": "^2.2.1",
     "@types/dompurify": "^3",
@@ -197,5 +198,5 @@
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
   },
-  "packageManager": "yarn@3.2.1"
+  "packageManager": "yarn@3.6.3"
 }
