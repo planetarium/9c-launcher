@@ -190,7 +190,7 @@ export function MonsterCollectionContent({
   const deltaIndex = useRewardIndex(latestLevels, amountDecimal);
   const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
-  const currentRewards = useRewards(latestLevels, userIndex ?? 0);
+  const currentRewards = useRewards(userLevels, userIndex ?? 0);
   const deltaRewards = useRewards(latestLevels, deltaIndex ?? 0);
 
   function RecurringReward(currentRewards: Rewards, deltaRewards?: Rewards) {
