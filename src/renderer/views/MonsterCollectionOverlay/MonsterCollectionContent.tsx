@@ -391,11 +391,10 @@ export function MonsterCollectionContent({
                 return (
                   <Item
                     key={item.title}
-                    amount={isEditing ? "" : amount + sysRewardSuffix}
-                    updatedAmount={
-                      isEditing ? updatedAmount + sysRewardSuffix : ""
-                    }
-                    isUpgrade={updatedAmount >= amount}
+                    amount={amount + sysRewardSuffix}
+                    updatedAmount={updatedAmount + sysRewardSuffix}
+                    isUpgrade={updatedAmount > amount}
+                    isDiff={updatedAmount !== amount}
                     title={item.title}
                   >
                     <img src={item.img} alt={item.title} height={48} />
