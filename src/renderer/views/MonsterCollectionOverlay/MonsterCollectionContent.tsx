@@ -147,7 +147,7 @@ export function MonsterCollectionContent({
 
   const deposit = useMemo(
     () => stakeState && new Decimal(stakeState.deposit),
-    [stakeState],
+    [stakeState, currentNCG],
   );
 
   const [isMigratable, setIsMigratable] = useState<boolean>(
@@ -168,7 +168,7 @@ export function MonsterCollectionContent({
     } else {
       return latestLevels;
     }
-  }, [isMigratable]);
+  }, [isMigratable, stakeState]);
 
   const availableNCG = useMemo(
     () => deposit?.add(currentNCG) ?? new Decimal(currentNCG),
@@ -266,12 +266,12 @@ export function MonsterCollectionContent({
         <DepositForm
           onSubmit={(e) => {
             e.preventDefault();
-            if (stakeState && amountDecimal.lt(stakeState.deposit))
-              setIsAlertOpen("lower-deposit");
-            else if (stakeState && tip >= stakeState.claimableBlockIndex)
+            if (stakeState && tip >= stakeState.claimableBlockIndex)
               setIsAlertOpen("unclaimed");
             else if (amountDecimal.lt(latestLevels[0].requiredGold))
               setIsAlertOpen("minimum");
+            else if (stakeState && amountDecimal.lt(stakeState.deposit))
+              setIsAlertOpen("lower-deposit");
             else if (stakeState) setIsAlertOpen("confirm-changes");
             else Stake();
           }}

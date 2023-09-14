@@ -80,6 +80,7 @@ export default function UserInfo() {
   const [fetchResult, { data: result, stopPolling }] =
     useTransactionResultLazyQuery({
       pollInterval: 1000,
+      fetchPolicy: "no-cache",
     });
   const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
@@ -95,9 +96,21 @@ export default function UserInfo() {
     stopPolling?.();
     setClaimLoading(false);
 
-    if (txStatus === TxStatus.Success) refetch();
-    else console.error("Claim transaction failed: ", result);
+    if (txStatus === TxStatus.Success) {
+      toast.success(
+        t("Successfully sent rewards to {name} #{address}", {
+          _tags: "v2/monster-collection",
+          name: claimedAvatar.current!.name,
+          address: claimedAvatar.current!.address.slice(2),
+        }),
+      );
+      refetch();
+    } else {
+      toast.error(t("Failed to claim your reward."));
+      console.error("Claim transaction failed: ", result);
+    }
   }, [result]);
+
   const remainingText = useMemo(() => {
     if (!claimableBlockIndex) return 0;
     const minutes = Math.round((claimableBlockIndex - tip) / 5);
@@ -119,13 +132,6 @@ export default function UserInfo() {
           txId,
           avatar: avatar.address,
         });
-        toast.success(
-          t("Successfully sent rewards to {name} #{address}", {
-            _tags: "v2/monster-collection",
-            name: avatar.name,
-            address: avatar.address.slice(2),
-          }),
-        );
         setClaimLoading(true);
       });
     },

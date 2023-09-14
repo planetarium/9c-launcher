@@ -17,6 +17,7 @@ import { useTip } from "src/utils/useTip";
 import { useTx } from "src/utils/useTx";
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { MonsterCollectionOverlayBase } from "./base";
+import { toast } from "react-hot-toast";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const loginSession = useLoginSession();
@@ -44,7 +45,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   useEffect(() => {
     if (!txStatus) return;
     if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
+      toast.success("Staking Success!");
       refetchUserStaking();
+    }
+    if (
+      txStatus.transaction.transactionResult.txStatus ===
+      (TxStatus.Failure || TxStatus.Invalid)
+    ) {
+      toast.error("Staking Failed.");
     }
     if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
@@ -75,11 +83,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             }).then((v) => {
               tx(v.data?.actionTxQuery.stake).then((v) => {
                 if (!v.data) throw error;
-                fetchStatus({ variables: { txId: v.data.stageTransaction } });
+                fetchStatus({
+                  variables: { txId: v.data.stageTransaction },
+                }).then((v) => refetchUserStaking());
               });
             });
           } catch (e) {
             setLoading(false);
+            toast.error("Staking Failed.");
             console.error(`Change Amount Failed : ${e}`);
           }
         }}
