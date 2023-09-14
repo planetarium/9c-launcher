@@ -312,6 +312,7 @@ function initializeIpc() {
 
   ipcMain.on("min", () => win?.minimize());
   ipcMain.on("max", () => win?.maximize());
+  ipcMain.on("close", () => win?.close());
 
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
