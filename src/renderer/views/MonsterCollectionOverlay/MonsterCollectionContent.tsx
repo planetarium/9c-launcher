@@ -147,7 +147,7 @@ export function MonsterCollectionContent({
 
   const deposit = useMemo(
     () => stakeState && new Decimal(stakeState.deposit),
-    [stakeState],
+    [stakeState, currentNCG],
   );
 
   const [isMigratable, setIsMigratable] = useState<boolean>(
