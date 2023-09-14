@@ -168,7 +168,7 @@ export function MonsterCollectionContent({
     } else {
       return latestLevels;
     }
-  }, [isMigratable]);
+  }, [isMigratable, stakeState]);
 
   const availableNCG = useMemo(
     () => deposit?.add(currentNCG) ?? new Decimal(currentNCG),

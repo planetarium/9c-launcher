@@ -75,7 +75,9 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
             }).then((v) => {
               tx(v.data?.actionTxQuery.stake).then((v) => {
                 if (!v.data) throw error;
-                fetchStatus({ variables: { txId: v.data.stageTransaction } });
+                fetchStatus({
+                  variables: { txId: v.data.stageTransaction },
+                }).then((v) => refetchUserStaking());
               });
             });
           } catch (e) {

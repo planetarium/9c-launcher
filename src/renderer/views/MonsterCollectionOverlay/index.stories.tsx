@@ -24,7 +24,7 @@ const mocks: [
       data: {
         stateQuery: {
           stakeState: {
-            deposit: "500",
+            deposit: "5000",
             cancellableBlockIndex: 0,
             claimableBlockIndex: 50400,
             receivedBlockIndex: 0,
@@ -194,102 +194,6 @@ const mocks: [
                     {
                       itemId: 0,
                       decimalRate: 0.05,
-                      type: StakeRewardType.Currency,
-                      currencyTicker: "CRYSTAL",
-                    },
-                  ],
-                  bonusRewards: [
-                    {
-                      itemId: 500000,
-                      count: 2,
-                    },
-                  ],
-                },
-                {
-                  level: 6,
-                  requiredGold: 5000000,
-                  rewards: [
-                    {
-                      itemId: 400000,
-                      decimalRate: 1,
-                      type: StakeRewardType.Item,
-                      currencyTicker: "",
-                    },
-                    {
-                      itemId: 500000,
-                      decimalRate: 200,
-                      type: StakeRewardType.Item,
-                      currencyTicker: "",
-                    },
-                    {
-                      itemId: 20001,
-                      decimalRate: 3000,
-                      type: StakeRewardType.Rune,
-                      currencyTicker: "",
-                    },
-                    {
-                      itemId: 800201,
-                      decimalRate: 100,
-                      type: StakeRewardType.Item,
-                      currencyTicker: "",
-                    },
-                    {
-                      itemId: 0,
-                      decimalRate: 0.05,
-                      type: StakeRewardType.Currency,
-                      currencyTicker: "CRYSTAL",
-                    },
-                  ],
-                  bonusRewards: [
-                    {
-                      itemId: 500000,
-                      count: 2,
-                    },
-                  ],
-                },
-                {
-                  level: 7,
-                  requiredGold: 10000000,
-                  rewards: [
-                    {
-                      itemId: 400000,
-                      decimalRate: 0.4,
-                      type: StakeRewardType.Item,
-                      currencyTicker: "",
-                    },
-                    {
-                      itemId: 500000,
-                      decimalRate: 80,
-                      type: StakeRewardType.Item,
-                      currencyTicker: "",
-                    },
-                    {
-                      itemId: 20001,
-                      decimalRate: 1200,
-                      type: StakeRewardType.Rune,
-                      currencyTicker: "",
-                    },
-                    {
-                      itemId: 600201,
-                      decimalRate: 50,
-                      type: StakeRewardType.Item,
-                      currencyTicker: "",
-                    },
-                    {
-                      itemId: 800201,
-                      decimalRate: 50,
-                      type: StakeRewardType.Item,
-                      currencyTicker: "",
-                    },
-                    {
-                      itemId: 0,
-                      decimalRate: 100,
-                      type: StakeRewardType.Currency,
-                      currencyTicker: "GARAGE",
-                    },
-                    {
-                      itemId: 0,
-                      decimalRate: 0.01,
                       type: StakeRewardType.Currency,
                       currencyTicker: "CRYSTAL",
                     },
@@ -600,7 +504,7 @@ export default {
     apolloClient: { MockedProvider, mocks },
   },
   args: {
-    currentNCG: 500,
+    currentNCG: 50000000,
   },
 };
 
@@ -622,7 +526,7 @@ function MonsterCollectionOverlay(
       <MonsterCollectionContent
         latestSheet={sheet}
         current={current}
-        currentNCG={500}
+        currentNCG={500000000}
         isLoading={loading}
         onClose={() => {}}
         tip={100}
@@ -638,6 +542,7 @@ function MonsterCollectionOverlay(
                 stakeState: {
                   ...current.stateQuery.stakeState,
                   deposit: amount.toString(),
+                  stakeRewards: sheet.stateQuery.latestStakeRewards,
                 },
               },
             },
