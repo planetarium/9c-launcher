@@ -22,7 +22,7 @@ import goldIconUrl from "src/renderer/resources/ui-main-icon-gold.png";
 import monsterIconUrl from "src/renderer/resources/monster.png";
 import { getRemain } from "src/utils/monsterCollection/utils";
 import ClaimCollectionRewardsOverlay from "src/renderer/views/ClaimCollectionRewardsOverlay";
-import { ClaimButton } from "./ClaimButton";
+import { Button, ClaimButton } from "./ClaimButton";
 import { clipboard } from "electron";
 import { toast } from "react-hot-toast";
 import { useT } from "@transifex/react";
@@ -215,6 +215,7 @@ export default function UserInfo() {
             onClick={() => setOpenDialog(true)}
           />
         )}
+        {!canClaim && isMigratable && <Button>Migrate Stake</Button>}
         {isCollecting && (
           <StakeStatusButton onClick={() => stakingStastics()} />
         )}
