@@ -206,9 +206,21 @@ export function MonsterCollectionContent({
       const itemAmount = currentRewards[index]
         ? currentRewards[index].count(deposit ?? new Decimal(0))
         : new Decimal(0);
-      const selectedAmount = deltaRewards?.[index]
-        ? deltaRewards?.[index].count(amountDecimal)
-        : new Decimal(0);
+      const getSelectedItem = () => {
+        if (!currentRewards[index]) {
+          return deltaRewards?.[index];
+        }
+
+        const rewardWithMatchingId = deltaRewards?.find(
+          (reward) => reward.itemId === currentRewards[index].itemId,
+        );
+
+        return rewardWithMatchingId ?? deltaRewards?.[index];
+      };
+
+      const selectedItem = getSelectedItem();
+      const selectedAmount =
+        selectedItem?.count(amountDecimal) ?? new Decimal(0);
 
       return (
         <Item
