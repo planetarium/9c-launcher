@@ -172,7 +172,7 @@ export function MonsterCollectionContent({
 
   const availableNCG = useMemo(
     () => deposit?.add(currentNCG) ?? new Decimal(currentNCG),
-    [currentNCG],
+    [],
   );
 
   useEffect(() => {
