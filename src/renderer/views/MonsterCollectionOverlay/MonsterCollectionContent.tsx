@@ -202,7 +202,10 @@ export function MonsterCollectionContent({
       const itemMeta = itemMetadata[item.itemId] ?? {
         name: "Unknown",
       };
-      const itemAmount = item.count(deposit ?? new Decimal(0));
+
+      const itemAmount = currentRewards[index]
+        ? currentRewards[index].count(deposit ?? new Decimal(0))
+        : new Decimal(0);
       const selectedAmount = deltaRewards?.[index]
         ? deltaRewards?.[index].count(amountDecimal)
         : new Decimal(0);
