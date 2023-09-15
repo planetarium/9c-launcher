@@ -7,6 +7,7 @@ import {
   useStakeLazyQuery,
   useLatestStakingSheetQuery,
   useTransactionResultLazyQuery,
+  useCheckPatchTableSubscription,
 } from "src/generated/graphql";
 import { sleep } from "src/utils";
 import { trackEvent } from "src/utils/mixpanel";
@@ -21,7 +22,13 @@ import { toast } from "react-hot-toast";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const loginSession = useLoginSession();
-  const { data: latestSheet } = useLatestStakingSheetQuery();
+  const { data: latestSheet, refetch: refetchLatest } =
+    useLatestStakingSheetQuery();
+  const { data: sheetChange } = useCheckPatchTableSubscription({
+    onData: () => {
+      refetchLatest();
+    },
+  });
   const { data: userStaking, refetch: refetchUserStaking } =
     useUserStakingQuery({
       variables: { address: loginSession?.address?.toString() },
@@ -32,7 +39,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const tip = useTip();
 
   const tx = useTx();
-  const [stake, { data: staked, loading, error }] = useStakeLazyQuery({
+  const [stake, { data, loading, error }] = useStakeLazyQuery({
     fetchPolicy: "no-cache",
   });
   const [isLoading, setLoading] = useState(false);
