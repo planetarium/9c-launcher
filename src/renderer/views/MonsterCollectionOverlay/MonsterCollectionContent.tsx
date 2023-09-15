@@ -271,10 +271,10 @@ export function MonsterCollectionContent({
             e.preventDefault();
             if (stakeState && tip >= stakeState.claimableBlockIndex)
               setIsAlertOpen("unclaimed");
-            else if (amountDecimal.lt(latestLevels[0].requiredGold))
-              setIsAlertOpen("minimum");
             else if (stakeState && amountDecimal.lt(stakeState.deposit))
               setIsAlertOpen("lower-deposit");
+            else if (amountDecimal.lt(latestLevels[0].requiredGold))
+              setIsAlertOpen("minimum");
             else if (stakeState) setIsAlertOpen("confirm-changes");
             else Stake();
           }}
