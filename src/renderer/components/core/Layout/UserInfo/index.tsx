@@ -12,6 +12,7 @@ import {
   useLatestStakingSheetQuery,
   useClaimStakeRewardLazyQuery,
   useTransactionResultLazyQuery,
+  useCheckPatchTableSubscription,
 } from "src/generated/graphql";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -65,7 +66,13 @@ const UserInfoItem = styled(motion.li, {
 
 export default function UserInfo() {
   const loginSession = useLoginSession();
-  const { data: latestSheet } = useLatestStakingSheetQuery();
+  const { data: latestSheet, refetch: refetchLatest } =
+    useLatestStakingSheetQuery();
+  const { data: sheetChange } = useCheckPatchTableSubscription({
+    onData: () => {
+      refetchLatest();
+    },
+  });
   const {
     canClaim,
     tip,
@@ -110,6 +117,15 @@ export default function UserInfo() {
       console.error("Claim transaction failed: ", result);
     }
   }, [result]);
+
+  useEffect(() => {
+    setIsMigratable(
+      isCollecting &&
+        !deepEqual(stakeRewards, latestSheet?.stateQuery.latestStakeRewards, {
+          strict: true,
+        }),
+    );
+  }, [stakeRewards, sheetChange, latestSheet]);
 
   const remainingText = useMemo(() => {
     if (!claimableBlockIndex) return 0;
@@ -215,7 +231,9 @@ export default function UserInfo() {
             onClick={() => setOpenDialog(true)}
           />
         )}
-        {!canClaim && isMigratable && <Button>Migrate Stake</Button>}
+        {isCollecting && !canClaim && isMigratable && (
+          <Button>Migrate Stake</Button>
+        )}
         {isCollecting && (
           <StakeStatusButton onClick={() => stakingStastics()} />
         )}
