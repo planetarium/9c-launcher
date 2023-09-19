@@ -12,6 +12,7 @@ import {
   useLatestStakingSheetQuery,
   useClaimStakeRewardLazyQuery,
   useTransactionResultLazyQuery,
+  useCheckPatchTableSubscription,
 } from "src/generated/graphql";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -22,7 +23,7 @@ import goldIconUrl from "src/renderer/resources/ui-main-icon-gold.png";
 import monsterIconUrl from "src/renderer/resources/monster.png";
 import { getRemain } from "src/utils/monsterCollection/utils";
 import ClaimCollectionRewardsOverlay from "src/renderer/views/ClaimCollectionRewardsOverlay";
-import { ClaimButton } from "./ClaimButton";
+import { Button, ClaimButton } from "./ClaimButton";
 import { clipboard } from "electron";
 import { toast } from "react-hot-toast";
 import { useT } from "@transifex/react";
@@ -65,7 +66,13 @@ const UserInfoItem = styled(motion.li, {
 
 export default function UserInfo() {
   const loginSession = useLoginSession();
-  const { data: latestSheet } = useLatestStakingSheetQuery();
+  const { data: latestSheet, refetch: refetchLatest } =
+    useLatestStakingSheetQuery();
+  const { data: sheetChange } = useCheckPatchTableSubscription({
+    onData: () => {
+      refetchLatest();
+    },
+  });
   const {
     canClaim,
     tip,
@@ -80,6 +87,7 @@ export default function UserInfo() {
   const [fetchResult, { data: result, stopPolling }] =
     useTransactionResultLazyQuery({
       pollInterval: 1000,
+      fetchPolicy: "no-cache",
     });
   const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
@@ -95,9 +103,30 @@ export default function UserInfo() {
     stopPolling?.();
     setClaimLoading(false);
 
-    if (txStatus === TxStatus.Success) refetch();
-    else console.error("Claim transaction failed: ", result);
+    if (txStatus === TxStatus.Success) {
+      toast.success(
+        t("Successfully sent rewards to {name} #{address}", {
+          _tags: "v2/monster-collection",
+          name: claimedAvatar.current!.name,
+          address: claimedAvatar.current!.address.slice(2),
+        }),
+      );
+      refetch();
+    } else {
+      toast.error(t("Failed to claim your reward."));
+      console.error("Claim transaction failed: ", result);
+    }
   }, [result]);
+
+  useEffect(() => {
+    setIsMigratable(
+      isCollecting &&
+        !deepEqual(stakeRewards, latestSheet?.stateQuery.latestStakeRewards, {
+          strict: true,
+        }),
+    );
+  }, [stakeRewards, sheetChange, latestSheet]);
+
   const remainingText = useMemo(() => {
     if (!claimableBlockIndex) return 0;
     const minutes = Math.round((claimableBlockIndex - tip) / 5);
@@ -119,13 +148,6 @@ export default function UserInfo() {
           txId,
           avatar: avatar.address,
         });
-        toast.success(
-          t("Successfully sent rewards to {name} #{address}", {
-            _tags: "v2/monster-collection",
-            name: avatar.name,
-            address: avatar.address.slice(2),
-          }),
-        );
         setClaimLoading(true);
       });
     },
@@ -201,13 +223,16 @@ export default function UserInfo() {
       <UserInfoItem onClick={() => setCollectionOpen(true)}>
         <img src={monsterIconUrl} width={28} alt="monster collection icon" />
         <strong>{deposit?.replace(/\.0+$/, "") || "0"}</strong>
-        {isCollecting ? ` - Remaining: ${remainingText}` : " (-)"}
+        {isCollecting && !canClaim ? ` - Remaining: ${remainingText}` : " (-)"}
         <LaunchIcon />
         {canClaim && (
           <ClaimButton
             loading={claimLoading}
             onClick={() => setOpenDialog(true)}
           />
+        )}
+        {isCollecting && !canClaim && isMigratable && (
+          <Button>Migrate Stake</Button>
         )}
         {isCollecting && (
           <StakeStatusButton onClick={() => stakingStastics()} />

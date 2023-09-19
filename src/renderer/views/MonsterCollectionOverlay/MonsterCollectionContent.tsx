@@ -147,7 +147,7 @@ export function MonsterCollectionContent({
 
   const deposit = useMemo(
     () => stakeState && new Decimal(stakeState.deposit),
-    [stakeState],
+    [stakeState, currentNCG],
   );
 
   const [isMigratable, setIsMigratable] = useState<boolean>(
@@ -158,23 +158,21 @@ export function MonsterCollectionContent({
 
   const amountDecimal = useMemo(() => new Decimal(amount || 0), [amount]);
 
-  // latestSheet always exists.
   const latestLevels = useMemo(
     () => latestSheet?.orderedList.filter((v) => v.level !== 0),
     [latestSheet],
   );
-  // but userSheet not. if not exists, coalescent to latestSheet
   const userLevels = useMemo(() => {
     if (isMigratable) {
       return stakeState?.stakeRewards.orderedList.filter((v) => v.level !== 0);
     } else {
       return latestLevels;
     }
-  }, [isMigratable]);
+  }, [isMigratable, stakeState]);
 
   const availableNCG = useMemo(
     () => deposit?.add(currentNCG) ?? new Decimal(currentNCG),
-    [deposit, currentNCG],
+    [],
   );
 
   useEffect(() => {
@@ -182,7 +180,7 @@ export function MonsterCollectionContent({
   }, [stakeState]);
 
   const Stake = useEvent(() => {
-    if (amountDecimal.eq(deposit!)) setIsMigratable(false);
+    if (deposit?.eq(amountDecimal)) setIsMigratable(false);
     onStake(amountDecimal);
     setIsAlertOpen(null);
     setIsEditing(false);
@@ -192,22 +190,37 @@ export function MonsterCollectionContent({
   const deltaIndex = useRewardIndex(latestLevels, amountDecimal);
   const isLockedUp = !!stakeState && tip <= stakeState.cancellableBlockIndex;
 
-  const currentRewards = useRewards(latestLevels, userIndex ?? 0);
+  const currentRewards = useRewards(userLevels, userIndex ?? 0);
   const deltaRewards = useRewards(latestLevels, deltaIndex ?? 0);
 
-  function RecurringReward(currentRewards: Rewards, selectedRewards?: Rewards) {
+  function RecurringReward(currentRewards: Rewards, deltaRewards?: Rewards) {
     const targetReward =
-      selectedRewards && selectedRewards.length > currentRewards.length
-        ? selectedRewards
+      deltaRewards && deltaRewards.length > currentRewards.length
+        ? deltaRewards
         : currentRewards;
     return targetReward.map((item, index) => {
       const itemMeta = itemMetadata[item.itemId] ?? {
         name: "Unknown",
       };
-      const itemAmount = item.count(deposit ?? new Decimal(0));
-      const selectedAmount = selectedRewards?.[index]
-        ? selectedRewards?.[index].count(amountDecimal)
+
+      const itemAmount = currentRewards[index]
+        ? currentRewards[index].count(deposit ?? new Decimal(0))
         : new Decimal(0);
+      const getSelectedItem = () => {
+        if (!currentRewards[index]) {
+          return deltaRewards?.[index];
+        }
+
+        const rewardWithMatchingId = deltaRewards?.find(
+          (reward) => reward.itemId === currentRewards[index].itemId,
+        );
+
+        return rewardWithMatchingId ?? deltaRewards?.[index];
+      };
+
+      const selectedItem = getSelectedItem();
+      const selectedAmount =
+        selectedItem?.count(amountDecimal) ?? new Decimal(0);
 
       return (
         <Item
@@ -216,7 +229,7 @@ export function MonsterCollectionContent({
           title={itemMeta.name}
           isUpgrade={selectedAmount.gt(itemAmount)}
           updatedAmount={selectedAmount.toString()}
-          isDiff
+          isDiff={!selectedAmount.eq(itemAmount)}
         >
           <img src={itemMeta.img} alt={itemMeta.name} height={48} />
         </Item>
@@ -252,7 +265,6 @@ export function MonsterCollectionContent({
     <>
       <CloseButton onClick={() => onClose()} />
       <Title src={titleImg} />
-      // Loading Part
       <AnimatePresence>
         {isLoading && (
           <LoadingBackdrop
@@ -265,15 +277,14 @@ export function MonsterCollectionContent({
           </LoadingBackdrop>
         )}
       </AnimatePresence>
-      // Input Part
       <DepositHolder>
         <DepositForm
           onSubmit={(e) => {
             e.preventDefault();
-            if (stakeState && amountDecimal.lt(stakeState.deposit))
-              setIsAlertOpen("lower-deposit");
-            else if (stakeState && tip >= stakeState.claimableBlockIndex)
+            if (stakeState && tip >= stakeState.claimableBlockIndex)
               setIsAlertOpen("unclaimed");
+            else if (stakeState && amountDecimal.lt(stakeState.deposit))
+              setIsAlertOpen("lower-deposit");
             else if (amountDecimal.lt(latestLevels[0].requiredGold))
               setIsAlertOpen("minimum");
             else if (stakeState) setIsAlertOpen("confirm-changes");
@@ -313,14 +324,14 @@ export function MonsterCollectionContent({
               </DepositLeftButton>
               <DepositRightButton
                 disabled={
-                  amountDecimal.gt(availableNCG) || // exceed balance
-                  (deposit && deposit.eq(0) && amountDecimal.eq(0)) || // 0 to 0
+                  amountDecimal.gt(availableNCG) ||
+                  (deposit && deposit.eq(0) && amountDecimal.eq(0)) ||
                   (isLockedUp &&
                     isMigratable &&
-                    amountDecimal.lt(stakeState.deposit)) || // lockup limit handle on migratable
+                    amountDecimal.lt(stakeState.deposit)) ||
                   (isLockedUp &&
                     !isMigratable &&
-                    amountDecimal.lte(stakeState.deposit)) // lockup limit handle on non-migratable
+                    amountDecimal.lte(stakeState.deposit))
                 }
               >
                 Save
@@ -328,7 +339,7 @@ export function MonsterCollectionContent({
             </>
           ) : (
             <>
-              <DepositContent onClick={() => inputRef.current?.focus()}>
+              <DepositContent>
                 {stakeState?.deposit?.replace(/\.0+$/, "") ?? 0}
                 <sub>/{availableNCG.toNumber().toLocaleString()}</sub>
                 {isMigratable && (
@@ -366,7 +377,6 @@ export function MonsterCollectionContent({
           </DepositDescription>
         )}
       </DepositHolder>
-      // Levels in "Latest Sheet"
       <Levels>
         {latestLevels.map((item, index) => (
           <Level
@@ -382,7 +392,6 @@ export function MonsterCollectionContent({
           />
         ))}
       </Levels>
-      // Reward Enumerate
       <AnimatePresence exitBeforeEnter>
         {currentRewards ? (
           <RewardSheet>
@@ -397,11 +406,10 @@ export function MonsterCollectionContent({
                 return (
                   <Item
                     key={item.title}
-                    amount={isEditing ? "" : amount + sysRewardSuffix}
-                    updatedAmount={
-                      isEditing ? updatedAmount + sysRewardSuffix : ""
-                    }
-                    isUpgrade={updatedAmount >= amount}
+                    amount={amount + sysRewardSuffix}
+                    updatedAmount={updatedAmount + sysRewardSuffix}
+                    isUpgrade={updatedAmount > amount}
+                    isDiff={updatedAmount !== amount}
                     title={item.title}
                   >
                     <img src={item.img} alt={item.title} height={48} />
@@ -414,7 +422,6 @@ export function MonsterCollectionContent({
           <RewardSheetPlaceholder />
         )}
       </AnimatePresence>
-      // Alert Overlays
       <Alert
         title="Information"
         onCancel={() => setIsAlertOpen(null)}

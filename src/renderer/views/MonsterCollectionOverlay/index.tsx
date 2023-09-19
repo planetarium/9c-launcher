@@ -7,6 +7,7 @@ import {
   useStakeLazyQuery,
   useLatestStakingSheetQuery,
   useTransactionResultLazyQuery,
+  useCheckPatchTableSubscription,
 } from "src/generated/graphql";
 import { sleep } from "src/utils";
 import { trackEvent } from "src/utils/mixpanel";
@@ -15,29 +16,30 @@ import { useBalance } from "src/utils/useBalance";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { useTip } from "src/utils/useTip";
 import { useTx } from "src/utils/useTx";
-// import Migration from "./Migration";
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { MonsterCollectionOverlayBase } from "./base";
+import { toast } from "react-hot-toast";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const loginSession = useLoginSession();
-  const { data: latestSheet } = useLatestStakingSheetQuery();
+  const { data: latestSheet, refetch: refetchLatest } =
+    useLatestStakingSheetQuery();
+  const { data: sheetChange } = useCheckPatchTableSubscription({
+    onData: () => {
+      refetchLatest();
+    },
+  });
   const { data: userStaking, refetch: refetchUserStaking } =
     useUserStakingQuery({
       variables: { address: loginSession?.address?.toString() },
       skip: !loginSession,
     });
-  /*  const { data: V1Collection, refetch: refetchV1Collection } =
-    useV1CollectionStateQuery({
-      variables: { address: loginSession?.address?.toString() },
-      skip: !loginSession,
-    });
-*/
+
   const balance = useBalance();
   const tip = useTip();
 
   const tx = useTx();
-  const [stake, { data: staked, loading, error }] = useStakeLazyQuery({
+  const [stake, { data, loading, error }] = useStakeLazyQuery({
     fetchPolicy: "no-cache",
   });
   const [isLoading, setLoading] = useState(false);
@@ -50,8 +52,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   useEffect(() => {
     if (!txStatus) return;
     if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
+      toast.success("Staking Success!");
       refetchUserStaking();
-      //refetchV1Collection();
+    }
+    if (
+      txStatus.transaction.transactionResult.txStatus ===
+      (TxStatus.Failure || TxStatus.Invalid)
+    ) {
+      toast.error("Staking Failed.");
     }
     if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
@@ -59,13 +67,7 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     }
   }, [txStatus]);
 
-  if (
-    !latestSheet ||
-    !userStaking /* || !V1Collection */ ||
-    !tip ||
-    !loginSession
-  )
-    return null;
+  if (!latestSheet || !userStaking || !tip || !loginSession) return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
@@ -85,17 +87,17 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
                 publicKey: loginSession.publicKey.toHex("uncompressed"),
                 amount: amount.toNumber(),
               },
-            });
-            while (loading) {
-              sleep(500);
-            }
-            if (!staked?.actionTxQuery) throw error;
-            return tx(staked.actionTxQuery.stake).then((v) => {
-              if (!v.data) throw error;
-              fetchStatus({ variables: { txId: v.data.stageTransaction } });
+            }).then((v) => {
+              tx(v.data?.actionTxQuery.stake).then((v) => {
+                if (!v.data) throw error;
+                fetchStatus({
+                  variables: { txId: v.data.stageTransaction },
+                }).then((v) => refetchUserStaking());
+              });
             });
           } catch (e) {
             setLoading(false);
+            toast.error("Staking Failed.");
             console.error(`Change Amount Failed : ${e}`);
           }
         }}
