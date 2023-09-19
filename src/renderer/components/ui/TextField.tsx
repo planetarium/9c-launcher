@@ -133,7 +133,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       motion: useMotion,
       ...inputAttrs
     },
-    ref
+    ref,
   ) => {
     return (
       <TextFieldWrapper invalid={invalid} layout={useMotion}>
@@ -148,7 +148,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {message && <Message invalid={invalid}>{message}</Message>}
       </TextFieldWrapper>
     );
-  }
+  },
 );
 
 export default TextField;
@@ -163,7 +163,7 @@ export const PasswordField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       motion: useMotion,
       ...inputAttrs
     },
-    ref
+    ref,
   ) => {
     const [visible, toggleVisible] = useReducer((v) => !v, false);
     const Icon = visible ? Visibility : VisibilityOff;
@@ -189,5 +189,5 @@ export const PasswordField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {message && <Message invalid={invalid}>{message}</Message>}
       </TextFieldWrapper>
     );
-  }
+  },
 );

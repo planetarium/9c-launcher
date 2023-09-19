@@ -19,7 +19,7 @@ const { Provider } = context;
 
 export function ExternalURLProvider({ children }: React.PropsWithChildren<{}>) {
   const [url, setUrl] = useState<URL | null>(
-    urlBeforeReact !== null ? new URL(urlBeforeReact) : null
+    urlBeforeReact !== null ? new URL(urlBeforeReact) : null,
   );
 
   const resetURL = () => {
@@ -31,7 +31,7 @@ export function ExternalURLProvider({ children }: React.PropsWithChildren<{}>) {
       on(IPC_OPEN_URL, (_, url) => {
         setUrl(new URL(url));
       }),
-    []
+    [],
   );
 
   return <Provider value={{ url, resetURL }}>{children}</Provider>;

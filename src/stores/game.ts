@@ -31,7 +31,7 @@ export default class GameStore {
     });
     userConfigStore.onDidChange(
       "Locale",
-      (value) => (this._language = value ?? "en")
+      (value) => (this._language = value ?? "en"),
     );
   }
 
@@ -48,7 +48,7 @@ export default class GameStore {
   @action
   startGame = (privateKey: string) => {
     const awsSinkGuid: string = ipcRenderer.sendSync(
-      "get-aws-sink-cloudwatch-guid"
+      "get-aws-sink-cloudwatch-guid",
     );
     const dataProviderUrl = getConfig("DataProviderUrl");
     const portalUrl = getConfig("OnboardingPortalUrl");
@@ -71,7 +71,7 @@ export default class GameStore {
       ].concat(
         dataProviderUrl === undefined
           ? []
-          : [`--api-server-host=${dataProviderUrl}`]
+          : [`--api-server-host=${dataProviderUrl}`],
       ),
     });
     this._isGameStarted = true;

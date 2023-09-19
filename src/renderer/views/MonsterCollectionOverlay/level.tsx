@@ -99,13 +99,13 @@ const CurrentMarker = styled(motion.div, {
 });
 
 const SelectionMarker = styled(motion.div, {
-  width: 42,
+  width: 46,
   height: 45,
   backgroundImage: `url(${selectArrow})`,
   backgroundSize: "contain",
   position: "absolute",
   top: -20,
-  left: "calc(50% - 21px)",
+  left: "calc(50% - 23px)",
 });
 
 interface LevelProps {

@@ -16,7 +16,7 @@ function RevokeView() {
   const accountStore = useStore("account");
   const loggedinAddress = useLoginSession()?.address;
   const [address, setAddress] = useState<Address>(
-    loggedinAddress ?? accountStore.addresses[0]
+    loggedinAddress ?? accountStore.addresses[0],
   );
   const history = useHistory();
 

@@ -15,7 +15,7 @@ import secondaryButtonHover from "src/renderer/resources/collection/button-cance
 import infoIcon from "src/renderer/resources/collection/mark-information.png";
 import React, { useRef } from "react";
 import { T } from "@transifex/react";
-import VisuallyHidden from "@reach/visually-hidden";
+import { VisuallyHidden } from "@reach/visually-hidden";
 
 export const AlertBackdrop = styled(AlertDialogOverlay, {
   zIndex: 3,

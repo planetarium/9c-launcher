@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   Container,
   FormControl,
   InputAdornment,
@@ -79,8 +80,9 @@ function SwapPage() {
   const [amountWarning, setAmountWarning] = useState<boolean>(false);
   const [tx, setTx] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
+  const [debounce, setDebounce] = useState<boolean>(false);
   const [currentPhase, setCurrentPhase] = useState<TransferPhase>(
-    TransferPhase.READY
+    TransferPhase.READY,
   );
 
   const listener: TransactionConfirmationListener = {
@@ -113,12 +115,16 @@ function SwapPage() {
     }
 
     setCurrentPhase(TransferPhase.SENDTX);
+    setDebounce(true);
+    setTimeout(() => {
+      setDebounce(false);
+    }, 15000);
 
     const tx = await transfer.swapToWNCG(
       transfer.senderAddress,
       recipient,
       amount,
-      loginSession.privateKey
+      loginSession.privateKey,
     );
     setTx(tx);
 
@@ -126,6 +132,10 @@ function SwapPage() {
 
     await transfer.confirmTransaction(tx, undefined, listener);
   };
+
+  const loading =
+    currentPhase === TransferPhase.SENDTX ||
+    currentPhase === TransferPhase.SENDING;
 
   return (
     <SwapContainer>
@@ -215,8 +225,8 @@ function SwapPage() {
         onClick={handleButton}
         disabled={amountWarning || recipientWarning}
       >
-        {" "}
-        Send{" "}
+        {(loading || debounce) && <CircularProgress />}
+        Send
       </SwapButton>
 
       <SendingDialog

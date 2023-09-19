@@ -25,8 +25,8 @@ export function StoreProvider({ children }: React.PropsWithChildren<{}>) {
  * @returns {object} The store specified by the store name.
  */
 export function useStore<T extends keyof typeof stores>(
-  store: T
-): typeof stores[T];
+  store: T,
+): (typeof stores)[T];
 /**
  * @returns {object} The store object containing all stores.
  */

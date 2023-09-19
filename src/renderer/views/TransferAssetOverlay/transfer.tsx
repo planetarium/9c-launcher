@@ -71,12 +71,14 @@ function TransferPage() {
   const [recipient, setRecipient] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [amount, setAmount] = useState<Decimal>(new Decimal(0));
+  const [debounce, setDebounce] = useState<boolean>(false);
   const [recipientWarning, setRecipientWarning] = useState<boolean>(false);
   const [amountWarning, setAmountWarning] = useState<boolean>(false);
+  const [memoWarning, setMemoWarning] = useState<boolean>(false);
   const [tx, setTx] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
   const [currentPhase, setCurrentPhase] = useState<TransferPhase>(
-    TransferPhase.READY
+    TransferPhase.READY,
   );
 
   const listener: TransactionConfirmationListener = {
@@ -115,12 +117,17 @@ function TransferPage() {
 
     setCurrentPhase(TransferPhase.SENDTX);
 
+    setDebounce(true);
+    setTimeout(() => {
+      setDebounce(false);
+    }, 15000);
+
     const tx = await transfer.transferAsset(
       transfer.senderAddress,
       recipient,
       amount,
       memo,
-      privateKey
+      privateKey,
     );
     setTx(tx);
 
@@ -134,7 +141,8 @@ function TransferPage() {
     currentPhase === TransferPhase.SENDTX ||
     currentPhase === TransferPhase.SENDING;
 
-  const disabled = amountWarning || recipientWarning || loading;
+  const disabled =
+    amountWarning || recipientWarning || memoWarning || loading || debounce;
 
   return (
     <TransferContainer>
@@ -187,7 +195,7 @@ function TransferPage() {
             name="amount"
             onChange={(e) =>
               setAmount(
-                new Decimal(e.target.value === "" ? -1 : e.target.value)
+                new Decimal(e.target.value === "" ? -1 : e.target.value),
               )
             }
             onBlur={() => setAmountWarning(!amount.gt(0))}
@@ -202,11 +210,16 @@ function TransferPage() {
         </TransferTitle>
         <TransferSecondTitle>
           <T _str="Enter an additional note." _tags={transifexTags} />
+          &nbsp;
+          <b>{`(${memo.length}/80)`}</b>
         </TransferSecondTitle>
         <FormControl fullWidth>
           <TransferInput
             type="text"
             name="memo"
+            onBlur={() => setMemoWarning(memo.length > 80)}
+            onFocus={() => setAmountWarning(false)}
+            error={memoWarning}
             onChange={(e) => setMemo(e.target.value)}
           />
         </FormControl>
@@ -217,7 +230,7 @@ function TransferPage() {
             onClick={handleButton}
             disabled={disabled}
           >
-            {loading && <CircularProgress />}
+            {(loading || debounce) && <CircularProgress />}
             Send
           </TransferButton>
         </FormControl>

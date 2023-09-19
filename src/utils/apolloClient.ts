@@ -10,17 +10,10 @@ import { WebSocketLink } from "@apollo/client/link/ws";
 import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { ipcRenderer } from "electron";
-import { app } from "@electron/remote";
 import { RetryLink } from "@apollo/client/link/retry";
 import { useEffect, useState } from "react";
 import { NodeInfo } from "src/config";
-import {
-  GenesisHashDocument,
-  GenesisHashQuery,
-  PreloadEndedDocument,
-  PreloadEndedQuery,
-} from "src/generated/graphql";
-import { captureException } from "@sentry/electron";
+import { GenesisHashDocument, GenesisHashQuery } from "src/generated/graphql";
 
 type Client = ApolloClient<NormalizedCacheObject>;
 
@@ -29,7 +22,6 @@ const onErrorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors)
     for (const error of graphQLErrors) {
       console.error("GraphQL Error by", operation.operationName, error);
-      captureException(error);
     }
 });
 
@@ -61,7 +53,7 @@ export default function useApolloClient(): Client | null {
           );
         },
         wsLink,
-        httpLink
+        httpLink,
       );
 
       const client = new ApolloClient({
@@ -78,7 +70,7 @@ export default function useApolloClient(): Client | null {
           if (!result.data) return;
           ipcRenderer.send(
             "set-genesis-hash",
-            result.data.nodeStatus.genesis.hash
+            result.data.nodeStatus.genesis.hash,
           );
         });
 

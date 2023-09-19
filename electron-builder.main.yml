@@ -18,6 +18,7 @@ nsis:
   perMachine: false
   allowElevation: false
   allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: true
 mac:
   icon: "AppIcon.icns"
   target:

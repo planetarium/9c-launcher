@@ -1,20 +1,22 @@
 {
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "import"],
   "extends": [
-    "react-app",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
   "ignorePatterns": [
-    "**/generated/**"
+    "**/generated/**",
+    "**/storybook-static/**",
+    "**/src/worker/**"
   ],
   "rules": {
     "jsx-a11y/alt-text": 0,
     "react/prop-types": 0,
     "no-underscore-dangle": 0,
     "no-constant-condition": 0,
+    "no-irregular-whitespace": 0,
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/prefer-default-export": 0,
@@ -31,7 +33,6 @@
         "extendDefaults": true
       }
     ]
-    
   },
   "globals": {
     "window": true,

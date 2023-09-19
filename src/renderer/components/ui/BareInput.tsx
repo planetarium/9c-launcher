@@ -28,7 +28,7 @@ const BareInputStyled = styled("input", {
 
 function BareInput(
   { value, ...props }: React.InputHTMLAttributes<HTMLInputElement>,
-  ref: React.Ref<HTMLInputElement>
+  ref: React.Ref<HTMLInputElement>,
 ) {
   return (
     <BareInputWrapper>

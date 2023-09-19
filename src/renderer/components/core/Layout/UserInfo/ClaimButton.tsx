@@ -3,7 +3,7 @@ import React, { MouseEvent, useCallback } from "react";
 import { T } from "src/renderer/i18n";
 import { styled } from "src/renderer/stitches.config";
 
-const Button = styled(motion.button, {
+export const Button = styled(motion.button, {
   appearance: "none",
   backgroundColor: "#dc9c2d",
   border: "none",
@@ -27,7 +27,7 @@ export function ClaimButton({ loading, onClick }: ClaimButtonProps) {
       e.stopPropagation();
       onClick();
     },
-    [onClick]
+    [onClick],
   );
 
   return (

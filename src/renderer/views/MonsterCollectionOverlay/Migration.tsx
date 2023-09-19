@@ -1,6 +1,6 @@
 import React, { useMemo, useReducer } from "react";
 import {
-  LegacyCollectionStateQuery,
+  V1CollectionStateQuery,
   useMigrateMonsterCollectionLazyQuery,
 } from "src/generated/graphql";
 import { MigrationAlert, MigrationAlertItem } from "./dialog";
@@ -12,9 +12,9 @@ import { useLoginSession } from "src/utils/useLoginSession";
 interface MigrationProps {
   tip: number;
   collectionState: NonNullable<
-    LegacyCollectionStateQuery["stateQuery"]["monsterCollectionState"]
+    V1CollectionStateQuery["stateQuery"]["monsterCollectionState"]
   >;
-  collectionSheet: LegacyCollectionStateQuery["stateQuery"]["monsterCollectionSheet"];
+  collectionSheet: V1CollectionStateQuery["stateQuery"]["monsterCollectionSheet"];
   onActionTxId(txId: string): void;
   onClose?(): void;
 }
@@ -49,7 +49,7 @@ export default function Migration({
           .then(
             (txId) =>
               txId.data?.stageTransaction &&
-              onActionTxId(txId.data.stageTransaction)
+              onActionTxId(txId.data.stageTransaction),
           )
           .catch((e) => console.error(e));
       },
@@ -60,10 +60,10 @@ export default function Migration({
     () =>
       collectionSheet?.orderedList
         ?.flatMap((item) =>
-          item && item.level <= collectionState.level ? item.requiredGold : []
+          item && item.level <= collectionState.level ? item.requiredGold : [],
         )
         .reduce((a, b) => a + b, 0),
-    [collectionState, collectionSheet]
+    [collectionState, collectionSheet],
   );
   const elapsedBlocks = tip - collectionState.startedBlockIndex;
   const elapsed = getRemain(elapsedBlocks);

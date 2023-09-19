@@ -11,7 +11,7 @@ class AppUpdater {
   constructor(
     win: Electron.BrowserWindow,
     baseUrl: string,
-    updateOptions: IUpdateOptions
+    updateOptions: IUpdateOptions,
   ) {
     this.win = win;
     this.updateOptions = updateOptions;
@@ -21,10 +21,10 @@ class AppUpdater {
     autoUpdater.setFeedURL(`${baseUrl}/${netenv}/launcher`);
 
     autoUpdater.on("update-available", (updateInfo) =>
-      this.handleUpdateAvailable(updateInfo)
+      this.handleUpdateAvailable(updateInfo),
     );
     autoUpdater.on("update-downloaded", (updateInfo) =>
-      this.handleUpdateDownloaded(updateInfo)
+      this.handleUpdateDownloaded(updateInfo),
     );
     autoUpdater.on("error", (err) => this.handleError(err));
   }
@@ -41,14 +41,14 @@ class AppUpdater {
   handleUpdateAvailable(updateInfo: UpdateInfo) {
     console.log(
       `Found update (local version: ${app.getVersion()})`,
-      updateInfo
+      updateInfo,
     );
   }
 
   handleUpdateDownloaded(updateInfo: UpdateInfo) {
     if (isVersionGreaterThan(updateInfo.version, app.getVersion())) {
       this.win.webContents.executeJavaScript(
-        `window.location.hash = '/confirm-update'`
+        `window.location.hash = '/confirm-update'`,
       );
     }
   }

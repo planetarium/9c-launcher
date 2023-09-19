@@ -13,7 +13,6 @@ import {
 import infoIcon from "src/renderer/resources/collection/mark-information.png";
 import ncgIcon from "src/renderer/resources/collection/items/ncg.png";
 import { T } from "@transifex/react";
-import { noop } from "lodash";
 
 export default {
   title: "MonsterCollection/Alert",
@@ -44,7 +43,7 @@ export const Migration = ({
 }: Pick<ComponentPropsWithoutRef<typeof MigrationAlert>, "isClaimable">) => (
   <MigrationAlert
     isOpen={true}
-    onConfirm={noop}
+    onConfirm={() => {}}
     isClaimable={isClaimable}
     items={
       <>

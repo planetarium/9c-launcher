@@ -10,7 +10,7 @@ import { useTip } from "src/utils/useTip";
 import { useLoginSession } from "src/utils/useLoginSession";
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
-  "get-aws-sink-cloudwatch-guid"
+  "get-aws-sink-cloudwatch-guid",
 );
 
 const InfoTextStyled = styled("div", {
@@ -36,7 +36,7 @@ function InfoText() {
       ]
         .filter(Boolean)
         .join("\n"),
-    [address, node, awsSinkGuid]
+    [address, node, awsSinkGuid],
   );
 
   const onClick = () => {
@@ -57,7 +57,7 @@ function InfoText() {
         setNode(nodeInfo.host);
         setApv(nodeInfo.apv);
       })(),
-    [node]
+    [node],
   );
 
   return (

@@ -29,3 +29,7 @@ report.html
 
 # tmp dir
 /tmp
+
+#Ignore storybook build file
+storybook-static
+

@@ -1,11 +1,8 @@
 import React from "react";
-import { getCurrentWindow } from "@electron/remote";
 import { styled } from "src/renderer/stitches.config";
-
+import { ipcRenderer } from "electron";
 import MinimizeIcon from "@material-ui/icons/Minimize";
 import CloseIcon from "@material-ui/icons/Close";
-
-const currentWindow = getCurrentWindow();
 
 const WindowControlsStyled = styled("div", {
   display: "flex",
@@ -39,11 +36,14 @@ export default function WindowControls({ color }: { color?: "black" }) {
     <WindowControlsStyled>
       <WindowControlButton
         color={color}
-        onClick={() => currentWindow.minimize()}
+        onClick={() => ipcRenderer.send("min")}
       >
         <MinimizeIcon fontSize="small" />
       </WindowControlButton>
-      <WindowControlButton color={color} onClick={() => currentWindow.close()}>
+      <WindowControlButton
+        color={color}
+        onClick={() => ipcRenderer.send("close")}
+      >
         <CloseIcon fontSize="small" />
       </WindowControlButton>
     </WindowControlsStyled>

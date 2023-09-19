@@ -9,8 +9,10 @@ import { motion } from "framer-motion";
 import { styled } from "src/renderer/stitches.config";
 import {
   TxStatus,
+  useLatestStakingSheetQuery,
   useClaimStakeRewardLazyQuery,
   useTransactionResultLazyQuery,
+  useCheckPatchTableSubscription,
 } from "src/generated/graphql";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -21,18 +23,20 @@ import goldIconUrl from "src/renderer/resources/ui-main-icon-gold.png";
 import monsterIconUrl from "src/renderer/resources/monster.png";
 import { getRemain } from "src/utils/monsterCollection/utils";
 import ClaimCollectionRewardsOverlay from "src/renderer/views/ClaimCollectionRewardsOverlay";
-import { ClaimButton } from "./ClaimButton";
+import { Button, ClaimButton } from "./ClaimButton";
 import { clipboard } from "electron";
 import { toast } from "react-hot-toast";
 import { useT } from "@transifex/react";
 import { useBalance } from "src/utils/useBalance";
 import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverlay";
-import { useStaking } from "src/utils/staking";
+import { useUserStaking } from "src/utils/staking";
 import { useTx } from "src/utils/useTx";
 import { trackEvent } from "src/utils/mixpanel";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { Avatar } from "src/renderer/views/ClaimCollectionRewardsOverlay/ClaimContent";
 import { ExportOverlay } from "./ExportOverlay";
+import deepEqual from "deep-equal";
+import { StakeStatusButton } from "./StakeStatus";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -62,34 +66,71 @@ const UserInfoItem = styled(motion.li, {
 
 export default function UserInfo() {
   const loginSession = useLoginSession();
+  const { data: latestSheet, refetch: refetchLatest } =
+    useLatestStakingSheetQuery();
+  const { data: sheetChange } = useCheckPatchTableSubscription({
+    onData: () => {
+      refetchLatest();
+    },
+  });
   const {
     canClaim,
     tip,
     startedBlockIndex,
+    receivedBlockIndex,
+    cancellableBlockIndex,
     claimableBlockIndex,
     deposit,
+    stakeRewards,
     refetch,
-  } = useStaking();
+  } = useUserStaking();
   const [fetchResult, { data: result, stopPolling }] =
     useTransactionResultLazyQuery({
       pollInterval: 1000,
+      fetchPolicy: "no-cache",
     });
-
+  const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
+  const [isMigratable, setIsMigratable] = useState<boolean>(
+    isCollecting &&
+      !deepEqual(stakeRewards, latestSheet?.stateQuery.latestStakeRewards, {
+        strict: true,
+      }),
+  );
   useEffect(() => {
     const txStatus = result?.transaction.transactionResult.txStatus;
     if (!txStatus || txStatus === TxStatus.Staging) return;
     stopPolling?.();
     setClaimLoading(false);
 
-    if (txStatus === TxStatus.Success) refetch();
-    else console.error("Claim transaction failed: ", result);
+    if (txStatus === TxStatus.Success) {
+      toast.success(
+        t("Successfully sent rewards to {name} #{address}", {
+          _tags: "v2/monster-collection",
+          name: claimedAvatar.current!.name,
+          address: claimedAvatar.current!.address.slice(2),
+        }),
+      );
+      refetch();
+    } else {
+      toast.error(t("Failed to claim your reward."));
+      console.error("Claim transaction failed: ", result);
+    }
   }, [result]);
-  const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
+
+  useEffect(() => {
+    setIsMigratable(
+      isCollecting &&
+        !deepEqual(stakeRewards, latestSheet?.stateQuery.latestStakeRewards, {
+          strict: true,
+        }),
+    );
+  }, [stakeRewards, sheetChange, latestSheet]);
+
   const remainingText = useMemo(() => {
     if (!claimableBlockIndex) return 0;
     const minutes = Math.round((claimableBlockIndex - tip) / 5);
-    return getRemain(minutes);
+    return `${getRemain(minutes)} (${claimableBlockIndex - tip} Blocks)`;
   }, [claimableBlockIndex, tip]);
 
   const claimedAvatar = useRef<Avatar>();
@@ -107,13 +148,6 @@ export default function UserInfo() {
           txId,
           avatar: avatar.address,
         });
-        toast.success(
-          t("Successfully sent rewards to {name} #{address}", {
-            _tags: "v2/monster-collection",
-            name: avatar.name,
-            address: avatar.address.slice(2),
-          })
-        );
         setClaimLoading(true);
       });
     },
@@ -130,6 +164,38 @@ export default function UserInfo() {
       toast("Copied!");
     }
   }, [loginSession]);
+
+  const stakingStastics = useCallback(() => {
+    if (isCollecting) {
+      clipboard.writeText(`
+      Tip: ${tip}
+      Staking Status: ${
+        isCollecting
+          ? isMigratable
+            ? canClaim
+              ? "Claimable"
+              : "Migratable"
+            : "Staked"
+          : "Not Staking"
+      }
+      isLocked : ${
+        cancellableBlockIndex !== undefined && tip >= cancellableBlockIndex!
+          ? "true"
+          : "false"
+      }
+      {
+      "stakeState": {
+        "deposit": "${deposit}",
+        "startedBlockIndex": ${startedBlockIndex},
+        "receivedBlockIndex": ${receivedBlockIndex},
+        "cancellableBlockIndex": ${cancellableBlockIndex},
+        "claimableBlockIndex": ${claimableBlockIndex},
+      }
+    }
+    `);
+      toast("Staking Status Copied!");
+    }
+  }, [isCollecting]);
 
   const t = useT();
 
@@ -157,13 +223,19 @@ export default function UserInfo() {
       <UserInfoItem onClick={() => setCollectionOpen(true)}>
         <img src={monsterIconUrl} width={28} alt="monster collection icon" />
         <strong>{deposit?.replace(/\.0+$/, "") || "0"}</strong>
-        {isCollecting ? ` (Remaining ${remainingText})` : " (-)"}
+        {isCollecting && !canClaim ? ` - Remaining: ${remainingText}` : " (-)"}
         <LaunchIcon />
         {canClaim && (
           <ClaimButton
             loading={claimLoading}
             onClick={() => setOpenDialog(true)}
           />
+        )}
+        {isCollecting && !canClaim && isMigratable && (
+          <Button>Migrate Stake</Button>
+        )}
+        {isCollecting && (
+          <StakeStatusButton onClick={() => stakingStastics()} />
         )}
         <ClaimCollectionRewardsOverlay
           isOpen={openDialog}

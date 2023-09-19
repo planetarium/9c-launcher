@@ -166,7 +166,7 @@ export const DepositContent = styled("div", {
   },
 });
 
-export const DepositButton2 = styled("button", {
+export const DepositRightButton = styled("button", {
   appearance: "none",
   border: "none",
   backgroundColor: "transparent",
@@ -202,7 +202,7 @@ export const DepositButton2 = styled("button", {
   },
 });
 
-export const DepositCancelButton = styled("button", {
+export const DepositLeftButton = styled("button", {
   appearance: "none",
   border: "none",
   backgroundColor: "transparent",
@@ -232,6 +232,42 @@ export const DepositCancelButton = styled("button", {
   },
 });
 
+export const MigrateLeftButton = styled("button", {
+  appearance: "none",
+  border: "none",
+  backgroundColor: "transparent",
+
+  backgroundImage: theme.images.depositButton,
+  borderRadius: "50%",
+  color: theme.colors.depositButton,
+  transition: "all 0.2s ease",
+
+  gridColumn: 1,
+  gridRow: "1 / span 2",
+  justifySelf: "center",
+  alignSelf: "center",
+
+  width: 118,
+  height: 118,
+  fontWeight: "$bold",
+  fontSize: 24,
+  textShadow: theme.shadows.embossed,
+
+  position: "relative",
+  top: -3,
+  left: 3,
+
+  "&:hover": {
+    backgroundImage: theme.images.depositButtonHover,
+    transform: "scale(1.1)",
+  },
+
+  "&:disabled": {
+    backgroundImage: theme.images.depositButtonDisabled,
+    cursor: "not-allowed",
+  },
+});
+
 export const LoadingBackdrop = styled(motion.div, {
   display: "flex",
   justifyContent: "center",
@@ -243,7 +279,6 @@ export const LoadingBackdrop = styled(motion.div, {
   width: "100%",
   height: "100%",
   zIndex: 3,
-  marginTop: -16,
 
   backgroundColor: "rgba(0, 0, 0, 0.8)",
 });

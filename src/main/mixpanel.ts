@@ -24,7 +24,7 @@ export class NineChroniclesMixpanel implements INineChroniclesMixpanel {
   public track(
     event: string,
     properties?: object,
-    callback?: () => void
+    callback?: () => void,
   ): void {
     this._mixpanel.track(
       event,
@@ -34,7 +34,7 @@ export class NineChroniclesMixpanel implements INineChroniclesMixpanel {
         login: this._login,
         ...properties,
       },
-      callback
+      callback,
     );
   }
 

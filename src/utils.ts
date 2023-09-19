@@ -47,7 +47,7 @@ export function deleteBlockchainStoreSync(storepath: string): void {
 
 export function execute(
   binarypath: string,
-  args: string[]
+  args: string[],
 ): ChildProcessWithoutNullStreams {
   if (binarypath == "") {
     throw Error("Path is empty.");
@@ -121,7 +121,7 @@ downloadAxios.interceptors.response.use(
       return downloadAxios.request(err.config);
     }
     return Promise.reject(err);
-  }
+  },
 );
 
 declare module "axios" {
@@ -146,7 +146,7 @@ export async function cancellableDownload(
   downloadPath: string,
   onProgress: (arg0: IDownloadProgress) => void,
   token: CancellationToken,
-  partial: boolean = true
+  partial: boolean = true,
 ): Promise<void> {
   const metaFilePath = `${downloadPath}.meta`;
 
@@ -208,7 +208,7 @@ export async function cancellableDownload(
     if (partial)
       await fs.promises.writeFile(
         metaFilePath,
-        JSON.stringify({ etag: res.headers.etag })
+        JSON.stringify({ etag: res.headers.etag }),
       );
 
     const totalBytes = parseInt(res.headers["content-length"]);
@@ -225,12 +225,12 @@ export async function cancellableDownload(
 
     await pipeline(
       res.data,
-      fs.createWriteStream(downloadPath, { flags: "a" })
+      fs.createWriteStream(downloadPath, { flags: "a" }),
     );
     if (partial)
       await fs.promises.writeFile(
         metaFilePath,
-        JSON.stringify({ etag: res.headers.etag, complete: true })
+        JSON.stringify({ etag: res.headers.etag, complete: true }),
       );
     console.log("Complete: ", url);
   } catch (error) {
@@ -243,7 +243,7 @@ export async function cancellableExtract(
   targetDir: string,
   outputDir: string,
   onProgress: (progress: number) => void,
-  token: CancellationToken
+  token: CancellationToken,
 ): Promise<void> {
   try {
     await extractZip(targetDir, {
@@ -264,7 +264,7 @@ export async function cancellableExtract(
     if (fs.existsSync(metaFile)) await fs.promises.unlink(metaFile);
   } catch (error) {
     console.error(
-      `Unexpected error occurred during extracting ${targetDir} to ${outputDir}. ${error}`
+      `Unexpected error occurred during extracting ${targetDir} to ${outputDir}. ${error}`,
     );
     throw new CancellableExtractFailedError(targetDir, outputDir);
   }

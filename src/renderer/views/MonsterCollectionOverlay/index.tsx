@@ -2,11 +2,12 @@ import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import {
   TxStatus,
-  useCurrentStakingQuery,
-  useLegacyCollectionStateQuery,
+  useUserStakingQuery,
+  useV1CollectionStateQuery,
   useStakeLazyQuery,
-  useStakingSheetQuery,
+  useLatestStakingSheetQuery,
   useTransactionResultLazyQuery,
+  useCheckPatchTableSubscription,
 } from "src/generated/graphql";
 import { sleep } from "src/utils";
 import { trackEvent } from "src/utils/mixpanel";
@@ -15,27 +16,30 @@ import { useBalance } from "src/utils/useBalance";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { useTip } from "src/utils/useTip";
 import { useTx } from "src/utils/useTx";
-import Migration from "./Migration";
 import { MonsterCollectionContent } from "./MonsterCollectionContent";
 import { MonsterCollectionOverlayBase } from "./base";
+import { toast } from "react-hot-toast";
 
 function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   const loginSession = useLoginSession();
-  const { data: sheet } = useStakingSheetQuery();
-  const { data: current, refetch: refetchStaking } = useCurrentStakingQuery({
-    variables: { address: loginSession?.address?.toString() },
-    skip: !loginSession,
+  const { data: latestSheet, refetch: refetchLatest } =
+    useLatestStakingSheetQuery();
+  const { data: sheetChange } = useCheckPatchTableSubscription({
+    onData: () => {
+      refetchLatest();
+    },
   });
-  const { data: collection, refetch: refetchCollection } =
-    useLegacyCollectionStateQuery({
+  const { data: userStaking, refetch: refetchUserStaking } =
+    useUserStakingQuery({
       variables: { address: loginSession?.address?.toString() },
       skip: !loginSession,
     });
+
   const balance = useBalance();
   const tip = useTip();
 
   const tx = useTx();
-  const [stake, { data: staked, loading, error }] = useStakeLazyQuery({
+  const [stake, { data, loading, error }] = useStakeLazyQuery({
     fetchPolicy: "no-cache",
   });
   const [isLoading, setLoading] = useState(false);
@@ -48,8 +52,14 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
   useEffect(() => {
     if (!txStatus) return;
     if (txStatus.transaction.transactionResult.txStatus === TxStatus.Success) {
-      refetchStaking();
-      refetchCollection();
+      toast.success("Staking Success!");
+      refetchUserStaking();
+    }
+    if (
+      txStatus.transaction.transactionResult.txStatus ===
+      (TxStatus.Failure || TxStatus.Invalid)
+    ) {
+      toast.error("Staking Failed.");
     }
     if (txStatus.transaction.transactionResult.txStatus !== TxStatus.Staging) {
       stopPolling?.();
@@ -57,19 +67,19 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
     }
   }, [txStatus]);
 
-  if (!sheet || !current || !collection || !tip || !loginSession) return null;
+  if (!latestSheet || !userStaking || !tip || !loginSession) return null;
 
   return (
     <MonsterCollectionOverlayBase isOpen={isOpen} onDismiss={onClose}>
       <MonsterCollectionContent
-        sheet={sheet}
-        current={current}
+        latestSheet={latestSheet}
+        current={userStaking}
         currentNCG={balance}
-        onChangeAmount={(amount) => {
+        onStake={(amount) => {
           setLoading(true);
           trackEvent("Staking/AmountChange", {
             amount: amount.toString(),
-            previousAmount: current.stateQuery.stakeState?.deposit,
+            previousAmount: userStaking.stateQuery.stakeState?.deposit,
           });
           try {
             stake({
@@ -77,42 +87,24 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
                 publicKey: loginSession.publicKey.toHex("uncompressed"),
                 amount: amount.toNumber(),
               },
-            });
-            while (loading) {
-              sleep(500);
-            }
-            if (!staked?.actionTxQuery) throw error;
-            return tx(staked.actionTxQuery.stake).then((v) => {
-              if (!v.data) throw error;
-              fetchStatus({ variables: { txId: v.data.stageTransaction } });
+            }).then((v) => {
+              tx(v.data?.actionTxQuery.stake).then((v) => {
+                if (!v.data) throw error;
+                fetchStatus({
+                  variables: { txId: v.data.stageTransaction },
+                }).then((v) => refetchUserStaking());
+              });
             });
           } catch (e) {
             setLoading(false);
+            toast.error("Staking Failed.");
             console.error(`Change Amount Failed : ${e}`);
           }
         }}
         onClose={onClose}
         tip={tip}
         isLoading={isLoading}
-      >
-        {collection.stateQuery.monsterCollectionState && !isLoading && (
-          <Migration
-            tip={tip}
-            collectionState={collection.stateQuery.monsterCollectionState}
-            collectionSheet={collection.stateQuery.monsterCollectionSheet}
-            onActionTxId={(txId) => {
-              setLoading(true);
-              trackEvent("Staking/Migration", {
-                txId,
-                tip,
-                level: collection.stateQuery.monsterCollectionState?.level,
-              });
-              fetchStatus({ variables: { txId } });
-            }}
-            onClose={onClose}
-          />
-        )}
-      </MonsterCollectionContent>
+      ></MonsterCollectionContent>
     </MonsterCollectionOverlayBase>
   );
 }

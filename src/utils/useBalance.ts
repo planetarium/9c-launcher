@@ -22,6 +22,6 @@ export function useBalance() {
 
   return useMemo(
     () => Number(balance?.balanceByAgent ?? ncgBalanceQuery?.goldBalance) ?? 0,
-    [balance, ncgBalanceQuery]
+    [balance, ncgBalanceQuery],
   );
 }

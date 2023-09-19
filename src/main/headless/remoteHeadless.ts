@@ -72,7 +72,7 @@ class RemoteHeadless {
   public getTip(storeType: string, storePath: string): BlockMetadata | null {
     try {
       console.log(
-        `cmd: [${basename(this._url)} chain tip ${storeType} ${storePath}]`
+        `cmd: [${basename(this._url)} chain tip ${storeType} ${storePath}]`,
       );
       console.log(`cwd: [${dirname(this._url)}]`);
 
@@ -82,7 +82,7 @@ class RemoteHeadless {
         {
           encoding: "utf-8",
           cwd: dirname(this._url),
-        }
+        },
       );
 
       console.log(`output: [${output}]`);

@@ -39,7 +39,7 @@ export const getMonsterImageFromTier = (tier: CollectionItemTier): string => {
 };
 
 export const getCartMonsterImageFromTier = (
-  tier: CollectionItemTier
+  tier: CollectionItemTier,
 ): string => {
   const prefix = "UI_staking_slot_monster_0";
   return `${prefix}${tier}`;
@@ -67,7 +67,7 @@ export const getRewardCategoryList = (): number[] => {
 
 export const getExpectedReward = (
   sheet: CollectionSheetItem[],
-  target: CollectionItemTier
+  target: CollectionItemTier,
 ) => {
   const currentReward = new Map<RewardCategory, number>();
   const cell = sheet.find((sheetItem) => sheetItem.level === target);
@@ -80,7 +80,7 @@ export const getExpectedReward = (
 
 export const getTotalDepositedGold = (
   sheet: CollectionSheetItem[],
-  target: CollectionItemTier
+  target: CollectionItemTier,
 ) => {
   let gold = 0;
   sheet.forEach((sheetItem) => {
