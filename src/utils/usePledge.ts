@@ -27,7 +27,8 @@ export function usePledge() {
       const { data } = await sdks.CheckContracted({
         agentAddress: account.loginSession.address.toHex(),
       });
-      const { approved, patronAddress } = data.stateQuery.pledge;
+      const { approved } = data.stateQuery.pledge;
+      let { patronAddress } = data.stateQuery.pledge;
 
       if (!approved) {
         if (patronAddress === null) {
@@ -38,6 +39,7 @@ export function usePledge() {
                 agentAddress: account.loginSession!.address.toHex(),
               });
               if (data.stateQuery.pledge.patronAddress !== null) {
+                patronAddress = data.stateQuery.pledge.patronAddress;
                 clearTimeout(timeoutId);
                 clearInterval(intervalId);
                 resolve();
@@ -51,60 +53,64 @@ export function usePledge() {
           });
         }
 
-        step = "createApprovePledgeTx";
-        const { data: approvePledgeTx } = await sdks.approvePledge({
-          publicKey: account.loginSession.publicKey.toHex("uncompressed"),
-        });
+        if (patronAddress !== undefined && patronAddress !== null) {
+          step = "createApprovePledgeTx";
+          const { data: approvePledgeTx } = await sdks.approvePledge({
+            publicKey: account.loginSession.publicKey.toHex("uncompressed"),
+            patronAddress,
+          });
 
-        if (!approvePledgeTx?.actionTxQuery.approvePledge) {
-          throw new Error("ApprovePledge ActionTxQuery Failed");
+          if (!approvePledgeTx?.actionTxQuery.approvePledge) {
+            throw new Error("ApprovePledge ActionTxQuery Failed");
+          }
+
+          step = "stageApprovePledgeTx";
+          const { data: txData } = await tx(
+            approvePledgeTx?.actionTxQuery.approvePledge,
+          );
+          if (!txData?.stageTransaction) {
+            throw Error("Tx Staging Failed");
+          }
+          console.log(`Staging approvePledge Tx: ${txData.stageTransaction}`);
+          await new Promise<void>((resolve, reject) => {
+            const intervalId = setInterval(() => {
+              sdks
+                .TransactionResult({
+                  txId: txData.stageTransaction,
+                })
+                .then(({ data }) => {
+                  switch (data.transaction.transactionResult.txStatus) {
+                    case "SUCCESS":
+                      console.log(
+                        `approvePledge Tx Staging Success: ${txData.stageTransaction}`,
+                      );
+                      clearTimeout(timeoutId);
+                      clearInterval(intervalId);
+                      resolve();
+                      break;
+                    case "FAILURE":
+                      clearTimeout(timeoutId);
+                      clearInterval(intervalId);
+                      reject(
+                        new Error(
+                          `approvePledge Tx Staging Failed: ${txData.stageTransaction}`,
+                        ),
+                      );
+                      break;
+                    case "INVALID":
+                    case "STAGING":
+                      break;
+                  }
+                });
+            }, 1000);
+
+            const timeoutId = setTimeout(() => {
+              clearInterval(intervalId);
+              reject(new Error("approvePledge Staging Confirmation Timeout."));
+            }, 120000);
+          });
         }
 
-        step = "stageApprovePledgeTx";
-        const { data: txData } = await tx(
-          approvePledgeTx?.actionTxQuery.approvePledge,
-        );
-        if (!txData?.stageTransaction) {
-          throw Error("Tx Staging Failed");
-        }
-        console.log(`Staging approvePledge Tx: ${txData.stageTransaction}`);
-        await new Promise<void>((resolve, reject) => {
-          const intervalId = setInterval(() => {
-            sdks
-              .TransactionResult({
-                txId: txData.stageTransaction,
-              })
-              .then(({ data }) => {
-                switch (data.transaction.transactionResult.txStatus) {
-                  case "SUCCESS":
-                    console.log(
-                      `approvePledge Tx Staging Success: ${txData.stageTransaction}`,
-                    );
-                    clearTimeout(timeoutId);
-                    clearInterval(intervalId);
-                    resolve();
-                    break;
-                  case "FAILURE":
-                    clearTimeout(timeoutId);
-                    clearInterval(intervalId);
-                    reject(
-                      new Error(
-                        `approvePledge Tx Staging Failed: ${txData.stageTransaction}`,
-                      ),
-                    );
-                    break;
-                  case "INVALID":
-                  case "STAGING":
-                    break;
-                }
-              });
-          }, 1000);
-
-          const timeoutId = setTimeout(() => {
-            clearInterval(intervalId);
-            reject(new Error("approvePledge Staging Confirmation Timeout."));
-          }, 120000);
-        });
         return {
           result: true,
         };
