@@ -392,9 +392,9 @@ query CheckContracted($agentAddress: Address!) {
   }
 }
 
-query approvePledge($publicKey: String!) {
+query approvePledge($publicKey: String!, $patronAddress: Address!) {
   actionTxQuery(publicKey: $publicKey) {
-    approvePledge(patronAddress: "0xc64c7cBf29BF062acC26024D5b9D1648E8f8D2e1")
+    approvePledge(patronAddress: $patronAddress)
   }
 }
 
