@@ -28,4 +28,5 @@ export interface IConfig {
   MarketServiceUrl: string;
   TrayOnClose: boolean;
   PlayerUpdateRetryCount: number;
+  PatrolRewardServiceUrl: string;
 }
