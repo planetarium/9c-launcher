@@ -41,6 +41,7 @@ const imageBox = {
   ...SquareBox,
   backgroundColor: "white",
   padding: "1rem",
+  minWidth: "unset",
 };
 
 export function ExportOverlay({ isOpen, onClose }: OverlayProps) {
