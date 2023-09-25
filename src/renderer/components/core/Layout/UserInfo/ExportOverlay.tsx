@@ -1,4 +1,4 @@
-import { styled, Box } from "@material-ui/core";
+import { styled, Box, Button, Backdrop } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import writeQR from "@paulmillr/qr";
 import { useStore } from "src/utils/useStore";
@@ -21,8 +21,31 @@ const MainPageContainer = styled(OverlayBase)({
   },
 });
 
+const SquareBox = {
+  borderRadius: "1rem",
+  aspectRatio: "1/1",
+  minWidth: "100%",
+  flex: "1 1 0",
+};
+
+const hiddenBox = {
+  ...SquareBox,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "3rem",
+  background: "grey",
+};
+
+const imageBox = {
+  ...SquareBox,
+  backgroundColor: "white",
+  padding: "1rem",
+};
+
 export function ExportOverlay({ isOpen, onClose }: OverlayProps) {
   const [vector, setVector] = useState<string>("");
+  const [hidden, setHidden] = useState<boolean>(true);
   const account = useStore("account");
   useEffect(() => {
     account.exportKeystore().then((key) => {
@@ -33,16 +56,34 @@ export function ExportOverlay({ isOpen, onClose }: OverlayProps) {
 
   return (
     <MainPageContainer isOpen={isOpen} onDismiss={onClose}>
-      <CloseButton onClick={() => onClose()} />
-      <H1 css={{ margin: 0 }}>Key Export</H1>
-      <img
-        style={{ backgroundColor: "white", padding: "1rem" }}
-        src={`data:image/svg+xml;utf8,${vector}`}
+      <CloseButton
+        onClick={() => {
+          setHidden(true);
+          onClose();
+        }}
       />
-      <Box>
+      <H1 css={{ margin: 0 }}>Key Export</H1>
+      {hidden ? (
+        <Box style={hiddenBox}>HIDDEN</Box>
+      ) : (
+        <img style={imageBox} src={`data:image/svg+xml;utf8,${vector}`} />
+      )}
+      <Box marginBottom={0}>
         <Text>This is Encrypted Key.</Text>
         <Text>Do Not Show Your Key to Others.</Text>
       </Box>
+      <Button
+        onClick={() => setHidden(!hidden)}
+        variant={hidden ? "outlined" : "contained"}
+        style={{
+          marginLeft: "auto",
+          marginRight: "auto",
+          color: `${hidden ? "white" : "black"}`,
+          borderColor: `${hidden ? "white" : "black"}`,
+        }}
+      >
+        Show / Hide QR Code
+      </Button>
     </MainPageContainer>
   );
 }
