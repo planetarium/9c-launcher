@@ -29,4 +29,5 @@ export interface IConfig {
   TrayOnClose: boolean;
   PlayerUpdateRetryCount: number;
   PatrolRewardServiceUrl: string;
+  MeadPledgePortalUrl: string;
 }
