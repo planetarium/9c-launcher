@@ -1,5 +1,5 @@
 import { ApolloProvider } from "@apollo/client";
-import React from "react";
+import React, { useEffect } from "react";
 import { ipcRenderer } from "electron";
 import { HashRouter as Router } from "react-router-dom";
 import Routes from "./Routes";
@@ -12,19 +12,22 @@ import { ExternalURLProvider } from "src/utils/useExternalURL";
 import { getSdk } from "src/generated/graphql-request";
 import { NodeInfo } from "src/config";
 import { GraphQLClient } from "graphql-request";
+import { observer } from "mobx-react";
 
 function App() {
-  const { transfer } = useStore();
-
-  ipcRenderer.invoke("get-node-info").then((node: NodeInfo) => {
-    transfer.updateSdk(
-      getSdk(
-        new GraphQLClient(`http://${node.host}:${node.graphqlPort}/graphql`),
-      ),
-    );
-  });
-
+  const { transfer, rpc } = useStore();
   const client = useApolloClient();
+  useEffect(() => {
+    ipcRenderer.invoke("get-node-info").then((node: NodeInfo) => {
+      transfer.updateSdk(
+        getSdk(
+          new GraphQLClient(`http://${node.host}:${node.graphqlPort}/graphql`),
+        ),
+      );
+
+      rpc.setNode(node);
+    });
+  }, []);
 
   if (!client) return null;
 
@@ -45,4 +48,4 @@ function App() {
   );
 }
 
-export default App;
+export default observer(App);

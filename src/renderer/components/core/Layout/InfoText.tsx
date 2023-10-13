@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { T } from "@transifex/react";
 import { useTip } from "src/utils/useTip";
 import { useLoginSession } from "src/utils/useLoginSession";
+import { useStore } from "src/utils/useStore";
 
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid",
@@ -22,21 +23,20 @@ const InfoTextStyled = styled("div", {
 
 function InfoText() {
   const address = useLoginSession()?.address;
-  const [node, setNode] = useState<string>("loading");
-  const [apv, setApv] = useState<number>(0);
+  const { rpc } = useStore();
 
   const debugValue = useMemo(
     () =>
       [
-        `APV: ${apv}`,
+        `APV: ${rpc.node?.apv}`,
         address && `Account: ${address.toString()}`,
-        `Node: ${node}`,
+        `Node: ${rpc.node}`,
         awsSinkGuid && `Client ID: ${awsSinkGuid}`,
         `Commit: ${GIT_HASH}`,
       ]
         .filter(Boolean)
         .join("\n"),
-    [address, node, awsSinkGuid],
+    [address, rpc.node, awsSinkGuid],
   );
 
   const onClick = () => {
@@ -49,24 +49,13 @@ function InfoText() {
 
   const blockTip = useTip();
 
-  useEffect(
-    () =>
-      void (async () => {
-        if (node !== "loading") return;
-        const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
-        setNode(nodeInfo.host);
-        setApv(nodeInfo.apv);
-      })(),
-    [node],
-  );
-
   return (
     <InfoTextStyled onClick={onClick}>
-      node: {node}
+      node: {rpc.node?.host}
       <br />
       tip: {blockTip}
       <br />
-      {`version: v${apv}`}
+      {`version: v${rpc.node?.apv}`}
     </InfoTextStyled>
   );
 }
