@@ -11,9 +11,9 @@ import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { ipcRenderer } from "electron";
 import { RetryLink } from "@apollo/client/link/retry";
-import { useEffect, useState } from "react";
-import { NodeInfo } from "src/config";
 import { GenesisHashDocument, GenesisHashQuery } from "src/generated/graphql";
+import { useStore } from "./useStore";
+import { NodeInfo } from "src/config";
 
 type Client = ApolloClient<NormalizedCacheObject>;
 
@@ -26,57 +26,50 @@ const onErrorLink = onError(({ graphQLErrors, networkError, operation }) => {
 });
 
 export default function useApolloClient(): Client | null {
-  const [apolloClient, setApolloClient] = useState<Client | null>(null);
+  const { rpc } = useStore();
+  const node = rpc.node;
+  if (node === null) {
+    return null;
+  }
 
-  useEffect(() => {
-    (async () => {
-      const node: NodeInfo = await ipcRenderer.invoke("get-node-info");
-      const headlessUrl = `${node.host}:${node.graphqlPort}`;
+  const headlessUrl = `${node.host}:${node.graphqlPort}`;
 
-      const wsLink = new WebSocketLink({
-        uri: `ws://${headlessUrl}/graphql`,
-        options: {
-          reconnect: true,
-        },
-      });
+  const wsLink = new WebSocketLink({
+    uri: `ws://${headlessUrl}/graphql`,
+    options: {
+      reconnect: true,
+    },
+  });
 
-      const httpLink = new HttpLink({
-        uri: `http://${headlessUrl}/graphql`,
-      });
+  const httpLink = new HttpLink({
+    uri: `http://${headlessUrl}/graphql`,
+  });
 
-      const splitLink = split(
-        ({ query }) => {
-          const definition = getMainDefinition(query);
-          return (
-            definition.kind === "OperationDefinition" &&
-            definition.operation === "subscription"
-          );
-        },
-        wsLink,
-        httpLink,
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === "OperationDefinition" &&
+        definition.operation === "subscription"
       );
+    },
+    wsLink,
+    httpLink,
+  );
 
-      const client = new ApolloClient({
-        link: ApolloLink.from([new RetryLink(), onErrorLink, splitLink]),
-        cache: new InMemoryCache(),
-        connectToDevTools: process.env.NODE_ENV !== "production",
-      });
+  const client = new ApolloClient({
+    link: ApolloLink.from([new RetryLink(), onErrorLink, splitLink]),
+    cache: new InMemoryCache(),
+    connectToDevTools: process.env.NODE_ENV !== "production",
+  });
 
-      client
-        .query<GenesisHashQuery>({
-          query: GenesisHashDocument,
-        })
-        .then((result) => {
-          if (!result.data) return;
-          ipcRenderer.send(
-            "set-genesis-hash",
-            result.data.nodeStatus.genesis.hash,
-          );
-        });
-
-      setApolloClient(client);
-    })().catch(console.error);
-  }, []);
-
-  return apolloClient;
+  client
+    .query<GenesisHashQuery>({
+      query: GenesisHashDocument,
+    })
+    .then((result) => {
+      if (!result.data) return;
+      ipcRenderer.send("set-genesis-hash", result.data.nodeStatus.genesis.hash);
+    });
+  return client;
 }
