@@ -3,6 +3,7 @@ import {
   configStore,
   get as getConfig,
   getBlockChainStorePath,
+  getPlanetById,
   playerPath,
   MIXPANEL_TOKEN,
   initializeNode,
@@ -178,8 +179,11 @@ async function initializeConfig() {
       0,
     );
     remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
-    console.log(remoteConfig.Locale);
-    configStore.store = remoteConfig;
+    remoteConfig.Planet = getConfig("Planet", "0x000000000000");
+    remoteConfig.PlanetRegistryUrl = getConfig(
+      "PlanetRegistryUrl",
+      "https://planets.nine-chronicles.com/planets/",
+    );
   } catch (error) {
     console.error(
       `An unexpected error occurred during fetching remote config. ${error}`,
