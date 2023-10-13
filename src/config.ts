@@ -28,6 +28,19 @@ const network = configStore.get(
   process.env.DEFAULT_NETWORK || "main",
 );
 
+export const registry: Planet[] = JSON.parse(
+  await (await fetch(configStore.get("PlanetRegistryUrl"))).json(),
+);
+
+export const updateConfigToRegistry = () => {
+  const planet = getPlanetById(configStore.get("Planet"), registry);
+  if (planet) {
+    configStore.set("GenesisBlockPath", planet.genesisUri);
+    configStore.set("RemoteNodeList", planet.rpcEndpoints["headless.grpc"]);
+    configStore.set("DataProviderUrl", planet.rpcEndpoints["dp.gql"]);
+  }
+};
+
 // Removed 9c prefix
 export const netenv = network === "9c-main" ? "main" : network;
 export const userConfigStore = new Store<IConfig>({
