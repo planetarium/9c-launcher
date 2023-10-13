@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { styled } from "src/renderer/stitches.config";
 import { useLanguages } from "@transifex/react";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
-import { configStore, userConfigStore } from "src/config";
+import { configStore, userConfigStore, registry } from "src/config";
 import type { IConfig } from "src/interfaces/config";
 import { T } from "src/renderer/i18n";
 import log from "electron-log";
@@ -215,6 +215,22 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                     {languages.map(({ code, localized_name }) => (
                       <SelectOption key={code} value={code}>
                         {localized_name}
+                      </SelectOption>
+                    ))}
+                  </Select>
+                )}
+              />
+              <span>
+                <T _str="Select the Chain" _tags={transifexTags} />
+              </span>
+              <Controller
+                name="Planet"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field}>
+                    {registry.map((entry) => (
+                      <SelectOption key={entry.id} value={entry.id}>
+                        `${entry.name} - ${entry.id}`
                       </SelectOption>
                     ))}
                   </Select>
