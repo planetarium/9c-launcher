@@ -42,7 +42,9 @@ function GetPatronView() {
           shell.openExternal(
             get("ActivationCodeUrl") +
               "&address=" +
-              account.loginSession!.address.toHex(),
+              account.loginSession!.address.toHex() +
+              "?planet=" +
+              get("Planet"),
           );
           setDisable(true);
           setTimeout(() => {
