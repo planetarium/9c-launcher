@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { styled } from "src/renderer/stitches.config";
 import { useLanguages } from "@transifex/react";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
-import { configStore, userConfigStore, registry } from "src/config";
+import { configStore, userConfigStore } from "src/config";
 import type { IConfig } from "src/interfaces/config";
 import { T } from "src/renderer/i18n";
 import log from "electron-log";
@@ -28,6 +28,7 @@ import { getKeyStorePath } from "src/stores/account";
 import { ExportOverlay } from "src/renderer/components/core/Layout/UserInfo/ExportOverlay";
 import { useStore } from "src/utils/useStore";
 import { useLoginSession } from "src/utils/useLoginSession";
+import { Planet } from "src/interfaces/registry";
 
 declare const CURRENT_VERSION: string;
 
@@ -115,6 +116,9 @@ async function handlePlayerUpdate() {
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid",
 );
+
+const registry: Planet[] = ipcRenderer.sendSync("get-registry-info");
+
 const InfoTextStyled = styled("div", {
   bottom: 50,
   left: 50,
@@ -230,7 +234,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                   <Select {...field}>
                     {registry.map((entry) => (
                       <SelectOption key={entry.id} value={entry.id}>
-                        `${entry.name} - ${entry.id}`
+                        {entry.name} - {entry.id}
                       </SelectOption>
                     ))}
                   </Select>
