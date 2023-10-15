@@ -64,6 +64,7 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
+import { Planet } from "src/interfaces/registry";
 
 Object.assign(console, log.functions);
 
@@ -84,6 +85,7 @@ const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
 let remoteHeadless: RemoteHeadless;
 let useRemoteHeadless: boolean;
+let registry: Planet[];
 let remoteNode: NodeInfo;
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
@@ -182,9 +184,23 @@ async function initializeConfig() {
     remoteConfig.Planet = getConfig("Planet", "0x000000000000");
     remoteConfig.PlanetRegistryUrl = getConfig(
       "PlanetRegistryUrl",
-      "https://planets.nine-chronicles.com/planets/",
+      "https://planets.nine-chronicles.com/planets/index.json",
     );
+
+    configStore.store = remoteConfig;
+
+    const data = await fetch(configStore.get("PlanetRegistryUrl"));
+    registry = await data.json();
+    console.log(registry);
+
+    const planet = getPlanetById(configStore.get("Planet"), registry);
+    if (planet) {
+      configStore.set("GenesisBlockPath", planet.genesisUri);
+      //configStore.set("RemoteNodeList", planet.rpcEndpoints["headless.grpc"]);
+      configStore.set("DataProviderUrl", planet.rpcEndpoints["dp.gql"]);
+    }
   } catch (error) {
+    console.log(registry);
     console.error(
       `An unexpected error occurred during fetching remote config. ${error}`,
     );
@@ -399,6 +415,13 @@ function initializeIpc() {
       await utils.sleep(100);
     }
     return remoteNode;
+  });
+
+  ipcMain.on("get-registry-info", async (event) => {
+    while (!registry) {
+      await utils.sleep(100);
+    }
+    event.returnValue = registry;
   });
 
   ipcMain.handle("manual player update", async () => {
