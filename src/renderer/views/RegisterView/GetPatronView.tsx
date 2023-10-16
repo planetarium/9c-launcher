@@ -19,11 +19,15 @@ const nodes = [
 
 function GetPatronView() {
   const [disable, setDisable] = useState(false);
-  const { account, rpc } = useStore();
+  const { account, planetary } = useStore();
 
   return (
     <Layout sidebar flex css={registerStyles}>
-      <select onChange={e => { rpc.setNode(nodes[parseInt(e.target.value)]) } }>
+      <select
+        onChange={(e) => {
+          planetary.setNode(nodes[parseInt(e.target.value)]);
+        }}
+      >
         <option value={0}>0</option>
         <option value={1}>1</option>
       </select>
