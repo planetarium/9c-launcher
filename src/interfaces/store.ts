@@ -1,7 +1,7 @@
 import AccountStore from "../stores/account";
 import { RouterStore } from "mobx-react-router";
 import GameStore from "src/stores/game";
-import RpcStore from "src/stores/rpc";
+import RpcStore from "src/stores/planetary";
 import TransferStore from "src/stores/transfer";
 
 export interface IStoreContainer {
