@@ -26,8 +26,8 @@ const onErrorLink = onError(({ graphQLErrors, networkError, operation }) => {
 });
 
 export default function useApolloClient(): Client | null {
-  const { rpc } = useStore();
-  const node = rpc.node;
+  const { planetary } = useStore();
+  const node = planetary.node;
   if (node === null) {
     return null;
   }

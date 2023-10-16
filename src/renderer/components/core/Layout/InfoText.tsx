@@ -23,20 +23,20 @@ const InfoTextStyled = styled("div", {
 
 function InfoText() {
   const address = useLoginSession()?.address;
-  const { rpc } = useStore();
+  const { planetary } = useStore();
 
   const debugValue = useMemo(
     () =>
       [
-        `APV: ${rpc.node?.apv}`,
+        `APV: ${planetary.node?.apv}`,
         address && `Account: ${address.toString()}`,
-        `Node: ${rpc.node}`,
+        `Node: ${planetary.node}`,
         awsSinkGuid && `Client ID: ${awsSinkGuid}`,
         `Commit: ${GIT_HASH}`,
       ]
         .filter(Boolean)
         .join("\n"),
-    [address, rpc.node, awsSinkGuid],
+    [address, planetary.node, awsSinkGuid],
   );
 
   const onClick = () => {
@@ -51,11 +51,11 @@ function InfoText() {
 
   return (
     <InfoTextStyled onClick={onClick}>
-      node: {rpc.node?.host}
+      node: {planetary.node?.host}
       <br />
       tip: {blockTip}
       <br />
-      {`version: v${rpc.node?.apv}`}
+      {`version: v${planetary.node?.apv}`}
     </InfoTextStyled>
   );
 }

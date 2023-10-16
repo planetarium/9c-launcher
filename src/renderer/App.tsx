@@ -15,7 +15,7 @@ import { GraphQLClient } from "graphql-request";
 import { observer } from "mobx-react";
 
 function App() {
-  const { transfer, rpc } = useStore();
+  const { transfer, planetary } = useStore();
   const client = useApolloClient();
   useEffect(() => {
     ipcRenderer.invoke("get-node-info").then((node: NodeInfo) => {
@@ -25,7 +25,7 @@ function App() {
         ),
       );
 
-      rpc.setNode(node);
+      planetary.setNode(node);
     });
   }, []);
 
