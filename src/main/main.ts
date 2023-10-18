@@ -2,14 +2,9 @@ import axios from "axios";
 import {
   configStore,
   get as getConfig,
-  getBlockChainStorePath,
-  getPlanetById,
   playerPath,
   MIXPANEL_TOKEN,
-  initializeNode,
-  NodeInfo,
   netenv,
-  userConfigStore,
   baseUrl,
   CONFIG_FILE_PATH,
 } from "../config";
@@ -21,7 +16,6 @@ import {
   nativeImage,
   ipcMain,
   dialog,
-  shell,
 } from "electron";
 import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-platform";
 import { PLATFORM2OS_MAP } from "src/utils/os";
@@ -33,7 +27,6 @@ import logoImage from "./resources/logo.png";
 import "core-js";
 import log from "electron-log";
 import * as utils from "src/utils";
-import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
 import { v4 as uuidv4 } from "uuid";
@@ -74,7 +67,6 @@ let gameNode: ChildProcessWithoutNullStreams | null = null;
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
 let registry: Planet[];
-let remoteNode: NodeInfo;
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
@@ -139,7 +131,6 @@ if (!app.requestSingleInstanceLock()) {
 async function initializeConfig() {
   try {
     const res = await axios(REMOTE_CONFIG_URL);
-    const data = fetch(configStore.get("PlanetRegistryUrl"));
     const remoteConfig: IConfig = res.data;
 
     const exists = await fs.promises.stat(CONFIG_FILE_PATH).catch(() => false);
@@ -175,10 +166,10 @@ async function initializeConfig() {
       "PlanetRegistryUrl",
       "https://planets.nine-chronicles.com/planets/index.json",
     );
-
+    const data = await fetch(configStore.get("PlanetRegistryUrl"));
     configStore.store = remoteConfig;
 
-    registry = await (await data).json();
+    registry = await data.json();
   } catch (error) {
     console.error(
       `An unexpected error occurred during fetching remote config. ${error}`,
@@ -214,18 +205,6 @@ async function initializeApp() {
 
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
-
-    try {
-      remoteNode = await initializeNode();
-    } catch (e) {
-      console.error(e);
-      await dialog.showMessageBox(win!, {
-        message: "Failed to connect remote node. please restart launcher.",
-        type: "error",
-      }); // TODO Replace with "go to error page" event
-
-      app.exit();
-    }
 
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
@@ -354,24 +333,6 @@ function initializeIpc() {
     if (status === "offline") {
       relaunch();
     }
-  });
-
-  ipcMain.handle("get-node-info", async () => {
-    while (!remoteNode) {
-      await utils.sleep(100);
-    }
-    return remoteNode;
-  });
-
-  ipcMain.handle("set-node-info", async (_, remoteNodeList: string[]) => {
-    try {
-      remoteNode = await initializeNode([
-        "9c-main-rpc-1.nine-chronicles.com,80,31238",
-      ]);
-    } catch (e) {
-      console.error(e);
-    }
-    return remoteNode;
   });
 
   ipcMain.handle("get-registry-info", async () => {
