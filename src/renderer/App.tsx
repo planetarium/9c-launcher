@@ -1,4 +1,4 @@
-import { ApolloProvider } from "@apollo/client";
+import { ApolloProvider, HttpLink } from "@apollo/client";
 import React, { useEffect } from "react";
 import { ipcRenderer } from "electron";
 import { HashRouter as Router } from "react-router-dom";
@@ -13,21 +13,23 @@ import { getSdk } from "src/generated/graphql-request";
 import { NodeInfo } from "src/config";
 import { GraphQLClient } from "graphql-request";
 import { observer } from "mobx-react";
+import { Planet } from "src/interfaces/registry";
 
 function App() {
   const { transfer, planetary } = useStore();
+  ipcRenderer.invoke("get-registry-info").then((registry: Planet[]) => {
+    planetary.setRegistry(registry);
+  });
   const client = useApolloClient();
-  useEffect(() => {
-    ipcRenderer.invoke("get-node-info").then((node: NodeInfo) => {
-      transfer.updateSdk(
-        getSdk(
-          new GraphQLClient(`http://${node.host}:${node.graphqlPort}/graphql`),
-        ),
-      );
 
-      planetary.setNode(node);
-    });
-  }, []);
+  useEffect(() => {
+    transfer.updateSdk(getSdk(new GraphQLClient(planetary.node!.gqlUrl)));
+    client?.setLink(
+      new HttpLink({
+        uri: planetary.node?.gqlUrl,
+      }),
+    );
+  }, [planetary.planet]);
 
   if (!client) return null;
 
