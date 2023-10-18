@@ -9,25 +9,10 @@ import { T } from "src/renderer/i18n";
 import Button from "src/renderer/components/ui/Button";
 import Checkbox from "src/renderer/components/ui/Checkbox";
 import bytes from "bytes";
-import {
-  getBlockChainStorePath,
-  userConfigStore,
-  app,
-  installerUrl,
-} from "src/config";
+import { getBlockChainStorePath, app, installerUrl } from "src/config";
 import { updateService } from "src/renderer/machines/updateMachine";
 
 const transifexTags = "v2/ErrorView";
-
-async function handleClearCache() {
-  await ipcRenderer.invoke("clear cache", false);
-  handleRestart();
-}
-
-function enableRemoteHeadless() {
-  userConfigStore.set("UseRemoteHeadless", true);
-  handleRestart();
-}
 
 function handleRestart() {
   app.relaunch();
@@ -52,33 +37,17 @@ function ErrorView() {
       <Route exact path={path}>
         <Redirect to="/" />
       </Route>
-      <Route path={`${path}/clear-cache`}>
-        <ErrorContent
-          title={t("Something went wrong.", { _tags: transifexTags })}
-        >
-          <T
-            _str="Please press the button below to clear cache. The launcher will restart automatically."
-            _tags={transifexTags}
-          />
-          <Button variant="primary" centered onClick={handleClearCache}>
-            <T _str="Clear cache" _tags={transifexTags} />
-          </Button>
-        </ErrorContent>
-      </Route>
       <Route path={`${path}/disk-space`}>
         <ErrorContent
           title={t("Disk space is not enough", { _tags: transifexTags })}
         >
           <T
-            _str="Nine Chronicles needs at least {space} to run. You may want to try enabling the 'Use Remote Headless' option in the settings."
+            _str="Nine Chronicles needs at least {space} to run."
             _tags={transifexTags}
             space={bytes.format(Number(state.context.data?.size ?? 0), {
               unitSeparator: " ",
             })}
           />
-          <Button variant="primary" centered onClick={enableRemoteHeadless}>
-            <T _str="Enable Remote Headless" _tags={transifexTags} />
-          </Button>
         </ErrorContent>
       </Route>
 
