@@ -7,6 +7,8 @@ import {
   netenv,
   baseUrl,
   CONFIG_FILE_PATH,
+  initializeNode,
+  NodeInfo,
 } from "../config";
 import {
   app,
@@ -51,6 +53,7 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
+import { Planet } from "src/interfaces/registry";
 
 Object.assign(console, log.functions);
 
@@ -63,6 +66,9 @@ let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
+
+let registry: Planet[];
+let remoteNode: NodeInfo;
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
@@ -162,7 +168,15 @@ async function initializeConfig() {
       "PlanetRegistryUrl",
       "https://planets.nine-chronicles.com/planets/index.json",
     );
+    const data = await fetch(configStore.get("PlanetRegistryUrl"));
+    registry = await data.json();
+    if (registry === undefined) throw Error("Failed to parse registry.");
 
+    const planet = registry.find((v) => v.id === remoteConfig.Planet);
+    if (!planet) throw Error(`Planet failed to initialize: ${planet}`);
+
+    remoteNode = await initializeNode(planet.rpcEndpoints, true);
+    console.log(registry);
     configStore.store = remoteConfig;
     console.log("Initialize config complete");
   } catch (error) {
@@ -328,6 +342,20 @@ function initializeIpc() {
     if (status === "offline") {
       relaunch();
     }
+  });
+
+  ipcMain.handle("get-registry-info", async () => {
+    while (!registry) {
+      await utils.sleep(100);
+    }
+    return registry;
+  });
+
+  ipcMain.handle("get-node-info", async () => {
+    while (!remoteNode) {
+      await utils.sleep(100);
+    }
+    return remoteNode;
   });
 
   ipcMain.handle("all-rpc-failed", (event) => {
