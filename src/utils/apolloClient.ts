@@ -13,6 +13,7 @@ import { ipcRenderer } from "electron";
 import { RetryLink } from "@apollo/client/link/retry";
 import { GenesisHashDocument, GenesisHashQuery } from "src/generated/graphql";
 import { useStore } from "./useStore";
+import { NodeInfo } from "src/config";
 
 type Client = ApolloClient<NormalizedCacheObject>;
 
@@ -27,21 +28,20 @@ const onErrorLink = onError(({ graphQLErrors, networkError, operation }) => {
 export default function useApolloClient(): Client | null {
   const { planetary } = useStore();
   const node = planetary.node;
-  if (node === null) {
+  const host = planetary.getHost();
+  if (!node) {
     return null;
   }
 
-  const headlessUrl = planetary.host;
-
   const wsLink = new WebSocketLink({
-    uri: `ws://${headlessUrl}/graphql`,
+    uri: `ws://${host}/graphql`,
     options: {
       reconnect: true,
     },
   });
 
   const httpLink = new HttpLink({
-    uri: planetary.node.gqlUrl,
+    uri: planetary.node!.gqlUrl,
   });
 
   const splitLink = split(

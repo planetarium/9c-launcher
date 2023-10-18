@@ -49,8 +49,8 @@ function StatusBar() {
               const privateKeyBytes = loginSession.privateKey.toBytes();
               return game.startGame(
                 Buffer.from(privateKeyBytes).toString("hex"),
-                planetary.host,
-                planetary.rpcPort,
+                planetary.getHost(),
+                planetary.getRpcPort(),
               );
             }}
           >
