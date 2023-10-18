@@ -13,7 +13,7 @@ export function usePledge() {
 
   const activate: ActivationFunction = async () => {
     let step: ActivationStep = "getGraphQLClient";
-    const sdks = getSdk(new GraphQLClient(planet.node.gqlUrl));
+    const sdks = getSdk(new GraphQLClient(planet.node!.gqlUrl));
 
     try {
       step = "preflightCheck";
