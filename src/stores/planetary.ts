@@ -5,13 +5,14 @@ import { initializeNode } from "src/config";
 import { ipcRenderer } from "electron";
 
 export default class PlanetaryStore {
-  public constructor() {}
+  public constructor() {
+    makeObservable(this);
+  }
 
   public init(registry: Planet[], node: NodeInfo) {
     this.registry = registry;
     this.setPlanet(get("Planet", "0x000000000000"));
     this.setNode(node);
-    makeObservable(this);
   }
 
   @observable
