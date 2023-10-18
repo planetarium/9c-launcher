@@ -12,10 +12,6 @@ import { ExtLink } from "src/renderer/components/ui/Link";
 import Button from "src/renderer/components/ui/Button";
 
 const transifexTags = "v2/views/register/GetPatronView";
-const nodes = [
-  new NodeInfo("9c-main-rpc-1.nine-chronicles.com", 80, 31238, 0),
-  new NodeInfo("9c-internal-rpc-1.nine-chronicles.com", 80, 31238, 1),
-];
 
 function GetPatronView() {
   const [disable, setDisable] = useState(false);
@@ -23,14 +19,6 @@ function GetPatronView() {
 
   return (
     <Layout sidebar flex css={registerStyles}>
-      <select
-        onChange={(e) => {
-          planetary.setNode(nodes[parseInt(e.target.value)]);
-        }}
-      >
-        <option value={0}>0</option>
-        <option value={1}>1</option>
-      </select>
       <H1>
         <T _str="You need a patron" _tags={transifexTags} />
       </H1>
