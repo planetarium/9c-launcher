@@ -25,8 +25,10 @@ interface FormData {
 }
 
 function LoginView() {
-  const { account: accountStore, transfer } = useStore();
+  const { account: accountStore, transfer, planetary } = useStore();
   const [invalid, setInvalid] = useState(false);
+  const [switching, setSwitching] = useState(false);
+  const [planetId, setPlanetId] = useState<string>(get("Planet"));
   const defaultAddress = getLastLoggedinAddress();
   const {
     register,
@@ -50,6 +52,14 @@ function LoginView() {
   }
 
   const history = useHistory();
+
+  const switchPlanet = (id: string) => {
+    setSwitching(true);
+    setPlanetId(id);
+    planetary.changePlanet(id).then(() => {
+      setSwitching(false);
+    });
+  };
 
   const handleLogin: SubmitHandler<FormData> = async ({
     address,
@@ -111,16 +121,24 @@ function LoginView() {
           autoFocus
           {...register("password")}
         />
+        <Select value={planetId} onChange={switchPlanet}>
+          {planetary.registry.map((entry) => (
+            <SelectOption key={entry.id} value={entry.id}>
+              {entry.name} - {entry.id}
+            </SelectOption>
+          ))}
+        </Select>
         <Button
           data-testid="login"
           variant="primary"
           centered
           css={{ width: 280 }}
+          disabled={switching}
         >
           <T _str="LOGIN" _tags={transifexTags} />
         </Button>
       </Form>
-      <Link centered to="/forgot">
+      <Link centered to="/register/getPatron">
         <T _str="Forgot password?" _tags={transifexTags} />
       </Link>
     </Layout>
