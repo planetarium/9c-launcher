@@ -319,7 +319,3 @@ export async function initializeNode(
   );
   return nodeInfo;
 }
-
-export const registry: Planet[] = await (
-  await fetch(configStore.get("PlanetRegistryUrl"))
-).json();
