@@ -29,6 +29,7 @@ function App() {
 
   if (planetary.node === null) return null;
   const client = useApolloClient()!;
+  if (client === null) return null;
 
   return (
     <LocaleProvider>
