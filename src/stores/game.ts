@@ -55,6 +55,7 @@ export default class GameStore {
     const unitySentrySampleRate = getConfig("UnitySentrySampleRate", 0);
     const marketServiceUrl = getConfig("MarketServiceUrl");
     const patrolRewardServiceUrl = getConfig("PatrolRewardServiceUrl");
+    const meadPledgePortalUrl = getConfig("MeadPledgePortalUrl");
 
     ipcRenderer.send("launch game", {
       args: [
@@ -70,6 +71,7 @@ export default class GameStore {
         `--sentry-sample-rate=${unitySentrySampleRate}`,
         `--market-service-host=${marketServiceUrl}`,
         `--patrol-reward-service-host=${patrolRewardServiceUrl}`,
+        `--mead-pledge-portal-url=${meadPledgePortalUrl}`,
       ].concat(
         dataProviderUrl === undefined
           ? []
