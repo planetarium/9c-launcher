@@ -113,14 +113,17 @@ const parseConfigRpcEndpoints = (): RpcEndpoints => {
   return result;
 };
 
-const NodeList = async (rpcEndpoints: RpcEndpoints): Promise<NodeInfo[]> => {
+const NodeList = async (
+  rpcEndpoints: RpcEndpoints,
+  quick: boolean,
+): Promise<NodeInfo[]> => {
   const nodeList: NodeInfo[] = [];
 
   //Pre-connection mixer
   if (
     rpcEndpoints["headless.gql"].length !== rpcEndpoints["headless.grpc"].length
   )
-    throw new Error("Arrays must have the same length.");
+    throw new Error("Arrays must have the same length."); // ...should be fixed for non-same length.
 
   const indices = Array.from(
     { length: rpcEndpoints["headless.gql"].length },
@@ -134,17 +137,22 @@ const NodeList = async (rpcEndpoints: RpcEndpoints): Promise<NodeInfo[]> => {
   });
 
   //Test connection
-  await Promise.all(
-    endpoints.map(async (v, i) => {
-      const nodeInfo = new NodeInfo(v.gqlUrl, v.grpcUrl);
-      try {
-        const preloadEnded = await nodeInfo.PreloadEnded();
-        if (preloadEnded) nodeList.push(nodeInfo);
-      } catch (e) {
-        console.error(e);
-      }
-    }),
-  );
+  const connectionCheck = endpoints.map(async (v) => {
+    const nodeInfo = new NodeInfo(v.gqlUrl, v.grpcUrl);
+    try {
+      const preloadEnded = await nodeInfo.PreloadEnded();
+      if (preloadEnded) nodeList.push(nodeInfo);
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  if (quick) {
+    await Promise.any(connectionCheck); // Grab the first node succes to cunnect and throw
+    return nodeList;
+  }
+
+  await Promise.all(connectionCheck);
   return nodeList;
 };
 
@@ -303,11 +311,12 @@ export const installerUrl = path.join(DEFAULT_DOWNLOAD_BASE_URL, installerName);
 
 export async function initializeNode(
   rpcEndpoints: RpcEndpoints,
+  quick: boolean = false,
 ): Promise<NodeInfo> {
   console.log("config initialize called");
   const relativeTipLimit = get("RemoteClientStaleTipLimit", 20) ?? Infinity;
   const nodeList = NonStaleNodeList(
-    await NodeList(rpcEndpoints),
+    await NodeList(rpcEndpoints, quick),
     relativeTipLimit,
   );
   if (nodeList.length < 1) {
