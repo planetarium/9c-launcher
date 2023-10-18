@@ -344,18 +344,11 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.handle("get-registry-info", async () => {
-    while (!registry) {
+  ipcMain.handle("get-planetary-info", async () => {
+    while (!registry || !remoteNode) {
       await utils.sleep(100);
     }
-    return registry;
-  });
-
-  ipcMain.handle("get-node-info", async () => {
-    while (!remoteNode) {
-      await utils.sleep(100);
-    }
-    return remoteNode;
+    return [registry, remoteNode];
   });
 
   ipcMain.handle("all-rpc-failed", (event) => {
