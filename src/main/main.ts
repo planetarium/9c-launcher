@@ -51,7 +51,6 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
-import { Planet } from "src/interfaces/registry";
 
 Object.assign(console, log.functions);
 
@@ -64,8 +63,6 @@ let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
-
-let registry: Planet[];
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
@@ -165,10 +162,7 @@ async function initializeConfig() {
       "PlanetRegistryUrl",
       "https://planets.nine-chronicles.com/planets/index.json",
     );
-    const data = await fetch(configStore.get("PlanetRegistryUrl"));
-    registry = await data.json();
 
-    console.log(registry);
     configStore.store = remoteConfig;
     console.log("Initialize config complete");
   } catch (error) {
@@ -334,13 +328,6 @@ function initializeIpc() {
     if (status === "offline") {
       relaunch();
     }
-  });
-
-  ipcMain.handle("get-registry-info", async () => {
-    while (!registry) {
-      await utils.sleep(100);
-    }
-    return registry;
   });
 
   ipcMain.handle("all-rpc-failed", (event) => {
