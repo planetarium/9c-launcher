@@ -10,23 +10,20 @@ import { StoreProvider, useStore } from "src/utils/useStore";
 import { LocaleProvider } from "src/renderer/i18n";
 import { ExternalURLProvider } from "src/utils/useExternalURL";
 import { getSdk } from "src/generated/graphql-request";
-import { NodeInfo } from "src/config";
 import { GraphQLClient } from "graphql-request";
 import { observer } from "mobx-react";
 import { Planet } from "src/interfaces/registry";
 
 function App() {
   const { transfer, planetary } = useStore();
-  ipcRenderer.invoke("get-registry-info").then((registry: Planet[]) => {
-    planetary.setRegistry(registry);
-  });
   const client = useApolloClient();
 
   useEffect(() => {
-    transfer.updateSdk(getSdk(new GraphQLClient(planetary.node!.gqlUrl)));
+    console.log(planetary.node);
+    transfer.updateSdk(getSdk(new GraphQLClient(planetary.node.gqlUrl)));
     client?.setLink(
       new HttpLink({
-        uri: planetary.node?.gqlUrl,
+        uri: planetary.node.gqlUrl,
       }),
     );
   }, [planetary.planet]);
@@ -35,8 +32,8 @@ function App() {
 
   return (
     <LocaleProvider>
-      <ApolloProvider client={client}>
-        <StoreProvider>
+      <StoreProvider>
+        <ApolloProvider client={client}>
           <APVSubscriptionProvider>
             <ExternalURLProvider>
               <Router>
@@ -44,8 +41,8 @@ function App() {
               </Router>
             </ExternalURLProvider>
           </APVSubscriptionProvider>
-        </StoreProvider>
-      </ApolloProvider>
+        </ApolloProvider>
+      </StoreProvider>
     </LocaleProvider>
   );
 }

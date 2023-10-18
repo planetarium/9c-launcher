@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
-import { NodeInfo, configStore, get, registry } from "src/config";
+import { NodeInfo, configStore, get } from "src/config";
 import { Planet } from "src/interfaces/registry";
 import { initializeNode } from "src/config";
 import { ipcRenderer } from "electron";
@@ -9,37 +9,34 @@ export default class PlanetaryStore {
   public node!: NodeInfo;
 
   @observable
-  public host: string = new URL(this.node.gqlUrl).host;
+  public host: string = "";
 
   @observable
-  public rpcPort: number = Number.parseInt(new URL(this.node.grpcUrl).port);
+  public rpcPort: number = 31238;
 
   @observable
-  public registry: Planet[] = registry;
+  public registry: Planet[] = [];
 
   @observable
   public planet!: Planet;
 
   @action
-  public setRegistry(registry: Planet[]) {
-    this.registry = registry;
-    this.setPlanet(get("Planet", "0x000000000000"));
-  }
-
-  @action
-  public setPlanet(planetID: string) {
+  public async setPlanet(planetID: string) {
     const planet = this.getPlanetById(planetID);
     if (planet === undefined) {
       throw Error("No matching planet ID found");
     }
     this.planet = planet;
-    this.setNodeFromPlanet(planet);
     this.updateConfigToRegistry();
+    await this.setNodeFromPlanet(planet);
   }
 
   public constructor() {
+    fetch(configStore.get("PlanetRegistryUrl"), {}).then(async (data) => {
+      this.registry = await data.json();
+      await this.setPlanet(get("Planet", "0x000000000000"));
+    });
     makeObservable(this);
-    this.setPlanet(get("Planet", "0x000000000000"));
   }
 
   @action
@@ -52,6 +49,8 @@ export default class PlanetaryStore {
   private async setNodeFromPlanet(planet: Planet) {
     try {
       this.node = await initializeNode(planet.rpcEndpoints);
+      this.host = new URL(this.node.gqlUrl).host;
+      this.rpcPort = Number.parseInt(new URL(this.node.grpcUrl).port);
     } catch (e) {
       console.error(e);
       ipcRenderer.invoke("all-rpc-failed").then((v: boolean) => {
@@ -61,10 +60,9 @@ export default class PlanetaryStore {
   }
 
   private updateConfigToRegistry = () => {
-    const planet = this.getPlanetById(configStore.get("Planet"));
-    if (planet) {
-      configStore.set("GenesisBlockPath", planet.genesisUri);
-      configStore.set("DataProviderUrl", planet.rpcEndpoints["dp.gql"]);
+    if (this.planet) {
+      configStore.set("GenesisBlockPath", this.planet.genesisUri);
+      configStore.set("DataProviderUrl", this.planet.rpcEndpoints["dp.gql"]);
     }
   };
 }
