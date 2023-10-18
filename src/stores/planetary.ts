@@ -5,18 +5,20 @@ import { initializeNode } from "src/config";
 import { ipcRenderer } from "electron";
 
 export default class PlanetaryStore {
-  public constructor() {
-    makeObservable(this);
-  }
+  @observable
+  public node!: NodeInfo;
 
   @observable
-  public node: NodeInfo | null = null;
+  public host: string = new URL(this.node.gqlUrl).host;
+
+  @observable
+  public rpcPort: number = Number.parseInt(new URL(this.node.grpcUrl).port);
 
   @observable
   public registry: Planet[] = registry;
 
   @observable
-  public planet: Planet | null = null;
+  public planet!: Planet;
 
   @action
   public setRegistry(registry: Planet[]) {
@@ -35,13 +37,9 @@ export default class PlanetaryStore {
     this.updateConfigToRegistry();
   }
 
-  private async setNodeFromPlanet(planet: Planet) {
-    try {
-      this.node = await initializeNode(planet.rpcEndpoints);
-    } catch (e) {
-      console.error(e);
-      ipcRenderer.send("all-rpc-failed");
-    }
+  public constructor() {
+    makeObservable(this);
+    this.setPlanet(get("Planet", "0x000000000000"));
   }
 
   @action
@@ -50,6 +48,17 @@ export default class PlanetaryStore {
       ? this.registry.find((planet) => planet.id === id)
       : undefined;
   };
+
+  private async setNodeFromPlanet(planet: Planet) {
+    try {
+      this.node = await initializeNode(planet.rpcEndpoints);
+    } catch (e) {
+      console.error(e);
+      ipcRenderer.invoke("all-rpc-failed").then((v: boolean) => {
+        this.setNodeFromPlanet(this.planet);
+      });
+    }
+  }
 
   private updateConfigToRegistry = () => {
     const planet = this.getPlanetById(configStore.get("Planet"));

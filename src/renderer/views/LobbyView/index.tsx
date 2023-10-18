@@ -6,7 +6,7 @@ import { useCheckContract } from "src/utils/useCheckContract";
 import { useStore } from "src/utils/useStore";
 
 function LobbyView() {
-  const { account, game } = useStore();
+  const { account, game, planetary } = useStore();
   const { loading, error, approved, requested, stopPolling } =
     useCheckContract(true);
   const history = useHistory();
@@ -22,7 +22,11 @@ function LobbyView() {
     if (account.loginSession && approved) {
       stopPolling();
       const privateKeyBytes = account.loginSession.privateKey.toBytes();
-      game.startGame(Buffer.from(privateKeyBytes).toString("hex"));
+      game.startGame(
+        Buffer.from(privateKeyBytes).toString("hex"),
+        planetary.host,
+        planetary.rpcPort,
+      );
     }
   }, [account.loginSession, approved, game]);
 
