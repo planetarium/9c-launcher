@@ -21,7 +21,6 @@ import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-pla
 import { PLATFORM2OS_MAP } from "src/utils/os";
 import path from "path";
 import fs from "fs";
-import fetch from "node-fetch";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
 import "core-js";
@@ -167,9 +166,11 @@ async function initializeConfig() {
       "https://planets.nine-chronicles.com/planets/index.json",
     );
     const data = await fetch(configStore.get("PlanetRegistryUrl"));
-    configStore.store = remoteConfig;
-
     registry = await data.json();
+
+    console.log(registry);
+    configStore.store = remoteConfig;
+    console.log("Initialize config complete");
   } catch (error) {
     console.error(
       `An unexpected error occurred during fetching remote config. ${error}`,
