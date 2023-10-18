@@ -50,7 +50,7 @@ function InfoText() {
 
   return (
     <InfoTextStyled onClick={onClick}>
-      node: {planetary.host}
+      node: {planetary.getHost()}
       <br />
       tip: {blockTip}
       <br />

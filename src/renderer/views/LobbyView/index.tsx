@@ -24,8 +24,8 @@ function LobbyView() {
       const privateKeyBytes = account.loginSession.privateKey.toBytes();
       game.startGame(
         Buffer.from(privateKeyBytes).toString("hex"),
-        planetary.host,
-        planetary.rpcPort,
+        planetary.getHost(),
+        planetary.getRpcPort(),
       );
     }
   }, [account.loginSession, approved, game]);
