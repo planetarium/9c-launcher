@@ -342,6 +342,28 @@ function initializeIpc() {
     return registry;
   });
 
+  ipcMain.handle("all-rpc-failed", (event) => {
+    event?.preventDefault();
+    console.error("All RPC Failed to respond.");
+    dialog
+      .showMessageBox(win!, {
+        message: "Failed to connect remote node. please restart launcher.",
+        type: "error",
+        buttons: ["Retry", "Exit"],
+        defaultId: 0,
+        cancelId: 1,
+      })
+      .then((result) => {
+        if (result.response === 0) {
+          console.log("RPC Reconnect Attempted");
+          return true;
+        } else {
+          console.log("Closing.");
+          app.exit;
+        }
+      }); // TODO Replace with "go to error page" event
+  });
+
   ipcMain.handle("manual player update", async () => {
     console.log("MANUAL PLAYER UPDATE TRIGGERED");
     manualPlayerUpdate();

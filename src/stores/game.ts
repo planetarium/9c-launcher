@@ -1,6 +1,6 @@
 import { observable, action, computed, makeObservable } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { userConfigStore, get as getConfig, NodeInfo } from "src/config";
+import { userConfigStore, get as getConfig } from "src/config";
 
 export default class GameStore {
   @observable
@@ -12,10 +12,6 @@ export default class GameStore {
 
   private _appProtocolVersion: string;
 
-  private _host: string | undefined;
-
-  private _port: number | undefined;
-
   public constructor() {
     makeObservable(this);
 
@@ -25,10 +21,6 @@ export default class GameStore {
     this._genesisBlockPath = getConfig("GenesisBlockPath") as string;
     this._language = getConfig("Locale", "en") as string;
     this._appProtocolVersion = getConfig("AppProtocolVersion") as string;
-    ipcRenderer.invoke("get-node-info").then((node) => {
-      this._host = node.host;
-      this._port = node.rpcPort;
-    });
     userConfigStore.onDidChange(
       "Locale",
       (value) => (this._language = value ?? "en"),
@@ -46,7 +38,7 @@ export default class GameStore {
   }
 
   @action
-  startGame = (privateKey: string) => {
+  startGame = (privateKey: string, host: string, port: number) => {
     const awsSinkGuid: string = ipcRenderer.sendSync(
       "get-aws-sink-cloudwatch-guid",
     );
@@ -61,8 +53,8 @@ export default class GameStore {
       args: [
         `--private-key=${privateKey}`,
         `--rpc-client=true`,
-        `--rpc-server-host=${this._host}`,
-        `--rpc-server-port=${this._port}`,
+        `--rpc-server-host=${host}`,
+        `--rpc-server-port=${port}`,
         `--genesis-block-path=${this._genesisBlockPath}`,
         `--language=${this._language}`,
         `--app-protocol-version=${this._appProtocolVersion}`,
