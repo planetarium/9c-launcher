@@ -1,8 +1,7 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo } from "react";
 import { observer } from "mobx-react";
 
 import { clipboard, ipcRenderer } from "electron";
-import { get as getConfig, NodeInfo } from "src/config";
 import { styled } from "src/renderer/stitches.config";
 import toast from "react-hot-toast";
 import { T } from "@transifex/react";
@@ -51,7 +50,7 @@ function InfoText() {
 
   return (
     <InfoTextStyled onClick={onClick}>
-      node: {planetary.node?.host}
+      node: {planetary.host}
       <br />
       tip: {blockTip}
       <br />
