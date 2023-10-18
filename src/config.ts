@@ -313,7 +313,7 @@ export async function initializeNode(
   rpcEndpoints: RpcEndpoints,
   quick: boolean = false,
 ): Promise<NodeInfo> {
-  console.log("config initialize called");
+  console.log("node selector called");
   const relativeTipLimit = get("RemoteClientStaleTipLimit", 20) ?? Infinity;
   const nodeList = NonStaleNodeList(
     await NodeList(rpcEndpoints, quick),
