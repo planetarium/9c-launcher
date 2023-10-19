@@ -166,9 +166,11 @@ async function initializeConfig() {
     remoteConfig.Planet = getConfig("Planet", "0x000000000000");
     remoteConfig.PlanetRegistryUrl = getConfig(
       "PlanetRegistryUrl",
-      "https://planets.nine-chronicles.com/planets/index.json",
+      "https://planets.nine-chronicles.com/planets/",
     );
-    const data = await fetch(configStore.get("PlanetRegistryUrl"));
+
+    const data = await fetch(remoteConfig.PlanetRegistryUrl);
+
     registry = await data.json();
     if (registry === undefined) throw Error("Failed to parse registry.");
 
