@@ -117,8 +117,6 @@ const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid",
 );
 
-const registry: Planet[] = ipcRenderer.sendSync("get-registry-info");
-
 const InfoTextStyled = styled("div", {
   bottom: 50,
   left: 50,
@@ -164,6 +162,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
   }, []);
 
   const [exportOverlayOpened, setExportOverlayOpened] = useState(false);
+  const { registry } = useStore("planetary");
   const { isLogin } = useStore("account");
 
   useEffect(

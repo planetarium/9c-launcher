@@ -28,21 +28,20 @@ const onErrorLink = onError(({ graphQLErrors, networkError, operation }) => {
 export default function useApolloClient(): Client | null {
   const { planetary } = useStore();
   const node = planetary.node;
-  if (node === null) {
+  const host = planetary.getHost();
+  if (!node) {
     return null;
   }
 
-  const headlessUrl = `${node.host}:${node.graphqlPort}`;
-
   const wsLink = new WebSocketLink({
-    uri: `ws://${headlessUrl}/graphql`,
+    uri: `ws://${host}/graphql`,
     options: {
       reconnect: true,
     },
   });
 
   const httpLink = new HttpLink({
-    uri: `http://${headlessUrl}/graphql`,
+    uri: planetary.node!.gqlUrl,
   });
 
   const splitLink = split(

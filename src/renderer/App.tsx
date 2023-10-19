@@ -10,26 +10,26 @@ import { StoreProvider, useStore } from "src/utils/useStore";
 import { LocaleProvider } from "src/renderer/i18n";
 import { ExternalURLProvider } from "src/utils/useExternalURL";
 import { getSdk } from "src/generated/graphql-request";
-import { NodeInfo } from "src/config";
 import { GraphQLClient } from "graphql-request";
 import { observer } from "mobx-react";
+import { Planet } from "src/interfaces/registry";
+import { NodeInfo } from "src/config";
 
 function App() {
   const { transfer, planetary } = useStore();
-  const client = useApolloClient();
-  useEffect(() => {
-    ipcRenderer.invoke("get-node-info").then((node: NodeInfo) => {
-      transfer.updateSdk(
-        getSdk(
-          new GraphQLClient(`http://${node.host}:${node.graphqlPort}/graphql`),
-        ),
-      );
 
-      planetary.setNode(node);
-    });
+  useEffect(() => {
+    ipcRenderer
+      .invoke("get-planetary-info")
+      .then((info: [Planet[], NodeInfo]) => {
+        planetary.init(info[0], info[1]);
+        transfer.updateSdk(getSdk(new GraphQLClient(planetary.node!.gqlUrl)));
+      });
   }, []);
 
-  if (!client) return null;
+  if (planetary.node === null) return null;
+  const client = useApolloClient()!;
+  if (client === null) return null;
 
   return (
     <LocaleProvider>
