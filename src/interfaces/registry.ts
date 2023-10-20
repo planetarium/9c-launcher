@@ -3,6 +3,9 @@ export type RpcEndpoints = {
   "9cscan.rest"?: string[];
   "headless.gql": string[];
   "headless.grpc": string[];
+  "market.rest"?: string[];
+  "world-boss.rest"?: string[];
+  "patrol-reward.gql"?: string[];
 };
 
 export type Planet = {

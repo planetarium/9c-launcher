@@ -78,6 +78,14 @@ export default class PlanetaryStore {
     if (this.planet) {
       configStore.set("GenesisBlockPath", this.planet.genesisUri);
       configStore.set("DataProviderUrl", this.planet.rpcEndpoints["dp.gql"]);
+      configStore.set(
+        "MarketServiceUrl",
+        this.planet.rpcEndpoints["market.rest"],
+      );
+      configStore.set(
+        "PatrolRewardServiceUrl",
+        this.planet.rpcEndpoints["patrol-reward.gql"],
+      );
     }
   }
 }
