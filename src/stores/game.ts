@@ -6,11 +6,7 @@ export default class GameStore {
   @observable
   private _isGameStarted: boolean = false;
 
-  private _genesisBlockPath: string;
-
   private _language: string;
-
-  private _appProtocolVersion: string;
 
   public constructor() {
     makeObservable(this);
@@ -18,9 +14,7 @@ export default class GameStore {
     ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
       this._isGameStarted = false;
     });
-    this._genesisBlockPath = getConfig("GenesisBlockPath") as string;
     this._language = getConfig("Locale", "en") as string;
-    this._appProtocolVersion = getConfig("AppProtocolVersion") as string;
     userConfigStore.onDidChange(
       "Locale",
       (value) => (this._language = value ?? "en"),
@@ -48,6 +42,8 @@ export default class GameStore {
     const marketServiceUrl = getConfig("MarketServiceUrl");
     const patrolRewardServiceUrl = getConfig("PatrolRewardServiceUrl");
     const meadPledgePortalUrl = getConfig("MeadPledgePortalUrl");
+    const genesisBlockPath = getConfig("GenesisBlockPath");
+    const appProtocolVersion = getConfig("AppProtocolVersion");
 
     ipcRenderer.send("launch game", {
       args: [
@@ -55,9 +51,9 @@ export default class GameStore {
         `--rpc-client=true`,
         `--rpc-server-host=${host}`,
         `--rpc-server-port=${port}`,
-        `--genesis-block-path=${this._genesisBlockPath}`,
+        `--genesis-block-path=${genesisBlockPath}`,
         `--language=${this._language}`,
-        `--app-protocol-version=${this._appProtocolVersion}`,
+        `--app-protocol-version=${appProtocolVersion}`,
         `--aws-sink-guid=${awsSinkGuid}`,
         `--on-boarding-host=${portalUrl}`,
         `--sentry-sample-rate=${unitySentrySampleRate}`,
