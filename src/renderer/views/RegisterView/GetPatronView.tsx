@@ -43,7 +43,7 @@ function GetPatronView() {
       <Select value={planetId} onChange={switchPlanet}>
         {planetary.registry.map((entry) => (
           <SelectOption key={entry.id} value={entry.id}>
-            {entry.name} - {entry.id}
+            {entry.name}
           </SelectOption>
         ))}
       </Select>

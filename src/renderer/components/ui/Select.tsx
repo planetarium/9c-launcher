@@ -22,6 +22,7 @@ export const Select = styled(Listbox, {
   color: "White",
   height: "3rem",
   padding: "0 1rem",
+  textTransform: "capitalize",
   variants: {
     invalid: {
       true: {
@@ -37,4 +38,11 @@ export const Select = styled(Listbox, {
   },
 });
 
-export const SelectOption = styled(ListboxOption, {});
+export const Label = styled("label", {
+  position: "relative",
+  top: "80%",
+});
+
+export const SelectOption = styled(ListboxOption, {
+  textTransform: "capitalize",
+});
