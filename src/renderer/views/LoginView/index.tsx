@@ -11,7 +11,7 @@ import Button from "src/renderer/components/ui/Button";
 import Form from "src/renderer/components/ui/Form";
 import H1 from "src/renderer/components/ui/H1";
 import { Link } from "src/renderer/components/ui/Link";
-import { Select, SelectOption } from "src/renderer/components/ui/Select";
+import { Label, Select, SelectOption } from "src/renderer/components/ui/Select";
 import { PasswordField } from "src/renderer/components/ui/TextField";
 import { T } from "src/renderer/i18n";
 import { trackEvent } from "src/utils/mixpanel";
@@ -114,20 +114,19 @@ function LoginView() {
             </Select>
           )}
         />
-
+        <Select value={planetId} onChange={switchPlanet}>
+          {planetary.registry.map((entry) => (
+            <SelectOption key={entry.id} value={entry.id}>
+              {entry.name}
+            </SelectOption>
+          ))}
+        </Select>
         <PasswordField
           label="Password"
           invalid={invalid || !!errors.password}
           autoFocus
           {...register("password")}
         />
-        <Select value={planetId} onChange={switchPlanet}>
-          {planetary.registry.map((entry) => (
-            <SelectOption key={entry.id} value={entry.id}>
-              {entry.name} - {entry.id}
-            </SelectOption>
-          ))}
-        </Select>
         <Button
           data-testid="login"
           variant="primary"
@@ -138,7 +137,7 @@ function LoginView() {
           <T _str="LOGIN" _tags={transifexTags} />
         </Button>
       </Form>
-      <Link centered to="/forgot">
+      <Link centered to="/register/getPatron">
         <T _str="Forgot password?" _tags={transifexTags} />
       </Link>
     </Layout>
