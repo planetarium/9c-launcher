@@ -40,7 +40,11 @@ function GetPatronView() {
         readOnly
         value={account.loginSession?.address.toString()}
       />
-      <Select value={planetId} onChange={switchPlanet}>
+      <Select
+        value={planetId}
+        defaultValue={planetary.planet.id}
+        onChange={switchPlanet}
+      >
         {planetary.registry.map((entry) => (
           <SelectOption key={entry.id} value={entry.id}>
             {entry.name}
@@ -57,7 +61,7 @@ function GetPatronView() {
             get("ActivationCodeUrl") +
               "&address=" +
               account.loginSession!.address.toHex() +
-              "?planet=" +
+              "&planet=" +
               planetId,
           );
           setDisable(true);

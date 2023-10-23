@@ -114,7 +114,11 @@ function LoginView() {
             </Select>
           )}
         />
-        <Select value={planetId} onChange={switchPlanet}>
+        <Select
+          value={planetId}
+          defaultValue={planetary.planet.id}
+          onChange={switchPlanet}
+        >
           {planetary.registry.map((entry) => (
             <SelectOption key={entry.id} value={entry.id}>
               {entry.name}
