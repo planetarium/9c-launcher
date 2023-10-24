@@ -141,7 +141,7 @@ function LoginView() {
           <T _str="LOGIN" _tags={transifexTags} />
         </Button>
       </Form>
-      <Link centered to="/register/getPatron">
+      <Link centered to="/forgot">
         <T _str="Forgot password?" _tags={transifexTags} />
       </Link>
     </Layout>
