@@ -38,16 +38,13 @@ function LoginView() {
   } = useForm();
 
   function getLastLoggedinAddress() {
-    const storedHex = localStorage.getItem("lastAddress");
-    const stored = storedHex && Address.fromHex(storedHex, true);
-
-    if (
-      stored &&
-      accountStore.addresses.filter((a) => a.equals(stored)).length > 0
-    ) {
-      return stored;
+    const storedHex = localStorage.getItem("lastAddress") ?? "";
+    const isValidHex = /^([0-9A-Fa-f])+$/.test(storedHex);
+    if (isValidHex) {
+      const address = Address.fromHex(storedHex, true);
+      if (accountStore.addresses.filter((a) => a.equals(address)).length > 0)
+        return address;
     }
-
     return accountStore.addresses[0];
   }
 
