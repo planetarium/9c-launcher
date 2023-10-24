@@ -28,7 +28,7 @@ function LobbyView() {
         planetary.getRpcPort(),
       );
     }
-  }, [account.loginSession, approved, game]);
+  }, [account.loginSession, approved, game, planetary.planet]);
 
   useEffect(() => {
     if (error) history.push("/error/relaunch");
