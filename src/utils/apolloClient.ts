@@ -27,11 +27,10 @@ const onErrorLink = onError(({ graphQLErrors, networkError, operation }) => {
 
 export default function useApolloClient(): Client | null {
   const { planetary } = useStore();
-  const node = planetary.node;
-  const host = planetary.getHost();
-  if (!node) {
+  if (!planetary.node) {
     return null;
   }
+  const host = planetary.getHost();
 
   const wsLink = new WebSocketLink({
     uri: `ws://${host}/graphql`,

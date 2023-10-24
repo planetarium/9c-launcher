@@ -9,6 +9,7 @@ export default class PlanetaryStore {
     makeObservable(this);
   }
 
+  @action
   public init(registry: Planet[], node: NodeInfo) {
     this.registry = registry;
     this.setPlanet(get("Planet", "0x000000000000"));
