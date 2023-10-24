@@ -16,7 +16,7 @@ function LobbyView() {
     if (loading || approved || search !== "") return;
     stopPolling();
     history.push(!requested ? "/register/getPatron" : "/register/pledgeWait");
-  }, [history, loading, approved, requested]);
+  }, [history, loading, approved, requested, planetary.planet]);
 
   useEffect(() => {
     if (account.loginSession && approved) {
