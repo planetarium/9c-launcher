@@ -1,16 +1,18 @@
 import { observer } from "mobx-react";
 import { shell } from "electron";
 import { get, NodeInfo } from "src/config";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "src/renderer/components/core/Layout";
 import H1 from "src/renderer/components/ui/H1";
 import { T } from "src/renderer/i18n";
 import { useStore } from "src/utils/useStore";
+import { useCheckContractedQuery } from "src/generated/graphql";
 import { registerStyles } from ".";
 import TextField from "src/renderer/components/ui/TextField";
 import { Select, SelectOption } from "src/renderer/components/ui/Select";
 import { ExtLink } from "src/renderer/components/ui/Link";
 import Button from "src/renderer/components/ui/Button";
+import { useHistory } from "react-router";
 
 const transifexTags = "v2/views/register/GetPatronView";
 
@@ -18,11 +20,26 @@ function GetPatronView() {
   const [disable, setDisable] = useState(false);
   const [planetId, setPlanetId] = useState<string>(get("Planet"));
   const { account, planetary } = useStore();
+  const { data, refetch } = useCheckContractedQuery({
+    variables: {
+      agentAddress: account.loginSession?.address.toHex(),
+    },
+  });
+  const history = useHistory();
 
   const switchPlanet = (id: string) => {
     setPlanetId(id);
-    planetary.changePlanet(id);
+    planetary.changePlanet(id).then((v) => {
+      refetch();
+    });
   };
+
+  useEffect(() => {
+    if (data?.stateQuery.pledge.approved) {
+      console.log("go lobby");
+      history.push("/lobby");
+    }
+  }, [data]);
 
   return (
     <Layout sidebar flex css={registerStyles}>
