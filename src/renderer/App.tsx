@@ -1,5 +1,5 @@
 import { ApolloProvider } from "@apollo/client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ipcRenderer } from "electron";
 import { HashRouter as Router } from "react-router-dom";
 import Routes from "./Routes";
@@ -16,8 +16,8 @@ import { Planet } from "src/interfaces/registry";
 import { NodeInfo } from "src/config";
 
 function App() {
-  const { transfer, planetary } = useStore();
-
+  const { transfer, planetary, account } = useStore();
+  const client = useApolloClient();
   useEffect(() => {
     ipcRenderer
       .invoke("get-planetary-info")
@@ -28,7 +28,7 @@ function App() {
   }, []);
 
   if (planetary.node === null) return null;
-  const client = useApolloClient()!;
+  if (!account.isInitialized) return null;
   if (client === null) return null;
 
   return (

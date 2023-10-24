@@ -86,6 +86,7 @@ Migrated at: ${new Date().toISOString()}\n`,
 export default class AccountStore {
   private _privateKeyToRecovery: RawPrivateKey | null = null;
 
+  @action
   async getKeyStore(passphrase: string | undefined): Promise<Web3KeyStore> {
     const passphraseEntry: PassphraseEntry = {
       authenticate(keyId: string, firstAttempt: boolean): Promise<string> {
@@ -115,6 +116,9 @@ export default class AccountStore {
   @observable
   public addresses: Address[] = [];
 
+  @observable
+  public isInitialized: boolean = false;
+
   constructor() {
     this.getKeyStore(undefined).then(async (keyStore) => {
       for await (const keyMetadata of keyStore.list()) {
@@ -122,6 +126,7 @@ export default class AccountStore {
         if (address == null) continue;
         this.addresses.push(address);
       }
+      this.isInitialized = true;
     });
     makeObservable(this);
   }
@@ -151,6 +156,11 @@ export default class AccountStore {
       return undefined;
     }
     return await result.account.exportPrivateKey();
+  };
+
+  @action
+  public addAddress = (address: Address) => {
+    this.addresses.push(address);
   };
 
   @action
@@ -217,7 +227,7 @@ export default class AccountStore {
           : "Key not found; something went wrong",
       );
     }
-    this.addresses.push(await account.account.getAddress());
+    this.addAddress(await account.account.getAddress());
     return account.account;
   };
 
