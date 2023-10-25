@@ -143,8 +143,24 @@ async function initializeConfig() {
         remoteConfig,
       );
       configStore.store = remoteConfig;
-      return;
     }
+    console.log("planetary registry initialization.");
+    remoteConfig.Planet = getConfig("Planet", "0x000000000000");
+    remoteConfig.PlanetRegistryUrl = getConfig(
+      "PlanetRegistryUrl",
+      "https://planets.nine-chronicles.com/planets/",
+    );
+
+    const data = await fetch(remoteConfig.PlanetRegistryUrl);
+
+    registry = await data.json();
+    if (registry === undefined) throw Error("Failed to parse registry.");
+
+    const planet = registry.find((v) => v.id === remoteConfig.Planet);
+    if (!planet) throw Error(`Planet failed to initialize: ${planet}`);
+
+    remoteNode = await initializeNode(planet.rpcEndpoints, true);
+    console.log(registry);
 
     const localConfigVersion = getConfig("ConfigVersion");
     const remoteConfigVersion = remoteConfig.ConfigVersion;
@@ -163,22 +179,6 @@ async function initializeConfig() {
       0,
     );
     remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
-    remoteConfig.Planet = getConfig("Planet", "0x000000000000");
-    remoteConfig.PlanetRegistryUrl = getConfig(
-      "PlanetRegistryUrl",
-      "https://planets.nine-chronicles.com/planets/",
-    );
-
-    const data = await fetch(remoteConfig.PlanetRegistryUrl);
-
-    registry = await data.json();
-    if (registry === undefined) throw Error("Failed to parse registry.");
-
-    const planet = registry.find((v) => v.id === remoteConfig.Planet);
-    if (!planet) throw Error(`Planet failed to initialize: ${planet}`);
-
-    remoteNode = await initializeNode(planet.rpcEndpoints, true);
-    console.log(registry);
     configStore.store = remoteConfig;
     console.log("Initialize config complete");
   } catch (error) {
