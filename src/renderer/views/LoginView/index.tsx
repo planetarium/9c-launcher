@@ -11,7 +11,13 @@ import Button from "src/renderer/components/ui/Button";
 import Form from "src/renderer/components/ui/Form";
 import H1 from "src/renderer/components/ui/H1";
 import { Link } from "src/renderer/components/ui/Link";
-import { Label, Select, SelectOption } from "src/renderer/components/ui/Select";
+import { Box } from "@mui/material";
+import {
+  SelectOption,
+  Select,
+  SelectWrapper,
+  SelectLabel,
+} from "src/renderer/components/ui/Select";
 import { PasswordField } from "src/renderer/components/ui/TextField";
 import { T } from "src/renderer/i18n";
 import { trackEvent } from "src/utils/mixpanel";
@@ -93,35 +99,52 @@ function LoginView() {
       <H1>
         <T _str="Login" _tags={transifexTags} />
       </H1>
-      <p>
-        <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
-      </p>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <p>
+          <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
+        </p>
+        <SelectWrapper>
+          <SelectLabel id="planet-label">Planet</SelectLabel>
+          <Select
+            labelId="planet-label"
+            value={planetId}
+            defaultValue={planetary.planet.id}
+            onChange={(event) => switchPlanet(event.target.value as string)}
+            label="Planet"
+          >
+            {planetary.registry.map((entry) => (
+              <SelectOption key={entry.id} value={entry.id}>
+                {entry.name}
+              </SelectOption>
+            ))}
+          </Select>
+        </SelectWrapper>
+      </Box>
+
       <Form onSubmit={handleSubmit(handleLogin)}>
         <Controller
           control={control}
           defaultValue={defaultAddress}
           {...register("address")}
           render={({ field }) => (
-            <Select {...field}>
-              {accountStore.addresses.map((address) => (
-                <SelectOption key={address.toHex()} value={address.toHex()}>
-                  {address.toString()}
-                </SelectOption>
-              ))}
-            </Select>
+            <SelectWrapper fullWidth>
+              <SelectLabel id="address-label">Address</SelectLabel>
+              <Select {...field} labelId="address-label" label="Address">
+                {accountStore.addresses.map((address) => (
+                  <SelectOption key={address.toHex()} value={address.toHex()}>
+                    {address.toString()}
+                  </SelectOption>
+                ))}
+              </Select>
+            </SelectWrapper>
           )}
         />
-        <Select
-          value={planetId}
-          defaultValue={planetary.planet.id}
-          onChange={switchPlanet}
-        >
-          {planetary.registry.map((entry) => (
-            <SelectOption key={entry.id} value={entry.id}>
-              {entry.name}
-            </SelectOption>
-          ))}
-        </Select>
         <PasswordField
           label="Password"
           invalid={invalid || !!errors.password}
