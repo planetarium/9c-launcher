@@ -29,29 +29,26 @@ function LoginView() {
   const [invalid, setInvalid] = useState(false);
   const [switching, setSwitching] = useState(false);
   const [planetId, setPlanetId] = useState<string>(get("Planet"));
-  const defaultAddress = getLastLoggedinAddress();
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const history = useHistory();
 
-  function getLastLoggedinAddress() {
-    const storedHex = localStorage.getItem("lastAddress");
-    const stored = storedHex && Address.fromHex(storedHex, true);
-
-    if (
-      stored &&
-      accountStore.addresses.filter((a) => a.equals(stored)).length > 0
-    ) {
-      return stored;
+  function getLastLoggedinAddress<Address>() {
+    const storedHex = localStorage.getItem("lastAddress") ?? "";
+    const isValidHex = /^([0-9A-Fa-f])+$/.test(storedHex);
+    if (isValidHex) {
+      const address = Address.fromHex(storedHex, true);
+      if (accountStore.addresses.filter((a) => a.equals(address)).length > 0)
+        return address.toHex();
     }
-
-    return accountStore.addresses[0];
+    return accountStore.addresses[0].toHex();
   }
 
-  const history = useHistory();
+  const defaultAddress = getLastLoggedinAddress();
 
   const switchPlanet = (id: string) => {
     setSwitching(true);
@@ -102,7 +99,7 @@ function LoginView() {
       <Form onSubmit={handleSubmit(handleLogin)}>
         <Controller
           control={control}
-          defaultValue={defaultAddress?.toHex()}
+          defaultValue={defaultAddress}
           {...register("address")}
           render={({ field }) => (
             <Select {...field}>
@@ -141,7 +138,7 @@ function LoginView() {
           <T _str="LOGIN" _tags={transifexTags} />
         </Button>
       </Form>
-      <Link centered to="/register/getPatron">
+      <Link centered to="/forgot">
         <T _str="Forgot password?" _tags={transifexTags} />
       </Link>
     </Layout>

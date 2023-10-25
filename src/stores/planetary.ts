@@ -9,6 +9,7 @@ export default class PlanetaryStore {
     makeObservable(this);
   }
 
+  @action
   public init(registry: Planet[], node: NodeInfo) {
     this.registry = registry;
     this.setPlanet(get("Planet", "0x000000000000"));
@@ -76,6 +77,7 @@ export default class PlanetaryStore {
 
   private updateConfigToPlanet() {
     if (this.planet) {
+      configStore.set("Planet", this.planet.id);
       configStore.set("GenesisBlockPath", this.planet.genesisUri);
       configStore.set("DataProviderUrl", this.planet.rpcEndpoints["dp.gql"]);
       configStore.set(
