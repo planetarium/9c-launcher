@@ -80,7 +80,7 @@ jobs:
       - uses: actions/setup-node@v3.8.1
         with:
           node-version: 20
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install
         shell: bash
@@ -107,6 +107,7 @@ jobs:
           fi
           curl -X POST -H 'Content-type: application/json' --data '{"text":"[Launcher] Had success releasing with '${{ matrix.packCmd }}' pack-cmd"}' ${{ secrets.SLACK_WEBHOOK }}
 
+          
           rm -fR ./dist/*-unpacked
           rm -fR ./dist/mac
           rm -fR ./dist/mac-arm64
@@ -124,3 +125,9 @@ jobs:
           name: Dist-${{ matrix.packCmd }}
           retention-days: 3
           if-no-files-found: error
+      - uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          generate_release_notes: true
+          files: |
+            dist/*.{zip|exe|dmg}
