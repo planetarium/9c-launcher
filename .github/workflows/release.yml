@@ -113,7 +113,7 @@ jobs:
           
           for file in ./dist/NineChronicles*.zip; do
             new_file=$(echo ${file%.*}-linux.${file##*.} | sed 's/eC/e C/')
-            mv "$file" "{$new_file%.zip}"
+            mv "$file" "$new_file"
           done
 
         env:
