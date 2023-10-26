@@ -111,11 +111,6 @@ jobs:
           rm -fR ./dist/mac
           rm -fR ./dist/mac-arm64
           
-          for file in ./dist/NineChronicles*.zip; do
-            new_file=$(echo ${file%.*}-linux.${file##*.} | sed 's/eC/e C/')
-            mv "$file" "$new_file"
-          done
-
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
@@ -130,9 +125,3 @@ jobs:
           name: Dist-${{ matrix.packCmd }}
           retention-days: 3
           if-no-files-found: error
-      - uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          generate_release_notes: true
-          files: |
-            dist/*.{zip|exe|dmg}
