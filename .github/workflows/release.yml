@@ -107,10 +107,15 @@ jobs:
           fi
           curl -X POST -H 'Content-type: application/json' --data '{"text":"[Launcher] Had success releasing with '${{ matrix.packCmd }}' pack-cmd"}' ${{ secrets.SLACK_WEBHOOK }}
 
-          
           rm -fR ./dist/*-unpacked
           rm -fR ./dist/mac
           rm -fR ./dist/mac-arm64
+          
+          for file in ./dist/NineChronicles*.zip; do
+            new_file=$(echo ${file%.*}-linux.${file##*.} | sed 's/eC/e C/')
+            mv "$file" "{$new_file%.zip}"
+          done
+
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
