@@ -3,7 +3,11 @@ import { observer } from "mobx-react";
 import Layout from "src/renderer/components/core/Layout";
 import H1 from "src/renderer/components/ui/H1";
 import { T } from "src/renderer/i18n";
-import { Select, SelectOption } from "src/renderer/components/ui/Select";
+import {
+  Select,
+  SelectOption,
+  SelectWrapper,
+} from "src/renderer/components/ui/Select";
 import { useStore } from "src/utils/useStore";
 import Button from "src/renderer/components/ui/Button";
 import { useHistory } from "react-router";
@@ -34,16 +38,21 @@ function RevokeView() {
         }
         _tags={transifexTags}
       />
-      <Select
-        value={address.toHex()}
-        onChange={(v) => setAddress(Address.fromHex(v))}
-      >
-        {accountStore.addresses.map((address) => (
-          <SelectOption key={address.toHex()} value={address.toHex()}>
-            {address.toString()}
-          </SelectOption>
-        ))}
-      </Select>
+      <SelectWrapper fullWidth>
+        <Select
+          value={address.toHex()}
+          onChange={(v) =>
+            setAddress(Address.fromHex(v.target.value as string))
+          }
+        >
+          {accountStore.addresses.map((address) => (
+            <SelectOption key={address.toHex()} value={address.toHex()}>
+              {address.toString()}
+            </SelectOption>
+          ))}
+        </Select>
+      </SelectWrapper>
+
       <Button
         variant="primary"
         centered

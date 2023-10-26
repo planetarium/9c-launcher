@@ -13,7 +13,11 @@ import toast from "react-hot-toast";
 
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import H1 from "src/renderer/components/ui/H1";
-import { Select, SelectOption } from "src/renderer/components/ui/Select";
+import {
+  Select,
+  SelectOption,
+  SelectWrapper,
+} from "src/renderer/components/ui/Select";
 import { t } from "@transifex/native";
 import Button from "src/renderer/components/ui/Button";
 import OverlayBase, {
@@ -214,13 +218,15 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 name="Locale"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field}>
-                    {languages.map(({ code, localized_name }) => (
-                      <SelectOption key={code} value={code}>
-                        {localized_name}
-                      </SelectOption>
-                    ))}
-                  </Select>
+                  <SelectWrapper fullWidth>
+                    <Select {...field}>
+                      {languages.map(({ code, localized_name }) => (
+                        <SelectOption key={code} value={code}>
+                          {localized_name}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </SelectWrapper>
                 )}
               />
               <span>
@@ -230,13 +236,15 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 name="Planet"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field}>
-                    {registry.map((entry) => (
-                      <SelectOption key={entry.id} value={entry.id}>
-                        {entry.name}
-                      </SelectOption>
-                    ))}
-                  </Select>
+                  <SelectWrapper fullWidth>
+                    <Select {...field}>
+                      {registry.map((entry) => (
+                        <SelectOption key={entry.id} value={entry.id}>
+                          {entry.name}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </SelectWrapper>
                 )}
               />
             </FormSection>

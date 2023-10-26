@@ -57,10 +57,11 @@ function GetPatronView() {
         readOnly
         value={account.loginSession?.address.toString()}
       />
+
       <Select
         value={planetId}
         defaultValue={planetary.planet.id}
-        onChange={switchPlanet}
+        onChange={(event) => switchPlanet(event.target.value as string)}
       >
         {planetary.registry.map((entry) => (
           <SelectOption key={entry.id} value={entry.id}>
