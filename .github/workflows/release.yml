@@ -30,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     environment:
-      name: ${{ startsWith(github.event.ref, 'refs/tags/') && 'main' || 'internal' }}
+      name: 'internal'
 
     steps:
       - uses: actions/checkout@v3.6.0
@@ -54,22 +54,16 @@ jobs:
         run: |
           sh scripts/download-codesigner.sh
 
-          if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
-          then
-            sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.main.yml > temp2.txt
-            mv temp2.txt electron-builder.main.yml
-          else
-            timestamp=$(date +%s)
-            version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
-            jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            sed 's/NineChronicles@workspace/NineChroniclesInternal@workspace/g' yarn.lock > temp1.txt
-            mv temp1.txt yarn.lock
-            mv ./signing/sandbox_code_sign_tool.properties ./tmp/codesign/conf/code_sign_tool.properties
-            sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.internal.yml > temp2.txt
-            mv temp2.txt electron-builder.internal.yml
-          fi
+          timestamp=$(date +%s)
+          version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
+          jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+          sed 's/NineChronicles@workspace/NineChroniclesInternal@workspace/g' yarn.lock > temp1.txt
+          mv temp1.txt yarn.lock
+          mv ./signing/sandbox_code_sign_tool.properties ./tmp/codesign/conf/code_sign_tool.properties
+          sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.internal.yml > temp2.txt
+          mv temp2.txt electron-builder.internal.yml
 
       - name: Cache electron-gyp
         uses: actions/cache@v3.3.1
@@ -95,16 +89,10 @@ jobs:
       - name: release
         shell: bash
         run: |
-          if [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == true ]]
-          then
-            sh ./scripts/release.sh main ${{ matrix.packCmd }}
-            aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest.yml"
-            aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest-mac.yml"
-          else
-            sh ./scripts/release.sh internal ${{ matrix.packCmd }}
-            aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest.yml"
-            aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest-mac.yml"
-          fi
+          sh ./scripts/release.sh internal ${{ matrix.packCmd }}
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest.yml"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest-mac.yml"
+
           curl -X POST -H 'Content-type: application/json' --data '{"text":"[Launcher] Had success releasing with '${{ matrix.packCmd }}' pack-cmd"}' ${{ secrets.SLACK_WEBHOOK }}
 
           rm -fR ./dist/*-unpacked
