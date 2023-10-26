@@ -148,6 +148,7 @@ export default function UserInfo() {
           txId,
           avatar: avatar.address,
         });
+        setClaimLoading(true);
       });
     },
   });
@@ -227,9 +228,7 @@ export default function UserInfo() {
         {canClaim && (
           <ClaimButton
             loading={claimLoading}
-            onClick={() => {
-              setOpenDialog(true);
-            }}
+            onClick={() => setOpenDialog(true)}
           />
         )}
         {isCollecting && !canClaim && isMigratable && (
@@ -243,7 +242,6 @@ export default function UserInfo() {
           onClose={() => setOpenDialog(false)}
           tip={tip}
           onConfirm={(avatar) => {
-            setClaimLoading(true);
             if (loginSession.publicKey) {
               claimedAvatar.current = avatar;
               requestClaimStakeRewardTx({
