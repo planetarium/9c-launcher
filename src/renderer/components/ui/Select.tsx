@@ -17,7 +17,7 @@ export const SelectWrapper = styled(FormControl, {
   "& .MuiOutlinedInput-root": {
     borderRadius: "2px",
     fontFamily: "Montserrat, sans-serif",
-    color: "#AAA",
+    color: "white",
     "& fieldset": {
       borderColor: "#AAA",
     },

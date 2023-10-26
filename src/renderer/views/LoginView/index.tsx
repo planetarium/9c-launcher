@@ -11,7 +11,6 @@ import Button from "src/renderer/components/ui/Button";
 import Form from "src/renderer/components/ui/Form";
 import H1 from "src/renderer/components/ui/H1";
 import { Link } from "src/renderer/components/ui/Link";
-import { Box } from "@mui/material";
 import {
   SelectOption,
   Select,
@@ -99,34 +98,22 @@ function LoginView() {
       <H1>
         <T _str="Login" _tags={transifexTags} />
       </H1>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <p>
-          <T _str="Welcome back Nine Chronicles!" _tags={transifexTags} />
-        </p>
-        <SelectWrapper>
-          <SelectLabel id="planet-label">Planet</SelectLabel>
-          <Select
-            labelId="planet-label"
-            value={planetId}
-            defaultValue={planetary.planet.id}
-            onChange={(event) => switchPlanet(event.target.value as string)}
-            label="Planet"
-          >
-            {planetary.registry.map((entry) => (
-              <SelectOption key={entry.id} value={entry.id}>
-                {entry.name}
-              </SelectOption>
-            ))}
-          </Select>
-        </SelectWrapper>
-      </Box>
-
+      <SelectWrapper fullWidth>
+        <SelectLabel id="planet-label">Planet</SelectLabel>
+        <Select
+          labelId="planet-label"
+          value={planetId}
+          defaultValue={planetary.planet.id}
+          onChange={(event) => switchPlanet(event.target.value as string)}
+          label="Planet"
+        >
+          {planetary.registry.map((entry) => (
+            <SelectOption key={entry.id} value={entry.id}>
+              {entry.name}
+            </SelectOption>
+          ))}
+        </Select>
+      </SelectWrapper>
       <Form onSubmit={handleSubmit(handleLogin)}>
         <Controller
           control={control}
