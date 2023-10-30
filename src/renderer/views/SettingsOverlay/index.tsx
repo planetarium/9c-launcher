@@ -211,9 +211,9 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
               <GroupTitle>
                 <T _str="Language" _tags={transifexTags} />
               </GroupTitle>
-              <span>
+              <p>
                 <T _str="Select the language you want." _tags={transifexTags} />
-              </span>
+              </p>
               <Controller
                 name="Locale"
                 control={control}
@@ -229,9 +229,12 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                   </SelectWrapper>
                 )}
               />
-              <span>
-                <T _str="Select the Chain" _tags={transifexTags} />
-              </span>
+              <GroupTitle>
+                <T _str="Planet" _tags={transifexTags} />
+              </GroupTitle>
+              <p>
+                <T _str="Select the Planet" _tags={transifexTags} />
+              </p>
               <Controller
                 name="Planet"
                 control={control}

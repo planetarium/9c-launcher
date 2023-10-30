@@ -5,6 +5,7 @@ import H1 from "src/renderer/components/ui/H1";
 import { T } from "src/renderer/i18n";
 import {
   Select,
+  SelectLabel,
   SelectOption,
   SelectWrapper,
 } from "src/renderer/components/ui/Select";
@@ -38,7 +39,8 @@ function RevokeView() {
         }
         _tags={transifexTags}
       />
-      <SelectWrapper fullWidth>
+      <SelectWrapper>
+        <SelectLabel id="planet-label">Planet</SelectLabel>
         <Select
           value={address.toHex()}
           onChange={(v) =>
@@ -52,7 +54,6 @@ function RevokeView() {
           ))}
         </Select>
       </SelectWrapper>
-
       <Button
         variant="primary"
         centered
