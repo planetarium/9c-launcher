@@ -45,7 +45,7 @@ const TransferSecondTitle = styled(Typography)({
 const TransferInput = styled(OutlinedInput)({
   marginTop: "5px",
   marginBottom: "10px",
-  height: "50px",
+  height: "40px",
 });
 
 const TransferButton = styled(Button)({
