@@ -187,7 +187,7 @@ function SwapPage() {
             <T _str="Recieve Amount" _tags={transifexTags} />
           </SwapTitle>
           <SwapSecondTitle>
-            <T _str="Amount of WNCG to recieve" _tags={transifexTags} />
+            <T _str="Amount of WNCG to be recieved" _tags={transifexTags} />
           </SwapSecondTitle>
         </Box>
       </Box>
