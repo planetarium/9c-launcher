@@ -1,8 +1,11 @@
 import {
+  Box,
   Button,
   CircularProgress,
   Container,
   FormControl,
+  IconButton,
+  Icon,
   InputAdornment,
   OutlinedInput,
   styled,
@@ -12,7 +15,7 @@ import { T } from "@transifex/react";
 import Decimal from "decimal.js";
 import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { verify as addressVerify } from "eip55";
 import FailureDialog from "src/renderer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/renderer/components/SendingDialog/SendingDialog";
@@ -20,13 +23,15 @@ import SuccessDialog from "src/renderer/components/SuccessDialog/SuccessDialog";
 import { useStore } from "src/utils/useStore";
 import { TransactionConfirmationListener } from "src/stores/transfer";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
-import refreshIcon from "src/renderer/resources/refreshIcon.png";
 import { useLoginSession } from "src/utils/useLoginSession";
+import { Refresh, ArrowForward } from "@material-ui/icons";
+import { BRIDGE_MIN, BRIDGE_MAX, NCGtoWNCG } from "src/utils/bridgeFee";
 
 const transifexTags = "Transfer/Transfer";
 
 const SwapContainer = styled(Container)({
   flex: "3",
+  flexDirection: "column",
 });
 
 const SwapTitle = styled(Typography)({
@@ -54,8 +59,8 @@ const SwapNoticeLabel = styled(Typography)({
 
 const SwapInput = styled(OutlinedInput)({
   marginTop: "5px",
-  marginBottom: "10px",
-  height: "50px",
+  marginBottom: "5px",
+  height: "40px",
 });
 
 const SwapButton = styled(Button)({
@@ -75,7 +80,8 @@ function SwapPage() {
   const transfer = useStore("transfer");
   const loginSession = useLoginSession();
   const [recipient, setRecipient] = useState<string>("");
-  const [amount, setAmount] = useState<Decimal>(new Decimal(0));
+  const [amount, setAmount] = useState<Decimal>(new Decimal(100));
+  const [WNCGAmount, setWNCGAmount] = useState<Decimal>(new Decimal(90));
   const [recipientWarning, setRecipientWarning] = useState<boolean>(false);
   const [amountWarning, setAmountWarning] = useState<boolean>(false);
   const [tx, setTx] = useState<string>("");
@@ -103,10 +109,21 @@ function SwapPage() {
     },
   };
 
+  const isOutOfRange = !amount.gte(BRIDGE_MIN) || !amount.lte(BRIDGE_MAX);
+
+  useEffect(() => {
+    setAmountWarning(isOutOfRange || amount.gt(transfer.balance));
+    setWNCGAmount(NCGtoWNCG(amount));
+  }, [amount]);
+
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
-    if (!addressVerify(recipient, true) || !amount.gte(100)) {
+    if (
+      !addressVerify(recipient, true) ||
+      !amount.gte(BRIDGE_MIN) ||
+      !amount.lte(BRIDGE_MAX)
+    ) {
       return;
     }
 
@@ -156,38 +173,64 @@ function SwapPage() {
           onFocus={() => setRecipientWarning(false)}
         />
       </FormControl>
-      <SwapTitle>
-        <T _str="NCG Amount" _tags={transifexTags} />
-      </SwapTitle>
-      <SwapSecondTitle>
-        <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
-        &nbsp;
-        <b>
-          <T
-            _str="(Your balance: {ncg} NCG)"
-            _tags={transifexTags}
-            ncg={transfer.balance}
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box>
+          <SwapTitle>
+            <T _str="Send Amount" _tags={transifexTags} />
+          </SwapTitle>
+          <SwapSecondTitle>
+            <T _str="Amount of NCG to send." _tags={transifexTags} />
+          </SwapSecondTitle>
+        </Box>
+        <Box display="flex" flexDirection="column" alignItems="end">
+          <SwapTitle>
+            <T _str="Recieve Amount" _tags={transifexTags} />
+          </SwapTitle>
+          <SwapSecondTitle>
+            <T _str="Amount of WNCG to recieve" _tags={transifexTags} />
+          </SwapSecondTitle>
+        </Box>
+      </Box>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <FormControl style={{ flexBasis: "240px" }}>
+          <SwapInput
+            type="number"
+            name="amount"
+            onChange={(e) =>
+              setAmount(
+                new Decimal(e.target.value === "" ? -1 : e.target.value),
+              )
+            }
+            error={amountWarning}
+            endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
+            defaultValue={100}
           />
-        </b>
-        <Button
-          startIcon={<img src={refreshIcon} alt="refresh" />}
-          onClick={() => transfer.updateBalance(transfer.senderAddress)}
+        </FormControl>
+        <Icon component={ArrowForward} />
+        <FormControl style={{ flexBasis: "240px" }}>
+          <SwapInput
+            readOnly
+            type="number"
+            name="amount"
+            error={amountWarning}
+            endAdornment={<InputAdornment position="end">WNCG</InputAdornment>}
+            value={isOutOfRange ? "" : WNCGAmount.toFixed(2)}
+          />
+        </FormControl>
+      </Box>
+      <b>
+        <T
+          _str="(Balance: {ncg} NCG)"
+          _tags={transifexTags}
+          ncg={transfer.balance}
         />
-      </SwapSecondTitle>
-      <FormControl fullWidth>
-        <SwapInput
-          type="number"
-          name="amount"
-          onChange={(e) =>
-            setAmount(new Decimal(e.target.value === "" ? -1 : e.target.value))
-          }
-          onBlur={() => setAmountWarning(!amount.gt(100))}
-          onFocus={() => setAmountWarning(false)}
-          error={amountWarning}
-          endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
-          defaultValue={100}
-        />
-      </FormControl>
+      </b>
+      <IconButton
+        size="small"
+        onClick={() => transfer.updateBalance(transfer.senderAddress)}
+      >
+        <Refresh />
+      </IconButton>
       <ul style={{ listStyleType: "none", padding: 0, marginTop: "5px" }}>
         <li>
           <SwapSecondTitle>Bridge Transfer Limit</SwapSecondTitle>
@@ -200,7 +243,7 @@ function SwapPage() {
             <T
               _str="ᐧ Maximum {max, number, integer} NCG per day"
               _tags={transifexTags}
-              max={5000}
+              max={BRIDGE_MAX}
             />
           </SwapNoticeLabel>
         </li>
@@ -213,7 +256,7 @@ function SwapPage() {
         <li>
           <SwapNoticeLabel>
             <T
-              _str="ᐧ ≥1,000 NCG: 1% of the transfer amount"
+              _str="ᐧ ≥1,000 NCG : 1% base fee on total amount, 2% additional surcharge for amount exceeding 10,000 NCG."
               _tags={transifexTags}
             />
           </SwapNoticeLabel>
