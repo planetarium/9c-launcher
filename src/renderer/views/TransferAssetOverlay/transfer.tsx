@@ -230,8 +230,7 @@ function TransferPage() {
             onClick={handleButton}
             disabled={disabled}
           >
-            {(loading || debounce) && <CircularProgress />}
-            Send
+            {loading || debounce ? <CircularProgress /> : "Send"}
           </TransferButton>
         </FormControl>
       </div>
