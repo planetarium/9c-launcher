@@ -3,6 +3,7 @@ import { GraphQLClient } from "graphql-request";
 import path from "path";
 import { getSdk } from "./generated/graphql-request";
 import { IConfig } from "./interfaces/config";
+import { Planet, RpcEndpoints } from "./interfaces/registry";
 
 export const { app } =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -26,6 +27,7 @@ const network = configStore.get(
   "Network",
   process.env.DEFAULT_NETWORK || "main",
 );
+
 // Removed 9c prefix
 export const netenv = network === "9c-main" ? "main" : network;
 export const userConfigStore = new Store<IConfig>({
@@ -46,40 +48,19 @@ const GraphQLServer = (): string => {
 };
 
 export class NodeInfo {
-  constructor(
-    host: string,
-    graphqlPort: number,
-    rpcPort: number,
-    nodeNumber: number,
-  ) {
-    this.host = host;
-    this.graphqlPort = graphqlPort;
-    this.rpcPort = rpcPort;
-    this.nodeNumber = nodeNumber;
+  constructor(gqlUrl: string, grpcUrl: string) {
+    this.gqlUrl = gqlUrl;
+    this.grpcUrl = grpcUrl;
   }
 
-  readonly host: string;
-  readonly graphqlPort: number;
-  readonly rpcPort: number;
-  readonly nodeNumber: number;
+  readonly gqlUrl: string;
+  readonly grpcUrl: string; //TODO Validate URL Validity
   apv = 0;
   clientCount = 0;
   tip = 0;
 
   public GraphqlClient(): GraphQLClient {
-    return new GraphQLClient(`http://${this.GraphqlServer()}`);
-  }
-
-  public GraphqlServer(): string {
-    return `${this.HeadlessUrl()}/graphql`;
-  }
-
-  public HeadlessUrl(): string {
-    return `${this.host}:${this.graphqlPort}`;
-  }
-
-  public RpcUrl(): string {
-    return `${this.host}:${this.rpcPort}`;
+    return new GraphQLClient(this.gqlUrl);
   }
 
   public async PreloadEnded(): Promise<boolean> {
@@ -99,30 +80,79 @@ export class NodeInfo {
   }
 }
 
-const NodeList = async (): Promise<NodeInfo[]> => {
+// TODO : Connect To config RPC Endpoints if Registry not works
+const parseConfigRpcEndpoints = (): RpcEndpoints => {
+  const result: RpcEndpoints = {
+    "headless.gql": [],
+    "headless.grpc": [],
+  };
+  const remoteNodeList = get("RemoteNodeList");
+  remoteNodeList.forEach((v) => {
+    const rawInfos = v.split(",");
+    if (rawInfos.length !== 3) {
+      console.error(`${v} does not contain node info.`);
+      return;
+    }
+    const host = rawInfos[0];
+    const graphqlPort = Number.parseInt(rawInfos[1]);
+    const rpcPort = Number.parseInt(rawInfos[2]);
+
+    if (isNaN(graphqlPort) || isNaN(rpcPort)) {
+      console.error(`Invalid port values in ${v}.`);
+      return;
+    }
+
+    const gqlProtocol =
+      graphqlPort === 80 || graphqlPort === 443 ? "https://" : "http://";
+    const gqlUrl = `${gqlProtocol}${host}:${graphqlPort}/graphql`;
+    const grpcUrl = `${host}:${rpcPort}`;
+
+    result["headless.gql"].push(gqlUrl);
+    result["headless.grpc"].push(grpcUrl);
+  });
+  return result;
+};
+
+const NodeList = async (
+  rpcEndpoints: RpcEndpoints,
+  quick: boolean,
+): Promise<NodeInfo[]> => {
   const nodeList: NodeInfo[] = [];
-  const remoteNodeList: string[] = get("RemoteNodeList");
-  await Promise.all(
-    remoteNodeList
-      .sort(() => Math.random() - 0.5)
-      .map(async (v, index) => {
-        const rawInfos = v.split(",");
-        if (rawInfos.length !== 3) {
-          console.error(`${v} does not contained node info.`);
-          return;
-        }
-        const host = rawInfos[0];
-        const graphqlPort = Number.parseInt(rawInfos[1]);
-        const rpcPort = Number.parseInt(rawInfos[2]);
-        const nodeInfo = new NodeInfo(host, graphqlPort, rpcPort, index + 1);
-        try {
-          const preloadEnded = await nodeInfo.PreloadEnded();
-          if (preloadEnded) nodeList.push(nodeInfo);
-        } catch (e) {
-          console.error(e);
-        }
-      }),
-  );
+
+  //Pre-connection mixer
+  if (
+    rpcEndpoints["headless.gql"].length !== rpcEndpoints["headless.grpc"].length
+  )
+    throw new Error("Arrays must have the same length."); // ...should be fixed for non-same length.
+
+  const indices = Array.from(
+    { length: rpcEndpoints["headless.gql"].length },
+    (_, i) => i,
+  ).sort(() => Math.random() - 0.5);
+  const endpoints = indices.map((i) => {
+    return {
+      gqlUrl: rpcEndpoints["headless.gql"][i],
+      grpcUrl: rpcEndpoints["headless.grpc"][i],
+    };
+  });
+
+  //Test connection
+  const connectionCheck = endpoints.map(async (v) => {
+    const nodeInfo = new NodeInfo(v.gqlUrl, v.grpcUrl);
+    try {
+      const preloadEnded = await nodeInfo.PreloadEnded();
+      if (preloadEnded) nodeList.push(nodeInfo);
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  if (quick) {
+    await Promise.any(connectionCheck); // Grab the first node succes to cunnect and throw
+    return nodeList;
+  }
+
+  await Promise.all(connectionCheck);
   return nodeList;
 };
 
@@ -279,19 +309,22 @@ export const LEGACY_EXECUTE_PATH: {
 export const baseUrl = get("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
 export const installerUrl = path.join(DEFAULT_DOWNLOAD_BASE_URL, installerName);
 
-export async function initializeNode(): Promise<NodeInfo> {
-  console.log("config initialize called");
+export async function initializeNode(
+  rpcEndpoints: RpcEndpoints,
+  quick: boolean = false,
+): Promise<NodeInfo> {
+  console.log("node selector called");
   const relativeTipLimit = get("RemoteClientStaleTipLimit", 20) ?? Infinity;
-  const nodeList = NonStaleNodeList(await NodeList(), relativeTipLimit);
+  const nodeList = NonStaleNodeList(
+    await NodeList(rpcEndpoints, quick),
+    relativeTipLimit,
+  );
   if (nodeList.length < 1) {
     throw Error("can't find available remote node.");
   }
-  console.log("config initialize complete");
   const nodeInfo = clientWeightedSelector(nodeList);
   console.log(
-    `selected node: ${nodeInfo.HeadlessUrl()}, clients: ${
-      nodeInfo.clientCount
-    }`,
+    `selected node: ${nodeInfo.gqlUrl})}, clients: ${nodeInfo.clientCount}`,
   );
   return nodeInfo;
 }

@@ -1,20 +1,12 @@
 import { observable, action, computed, makeObservable } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import { userConfigStore, get as getConfig, NodeInfo } from "src/config";
+import { userConfigStore, get as getConfig } from "src/config";
 
 export default class GameStore {
   @observable
   private _isGameStarted: boolean = false;
 
-  private _genesisBlockPath: string;
-
   private _language: string;
-
-  private _appProtocolVersion: string;
-
-  private _host: string | undefined;
-
-  private _port: number | undefined;
 
   public constructor() {
     makeObservable(this);
@@ -22,13 +14,7 @@ export default class GameStore {
     ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
       this._isGameStarted = false;
     });
-    this._genesisBlockPath = getConfig("GenesisBlockPath") as string;
     this._language = getConfig("Locale", "en") as string;
-    this._appProtocolVersion = getConfig("AppProtocolVersion") as string;
-    ipcRenderer.invoke("get-node-info").then((node) => {
-      this._host = node.host;
-      this._port = node.rpcPort;
-    });
     userConfigStore.onDidChange(
       "Locale",
       (value) => (this._language = value ?? "en"),
@@ -46,7 +32,7 @@ export default class GameStore {
   }
 
   @action
-  startGame = (privateKey: string) => {
+  startGame = (privateKey: string, host: string, port: number) => {
     const awsSinkGuid: string = ipcRenderer.sendSync(
       "get-aws-sink-cloudwatch-guid",
     );
@@ -56,16 +42,18 @@ export default class GameStore {
     const marketServiceUrl = getConfig("MarketServiceUrl");
     const patrolRewardServiceUrl = getConfig("PatrolRewardServiceUrl");
     const meadPledgePortalUrl = getConfig("MeadPledgePortalUrl");
+    const genesisBlockPath = getConfig("GenesisBlockPath");
+    const appProtocolVersion = getConfig("AppProtocolVersion");
 
     ipcRenderer.send("launch game", {
       args: [
         `--private-key=${privateKey}`,
         `--rpc-client=true`,
-        `--rpc-server-host=${this._host}`,
-        `--rpc-server-port=${this._port}`,
-        `--genesis-block-path=${this._genesisBlockPath}`,
+        `--rpc-server-host=${host}`,
+        `--rpc-server-port=${port}`,
+        `--genesis-block-path=${genesisBlockPath}`,
         `--language=${this._language}`,
-        `--app-protocol-version=${this._appProtocolVersion}`,
+        `--app-protocol-version=${appProtocolVersion}`,
         `--aws-sink-guid=${awsSinkGuid}`,
         `--on-boarding-host=${portalUrl}`,
         `--sentry-sample-rate=${unitySentrySampleRate}`,

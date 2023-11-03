@@ -6,7 +6,7 @@ import { useCheckContract } from "src/utils/useCheckContract";
 import { useStore } from "src/utils/useStore";
 
 function LobbyView() {
-  const { account, game } = useStore();
+  const { account, game, planetary } = useStore();
   const { loading, error, approved, requested, stopPolling } =
     useCheckContract(true);
   const history = useHistory();
@@ -16,15 +16,19 @@ function LobbyView() {
     if (loading || approved || search !== "") return;
     stopPolling();
     history.push(!requested ? "/register/getPatron" : "/register/pledgeWait");
-  }, [history, loading, approved, requested]);
+  }, [history, loading, approved, requested, planetary.planet]);
 
   useEffect(() => {
     if (account.loginSession && approved) {
       stopPolling();
       const privateKeyBytes = account.loginSession.privateKey.toBytes();
-      game.startGame(Buffer.from(privateKeyBytes).toString("hex"));
+      game.startGame(
+        Buffer.from(privateKeyBytes).toString("hex"),
+        planetary.getHost(),
+        planetary.getRpcPort(),
+      );
     }
-  }, [account.loginSession, approved, game]);
+  }, [account.loginSession, approved, game, planetary.planet]);
 
   useEffect(() => {
     if (error) history.push("/error/relaunch");
