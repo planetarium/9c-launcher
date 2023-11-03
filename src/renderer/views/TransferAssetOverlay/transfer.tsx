@@ -45,7 +45,7 @@ const TransferSecondTitle = styled(Typography)({
 const TransferInput = styled(OutlinedInput)({
   marginTop: "5px",
   marginBottom: "10px",
-  height: "50px",
+  height: "40px",
 });
 
 const TransferButton = styled(Button)({
@@ -230,8 +230,7 @@ function TransferPage() {
             onClick={handleButton}
             disabled={disabled}
           >
-            {(loading || debounce) && <CircularProgress />}
-            Send
+            {loading || debounce ? <CircularProgress /> : "Send"}
           </TransferButton>
         </FormControl>
       </div>

@@ -70,7 +70,7 @@ const TitleContainer = styled(Container)({
 const LayoutContainer = styled(Container)({
   display: "flex",
   flexDirection: "row",
-  marginTop: "25px",
+  marginTop: "15px",
 });
 
 const TitleMessage = styled(Typography)({

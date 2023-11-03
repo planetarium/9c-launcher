@@ -80,7 +80,7 @@ jobs:
       - uses: actions/setup-node@v3.8.1
         with:
           node-version: 20
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Install
         shell: bash
@@ -110,6 +110,7 @@ jobs:
           rm -fR ./dist/*-unpacked
           rm -fR ./dist/mac
           rm -fR ./dist/mac-arm64
+          
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}

@@ -1,7 +1,7 @@
 {
   "name": "NineChronicles",
   "productName": "Nine Chronicles",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "description": "Game Launcher for Nine Chronicles",
   "author": "Planetarium <engineering@planetariumhq.com>",
   "license": "GPL-3.0",
@@ -170,7 +170,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "dotenv": "^8.2.0",
-    "electron": "^25.8.1",
+    "electron": "^25.8.4",
     "electron-builder": "^24.2.1",
     "electron-devtools-installer": "^3.2.0",
     "electron-download": "^4.1.1",
