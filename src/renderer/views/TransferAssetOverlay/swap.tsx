@@ -109,7 +109,7 @@ function SwapPage() {
     },
   };
 
-  const isOutOfRange = !amount.gte(BRIDGE_MIN) || !amount.lte(BRIDGE_MAX);
+  const isOutOfRange = amount.lt(BRIDGE_MIN) || amount.gt(BRIDGE_MAX);
 
   useEffect(() => {
     setAmountWarning(isOutOfRange || amount.gt(transfer.balance));
@@ -118,12 +118,9 @@ function SwapPage() {
 
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    setDebounce(true);
     ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
-    if (
-      !addressVerify(recipient, true) ||
-      !amount.gte(BRIDGE_MIN) ||
-      !amount.lte(BRIDGE_MAX)
-    ) {
+    if (!addressVerify(recipient, true) || isOutOfRange) {
       return;
     }
 
@@ -132,7 +129,6 @@ function SwapPage() {
     }
 
     setCurrentPhase(TransferPhase.SENDTX);
-    setDebounce(true);
     setTimeout(() => {
       setDebounce(false);
     }, 15000);
@@ -209,7 +205,7 @@ function SwapPage() {
         <Icon component={ArrowForward} />
         <FormControl style={{ flexBasis: "240px" }}>
           <SwapInput
-            readOnly
+            disabled
             type="number"
             name="amount"
             error={amountWarning}
@@ -268,8 +264,7 @@ function SwapPage() {
         onClick={handleButton}
         disabled={amountWarning || recipientWarning}
       >
-        {(loading || debounce) && <CircularProgress />}
-        Send
+        {loading || debounce ? <CircularProgress /> : "Send"}
       </SwapButton>
 
       <SendingDialog
