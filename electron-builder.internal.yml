@@ -13,7 +13,6 @@ win:
       arch:
         - "x64"
   icon: "app.ico"
-  sign: "./scripts/sign.js"
 nsis:
   oneClick: false
   perMachine: false
