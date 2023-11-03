@@ -80,6 +80,7 @@ function SwapPage() {
   const transfer = useStore("transfer");
   const loginSession = useLoginSession();
   const [recipient, setRecipient] = useState<string>("");
+  const [tempAmount, setTempAmount] = useState("100");
   const [amount, setAmount] = useState<Decimal>(new Decimal(100));
   const [WNCGAmount, setWNCGAmount] = useState<Decimal>(new Decimal(90));
   const [recipientWarning, setRecipientWarning] = useState<boolean>(false);
@@ -119,6 +120,10 @@ function SwapPage() {
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setDebounce(true);
+    setTimeout(() => {
+      setDebounce(false);
+    }, 15000);
+
     ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
     if (!addressVerify(recipient, true) || isOutOfRange) {
       return;
@@ -127,11 +132,7 @@ function SwapPage() {
     if (!loginSession) {
       return;
     }
-
     setCurrentPhase(TransferPhase.SENDTX);
-    setTimeout(() => {
-      setDebounce(false);
-    }, 15000);
 
     const tx = await transfer.swapToWNCG(
       transfer.senderAddress,
@@ -192,14 +193,24 @@ function SwapPage() {
           <SwapInput
             type="number"
             name="amount"
-            onChange={(e) =>
-              setAmount(
-                new Decimal(e.target.value === "" ? -1 : e.target.value),
-              )
-            }
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              setTempAmount(inputValue === "" ? "" : inputValue);
+              try {
+                setAmount(
+                  new Decimal(
+                    inputValue === "" ? "100" : inputValue,
+                  ).toDecimalPlaces(2),
+                );
+              } catch (error) {
+                console.error("Invalid decimal value:", error);
+              }
+            }}
+            onBlur={() => setTempAmount(amount.toFixed(2))}
             error={amountWarning}
             endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
             defaultValue={100}
+            value={tempAmount}
           />
         </FormControl>
         <Icon component={ArrowForward} />
