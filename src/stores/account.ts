@@ -16,8 +16,9 @@ import {
 // this store to the dedicated backend, and inject that into this.
 import fs from "fs";
 import path from "path";
-import { action, observable, makeObservable, computed } from "mobx";
+import { action, observable, computed, makeAutoObservable } from "mobx";
 import { app } from "@electron/remote";
+import { RootStore } from "src/utils/useStore";
 
 export interface ILoginSession {
   address: Address;
@@ -85,6 +86,7 @@ Migrated at: ${new Date().toISOString()}\n`,
 
 export default class AccountStore {
   private _privateKeyToRecovery: RawPrivateKey | null = null;
+  rootStore: RootStore;
 
   @action
   async getKeyStore(passphrase: string | undefined): Promise<Web3KeyStore> {
@@ -119,7 +121,7 @@ export default class AccountStore {
   @observable
   public isInitialized: boolean = false;
 
-  constructor() {
+  constructor(RootStore: RootStore) {
     this.getKeyStore(undefined).then(async (keyStore) => {
       for await (const keyMetadata of keyStore.list()) {
         const address = keyMetadata.metadata.address;
@@ -128,7 +130,8 @@ export default class AccountStore {
       }
       this.isInitialized = true;
     });
-    makeObservable(this);
+    makeAutoObservable(this);
+    this.rootStore = RootStore;
   }
 
   @action

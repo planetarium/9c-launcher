@@ -1,12 +1,15 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeAutoObservable, observable } from "mobx";
 import { NodeInfo, configStore, get } from "src/config";
 import { Planet } from "src/interfaces/registry";
 import { initializeNode } from "src/config";
 import { ipcRenderer } from "electron";
+import { RootStore } from "src/utils/useStore";
 
 export default class PlanetaryStore {
-  public constructor() {
-    makeObservable(this);
+  rootStore: RootStore;
+  public constructor(RootStore: RootStore) {
+    makeAutoObservable(this);
+    this.rootStore = RootStore;
   }
 
   @action
