@@ -37,6 +37,8 @@ import { Avatar } from "src/renderer/views/ClaimCollectionRewardsOverlay/ClaimCo
 import { ExportOverlay } from "./ExportOverlay";
 import deepEqual from "deep-equal";
 import { StakeStatusButton } from "./StakeStatus";
+import { useStore } from "src/utils/useStore";
+import Decimal from "decimal.js";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -65,6 +67,7 @@ const UserInfoItem = styled(motion.li, {
 });
 
 export default function UserInfo() {
+  const { transfer } = useStore();
   const loginSession = useLoginSession();
   const { data: latestSheet, refetch: refetchLatest } =
     useLatestStakingSheetQuery();
@@ -156,6 +159,10 @@ export default function UserInfo() {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const gold = useBalance();
+
+  useEffect(() => {
+    transfer.balance = new Decimal(gold);
+  }, [gold]);
 
   const copyAddress = useCallback(() => {
     if (loginSession) {

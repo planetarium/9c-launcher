@@ -1,15 +1,18 @@
-import { observable, action, computed, makeObservable } from "mobx";
+import { observable, action, computed, makeAutoObservable } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import { userConfigStore, get as getConfig } from "src/config";
+import { RootStore } from "src/utils/useStore";
 
 export default class GameStore {
   @observable
   private _isGameStarted: boolean = false;
 
   private _language: string;
+  rootStore: RootStore;
 
-  public constructor() {
-    makeObservable(this);
+  public constructor(RootStore: RootStore) {
+    makeAutoObservable(this);
+    this.rootStore = RootStore;
 
     ipcRenderer.on("game closed", (event: IpcRendererEvent) => {
       this._isGameStarted = false;

@@ -134,12 +134,7 @@ function SwapPage() {
     }
     setCurrentPhase(TransferPhase.SENDTX);
 
-    const tx = await transfer.swapToWNCG(
-      transfer.senderAddress,
-      recipient,
-      amount,
-      loginSession.privateKey,
-    );
+    const tx = await transfer.swapToWNCG(recipient, amount);
     setTx(tx);
 
     setCurrentPhase(TransferPhase.SENDING);
@@ -232,12 +227,6 @@ function SwapPage() {
           ncg={transfer.balance}
         />
       </b>
-      <IconButton
-        size="small"
-        onClick={() => transfer.updateBalance(transfer.senderAddress)}
-      >
-        <Refresh />
-      </IconButton>
       <ul style={{ listStyleType: "none", padding: 0, marginTop: "5px" }}>
         <li>
           <SwapSecondTitle>Bridge Transfer Limit</SwapSecondTitle>
