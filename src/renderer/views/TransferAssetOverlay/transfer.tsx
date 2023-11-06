@@ -105,7 +105,7 @@ function TransferPage() {
       return;
     }
 
-    if (recipient === transfer.senderAddress) {
+    if (recipient === transfer.loginSession.address.toString()) {
       const errorMessage = "You can't transfer NCG to yourself.";
       alert(errorMessage);
       return;
@@ -122,13 +122,7 @@ function TransferPage() {
       setDebounce(false);
     }, 15000);
 
-    const tx = await transfer.transferAsset(
-      transfer.senderAddress,
-      recipient,
-      amount,
-      memo,
-      privateKey,
-    );
+    const tx = await transfer.transferAsset(recipient, amount, memo);
     setTx(tx);
 
     setCurrentPhase(TransferPhase.SENDING);
@@ -182,12 +176,6 @@ function TransferPage() {
               ncg={transfer.balance}
             />
           </b>
-          <Button
-            startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={async () =>
-              await transfer.updateBalance(transfer.senderAddress)
-            }
-          />
         </TransferSecondTitle>
         <FormControl fullWidth>
           <TransferInput
