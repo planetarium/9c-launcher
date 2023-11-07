@@ -4,7 +4,6 @@ import {
   CircularProgress,
   Container,
   FormControl,
-  IconButton,
   Icon,
   InputAdornment,
   OutlinedInput,
@@ -16,7 +15,7 @@ import Decimal from "decimal.js";
 import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
-import { verify as addressVerify } from "eip55";
+import { verify as addressVerify } from "src/utils/eip55";
 import FailureDialog from "src/renderer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/renderer/components/SendingDialog/SendingDialog";
 import SuccessDialog from "src/renderer/components/SuccessDialog/SuccessDialog";
@@ -24,7 +23,7 @@ import { useStore } from "src/utils/useStore";
 import { TransactionConfirmationListener } from "src/stores/transfer";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
 import { useLoginSession } from "src/utils/useLoginSession";
-import { Refresh, ArrowForward } from "@material-ui/icons";
+import { ArrowForward } from "@material-ui/icons";
 import { BRIDGE_MIN, BRIDGE_MAX, NCGtoWNCG } from "src/utils/bridgeFee";
 
 const transifexTags = "Transfer/Transfer";
