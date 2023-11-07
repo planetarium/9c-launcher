@@ -44,6 +44,7 @@ export default class GameStore {
     const unitySentrySampleRate = getConfig("UnitySentrySampleRate", 0);
     const marketServiceUrl = getConfig("MarketServiceUrl");
     const patrolRewardServiceUrl = getConfig("PatrolRewardServiceUrl");
+    const seasonPassServiceUrl = getConfig("SeasonPassServiceUrl");
     const meadPledgePortalUrl = getConfig("MeadPledgePortalUrl");
     const genesisBlockPath = getConfig("GenesisBlockPath");
     const appProtocolVersion = getConfig("AppProtocolVersion");
@@ -62,6 +63,7 @@ export default class GameStore {
         `--sentry-sample-rate=${unitySentrySampleRate}`,
         `--market-service-host=${marketServiceUrl}`,
         `--patrol-reward-service-host=${patrolRewardServiceUrl}`,
+        `--season-pass-service-host=${seasonPassServiceUrl}`,
         `--mead-pledge-portal-url=${meadPledgePortalUrl}`,
       ].concat(
         dataProviderUrl === undefined

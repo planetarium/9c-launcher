@@ -32,4 +32,5 @@ export interface IConfig {
   PlayerUpdateRetryCount: number;
   PatrolRewardServiceUrl: string;
   MeadPledgePortalUrl: string;
+  SeasonPassServiceUrl: string;
 }
