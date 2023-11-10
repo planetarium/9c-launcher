@@ -41,6 +41,27 @@ export default class PlanetaryStore {
     return Number.parseInt(new URL(this.node!.grpcUrl).port);
   }
 
+  @action getBridgePair() {
+    if (this.planet.bridges) {
+      return Object.entries(this.planet.bridges!).map(([planetId, bridge]) => {
+        const name = this.getPlanetById(planetId)?.name;
+        if (name !== undefined) {
+          return {
+            name: name,
+            planetId: planetId,
+            bridgeAddress: bridge.agent,
+          };
+        } else
+          return {
+            name: planetId,
+            planetId: planetId,
+            bridgeAddress: bridge.agent,
+          };
+      });
+    }
+    throw Error("This planet has no interplanetary bridge");
+  }
+
   @action
   public setPlanet(planetID: string) {
     const planet = this.getPlanetById(planetID);
