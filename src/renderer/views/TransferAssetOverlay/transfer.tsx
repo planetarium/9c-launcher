@@ -8,9 +8,8 @@ import {
   styled,
   Typography,
   CircularProgress as OriginCircularProgress,
-  Radio,
-  RadioGroup,
-  FormLabel,
+  MenuItem,
+  Select,
 } from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
@@ -68,7 +67,14 @@ const CircularProgress = styled(OriginCircularProgress)({
   marginRight: "1em",
 });
 
-const Label = styled(FormControlLabel)({
+const SelectWrapper = styled(Select)({
+  textTransform: "capitalize",
+  height: "40px",
+  marginTop: "5px",
+  marginBottom: "10px",
+});
+
+const Option = styled(MenuItem)({
   textTransform: "capitalize",
 });
 
@@ -164,145 +170,135 @@ function TransferPage() {
 
   return (
     <TransferContainer>
-      <div>
-        {planetary.getBridgePair().length > 0 && (
-          <FormControl>
-            <TransferTitle>
-              <T _str="Target Planet" _tags={transifexTags} />
-            </TransferTitle>
-            <TransferSecondTitle>
-              <T
-                _str="Select target planet to transfer/."
-                _tags={transifexTags}
-              />
-            </TransferSecondTitle>
-            <RadioGroup
-              aria-label="planet"
+      {planetary.getBridgePair().length > 0 && (
+        <>
+          <TransferTitle>
+            <T _str="Target Planet" _tags={transifexTags} />
+          </TransferTitle>
+          <TransferSecondTitle>
+            <T _str="Select target planet to transfer." _tags={transifexTags} />
+          </TransferSecondTitle>
+          <FormControl variant="outlined" fullWidth>
+            <SelectWrapper
               name="planet"
-              onChange={(e) => setTargetPlanet(e.target.value)}
+              onChange={(e) => setTargetPlanet(e.target.value as string)}
               value={targetPlanet}
-              row
+              inputProps={{ "aria-label": "Without label" }}
             >
-              <Label
-                value={planetary.planet.id}
-                control={<Radio />}
-                label={planetary.planet.name}
-              />
+              <Option key={planetary.planet.id} value={planetary.planet.id}>
+                {planetary.planet.name}
+              </Option>
               {planetary.getBridgePair().map((v) => {
                 return (
-                  <Label
-                    value={v.planetId}
-                    control={<Radio />}
-                    label={v.name}
-                  />
+                  <Option key={v.planetId} value={v.planetId}>
+                    {v.name}
+                  </Option>
                 );
               })}
-            </RadioGroup>
+            </SelectWrapper>
           </FormControl>
-        )}
-        <TransferTitle>
-          <T _str="User Address" _tags={transifexTags} />
-        </TransferTitle>
+        </>
+      )}
+      <TransferTitle>
+        <T _str="User Address" _tags={transifexTags} />
+      </TransferTitle>
 
-        {isInterplanetary ? (
-          <>
-            <TransferSecondTitle>
-              <T
-                _str="You're attempting an interplanetary transfer."
-                _tags={transifexTags}
-              />
-            </TransferSecondTitle>
-            <TransferSecondTitle>
-              <b style={{ color: "#ff5555" }}>
-                <T
-                  _str="Make sure your recipient NCG address exists in target planet."
-                  _tags={transifexTags}
-                />
-              </b>
-            </TransferSecondTitle>
-          </>
-        ) : (
+      {isInterplanetary ? (
+        <>
           <TransferSecondTitle>
             <T
-              _str="Enter the Nine Chronicle user address. "
+              _str="You're attempting an interplanetary transfer."
               _tags={transifexTags}
             />
+          </TransferSecondTitle>
+          <TransferSecondTitle>
             <b style={{ color: "#ff5555" }}>
-              <T _str="Not the ETH address." _tags={transifexTags} />
+              <T
+                _str="Make sure your recipient NCG address exists in target planet."
+                _tags={transifexTags}
+              />
             </b>
           </TransferSecondTitle>
-        )}
-        <FormControl fullWidth>
-          <TransferInput
-            type="text"
-            name="address"
-            error={recipientWarning}
-            onChange={(e) => setRecipient(e.target.value)}
-            onBlur={() => setRecipientWarning(!addressVerify(recipient, true))}
-            onFocus={() => setRecipientWarning(false)}
-          />
-        </FormControl>
-        <TransferTitle>
-          <T _str="NCG Amount" _tags={transifexTags} />
-        </TransferTitle>
+        </>
+      ) : (
         <TransferSecondTitle>
-          <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
-          &nbsp;
-          <b>
-            <T
-              _str="(Your balance: {ncg} NCG)"
-              _tags={transifexTags}
-              ncg={transfer.balance}
-            />
+          <T
+            _str="Enter the Nine Chronicle user address. "
+            _tags={transifexTags}
+          />
+          <b style={{ color: "#ff5555" }}>
+            <T _str="Not the ETH address." _tags={transifexTags} />
           </b>
         </TransferSecondTitle>
+      )}
+      <FormControl fullWidth>
+        <TransferInput
+          type="text"
+          name="address"
+          error={recipientWarning}
+          onChange={(e) => setRecipient(e.target.value)}
+          onBlur={() => setRecipientWarning(!addressVerify(recipient, true))}
+          onFocus={() => setRecipientWarning(false)}
+        />
+      </FormControl>
+      <TransferTitle>
+        <T _str="NCG Amount" _tags={transifexTags} />
+      </TransferTitle>
+      <TransferSecondTitle>
+        <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
+        &nbsp;
+        <b>
+          <T
+            _str="(Your balance: {ncg} NCG)"
+            _tags={transifexTags}
+            ncg={transfer.balance}
+          />
+        </b>
+      </TransferSecondTitle>
+      <FormControl fullWidth>
+        <TransferInput
+          type="number"
+          name="amount"
+          onChange={(e) =>
+            setAmount(new Decimal(e.target.value === "" ? -1 : e.target.value))
+          }
+          onBlur={() => setAmountWarning(!amount.gt(0))}
+          onFocus={() => setAmountWarning(false)}
+          error={amountWarning}
+          endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
+          defaultValue={0}
+        />
+      </FormControl>
+      {!isInterplanetary && (
         <FormControl fullWidth>
+          <TransferTitle>
+            <T _str="Memo" _tags={transifexTags} />
+          </TransferTitle>
+          <TransferSecondTitle>
+            <T _str="Enter an additional note." _tags={transifexTags} />
+            &nbsp;
+            <b>{`(${memo.length}/80)`}</b>
+          </TransferSecondTitle>
           <TransferInput
-            type="number"
-            name="amount"
-            onChange={(e) =>
-              setAmount(
-                new Decimal(e.target.value === "" ? -1 : e.target.value),
-              )
-            }
-            onBlur={() => setAmountWarning(!amount.gt(0))}
+            type="text"
+            name="memo"
+            onBlur={() => setMemoWarning(memo.length > 80)}
             onFocus={() => setAmountWarning(false)}
-            error={amountWarning}
-            endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
-            defaultValue={0}
+            error={memoWarning}
+            onChange={(e) => setMemo(e.target.value)}
           />
         </FormControl>
-        {!isInterplanetary && (
-          <FormControl fullWidth>
-            <TransferTitle>
-              <T _str="Memo" _tags={transifexTags} />
-            </TransferTitle>
-            <TransferSecondTitle>
-              <T _str="Enter an additional note." _tags={transifexTags} />
-              &nbsp;
-              <b>{`(${memo.length}/80)`}</b>
-            </TransferSecondTitle>
-            <TransferInput
-              type="text"
-              name="memo"
-              onBlur={() => setMemoWarning(memo.length > 80)}
-              onFocus={() => setAmountWarning(false)}
-              error={memoWarning}
-              onChange={(e) => setMemo(e.target.value)}
-            />
-          </FormControl>
-        )}
-        <FormControl fullWidth>
-          <TransferButton
-            variant="contained"
-            color="primary"
-            onClick={handleButton}
-            disabled={disabled}
-          >
-            {loading || debounce ? <CircularProgress /> : "Send"}
-          </TransferButton>
-        </FormControl>
-      </div>
+      )}
+      <FormControl fullWidth>
+        <TransferButton
+          variant="contained"
+          color="primary"
+          onClick={handleButton}
+          disabled={disabled}
+        >
+          {loading || debounce ? <CircularProgress /> : "Send"}
+        </TransferButton>
+      </FormControl>
 
       <SendingDialog
         open={currentPhase === TransferPhase.SENDING}
