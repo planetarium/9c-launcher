@@ -35,7 +35,12 @@ export default class GameStore {
   }
 
   @action
-  startGame = (privateKey: string, host: string, port: number) => {
+  startGame = (
+    privateKey: string,
+    host: string,
+    port: number,
+    planetId: string,
+  ) => {
     const awsSinkGuid: string = ipcRenderer.sendSync(
       "get-aws-sink-cloudwatch-guid",
     );
@@ -55,6 +60,7 @@ export default class GameStore {
         `--rpc-client=true`,
         `--rpc-server-host=${host}`,
         `--rpc-server-port=${port}`,
+        `--selected-planet-id=${planetId}`,
         `--genesis-block-path=${genesisBlockPath}`,
         `--language=${this._language}`,
         `--app-protocol-version=${appProtocolVersion}`,
