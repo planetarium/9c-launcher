@@ -2,17 +2,21 @@ import {
   Button,
   Container,
   FormControl,
+  FormControlLabel,
   InputAdornment,
   OutlinedInput,
   styled,
   Typography,
   CircularProgress as OriginCircularProgress,
+  Radio,
+  RadioGroup,
+  FormLabel,
 } from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
 import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { verify as addressVerify } from "src/utils/eip55";
 import FailureDialog from "src/renderer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/renderer/components/SendingDialog/SendingDialog";
@@ -64,8 +68,14 @@ const CircularProgress = styled(OriginCircularProgress)({
   marginRight: "1em",
 });
 
+const Label = styled(FormControlLabel)({
+  textTransform: "capitalize",
+});
+
 function TransferPage() {
-  const { transfer } = useStore();
+  const { transfer, planetary } = useStore();
+  const [targetPlanet, setTargetPlanet] = useState<string>(planetary.planet.id);
+  const [isInterplanetary, setIsInterplanetary] = useState<boolean>(false);
   const privateKey = useLoginSession()?.privateKey;
   const [recipient, setRecipient] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
@@ -78,6 +88,11 @@ function TransferPage() {
   const [success, setSuccess] = useState<boolean>(false);
   const [currentPhase, setCurrentPhase] = useState<TransferPhase>(
     TransferPhase.READY,
+  );
+
+  useEffect(
+    () => setIsInterplanetary(targetPlanet !== planetary.planet.id),
+    [targetPlanet],
   );
 
   const listener: TransactionConfirmationListener = {
@@ -102,6 +117,16 @@ function TransferPage() {
     ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
     if (!addressVerify(recipient, true) || !amount.gt(0)) {
       return;
+    }
+
+    if (isInterplanetary) {
+      const bridgeAddress = planetary.getBridgePair().find((v) => {
+        v.planetId === targetPlanet;
+      })?.bridgeAddress;
+      if (bridgeAddress !== undefined) {
+        setMemo(recipient);
+        setRecipient(bridgeAddress);
+      }
     }
 
     if (recipient === transfer.loginSession.address.toString()) {
@@ -140,18 +165,73 @@ function TransferPage() {
   return (
     <TransferContainer>
       <div>
+        {planetary.getBridgePair().length > 0 && (
+          <FormControl>
+            <TransferTitle>
+              <T _str="Target Planet" _tags={transifexTags} />
+            </TransferTitle>
+            <TransferSecondTitle>
+              <T
+                _str="Select target planet to transfer/."
+                _tags={transifexTags}
+              />
+            </TransferSecondTitle>
+            <RadioGroup
+              aria-label="planet"
+              name="planet"
+              onChange={(e) => setTargetPlanet(e.target.value)}
+              value={targetPlanet}
+              row
+            >
+              <Label
+                value={planetary.planet.id}
+                control={<Radio />}
+                label={planetary.planet.name}
+              />
+              {planetary.getBridgePair().map((v) => {
+                return (
+                  <Label
+                    value={v.planetId}
+                    control={<Radio />}
+                    label={v.name}
+                  />
+                );
+              })}
+            </RadioGroup>
+          </FormControl>
+        )}
         <TransferTitle>
           <T _str="User Address" _tags={transifexTags} />
         </TransferTitle>
-        <TransferSecondTitle>
-          <T
-            _str="Enter the Nine Chronicle user address. "
-            _tags={transifexTags}
-          />
-          <b style={{ color: "#ff5555" }}>
-            <T _str="Not the ETH address." _tags={transifexTags} />
-          </b>
-        </TransferSecondTitle>
+
+        {isInterplanetary ? (
+          <>
+            <TransferSecondTitle>
+              <T
+                _str="You're attempting an interplanetary transfer."
+                _tags={transifexTags}
+              />
+            </TransferSecondTitle>
+            <TransferSecondTitle>
+              <b style={{ color: "#ff5555" }}>
+                <T
+                  _str="Make sure your recipient NCG address exists in target planet."
+                  _tags={transifexTags}
+                />
+              </b>
+            </TransferSecondTitle>
+          </>
+        ) : (
+          <TransferSecondTitle>
+            <T
+              _str="Enter the Nine Chronicle user address. "
+              _tags={transifexTags}
+            />
+            <b style={{ color: "#ff5555" }}>
+              <T _str="Not the ETH address." _tags={transifexTags} />
+            </b>
+          </TransferSecondTitle>
+        )}
         <FormControl fullWidth>
           <TransferInput
             type="text"
@@ -192,24 +272,26 @@ function TransferPage() {
             defaultValue={0}
           />
         </FormControl>
-        <TransferTitle>
-          <T _str="Memo" _tags={transifexTags} />
-        </TransferTitle>
-        <TransferSecondTitle>
-          <T _str="Enter an additional note." _tags={transifexTags} />
-          &nbsp;
-          <b>{`(${memo.length}/80)`}</b>
-        </TransferSecondTitle>
-        <FormControl fullWidth>
-          <TransferInput
-            type="text"
-            name="memo"
-            onBlur={() => setMemoWarning(memo.length > 80)}
-            onFocus={() => setAmountWarning(false)}
-            error={memoWarning}
-            onChange={(e) => setMemo(e.target.value)}
-          />
-        </FormControl>
+        {!isInterplanetary && (
+          <FormControl fullWidth>
+            <TransferTitle>
+              <T _str="Memo" _tags={transifexTags} />
+            </TransferTitle>
+            <TransferSecondTitle>
+              <T _str="Enter an additional note." _tags={transifexTags} />
+              &nbsp;
+              <b>{`(${memo.length}/80)`}</b>
+            </TransferSecondTitle>
+            <TransferInput
+              type="text"
+              name="memo"
+              onBlur={() => setMemoWarning(memo.length > 80)}
+              onFocus={() => setAmountWarning(false)}
+              error={memoWarning}
+              onChange={(e) => setMemo(e.target.value)}
+            />
+          </FormControl>
+        )}
         <FormControl fullWidth>
           <TransferButton
             variant="contained"
