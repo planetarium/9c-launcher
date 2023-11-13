@@ -32,7 +32,6 @@ import { getKeyStorePath } from "src/stores/account";
 import { ExportOverlay } from "src/renderer/components/core/Layout/UserInfo/ExportOverlay";
 import { useStore } from "src/utils/useStore";
 import { useLoginSession } from "src/utils/useLoginSession";
-import { Planet } from "src/interfaces/registry";
 
 declare const CURRENT_VERSION: string;
 
@@ -166,7 +165,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
   }, []);
 
   const [exportOverlayOpened, setExportOverlayOpened] = useState(false);
-  const { registry } = useStore("planetary");
   const { isLogin } = useStore("account");
 
   useEffect(
@@ -223,27 +221,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                       {languages.map(({ code, localized_name }) => (
                         <SelectOption key={code} value={code}>
                           {localized_name}
-                        </SelectOption>
-                      ))}
-                    </Select>
-                  </SelectWrapper>
-                )}
-              />
-              <GroupTitle>
-                <T _str="Planet" _tags={transifexTags} />
-              </GroupTitle>
-              <p>
-                <T _str="Select the Planet" _tags={transifexTags} />
-              </p>
-              <Controller
-                name="Planet"
-                control={control}
-                render={({ field }) => (
-                  <SelectWrapper fullWidth>
-                    <Select {...field}>
-                      {registry.map((entry) => (
-                        <SelectOption key={entry.id} value={entry.id}>
-                          {entry.name}
                         </SelectOption>
                       ))}
                     </Select>
