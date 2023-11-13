@@ -1,3 +1,7 @@
+export type Bridge = {
+  agent: string;
+  avatar: string;
+};
 export type RpcEndpoints = {
   "dp.gql"?: string[];
   "9cscan.rest"?: string[];
@@ -14,4 +18,5 @@ export type Planet = {
   genesisHash?: string;
   genesisUri?: string;
   rpcEndpoints: RpcEndpoints;
+  bridges?: { [key: string]: Bridge };
 };
