@@ -132,7 +132,7 @@ export default function UserInfo() {
 
   const remainingText = useMemo(() => {
     if (!claimableBlockIndex) return 0;
-    const minutes = Math.round((claimableBlockIndex - tip) / 5);
+    const minutes = Math.round((claimableBlockIndex - tip) / 7.5);
     return `${getRemain(minutes)} (${claimableBlockIndex - tip} Blocks)`;
   }, [claimableBlockIndex, tip]);
 
