@@ -118,24 +118,31 @@ function TransferPage() {
       setSuccess(false);
     },
   };
-
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
     if (!addressVerify(recipient, true) || !amount.gt(0)) {
       return;
     }
 
+    let finalRecipient = recipient;
+    let finalMemo = memo;
+
     if (isInterplanetary) {
-      const bridgeAddress = planetary.getBridgePair().find((v) => {
-        v.planetId === targetPlanet;
-      })?.bridgeAddress;
+      console.log("Detected Interplanetary Transfer");
+      const bridgePair = planetary
+        .getBridgePair()
+        .find((v) => v.planetId === targetPlanet);
+      const bridgeAddress = bridgePair?.bridgeAddress;
       if (bridgeAddress !== undefined) {
-        setMemo(recipient);
-        setRecipient(bridgeAddress);
+        finalMemo = recipient;
+        finalRecipient = bridgeAddress;
+        console.log(
+          `Bridge Matching Success, Recipient: ${finalRecipient}(${bridgePair?.name}), Memo: ${finalMemo}`,
+        );
       }
     }
 
-    if (recipient === transfer.loginSession.address.toString()) {
+    if (finalRecipient === transfer.loginSession.address.toString()) {
       const errorMessage = "You can't transfer NCG to yourself.";
       alert(errorMessage);
       return;
@@ -152,7 +159,7 @@ function TransferPage() {
       setDebounce(false);
     }, 15000);
 
-    const tx = await transfer.transferAsset(recipient, amount, memo);
+    const tx = await transfer.transferAsset(finalRecipient, amount, finalMemo);
     setTx(tx);
 
     setCurrentPhase(TransferPhase.SENDING);
@@ -160,7 +167,6 @@ function TransferPage() {
     await transfer.confirmTransaction(tx, undefined, listener);
     event.preventDefault();
   };
-
   const loading =
     currentPhase === TransferPhase.SENDTX ||
     currentPhase === TransferPhase.SENDING;
