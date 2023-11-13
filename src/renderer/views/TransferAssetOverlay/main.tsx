@@ -87,8 +87,7 @@ const DescriptionTitleMessage = styled(Typography)({
 });
 
 function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
-  const isOdin = useStore("planetary").planet.id.endsWith("000");
-  // This is only safe until 4095 other planet registered in theory, so be aware of it.
+  const isOdin = useStore("planetary").planet.id === "0x000000000000";
   const [menuItem, setMenuItem] = useState<MenuItems>(MenuItems.TRANSFER);
 
   const theme = useMemo(
