@@ -16,6 +16,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     webPreferences: {
       contextIsolation: false,
       nodeIntegration: true,
+      disableBlinkFeatures: "Auxclick",
     },
     frame: false,
     resizable: false,
@@ -53,6 +54,20 @@ export async function createWindow(): Promise<BrowserWindow> {
     await win.loadURL("http://localhost:9000/index.html");
     await win.webContents.openDevTools({ mode: "detach" });
   } else {
+    win.webContents.session.webRequest.onHeadersReceived(
+      (details, callback) => {
+        callback({
+          responseHeaders: Object.assign(
+            {
+              "Content-Security-Policy": [
+                "script-src 'self' http: https:;; object-src 'none'; base-uri 'none';",
+              ],
+            },
+            details.responseHeaders,
+          ),
+        });
+      },
+    );
     await win.loadFile("index.html");
   }
 
