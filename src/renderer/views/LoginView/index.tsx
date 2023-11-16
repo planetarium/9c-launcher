@@ -113,9 +113,9 @@ function LoginView() {
       </SelectWrapper>
       <Form onSubmit={handleSubmit(handleLogin)}>
         <Controller
+          name="address"
           control={control}
           defaultValue={defaultAddress}
-          {...register("address")}
           render={({ field }) => (
             <SelectWrapper fullWidth>
               <SelectLabel id="address-label">Address</SelectLabel>
