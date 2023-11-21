@@ -174,6 +174,9 @@ const clientWeightedSelector = (nodeList: NodeInfo[]): NodeInfo => {
   const sum = nodeList
     .map((node) => node.clientCount)
     .reduce((p, c) => p + c, 0);
+  if (sum < nodeList.length) {
+    return nodeList[Math.floor(Math.random() * nodeList.length)];
+  }
   const weightList = nodeList.map((node) => sum / node.clientCount);
   const target = Math.random() * weightList.reduce((p, v) => p + v, 0);
   let weightSum = 0;
