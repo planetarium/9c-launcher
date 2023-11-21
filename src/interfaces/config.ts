@@ -34,4 +34,6 @@ export interface IConfig {
   MeadPledgePortalUrl: string;
   SeasonPassServiceUrl: string;
   IAPServiceHostUrl: string;
+  AppleMarketUrl: string;
+  GoogleMarketUrl: string;
 }

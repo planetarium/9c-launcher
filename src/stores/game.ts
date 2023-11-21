@@ -54,6 +54,8 @@ export default class GameStore {
     const genesisBlockPath = getConfig("GenesisBlockPath");
     const appProtocolVersion = getConfig("AppProtocolVersion");
     const IAPServiceHostUrl = getConfig("IAPServiceHostUrl");
+    const appleMarketUrl = getConfig("AppleMarketUrl");
+    const googleMarketUrl = getConfig("GoogleMarketUrl");
 
     ipcRenderer.send("launch game", {
       args: [
@@ -73,6 +75,8 @@ export default class GameStore {
         `--season-pass-service-host=${seasonPassServiceUrl}`,
         `--mead-pledge-portal-url=${meadPledgePortalUrl}`,
         `--iap-service-host=${IAPServiceHostUrl}`,
+        `--apple-market-url=${appleMarketUrl}`,
+        `--google-market-url=${googleMarketUrl}`,
       ].concat(
         dataProviderUrl === undefined
           ? []
