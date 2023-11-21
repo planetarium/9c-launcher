@@ -16,16 +16,10 @@ if [ ! -f "./tmp/CodeSignTool.zip" ]; then
   exit 1
 fi
 
-unzip -q "./tmp/CodeSignTool.zip" -d "./tmp"
+unzip -q "./tmp/CodeSignTool.zip" -d "./tmp/codesign"
 rm "./tmp/CodeSignTool.zip"
 
-if [ "$PLATFORM" == "windows" ]; then
-  CODESIGN_DIR="CodeSignTool-v1.3.0-windows"
-else
-  CODESIGN_DIR="CodeSignTool-v1.3.0"
-fi
 
-mv "./tmp/$CODESIGN_DIR" "./tmp/codesign"
 if [ ! -d "./tmp/codesign" ]; then
   echo "Failed to extract CodeSignTool"
   exit 1
