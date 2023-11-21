@@ -33,4 +33,5 @@ export interface IConfig {
   PatrolRewardServiceUrl: string;
   MeadPledgePortalUrl: string;
   SeasonPassServiceUrl: string;
+  IAPServiceHostUrl: string;
 }
