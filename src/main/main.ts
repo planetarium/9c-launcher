@@ -354,7 +354,7 @@ function initializeIpc() {
     return [registry, remoteNode];
   });
 
-  ipcMain.handle("all-rpc-failed", (event) => {
+  ipcMain.on("all-rpc-failed", (event) => {
     if (isMessageBoxOpen) return;
     isMessageBoxOpen = true;
 
@@ -372,7 +372,7 @@ function initializeIpc() {
         isMessageBoxOpen = false;
         if (result.response === 0) {
           console.log("RPC Reconnect Attempted");
-          return true;
+          event.returnValue = true;
         } else {
           console.log("Closing.");
           app.exit();

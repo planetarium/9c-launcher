@@ -93,9 +93,9 @@ export default class PlanetaryStore {
       this.setNode(await initializeNode(this.planet.rpcEndpoints));
     } catch (e) {
       console.error("Failed to set node from planet:", e);
-      ipcRenderer.invoke("all-rpc-failed").then(async () => {
-        await this.setNodeFromPlanet();
-      });
+      ipcRenderer.sendSync("all-rpc-failed");
+      console.log("Return to Renderer, Reconnecting.");
+      await this.setNode(await initializeNode(this.planet.rpcEndpoints, true));
     }
   }
 
