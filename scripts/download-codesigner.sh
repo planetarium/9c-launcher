@@ -20,9 +20,9 @@ unzip -q "./tmp/CodeSignTool.zip" -d "./tmp"
 rm "./tmp/CodeSignTool.zip"
 
 if [ "$PLATFORM" == "windows" ]; then
-  CODESIGN_DIR="CodeSignTool-v1.2.7-windows"
+  CODESIGN_DIR="CodeSignTool-v1.3.0-windows"
 else
-  CODESIGN_DIR="CodeSignTool-v1.2.7"
+  CODESIGN_DIR="CodeSignTool-v1.3.0"
 fi
 
 mv "./tmp/$CODESIGN_DIR" "./tmp/codesign"
