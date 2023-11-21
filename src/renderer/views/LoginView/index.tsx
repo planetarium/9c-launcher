@@ -101,6 +101,7 @@ function LoginView() {
           labelId="planet-label"
           value={planetId}
           defaultValue={planetary.planet.id}
+          disabled={switching}
           onChange={(event) => switchPlanet(event.target.value as string)}
           label="Planet"
         >
