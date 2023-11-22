@@ -1,5 +1,5 @@
 import { ApolloProvider } from "@apollo/client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ipcRenderer } from "electron";
 import { HashRouter as Router } from "react-router-dom";
 import Routes from "./Routes";
@@ -9,24 +9,24 @@ import "./global.scss";
 import { StoreProvider, useStore } from "src/utils/useStore";
 import { LocaleProvider } from "src/renderer/i18n";
 import { ExternalURLProvider } from "src/utils/useExternalURL";
-import { getSdk } from "src/generated/graphql-request";
+import { observer } from "mobx-react";
+import { Planet } from "src/interfaces/registry";
 import { NodeInfo } from "src/config";
-import { GraphQLClient } from "graphql-request";
 
 function App() {
-  const { transfer } = useStore();
-
-  ipcRenderer.invoke("get-node-info").then((node: NodeInfo) => {
-    transfer.updateSdk(
-      getSdk(
-        new GraphQLClient(`http://${node.host}:${node.graphqlPort}/graphql`),
-      ),
-    );
-  });
-
+  const { planetary, account } = useStore();
   const client = useApolloClient();
+  useEffect(() => {
+    ipcRenderer
+      .invoke("get-planetary-info")
+      .then((info: [Planet[], NodeInfo]) => {
+        planetary.init(info[0], info[1]);
+      });
+  }, []);
 
-  if (!client) return null;
+  if (planetary.node === null) return null;
+  if (!account.isInitialized) return null;
+  if (client === null) return null;
 
   return (
     <LocaleProvider>
@@ -45,4 +45,4 @@ function App() {
   );
 }
 
-export default App;
+export default observer(App);

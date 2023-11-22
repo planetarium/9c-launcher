@@ -13,7 +13,7 @@ const systemRewards: Reward[] = [
     name: "arena",
     img: ncgImg,
     title: "Arena Reward",
-    amount: [0, 100, 200, 300, 300, 300, 300, 300],
+    amount: [0, 100, 200, 200, 200, 200, 200, 200],
   },
   {
     name: "stage",

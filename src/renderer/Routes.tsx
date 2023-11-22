@@ -26,10 +26,11 @@ const Redirector = observer(() => {
   const history = useHistory();
 
   useEffect(() => {
-    history.replace("/login");
-    account.isEmpty().then((isEmpty: boolean) => {
-      if (isEmpty) history.replace("/welcome");
-    });
+    if (account.addresses.length > 0) {
+      history.replace("/login");
+    } else {
+      history.replace("/welcome");
+    }
   });
   return null;
 });

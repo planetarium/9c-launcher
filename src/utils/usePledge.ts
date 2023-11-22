@@ -9,15 +9,11 @@ import { useStore } from "./useStore";
 export function usePledge() {
   const tx = useTx();
   const account = useStore("account");
+  const planet = useStore("planetary");
 
   const activate: ActivationFunction = async () => {
     let step: ActivationStep = "getGraphQLClient";
-    const nodeInfo: NodeInfo = await ipcRenderer.invoke("get-node-info");
-    const sdks = getSdk(
-      new GraphQLClient(
-        `http://${nodeInfo.host}:${nodeInfo.graphqlPort}/graphql`,
-      ),
-    );
+    const sdks = getSdk(new GraphQLClient(planet.node!.gqlUrl));
 
     try {
       step = "preflightCheck";

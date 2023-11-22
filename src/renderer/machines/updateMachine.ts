@@ -1,4 +1,3 @@
-import { ipcRenderer } from "electron";
 import { assign, createMachine, interpret } from "xstate";
 import { invokeIpcEvent } from "src/utils/ipcEvent";
 

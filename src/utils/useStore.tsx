@@ -1,19 +1,32 @@
+import { makeAutoObservable } from "mobx";
 import React, { createContext, useContext } from "react";
 import AccountStore from "src/stores/account";
 import GameStore from "src/stores/game";
+import PlanetaryStore from "src/stores/planetary";
 import TransferStore from "src/stores/transfer";
 
-const stores = {
-  account: new AccountStore(),
-  game: new GameStore(),
-  transfer: new TransferStore(),
-} as const;
+export class RootStore {
+  account: AccountStore;
+  game: GameStore;
+  transfer: TransferStore;
+  planetary: PlanetaryStore;
 
-export const StoreContext = createContext<typeof stores>(stores);
+  constructor() {
+    makeAutoObservable(this);
+    this.account = new AccountStore(this);
+    this.game = new GameStore(this);
+    this.transfer = new TransferStore(this);
+    this.planetary = new PlanetaryStore(this);
+  }
+}
+
+const store: RootStore = new RootStore();
+
+export const StoreContext = createContext<RootStore>(store);
 
 export function StoreProvider({ children }: React.PropsWithChildren<{}>) {
   return (
-    <StoreContext.Provider value={stores}>{children}</StoreContext.Provider>
+    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
   );
 }
 
@@ -24,14 +37,12 @@ export function StoreProvider({ children }: React.PropsWithChildren<{}>) {
  * @param {string=} [store] - The name of the store to return. Optional.
  * @returns {object} The store specified by the store name.
  */
-export function useStore<T extends keyof typeof stores>(
-  store: T,
-): (typeof stores)[T];
+export function useStore<T extends keyof typeof store>(store: T): RootStore[T];
 /**
  * @returns {object} The store object containing all stores.
  */
-export function useStore(): typeof stores;
-export function useStore(store?: keyof typeof stores) {
+export function useStore(): RootStore;
+export function useStore(store?: keyof RootStore) {
   const context = useContext(StoreContext);
   return store ? context[store] : context;
 }

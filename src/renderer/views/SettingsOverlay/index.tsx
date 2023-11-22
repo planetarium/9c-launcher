@@ -13,7 +13,11 @@ import toast from "react-hot-toast";
 
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import H1 from "src/renderer/components/ui/H1";
-import { Select, SelectOption } from "src/renderer/components/ui/Select";
+import {
+  Select,
+  SelectOption,
+  SelectWrapper,
+} from "src/renderer/components/ui/Select";
 import { t } from "@transifex/native";
 import Button from "src/renderer/components/ui/Button";
 import OverlayBase, {
@@ -81,7 +85,7 @@ const FormSection = styled("div", {
     marginLeft: 40,
   },
   "& > * + *": {
-    marginTop: "1em",
+    margin: "1em 0",
   },
 });
 
@@ -115,6 +119,7 @@ async function handlePlayerUpdate() {
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid",
 );
+
 const InfoTextStyled = styled("div", {
   bottom: 50,
   left: 50,
@@ -204,22 +209,44 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
               <GroupTitle>
                 <T _str="Language" _tags={transifexTags} />
               </GroupTitle>
-              <span>
+              <p>
                 <T _str="Select the language you want." _tags={transifexTags} />
-              </span>
+              </p>
               <Controller
                 name="Locale"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field}>
-                    {languages.map(({ code, localized_name }) => (
-                      <SelectOption key={code} value={code}>
-                        {localized_name}
-                      </SelectOption>
-                    ))}
-                  </Select>
+                  <SelectWrapper fullWidth>
+                    <Select {...field}>
+                      {languages.map(({ code, localized_name }) => (
+                        <SelectOption key={code} value={code}>
+                          {localized_name}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </SelectWrapper>
                 )}
               />
+            </FormSection>
+            <FormSection>
+              <GroupTitle>
+                <T _str="User Interface" _tags={transifexTags} />
+              </GroupTitle>
+              <Checkbox {...register("TrayOnClose")}>
+                <T
+                  _str="Keep launcher on tray when closed"
+                  _tags={transifexTags}
+                />
+              </Checkbox>
+              <GroupTitle>
+                <T _str="Send Information" _tags={transifexTags} />
+              </GroupTitle>
+              <Checkbox {...register("Mixpanel")}>
+                <T
+                  _str="Send anonymous usage information"
+                  _tags={transifexTags}
+                />
+              </Checkbox>
               <GroupTitle>
                 <T _str="Advanced" _tags={transifexTags} />
               </GroupTitle>
@@ -247,26 +274,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 onClick={handlePlayerUpdate}
                 text={t("Manual Player Update")}
               />
-            </FormSection>
-            <FormSection>
-              <GroupTitle>
-                <T _str="User Interface" _tags={transifexTags} />
-              </GroupTitle>
-              <Checkbox {...register("TrayOnClose")}>
-                <T
-                  _str="Keep launcher on tray when closed"
-                  _tags={transifexTags}
-                />
-              </Checkbox>
-              <GroupTitle>
-                <T _str="Send Information" _tags={transifexTags} />
-              </GroupTitle>
-              <Checkbox {...register("Mixpanel")}>
-                <T
-                  _str="Send anonymous usage information"
-                  _tags={transifexTags}
-                />
-              </Checkbox>
             </FormSection>
           </Form>
           <Button

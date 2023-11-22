@@ -27,7 +27,13 @@ export interface IConfig {
   DiscordUrl: string;
   MarketServiceUrl: string;
   TrayOnClose: boolean;
+  Planet: string;
+  PlanetRegistryUrl: string;
   PlayerUpdateRetryCount: number;
   PatrolRewardServiceUrl: string;
   MeadPledgePortalUrl: string;
+  SeasonPassServiceUrl: string;
+  IAPServiceHostUrl: string;
+  AppleMarketUrl: string;
+  GoogleMarketUrl: string;
 }

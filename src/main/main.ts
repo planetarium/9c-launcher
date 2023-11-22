@@ -2,15 +2,13 @@ import axios from "axios";
 import {
   configStore,
   get as getConfig,
-  getBlockChainStorePath,
   playerPath,
   MIXPANEL_TOKEN,
-  initializeNode,
-  NodeInfo,
   netenv,
-  userConfigStore,
   baseUrl,
   CONFIG_FILE_PATH,
+  initializeNode,
+  NodeInfo,
 } from "../config";
 import {
   app,
@@ -20,29 +18,21 @@ import {
   nativeImage,
   ipcMain,
   dialog,
-  shell,
 } from "electron";
 import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-platform";
 import { PLATFORM2OS_MAP } from "src/utils/os";
 import path from "path";
 import fs from "fs";
-import fetch from "node-fetch";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import logoImage from "./resources/logo.png";
 import "core-js";
 import log from "electron-log";
 import * as utils from "src/utils";
-import {
-  HeadlessExitedError,
-  HeadlessInitializeError,
-} from "../main/exceptions";
-import CancellationToken from "cancellationtoken";
 import { IGameStartOptions } from "../interfaces/ipc";
 import { init as createMixpanel } from "mixpanel";
 import { v4 as uuidv4 } from "uuid";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
-import RemoteHeadless from "./headless/remoteHeadless";
 import { NineChroniclesMixpanel } from "./mixpanel";
 import {
   createWindow as createV2Window,
@@ -63,6 +53,7 @@ import {
   enable as webEnable,
 } from "@electron/remote/main";
 import { fork } from "child_process";
+import { Planet } from "src/interfaces/registry";
 
 Object.assign(console, log.functions);
 
@@ -71,18 +62,13 @@ const REMOTE_CONFIG_URL = `${baseUrl}/${netenv}/config.json`;
 let win: BrowserWindow | null = null;
 let appUpdaterInstance: AppUpdater | null = null;
 let tray: Tray;
+let isMessageBoxOpen = false;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
-let relaunched: boolean = false;
 
-let initializeHeadlessCts: {
-  cancel: (reason?: any) => void;
-  token: CancellationToken;
-} | null = null;
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
-let remoteHeadless: RemoteHeadless;
-let useRemoteHeadless: boolean;
+let registry: Planet[];
 let remoteNode: NodeInfo;
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
@@ -158,8 +144,24 @@ async function initializeConfig() {
         remoteConfig,
       );
       configStore.store = remoteConfig;
-      return;
     }
+    console.log("planetary registry initialization.");
+    remoteConfig.Planet = getConfig("Planet", "0x000000000000");
+    remoteConfig.PlanetRegistryUrl = getConfig(
+      "PlanetRegistryUrl",
+      "https://planets.nine-chronicles.com/planets/",
+    );
+
+    const data = await fetch(remoteConfig.PlanetRegistryUrl);
+
+    registry = await data.json();
+    if (registry === undefined) throw Error("Failed to parse registry.");
+
+    const planet = registry.find((v) => v.id === remoteConfig.Planet);
+    if (!planet) throw Error(`Planet failed to initialize: ${planet}`);
+
+    remoteNode = await initializeNode(planet.rpcEndpoints, true);
+    console.log(registry);
 
     const localConfigVersion = getConfig("ConfigVersion");
     const remoteConfigVersion = remoteConfig.ConfigVersion;
@@ -178,8 +180,8 @@ async function initializeConfig() {
       0,
     );
     remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
-    console.log(remoteConfig.Locale);
     configStore.store = remoteConfig;
+    console.log("Initialize config complete");
   } catch (error) {
     console.error(
       `An unexpected error occurred during fetching remote config. ${error}`,
@@ -216,35 +218,12 @@ async function initializeApp() {
     webEnable(win.webContents);
     createTray(path.join(app.getAppPath(), logoImage));
 
-    try {
-      remoteNode = await initializeNode();
-    } catch (e) {
-      console.error(e);
-      const { checkboxChecked } = await dialog.showMessageBox(win!, {
-        message: "Failed to connect remote node. please restart launcher.",
-        type: "error",
-        checkboxLabel: "Disable RPC mode",
-      }); // TODO Replace with "go to error page" event
-      if (checkboxChecked) userConfigStore.set("UseRemoteHeadless", false);
-
-      app.exit();
-    }
-
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
 
     mixpanel?.track("Launcher/Start", {
       isV2: true,
-      useRemoteHeadless,
     });
-
-    // Detects and move old snapshot caches as they're unused.
-    // Ignores any failure as they're not critical.
-    fg("snapshot-*", { cwd: app.getPath("userData") }).then((files) =>
-      Promise.allSettled(files.map((file) => fs.promises.unlink(file))),
-    );
-    console.log("main initializeApp call initializeRemoteHeadless");
-    initializeRemoteHeadless();
   });
 
   app.on("quit", (event) => {
@@ -298,18 +277,6 @@ function initializeIpc() {
     gameNode = node;
   });
 
-  ipcMain.handle("clear cache", async (event, rerun: boolean) => {
-    console.log(`Clear cache is requested. (rerun: ${rerun})`);
-    mixpanel?.track("Launcher/Clear Cache");
-    await quitAllProcesses("clear-cache");
-    utils.deleteBlockchainStoreSync(getBlockChainStorePath());
-    if (rerun) {
-      console.log("main clear cache call initializeRemoteHeadless");
-      await initializeRemoteHeadless();
-    }
-    return true;
-  });
-
   ipcMain.on("min", () => win?.minimize());
   ipcMain.on("max", () => win?.maximize());
   ipcMain.on("close", () => win?.close());
@@ -335,16 +302,6 @@ function initializeIpc() {
 
   ipcMain.on("login", async () => {
     mixpanel?.login();
-  });
-
-  ipcMain.on("relaunch standalone", async (event, param: object) => {
-    mixpanel?.track("Launcher/Relaunch Headless", {
-      relaunched,
-      ...param,
-    });
-    await relaunchHeadless();
-    relaunched = true;
-    event.returnValue = true;
   });
 
   ipcMain.on("get-aws-sink-cloudwatch-guid", async (event) => {
@@ -390,11 +347,37 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.handle("get-node-info", async () => {
-    while (!remoteNode) {
+  ipcMain.handle("get-planetary-info", async () => {
+    while (!registry || !remoteNode) {
       await utils.sleep(100);
     }
-    return remoteNode;
+    return [registry, remoteNode];
+  });
+
+  ipcMain.on("all-rpc-failed", (event) => {
+    if (isMessageBoxOpen) return;
+    isMessageBoxOpen = true;
+
+    event?.preventDefault();
+    console.error("All RPC Failed to respond.");
+    dialog
+      .showMessageBox(win!, {
+        message: "Failed to connect remote node. please restart launcher.",
+        type: "error",
+        buttons: ["Retry", "Exit"],
+        defaultId: 0,
+        cancelId: 1,
+      })
+      .then((result) => {
+        isMessageBoxOpen = false;
+        if (result.response === 0) {
+          console.log("RPC Reconnect Attempted");
+          event.returnValue = true;
+        } else {
+          console.log("Closing.");
+          app.exit();
+        }
+      });
   });
 
   ipcMain.handle("manual player update", async () => {
@@ -402,58 +385,6 @@ function initializeIpc() {
     manualPlayerUpdate();
   });
 }
-
-async function initializeRemoteHeadless(): Promise<void> {
-  /*
-  1. Check APV and update if needed.
-  2. Execute remote headless.
-  */
-  console.log(`Initialize remote headless. (win: ${win?.getTitle()})`);
-
-  if (initializeHeadlessCts !== null) {
-    console.error(
-      "Cannot initialize remote headless while initializing headless.",
-    );
-    return;
-  }
-
-  if (isUpdating()) {
-    console.error(
-      "Cannot initialize remote headless while updater is running.",
-    );
-    return;
-  }
-
-  initializeHeadlessCts = CancellationToken.create();
-
-  try {
-    initializeHeadlessCts.token.throwIfCancelled();
-    win?.webContents.send("start remote headless");
-    // console.log("main call remote_node");
-    remoteHeadless = new RemoteHeadless(remoteNode!);
-    await remoteHeadless.execute();
-  } catch (error) {
-    console.error(
-      `Error occurred during initialize remote headless(). ${error}`,
-    );
-    if (
-      error instanceof HeadlessInitializeError ||
-      error instanceof CancellationToken.CancellationError
-    ) {
-      console.error(`Initialize remote headless() halted: ${error}`);
-    } else if (error instanceof HeadlessExitedError) {
-      console.error("remote headless exited during initialization:", error);
-      win?.webContents.send("go to error page", "clear-cache");
-    } else {
-      win?.webContents.send("go to error page", "reinstall");
-      throw error;
-    }
-  } finally {
-    console.log("initialize remote headless() finished.");
-    initializeHeadlessCts = null;
-  }
-}
-
 /**
  * Clean up the byproducts from the previous runs at the start of the program.
  */
@@ -485,10 +416,6 @@ function loadInstallerMixpanelUUID(): string {
       encoding: "utf-8",
     });
   }
-}
-
-async function relaunchHeadless(reason: string = "default") {
-  await initializeRemoteHeadless();
 }
 
 async function quitAllProcesses(reason: string = "default") {

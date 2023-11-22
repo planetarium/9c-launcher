@@ -1,27 +1,45 @@
-import { Listbox, ListboxOption } from "@reach/listbox";
-import "@reach/listbox/styles.css";
-import { globalCss, styled } from "src/renderer/stitches.config";
+import {
+  InputLabel,
+  Select as MUISelect,
+  FormControl,
+  MenuItem,
+} from "@mui/material";
+import { styled } from "src/renderer/stitches.config";
 
-globalCss({
-  "div[data-reach-listbox-popover]": {
-    backgroundColor: "$gray",
+export const SelectWrapper = styled(FormControl, {
+  "& label": {
+    fontFamily: "Montserrat, sans-serif",
+    color: "white",
   },
-  "[data-reach-listbox-list]": {
-    maxHeight: "8rem",
-    overflowY: "scroll",
+  "& .MuiSelect-icon": {
+    color: "white",
   },
-})();
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "2px",
+    fontFamily: "Montserrat, sans-serif",
+    color: "white",
+    "& fieldset": {
+      borderColor: "#AAA",
+    },
+    "&:hover fieldset": {
+      borderColor: "white",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "white",
+    },
+  },
+  "& .MuiOutlinedInput-input": {
+    color: "white",
+    "&.Mui-disabled": {
+      "-webkit-text-fill-color": "gray",
+      color: "gray",
+    },
+  },
+});
 
-export const Select = styled(Listbox, {
+export const Select = styled(MUISelect, {
   position: "relative",
-  outline: "none",
-  border: "1px solid #979797",
-  borderRadius: 2,
-  display: "flex",
-  flexDirection: "column",
-  color: "White",
-  height: "3rem",
-  padding: "0 1rem",
+  textTransform: "capitalize",
   variants: {
     invalid: {
       true: {
@@ -30,11 +48,18 @@ export const Select = styled(Listbox, {
       },
     },
   },
-  "& [data-reach-listbox-button]": {
-    border: "none",
-    flex: 1,
-    padding: 0,
-  },
 });
 
-export const SelectOption = styled(ListboxOption, {});
+export const Label = styled("label", {
+  position: "relative",
+  top: "80%",
+});
+
+export const SelectLabel = styled(InputLabel, {
+  fontFamily: "Montserrat, sans-serif",
+  color: "White",
+});
+
+export const SelectOption = styled(MenuItem, {
+  textTransform: "capitalize",
+});

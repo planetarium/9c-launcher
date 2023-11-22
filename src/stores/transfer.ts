@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { observable, action } from "mobx";
+import { observable, action, makeAutoObservable, computed } from "mobx";
 import { sleep } from "src/utils";
 import { GraphQLClient } from "graphql-request";
 import { get as getConfig } from "src/config";
@@ -8,7 +8,9 @@ import {
   addUpdatedAddressesToTransactionHex,
   signTransactionHex,
 } from "src/utils/sign";
-import { Account, Address } from "@planetarium/account";
+import { Address } from "@planetarium/account";
+import { RootStore } from "src/utils/useStore";
+import { ILoginSession } from "./account";
 
 type GraphQLSDK = ReturnType<typeof getSdk>;
 
@@ -18,28 +20,18 @@ type TxId = string;
 
 export interface ITransferStore {
   balance: Decimal;
-  getBalance: (senderAdress: string) => Promise<Decimal>;
-  trySetSenderAddress: (senderAddress: string) => Promise<boolean>;
   transferAsset: (
-    sender: string,
     recipient: string,
     amount: Decimal,
     memo: string,
-    account: Account,
   ) => Promise<string>;
-  swapToWNCG: (
-    sender: string,
-    recipient: string,
-    amount: Decimal,
-    account: Account,
-  ) => Promise<string>;
+  swapToWNCG: (recipient: string, amount: Decimal) => Promise<string>;
   confirmTransaction: (
     txId: TxId,
     timeout: number | undefined,
     listener: TransactionConfirmationListener,
   ) => Promise<void>;
   updateBalance: (senderAddress: string) => Promise<Decimal>;
-  updateSdk: (sdk: GraphQLSDK) => void;
 }
 
 export interface TransactionConfirmationListener {
@@ -49,11 +41,27 @@ export interface TransactionConfirmationListener {
 }
 
 export default class TransferStore implements ITransferStore {
+  constructor(RootStore: RootStore) {
+    makeAutoObservable(this);
+    this.rootStore = RootStore;
+  }
   private bridgeAddress: string =
     getConfig("SwapAddress") || "0x9093dd96c4bb6b44A9E0A522e2DE49641F146223";
-  @observable public graphqlSdk: GraphQLSDK = getSdk(new GraphQLClient(""));
   @observable public balance: Decimal = new Decimal(0);
-  @observable public senderAddress: string = "";
+  @observable public rootStore: RootStore;
+
+  @computed
+  public get graphqlSdk(): GraphQLSDK {
+    const client = new GraphQLClient(
+      this.rootStore.planetary.node!.gqlUrl ?? "",
+    );
+    return getSdk(client);
+  }
+
+  @computed
+  public get loginSession(): ILoginSession {
+    return this.rootStore.account.loginSession!;
+  }
 
   @action
   getBalance = async (senderAddress: string): Promise<Decimal> => {
@@ -73,42 +81,22 @@ export default class TransferStore implements ITransferStore {
   };
 
   @action
-  trySetSenderAddress = async (senderAddress: string): Promise<boolean> => {
-    if (senderAddress === "") {
-      throw new Error("Sender address is empty");
-    }
-
-    if (senderAddress) {
-      this.senderAddress = senderAddress;
-      return true;
-    }
-
-    return false;
-  };
-
-  @action
   transferAsset = async (
-    sender: string,
     recipient: string,
     amount: Decimal,
     memo: string,
-    account: Account,
   ): Promise<TxId> => {
-    if (sender.startsWith("0x")) {
-      sender = sender.replace("0x", "");
-    }
     if (recipient.startsWith("0x")) {
       recipient = recipient.replace("0x", "");
     }
-
-    if (sender === "") {
+    if (!this.loginSession.address.toString()) {
       throw new Error("Sender address is empty");
     }
 
     try {
       const { data } = await this.graphqlSdk.transferAsset({
-        publicKey: (await account.getPublicKey()).toHex("uncompressed"),
-        sender: sender,
+        publicKey: await this.loginSession.publicKey.toHex("uncompressed"),
+        sender: this.loginSession.address.toString(),
         recipient: recipient,
         amount: amount.toString(),
         memo: memo,
@@ -117,7 +105,7 @@ export default class TransferStore implements ITransferStore {
         throw new Error("ActionTxQuery Failed.");
       }
       const updatedAddresses: Uint8Array[] = [
-        Address.fromHex(sender, true).toBytes(),
+        this.loginSession.address.toBytes(),
         Address.fromHex(recipient, true).toBytes(),
       ];
 
@@ -126,7 +114,7 @@ export default class TransferStore implements ITransferStore {
           data.actionTxQuery.transferAsset,
           updatedAddresses,
         ),
-        account,
+        this.loginSession.privateKey,
       );
       const TxResult = await this.graphqlSdk.stageTransaction({
         payload: signedTx,
@@ -140,19 +128,8 @@ export default class TransferStore implements ITransferStore {
   };
 
   @action
-  swapToWNCG = async (
-    sender: string,
-    recipient: string,
-    amount: Decimal,
-    account: Account,
-  ): Promise<TxId> => {
-    return await this.transferAsset(
-      sender,
-      this.bridgeAddress,
-      amount,
-      recipient,
-      account,
-    );
+  swapToWNCG = async (recipient: string, amount: Decimal): Promise<TxId> => {
+    return await this.transferAsset(this.bridgeAddress, amount, recipient);
   };
 
   @action
@@ -208,10 +185,5 @@ export default class TransferStore implements ITransferStore {
     const balance = await this.getBalance(senderAddress);
     this.balance = balance;
     return balance;
-  };
-
-  @action
-  updateSdk = (sdk: GraphQLSDK) => {
-    this.graphqlSdk = sdk;
   };
 }

@@ -29,6 +29,7 @@ function StatusBar() {
   const {
     account: { loginSession },
     game,
+    planetary,
   } = useStore();
 
   const { loading, data } = useCheckContractedQuery({
@@ -48,6 +49,9 @@ function StatusBar() {
               const privateKeyBytes = loginSession.privateKey.toBytes();
               return game.startGame(
                 Buffer.from(privateKeyBytes).toString("hex"),
+                planetary.getHost(),
+                planetary.getRpcPort(),
+                planetary.planet.id,
               );
             }}
           >
