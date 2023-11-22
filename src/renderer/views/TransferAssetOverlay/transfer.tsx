@@ -2,23 +2,25 @@ import {
   Button,
   Container,
   FormControl,
+  FormControlLabel,
   InputAdornment,
   OutlinedInput,
   styled,
   Typography,
   CircularProgress as OriginCircularProgress,
+  MenuItem,
+  Select,
 } from "@material-ui/core";
 import { T } from "@transifex/react";
 import Decimal from "decimal.js";
 import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
-import React, { useState } from "react";
-import { verify as addressVerify, encode } from "eip55";
+import React, { useEffect, useState } from "react";
+import { verify as addressVerify } from "src/utils/eip55";
 import FailureDialog from "src/renderer/components/FailureDialog/FailureDialog";
 import SendingDialog from "src/renderer/components/SendingDialog/SendingDialog";
 import SuccessDialog from "src/renderer/components/SuccessDialog/SuccessDialog";
 import { TransactionConfirmationListener } from "src/stores/transfer";
-import refreshIcon from "src/renderer/resources/refreshIcon.png";
 import { useStore } from "src/utils/useStore";
 import { handleDetailView, TransferPhase } from "src/utils/transfer/utils";
 import { useLoginSession } from "src/utils/useLoginSession";
@@ -65,8 +67,21 @@ const CircularProgress = styled(OriginCircularProgress)({
   marginRight: "1em",
 });
 
+const SelectWrapper = styled(Select)({
+  textTransform: "capitalize",
+  height: "40px",
+  marginTop: "5px",
+  marginBottom: "10px",
+});
+
+const Option = styled(MenuItem)({
+  textTransform: "capitalize",
+});
+
 function TransferPage() {
-  const { transfer } = useStore();
+  const { transfer, planetary } = useStore();
+  const [targetPlanet, setTargetPlanet] = useState<string>(planetary.planet.id);
+  const [isInterplanetary, setIsInterplanetary] = useState<boolean>(false);
   const privateKey = useLoginSession()?.privateKey;
   const [recipient, setRecipient] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
@@ -79,6 +94,11 @@ function TransferPage() {
   const [success, setSuccess] = useState<boolean>(false);
   const [currentPhase, setCurrentPhase] = useState<TransferPhase>(
     TransferPhase.READY,
+  );
+
+  useEffect(
+    () => setIsInterplanetary(targetPlanet !== planetary.planet.id),
+    [targetPlanet],
   );
 
   const listener: TransactionConfirmationListener = {
@@ -98,14 +118,31 @@ function TransferPage() {
       setSuccess(false);
     },
   };
-
   const handleButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     ipcRenderer.send("mixpanel-track-event", "Launcher/Send NCG");
     if (!addressVerify(recipient, true) || !amount.gt(0)) {
       return;
     }
 
-    if (recipient === transfer.senderAddress) {
+    let finalRecipient = recipient;
+    let finalMemo = memo;
+
+    if (isInterplanetary) {
+      console.log("Detected Interplanetary Transfer");
+      const bridgePair = planetary
+        .getBridgePair()
+        .find((v) => v.planetId === targetPlanet);
+      const bridgeAddress = bridgePair?.bridgeAddress;
+      if (bridgeAddress !== undefined) {
+        finalMemo = recipient;
+        finalRecipient = bridgeAddress;
+        console.log(
+          `Bridge Matching Success, Recipient: ${finalRecipient}(${bridgePair?.name}), Memo: ${finalMemo}`,
+        );
+      }
+    }
+
+    if (finalRecipient === transfer.loginSession.address.toString()) {
       const errorMessage = "You can't transfer NCG to yourself.";
       alert(errorMessage);
       return;
@@ -122,13 +159,7 @@ function TransferPage() {
       setDebounce(false);
     }, 15000);
 
-    const tx = await transfer.transferAsset(
-      transfer.senderAddress,
-      recipient,
-      amount,
-      memo,
-      privateKey,
-    );
+    const tx = await transfer.transferAsset(finalRecipient, amount, finalMemo);
     setTx(tx);
 
     setCurrentPhase(TransferPhase.SENDING);
@@ -136,7 +167,6 @@ function TransferPage() {
     await transfer.confirmTransaction(tx, undefined, listener);
     event.preventDefault();
   };
-
   const loading =
     currentPhase === TransferPhase.SENDTX ||
     currentPhase === TransferPhase.SENDING;
@@ -146,10 +176,57 @@ function TransferPage() {
 
   return (
     <TransferContainer>
-      <div>
-        <TransferTitle>
-          <T _str="User Address" _tags={transifexTags} />
-        </TransferTitle>
+      {planetary.getBridgePair().length > 0 && (
+        <>
+          <TransferTitle>
+            <T _str="Target Planet" _tags={transifexTags} />
+          </TransferTitle>
+          <TransferSecondTitle>
+            <T _str="Select target planet to transfer." _tags={transifexTags} />
+          </TransferSecondTitle>
+          <FormControl variant="outlined" fullWidth>
+            <SelectWrapper
+              name="planet"
+              onChange={(e) => setTargetPlanet(e.target.value as string)}
+              value={targetPlanet}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              <Option key={planetary.planet.id} value={planetary.planet.id}>
+                {planetary.planet.name}
+              </Option>
+              {planetary.getBridgePair().map((v) => {
+                return (
+                  <Option key={v.planetId} value={v.planetId}>
+                    {v.name}
+                  </Option>
+                );
+              })}
+            </SelectWrapper>
+          </FormControl>
+        </>
+      )}
+      <TransferTitle>
+        <T _str="User Address" _tags={transifexTags} />
+      </TransferTitle>
+
+      {isInterplanetary ? (
+        <>
+          <TransferSecondTitle>
+            <T
+              _str="You're attempting an interplanetary transfer."
+              _tags={transifexTags}
+            />
+          </TransferSecondTitle>
+          <TransferSecondTitle>
+            <b style={{ color: "#ff5555" }}>
+              <T
+                _str="Make sure your recipient NCG address exists in target planet."
+                _tags={transifexTags}
+              />
+            </b>
+          </TransferSecondTitle>
+        </>
+      ) : (
         <TransferSecondTitle>
           <T
             _str="Enter the Nine Chronicle user address. "
@@ -159,61 +236,55 @@ function TransferPage() {
             <T _str="Not the ETH address." _tags={transifexTags} />
           </b>
         </TransferSecondTitle>
-        <FormControl fullWidth>
-          <TransferInput
-            type="text"
-            name="address"
-            error={recipientWarning}
-            onChange={(e) => setRecipient(e.target.value)}
-            onBlur={() => setRecipientWarning(!addressVerify(recipient, true))}
-            onFocus={() => setRecipientWarning(false)}
+      )}
+      <FormControl fullWidth>
+        <TransferInput
+          type="text"
+          name="address"
+          error={recipientWarning}
+          onChange={(e) => setRecipient(e.target.value)}
+          onBlur={() => setRecipientWarning(!addressVerify(recipient, true))}
+          onFocus={() => setRecipientWarning(false)}
+        />
+      </FormControl>
+      <TransferTitle>
+        <T _str="NCG Amount" _tags={transifexTags} />
+      </TransferTitle>
+      <TransferSecondTitle>
+        <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
+        &nbsp;
+        <b>
+          <T
+            _str="(Your balance: {ncg} NCG)"
+            _tags={transifexTags}
+            ncg={transfer.balance}
           />
-        </FormControl>
-        <TransferTitle>
-          <T _str="NCG Amount" _tags={transifexTags} />
-        </TransferTitle>
-        <TransferSecondTitle>
-          <T _str="Enter the amount of NCG to send." _tags={transifexTags} />
-          &nbsp;
-          <b>
-            <T
-              _str="(Your balance: {ncg} NCG)"
-              _tags={transifexTags}
-              ncg={transfer.balance}
-            />
-          </b>
-          <Button
-            startIcon={<img src={refreshIcon} alt="refresh" />}
-            onClick={async () =>
-              await transfer.updateBalance(transfer.senderAddress)
-            }
-          />
-        </TransferSecondTitle>
+        </b>
+      </TransferSecondTitle>
+      <FormControl fullWidth>
+        <TransferInput
+          type="number"
+          name="amount"
+          onChange={(e) =>
+            setAmount(new Decimal(e.target.value === "" ? -1 : e.target.value))
+          }
+          onBlur={() => setAmountWarning(!amount.gt(0))}
+          onFocus={() => setAmountWarning(false)}
+          error={amountWarning}
+          endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
+          defaultValue={0}
+        />
+      </FormControl>
+      {!isInterplanetary && (
         <FormControl fullWidth>
-          <TransferInput
-            type="number"
-            name="amount"
-            onChange={(e) =>
-              setAmount(
-                new Decimal(e.target.value === "" ? -1 : e.target.value),
-              )
-            }
-            onBlur={() => setAmountWarning(!amount.gt(0))}
-            onFocus={() => setAmountWarning(false)}
-            error={amountWarning}
-            endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
-            defaultValue={0}
-          />
-        </FormControl>
-        <TransferTitle>
-          <T _str="Memo" _tags={transifexTags} />
-        </TransferTitle>
-        <TransferSecondTitle>
-          <T _str="Enter an additional note." _tags={transifexTags} />
-          &nbsp;
-          <b>{`(${memo.length}/80)`}</b>
-        </TransferSecondTitle>
-        <FormControl fullWidth>
+          <TransferTitle>
+            <T _str="Memo" _tags={transifexTags} />
+          </TransferTitle>
+          <TransferSecondTitle>
+            <T _str="Enter an additional note." _tags={transifexTags} />
+            &nbsp;
+            <b>{`(${memo.length}/80)`}</b>
+          </TransferSecondTitle>
           <TransferInput
             type="text"
             name="memo"
@@ -223,17 +294,17 @@ function TransferPage() {
             onChange={(e) => setMemo(e.target.value)}
           />
         </FormControl>
-        <FormControl fullWidth>
-          <TransferButton
-            variant="contained"
-            color="primary"
-            onClick={handleButton}
-            disabled={disabled}
-          >
-            {loading || debounce ? <CircularProgress /> : "Send"}
-          </TransferButton>
-        </FormControl>
-      </div>
+      )}
+      <FormControl fullWidth>
+        <TransferButton
+          variant="contained"
+          color="primary"
+          onClick={handleButton}
+          disabled={disabled}
+        >
+          {loading || debounce ? <CircularProgress /> : "Send"}
+        </TransferButton>
+      </FormControl>
 
       <SendingDialog
         open={currentPhase === TransferPhase.SENDING}

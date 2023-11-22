@@ -1,7 +1,7 @@
 import RuneImg from "src/renderer/resources/collection/items/20001.png";
 import HourglassImg from "src/renderer/resources/collection/items/400000.png";
 import APpotionImg from "src/renderer/resources/collection/items/500000.png";
-import GoldenMeatImg from "src/renderer/resources/collection/items/800201.png";
+import SilverDustImg from "src/renderer/resources/collection/items/800201.png";
 import GoldDustImg from "src/renderer/resources/collection/items/600201.png";
 import CrystalImg from "src/renderer/resources/collection/items/crystal.png";
 
@@ -19,8 +19,8 @@ export default {
     img: RuneImg,
   },
   800201: {
-    name: "Golden Meat",
-    img: GoldenMeatImg,
+    name: "Silver Dust",
+    img: SilverDustImg,
   },
   600201: {
     name: "Gold Dust",

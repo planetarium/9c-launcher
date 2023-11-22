@@ -26,6 +26,7 @@ function LobbyView() {
         Buffer.from(privateKeyBytes).toString("hex"),
         planetary.getHost(),
         planetary.getRpcPort(),
+        planetary.planet.id,
       );
     }
   }, [account.loginSession, approved, game, planetary.planet]);

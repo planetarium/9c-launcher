@@ -74,9 +74,6 @@ function LoginView() {
       ipcRenderer.send("mixpanel-alias", address);
       trackEvent("Launcher/Login");
 
-      await transfer.trySetSenderAddress(address);
-      await transfer.updateBalance(address);
-
       _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
       _refiner("identifyUser", {
         id: address,
@@ -104,6 +101,7 @@ function LoginView() {
           labelId="planet-label"
           value={planetId}
           defaultValue={planetary.planet.id}
+          disabled={switching}
           onChange={(event) => switchPlanet(event.target.value as string)}
           label="Planet"
         >
@@ -116,9 +114,9 @@ function LoginView() {
       </SelectWrapper>
       <Form onSubmit={handleSubmit(handleLogin)}>
         <Controller
+          name="address"
           control={control}
           defaultValue={defaultAddress}
-          {...register("address")}
           render={({ field }) => (
             <SelectWrapper fullWidth>
               <SelectLabel id="address-label">Address</SelectLabel>

@@ -62,6 +62,7 @@ const REMOTE_CONFIG_URL = `${baseUrl}/${netenv}/config.json`;
 let win: BrowserWindow | null = null;
 let appUpdaterInstance: AppUpdater | null = null;
 let tray: Tray;
+let isMessageBoxOpen = false;
 let isQuiting: boolean = false;
 let gameNode: ChildProcessWithoutNullStreams | null = null;
 
@@ -353,7 +354,10 @@ function initializeIpc() {
     return [registry, remoteNode];
   });
 
-  ipcMain.handle("all-rpc-failed", (event) => {
+  ipcMain.on("all-rpc-failed", (event) => {
+    if (isMessageBoxOpen) return;
+    isMessageBoxOpen = true;
+
     event?.preventDefault();
     console.error("All RPC Failed to respond.");
     dialog
@@ -365,14 +369,15 @@ function initializeIpc() {
         cancelId: 1,
       })
       .then((result) => {
+        isMessageBoxOpen = false;
         if (result.response === 0) {
           console.log("RPC Reconnect Attempted");
-          return true;
+          event.returnValue = true;
         } else {
           console.log("Closing.");
-          app.exit;
+          app.exit();
         }
-      }); // TODO Replace with "go to error page" event
+      });
   });
 
   ipcMain.handle("manual player update", async () => {
