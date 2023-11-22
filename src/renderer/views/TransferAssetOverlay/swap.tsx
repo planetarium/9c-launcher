@@ -251,7 +251,7 @@ function SwapPage() {
         <li>
           <SwapNoticeLabel>
             <T
-              _str="ᐧ ≥1,000 NCG : 1% base fee on total amount, 2% additional surcharge for amount exceeding 10,000 NCG."
+              _str="ᐧ ≥1,000 NCG : 1% base fee on total amount, 2% additional surcharge for amount exceeding 50,000 NCG."
               _tags={transifexTags}
             />
           </SwapNoticeLabel>
