@@ -32,7 +32,6 @@ import { getKeyStorePath } from "src/stores/account";
 import { ExportOverlay } from "src/renderer/components/core/Layout/UserInfo/ExportOverlay";
 import { useStore } from "src/utils/useStore";
 import { useLoginSession } from "src/utils/useLoginSession";
-import { Planet } from "src/interfaces/registry";
 
 declare const CURRENT_VERSION: string;
 
