@@ -229,6 +229,26 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                   </SelectWrapper>
                 )}
               />
+            </FormSection>
+            <FormSection>
+              <GroupTitle>
+                <T _str="User Interface" _tags={transifexTags} />
+              </GroupTitle>
+              <Checkbox {...register("TrayOnClose")}>
+                <T
+                  _str="Keep launcher on tray when closed"
+                  _tags={transifexTags}
+                />
+              </Checkbox>
+              <GroupTitle>
+                <T _str="Send Information" _tags={transifexTags} />
+              </GroupTitle>
+              <Checkbox {...register("Mixpanel")}>
+                <T
+                  _str="Send anonymous usage information"
+                  _tags={transifexTags}
+                />
+              </Checkbox>
               <GroupTitle>
                 <T _str="Planet" _tags={transifexTags} />
               </GroupTitle>

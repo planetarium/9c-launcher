@@ -28,6 +28,13 @@ export const SelectWrapper = styled(FormControl, {
       borderColor: "white",
     },
   },
+  "& .MuiOutlinedInput-input": {
+    color: "white",
+    "&.Mui-disabled": {
+      "-webkit-text-fill-color": "gray",
+      color: "gray",
+    },
+  },
 });
 
 export const Select = styled(MUISelect, {

@@ -16,6 +16,7 @@ import TransferPage from "./transfer";
 import OverlayBase, {
   CloseButton,
 } from "src/renderer/components/core/OverlayBase";
+import { useStore } from "src/utils/useStore";
 
 const transifexTags = "Transfer/Main";
 
@@ -86,6 +87,7 @@ const DescriptionTitleMessage = styled(Typography)({
 });
 
 function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
+  const isOdin = useStore("planetary").planet.id === "0x000000000000";
   const [menuItem, setMenuItem] = useState<MenuItems>(MenuItems.TRANSFER);
 
   const theme = useMemo(
@@ -136,6 +138,7 @@ function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
           <MenuContainer>
             {Object.keys(MenuItems).map((key) => {
               const menu = MenuItems[key as keyof typeof MenuItems];
+              if (menu === MenuItems.SWAP && !isOdin) return;
               if (!isNaN(Number(menu))) {
                 if (menu === menuItem) {
                   return (

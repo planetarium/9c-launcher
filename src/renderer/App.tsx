@@ -9,21 +9,18 @@ import "./global.scss";
 import { StoreProvider, useStore } from "src/utils/useStore";
 import { LocaleProvider } from "src/renderer/i18n";
 import { ExternalURLProvider } from "src/utils/useExternalURL";
-import { getSdk } from "src/generated/graphql-request";
-import { GraphQLClient } from "graphql-request";
 import { observer } from "mobx-react";
 import { Planet } from "src/interfaces/registry";
 import { NodeInfo } from "src/config";
 
 function App() {
-  const { transfer, planetary, account } = useStore();
+  const { planetary, account } = useStore();
   const client = useApolloClient();
   useEffect(() => {
     ipcRenderer
       .invoke("get-planetary-info")
       .then((info: [Planet[], NodeInfo]) => {
         planetary.init(info[0], info[1]);
-        transfer.updateSdk(getSdk(new GraphQLClient(planetary.node!.gqlUrl)));
       });
   }, []);
 

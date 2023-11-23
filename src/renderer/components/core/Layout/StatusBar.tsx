@@ -51,6 +51,7 @@ function StatusBar() {
                 Buffer.from(privateKeyBytes).toString("hex"),
                 planetary.getHost(),
                 planetary.getRpcPort(),
+                planetary.planet.id,
               );
             }}
           >
