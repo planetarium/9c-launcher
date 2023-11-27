@@ -55,7 +55,7 @@ jobs:
       
       - name: Sync time on macOS
         if: runner.os == 'macOS'
-        run: sntp -sS pool.ntp.org
+        run: sudo sntp -rsS time.apple.com
 
       - name: Copy builder config
         shell: bash
