@@ -29,6 +29,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3.6.0
 
+      - name: Sync time on Ubuntu
+        if: runner.os == 'Linux'
+        run: sudo chronyc -a makestep
+      
+      - name: Sync time on macOS
+        if: runner.os == 'macOS'
+        run: sntp -sS pool.ntp.org
+
       - name: Copy builder config
         shell: bash
         run: |
