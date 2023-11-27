@@ -39,12 +39,11 @@ jobs:
         continue-on-error: true
         if: runner.os == 'macOS'
         run: |
-          SERVER_DATE=$(curl -sI http://worldtimeapi.org/api/ip | grep -i date: | awk '{print $2,$3,$4,$5,$6}')
-          echo "Server date is: $SERVER_DATE"
+          UNIX_TIMESTAMP=$(curl -s http://worldtimeapi.org/api/ip | jq '.unixtime')
+          echo "Unix timestamp is: $UNIX_TIMESTAMP"
           sudo systemsetup -setusingnetworktime off
-          sudo date -u $(date -j -f "%a, %d %b %Y %H:%M:%S GMT" "$SERVER_DATE" "+%m%d%H%M%y.%S")
+          sudo date -r $UNIX_TIMESTAMP
           sudo systemsetup -setusingnetworktime on
-    
 
       - name: Copy builder config
         shell: bash
