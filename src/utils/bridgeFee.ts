@@ -1,7 +1,7 @@
 import { Decimal } from "decimal.js";
 
 export const BRIDGE_MIN = new Decimal(100);
-export const BRIDGE_MAX = new Decimal(20000);
+export const BRIDGE_MAX = new Decimal(50000);
 export const BASE_RATE = new Decimal(0.01);
 export const SURCHARGE_RATE = new Decimal(0.02);
 export const FIXED_THRESHOLD = new Decimal(1000);
