@@ -1,6 +1,6 @@
 import { styled, Box, Button, Backdrop } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import DummyQR from "src/renderer/resources/dummyQR.png";
+import DummyQR from "src/renderer/resources/DummyQR.png";
 import writeQR from "@paulmillr/qr";
 import { useStore } from "src/utils/useStore";
 import OverlayBase, { CloseButton } from "../../OverlayBase";
