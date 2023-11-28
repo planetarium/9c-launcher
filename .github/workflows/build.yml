@@ -29,6 +29,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3.6.0
 
+      - name: Sync time on Ubuntu
+        continue-on-error: true
+        if: runner.os == 'Linux'
+        run: |
+          sudo chronyc -a makestep
+      
+      - name: Sync time on macOS
+        continue-on-error: true
+        if: runner.os == 'macOS'
+        run: |
+          UNIX_TIMESTAMP=$(curl -s http://worldtimeapi.org/api/ip | jq '.unixtime')
+          echo "Unix timestamp is: $UNIX_TIMESTAMP"
+          sudo systemsetup -setusingnetworktime off
+          sudo date -r $UNIX_TIMESTAMP
+          sudo systemsetup -setusingnetworktime on
+
       - name: Copy builder config
         shell: bash
         run: |

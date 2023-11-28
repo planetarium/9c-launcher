@@ -101,7 +101,11 @@ export default class AccountStore {
         return Promise.resolve(passphrase);
       },
     };
-    return new Web3KeyStore({ passphraseEntry, path: await getKeyStorePath() });
+    return new Web3KeyStore({
+      passphraseEntry,
+      path: await getKeyStorePath(),
+      allowWeakPrivateKey: true,
+    });
   }
 
   @computed
