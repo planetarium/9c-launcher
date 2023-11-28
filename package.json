@@ -43,6 +43,8 @@
   "dependencies": {
     "@apollo/client": "^3.7.17",
     "@apollo/react-testing": "3.1.4",
+    "@chakra-ui/react": "^2.8.2",
+    "@electron/get": "^2.0.2",
     "@electron/remote": "^2.0.8",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -87,7 +89,7 @@
     "electron-store": "8.0.2",
     "electron-updater": "^5.3.0",
     "fast-glob": "^3.2.11",
-    "framer-motion": "^6.3.3",
+    "framer-motion": "^10.16.5",
     "graphql": "15.7.2",
     "graphql-request": "5.1.0",
     "lockfile": "^1.0.4",
