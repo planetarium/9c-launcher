@@ -3,7 +3,7 @@ import { GraphQLClient } from "graphql-request";
 import path from "path";
 import { getSdk } from "./generated/graphql-request";
 import { IConfig } from "./interfaces/config";
-import { Planet, RpcEndpoints } from "./interfaces/registry";
+import { RpcEndpoints } from "./interfaces/registry";
 
 export const { app } =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
