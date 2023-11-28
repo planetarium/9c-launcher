@@ -39,8 +39,7 @@ function RevokeView() {
         }
         _tags={transifexTags}
       />
-      <SelectWrapper>
-        <SelectLabel id="planet-label">Planet</SelectLabel>
+      <SelectWrapper style={{ marginBlockStart: "1rem" }}>
         <Select
           value={address.toHex()}
           onChange={(v) =>

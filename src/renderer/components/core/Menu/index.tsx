@@ -100,7 +100,9 @@ function Menu() {
       <MenuItem
         icon={discord}
         text="Discord"
-        onClick={() => shell.openExternal("https://bit.ly/planetarium-discord")}
+        onClick={() =>
+          shell.openExternal("https://discord.com/invite/planetarium")
+        }
       />
       <MenuDivider />
       <MenuItem
