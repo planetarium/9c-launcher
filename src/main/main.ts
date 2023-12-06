@@ -18,6 +18,7 @@ import {
   nativeImage,
   ipcMain,
   dialog,
+  shell,
 } from "electron";
 import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-platform";
 import { PLATFORM2OS_MAP } from "src/utils/os";
@@ -207,6 +208,32 @@ async function initializeApp() {
     remoteInitialize();
 
     win = await createV2Window();
+
+    process.on("uncaughtException", async (error) => {
+      if (error.message.includes("system error -86")) {
+        if (win) {
+          await dialog
+            .showMessageBox(win, {
+              type: "error",
+              title: "Execution Error",
+              message: "Unable to run due to missing Rosetta.",
+              detail:
+                'Please install Rosetta to execute the application. Click "OK" to view the guide.',
+              buttons: ["OK", "Cancel"],
+            })
+            .then((response) => {
+              if (response.response === 0) {
+                shell.openExternal(
+                  "https://planetarium.notion.site/e889b314513e4bacb92e9ee97ee6d52b?pvs=4",
+                );
+              }
+            });
+        }
+      } else {
+        console.error("An uncaught error occurred:", error);
+        throw error;
+      }
+    });
 
     setV2Quitting(!getConfig("TrayOnClose"));
 
