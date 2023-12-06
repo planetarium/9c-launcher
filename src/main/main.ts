@@ -224,7 +224,7 @@ async function initializeApp() {
             .then((response) => {
               if (response.response === 0) {
                 shell.openExternal(
-                  "https://planetarium.notion.site/e889b314513e4bacb92e9ee97ee6d52b?pvs=4",
+                  "https://planetarium.notion.site/How-to-Install-Rosetta-on-Your-Mac-32e8e50f35ee49f3b0a9686a3267160d?pvs=4",
                 );
               }
             });
