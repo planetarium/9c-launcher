@@ -230,6 +230,8 @@ async function initializeApp() {
                 );
               }
 
+              isQuiting = true;
+              setV2Quitting(true);
               app.quit();
             });
         }
