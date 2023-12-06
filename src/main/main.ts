@@ -211,6 +211,8 @@ async function initializeApp() {
 
     process.on("uncaughtException", async (error) => {
       if (error.message.includes("system error -86")) {
+        console.error("System error -86 error occurred:", error);
+
         if (win) {
           await dialog
             .showMessageBox(win, {
@@ -227,6 +229,8 @@ async function initializeApp() {
                   "https://planetarium.notion.site/How-to-Install-Rosetta-on-Your-Mac-32e8e50f35ee49f3b0a9686a3267160d?pvs=4",
                 );
               }
+
+              app.quit();
             });
         }
       } else {
