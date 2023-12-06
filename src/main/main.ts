@@ -23,7 +23,7 @@ import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-pla
 import { PLATFORM2OS_MAP } from "src/utils/os";
 import path from "path";
 import fs from "fs";
-import { ChildProcessWithoutNullStreams } from "child_process";
+import { ChildProcessWithoutNullStreams, spawn, exec } from "child_process";
 import logoImage from "./resources/logo.png";
 import "core-js";
 import log from "electron-log";
@@ -125,6 +125,20 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   cleanUp();
+
+  if (process.platform === "darwin" && process.arch == "arm64") {
+    exec("/usr/bin/arch -arch x86_64 uname -m", (error) => {
+      if (error) {
+        console.log("ARM64: Rosetta Not Installed, Try Installation...");
+        utils.execute("/usr/sbin/softwareupdate", [
+          "--install-rosetta",
+          "--agree-to-license",
+        ]);
+      } else {
+        console.log("ARM64: Rosetta Installed, Skip Installation...");
+      }
+    });
+  }
 
   initializeConfig();
   initializeApp();
