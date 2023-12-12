@@ -18,12 +18,13 @@ import {
   nativeImage,
   ipcMain,
   dialog,
+  shell,
 } from "electron";
 import { NotSupportedPlatformError } from "src/main/exceptions/not-supported-platform";
 import { PLATFORM2OS_MAP } from "src/utils/os";
 import path from "path";
 import fs from "fs";
-import { ChildProcessWithoutNullStreams } from "child_process";
+import { ChildProcessWithoutNullStreams, spawn, exec } from "child_process";
 import logoImage from "./resources/logo.png";
 import "core-js";
 import log from "electron-log";
@@ -126,6 +127,20 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
+  if (process.platform === "darwin" && process.arch == "arm64") {
+    exec("/usr/bin/arch -arch x86_64 uname -m", (error) => {
+      if (error) {
+        console.log("ARM64: Rosetta Not Installed, Try Installation...");
+        utils.execute("/usr/sbin/softwareupdate", [
+          "--install-rosetta",
+          "--agree-to-license",
+        ]);
+      } else {
+        console.log("ARM64: Rosetta Installed, Skip Installation...");
+      }
+    });
+  }
+
   initializeConfig();
   initializeApp();
   initializeIpc();
@@ -207,6 +222,38 @@ async function initializeApp() {
     remoteInitialize();
 
     win = await createV2Window();
+
+    process.on("uncaughtException", async (error) => {
+      if (error.message.includes("system error -86")) {
+        console.error("System error -86 error occurred:", error);
+
+        if (win) {
+          await dialog
+            .showMessageBox(win, {
+              type: "error",
+              title: "Execution Error",
+              message: "Unable to run due to missing Rosetta.",
+              detail:
+                'Please install Rosetta to execute the application. Click "OK" to view the guide.',
+              buttons: ["OK", "Cancel"],
+            })
+            .then((response) => {
+              if (response.response === 0) {
+                shell.openExternal(
+                  "https://planetarium.notion.site/How-to-Install-Rosetta-on-Your-Mac-32e8e50f35ee49f3b0a9686a3267160d?pvs=4",
+                );
+              }
+
+              isQuiting = true;
+              setV2Quitting(true);
+              app.quit();
+            });
+        }
+      } else {
+        console.error("An uncaught error occurred:", error);
+        throw error;
+      }
+    });
 
     setV2Quitting(!getConfig("TrayOnClose"));
 

@@ -175,10 +175,10 @@ function SwapPage() {
         </Box>
         <Box display="flex" flexDirection="column" alignItems="end">
           <SwapTitle>
-            <T _str="Recieve Amount" _tags={transifexTags} />
+            <T _str="Receive Amount" _tags={transifexTags} />
           </SwapTitle>
           <SwapSecondTitle>
-            <T _str="Amount of WNCG to be recieved" _tags={transifexTags} />
+            <T _str="Amount of WNCG to be received" _tags={transifexTags} />
           </SwapSecondTitle>
         </Box>
       </Box>
