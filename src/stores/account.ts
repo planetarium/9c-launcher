@@ -11,6 +11,8 @@ import {
   Web3KeyStore,
   getDefaultWeb3KeyStorePath,
 } from "@planetarium/account-web3-secret-storage";
+import * as bip39 from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english";
 // FIXME these imports cause matter since file-system related features aren't
 // possible on some targets (e.g., browser). thus we should extract them from
 // this store to the dedicated backend, and inject that into this.
@@ -24,6 +26,7 @@ export interface ILoginSession {
   address: Address;
   publicKey: PublicKey;
   privateKey: RawPrivateKey;
+  mnemonic: string;
 }
 
 export async function getKeyStorePath(): Promise<string> {
@@ -139,13 +142,15 @@ export default class AccountStore {
   }
 
   @action
-  login = async (account: ExportableAccount, password: string) => {
+  login = async (account: ExportableAccount) => {
     const privateKey = await account.exportPrivateKey();
     const publicKey = await privateKey.getPublicKey();
+    const mnemonic = bip39.entropyToMnemonic(privateKey.toBytes(), wordlist);
     this.loginSession = {
       privateKey,
       publicKey,
       address: Address.deriveFrom(publicKey),
+      mnemonic,
     };
   };
 
@@ -304,6 +309,15 @@ export default class AccountStore {
       } catch (err) {
         console.error("Failed to load Web3 Secret Storage: ", err);
       }
+    } else {
+      console.error("Not logged in.");
+    }
+  };
+
+  @action
+  exportMnemonic = () => {
+    if (this.isLogin) {
+      return this.loginSession?.mnemonic;
     } else {
       console.error("Not logged in.");
     }

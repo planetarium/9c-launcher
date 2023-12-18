@@ -70,7 +70,7 @@ function LoginView() {
     try {
       localStorage.setItem("lastAddress", address);
       const account = (await accountStore.getAccount(address, password))!;
-      await accountStore.login(account, password);
+      await accountStore.login(account);
       ipcRenderer.send("mixpanel-alias", address);
       trackEvent("Launcher/Login");
 

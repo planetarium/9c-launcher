@@ -27,7 +27,7 @@ function CreateKeyView() {
       password,
     );
 
-    await accountStore.login(account, password);
+    await accountStore.login(account);
 
     history.push("/register/getPatron");
   };
