@@ -174,10 +174,12 @@ const ItemTitle = styled("h2", {
 });
 
 const ItemAmount = styled("div", {
+  fontSize: "12px",
   color: "#fff5e3",
   textShadow: theme.shadows.standard,
   WebKitTextStroke: "1px solid black",
   textAlign: "center",
+  textWrap: "balance",
 });
 
 const ItemUpdatedAmount = styled("span", {
