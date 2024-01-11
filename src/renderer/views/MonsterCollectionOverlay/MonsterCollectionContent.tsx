@@ -29,6 +29,7 @@ import monster4Img from "src/renderer/resources/collection/monster-4.png";
 import monster5Img from "src/renderer/resources/collection/monster-5.png";
 import monster6Img from "src/renderer/resources/collection/monster-6.png";
 import monster7Img from "src/renderer/resources/collection/monster-7.png";
+import monster8Img from "src/renderer/resources/collection/monster-8.png";
 
 import itemMetadata from "src/utils/monsterCollection/items";
 import systemRewards from "src/utils/monsterCollection/systemRewards";
@@ -88,6 +89,7 @@ const images = [
   monster5Img,
   monster6Img,
   monster7Img,
+  monster8Img,
 ];
 
 function useRewardIndex(levels: LevelList, amount: Decimal = new Decimal(0)) {
