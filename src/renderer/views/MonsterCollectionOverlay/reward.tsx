@@ -174,10 +174,12 @@ const ItemTitle = styled("h2", {
 });
 
 const ItemAmount = styled("div", {
+  fontSize: "14px",
   color: "#fff5e3",
   textShadow: theme.shadows.standard,
   WebKitTextStroke: "1px solid black",
   textAlign: "center",
+  textWrap: "balance",
 });
 
 const ItemUpdatedAmount = styled("span", {
@@ -216,12 +218,12 @@ const ItemBox = styled("div", {
 interface ItemProps {
   children: React.ReactNode;
   title: React.ReactNode;
-  amount?: string | number;
+  amount: string | number;
   received?: boolean;
   tooltip?: React.ReactNode;
   isUpgrade?: boolean;
   isDiff?: boolean;
-  updatedAmount?: string | number;
+  updatedAmount: string | number;
 }
 
 export const Item = ({
@@ -231,19 +233,28 @@ export const Item = ({
   updatedAmount,
   isUpgrade,
   isDiff,
-}: ItemProps) => (
-  <ItemBox>
-    <ItemFrame>
-      {children}
-      <ItemAmount>
-        {amount}
-        {isUpgrade != null && isDiff && (
-          <ItemUpdatedAmount isUpgrade={isUpgrade} isDiff={isDiff ?? false}>
-            {updatedAmount}
-          </ItemUpdatedAmount>
-        )}
-      </ItemAmount>
-    </ItemFrame>
-    <ItemTitle>{title}</ItemTitle>
-  </ItemBox>
-);
+}: ItemProps) => {
+  const numFormat = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 2,
+  });
+
+  return (
+    <ItemBox>
+      <ItemFrame>
+        {children}
+        <ItemAmount>
+          {Number.isNaN(+amount) ? amount : numFormat.format(+amount)}
+          {isUpgrade != null && isDiff && (
+            <ItemUpdatedAmount isUpgrade={isUpgrade} isDiff={isDiff ?? false}>
+              {Number.isNaN(+updatedAmount)
+                ? updatedAmount
+                : numFormat.format(+updatedAmount)}
+            </ItemUpdatedAmount>
+          )}
+        </ItemAmount>
+      </ItemFrame>
+      <ItemTitle>{title}</ItemTitle>
+    </ItemBox>
+  );
+};
