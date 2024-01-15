@@ -9,7 +9,7 @@ import selectArrow from "src/renderer/resources/collection/select-arrow.gif";
 import ncgIcon from "src/renderer/resources/ui-main-icon-gold.png";
 
 const LevelsLine = styled("div", {
-  width: "940px",
+  width: "960px",
   height: 6,
   backgroundColor: "rgba(0, 0, 0, 0.5)",
   border: "1px solid black",
@@ -25,7 +25,7 @@ const LevelContainer = styled("ol", {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  width: "960px",
+  width: "980px",
   marginTop: "auto",
 });
 
@@ -71,8 +71,8 @@ const LevelCaption = styled(motion.div, {
     expanded: {
       true: {
         top: "unset",
-        bottom: 0,
-        fontSize: 18,
+        bottom: -2,
+        fontSize: 16,
         height: 30,
         borderRadius: 15,
         lineHeight: "30px",
