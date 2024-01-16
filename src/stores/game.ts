@@ -56,6 +56,8 @@ export default class GameStore {
     const IAPServiceHostUrl = getConfig("IAPServiceHostUrl");
     const appleMarketUrl = getConfig("AppleMarketUrl");
     const googleMarketUrl = getConfig("GoogleMarketUrl");
+    const guildServiceUrl = getConfig("GuildServiceUrl");
+    const guildIconBucket = getConfig("GuildIconBucket");
 
     const playerArgs = [
       `--private-key=${privateKey}`,
@@ -85,6 +87,8 @@ export default class GameStore {
     };
 
     appendIfDefined(dataProviderUrl, "api-server-host");
+    appendIfDefined(guildServiceUrl, "guild-service-url");
+    appendIfDefined(guildIconBucket, "guild-icon-bucket");
 
     ipcRenderer.send("launch game", {
       args: playerArgs,
