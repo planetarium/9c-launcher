@@ -36,4 +36,6 @@ export interface IConfig {
   IAPServiceHostUrl: string;
   AppleMarketUrl: string;
   GoogleMarketUrl: string;
+  GuildServiceUrl: string | undefined;
+  GuildIconBucket: string | undefined;
 }
