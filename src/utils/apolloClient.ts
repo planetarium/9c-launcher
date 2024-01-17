@@ -13,7 +13,6 @@ import { ipcRenderer } from "electron";
 import { RetryLink } from "@apollo/client/link/retry";
 import { GenesisHashDocument, GenesisHashQuery } from "src/generated/graphql";
 import { useStore } from "./useStore";
-import { NodeInfo } from "src/config";
 
 type Client = ApolloClient<NormalizedCacheObject>;
 

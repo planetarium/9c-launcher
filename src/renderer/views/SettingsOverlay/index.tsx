@@ -165,6 +165,7 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
   }, []);
 
   const [exportOverlayOpened, setExportOverlayOpened] = useState(false);
+  const { registry } = useStore("planetary");
   const { isLogin } = useStore("account");
 
   useEffect(
@@ -221,6 +222,47 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                       {languages.map(({ code, localized_name }) => (
                         <SelectOption key={code} value={code}>
                           {localized_name}
+                        </SelectOption>
+                      ))}
+                    </Select>
+                  </SelectWrapper>
+                )}
+              />
+            </FormSection>
+            <FormSection>
+              <GroupTitle>
+                <T _str="User Interface" _tags={transifexTags} />
+              </GroupTitle>
+              <Checkbox {...register("TrayOnClose")}>
+                <T
+                  _str="Keep launcher on tray when closed"
+                  _tags={transifexTags}
+                />
+              </Checkbox>
+              <GroupTitle>
+                <T _str="Send Information" _tags={transifexTags} />
+              </GroupTitle>
+              <Checkbox {...register("Mixpanel")}>
+                <T
+                  _str="Send anonymous usage information"
+                  _tags={transifexTags}
+                />
+              </Checkbox>
+              <GroupTitle>
+                <T _str="Planet" _tags={transifexTags} />
+              </GroupTitle>
+              <p>
+                <T _str="Select the Planet" _tags={transifexTags} />
+              </p>
+              <Controller
+                name="Planet"
+                control={control}
+                render={({ field }) => (
+                  <SelectWrapper fullWidth>
+                    <Select {...field}>
+                      {registry.map((entry) => (
+                        <SelectOption key={entry.id} value={entry.id}>
+                          {entry.name}
                         </SelectOption>
                       ))}
                     </Select>
