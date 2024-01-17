@@ -201,37 +201,34 @@ export function MonsterCollectionContent({
         ? deltaRewards
         : currentRewards;
     return targetReward.map((item, index) => {
-      const itemMeta = itemMetadata[item.itemId] ?? {
-        name: "Unknown",
-      };
+      const itemMeta = itemMetadata[item.itemId] ?? { name: "Unknown" };
 
-      const itemAmount = currentRewards[index]
-        ? currentRewards[index].count(deposit ?? new Decimal(0))
+      const deltaReward = deltaRewards?.find(
+        (reward) => reward.itemId === item.itemId,
+      );
+      const currentItem = currentRewards.find(
+        (reward) => reward.itemId === item.itemId,
+      );
+
+      const itemAmount = currentItem
+        ? currentItem.count(deposit ?? new Decimal(0))
         : new Decimal(0);
-      const getSelectedItem = () => {
-        if (!currentRewards[index]) {
-          return deltaRewards?.[index];
-        }
 
-        const rewardWithMatchingId = deltaRewards?.find(
-          (reward) => reward.itemId === currentRewards[index].itemId,
-        );
+      const updatedAmount = deltaReward
+        ? deltaReward.count(amountDecimal)
+        : itemAmount;
 
-        return rewardWithMatchingId ?? deltaRewards?.[index];
-      };
-
-      const selectedItem = getSelectedItem();
-      const selectedAmount =
-        selectedItem?.count(amountDecimal) ?? new Decimal(0);
+      const isUpgrade = deltaReward ? updatedAmount.gt(itemAmount) : false;
+      const isDiff = !updatedAmount.eq(itemAmount);
 
       return (
         <Item
           key={item.itemId}
           amount={itemAmount.toString()}
           title={itemMeta.name}
-          isUpgrade={selectedAmount.gt(itemAmount)}
-          updatedAmount={selectedAmount.toString()}
-          isDiff={!selectedAmount.eq(itemAmount)}
+          isUpgrade={isUpgrade}
+          updatedAmount={updatedAmount.toString()}
+          isDiff={isDiff}
         >
           <img src={itemMeta.img} alt={itemMeta.name} height={48} />
         </Item>
@@ -403,8 +400,10 @@ export function MonsterCollectionContent({
             <ItemGroup key="system" title="System Rewards">
               {systemRewards.map((item) => {
                 const sysRewardSuffix = item.name === "stage" ? "% DC" : "%";
-                const amount = item.amount[userIndex ?? 0];
-                const updatedAmount = item.amount[deltaIndex ?? 0];
+                const amount =
+                  item.amount[userIndex === null ? 0 : userIndex + 1];
+                const updatedAmount =
+                  item.amount[deltaIndex === null ? 0 : deltaIndex + 1];
                 return (
                   <Item
                     key={item.title}
