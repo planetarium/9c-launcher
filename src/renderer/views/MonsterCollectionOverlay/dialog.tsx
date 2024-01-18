@@ -106,6 +106,8 @@ interface AlertProps {
   children: React.ReactNode;
   title: React.ReactNode;
   isOpen?: boolean;
+  cancelText?: string;
+  confirmText?: string;
 }
 
 export function Alert({
@@ -114,6 +116,8 @@ export function Alert({
   children,
   title,
   isOpen,
+  cancelText = "Cancel",
+  confirmText = "OK",
 }: AlertProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
@@ -132,11 +136,11 @@ export function Alert({
         <AlertButtonBar>
           {onCancel && (
             <AlertButton onClick={onCancel} ref={ref}>
-              <T _str="Cancel" _tags="v2/collection/alert" />
+              <T _str={cancelText} _tags="v2/collection/alert" />
             </AlertButton>
           )}
           <AlertButton onClick={onConfirm} variant="primary">
-            <T _str="OK" _tags="v2/collection/alert" />
+            <T _str={confirmText} _tags="v2/collection/alert" />
           </AlertButton>
         </AlertButtonBar>
       </AlertBase>
