@@ -435,18 +435,23 @@ export function MonsterCollectionContent({
         compensation will be reset.
       </Alert>
       <Alert
-        title="Confirmation"
+        title="Warning!"
         onCancel={() => setIsAlertOpen(null)}
         onConfirm={Stake}
         isOpen={openedAlert === "confirm-changes"}
+        confirmText="Proceed"
       >
-        When you create new stake contract,
+        <b>If you migrate,</b>
         <br />
-        the daily count is initialized to 0. <br />
-        The reward is given every week and cannot be changed to a less amount
-        within 28 days.
+        <b>
+          the reward claim cycle gets{" "}
+          <span style={{ color: "#ff4343" }}>reset</span>
+          <br />
+          and you need to wait 7 days to claim.
+        </b>
         <br />
-        Do you want to proceed?
+        <br />
+        Also, deposits cannot be withdrawn within 28 days.
       </Alert>
       <Alert
         title="Error"
