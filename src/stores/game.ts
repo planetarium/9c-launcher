@@ -87,8 +87,10 @@ export default class GameStore {
     };
 
     appendIfDefined(dataProviderUrl, "api-server-host");
-    appendIfDefined(guildServiceUrl, "guild-service-url");
-    appendIfDefined(guildIconBucket, "guild-icon-bucket");
+    if (planetId !== "0x000000000000" && planetId !== "0x100000000000") {
+      appendIfDefined(guildServiceUrl, "guild-service-url");
+      appendIfDefined(guildIconBucket, "guild-icon-bucket");
+    }
 
     ipcRenderer.send("launch game", {
       args: playerArgs,
