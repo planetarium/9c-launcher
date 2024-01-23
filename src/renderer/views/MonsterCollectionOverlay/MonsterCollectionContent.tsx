@@ -155,6 +155,7 @@ export function MonsterCollectionContent({
   const [isMigratable, setIsMigratable] = useState<boolean>(
     !!deposit &&
       deposit.gt(0) &&
+      tip !== 0 &&
       !deepEqual(stakeState?.stakeRewards, latestSheet, { strict: true }),
   );
 
