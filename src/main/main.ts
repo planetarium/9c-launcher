@@ -195,6 +195,7 @@ async function initializeConfig() {
       0,
     );
     remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
+
     configStore.store = remoteConfig;
     console.log("Initialize config complete");
   } catch (error) {
