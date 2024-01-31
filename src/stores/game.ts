@@ -56,32 +56,44 @@ export default class GameStore {
     const IAPServiceHostUrl = getConfig("IAPServiceHostUrl");
     const appleMarketUrl = getConfig("AppleMarketUrl");
     const googleMarketUrl = getConfig("GoogleMarketUrl");
+    const guildServiceUrl = getConfig("GuildServiceUrl");
+    const guildIconBucket = getConfig("GuildIconBucket");
+
+    const playerArgs = [
+      `--private-key=${privateKey}`,
+      `--rpc-client=true`,
+      `--rpc-server-host=${host}`,
+      `--rpc-server-port=${port}`,
+      `--selected-planet-id=${planetId}`,
+      `--genesis-block-path=${genesisBlockPath}`,
+      `--language=${this._language}`,
+      `--app-protocol-version=${appProtocolVersion}`,
+      `--aws-sink-guid=${awsSinkGuid}`,
+      `--on-boarding-host=${portalUrl}`,
+      `--sentry-sample-rate=${unitySentrySampleRate}`,
+      `--market-service-host=${marketServiceUrl}`,
+      `--patrol-reward-service-host=${patrolRewardServiceUrl}`,
+      `--season-pass-service-host=${seasonPassServiceUrl}`,
+      `--mead-pledge-portal-url=${meadPledgePortalUrl}`,
+      `--iap-service-host=${IAPServiceHostUrl}`,
+      `--apple-market-url=${appleMarketUrl}`,
+      `--google-market-url=${googleMarketUrl}`,
+    ];
+
+    const appendIfDefined = (value: string | undefined, label: string) => {
+      if (value !== undefined) {
+        playerArgs.push(`--${label}=${value}`);
+      }
+    };
+
+    appendIfDefined(dataProviderUrl, "api-server-host");
+    if (planetId !== "0x000000000000" && planetId !== "0x100000000000") {
+      appendIfDefined(guildServiceUrl, "guild-service-url");
+      appendIfDefined(guildIconBucket, "guild-icon-bucket");
+    }
 
     ipcRenderer.send("launch game", {
-      args: [
-        `--private-key=${privateKey}`,
-        `--rpc-client=true`,
-        `--rpc-server-host=${host}`,
-        `--rpc-server-port=${port}`,
-        `--selected-planet-id=${planetId}`,
-        `--genesis-block-path=${genesisBlockPath}`,
-        `--language=${this._language}`,
-        `--app-protocol-version=${appProtocolVersion}`,
-        `--aws-sink-guid=${awsSinkGuid}`,
-        `--on-boarding-host=${portalUrl}`,
-        `--sentry-sample-rate=${unitySentrySampleRate}`,
-        `--market-service-host=${marketServiceUrl}`,
-        `--patrol-reward-service-host=${patrolRewardServiceUrl}`,
-        `--season-pass-service-host=${seasonPassServiceUrl}`,
-        `--mead-pledge-portal-url=${meadPledgePortalUrl}`,
-        `--iap-service-host=${IAPServiceHostUrl}`,
-        `--apple-market-url=${appleMarketUrl}`,
-        `--google-market-url=${googleMarketUrl}`,
-      ].concat(
-        dataProviderUrl === undefined
-          ? []
-          : [`--api-server-host=${dataProviderUrl}`],
-      ),
+      args: playerArgs,
     });
     this._isGameStarted = true;
   };
