@@ -38,4 +38,5 @@ export interface IConfig {
   GoogleMarketUrl: string;
   GuildServiceUrl: string | undefined;
   GuildIconBucket: string | undefined;
+  Maintenance: boolean;
 }
