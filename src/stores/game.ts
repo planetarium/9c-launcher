@@ -79,7 +79,6 @@ export default class GameStore {
       `--iap-service-host=${IAPServiceHostUrl}`,
       `--apple-market-url=${appleMarketUrl}`,
       `--google-market-url=${googleMarketUrl}`,
-      `--maintenance=${maintenance}`,
     ];
 
     const appendIfDefined = (value: string | undefined, label: string) => {
@@ -92,6 +91,10 @@ export default class GameStore {
     if (planetId !== "0x000000000000" && planetId !== "0x100000000000") {
       appendIfDefined(guildServiceUrl, "guild-service-url");
       appendIfDefined(guildIconBucket, "guild-icon-bucket");
+    }
+
+    if (maintenance) {
+      playerArgs.push(`--maintenance=${maintenance}`);
     }
 
     ipcRenderer.send("launch game", {
