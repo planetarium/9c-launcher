@@ -58,6 +58,7 @@ export default class GameStore {
     const googleMarketUrl = getConfig("GoogleMarketUrl");
     const guildServiceUrl = getConfig("GuildServiceUrl");
     const guildIconBucket = getConfig("GuildIconBucket");
+    const maintenance = getConfig("Maintenance", false);
 
     const playerArgs = [
       `--private-key=${privateKey}`,
@@ -78,6 +79,7 @@ export default class GameStore {
       `--iap-service-host=${IAPServiceHostUrl}`,
       `--apple-market-url=${appleMarketUrl}`,
       `--google-market-url=${googleMarketUrl}`,
+      `--maintenance=${maintenance}`,
     ];
 
     const appendIfDefined = (value: string | undefined, label: string) => {
