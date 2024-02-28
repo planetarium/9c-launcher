@@ -395,7 +395,7 @@ export function MonsterCollectionContent({
       <AnimatePresence exitBeforeEnter>
         {currentRewards ? (
           <RewardSheet>
-            <ItemGroup key="recurring" title="Recurring Rewards">
+            <ItemGroup key="recurring" title="Item Rewards">
               {RecurringReward(currentRewards, deltaRewards)}
             </ItemGroup>
             <ItemGroup key="system" title="System Rewards">

@@ -58,6 +58,7 @@ export default class GameStore {
     const googleMarketUrl = getConfig("GoogleMarketUrl");
     const guildServiceUrl = getConfig("GuildServiceUrl");
     const guildIconBucket = getConfig("GuildIconBucket");
+    const maintenance = getConfig("Maintenance", false);
 
     const playerArgs = [
       `--private-key=${privateKey}`,
@@ -90,6 +91,10 @@ export default class GameStore {
     if (planetId !== "0x000000000000" && planetId !== "0x100000000000") {
       appendIfDefined(guildServiceUrl, "guild-service-url");
       appendIfDefined(guildIconBucket, "guild-icon-bucket");
+    }
+
+    if (maintenance) {
+      playerArgs.push(`--maintenance=${maintenance}`);
     }
 
     ipcRenderer.send("launch game", {
