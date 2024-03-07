@@ -190,10 +190,6 @@ async function initializeConfig() {
     // Replace config
     console.log("Replace config with remote config:", remoteConfig);
     remoteConfig.Locale = getConfig("Locale");
-    remoteConfig.PlayerUpdateRetryCount = getConfig(
-      "PlayerUpdateRetryCount",
-      0,
-    );
     remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
 
     configStore.store = remoteConfig;
@@ -297,18 +293,10 @@ function initializeIpc() {
     }
 
     if (utils.getExecutePath() === "PLAYER_UPDATE") {
-      configStore.set(
-        // Update Retry Counter
-        "PlayerUpdateRetryCount",
-        configStore.get("PlayerUpdateRetryCount") + 1,
-      );
       return manualPlayerUpdate();
     }
 
     const node = utils.execute(utils.getExecutePath(), info.args);
-    if (node !== null) {
-      configStore.set("PlayerUpdateRetryCount", 0);
-    }
     node.on("close", (code) => {
       // Code 21: ERROR_NOT_READY
       if (code === 21) {
@@ -332,7 +320,6 @@ function initializeIpc() {
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
     setV2Quitting(true);
-    configStore.set("PlayerUpdateRetryCount", 0);
     await appUpdaterInstance.execute();
   });
 
