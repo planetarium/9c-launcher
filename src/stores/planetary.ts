@@ -112,6 +112,10 @@ export default class PlanetaryStore {
         "PatrolRewardServiceUrl",
         this.planet.rpcEndpoints["patrol-reward.gql"],
       );
+      configStore.set(
+        "OnboardingPortalUrl",
+        this.planet.rpcEndpoints["world-boss.rest"],
+      );
       if (this.planet.guildIconBucket) {
         configStore.set("GuildIconBucket", this.planet.guildIconBucket);
       } else {
