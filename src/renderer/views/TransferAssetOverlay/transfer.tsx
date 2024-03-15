@@ -268,7 +268,9 @@ function TransferPage() {
           onChange={(e) =>
             setAmount(new Decimal(e.target.value === "" ? -1 : e.target.value))
           }
-          onBlur={() => setAmountWarning(!amount.gt(0))}
+          onBlur={() =>
+            setAmountWarning(amount.lt(0) || amount.gt(transfer.balance))
+          }
           onFocus={() => setAmountWarning(false)}
           error={amountWarning}
           endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
