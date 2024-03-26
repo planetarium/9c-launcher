@@ -17,6 +17,7 @@ import OverlayBase, {
   CloseButton,
 } from "src/renderer/components/core/OverlayBase";
 import { useStore } from "src/utils/useStore";
+import { get } from "src/config";
 
 const transifexTags = "Transfer/Main";
 
@@ -89,18 +90,23 @@ const DescriptionTitleMessage = styled(Typography)({
 function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
   const isOdin = useStore("planetary").planet.id === "0x000000000000";
   const [menuItem, setMenuItem] = useState<MenuItems>(MenuItems.TRANSFER);
-  const [isBlocked, setIsBlocked] = useState<string>("");
+  const [isAvailable, setIsAvailable] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch("https://d1edb0vsfkwhtg.cloudfront.net/updates.json")
+    fetch(
+      get(
+        "SwapAvailabilityCheckServiceUrl",
+        "https://check.nine-chronicles.com/updates.json",
+      ),
+    )
       .then((res) => {
-        console.log("isBlocked Fetch");
-        console.log("isBlocked Fetched", res.status.toString());
-        setIsBlocked(res.status.toString());
-        console.log("isBlocked", isBlocked);
+        if (res.status === 200) {
+          setIsAvailable(false);
+        }
       })
       .catch(() => {
-        setIsBlocked("fail");
+        console.error("Failed to fetch Availablity");
+        setIsAvailable(true);
       });
   }, []);
 
@@ -152,8 +158,7 @@ function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
           <MenuContainer>
             {Object.keys(MenuItems).map((key) => {
               const menu = MenuItems[key as keyof typeof MenuItems];
-              if (menu === MenuItems.SWAP && (!isOdin || isBlocked === "200"))
-                return;
+              if (menu === MenuItems.SWAP && (!isOdin || !isAvailable)) return;
               if (!isNaN(Number(menu))) {
                 if (menu === menuItem) {
                   return (
