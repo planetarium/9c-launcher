@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import montserrat from "src/renderer/styles/font";
 import { T } from "@transifex/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState, useMemo } from "react";
 import { OverlayProps } from "src/utils/types";
 import ExchangePage from "./swap";
@@ -89,6 +89,20 @@ const DescriptionTitleMessage = styled(Typography)({
 function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
   const isOdin = useStore("planetary").planet.id === "0x000000000000";
   const [menuItem, setMenuItem] = useState<MenuItems>(MenuItems.TRANSFER);
+  const [isBlocked, setIsBlocked] = useState("");
+
+  useEffect(() => {
+    fetch("https://d1edb0vsfkwhtg.cloudfront.net/updates.json")
+      .then((res) => {
+        console.log("isBlocked Fetch");
+        console.log("isBlocked Fetched", res.status.toString());
+        setIsBlocked(res.status.toString());
+        console.log("isBlocked", isBlocked);
+      })
+      .catch(() => {
+        setIsBlocked("fail");
+      });
+  }, []);
 
   const theme = useMemo(
     () =>
@@ -138,7 +152,8 @@ function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
           <MenuContainer>
             {Object.keys(MenuItems).map((key) => {
               const menu = MenuItems[key as keyof typeof MenuItems];
-              if (menu === MenuItems.SWAP && !isOdin) return;
+              if (menu === MenuItems.SWAP && !isOdin && isBlocked === "200")
+                return;
               if (!isNaN(Number(menu))) {
                 if (menu === menuItem) {
                   return (
