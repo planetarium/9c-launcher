@@ -89,7 +89,7 @@ const DescriptionTitleMessage = styled(Typography)({
 function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
   const isOdin = useStore("planetary").planet.id === "0x000000000000";
   const [menuItem, setMenuItem] = useState<MenuItems>(MenuItems.TRANSFER);
-  const [isBlocked, setIsBlocked] = useState("");
+  const [isBlocked, setIsBlocked] = useState<string>("");
 
   useEffect(() => {
     fetch("https://d1edb0vsfkwhtg.cloudfront.net/updates.json")
@@ -152,7 +152,7 @@ function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
           <MenuContainer>
             {Object.keys(MenuItems).map((key) => {
               const menu = MenuItems[key as keyof typeof MenuItems];
-              if (menu === MenuItems.SWAP && !isOdin && isBlocked === "200")
+              if (menu === MenuItems.SWAP && (!isOdin || isBlocked === "200"))
                 return;
               if (!isNaN(Number(menu))) {
                 if (menu === menuItem) {
