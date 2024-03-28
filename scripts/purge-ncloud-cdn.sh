@@ -5,7 +5,7 @@ ACCESS_KEY=$2
 SECRET_KEY=$3
 API_GATEWAY_URL="https://ncloud.apigw.ntruss.com"
 RESOURCE_URL="/cdn/v2/requestGlobalCdnPurge?cdnInstanceNo=$4&isWholePurge=true&isWholeDomain=true&responseFormatType=JSON"
-if [[ $OS = "macOS" ]] then
+if [[ $OS = "macOS" ]]; then
   TIMESTAMP=$(echo $(($(gdate +%s%N)/1000000)))
 else
   TIMESTAMP=$(echo $(($(date +%s%N)/1000000)))
