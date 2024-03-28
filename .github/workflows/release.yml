@@ -120,6 +120,8 @@ jobs:
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest.yml"
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest-mac.yml"
           fi
+
+          sh ./scripts/purge-ncloud-cdn.sh ${{ secrets.NAVER_CLOUD_ACCESS_KEY }} ${{ secrets.NAVER_CLOUD_SECRET_KEY }} ${{ secrets.NAVER_CLOUD_CDN_ID }}
           curl -X POST -H 'Content-type: application/json' --data '{"text":"[Launcher] Had success releasing with '${{ matrix.packCmd }}' pack-cmd"}' ${{ secrets.SLACK_WEBHOOK }}
 
           rm -fR ./dist/*-unpacked
