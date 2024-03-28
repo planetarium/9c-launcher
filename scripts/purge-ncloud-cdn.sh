@@ -1,15 +1,11 @@
 #!/bin/bash
 
-OS=$1
-ACCESS_KEY=$2
-SECRET_KEY=$3
+ACCESS_KEY=$1
+SECRET_KEY=$2
 API_GATEWAY_URL="https://ncloud.apigw.ntruss.com"
-RESOURCE_URL="/cdn/v2/requestGlobalCdnPurge?cdnInstanceNo=$4&isWholePurge=true&isWholeDomain=true&responseFormatType=JSON"
-if [[ $OS = "macOS" ]]; then
-  TIMESTAMP=$(echo $(($(gdate +%s%N)/1000000)))
-else
-  TIMESTAMP=$(echo $(($(date +%s%N)/1000000)))
-fi
+RESOURCE_URL="/cdn/v2/requestGlobalCdnPurge?cdnInstanceNo=$3&isWholePurge=true&isWholeDomain=true&responseFormatType=JSON"
+
+TIMESTAMP=$(python -c 'import time; print(int(time.time() * 1000))')
 
 function makeSignature() {
     nl=$'\\n'
@@ -30,7 +26,7 @@ function makeSignature() {
 
 SIGNATURE=$(makeSignature)
 
-curl -vs "$API_GATEWAY_URL$RESOURCE_URL" \
+curl -X GET "$API_GATEWAY_URL$RESOURCE_URL" \
     -H "Content-Type: application/json" \
     -H "x-ncp-apigw-timestamp:$TIMESTAMP" \
     -H "x-ncp-iam-access-key:$ACCESS_KEY" \
