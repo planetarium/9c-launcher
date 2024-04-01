@@ -101,11 +101,9 @@ async function playerUpdate(
 
   const exists = await fs.promises.stat(playerPath).catch(() => false);
 
-  if (exists) {
-    await fs.promises.rm(playerPath, { recursive: true });
+  if (!exists) {
+    await fs.promises.mkdir(playerPath, { recursive: true });
   }
-
-  await fs.promises.mkdir(playerPath, { recursive: true });
 
   console.log("[player] Clean up exists player");
 
@@ -122,7 +120,7 @@ async function playerUpdate(
     try {
       await spawnPromise("powershell", [
         "-Command",
-        `Expand-Archive -Path "${dlPath}" -DestinationPath "${playerPath}"`,
+        `Expand-Archive -Path "${dlPath}" -DestinationPath "${playerPath} -Force"`,
       ]);
     } catch (e) {
       win.webContents.send("go to error page", "player", {
