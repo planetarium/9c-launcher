@@ -30,7 +30,6 @@ import { useT } from "@transifex/react";
 import { useBalance } from "src/utils/useBalance";
 import { useUserStaking } from "src/utils/staking";
 import { useTx } from "src/utils/useTx";
-import { trackEvent } from "src/utils/mixpanel";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { Avatar } from "src/renderer/views/ClaimCollectionRewardsOverlay/ClaimContent";
 import { ExportOverlay } from "./ExportOverlay";
@@ -146,10 +145,6 @@ export default function UserInfo() {
           fetchResult({
             variables: { txId: txId!.data.stageTransaction },
           });
-        trackEvent("Staking/Claim", {
-          txId,
-          avatar: avatar.address,
-        });
       });
     },
   });
