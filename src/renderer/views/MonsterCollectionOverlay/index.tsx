@@ -10,7 +10,6 @@ import {
   useCheckPatchTableSubscription,
 } from "src/generated/graphql";
 import { sleep } from "src/utils";
-import { trackEvent } from "src/utils/mixpanel";
 import { OverlayProps } from "src/utils/types";
 import { useBalance } from "src/utils/useBalance";
 import { useLoginSession } from "src/utils/useLoginSession";
@@ -77,10 +76,6 @@ function MonsterCollectionOverlay({ isOpen, onClose }: OverlayProps) {
         currentNCG={balance}
         onStake={(amount) => {
           setLoading(true);
-          trackEvent("Staking/AmountChange", {
-            amount: amount.toString(),
-            previousAmount: userStaking.stateQuery.stakeState?.deposit,
-          });
           try {
             stake({
               variables: {
