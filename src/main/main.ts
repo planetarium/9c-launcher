@@ -3,7 +3,6 @@ import {
   configStore,
   get as getConfig,
   playerPath,
-  MIXPANEL_TOKEN,
   netenv,
   baseUrl,
   CONFIG_FILE_PATH,
@@ -30,11 +29,9 @@ import "core-js";
 import log from "electron-log";
 import * as utils from "src/utils";
 import { IGameStartOptions } from "../interfaces/ipc";
-import { init as createMixpanel } from "mixpanel";
 import { v4 as uuidv4 } from "uuid";
 import { Client as NTPClient } from "ntp-time";
 import { IConfig } from "src/interfaces/config";
-import { NineChroniclesMixpanel } from "./mixpanel";
 import {
   createWindow as createV2Window,
   setQuitting as setV2Quitting,
@@ -79,12 +76,6 @@ const updateOptions: IUpdateOptions = {
   downloadStarted: quitAllProcesses,
 };
 
-const mixpanelUUID = loadInstallerMixpanelUUID();
-const mixpanel: NineChroniclesMixpanel | undefined =
-  getConfig("Mixpanel") && process.env.NODE_ENV === "production"
-    ? new NineChroniclesMixpanel(createMixpanel(MIXPANEL_TOKEN), mixpanelUUID)
-    : undefined;
-
 client
   .syncTime()
   .then((time) => {
@@ -114,17 +105,6 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.on("open-url", (_, url) => win && send(win, IPC_OPEN_URL, url));
-
-  let quitTracked = false;
-  app.on("before-quit", (event) => {
-    if (mixpanel != null && !quitTracked) {
-      event.preventDefault();
-      mixpanel?.track("Launcher/Quit", undefined, () => {
-        quitTracked = true;
-        app.quit();
-      });
-    }
-  });
 
   cleanUp();
 
@@ -270,10 +250,6 @@ async function initializeApp() {
 
     if (app.commandLine.hasSwitch("protocol"))
       send(win!, IPC_OPEN_URL, process.argv[process.argv.length - 1]);
-
-    mixpanel?.track("Launcher/Start", {
-      isV2: true,
-    });
   });
 
   app.on("quit", (event) => {
@@ -350,10 +326,6 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.on("login", async () => {
-    mixpanel?.login();
-  });
-
   ipcMain.on("get-aws-sink-cloudwatch-guid", async (event) => {
     const localAppData = process.env.localappdata;
     if (process.platform === "win32" && localAppData !== undefined) {
@@ -375,19 +347,6 @@ function initializeIpc() {
     }
 
     event.returnValue = "Not supported platform.";
-  });
-
-  ipcMain.on(
-    "mixpanel-track-event",
-    async (_, eventName: string, param: object) => {
-      mixpanel?.track(eventName, {
-        ...param,
-      });
-    },
-  );
-
-  ipcMain.on("mixpanel-alias", async (_, alias: string) => {
-    mixpanel?.alias(alias);
   });
 
   ipcMain.on("online-status-changed", (event, status: "online" | "offline") => {
@@ -449,32 +408,6 @@ function cleanUp() {
   cleanUpLockfile();
 }
 
-function loadInstallerMixpanelUUID(): string {
-  const planetariumPath =
-    process.platform === "win32"
-      ? path.join(process.env.LOCALAPPDATA as string, "planetarium")
-      : app.getPath("userData");
-  if (!fs.existsSync(planetariumPath)) {
-    fs.mkdirSync(planetariumPath, {
-      recursive: true,
-    });
-  }
-
-  const guidPath = path.join(planetariumPath, ".installer_mixpanel_uuid");
-
-  if (!fs.existsSync(guidPath)) {
-    const newUUID = uuidv4();
-    console.log(`The installer mixpanel UUID doesn't exist at '${guidPath}'.`);
-    fs.writeFileSync(guidPath, newUUID);
-    console.log(`Created new UUID ${newUUID} and stored.`);
-    return newUUID;
-  } else {
-    return fs.readFileSync(guidPath, {
-      encoding: "utf-8",
-    });
-  }
-}
-
 async function quitAllProcesses(reason: string = "default") {
   if (gameNode === null) return;
   const pid = gameNode.pid!;
@@ -520,15 +453,8 @@ function createTray(iconPath: string) {
 }
 
 function relaunch() {
-  if (mixpanel !== undefined) {
-    mixpanel.track("Launcher/Relaunch", undefined, () => {
-      app.relaunch();
-      app.exit();
-    });
-  } else {
-    app.relaunch();
-    app.exit();
-  }
+  app.relaunch();
+  app.exit();
 }
 
 function initCheckForUpdateWorker(

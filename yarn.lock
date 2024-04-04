@@ -7659,7 +7659,6 @@ __metadata:
     lockfile: ^1.0.4
     material-ui-popup-state: ^1.6.1
     mini-css-extract-plugin: ^2.7.6
-    mixpanel: ^0.13.0
     mobx: ^6.7.0
     mobx-react: ^7.6.0
     mobx-react-router: ^5.0.0
@@ -13691,16 +13690,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"https-proxy-agent@npm:5.0.0":
-  version: 5.0.0
-  resolution: "https-proxy-agent@npm:5.0.0"
-  dependencies:
-    agent-base: 6
-    debug: 4
-  checksum: 165bfb090bd26d47693597661298006841ab733d0c7383a8cb2f17373387a94c903a3ac687090aa739de05e379ab6f868bae84ab4eac288ad85c328cd1ec9e53
-  languageName: node
-  linkType: hard
-
 "https-proxy-agent@npm:^2.2.1":
   version: 2.2.4
   resolution: "https-proxy-agent@npm:2.2.4"
@@ -16110,15 +16099,6 @@ __metadata:
     minipass: ^3.0.0
     yallist: ^4.0.0
   checksum: f1fdeac0b07cf8f30fcf12f4b586795b97be856edea22b5e9072707be51fc95d41487faec3f265b42973a304fe3a64acd91a44a3826a963e37b37bafde0212c3
-  languageName: node
-  linkType: hard
-
-"mixpanel@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "mixpanel@npm:0.13.0"
-  dependencies:
-    https-proxy-agent: 5.0.0
-  checksum: b7486d763aa8f57670e99590db0488bc722178b8844c0508d127c8f1b160fd36053e3e90f0cc11d0669dfd7778b170b3638200b481005c6583122ae343c5f069
   languageName: node
   linkType: hard
 
