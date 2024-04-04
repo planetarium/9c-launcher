@@ -123,7 +123,6 @@ function SwapPage() {
       setDebounce(false);
     }, 15000);
 
-    ipcRenderer.send("mixpanel-track-event", "Launcher/Swap WNCG");
     if (!addressVerify(recipient, true) || isOutOfRange) {
       return;
     }
