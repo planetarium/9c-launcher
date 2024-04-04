@@ -19,7 +19,6 @@ import {
 } from "src/renderer/components/ui/Select";
 import { PasswordField } from "src/renderer/components/ui/TextField";
 import { T } from "src/renderer/i18n";
-import { trackEvent } from "src/utils/mixpanel";
 import { useStore } from "src/utils/useStore";
 
 const transifexTags = "v2/login-view";
@@ -71,8 +70,6 @@ function LoginView() {
       localStorage.setItem("lastAddress", address);
       const account = (await accountStore.getAccount(address, password))!;
       await accountStore.login(account, password);
-      ipcRenderer.send("mixpanel-alias", address);
-      trackEvent("Launcher/Login");
 
       _refiner("setProject", "43e75b10-c10d-11ec-a73a-958e7574f4fc");
       _refiner("identifyUser", {
@@ -85,7 +82,6 @@ function LoginView() {
       history.push("/lobby");
     } catch (error) {
       setInvalid(true);
-      trackEvent("Launcher/LoginFailed");
       console.error(error);
     }
   };
