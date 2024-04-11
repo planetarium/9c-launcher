@@ -26,19 +26,3 @@ export function get<K extends keyof IConfig>(
   // @ts-expect-error - The overload doesn't work well with optional arguments.
   return configStore.get(key, defaultValue);
 }
-
-const getLocalApplicationDataPath = (): string => {
-  if (process.platform === "darwin") {
-    return path.join(app.getPath("home"), ".local", "share");
-  }
-  return path.join(app.getPath("home"), "AppData", "Local");
-};
-
-export const blockchainStoreDirParent =
-  get("BlockchainStoreDirParent") === ""
-    ? path.join(getLocalApplicationDataPath(), "planetarium")
-    : get("BlockchainStoreDirParent");
-
-export function getBlockChainStorePath(): string {
-  return path.join(blockchainStoreDirParent, get("BlockchainStoreDirName"));
-}
