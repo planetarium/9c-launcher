@@ -1,52 +1,3 @@
-import Store from "electron-store";
-import { GraphQLClient } from "graphql-request";
-import path from "path";
-import { getSdk } from "./generated/graphql-request";
-import { IConfig } from "./interfaces/config";
-import { RpcEndpoints } from "./interfaces/registry";
-
-export const { app } =
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  process.type === "browser"
-    ? require("electron")
-    : require("@electron/remote");
-
-if (process.type === "browser") Store.initRenderer();
-
-export function getConfigPath() {
-  return app.getPath("userData");
-}
-export const configFileName = "config.json";
-export const CONFIG_FILE_PATH = path.join(getConfigPath(), configFileName);
-
-export const configStore = new Store<IConfig>({
-  cwd: getConfigPath(),
-});
-
-const network = configStore.get(
-  "Network",
-  process.env.DEFAULT_NETWORK || "main",
-);
-
-// Removed 9c prefix
-export const netenv = network === "9c-main" ? "main" : network;
-export const userConfigStore = new Store<IConfig>({
-  name: network === "9c-main" ? "config" : `config.${network}`,
-});
-
-export const playerPath = path.join(
-  app.getPath("userData"),
-  `player/${netenv}`,
-);
-
-const LocalServerUrl = (): string => {
-  return `${LocalServerHost().host}:${LocalServerPort().port}`;
-};
-
-const GraphQLServer = (): string => {
-  return `${LocalServerUrl}/graphql`;
-};
-
 export class NodeInfo {
   constructor(gqlUrl: string, grpcUrl: string) {
     this.gqlUrl = gqlUrl;
@@ -187,6 +138,34 @@ const clientWeightedSelector = (nodeList: NodeInfo[]): NodeInfo => {
   ];
 };
 
+export async function initializeNode(
+  rpcEndpoints: RpcEndpoints,
+  quick: boolean = false,
+): Promise<NodeInfo> {
+  console.log("node selector called");
+  const relativeTipLimit = get("RemoteClientStaleTipLimit", 20) ?? Infinity;
+  const nodeList = NonStaleNodeList(
+    await NodeList(rpcEndpoints, quick),
+    relativeTipLimit,
+  );
+  if (nodeList.length < 1) {
+    throw Error("can't find available remote node.");
+  }
+  const nodeInfo = clientWeightedSelector(nodeList);
+  console.log(
+    `selected node: ${nodeInfo.gqlUrl})}, clients: ${nodeInfo.clientCount}`,
+  );
+  return nodeInfo;
+}
+
+const LocalServerUrl = (): string => {
+  return `${LocalServerHost().host}:${LocalServerPort().port}`;
+};
+
+const GraphQLServer = (): string => {
+  return `${LocalServerUrl}/graphql`;
+};
+
 const RpcServerHost = (): { host: string; notDefault: boolean } => {
   const host = process.env.NC_RPC_SERVER_HOST;
   return host == null
@@ -221,48 +200,6 @@ const LocalServerPort = (): { port: number; notDefault: boolean } => {
   return { port: 23061, notDefault: false };
 };
 
-const getLocalApplicationDataPath = (): string => {
-  if (process.platform === "darwin") {
-    return path.join(app.getPath("home"), ".local", "share");
-  }
-  return path.join(app.getPath("home"), "AppData", "Local");
-};
-
-export const blockchainStoreDirParent =
-  get("BlockchainStoreDirParent") === ""
-    ? path.join(getLocalApplicationDataPath(), "planetarium")
-    : get("BlockchainStoreDirParent");
-
-export function get<K extends keyof IConfig>(
-  key: K,
-  defaultValue?: Required<IConfig>[K],
-): IConfig[K] {
-  if (userConfigStore.has(key)) {
-    return userConfigStore.get(key);
-  }
-
-  // @ts-expect-error - The overload doesn't work well with optional arguments.
-  return configStore.get(key, defaultValue);
-}
-
-export function getBlockChainStorePath(): string {
-  return path.join(blockchainStoreDirParent, get("BlockchainStoreDirName"));
-}
-
-export const REQUIRED_DISK_SPACE = 20n * 1000n * 1000n * 1000n;
-export const SNAPSHOT_SAVE_PATH = app.getPath("userData");
-export const LEGACY_MAC_GAME_PATH = path.join(
-  playerPath,
-  "9c.app/Contents/MacOS/9c",
-);
-export const LEGACY_WIN_GAME_PATH = path.join(playerPath, "9c.exe");
-export const LEGACY_LINUX_GAME_PATH = path.join(playerPath, "9c");
-export const MAC_GAME_PATH = path.join(
-  playerPath,
-  "NineChronicles.app/Contents/MacOS/NineChronicles",
-);
-export const WIN_GAME_PATH = path.join(playerPath, "NineChronicles.exe");
-export const LINUX_GAME_PATH = path.join(playerPath, "NineChronicles");
 export const LOCAL_SERVER_URL = LocalServerUrl();
 export const GRAPHQL_SERVER_URL = GraphQLServer();
 export const LOCAL_SERVER_HOST: string = LocalServerHost().host;
@@ -274,59 +211,3 @@ export const CUSTOM_SERVER: boolean =
   LocalServerPort().notDefault ||
   RpcServerHost().notDefault ||
   RpcServerPort().notDefault;
-export const TRANSIFEX_TOKEN = "1/9ac6d0a1efcda679e72e470221e71f4b0497f7ab";
-export const DEFAULT_DOWNLOAD_BASE_URL = "https://release.nine-chronicles.com";
-export const installerName = "NineChroniclesInstaller.exe";
-
-export const EXECUTE_PATH: {
-  [k in NodeJS.Platform]: string | null;
-} = {
-  aix: null,
-  android: null,
-  darwin: MAC_GAME_PATH,
-  freebsd: null,
-  haiku: null,
-  linux: LINUX_GAME_PATH,
-  openbsd: null,
-  sunos: null,
-  win32: WIN_GAME_PATH,
-  cygwin: WIN_GAME_PATH,
-  netbsd: null,
-};
-export const LEGACY_EXECUTE_PATH: {
-  [k in NodeJS.Platform]: string | null;
-} = {
-  aix: null,
-  android: null,
-  darwin: LEGACY_MAC_GAME_PATH,
-  freebsd: null,
-  haiku: null,
-  linux: LEGACY_LINUX_GAME_PATH,
-  openbsd: null,
-  sunos: null,
-  win32: LEGACY_WIN_GAME_PATH,
-  cygwin: LEGACY_WIN_GAME_PATH,
-  netbsd: null,
-};
-export const baseUrl = get("DownloadBaseURL", DEFAULT_DOWNLOAD_BASE_URL);
-export const installerUrl = path.join(DEFAULT_DOWNLOAD_BASE_URL, installerName);
-
-export async function initializeNode(
-  rpcEndpoints: RpcEndpoints,
-  quick: boolean = false,
-): Promise<NodeInfo> {
-  console.log("node selector called");
-  const relativeTipLimit = get("RemoteClientStaleTipLimit", 20) ?? Infinity;
-  const nodeList = NonStaleNodeList(
-    await NodeList(rpcEndpoints, quick),
-    relativeTipLimit,
-  );
-  if (nodeList.length < 1) {
-    throw Error("can't find available remote node.");
-  }
-  const nodeInfo = clientWeightedSelector(nodeList);
-  console.log(
-    `selected node: ${nodeInfo.gqlUrl})}, clients: ${nodeInfo.clientCount}`,
-  );
-  return nodeInfo;
-}
