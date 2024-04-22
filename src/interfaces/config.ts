@@ -1,43 +1,43 @@
 export interface IConfig {
-  ConfigVersion: number;
-  AppProtocolVersion: string;
-  GenesisBlockPath: string;
-  TrustedAppProtocolVersionSigners: string[];
-  BlockchainStoreDirParent: string;
-  BlockchainStoreDirName: string;
-  Locale: string;
-  Workers: number;
-  Confirmations: number;
-  Mixpanel: boolean;
-  Sentry: boolean;
-  MuteTeaser: boolean;
-  LogSizeBytes: number;
-  Network: string;
-  SwapAddress: string | undefined;
-  DataProviderUrl: string | undefined;
-  LaunchPlayer: boolean;
-  RemoteNodeList: string[];
-  RemoteClientStaleTipLimit: number;
-  DownloadBaseURL: string;
-  UseUpdate: boolean;
-  OnboardingPortalUrl: string;
-  ActivationCodeUrl: string;
-  KeystoreBackupDocumentationUrl: string;
-  UnitySentrySampleRate: number;
-  DiscordUrl: string;
-  MarketServiceUrl: string;
-  TrayOnClose: boolean;
-  Planet: string;
-  PlanetRegistryUrl: string;
-  PlayerUpdateRetryCount: number;
-  PatrolRewardServiceUrl: string;
-  MeadPledgePortalUrl: string;
-  SeasonPassServiceUrl: string;
-  IAPServiceHostUrl: string;
-  AppleMarketUrl: string;
-  GoogleMarketUrl: string;
-  GuildServiceUrl: string | undefined;
-  GuildIconBucket: string | undefined;
-  Maintenance: boolean;
-  SwapAvailabilityCheckServiceUrl: string;
+  System: {
+    AppProtocolVersion: string;
+    ConfigVersion: number;
+    Network: string;
+    URL: {
+      Client: {
+        DataProviderUrl: string;
+        GenesisBlockPath: string;
+        IAPServiceHostUrl: string;
+        MarketServiceUrl: string;
+        OnboardingPortalUrl: string;
+        PatrolRewardServiceUrl: string;
+        SeasonPassServiceUrl: string;
+        SwapAvailabilityCheckServiceUrl: string;
+      };
+      Launcher: {
+        ActivationCodeUrl: string;
+        AppleMarketUrl: string;
+        DiscordUrl: string;
+        GoogleMarketUrl: string;
+        KeystoreBackupDocumentationUrl: string;
+        MeadPledgePortalUrl: string;
+        PlanetRegistryUrl: string;
+      };
+    };
+    LogSizeBytes: number;
+    Maintenance: boolean;
+    RemoteNodeList: string[];
+    SwapAddress: string;
+    TrustedAppProtocolVersionSigners: string[];
+    UnitySentrySampleRate: number;
+  };
+  User: {
+    LaunchPlayer: boolean;
+    Locale: string;
+    Mixpanel: boolean;
+    Planet: string;
+    PlayerUpdateRetryCount: number;
+    Sentry: boolean;
+    TrayOnClose: boolean;
+  };
 }
