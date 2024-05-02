@@ -164,61 +164,36 @@ function SwapPage() {
           onFocus={() => setRecipientWarning(false)}
         />
       </FormControl>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Box>
-          <SwapTitle>
-            <T _str="Send Amount" _tags={transifexTags} />
-          </SwapTitle>
-          <SwapSecondTitle>
-            <T _str="Amount of NCG to send." _tags={transifexTags} />
-          </SwapSecondTitle>
-        </Box>
-        <Box display="flex" flexDirection="column" alignItems="end">
-          <SwapTitle>
-            <T _str="Receive Amount" _tags={transifexTags} />
-          </SwapTitle>
-          <SwapSecondTitle>
-            <T _str="Amount of WNCG to be received" _tags={transifexTags} />
-          </SwapSecondTitle>
-        </Box>
-      </Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <FormControl style={{ flexBasis: "240px" }}>
-          <SwapInput
-            type="number"
-            name="amount"
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              setTempAmount(inputValue === "" ? "" : inputValue);
-              try {
-                setAmount(
-                  new Decimal(
-                    inputValue === "" ? "100" : inputValue,
-                  ).toDecimalPlaces(2),
-                );
-              } catch (error) {
-                console.error("Invalid decimal value:", error);
-              }
-            }}
-            onBlur={() => setTempAmount(amount.toFixed(2))}
-            error={amountWarning}
-            endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
-            defaultValue={100}
-            value={tempAmount}
-          />
-        </FormControl>
-        <Icon component={ArrowForward} />
-        <FormControl style={{ flexBasis: "240px" }}>
-          <SwapInput
-            disabled
-            type="number"
-            name="amount"
-            error={amountWarning}
-            endAdornment={<InputAdornment position="end">WNCG</InputAdornment>}
-            value={isOutOfRange ? "" : WNCGAmount.toFixed(2)}
-          />
-        </FormControl>
-      </Box>
+      <SwapTitle>
+        <T _str="Send Amount" _tags={transifexTags} />
+      </SwapTitle>
+      <SwapSecondTitle>
+        <T _str="Amount of NCG to send." _tags={transifexTags} />
+      </SwapSecondTitle>
+      <FormControl fullWidth>
+        <SwapInput
+          type="number"
+          name="amount"
+          onChange={(e) => {
+            const inputValue = e.target.value;
+            setTempAmount(inputValue === "" ? "" : inputValue);
+            try {
+              setAmount(
+                new Decimal(
+                  inputValue === "" ? "100" : inputValue,
+                ).toDecimalPlaces(2),
+              );
+            } catch (error) {
+              console.error("Invalid decimal value:", error);
+            }
+          }}
+          onBlur={() => setTempAmount(amount.toFixed(2))}
+          error={amountWarning}
+          endAdornment={<InputAdornment position="end">NCG</InputAdornment>}
+          defaultValue={100}
+          value={tempAmount}
+        />
+      </FormControl>
       <b>
         <T
           _str="(Balance: {ncg} NCG)"
