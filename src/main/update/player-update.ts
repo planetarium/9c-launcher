@@ -120,7 +120,7 @@ async function playerUpdate(
     try {
       await spawnPromise("powershell", [
         "-Command",
-        `Expand-Archive -Path "${dlPath}" -DestinationPath "${playerPath} -Force"`,
+        `Expand-Archive -Path "${dlPath}" -DestinationPath "${playerPath}" -Force`,
       ]);
     } catch (e) {
       win.webContents.send("go to error page", "player", {
