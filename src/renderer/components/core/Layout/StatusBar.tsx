@@ -44,7 +44,9 @@ function StatusBar() {
           <Button
             data-testid="play"
             variant="primary"
-            disabled={loading || !data?.stateQuery.pledge.approved}
+            disabled={
+              loading || !data?.stateQuery.pledge.approved || game.isGameBlocked
+            }
             onClick={() => {
               const privateKeyBytes = loginSession.privateKey.toBytes();
               return game.startGame(
