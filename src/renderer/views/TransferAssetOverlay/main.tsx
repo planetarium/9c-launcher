@@ -89,27 +89,9 @@ const DescriptionTitleMessage = styled(Typography)({
 
 function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
   const planetID = useStore("planetary").planet.id;
+  const isAvailable = !useStore("transfer").isSwapBlocked;
   const isOdin = planetID === "0x000000000000" || planetID === "0x100000000000";
   const [menuItem, setMenuItem] = useState<MenuItems>(MenuItems.TRANSFER);
-  const [isAvailable, setIsAvailable] = useState<boolean>(true);
-
-  useEffect(() => {
-    fetch(
-      get(
-        "SwapAvailabilityCheckServiceUrl",
-        "https://check.nine-chronicles.com/updates.json",
-      ),
-    )
-      .then((res) => {
-        if (res.status === 200) {
-          setIsAvailable(false);
-        }
-      })
-      .catch(() => {
-        console.error("Failed to fetch Availablity");
-        setIsAvailable(true);
-      });
-  }, []);
 
   const theme = useMemo(
     () =>

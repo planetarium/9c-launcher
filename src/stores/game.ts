@@ -8,6 +8,8 @@ export default class GameStore {
   private _isGameStarted: boolean = false;
 
   private _language: string;
+  public _country: string = "KR";
+  public _whitelist: boolean = false;
   rootStore: RootStore;
 
   public constructor(RootStore: RootStore) {
@@ -32,6 +34,16 @@ export default class GameStore {
   @action
   public setGameStarted(set: boolean) {
     this._isGameStarted = set;
+  }
+
+  @action
+  public setGeoBlock(country: string, whitelist: boolean) {
+    (this._country = country), (this._whitelist = whitelist);
+  }
+
+  @computed
+  get isGameBlocked(): boolean {
+    return ["KR"].includes(this._country) && !this._whitelist;
   }
 
   @action
