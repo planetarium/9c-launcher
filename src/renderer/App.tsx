@@ -14,7 +14,7 @@ import { Planet } from "src/interfaces/registry";
 import { NodeInfo } from "src/config";
 
 function App() {
-  const { planetary, account } = useStore();
+  const { planetary, account, game } = useStore();
   const client = useApolloClient();
   useEffect(() => {
     ipcRenderer
@@ -22,6 +22,9 @@ function App() {
       .then((info: [Planet[], NodeInfo]) => {
         planetary.init(info[0], info[1]);
       });
+    ipcRenderer
+      .invoke("check-geoblock")
+      .then((v) => game.setGeoBlock(v.country, v.isWhiteList ?? false));
   }, []);
 
   if (planetary.node === null) return null;
