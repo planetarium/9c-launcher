@@ -88,7 +88,8 @@ const DescriptionTitleMessage = styled(Typography)({
 });
 
 function TransferAssetOverlay({ isOpen, onClose }: OverlayProps) {
-  const isOdin = useStore("planetary").planet.id === "0x000000000000";
+  const planetID = useStore("planetary").planet.id;
+  const isOdin = planetID === "0x000000000000" || planetID === "0x100000000000";
   const [menuItem, setMenuItem] = useState<MenuItems>(MenuItems.TRANSFER);
   const [isAvailable, setIsAvailable] = useState<boolean>(true);
 
