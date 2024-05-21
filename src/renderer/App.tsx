@@ -24,7 +24,7 @@ function App() {
       });
     ipcRenderer
       .invoke("check-geoblock")
-      .then((v) => game.setGeoBlock(v.country, v.isWhiteList ?? false));
+      .then((v) => game.setGeoBlock(v.country, v.isWhitelist ?? false));
   }, []);
 
   if (planetary.node === null) return null;
