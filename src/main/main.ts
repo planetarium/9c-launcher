@@ -71,6 +71,7 @@ const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
 let registry: Planet[];
 let remoteNode: NodeInfo;
+let geoBlock: { ip: string; country: string; isWhiteList?: boolean };
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
@@ -223,6 +224,7 @@ async function initializeApp() {
     remoteInitialize();
 
     win = await createV2Window();
+    await initGeoBlocking();
 
     process.on("uncaughtException", async (error) => {
       if (error.message.includes("system error -86")) {
@@ -400,6 +402,13 @@ function initializeIpc() {
       await utils.sleep(100);
     }
     return [registry, remoteNode];
+  });
+
+  ipcMain.handle("check-geoblock", async () => {
+    while (!geoBlock) {
+      await utils.sleep(100);
+    }
+    return geoBlock;
   });
 
   ipcMain.on("all-rpc-failed", (event) => {
@@ -594,5 +603,26 @@ async function manualPlayerUpdate() {
     }
   } catch (e) {
     console.error("Manual Player Update Failed:", e);
+  }
+}
+
+async function initGeoBlocking() {
+  try {
+    const response = await fetch(
+      "https://country-checker.nine-chronicles.com/",
+    );
+    geoBlock = await response.json();
+
+    return geoBlock.country;
+  } catch (error) {
+    console.error("Failed to fetch geo data:", error);
+    win?.webContents
+      .executeJavaScript('localStorage.getItem("country")')
+      .then((result) => {
+        geoBlock.isWhiteList = false;
+        if (result == null) {
+          geoBlock.country = "KR";
+        } else geoBlock.country = result;
+      });
   }
 }

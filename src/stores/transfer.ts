@@ -186,4 +186,12 @@ export default class TransferStore implements ITransferStore {
     this.balance = balance;
     return balance;
   };
+
+  @computed
+  get isSwapBlocked(): boolean {
+    return (
+      ["JP", "KR"].includes(this.rootStore.game._country) &&
+      !this.rootStore.game._whitelist
+    );
+  }
 }

@@ -1,3 +1,4 @@
+import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -11,6 +12,7 @@ function LobbyView() {
     useCheckContract(true);
   const history = useHistory();
   const { search } = useLocation();
+  localStorage.setItem("country", game._country);
 
   useEffect(() => {
     if (loading || approved || search !== "") return;
@@ -19,7 +21,7 @@ function LobbyView() {
   }, [history, loading, approved, requested, planetary.planet]);
 
   useEffect(() => {
-    if (account.loginSession && approved) {
+    if (account.loginSession && approved && !game.isGameBlocked) {
       stopPolling();
       const privateKeyBytes = account.loginSession.privateKey.toBytes();
       game.startGame(
@@ -29,7 +31,13 @@ function LobbyView() {
         planetary.planet.id,
       );
     }
-  }, [account.loginSession, approved, game, planetary.planet]);
+  }, [
+    account.loginSession,
+    approved,
+    game,
+    planetary.planet,
+    game.isGameBlocked,
+  ]);
 
   useEffect(() => {
     if (error) history.push("/error/relaunch");
