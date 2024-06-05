@@ -190,7 +190,7 @@ export default class TransferStore implements ITransferStore {
   @computed
   get isSwapBlocked(): boolean {
     return (
-      ["JP"].includes(this.rootStore.game._country) &&
+      ["JP", "KR"].includes(this.rootStore.game._country) &&
       !this.rootStore.game._whitelist
     );
   }
