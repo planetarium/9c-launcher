@@ -21,9 +21,12 @@ setInterval(() => {
   checkForPlayerUpdate();
 }, 60 * 1000);
 
-setInterval(() => {
-  checkForLauncherUpdate();
-}, 60 * 5 * 1000);
+setInterval(
+  () => {
+    checkForLauncherUpdate();
+  },
+  60 * 5 * 1000,
+);
 
 async function checkForPlayerUpdate() {
   sendLog("info", "Check for player update");
