@@ -20,13 +20,4 @@ export const WINDOW_DEFAULT_OPTIONS: Electron.BrowserWindowConstructorOptions =
     //icon: join(app.getAppPath(), logoImage),
   };
 
-export const LOADING_DEFAULT_OPTIONS: Electron.BrowserWindowConstructorOptions =
-  {
-    width: 400,
-    height: 400,
-    resizable: false,
-    frame: false,
-    autoHideMenuBar: true,
-  };
-
 export const LAUNCHER_PROTOCOL = "ninechronicles-launcher";
