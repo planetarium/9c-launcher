@@ -13,16 +13,17 @@ import {
   useClaimStakeRewardLazyQuery,
   useTransactionResultLazyQuery,
   useCheckPatchTableSubscription,
+  useStakeLazyQuery,
 } from "src/generated/graphql";
 
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import LaunchIcon from "@material-ui/icons/Launch";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 import goldIconUrl from "src/renderer/resources/ui-main-icon-gold.png";
 import monsterIconUrl from "src/renderer/resources/monster.png";
 import { getRemain } from "src/utils/monsterCollection/utils";
 import ClaimCollectionRewardsOverlay from "src/renderer/views/ClaimCollectionRewardsOverlay";
+import MigrateCollectionRewardsOverlay from "src/renderer/views/MigrateCollectionRewardsOverlay";
 import { Button, ClaimButton } from "./ClaimButton";
 import { clipboard } from "electron";
 import { toast } from "react-hot-toast";
@@ -37,6 +38,7 @@ import deepEqual from "deep-equal";
 import { StakeStatusButton } from "./StakeStatus";
 import { useStore } from "src/utils/useStore";
 import Decimal from "decimal.js";
+import { MigrateButton } from "./MigrateButton";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -93,29 +95,47 @@ export default function UserInfo() {
   const isCollecting = !!startedBlockIndex && startedBlockIndex > 0;
   const [claimLoading, setClaimLoading] = useState<boolean>(false);
   const [isMigratable, setIsMigratable] = useState<boolean>(
-    isCollecting &&
+    !!deposit &&
+      new Decimal(deposit).gt(0) &&
+      tip !== 0 &&
+      isCollecting &&
       !deepEqual(stakeRewards, latestSheet?.stateQuery.latestStakeRewards, {
         strict: true,
       }),
   );
+
   useEffect(() => {
     const txStatus = result?.transaction.transactionResult.txStatus;
     if (!txStatus || txStatus === TxStatus.Staging) return;
     stopPolling?.();
     setClaimLoading(false);
 
-    if (txStatus === TxStatus.Success) {
-      toast.success(
-        t("Successfully sent rewards to {name} #{address}", {
-          _tags: "v2/monster-collection",
-          name: claimedAvatar.current!.name,
-          address: claimedAvatar.current!.address.slice(2),
-        }),
-      );
-      refetch();
+    if (canClaim) {
+      if (txStatus === TxStatus.Success) {
+        toast.success(
+          t("Successfully sent rewards to {name} #{address}", {
+            _tags: "v2/monster-collection",
+            name: claimedAvatar.current!.name,
+            address: claimedAvatar.current!.address.slice(2),
+          }),
+        );
+        refetch();
+      } else {
+        toast.error(t("Failed to claim your reward."));
+        console.error("Claim transaction failed: ", result);
+      }
     } else {
-      toast.error(t("Failed to claim your reward."));
-      console.error("Claim transaction failed: ", result);
+      if (txStatus === TxStatus.Success) {
+        toast.success(
+          t("Successfully migrated your staking.", {
+            _tags: "v2/monster-collection",
+          }),
+        );
+        refetch();
+      } else {
+        toast.error(t("Failed to migrate your staking."));
+        console.error("Migration transaction failed: ", result);
+      }
     }
   }, [result]);
 
@@ -148,9 +168,22 @@ export default function UserInfo() {
       });
     },
   });
+
+  const [requestMigrationTx] = useStakeLazyQuery({
+    fetchPolicy: "network-only",
+    onCompleted: ({ actionTxQuery: { stake } }) => {
+      tx(stake).then((txId) => {
+        if (txId!.data)
+          fetchResult({
+            variables: { txId: txId!.data.stageTransaction },
+          });
+      });
+    },
+  });
   const tx = useTx();
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openMigration, setOpenMigration] = useState<boolean>(false);
 
   const gold = useBalance();
 
@@ -199,7 +232,6 @@ export default function UserInfo() {
 
   const t = useT();
 
-  const [isCollectionOpen, setCollectionOpen] = useState<boolean>(false);
   const [isExportKeyOpen, setExportKeyOpen] = useState<boolean>(false);
 
   if (!loginSession) return null;
@@ -220,13 +252,12 @@ export default function UserInfo() {
         <img src={goldIconUrl} alt="gold" />
         <strong>{Number(gold)}</strong>
       </UserInfoItem>
-      <UserInfoItem onClick={() => setCollectionOpen(true)}>
+      <UserInfoItem>
         <img src={monsterIconUrl} width={28} alt="monster collection icon" />
         <strong>{deposit?.replace(/\.0+$/, "") || "0"}</strong>
         {isCollecting && !canClaim && tip !== 0
           ? ` - Remaining: ${remainingText}`
           : " (-)"}
-        <LaunchIcon />
         {canClaim && (
           <ClaimButton
             loading={claimLoading}
@@ -236,7 +267,12 @@ export default function UserInfo() {
           />
         )}
         {isCollecting && !canClaim && tip !== 0 && isMigratable && (
-          <Button>Migrate Stake</Button>
+          <MigrateButton
+            loading={claimLoading}
+            onClick={() => {
+              setOpenMigration(true);
+            }}
+          />
         )}
         {isCollecting && (
           <StakeStatusButton onClick={() => stakingStastics()} />
@@ -258,6 +294,24 @@ export default function UserInfo() {
             }
 
             setOpenDialog(false);
+          }}
+        />
+        <MigrateCollectionRewardsOverlay
+          isOpen={openMigration}
+          onClose={() => setOpenMigration(false)}
+          tip={tip}
+          onConfirm={() => {
+            setClaimLoading(true);
+            if (loginSession.publicKey) {
+              requestMigrationTx({
+                variables: {
+                  publicKey: loginSession.publicKey.toHex("uncompressed"),
+                  amount: new Decimal(deposit!).toNumber(),
+                },
+              });
+            }
+
+            setOpenMigration(false);
           }}
         />
       </UserInfoItem>
