@@ -267,9 +267,6 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                   _tags={transifexTags}
                 />
               </Checkbox>
-              <GroupTitle>
-                <T _str="Send Information" _tags={transifexTags} />
-              </GroupTitle>
             </FormSection>
           </Form>
           <Button

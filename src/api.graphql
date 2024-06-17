@@ -181,18 +181,6 @@ query StateQueryMonsterCollection($agentAddress: Address!) {
   }
 }
 
-mutation Collect($level: Int!) {
-  action {
-    monsterCollect(level: $level)
-  }
-}
-
-mutation ClaimCollectionReward($address: Address!) {
-  action {
-    claimMonsterCollectionReward(avatarAddress: $address)
-  }
-}
-
 mutation Transfer(
   $recipient: Address!
   $amount: String!
