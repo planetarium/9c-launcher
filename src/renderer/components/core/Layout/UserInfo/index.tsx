@@ -28,7 +28,6 @@ import { clipboard } from "electron";
 import { toast } from "react-hot-toast";
 import { useT } from "@transifex/react";
 import { useBalance } from "src/utils/useBalance";
-import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverlay";
 import { useUserStaking } from "src/utils/staking";
 import { useTx } from "src/utils/useTx";
 import { trackEvent } from "src/utils/mixpanel";
@@ -267,10 +266,6 @@ export default function UserInfo() {
           }}
         />
       </UserInfoItem>
-      <MonsterCollectionOverlay
-        isOpen={isCollectionOpen}
-        onClose={() => setCollectionOpen(false)}
-      />
       <ExportOverlay
         isOpen={isExportKeyOpen}
         onClose={() => setExportKeyOpen(false)}
