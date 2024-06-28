@@ -6,6 +6,7 @@ import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 import goldIconUrl from "src/renderer/resources/ui-main-icon-gold.png";
+import monsterIconUrl from "src/renderer/resources/monster.png";
 import { clipboard } from "electron";
 import { toast } from "react-hot-toast";
 import { useT } from "@transifex/react";
@@ -14,6 +15,8 @@ import { useLoginSession } from "src/utils/useLoginSession";
 import { ExportOverlay } from "./ExportOverlay";
 import { useStore } from "src/utils/useStore";
 import Decimal from "decimal.js";
+import { NoticeButton } from "./Button";
+import { NoticeOverlay } from "./NoticeOverlay";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -60,6 +63,7 @@ export default function UserInfo() {
   const t = useT();
 
   const [isExportKeyOpen, setExportKeyOpen] = useState<boolean>(false);
+  const [isNoticeOpen, setNoticeOpen] = useState<boolean>(false);
 
   if (!loginSession) return null;
 
@@ -83,6 +87,14 @@ export default function UserInfo() {
         isOpen={isExportKeyOpen}
         onClose={() => setExportKeyOpen(false)}
       />
+      <UserInfoItem>
+        <img src={monsterIconUrl} width={28} alt="monster collection icon" />
+        <NoticeButton onClick={() => setNoticeOpen(true)} />
+        <NoticeOverlay
+          isOpen={isNoticeOpen}
+          onClose={() => setNoticeOpen(false)}
+        />
+      </UserInfoItem>
     </UserInfoStyled>
   );
 }
