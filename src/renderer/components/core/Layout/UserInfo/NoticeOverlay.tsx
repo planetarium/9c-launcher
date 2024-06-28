@@ -7,7 +7,7 @@ import { OverlayProps } from "src/utils/types";
 
 const MainPageContainer = styled(OverlayBase)({
   "&&": {
-    width: "420px",
+    width: "520px",
     height: "auto",
     backgroundColor: "#1d1e1f",
     padding: "2rem",
@@ -38,8 +38,11 @@ export function NoticeOverlay({ isOpen, onClose }: OverlayProps) {
           onClose();
         }}
       />
-      <H1 css={{ margin: 0 }}>Notice Regarding Monster Collection</H1>
+      <H1 css={{ margin: 0 }}>Notice Regarding Launcher Update</H1>
       <Box marginBottom={0}>
+        <Text css={{ fontWeight: "bold", fontSize: "18px" }}>
+          Monster Collection is still available in the game!
+        </Text>
         <Text>
           Starting from Launcher version 2.6.2, the Monster Collection and Get
           Reward features will no longer be supported within the launcher.
