@@ -1,7 +1,7 @@
 {
   "name": "NineChronicles",
   "productName": "Nine Chronicles",
-  "version": "2.6.2",
+  "version": "2.7.0",
   "description": "Game Launcher for Nine Chronicles",
   "author": "Planetarium <engineering@planetariumhq.com>",
   "license": "GPL-3.0",
@@ -92,7 +92,6 @@
     "graphql-request": "5.1.0",
     "lockfile": "^1.0.4",
     "material-ui-popup-state": "^1.6.1",
-    "mixpanel": "^0.13.0",
     "mobx": "^6.7.0",
     "mobx-react": "^7.6.0",
     "mobx-react-router": "^5.0.0",
