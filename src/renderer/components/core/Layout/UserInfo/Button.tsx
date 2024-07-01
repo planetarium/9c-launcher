@@ -14,14 +14,13 @@ export const Button = styled(motion.button, {
   },
 });
 
-const transifexTags = "v2/ClaimButton";
+const transifexTags = "v2/NoticeButton";
 
-interface ClaimButtonProps {
+interface NoticeButtonProps {
   onClick: () => void;
-  loading: boolean;
 }
 
-export function ClaimButton({ loading, onClick }: ClaimButtonProps) {
+export function NoticeButton({ onClick }: NoticeButtonProps) {
   const eventListener = useCallback<(e: MouseEvent) => void>(
     (e) => {
       e.stopPropagation();
@@ -31,12 +30,8 @@ export function ClaimButton({ loading, onClick }: ClaimButtonProps) {
   );
 
   return (
-    <Button disabled={loading} onClick={eventListener}>
-      {loading ? (
-        <T _str="Loading" _tags={transifexTags} />
-      ) : (
-        <T _str="Get Rewards" _tags={transifexTags} />
-      )}
+    <Button onClick={eventListener}>
+      <T _str="Monster Collection" _tags={transifexTags} />
     </Button>
   );
 }

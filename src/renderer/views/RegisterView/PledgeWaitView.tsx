@@ -9,7 +9,7 @@ import { ExtLink } from "src/renderer/components/ui/Link";
 import { T } from "src/renderer/i18n";
 import loading from "src/renderer/resources/icons/loading.png";
 import { registerStyles } from ".";
-import { LoadingImage } from "../MonsterCollectionOverlay/base";
+import { LoadingImage } from "src/renderer/components/Loading";
 import { usePledge } from "src/utils/usePledge";
 import { ActivationResult } from "src/interfaces/activation";
 

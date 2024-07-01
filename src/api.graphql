@@ -56,6 +56,7 @@ query TransactionResult($txId: TxId!) {
       blockHash
       blockIndex
       txStatus
+      outputState
     }
   }
 }
@@ -98,21 +99,6 @@ query ValidateSnapshot($raw: String!) {
   }
 }
 
-query CollectionSheet {
-  stateQuery {
-    monsterCollectionSheet {
-      orderedList {
-        level
-        requiredGold
-        rewards {
-          itemId
-          quantity
-        }
-      }
-    }
-  }
-}
-
 query GetAvatarAddress($address: Address!) {
   stateQuery {
     agent(address: $address) {
@@ -121,27 +107,6 @@ query GetAvatarAddress($address: Address!) {
         name
         updatedAt
       }
-    }
-  }
-}
-
-query CollectionSheetWithState($address: Address!) {
-  stateQuery {
-    monsterCollectionSheet {
-      orderedList {
-        level
-        requiredGold
-        rewards {
-          itemId
-          quantity
-        }
-      }
-    }
-    agent(address: $address) {
-      gold
-    }
-    monsterCollectionState(agentAddress: $address) {
-      level
     }
   }
 }
@@ -161,35 +126,6 @@ query GetTip {
 query GetNextTxNonce($address: Address!) {
   transaction {
     nextTxNonce(address: $address)
-  }
-}
-
-query StateQueryMonsterCollection($agentAddress: Address!) {
-  stateQuery {
-    agent(address: $agentAddress) {
-      gold
-    }
-
-    monsterCollectionState(agentAddress: $agentAddress) {
-      expiredBlockIndex
-      level
-      rewardLevel
-      receivedBlockIndex
-      startedBlockIndex
-      claimableBlockIndex
-    }
-  }
-}
-
-mutation Collect($level: Int!) {
-  action {
-    monsterCollect(level: $level)
-  }
-}
-
-mutation ClaimCollectionReward($address: Address!) {
-  action {
-    claimMonsterCollectionReward(avatarAddress: $address)
   }
 }
 
@@ -249,92 +185,6 @@ subscription Tip {
   }
 }
 
-query UserStaking($address: Address!) {
-  stateQuery {
-    stakeState(address: $address) {
-      deposit
-      startedBlockIndex
-      receivedBlockIndex
-      cancellableBlockIndex
-      claimableBlockIndex
-      stakeRewards {
-        orderedList {
-          level
-          requiredGold
-          rewards {
-            itemId
-            decimalRate
-            type
-            currencyTicker
-          }
-          bonusRewards {
-            itemId
-            count
-          }
-        }
-      }
-    }
-  }
-}
-
-query LatestStakingSheet {
-  stateQuery {
-    latestStakeRewards {
-      orderedList {
-        level
-        requiredGold
-        rewards {
-          itemId
-          decimalRate
-          type
-          currencyTicker
-        }
-        bonusRewards {
-          itemId
-          count
-        }
-      }
-    }
-  }
-}
-
-query StakingSheet {
-  stateQuery {
-    stakeRewards {
-      orderedList {
-        level
-        requiredGold
-        rewards {
-          itemId
-          decimalRate
-          type
-          currencyTicker
-        }
-        bonusRewards {
-          itemId
-          count
-        }
-      }
-    }
-  }
-}
-
-query V1CollectionState($address: Address!) {
-  stateQuery {
-    monsterCollectionSheet {
-      orderedList {
-        level
-        requiredGold
-      }
-    }
-    monsterCollectionState(agentAddress: $address) {
-      startedBlockIndex
-      claimableBlockIndex
-      level
-    }
-  }
-}
-
 query GenesisHash {
   nodeStatus {
     genesis {
@@ -362,24 +212,6 @@ query transferAsset(
       currency: NCG
       memo: $memo
     )
-  }
-}
-
-query Stake($publicKey: String!, $amount: BigInt) {
-  actionTxQuery(publicKey: $publicKey) {
-    stake(amount: $amount)
-  }
-}
-
-query ClaimStakeReward($publicKey: String!, $avatarAddress: Address) {
-  actionTxQuery(publicKey: $publicKey) {
-    claimStakeReward(avatarAddress: $avatarAddress)
-  }
-}
-
-query MigrateMonsterCollection($publicKey: String!, $avatarAddress: Address) {
-  actionTxQuery(publicKey: $publicKey) {
-    migrateMonsterCollection(avatarAddress: $avatarAddress)
   }
 }
 

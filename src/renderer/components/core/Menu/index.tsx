@@ -13,8 +13,6 @@ import exchange from "src/renderer/resources/icons/exchange.png";
 import ncgLogo from "src/renderer/resources/icons/ncgLogo.png";
 import refresh from "src/renderer/resources/icons/refresh.png";
 import settings from "src/renderer/resources/icons/settings.png";
-import staking from "src/renderer/resources/icons/staking.png";
-import MonsterCollectionOverlay from "src/renderer/views/MonsterCollectionOverlay";
 import SettingsOverlay from "src/renderer/views/SettingsOverlay";
 import TransferAssetOverlay from "src/renderer/views/TransferAssetOverlay/main";
 import { useExternalURL } from "src/utils/useExternalURL";
@@ -37,7 +35,7 @@ const MenuDivider = styled("hr", {
   borderTop: "1px solid #979797",
 });
 
-type Overlay = "settings" | "staking" | "transfer";
+type Overlay = "settings" | "transfer";
 
 function Menu() {
   const account = useStore("account");
@@ -51,9 +49,6 @@ function Menu() {
   const { url, resetURL } = useExternalURL();
   useEffect(() => {
     if (!url) return;
-    if (url.pathname.startsWith("//open/monster-collection")) {
-      openOverlay("staking");
-    }
     if (url.pathname.startsWith("//open/transfer-asset")) {
       openOverlay("transfer");
     }
@@ -65,16 +60,6 @@ function Menu() {
 
   return (
     <MenuContainer>
-      <MenuItem
-        icon={staking}
-        text="Staking"
-        disabled={
-          !account.isLogin ||
-          !data?.stateQuery.pledge.approved ||
-          currentOverlay === "staking"
-        }
-        onClick={() => openOverlay("staking")}
-      />
       <MenuItem
         icon={ncgLogo}
         text="WNCG Staking"
@@ -121,10 +106,6 @@ function Menu() {
       />
       <SettingsOverlay
         isOpen={currentOverlay === "settings"}
-        onClose={() => openOverlay(null)}
-      />
-      <MonsterCollectionOverlay
-        isOpen={currentOverlay === "staking"}
         onClose={() => openOverlay(null)}
       />
       <TransferAssetOverlay

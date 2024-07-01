@@ -5,7 +5,7 @@ import loading from "src/renderer/resources/icons/loading.png";
 import zxcvbn from "zxcvbn";
 import { T } from "../i18n";
 import { styled } from "../stitches.config";
-import { LoadingImage } from "../views/MonsterCollectionOverlay/base";
+import { LoadingImage } from "../components/Loading";
 import Button from "./ui/Button";
 import TextField, { PasswordField } from "./ui/TextField";
 
