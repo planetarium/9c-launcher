@@ -44,7 +44,7 @@ export function NoticeOverlay({ isOpen, onClose }: OverlayProps) {
           Monster Collection is still available in the game!
         </Text>
         <Text>
-          Starting from Launcher version 2.6.2, the Monster Collection and Get
+          Starting from Launcher version 2.7.0, the Monster Collection and Get
           Reward features will no longer be supported within the launcher.
         </Text>
         <Text>
