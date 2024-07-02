@@ -71,6 +71,7 @@ export default class GameStore {
     const guildServiceUrl = getConfig("GuildServiceUrl");
     const guildIconBucket = getConfig("GuildIconBucket");
     const maintenance = getConfig("Maintenance", false);
+    const planetRegistryUrl = getConfig("PlanetRegistryUrl");
 
     const playerArgs = [
       `--private-key=${privateKey}`,
@@ -108,6 +109,8 @@ export default class GameStore {
     if (maintenance) {
       playerArgs.push(`--maintenance=${maintenance}`);
     }
+
+    appendIfDefined(planetRegistryUrl, "planet-registry-url");
 
     ipcRenderer.send("launch game", {
       args: playerArgs,
