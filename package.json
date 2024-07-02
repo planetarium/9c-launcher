@@ -8,8 +8,7 @@
   "keywords": [
     "electron",
     "react",
-    "typescript",
-    "hot"
+    "typescript"
   ],
   "homepage": "https://nine-chronicles.com/",
   "repository": {
@@ -19,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/planetarium/electron-launcher/issues"
   },
-  "main": "main.js",
+  "main": "src/main/index.ts",
   "scripts": {
     "build": "yarn codegen && webpack --env NODE_ENV=development --env target=render && webpack --env NODE_ENV=development --env target=main",
     "build-main": "yarn codegen && webpack --env NODE_ENV=production --env target=render --env DEFAULT_NETWORK=main && webpack --env NODE_ENV=production --env target=main --env DEFAULT_NETWORK=main",
