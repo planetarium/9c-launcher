@@ -20,6 +20,9 @@
   },
   "main": "src/main/index.ts",
   "scripts": {
+    "rollup:main": "yarn rollup -c ./builder/rollup.main.config.ts --configPlugin typescript",
+    "rollup:watch": "yarn rollup -c ./builder/rollup.renderer.config.ts -w --configPlugin typescript",
+    "rollup:dev": "concurrently --kill-others \"yarn rollup:main\" \"yarn rollup:watch\"",
     "build": "yarn codegen && webpack --env NODE_ENV=development --env target=render && webpack --env NODE_ENV=development --env target=main",
     "build-main": "yarn codegen && webpack --env NODE_ENV=production --env target=render --env DEFAULT_NETWORK=main && webpack --env NODE_ENV=production --env target=main --env DEFAULT_NETWORK=main",
     "build-internal": "yarn codegen && webpack --env NODE_ENV=production --env target=render --env DEFAULT_NETWORK=internal && webpack --env NODE_ENV=production --env target=main --env DEFAULT_NETWORK=internal",
