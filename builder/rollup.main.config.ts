@@ -1,17 +1,17 @@
-const path = require("path");
-const commonjs = require("@rollup/plugin-commonjs");
-const alias = require("@rollup/plugin-alias");
-const terser = require("@rollup/plugin-terser");
-const typescript = require("@rollup/plugin-typescript");
-
-const dotenv = require("dotenv");
-dotenv.config();
+import * as path from "path";
+import commonjs from "@rollup/plugin-commonjs";
+import alias from "@rollup/plugin-alias";
+import terser from "@rollup/plugin-terser";
+import typescript from "@rollup/plugin-typescript";
+import { fileURLToPath } from "node:url";
 
 const watch = process.env.ROLLUP_WATCH === "true";
 const production = process.env.NODE_ENV !== "dev";
-const projectRootDir = path.resolve(__dirname);
+const projectRootDir = path.resolve(
+  fileURLToPath(new URL("../", import.meta.url)),
+);
 
-module.exports = {
+export default {
   input: "src/main/index.ts",
   output: {
     sourcemap: !production,
@@ -29,10 +29,7 @@ module.exports = {
 
     alias({
       entries: [
-        {
-          find: "Main",
-          replacement: path.resolve(projectRootDir, "src/main"),
-        },
+        { find: "Main", replacement: path.resolve(projectRootDir, "src/main") },
         {
           find: "Types",
           replacement: path.resolve(projectRootDir, "src/types"),
