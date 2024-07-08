@@ -1,3 +1,4 @@
+// RevokeView.tsx
 import React, { useState } from "react";
 import { observer } from "mobx-react";
 import Layout from "src/renderer/components/core/Layout";
@@ -14,6 +15,7 @@ import Button from "src/renderer/components/ui/Button";
 import { useHistory } from "react-router";
 import { useLoginSession } from "src/utils/useLoginSession";
 import { Address } from "@planetarium/account";
+import { Box } from "@mui/material";
 
 const transifexTags = "v2/revoke-view";
 
@@ -64,6 +66,7 @@ function RevokeView() {
       >
         <T _str="Revoke this key" _tags={transifexTags} />
       </Button>
+      <Box sx={{ height: "12rem" }} />
     </Layout>
   );
 }
