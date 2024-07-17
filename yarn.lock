@@ -7671,7 +7671,7 @@ __metadata:
     react: ^17.0.2
     react-apollo: ^3.1.5
     react-dom: ^17.0.2
-    react-dropzone: ^11.4.2
+    react-dropzone: ^14.2.3
     react-hook-form: ^7.14.1
     react-hot-toast: ^2.2.0
     react-router: ^5.2.0
@@ -8474,7 +8474,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"attr-accept@npm:^2.2.1":
+"attr-accept@npm:^2.2.2":
   version: 2.2.2
   resolution: "attr-accept@npm:2.2.2"
   checksum: 496f7249354ab53e522510c1dc8f67a1887382187adde4dc205507d2f014836a247073b05e9d9ea51e2e9c7f71b0d2aa21730af80efa9af2d68303e5f0565c4d
@@ -12318,12 +12318,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-selector@npm:^0.2.2":
-  version: 0.2.4
-  resolution: "file-selector@npm:0.2.4"
+"file-selector@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "file-selector@npm:0.6.0"
   dependencies:
-    tslib: ^2.0.3
-  checksum: 83341e7416352c7de0caf433b33c8d007d3c298c17d6ba0e70168af82bb045d905ddd6f4bc3ca764a2035c6f18eae7f52223dc6a784056f61b8391c351f88323
+    tslib: ^2.4.0
+  checksum: 7d051b6e5d793f3c6e2ab287ba5e7c2c6a0971bccc9d56e044c8047ba483e18f60fc0b5771c951dc707c0d15f4f36ccb4f1f1aaf385d21ec8f7700dadf8325ba
   languageName: node
   linkType: hard
 
@@ -18178,16 +18178,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dropzone@npm:^11.4.2":
-  version: 11.4.2
-  resolution: "react-dropzone@npm:11.4.2"
+"react-dropzone@npm:^14.2.3":
+  version: 14.2.3
+  resolution: "react-dropzone@npm:14.2.3"
   dependencies:
-    attr-accept: ^2.2.1
-    file-selector: ^0.2.2
-    prop-types: ^15.7.2
+    attr-accept: ^2.2.2
+    file-selector: ^0.6.0
+    prop-types: ^15.8.1
   peerDependencies:
-    react: ">= 16.8"
-  checksum: f8dc6af69193133efe30ed11dd8c2212a180abd3833e91d03dab4bdc9546d47dcad311d7f72b4968b7d016871884555b9e16f7a490913b78dbfec8ce8f569193
+    react: ">= 16.8 || 18.0.0"
+  checksum: 174b744d5ca898cf3d84ec1aeb6cef5211c446697e45dc8ece8287a03d291f8d07253206d5a1247ef156fd385d65e7de666d4d5c2986020b8543b8f2434e8b40
   languageName: node
   linkType: hard
 
