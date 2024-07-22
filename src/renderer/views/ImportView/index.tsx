@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react";
-import { RawPrivateKey } from "@planetarium/account";
+import { Address, RawPrivateKey } from "@planetarium/account";
 import Layout from "src/renderer/components/core/Layout";
 import { T } from "src/renderer/i18n";
 import H1 from "src/renderer/components/ui/H1";
@@ -10,8 +10,8 @@ import { useStore } from "src/utils/useStore";
 import { useHistory } from "react-router";
 import ImportInput, { ImportData } from "src/renderer/components/ImportInput";
 import { t } from "@transifex/native";
-import decodeQR from "@paulmillr/qr/decode.js";
-import { Bitmap } from "@paulmillr/qr";
+import { checkAndSaveFile, decodeQRCode } from "src/utils/qrDecode";
+import { getKeyStorePath } from "src/stores/account";
 
 const transifexTags = "v2/import-view";
 
@@ -22,64 +22,25 @@ function ImportView() {
   const [key, setKey] = useState<ImportData>({});
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let privateKey: RawPrivateKey;
-    if (key.fromFile && key.keyFile) {
+    if (key.keyFile) {
       try {
-        // Create an image object
-        const img = new Image();
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-          img.src = e.target!.result as string;
-
-          img.onload = () => {
-            // Create an invisible canvas
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            if (!ctx) {
-              setError(t("Failed to create canvas context"));
-              return;
-            }
-
-            // Set canvas dimensions to image dimensions
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            // Draw the image onto the canvas
-            ctx.drawImage(img, 0, 0);
-
-            // Get ImageData from the canvas
-            const imageData = ctx.getImageData(0, 0, img.width, img.height);
-
-            console.log(imageData.width, imageData.height);
-            // Now you can pass the ImageData to decodeQR
-            try {
-              const a = decodeQR({
-                height: imageData.height,
-                width: imageData.width,
-                data: imageData.data,
-              });
-              console.log(a);
-            } catch (e) {
-              console.log(e);
-              setError(t("Invalid QR code"));
-            }
-          };
-
-          img.onerror = (e) => {
-            setError(t("Failed to load image"));
-          };
-        };
-
-        reader.onerror = () => {
-          setError(t("Failed to read file"));
-        };
-
-        reader.readAsDataURL(key.keyFile);
+        const keystore = await decodeQRCode(key.keyFile);
+        const { id, address }: { id: string; address: string } =
+          JSON.parse(keystore);
+        try {
+          await checkAndSaveFile(await getKeyStorePath(), keystore, id);
+        } catch (e) {
+          console.log(e);
+          setError(t(e.message));
+          return;
+        }
+        account.addAddress(Address.fromHex("0x" + address, true));
+        history.push("/login");
       } catch (e) {
         console.log(e);
-        setError(t("Invalid QR code"));
+        setError(t(e.message));
         return;
       }
     } else {
@@ -104,7 +65,7 @@ function ImportView() {
         <T _str="Register your backed up key string." _tags={transifexTags} />
       </H2>
       {error && <p>{error}</p>}
-      <ImportInput onSubmit={setKey} fromFile={key.fromFile} />
+      <ImportInput onSubmit={setKey} fromFile={true} />
       <ButtonBar>
         <Button onClick={history.goBack.bind(history)}>
           <T _str="Prev" _tags={transifexTags} />
