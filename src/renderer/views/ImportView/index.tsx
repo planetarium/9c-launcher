@@ -65,14 +65,21 @@ function ImportView() {
         <T _str="Register your backed up key string." _tags={transifexTags} />
       </H2>
       {error && <p>{error}</p>}
-      <ImportInput onSubmit={setKey} fromFile={true} />
+      <ImportInput
+        onSubmit={setKey}
+        fromFile={key.fromFile}
+        invalid={!!key.key && !account.isValidPrivateKey(key.key ?? "")}
+      />
       <ButtonBar>
         <Button onClick={history.goBack.bind(history)}>
           <T _str="Prev" _tags={transifexTags} />
         </Button>
         <Button
           variant="primary"
-          disabled={!key.key && !key.keyFile}
+          disabled={
+            (!key.key && !key.keyFile) ||
+            (!!key.key && !account.isValidPrivateKey(key.key))
+          }
           onClick={handleSubmit}
         >
           <T _str="Next" _tags={transifexTags} />
