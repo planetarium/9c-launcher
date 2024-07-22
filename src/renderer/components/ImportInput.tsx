@@ -2,20 +2,23 @@ import { t } from "@transifex/native";
 import React from "react";
 // import FileChooser from "./ui/FileChooser";
 import TextField from "./ui/TextField";
+import FileChooser from "./ui/FileChooser";
 
 export interface ImportData {
   key?: string;
-  fromFile?: boolean;
+  keyFile?: File;
 }
 
-type Action = React.ChangeEvent<HTMLInputElement> | string;
+type Action = React.ChangeEvent<HTMLInputElement> | string | File;
 
 function make(action: Action): ImportData {
   if (typeof action === "string") {
-    return { key: action, fromFile: true };
+    return { key: action };
+  } else if (action instanceof File) {
+    return { keyFile: action };
   } else {
     if (action.target.value.length === 0) return {};
-    return { key: action.target.value, fromFile: false };
+    return { key: action.target.value };
   }
 }
 
@@ -29,14 +32,16 @@ export interface ImportInputProps {
 export default function ImportInput({ onSubmit, fromFile }: ImportInputProps) {
   return (
     <>
-      {/* <FileChooser
-        disabled={!fromFile && fromFile != null}
-        onDrop={(files) => files[0]?.text()?.then((v) => onSubmit(make(v)))}
-      /> */}
+      {
+        <FileChooser
+          disabled={!fromFile && fromFile != null}
+          onDrop={(files) => onSubmit(make(files[0]))}
+        />
+      }
       <TextField
         disabled={!!fromFile}
         onChange={(v) => onSubmit(make(v))}
-        label={t("Private key", { _tags: transifexTags })}
+        label={t("Private Key", { _tags: transifexTags })}
       />
     </>
   );
