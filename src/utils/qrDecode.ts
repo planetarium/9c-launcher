@@ -53,7 +53,6 @@ export async function checkAndSaveFile(
   uuid: string,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    console.log(dirPath, keystore, uuid);
     try {
       const files = fs.readdirSync(dirPath);
 
