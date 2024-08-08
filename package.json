@@ -1,7 +1,7 @@
 {
   "name": "NineChronicles",
   "productName": "Nine Chronicles",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "description": "Game Launcher for Nine Chronicles",
   "author": "Planetarium <engineering@planetariumhq.com>",
   "license": "GPL-3.0",
@@ -101,7 +101,7 @@
     "react": "^17.0.2",
     "react-apollo": "^3.1.5",
     "react-dom": "^17.0.2",
-    "react-dropzone": "^11.4.2",
+    "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.14.1",
     "react-hot-toast": "^2.2.0",
     "react-router": "^5.2.0",

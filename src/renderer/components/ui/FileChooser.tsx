@@ -39,12 +39,12 @@ export default function FileChooser({
         <p>{acceptedFiles[0].name}</p>
       ) : isDragActive ? (
         <p>
-          <T _str="Drop the files here ..." _tags={transifexTags} />
+          <T _str="Drop the QR image here ..." _tags={transifexTags} />
         </p>
       ) : (
         <p>
           <T
-            _str="Drag and drop the key file, or Browse"
+            _str="Drag and drop the QR key file, or Browse"
             _tags={transifexTags}
           />
         </p>
