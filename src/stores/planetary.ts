@@ -129,6 +129,7 @@ export default class PlanetaryStore {
       } else {
         configStore.delete("GuildServiceUrl");
       }
+      configStore.set("ArenaServiceUrl", this.planet.rpcEndpoints["arena.gql"]);
     }
   }
 }

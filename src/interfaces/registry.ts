@@ -11,6 +11,7 @@ export type RpcEndpoints = {
   "world-boss.rest"?: string[];
   "patrol-reward.gql"?: string[];
   "guild.rest"?: string[];
+  "arena.gql"?: string[];
 };
 
 export type Planet = {
