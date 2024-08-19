@@ -40,4 +40,5 @@ export interface IConfig {
   GuildIconBucket: string | undefined;
   Maintenance: boolean;
   SwapAvailabilityCheckServiceUrl: string;
+  ArenaServiceUrl: string;
 }
