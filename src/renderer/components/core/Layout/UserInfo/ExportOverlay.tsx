@@ -34,7 +34,7 @@ const SquareBox = {
 
 const imageBox = {
   backgroundColor: "white",
-  padding: "1rem",
+  padding: "2rem",
 };
 
 const hiddenBox = {
