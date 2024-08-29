@@ -31,28 +31,29 @@
     "format": "npx prettier --write \"**/*.{js,mjs,cjs,ts,mts,cts,vue,json}\""
   },
   "devDependencies": {
-    "@types/node": "20.14.13",
-    "@types/react": "^18.3.3",
+    "@types/node": "20.16.2",
+    "@types/react": "^18.3.4",
     "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "7.17.0",
+    "@typescript-eslint/eslint-plugin": "8.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "cross-env": "7.0.3",
-    "electron": "31.3.0",
-    "electron-builder": "24.13.3",
-    "eslint": "8.57.0",
+    "electron": "^32.0.1",
+    "electron-builder": "^25.0.5",
+    "eslint": "9.9.1",
     "eslint-plugin-vue": "9.27.0",
-    "happy-dom": "14.12.3",
+    "happy-dom": "^15.3.1",
     "nano-staged": "0.8.0",
-    "playwright": "1.45.3",
+    "playwright": "1.46.1",
     "simple-git-hooks": "2.11.1",
     "typescript": "5.5.4",
     "unplugin-auto-expose": "0.3.0",
-    "vite": "5.3.5",
-    "vitest": "2.0.4"
+    "vite": "^5.4.2",
+    "vitest": "^2.0.5"
   },
   "dependencies": {
     "electron-updater": "6.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
-  }
+  },
+  "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1"
 }
