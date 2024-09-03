@@ -72,7 +72,7 @@ jobs:
           then
             sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.main.yml > temp2.txt
             mv temp2.txt electron-builder.main.yml
-          elif [[ ""$"{{ startsWith(github.event.ref, 'refs/heads/preview/') }}" == true ]]
+          elif [[ "${{ startsWith(github.event.ref, 'refs/heads/preview/') }}" == true ]]
           then
             timestamp=$(date +%y%m%d%H%M%S)
             version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
@@ -126,7 +126,7 @@ jobs:
             sh ./scripts/release.sh main ${{ matrix.packCmd }}
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest.yml"
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest-mac.yml"
-          elif [[ ""$"{{ startsWith(github.event.ref, 'refs/heads/preview/') }}" == true ]]
+          elif [[ "${{ startsWith(github.event.ref, 'refs/heads/preview/') }}" == true ]]
           then
             sh ./scripts/release.sh previewnet ${{ matrix.packCmd }}
           else
