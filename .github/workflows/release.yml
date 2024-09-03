@@ -5,6 +5,7 @@ on:
     branches:
       - release/*
       - hotfix/*
+      - preview/*
     tags: ["*"]
 
 permissions:
@@ -30,7 +31,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     environment:
-      name: ${{ startsWith(github.event.ref, 'refs/tags/') && 'main' || 'internal' }}
+      name: ${{ startsWith(github.event.ref, 'refs/tags/') && 'main' || startsWith(github.event.ref, 'refs/heads/preview/') && 'previewnet' || 'internal' }}
 
     steps:
       - uses: actions/checkout@v3.6.0
@@ -48,12 +49,10 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "11"
-      
       - name: Sync time on Ubuntu
         continue-on-error: true
         if: runner.os == 'Linux'
         run: sudo chronyc -a makestep
-      
       - name: Sync time on macOS
         continue-on-error: true
         if: runner.os == 'macOS'
@@ -127,7 +126,6 @@ jobs:
           rm -fR ./dist/*-unpacked
           rm -fR ./dist/mac
           rm -fR ./dist/mac-arm64
-          
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}

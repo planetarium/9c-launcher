@@ -1,0 +1,51 @@
+appId: "com.nine-chronicles-preview"
+asar: true
+productName: "Nine Chronicles Preview"
+files:
+  - "!**/*"
+  - from: build
+    filter:
+      - '**/*'
+win:
+  target:
+    - "zip"
+    - target: "nsis"
+      arch:
+        - "x64"
+  icon: "app.ico"
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: true
+mac:
+  icon: "AppIcon.icns"
+  target:
+    - "dmg"
+    - "zip"
+  category: "public.app-category.games"
+  hardenedRuntime: true
+  entitlements: "./signing/entitlements.plist"
+  entitlementsInherit: "./signing/entitlements.inherit.plist"
+  notarize: { teamId: "Please replace it" }
+dmg:
+  icon: "AppIcon.icns"
+  sign: false
+  iconSize: 75
+  contents:
+    - x: 130
+      y: 200
+    - x: 410
+      y: 200
+      type: "link"
+      path: "/Applications"
+linux:
+  target:
+    - "zip"
+    - "AppImage"
+publish:
+  provider: "s3"
+  bucket: "9c-release.planetariumhq.com"
+  path: "previewnet/launcher"
+  acl: "private"
