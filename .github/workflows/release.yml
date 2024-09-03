@@ -72,8 +72,20 @@ jobs:
           then
             sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.main.yml > temp2.txt
             mv temp2.txt electron-builder.main.yml
+          elif [[ ""$"{{ startsWith(github.event.ref, 'refs/heads/preview/') }}" == true ]]
+          then
+            timestamp=$(date +%y%m%d%H%M%S)
+            version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
+            jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
+            jq --arg suffix " Preview" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+            jq --arg suffix "Preview" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
+            sed 's/NineChronicles@workspace/NineChroniclesPreview@workspace/g' yarn.lock > temp1.txt
+            mv temp1.txt yarn.lock
+            mv ./signing/sandbox_code_sign_tool.properties ./tmp/codesign/conf/code_sign_tool.properties
+            sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.previewnet.yml > temp2.txt
+            mv temp2.txt electron-builder.previewnet.yml
           else
-            timestamp=$(date +%s)
+            timestamp=$(date +%y%m%d%H%M%S)
             version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
             jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
             jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
