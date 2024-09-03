@@ -126,6 +126,9 @@ jobs:
             sh ./scripts/release.sh main ${{ matrix.packCmd }}
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest.yml"
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest-mac.yml"
+          elif [[ ""$"{{ startsWith(github.event.ref, 'refs/heads/preview/') }}" == true ]]
+          then
+            sh ./scripts/release.sh previewnet ${{ matrix.packCmd }}
           else
             sh ./scripts/release.sh internal ${{ matrix.packCmd }}
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest.yml"
