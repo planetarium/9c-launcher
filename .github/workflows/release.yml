@@ -31,7 +31,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     environment:
-      name: ${{ startsWith(github.event.ref, 'refs/tags/') && 'main' || startsWith(github.event.ref, 'refs/heads/preview/') && 'previewnet' || 'internal' }}
+      name: ${{ startsWith(github.event.ref, 'refs/tags/') && 'main' || startsWith(github.event.ref, 'refs/heads/preview/') && 'preview' || 'internal' }}
 
     steps:
       - uses: actions/checkout@v3.6.0
@@ -82,8 +82,8 @@ jobs:
             sed 's/NineChronicles@workspace/NineChroniclesPreview@workspace/g' yarn.lock > temp1.txt
             mv temp1.txt yarn.lock
             mv ./signing/sandbox_code_sign_tool.properties ./tmp/codesign/conf/code_sign_tool.properties
-            sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.previewnet.yml > temp2.txt
-            mv temp2.txt electron-builder.previewnet.yml
+            sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.preview.yml > temp2.txt
+            mv temp2.txt electron-builder.preview.yml
           else
             timestamp=$(date +%y%m%d%H%M%S)
             version=$(jq -r .version package.json | awk -F'.' '{print $1"."$2}')
@@ -128,7 +128,7 @@ jobs:
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/main/launcher/latest-mac.yml"
           elif [[ "${{ startsWith(github.event.ref, 'refs/heads/preview/') }}" == true ]]
           then
-            sh ./scripts/release.sh previewnet ${{ matrix.packCmd }}
+            sh ./scripts/release.sh preview ${{ matrix.packCmd }}
           else
             sh ./scripts/release.sh internal ${{ matrix.packCmd }}
             aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/internal/launcher/latest.yml"

@@ -47,5 +47,5 @@ linux:
 publish:
   provider: "s3"
   bucket: "9c-release.planetariumhq.com"
-  path: "previewnet/launcher"
+  path: "preview/launcher"
   acl: "private"
