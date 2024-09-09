@@ -24,7 +24,7 @@
     "build": "yarn codegen && webpack --env NODE_ENV=development --env target=render && webpack --env NODE_ENV=development --env target=main",
     "build-main": "yarn codegen && webpack --env NODE_ENV=production --env target=render --env DEFAULT_NETWORK=main && webpack --env NODE_ENV=production --env target=main --env DEFAULT_NETWORK=main",
     "build-internal": "yarn codegen && webpack --env NODE_ENV=production --env target=render --env DEFAULT_NETWORK=internal && webpack --env NODE_ENV=production --env target=main --env DEFAULT_NETWORK=internal",
-    "build-preview": "yarn codegen && webpack --env NODE_ENV=production --env target=render --env DEFAULT_NETWORK=previewnet && webpack --env NODE_ENV=production --env target=main --env DEFAULT_NETWORK=previewnet",
+    "build-preview": "yarn codegen && webpack --env NODE_ENV=production --env target=render --env DEFAULT_NETWORK=preview && webpack --env NODE_ENV=production --env target=main --env DEFAULT_NETWORK=preview",
     "server": "yarn webpack serve --env NODE_ENV=development --env target=render --hot",
     "start": "yarn webpack --env NODE_ENV=development --env target=main && electron ./build/.",
     "start:v2": "yarn webpack --env NODE_ENV=development --env target=main && electron ./build/. --v2",

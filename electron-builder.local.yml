@@ -11,7 +11,7 @@ win:
     - "zip"
   icon: "app.ico"
 mac:
-  icon: "AppIcon.icns"
+  icon: "./src/renderer/resources/launcher-icon/main/AppIcon.icns"
   target:
     - "tar.gz"
   category: "public.app-category.games"

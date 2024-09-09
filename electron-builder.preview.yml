@@ -12,7 +12,7 @@ win:
     - target: "nsis"
       arch:
         - "x64"
-  icon: "app.ico"
+  icon: "./src/renderer/resources/launcher-icon/preview/app.ico"
 nsis:
   oneClick: false
   perMachine: false
@@ -20,7 +20,7 @@ nsis:
   allowToChangeInstallationDirectory: true
   deleteAppDataOnUninstall: true
 mac:
-  icon: "AppIcon.icns"
+  icon: "./src/renderer/resources/launcher-icon/preview/AppIcon.icns"
   target:
     - "dmg"
     - "zip"
@@ -30,7 +30,7 @@ mac:
   entitlementsInherit: "./signing/entitlements.inherit.plist"
   notarize: { teamId: "Please replace it" }
 dmg:
-  icon: "AppIcon.icns"
+  icon: "./src/renderer/resources/launcher-icon/preview/AppIcon.icns"
   sign: false
   iconSize: 75
   contents:
@@ -47,5 +47,5 @@ linux:
 publish:
   provider: "s3"
   bucket: "9c-release.planetariumhq.com"
-  path: "previewnet/launcher"
+  path: "preview/launcher"
   acl: "private"
