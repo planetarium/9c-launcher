@@ -2,7 +2,7 @@ import {app} from 'electron';
 import './security-restrictions';
 import {platform} from 'node:process';
 import updater from 'electron-updater';
-import type WindowManager from './UI/Window.js';
+import type WindowManager from '/@/modules/UI/Window.js';
 
 export default class App {
   windowManager: WindowManager;
