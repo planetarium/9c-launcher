@@ -9,6 +9,12 @@ export default class WindowManager {
 
   private async createWindow() {
     this.window = new BrowserWindow({
+      width: 1280,
+      height: 768,
+      frame: false,
+      resizable: false,
+      autoHideMenuBar: true,
+      titleBarStyle: process.platform === "darwin" ? "hidden" : undefined,
       show: false, // Use the 'ready-to-show' event to show the instantiated BrowserWindow.
       webPreferences: {
         nodeIntegration: false,
