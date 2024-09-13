@@ -28,6 +28,8 @@ The launcher is written in Typescript, and uses GraphQL, Electron, React.
 - Supports Windows, macOS, Linux.
 
 ## Setup
+> **Note**
+> The repository is under refactor process, v2 changes will be still migrated, but if you want to participate in new version, but if you want to participate ongoing refactoring check out [v3/dev](https://github.com/planetarium/9c-launcher/tree/v3/dev) and related branches.
 
 First, install all dependencies required for development.
 
