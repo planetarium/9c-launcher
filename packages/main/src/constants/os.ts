@@ -52,7 +52,6 @@ export const PLATFORM2OS_MAP: {[k in NodeJS.Platform]: string | null} = {
   netbsd: null,
 };
 
-/**
 export async function getKeyStorePath(): Promise<string> {
   const keyStorePath = getDefaultWeb3KeyStorePath();
 
@@ -68,14 +67,14 @@ export async function getKeyStorePath(): Promise<string> {
       await fs.promises.stat(path.join(legacyPath, '__MIGRATED__'));
       return keyStorePath;
     } catch (e) {
-      if (typeof e !== 'object' || e.code !== 'ENOENT') throw e;
+      if (!(e instanceof Error) || (e as NodeJS.ErrnoException).code !== 'ENOENT') throw e;
     }
 
     let dir: fs.Dir;
     try {
       dir = await fs.promises.opendir(legacyPath);
     } catch (e) {
-      if (typeof e === 'object' && e.code === 'ENOENT') {
+      if (e instanceof Error && (e as NodeJS.ErrnoException).code === 'ENOENT') {
         return keyStorePath;
       }
 
@@ -104,5 +103,3 @@ Migrated at: ${new Date().toISOString()}\n`,
 
   return keyStorePath;
 }
-
- */

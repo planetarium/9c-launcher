@@ -17,6 +17,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.13.0
         version: 11.13.0(@emotion/react@11.13.3(@types/react@18.3.4)(react@18.3.1))(@types/react@18.3.4)(react@18.3.1)
+      '@planetarium/account':
+        specifier: ^5.2.2
+        version: 5.2.2
       '@planetarium/account-web3-secret-storage':
         specifier: ^5.2.2
         version: 5.2.2(@planetarium/account@5.2.2)
