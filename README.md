@@ -1,13 +1,33 @@
-# Nine Chronicles Launcher
+<br>
+
+<div align="center">
+
+[<img src="./src/main/resources/logo.png" width="144"/>](https://nine-chronicles.com/)
+
+  <h1 align="center">Nine Chronicles Launcher</h1>
+
+  <p align="center">
+    <strong>Game Launcher with embedded NCG Wallet</strong>
+  </p>
+  
 [![Discord](https://img.shields.io/discord/539405872346955788?color=6278DA&label=Planetarium&logo=discord&logoColor=white)](https://discord.gg/JyujU8E4SD)
 [![Planetarium-Dev Discord Invite](https://img.shields.io/discord/928926944937013338?color=6278DA&label=Planetarium-dev&logo=discord&logoColor=white)](https://discord.gg/RYJDyFRYY7)
-[Wiki for more in-depth information.](https://github.com/planetarium/9c-launcher/wiki)
+
+</div>
 
 ## Overview
 
-Electron-based multi-platform game launcher to run [Nine Chronicles.](https://github.com/planetarium/NineChronicles)
+9c-launcher is a game launcher to run [Nine Chronicles](https://github.com/planetarium/NineChronicles), with embedded private key management & NCG wallet capabilities.
+The launcher is written in Typescript, and uses GraphQL, Electron, React.
 
-## Installation
+## Features
+- Game execution and update, with multiple release channel support.
+- Automatically selects optimized RPC server for user's network
+- Private key creation, import from QR code or raw secp256k1 key, encrypt using [Web3 Secret Storage](https://ethereum.org/en/developers/docs/data-structures-and-encoding/web3-secret-storage/) specs.
+- [NCG](https://gold.nine-chronicles.com/) wallet: Send NCG to other addresses or swap to WNCG.
+- Supports Windows, macOS, Linux.
+
+## Setup
 
 First, install all dependencies required for development.
 
