@@ -1,15 +1,13 @@
-import {Button} from '@chakra-ui/react';
+import {Button} from '@radix-ui/themes';
 
 export function GameStartButton() {
   return (
     <Button
-      colorScheme="yellow"
-      sx={{
-        width: '156px',
-        height: '48px',
-        fontSize: '1.25rem',
-      }}
+      size="4"
+      variant="solid"
+      className="font-bold"
     >
       Game Start
-    </Button>)
+    </Button>
+  );
 }
