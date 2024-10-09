@@ -2,7 +2,7 @@ import {app, BrowserWindow} from 'electron';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-export default class WindowManager {
+export default class Window {
   private window!: BrowserWindow;
 
   constructor() {}

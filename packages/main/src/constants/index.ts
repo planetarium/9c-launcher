@@ -1,3 +1,3 @@
-export * from "./misc.js";
-export * from "./os.js";
-export * from "./network.js"
+export * from "./misc";
+export * from "./os";
+export * from "./network"

@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "module": "NodeNext",
+    "module": "ESNext",
     "target": "ESNext",
     "sourceMap": false,
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "Bundler",
     "skipLibCheck": true,
     "strict": true,
     "isolatedModules": true,

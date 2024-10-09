@@ -1,5 +1,5 @@
 import Store from "electron-store";
-import { IConfig } from "/@/types/config.js";
+import { IConfig } from "/@/types/config";
 
 export const configStore = new Store<IConfig>();
 

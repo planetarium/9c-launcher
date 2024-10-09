@@ -2,11 +2,12 @@ import {app} from 'electron';
 import './security-restrictions';
 import {platform} from 'node:process';
 import updater from 'electron-updater';
-import type WindowManager from '/@/modules/UI/Window.js';
+
+import Window from './modules/UI/Window';
 
 export default class App {
-  windowManager: WindowManager;
-  constructor(windowManager: WindowManager) {
+  window: Window;
+  constructor() {
     /**
      * Prevent electron from running multiple instances.
      */
@@ -21,14 +22,14 @@ export default class App {
      * Disable Hardware Acceleration to save more system resources.
      */
     app.disableHardwareAcceleration();
-    this.windowManager = windowManager;
+    this.window = new Window();
     this.registerEvents();
   }
 
   private ready = (): void => {
     try {
       updater.autoUpdater.checkForUpdatesAndNotify();
-      this.windowManager.restoreOrCreateWindow();
+      this.window.restoreOrCreateWindow();
     } catch (e) {
       console.error('Failed create window:', e);
     }
@@ -41,7 +42,7 @@ export default class App {
   };
 
   private activate = (): void => {
-    this.windowManager.restoreOrCreateWindow();
+    this.window.restoreOrCreateWindow();
   };
 
   private registerEvents = (): void => {

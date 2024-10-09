@@ -12,7 +12,7 @@ import {
 } from "@planetarium/account-web3-secret-storage";
 import fs from "fs";
 import path from "path";
-import { getKeyStorePath } from "src/constants/os.js";
+import { getKeyStorePath } from "src/constants/os";
 
 export interface ILoginSession {
   address: Address;

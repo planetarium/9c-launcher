@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import {app} from 'electron';
-import {CONFIG_FILENAME, network} from './network.js';
+import {CONFIG_FILENAME, network} from './network';
 import {getDefaultWeb3KeyStorePath} from '@planetarium/account-web3-secret-storage';
 
 export const WEB3_SECRET_STORAGE_NAME_PATTERN =

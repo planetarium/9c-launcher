@@ -1,9 +1,9 @@
 import {app, ipcMain} from 'electron';
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn} from 'node:child_process';
-import {DEFAULT_PLAYER_INSTALL_PATH} from '/@/constants/os.js';
+import {DEFAULT_PLAYER_INSTALL_PATH} from '/@/constants/os';
 import {BrowserWindow} from 'electron/main';
-// import { isUpdating } from "/@/modules/updater.js"
+// import { isUpdating } from "/@/modules/updater"
 
 export default class Game {
   private _gameNode: ChildProcessWithoutNullStreams | null = null;
