@@ -1,5 +1,5 @@
-import { Menu } from "../Menubar";
-import MenuItem from "../Menubar/MenuItem";
+import {Menu} from '../Menubar/Menu';
+import {MenuItem} from '../Menubar/MenuItem';
 
 import WNCG from '/@/assets/WNCG.svg';
 import gold from '/@/assets/gold.png';

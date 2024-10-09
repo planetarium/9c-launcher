@@ -1,48 +1,35 @@
 import styled from '@emotion/styled';
+import {Button} from '@radix-ui/themes';
 
 interface MenuItemProps {
-  onClick: () => void;
   icon: string;
   text: string;
+  onClick: () => void;
   disabled?: boolean;
 }
 
-const Item = styled.button({
-  display: 'flex',
-  alignItems: 'center',
-  padding: '4px',
-  appearence: 'none',
-  cursor: 'pointer',
-  justifyContent: 'center',
-  '&:hover': {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    outline: 'none',
-  },
-  '&:disabled': {
-    opacity: 0.8,
-  },
-});
-
 const ItemIcon = styled.img({
-  paddingRight: '0.5rem',
-});
-const ItemText = styled.span({
-  fontWeight: '300',
-  height: '24px',
-  fontSize: '1.1rem',
+  paddingRight: '2px',
 });
 
-export default function MenuItem({onClick, icon, text, disabled, ...props}: MenuItemProps) {
+export function MenuItem({onClick, icon, text, disabled, ...props}: MenuItemProps) {
   return (
-    <Item
+    <Button
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        outline: 'none',
+        cursor: 'pointer',
+        color: 'white',
+        fontSize: '1rem',
+      }}
+      variant="ghost"
+      color="gray"
       onClick={onClick}
       disabled={disabled}
       {...props}
     >
-      <ItemIcon
-        src={icon}
-      />
-      <ItemText>{text}</ItemText>
-    </Item>
+      <ItemIcon src={icon} /> {text}
+    </Button>
   );
 }
