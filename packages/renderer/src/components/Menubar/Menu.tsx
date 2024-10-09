@@ -8,7 +8,7 @@ export const Menu = styled.div({
   borderImageSlice: '1',
   backdropFilter: 'blur(4px)',
   display: 'flex',
-  padding: '4px 16px',
-  alignItems: 'flex-start',
+  padding: '8px 12px',
+  alignItems: 'center',
   gap: '1rem',
 });
