@@ -1,16 +1,20 @@
 import React from 'react';
-import {ChakraProvider, extendTheme} from '@chakra-ui/react';
+import {Theme, ThemePanel} from '@radix-ui/themes';
 import {createRoot} from 'react-dom/client';
 import App from './App';
-
-const theme = extendTheme({
-})
 
 const root = createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
+    <Theme
+      accentColor="yellow"
+      appearance="dark"
+      panelBackground="translucent"
+    >
       <App />
-    </ChakraProvider>
+      <ThemePanel style={{
+        '-webkit-app-region': "no-drag"
+      }} />
+    </Theme>
   </React.StrictMode>,
 );
