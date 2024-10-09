@@ -1,59 +1,45 @@
-import styled from '@emotion/styled';
-
-import launcherBackground from '/@/assets/launcher-bg.png';
-import ncLogo from '/@/assets/9c-logo.png';
+import {Flex} from '@radix-ui/themes';
+import {BaseBackground} from './BaseBackground';
+import {BaseNav} from './BaseNav';
+import {BaseLogo} from './BaseLogo';
+import {BaseNodeInfo} from './BaseNodeInfo';
 import {TopMenu} from './TopMenu';
-import {UserInfo} from './UserInfo';
-import {Box} from '../Modal/Modal';
+import {TopUserInfo} from './TopUserInfo';
 import {GameStartButton} from '../Button/GameStartButton';
+import {RestartButton} from '../Button/RestartButton';
+import {SettingButton} from '../Button/SettingButton';
 
-const Background = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  background: `url(${launcherBackground}) center/cover repeat`,
-  padding: '1rem',
-  width: '100%',
-  height: '100%',
-});
-
-const BarContainer = styled.div({
-  display: 'flex',
-  margin: '1rem',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  align: 'flex-end',
-  gap: '2rem',
-});
-
-const MainContainer = styled.div({
-  display: 'flex',
-  flexGrow: '1',
-});
-
-const Logo = styled.img({
-  display: 'flex',
-  width: '170px',
-  justifyContent: 'center',
-});
+import {BaseContent} from '../Content/BaseContent';
+import {Login} from '../Content/Login';
 
 export function Layout() {
   return (
-    <Background>
-      <BarContainer>
-        <Logo src={ncLogo} />
+    <BaseBackground>
+      <BaseNav>
+        <BaseLogo />
         <TopMenu />
-        <UserInfo />
-      </BarContainer>
-      <MainContainer>
-      </MainContainer>
-      <BarContainer
-        style={{
-          alignItems: 'flex-end',
-          justifyContent: 'flex-end',
-        }}
+        <TopUserInfo />
+      </BaseNav>
+      <Flex
+        justify="center"
+        align="center"
+        flexGrow="1"
       >
-        <GameStartButton />
-      </BarContainer>
-    </Background>
+        <BaseContent>
+          <Login />
+        </BaseContent>
+      </Flex>
+      <BaseNav>
+        <BaseNodeInfo />
+        <Flex
+          gap="2rem"
+          align="center"
+        >
+          <GameStartButton />
+          <RestartButton />
+          <SettingButton />
+        </Flex>
+      </BaseNav>
+    </BaseBackground>
   );
 }
