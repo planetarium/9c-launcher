@@ -1,9 +1,8 @@
-import {Box} from '@radix-ui/themes';
 import {ReactNode} from 'react';
 
 export function BaseContent({children}: {children: ReactNode}) {
   return (
-    <Box
+    <div
       className="text-white backdrop-blur-[10px] p-9 flex flex-col"
       style={{
         '-webkit-app-region': 'no-drag',
@@ -11,6 +10,6 @@ export function BaseContent({children}: {children: ReactNode}) {
       }}
     >
       {children}
-    </Box>
+    </div>
   );
 }

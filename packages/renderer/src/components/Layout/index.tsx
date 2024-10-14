@@ -1,4 +1,3 @@
-import {Flex} from '@radix-ui/themes';
 import {BaseBackground} from './BaseBackground';
 import {BaseNav} from './BaseNav';
 import {BaseLogo} from './BaseLogo';
@@ -20,25 +19,18 @@ export function Layout() {
         <TopMenu />
         <TopUserInfo />
       </BaseNav>
-      <Flex
-        justify="center"
-        align="center"
-        flexGrow="1"
-      >
+      <div className="justify-center self-center flex-grow">
         <BaseContent>
           <Login />
         </BaseContent>
-      </Flex>
+      </div>
       <BaseNav>
         <BaseNodeInfo />
-        <Flex
-          gap="2rem"
-          align="center"
-        >
+        <div className="flex gap-2 items-center">
           <GameStartButton />
           <RestartButton />
           <SettingButton />
-        </Flex>
+        </div>
       </BaseNav>
     </BaseBackground>
   );

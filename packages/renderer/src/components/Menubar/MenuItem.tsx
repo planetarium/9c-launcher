@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import {Button} from '@radix-ui/themes';
 
 interface MenuItemProps {
   icon: string;
@@ -14,22 +13,17 @@ const ItemIcon = styled.img({
 
 export function MenuItem({onClick, icon, text, disabled, ...props}: MenuItemProps) {
   return (
-    <Button
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        outline: 'none',
-        cursor: 'pointer',
-        color: 'white',
-        fontSize: '1rem',
-      }}
-      variant="ghost"
-      color="gray"
+    <button
+      className="inline-flex items-center rounded-md hover:bg-gray-500/90 focus:outline-none p-1"
       onClick={onClick}
       disabled={disabled}
       {...props}
     >
-      <ItemIcon src={icon} /> {text}
-    </Button>
+      <img
+        className="pr-[4px]"
+        src={icon}
+      />{' '}
+      {text}
+    </button>
   );
 }
