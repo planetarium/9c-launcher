@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import launcherBackground from '/@/assets/launcher-bg.png';
+import launcherBackground from '@/assets/launcher-bg.png';
 
 export const BaseBackground = styled.div({
   '-webkit-app-region': 'drag',
