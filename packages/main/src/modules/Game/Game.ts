@@ -3,14 +3,17 @@ import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn} from 'node:child_process';
 import {DEFAULT_PLAYER_INSTALL_PATH} from '/@/constants/os';
 import {BrowserWindow} from 'electron/main';
+import Keyv from 'keyv';
 // import { isUpdating } from "/@/modules/updater"
 
 export default class Game {
   private _gameNode: ChildProcessWithoutNullStreams | null = null;
   private _window: BrowserWindow;
+  private _keyv: Keyv;
 
-  constructor(window: BrowserWindow) {
+  constructor(window: BrowserWindow, keyv: Keyv) {
     this._window = window;
+    this._keyv = keyv;
     this.registerEvents();
   }
 
