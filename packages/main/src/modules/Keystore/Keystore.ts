@@ -9,6 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import {getKeyStorePath} from '/@/constants/os';
 import {BrowserWindow} from 'electron/main';
+import Keyv from 'keyv';
 
 export interface ILoginSession {
   address: Address;
@@ -21,11 +22,13 @@ export default class Keystore {
   private _addresses: Address[] = [];
   private _account: ExportableAccount | null = null;
   private _window: BrowserWindow;
+  private _keyv: Keyv;
   public loginSession: ILoginSession | null = null;
   public isKeystoreInitialized: boolean = false;
 
-  constructor(window: BrowserWindow) {
+  constructor(window: BrowserWindow, keyv: Keyv) {
     this._window = window;
+    this._keyv = keyv;
     this.getKeyStore(undefined).then(async keyStore => {
       for await (const keyMetadata of keyStore.list()) {
         const address = keyMetadata.metadata.address;
