@@ -35,7 +35,7 @@ export default class Remote {
     // setPlanetServiceEndpoint
   }
 
-  private setPlanetSeviceEndpoint(planetId: string) {
+  private setPlanetServiceEndpoint(planetId: string) {
     // check current Planet
     // get service endpoint from this._planetRegistry -> keyv
   }
