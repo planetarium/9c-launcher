@@ -1,13 +1,15 @@
 import {z} from 'zod';
 import {PLANET_REGISTRY} from '/@/constants';
 import {Planet, PlanetArraySchema} from '/@/types/registry';
+import { BrowserWindow } from 'electron';
 
 export default class Remote {
   private _planetRegistry: Planet[] | null = null;
   private _isChangingPlanet: boolean = false;
+  private _window: BrowserWindow;
 
-  constructor() {
-    this.init();
+  constructor(window: BrowserWindow) {
+    this._window = window;
     this.registerEvents();
     // isOnline Tracker
   }
