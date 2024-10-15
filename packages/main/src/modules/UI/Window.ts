@@ -3,11 +3,11 @@ import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 export default class Window {
-  private window!: BrowserWindow;
+  public window!: BrowserWindow;
 
   constructor() {}
 
-  private async createWindow() {
+  private createWindow() {
     this.window = new BrowserWindow({
       show: false, // Use the 'ready-to-show' event to show the instantiated BrowserWindow.
       webPreferences: {
@@ -28,7 +28,7 @@ export default class Window {
       /**
        * Load from the Vite dev server for development.
        */
-      await this.window.loadURL(import.meta.env.VITE_DEV_SERVER_URL);
+      this.window.loadURL(import.meta.env.VITE_DEV_SERVER_URL);
     } else {
       /**
        * Load from the local file system for production and test.
@@ -39,7 +39,7 @@ export default class Window {
        * @see https://github.com/nodejs/node/issues/12682
        * @see https://github.com/electron/electron/issues/6869
        */
-      await this.window.loadFile(
+      this.window.loadFile(
         fileURLToPath(new URL('./../../renderer/dist/index.html', import.meta.url)),
       );
     }
@@ -47,7 +47,7 @@ export default class Window {
   /**
    * Restore an existing BrowserWindow or Create a new BrowserWindow.
    */
-  public async restoreOrCreateWindow() {
+  public restoreOrCreateWindow() {
     const window = BrowserWindow.getAllWindows().find(w => !w.isDestroyed());
 
     if (window === undefined) {

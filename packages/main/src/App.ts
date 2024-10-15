@@ -4,9 +4,16 @@ import {platform} from 'node:process';
 import updater from 'electron-updater';
 
 import Window from './modules/UI/Window';
+import Game from './modules/Game/Game';
+import Keystore from './modules/Keystore/Keystore';
+import Remote from './modules/Remote/Remote';
 
 export default class App {
-  window: Window;
+  private window!: Window;
+  private game!: Game;
+  private keystore!: Keystore;
+  private remote!: Remote;
+  // Module Components are initialized in ready, if not. app must print error
   constructor() {
     /**
      * Prevent electron from running multiple instances.
@@ -32,7 +39,11 @@ export default class App {
       this.window.restoreOrCreateWindow();
     } catch (e) {
       console.error('Failed create window:', e);
+      //display dialog failed to create window
     }
+    this.game = new Game(this.window.window);
+    this.keystore = new Keystore(this.window.window);
+    this.remote = new Remote(this.window.window);
   };
 
   private windowAllClosed = (): void => {
