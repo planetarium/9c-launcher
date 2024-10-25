@@ -54,4 +54,4 @@ export const PlanetSchema = z.object({
   guildIconBucket: z.string().optional(),
 });
 
-export const PlanetArraySchema = z.array(PlanetSchema)
+export const PlanetArraySchema = z.array(PlanetSchema);
