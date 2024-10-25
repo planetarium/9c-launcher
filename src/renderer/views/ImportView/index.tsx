@@ -36,14 +36,7 @@ function ImportView() {
         <Button onClick={history.goBack.bind(history)}>
           <T _str="Prev" _tags={transifexTags} />
         </Button>
-        <Button
-          variant="primary"
-          disabled={
-            (!key.key && !key.keyFile) ||
-            (!!key.key && !account.isValidPrivateKey(key.key))
-          }
-          onClick={handleSubmit}
-        >
+        <Button variant="primary" disabled={!isKeyValid} onClick={handleSubmit}>
           <T _str="Next" _tags={transifexTags} />
         </Button>
       </ButtonBar>
