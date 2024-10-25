@@ -6,6 +6,7 @@ import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { configStore, userConfigStore } from "src/config";
 import type { IConfig } from "src/interfaces/config";
 import { T } from "src/renderer/i18n";
+import path from "path";
 import log from "electron-log";
 import { clipboard, shell, ipcRenderer } from "electron";
 import { app } from "@electron/remote";
@@ -99,23 +100,22 @@ type Languages = Array<Record<"code" | "name" | "localized_name", string>>;
 const transifexTags = "v2/configuration";
 
 function handleOpenKeyStorePath() {
-  getKeyStorePath().then((keyStorPath) => {
-    console.log(`Open keystore folder. ${keyStorPath}`);
-    shell.showItemInFolder(keyStorPath);
+  getKeyStorePath().then((keyStorePath) => {
+    console.log(`Open keystore folder. ${keyStorePath}`);
+    shell.openPath(keyStorePath);
   });
 }
 
 function handleOpenLogPath() {
-  const openpath = log.transports.file.getFile().path;
+  const openpath = path.dirname(log.transports.file.getFile().path);
   console.log(`Open log folder. ${openpath}`);
-  shell.showItemInFolder(openpath);
+  shell.openPath(openpath);
 }
 
 async function handlePlayerUpdate() {
   const result = await ipcRenderer.invoke("manual player update", true);
   return result;
 }
-
 const awsSinkGuid: string | undefined = ipcRenderer.sendSync(
   "get-aws-sink-cloudwatch-guid",
 );
