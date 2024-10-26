@@ -76,19 +76,14 @@ export default function useKeyImport() {
         if (isImageFile(fileName)) {
           keystore = await decodeQRCode(key.keyFile);
         } else if (isValidFileName(fileName)) {
-          try {
-            JSON.parse(keyFileText);
-          } catch (e) {
-            setError(t("Invalid JSON format"));
-            return;
-          }
+          const parsedKeyFile = JSON.parse(keyFileText);
 
           // JSON 내용 검증
-          if (!validateWeb3SecretStorage(JSON.parse(keyFileText))) {
+          if (!validateWeb3SecretStorage(parsedKeyFile)) {
             setError(t("Invalid keystore JSON"));
             return;
           }
-          keystore = JSON.parse(keyFileText);
+          keystore = keyFileText;
         } else {
           setError(t("Invalid keyFile text"));
           return;
