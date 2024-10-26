@@ -13,17 +13,57 @@ export default function useKeyImport() {
   const [key, setKey] = useState<ImportData>({});
   const [error, setError] = useState<string | null>(null);
 
-  // 파일 이름 정규식으로 검증
   const isValidFileName = (fileName: string) => {
-    const regex = /^[a-z0-9]{3,15}\.(txt|json)$/;
-    return regex.test(fileName);
+    const utcRegex =
+      /^UTC--\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z--[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const jsonRegex = /\.json$/i;
+    return utcRegex.test(fileName) || jsonRegex.test(fileName);
   };
 
   //파일 형식 검증
   const isImageFile = (fileName: string) => {
-    const imageExtensions = /\.(png|jpg|jpeg|gif)$/i;
+    const imageExtensions = /\.(png|jpg|jpeg)$/i;
     return imageExtensions.test(fileName);
   };
+
+  // 파일 안 내용 검증
+  function validateWeb3SecretStorage(json: any): boolean {
+    const schema: { [key: string]: any } = {
+      version: "number",
+      id: "string",
+      address: "string",
+      crypto: {
+        ciphertext: "string",
+        cipherparams: {
+          iv: "string",
+        },
+        cipher: "string",
+        kdf: "string",
+        kdfparams: {
+          dklen: "number",
+          salt: "string",
+          n: "number",
+          r: "number",
+          p: "number",
+        },
+        mac: "string",
+      },
+    };
+
+    function validate(obj: any, schema: any): boolean {
+      for (const key in schema) {
+        if (typeof schema[key] === "object") {
+          if (!obj[key] || typeof obj[key] !== "object") return false;
+          if (!validate(obj[key], schema[key])) return false;
+        } else if (typeof obj[key] !== schema[key]) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    return validate(json, schema);
+  }
 
   const handleSubmit = async () => {
     let privateKey: RawPrivateKey;
@@ -31,7 +71,6 @@ export default function useKeyImport() {
       // QR 디코딩을 사용하지 않고 파일을 그대로
       const fileName = key.keyFile.name;
 
-      //
       if (!isValidFileName(fileName)) {
         setError(t("Invalid file name format."));
         return;
@@ -50,7 +89,13 @@ export default function useKeyImport() {
         try {
           JSON.parse(keystore);
         } catch (e) {
-          setError(t("Invalid JSON format in the file."));
+          setError(t("Invalid JSON format"));
+          return;
+        }
+
+        // JSON 내용 검증
+        if (!validateWeb3SecretStorage(JSON.parse(keystore))) {
+          setError(t("Invalid keystore JSON"));
           return;
         }
 
