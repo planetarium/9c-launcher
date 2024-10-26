@@ -40,11 +40,10 @@ export default function useKeyImport() {
         cipher: "string",
         kdf: "string",
         kdfparams: {
+          c: "number",
           dklen: "number",
+          prf: "string",
           salt: "string",
-          n: "number",
-          r: "number",
-          p: "number",
         },
         mac: "string",
       },
@@ -68,34 +67,31 @@ export default function useKeyImport() {
   const handleSubmit = async () => {
     let privateKey: RawPrivateKey;
     if (key.keyFile) {
-      // QR 디코딩을 사용하지 않고 파일을 그대로
       const fileName = key.keyFile.name;
-
-      if (!isValidFileName(fileName)) {
-        setError(t("Invalid file name format."));
-        return;
-      }
 
       try {
         //qr디코딩 없이 일반 파일로 처리
-        const keystore = await key.keyFile.text();
+        const keyFileText = await key.keyFile.text();
+        let keystore;
 
-        //이미지 파일일 경우 qr코드 디코드
         if (isImageFile(fileName)) {
-          const keystore = await decodeQRCode(key.keyFile);
-        }
+          keystore = await decodeQRCode(key.keyFile);
+        } else if (!isValidFileName(fileName)) {
+          try {
+            JSON.parse(keyFileText);
+          } catch (e) {
+            setError(t("Invalid JSON format"));
+            return;
+          }
 
-        // JSON 검증
-        try {
-          JSON.parse(keystore);
-        } catch (e) {
-          setError(t("Invalid JSON format"));
-          return;
-        }
-
-        // JSON 내용 검증
-        if (!validateWeb3SecretStorage(JSON.parse(keystore))) {
-          setError(t("Invalid keystore JSON"));
+          // JSON 내용 검증
+          if (!validateWeb3SecretStorage(JSON.parse(keyFileText))) {
+            setError(t("Invalid keystore JSON"));
+            return;
+          }
+          keystore = JSON.parse(keyFileText);
+        } else {
+          setError(t("Invalid keyFile text"));
           return;
         }
 
