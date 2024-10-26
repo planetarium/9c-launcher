@@ -15,9 +15,8 @@ export default function useKeyImport() {
 
   const isValidFileName = (fileName: string) => {
     const utcRegex =
-      /^UTC--\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z--[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const jsonRegex = /\.json$/i;
-    return utcRegex.test(fileName) || jsonRegex.test(fileName);
+      /^UTC--\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z--[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}.json$/i;
+    return utcRegex.test(fileName);
   };
 
   //파일 형식 검증
@@ -76,7 +75,7 @@ export default function useKeyImport() {
 
         if (isImageFile(fileName)) {
           keystore = await decodeQRCode(key.keyFile);
-        } else if (!isValidFileName(fileName)) {
+        } else if (isValidFileName(fileName)) {
           try {
             JSON.parse(keyFileText);
           } catch (e) {
