@@ -54,7 +54,6 @@ export default function useKeyImport() {
           return;
         }
 
-        // const keystore = await decodeQRCode(key.keyFile);
         const { id, address }: { id: string; address: string } =
           JSON.parse(keystore);
         try {
