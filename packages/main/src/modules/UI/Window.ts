@@ -14,7 +14,7 @@ export default class Window {
       frame: false,
       resizable: false,
       autoHideMenuBar: true,
-      titleBarStyle: process.platform === "darwin" ? "hidden" : undefined,
+      titleBarStyle: process.platform === 'darwin' ? 'hidden' : undefined,
       show: false, // Use the 'ready-to-show' event to show the instantiated BrowserWindow.
       webPreferences: {
         nodeIntegration: false,

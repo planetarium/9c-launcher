@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {PLANET_REGISTRY} from '/@/constants';
 import {Planet, PlanetArraySchema} from '/@/types/registry';
-import { BrowserWindow } from 'electron';
+import {BrowserWindow} from 'electron';
 import Keyv from 'keyv';
 
 export default class Remote {

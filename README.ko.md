@@ -149,7 +149,7 @@ yarn pack-all:electron-builder
 ## 코드 스타일 맞추기
 
 ```bash
-npx pretty-quick --staged
+yarn dlx pretty-quick --staged
 ```
 
 ### Visual Studio Code 확장

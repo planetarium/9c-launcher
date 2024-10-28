@@ -1,12 +1,12 @@
-import Store from "electron-store";
-import { IConfig } from "/@/types/config";
+import Store from 'electron-store';
+import {IConfig} from '/@/types/config';
 
 export const configStore = new Store<IConfig>();
 
 export const network = () => {
-  const network = configStore.get("Network", DEFAULT_NETWORK);
-  if (network === "9c-main") {
-    return "main";
+  const network = configStore.get('Network', DEFAULT_NETWORK);
+  if (network === '9c-main') {
+    return 'main';
   }
   return network;
 };

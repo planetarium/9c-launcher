@@ -1,0 +1,49 @@
+{
+  "name": "@9c-launcher/renderer",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "format": "yarn dlx prettier --check \"**/*.{js,mjs,cjs,ts,mts,cts,vue,json}\""
+  },
+  "files": [
+    "dist/**"
+  ],
+  "devDependencies": {
+    "@emotion/eslint-plugin": "^11.12.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "happy-dom": "^15.7.4",
+    "postcss": "^8.4.47",
+    "sass-embedded": "^1.80.4",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3",
+    "unplugin-auto-expose": "^0.3.0",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.3"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^3.0.0",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@hookform/resolvers": "^3.9.0",
+    "@planetarium/account": "^5.3.1",
+    "@planetarium/account-web3-secret-storage": "^5.3.1",
+    "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/themes": "^3.1.4",
+    "@tanstack/react-form": "^0.34.1",
+    "@tanstack/react-query": "^5.59.16",
+    "@tanstack/zod-form-adapter": "^0.34.1",
+    "framer-motion": "^11.11.9",
+    "jotai": "^2.10.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.1",
+    "react-icons": "^5.3.0",
+    "zod": "^3.23.8"
+  }
+}
