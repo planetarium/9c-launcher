@@ -5,6 +5,8 @@ export const BaseBackground = styled.div({
   '-webkit-app-region': 'drag',
   display: 'flex',
   flexDirection: 'column',
+  justifyContent: "space-between",
+  alignContent: "center",
   background: `url(${launcherBackground}) center/cover repeat`,
   width: '100vw',
   height: '100vh',

@@ -1,5 +1,15 @@
-import {TextField, Checkbox, Heading, Select, Flex, Button} from '@radix-ui/themes';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '../UI/select';
+import { Input } from '../UI/input'
 import {useForm} from '@tanstack/react-form';
+import { Button } from '../UI/button';
 
 export function Login() {
   const {Field, handleSubmit, state} = useForm({
@@ -16,66 +26,57 @@ export function Login() {
 
   return (
     <>
-      <Heading className="mb-6 text-3xl">Login</Heading>
+      <h1 className="font-bold text-3xl mb-6">Login</h1>
       <form
+        className="flex flex-col gap-2"
         onSubmit={e => {
           e.preventDefault();
           handleSubmit();
         }}
       >
-        <Flex
-          gap="4"
-          direction="column"
-          width="420px"
-        >
           <Field
             name="planet"
             children={({state, handleChange, handleBlur}) => (
-              <Select.Root
-                size="3"
-                defaultValue="0x000000000000"
-              >
-                <Select.Trigger
-                  id="planet"
-                  placeholder="Planet"
-                />
-                <Select.Content>
-                  <Select.Group>
-                    <Select.Label>Planets</Select.Label>
-                    <Select.Item value="0x000000000000">Odin</Select.Item>
-                    <Select.Item value="0x000000000001">Heimdall</Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+              <Select defaultValue="0x000000000000">
+                <SelectTrigger id="planet">
+                <SelectValue placeholder="Planets" />
+
+                  </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Planets</SelectLabel>
+                    <SelectItem value="0x000000000000">Odin</SelectItem>
+                    <SelectItem value="0x000000000001">Heimdall</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             )}
           ></Field>
 
           <Field
             name="address"
             children={({state, handleChange, handleBlur}) => (
-              <Select.Root
-                size="3"
-                defaultValue="0x3dfc24e309b4d5dc24f53fba70a3b97debca5ada"
-              >
-                <Select.Trigger placeholder="Nine Chronicles Address" />
-                <Select.Content>
-                  <Select.Group>
-                    <Select.Label>Address</Select.Label>
-                    <Select.Item value="0x3dfc24e309b4d5dc24f53fba70a3b97debca5ada">
+              <Select defaultValue="0x3dfc24e309b4d5dc24f53fba70a3b97debca5ada">
+                <SelectTrigger>
+                  <SelectValue placeholder="Address" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Address</SelectLabel>
+                    <SelectItem value="0x3dfc24e309b4d5dc24f53fba70a3b97debca5ada">
                       0x3dfc24e309b4d5dc24f53fba70a3b97debca5ada
-                    </Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             )}
           ></Field>
 
           <Field
             name="password"
             children={({state, handleChange, handleBlur}) => (
-              <TextField.Root
-                size="3"
-                type="password"
+              <Input
+                typeof="password"
                 defaultValue={state.value}
                 onChange={e => handleChange(e.target.value)}
                 onBlur={handleBlur}
@@ -83,9 +84,8 @@ export function Login() {
               />
             )}
           />
-          <div className="flex items-center justify-between mt-6S">
+          <div className="flex items-center justify-between pt-6">
             <Button
-              size="3"
               className="font-bold rounded focus:outline-none focus:shadow-outline"
               type="button"
             >
@@ -98,7 +98,6 @@ export function Login() {
               Forgot Password?
             </a>
           </div>
-        </Flex>
       </form>
     </>
   );

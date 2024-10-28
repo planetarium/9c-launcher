@@ -5,6 +5,5 @@ export const BaseNav  = styled.div({
   margin: '2rem',
   justifyContent: 'space-between',
   alignItems: 'center',
-  align: 'flex-end',
   gap: '2rem',
 });

@@ -19,14 +19,14 @@ export function Layout() {
         <TopMenu />
         <TopUserInfo />
       </BaseNav>
-      <div className="justify-center self-center flex-grow">
+      <div className="flex justify-center">
         <BaseContent>
           <Login />
         </BaseContent>
       </div>
       <BaseNav>
         <BaseNodeInfo />
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2">
           <GameStartButton />
           <RestartButton />
           <SettingButton />
