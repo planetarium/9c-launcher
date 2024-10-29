@@ -33,6 +33,7 @@ import { getKeyStorePath } from "src/stores/account";
 import { ExportOverlay } from "src/renderer/components/core/Layout/UserInfo/ExportOverlay";
 import { useStore } from "src/utils/useStore";
 import { useLoginSession } from "src/utils/useLoginSession";
+import { CONFIG_FILE_PATH } from "src/config";
 
 declare const CURRENT_VERSION: string;
 
@@ -110,6 +111,11 @@ function handleOpenLogPath() {
   const openpath = path.dirname(log.transports.file.getFile().path);
   console.log(`Open log folder. ${openpath}`);
   shell.openPath(openpath);
+}
+
+function handleOpenConfigFile() {
+  console.log(`Open config file: ${CONFIG_FILE_PATH}`);
+  shell.openPath(CONFIG_FILE_PATH);
 }
 
 async function handlePlayerUpdate() {
@@ -242,6 +248,13 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 onClick={handleOpenKeyStorePath}
                 text={t("Open keystore Folder")}
               />
+              {isLogin && (
+                <AdvancedAction
+                  link
+                  onClick={handleOpenConfigFile}
+                  text={t("Open config file")}
+                />
+              )}
               {isLogin && (
                 <AdvancedAction
                   icon={<AccountBoxIcon />}
