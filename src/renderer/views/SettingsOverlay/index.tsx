@@ -248,13 +248,11 @@ function SettingsOverlay({ onClose, isOpen }: OverlayProps) {
                 onClick={handleOpenKeyStorePath}
                 text={t("Open keystore Folder")}
               />
-              {isLogin && (
-                <AdvancedAction
-                  link
-                  onClick={handleOpenConfigFile}
-                  text={t("Open config file")}
-                />
-              )}
+              <AdvancedAction
+                link
+                onClick={handleOpenConfigFile}
+                text={t("Open config file")}
+              />
               {isLogin && (
                 <AdvancedAction
                   icon={<AccountBoxIcon />}
