@@ -14,20 +14,18 @@ export default function useKeyImport() {
   const [error, setError] = useState<string | null>(null);
 
   const isValidFileName = (fileName: string) => {
-    const utcRegex =
-      /^UTC--\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z--[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}.json$/i;
-    return utcRegex.test(fileName);
+    return /^(?:UTC--([0-9]{4}-[0-9]{2}-[0-9]{2})T([0-9]{2}-[0-9]{2}-[0-9]{2})Z--)?([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})(?:.json)?$/i.test(
+      fileName,
+    );
   };
 
-  //파일 형식 검증
   const isImageFile = (fileName: string) => {
     const imageExtensions = /\.(png|jpg|jpeg)$/i;
     return imageExtensions.test(fileName);
   };
 
-  // 파일 안 내용 검증
   function validateWeb3SecretStorage(json: any): boolean {
-    const schema: { [key: string]: any } = {
+    const baseSchema: { [key: string]: any } = {
       version: "number",
       id: "string",
       address: "string",
@@ -38,14 +36,23 @@ export default function useKeyImport() {
         },
         cipher: "string",
         kdf: "string",
-        kdfparams: {
-          c: "number",
-          dklen: "number",
-          prf: "string",
-          salt: "string",
-        },
         mac: "string",
       },
+    };
+
+    const pbkdf2Schema = {
+      dklen: "number",
+      c: "number",
+      prf: "string",
+      salt: "string",
+    };
+
+    const scryptSchema = {
+      dklen: "number",
+      n: "number",
+      p: "number",
+      r: "number",
+      salt: "string",
     };
 
     function validate(obj: any, schema: any): boolean {
@@ -60,7 +67,16 @@ export default function useKeyImport() {
       return true;
     }
 
-    return validate(json, schema);
+    if (!validate(json, baseSchema)) return false;
+
+    const kdf = json.crypto.kdf;
+    if (kdf === "pbkdf2") {
+      return validate(json.crypto.kdfparams, pbkdf2Schema);
+    } else if (kdf === "scrypt") {
+      return validate(json.crypto.kdfparams, scryptSchema);
+    } else {
+      return false;
+    }
   }
 
   const handleSubmit = async () => {
@@ -69,7 +85,6 @@ export default function useKeyImport() {
       const fileName = key.keyFile.name;
 
       try {
-        //qr디코딩 없이 일반 파일로 처리
         const keyFileText = await key.keyFile.text();
         let keystore;
 
@@ -78,7 +93,6 @@ export default function useKeyImport() {
         } else if (isValidFileName(fileName)) {
           const parsedKeyFile = JSON.parse(keyFileText);
 
-          // JSON 내용 검증
           if (!validateWeb3SecretStorage(parsedKeyFile)) {
             setError(t("Invalid keystore JSON"));
             return;
