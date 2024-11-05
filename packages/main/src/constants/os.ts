@@ -7,7 +7,10 @@ import {getDefaultWeb3KeyStorePath} from '@planetarium/account-web3-secret-stora
 export const WEB3_SECRET_STORAGE_NAME_PATTERN =
   /^(?:UTC--([0-9]{4}-[0-9]{2}-[0-9]{2})T([0-9]{2}-[0-9]{2}-[0-9]{2})Z--)?([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})(?:.json)?$/i;
 
-export const DEFAULT_PLAYER_INSTALL_PATH = path.join(app.getPath('userData'), `player/${network}`);
+export const DEFAULT_PLAYER_INSTALL_PATH = path.join(
+  app.getPath('userData'),
+  `player/${network()}`,
+);
 
 export const CONFIG_FILE_PATH = path.join(app.getPath('userData'), CONFIG_FILENAME);
 
@@ -102,4 +105,13 @@ Migrated at: ${new Date().toISOString()}\n`,
   }
 
   return keyStorePath;
+}
+
+export function getExecutePath() {
+  const defaultPath = EXECUTE_PATH[process.platform] ?? WIN_GAME_PATH;
+
+  if (fs.existsSync(defaultPath)) return defaultPath;
+
+  console.error('Player Binary Not Exists. Trigger Player Update.');
+  return 'PLAYER_UPDATE';
 }
