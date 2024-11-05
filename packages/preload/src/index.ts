@@ -16,7 +16,7 @@ const gameState = (callback: (arg: boolean) => {}) => {
 const frontReady = () => ipcRenderer.send('front-ready');
 
 function getKeys(callback: (arg: string[]) => {}) {
-  ipcRenderer.on('get-keys', (_event, arg) => {
+  ipcRenderer.on('get-keys', (_event, arg: string[]) => {
     callback(arg);
   });
 }
@@ -24,7 +24,7 @@ function getKeys(callback: (arg: string[]) => {}) {
 contextBridge.exposeInMainWorld('game', {
   startGame,
   endGame,
-  gameState
+  gameState,
 });
 
 contextBridge.exposeInMainWorld('renderer', {
