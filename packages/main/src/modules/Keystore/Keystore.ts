@@ -1,5 +1,6 @@
 import {Address, ExportableAccount, PublicKey, RawPrivateKey} from '@planetarium/account';
 import {
+  getDefaultWeb3KeyStorePath,
   KeyId,
   PassphraseEntry,
   Web3Account,
@@ -7,8 +8,26 @@ import {
 } from '@planetarium/account-web3-secret-storage';
 import fs from 'fs';
 import path from 'path';
+import {homedir} from 'os';
 import {getKeyStorePath} from '/@/constants/os';
 import {BrowserWindow} from 'electron/main';
+/**
+ * Shim for same function in @planetarium/account-web3-secret-storage, due to node:os import issue.
+ * Determines the default key store path.  It depends on the platform:
+ */
+export function getDefaultWeb3KeyStorePath(): string {
+  const baseDir =
+    process.platform === 'win32'
+      ? process.env.AppData || path.join(homedir(), 'AppData', 'Roaming')
+      : process.env.XDG_CONFIG_HOME || path.join(homedir(), '.config');
+  // Note that it's not necessary to explicitly choose one of `path.win32` or
+  // `path.posix` here, but it makes unit tests less dependent on mocks:
+  return (process.platform === 'win32' ? path.win32 : path.posix).join(
+    baseDir,
+    'planetarium',
+    'keystore',
+  );
+}
 
 export interface ILoginSession {
   address: Address;
@@ -21,11 +40,13 @@ export default class Keystore {
   private _addresses: Address[] = [];
   private _account: ExportableAccount | null = null;
   private _window: BrowserWindow;
+  private _keyv: Keyv;
   public loginSession: ILoginSession | null = null;
   public isKeystoreInitialized: boolean = false;
 
-  constructor(window: BrowserWindow) {
+  constructor(window: BrowserWindow, keyv: Keyv) {
     this._window = window;
+    this._keyv = keyv;
     this.getKeyStore(undefined).then(async keyStore => {
       for await (const keyMetadata of keyStore.list()) {
         const address = keyMetadata.metadata.address;
@@ -33,6 +54,21 @@ export default class Keystore {
         this._addresses.push(address);
       }
       this.isKeystoreInitialized = true;
+
+      console.log(
+        'get-keys fired',
+        this._addresses.map(v => {
+          return v.toString();
+        }),
+      );
+      this._window.webContents.on('did-finish-load', () => {
+        window.webContents.send(
+          'get-keys',
+          this._addresses.map(v => {
+            return v.toString();
+          }),
+        );
+      });
     });
   }
 
@@ -50,7 +86,7 @@ export default class Keystore {
     };
     return new Web3KeyStore({
       passphraseEntry,
-      path: await getKeyStorePath(),
+      path: getDefaultWeb3KeyStorePath(),
       allowWeakPrivateKey: true,
     });
   }

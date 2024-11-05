@@ -7,12 +7,14 @@ import Window from './modules/UI/Window';
 import Game from './modules/Game/Game';
 import Keystore from './modules/Keystore/Keystore';
 import Remote from './modules/Remote/Remote';
+import Keyv from 'keyv';
 
 export default class App {
   private window!: Window;
   private game!: Game;
   private keystore!: Keystore;
   private remote!: Remote;
+  private state: Keyv;
   // Module Components are initialized in ready, if not. app must print error
   constructor() {
     /**
@@ -30,6 +32,7 @@ export default class App {
      */
     app.disableHardwareAcceleration();
     this.window = new Window();
+    this.state = new Keyv();
     this.registerEvents();
   }
 
@@ -41,9 +44,9 @@ export default class App {
       console.error('Failed create window:', e);
       //display dialog failed to create window
     }
-    this.game = new Game(this.window.window);
-    this.keystore = new Keystore(this.window.window);
-    this.remote = new Remote(this.window.window);
+    this.game = new Game(this.window.window, this.state);
+    this.keystore = new Keystore(this.window.window, this.state);
+    this.remote = new Remote(this.window.window, this.state);
   };
 
   private windowAllClosed = (): void => {

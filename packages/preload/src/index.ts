@@ -1,11 +1,36 @@
 /**
  * @module preload
  */
+import {ipcRenderer} from 'electron';
+import {contextBridge} from 'electron';
 
-import {contextBridge, ipcRenderer} from 'electron';
+const startGame = () => ipcRenderer.send('start-game');
+const endGame = () => ipcRenderer.send('end-game');
+
+const gameState = (callback: (arg: boolean) => {}) => {
+  ipcRenderer.on('game-state', (_event, arg: boolean) => {
+    callback(arg);
+  });
+};
+
+const frontReady = () => ipcRenderer.send('front-ready');
+
+function getKeys(callback: (arg: string[]) => {}) {
+  ipcRenderer.on('get-keys', (_event, arg: string[]) => {
+    callback(arg);
+  });
+}
 
 contextBridge.exposeInMainWorld('game', {
-  startGame: () => ipcRenderer.invoke('start-game'),
-  endGame: () => ipcRenderer.invoke('end-game'),
-//onGameState: () => ipcRenderer.on('game-state', (_event, value) => callback(value)),
+  startGame,
+  endGame,
+  gameState,
+});
+
+contextBridge.exposeInMainWorld('renderer', {
+  frontReady,
+});
+
+contextBridge.exposeInMainWorld('keystore', {
+  getKeys,
 });

@@ -1,0 +1,27 @@
+{
+  "name": "@9c-launcher/main",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "format": "yarn dlx prettier --check \"**/*.{js,mjs,cjs,ts,mts,cts,vue,json}\""
+  },
+  "files": [
+    "dist/**"
+  ],
+  "dependencies": {
+    "@9c-launcher/preload": "workspace:*",
+    "@9c-launcher/renderer": "workspace:*",
+    "@planetarium/account": "^5.3.1",
+    "@planetarium/account-web3-secret-storage": "^5.3.1",
+    "electron-updater": "^6.3.9",
+    "keyv": "^5.1.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10",
+    "vitest": "^2.1.3"
+  }
+}

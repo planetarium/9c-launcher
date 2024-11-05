@@ -1,0 +1,19 @@
+{
+  "name": "@9c-launcher/preload",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "format": "yarn dlx prettier --check \"**/*.{js,mjs,cjs,ts,mts,cts,vue,json}\""
+  },
+  "files": [
+    "dist/**"
+  ],
+  "devDependencies": {
+    "unplugin-auto-expose": "^0.3.0",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.3"
+  }
+}

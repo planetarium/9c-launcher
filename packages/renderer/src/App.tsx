@@ -1,4 +1,6 @@
-const App = () => {
-  return <p>9C Launcher</p>;
-};
-export default App;
+import { Layout } from '@/components/Layout/index';
+import '../styles/global.scss';
+
+export default function App() {
+  return <Layout />;
+}

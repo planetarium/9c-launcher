@@ -57,3 +57,12 @@ thumbs.db
 .idea/httpRequests
 /.idea/csv-plugin.xml
 node_modules
+
+.yarn/*
+.yarn/install-state.gz
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
