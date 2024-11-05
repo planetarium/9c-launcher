@@ -1,9 +1,10 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, ipcMain} from 'electron';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 export default class Window {
   public window!: BrowserWindow;
+  public isReady: boolean = false;
 
   constructor() {}
 
@@ -75,14 +76,18 @@ export default class Window {
    *
    * @see https://github.com/electron/electron/issues/25012 for the afford mentioned issue.
    */
-  private readyToShow() {
-    this.window.show();
+  private setReady() {
+    this.isReady = true;
+  }
 
+  private show() {
+    this.window.show();
     if (import.meta.env.DEV) {
       this.window?.webContents.openDevTools();
     }
   }
   private registerEvents() {
-    this.window.on('ready-to-show', this.readyToShow.bind(this));
+    this.window.on('ready-to-show', this.setReady.bind(this));
+    ipcMain.on('front-ready', this.show.bind(this));
   }
 }
