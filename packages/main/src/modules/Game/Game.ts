@@ -65,7 +65,7 @@ export default class Game {
   };
 
   private registerEvents = (): void => {
-    ipcMain.handle('start-game', this.startGame.bind(this));
-    ipcMain.handle('end-game', this.endGame.bind(this));
+    ipcMain.on('start-game', this.startGame.bind(this));
+    ipcMain.on('end-game', this.endGame.bind(this));
   };
 }
