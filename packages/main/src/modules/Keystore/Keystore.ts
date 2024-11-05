@@ -61,12 +61,14 @@ export default class Keystore {
           return v.toString();
         }),
       );
-      window.webContents.send(
-        'get-keys',
-        this._addresses.map(v => {
-          return v.toString();
-        }),
-      );
+      this._window.webContents.on('did-finish-load', () => {
+        window.webContents.send(
+          'get-keys',
+          this._addresses.map(v => {
+            return v.toString();
+          }),
+        );
+      });
     });
   }
 

@@ -11,13 +11,13 @@ import {Input} from '../UI/input';
 import {useForm} from '@tanstack/react-form';
 import {Button} from '../UI/button';
 import {useAtom} from 'jotai';
-import {useMemo} from 'react';
+import {useEffect} from 'react';
 import {keystoreAtom} from '@/store/keystore';
 
 export function Login() {
   const [keys, setKeys] = useAtom(keystoreAtom);
 
-  useMemo(() => {
+  useEffect(() => {
     // Listen for updates from the main process
     window.keystore.getKeys((v: string[]) => {
       console.log(v);
@@ -72,16 +72,21 @@ export function Login() {
         <Field
           name="address"
           children={({state, handleChange, handleBlur}) => (
-            <Select defaultValue="0x3dfc24e309b4d5dc24f53fba70a3b97debca5ada">
+            <Select defaultValue={keys.length > 0 ? keys[0] : ''}>
               <SelectTrigger>
                 <SelectValue placeholder="Address" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Address</SelectLabel>
-                  <SelectItem value="0x3dfc24e309b4d5dc24f53fba70a3b97debca5ada">
-                    0x3dfc24e309b4d5dc24f53fba70a3b97debca5ada
-                  </SelectItem>
+                  {keys.map(key => (
+                    <SelectItem
+                      key={key}
+                      value={key}
+                    >
+                      {key}
+                    </SelectItem>
+                  ))}{' '}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -92,7 +97,7 @@ export function Login() {
           name="password"
           children={({state, handleChange, handleBlur}) => (
             <Input
-              typeof="password"
+              type="password"
               defaultValue={state.value}
               onChange={e => handleChange(e.target.value)}
               onBlur={handleBlur}
