@@ -8,26 +8,25 @@ import {
   SelectValue,
 } from '../UI/select';
 import {Input} from '../UI/input';
-import {useForm} from '@tanstack/react-form';
 import {Button} from '../UI/button';
 import {useAtom} from 'jotai';
 import {useEffect} from 'react';
+import {useForm} from '@tanstack/react-form';
 import {keystoreAtom} from '@/store/keystore';
 
 export function Login() {
   const [keys, setKeys] = useAtom(keystoreAtom);
 
   useEffect(() => {
-    // Listen for updates from the main process
     window.keystore.getKeys((v: string[]) => {
-      console.log(v);
+      console.log('Keys received:', v);
       setKeys(v);
-
-      if (v !== null) {
+      if (v !== null && v.length > 0) {
+        console.log('Sending front-ready event');
         window.renderer.frontReady();
       }
     });
-  }, [setKeys]);
+  }, []);
 
   const {Field, handleSubmit, state} = useForm({
     defaultValues: {
@@ -43,7 +42,7 @@ export function Login() {
 
   return (
     <>
-      <h1 className="font-bold text-3xl mb-6">Login</h1>
+      <h1 className="font-bold text-3xl mb-6 m-1">Login</h1>
       <form
         className="flex flex-col gap-2"
         onSubmit={e => {
@@ -72,21 +71,22 @@ export function Login() {
         <Field
           name="address"
           children={({state, handleChange, handleBlur}) => (
-            <Select defaultValue={keys.length > 0 ? keys[0] : ''}>
+            <Select defaultValue={keys && keys.length > 0 ? keys[0] : 'Address'}>
               <SelectTrigger>
                 <SelectValue placeholder="Address" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Address</SelectLabel>
-                  {keys.map(key => (
-                    <SelectItem
-                      key={key}
-                      value={key}
-                    >
-                      {key}
-                    </SelectItem>
-                  ))}{' '}
+                  {keys &&
+                    keys.map(key => (
+                      <SelectItem
+                        key={key}
+                        value={key}
+                      >
+                        {key}
+                      </SelectItem>
+                    ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
