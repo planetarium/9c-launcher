@@ -11,6 +11,7 @@ import path from 'path';
 import {homedir} from 'os';
 import {getKeyStorePath} from '/@/constants/os';
 import {BrowserWindow} from 'electron/main';
+import Keyv from 'keyv';
 /**
  * Shim for same function in @planetarium/account-web3-secret-storage, due to node:os import issue.
  * Determines the default key store path.  It depends on the platform:
@@ -56,7 +57,6 @@ export default class Keystore {
       this.isKeystoreInitialized = true;
 
       console.log(
-        'get-keys fired',
         this._addresses.map(v => {
           return v.toString();
         }),
