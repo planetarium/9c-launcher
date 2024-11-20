@@ -147,10 +147,7 @@ function LoginView() {
       </Link>
       {get("ThorSeasonBannerUrl", undefined) ? (
         <ExtLink href={get("ThorSeasonBannerUrl")}>
-          <img
-            style={{ opacity: 1, maxWidth: "100%", justifyContent: "center" }}
-            src={ThorBanner}
-          ></img>
+          <img style={{ maxWidth: "100%" }} src={ThorBanner}></img>
         </ExtLink>
       ) : (
         ""
