@@ -15,8 +15,6 @@ import { useLoginSession } from "src/utils/useLoginSession";
 import { ExportOverlay } from "./ExportOverlay";
 import { useStore } from "src/utils/useStore";
 import Decimal from "decimal.js";
-import { NoticeButton } from "./Button";
-import { NoticeOverlay } from "./NoticeOverlay";
 
 const UserInfoStyled = styled(motion.ul, {
   position: "fixed",
@@ -63,7 +61,6 @@ export default function UserInfo() {
   const t = useT();
 
   const [isExportKeyOpen, setExportKeyOpen] = useState<boolean>(false);
-  const [isNoticeOpen, setNoticeOpen] = useState<boolean>(false);
 
   if (!loginSession) return null;
 
@@ -87,14 +84,6 @@ export default function UserInfo() {
         isOpen={isExportKeyOpen}
         onClose={() => setExportKeyOpen(false)}
       />
-      <UserInfoItem>
-        <img src={monsterIconUrl} width={28} alt="monster collection icon" />
-        <NoticeButton onClick={() => setNoticeOpen(true)} />
-        <NoticeOverlay
-          isOpen={isNoticeOpen}
-          onClose={() => setNoticeOpen(false)}
-        />
-      </UserInfoItem>
     </UserInfoStyled>
   );
 }
