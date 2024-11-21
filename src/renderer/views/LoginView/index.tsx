@@ -1,5 +1,4 @@
 import { Address } from "@planetarium/account";
-import { ipcRenderer } from "electron";
 import { observer } from "mobx-react";
 import React, { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -10,7 +9,7 @@ import Layout from "src/renderer/components/core/Layout";
 import Button from "src/renderer/components/ui/Button";
 import Form from "src/renderer/components/ui/Form";
 import H1 from "src/renderer/components/ui/H1";
-import { Link } from "src/renderer/components/ui/Link";
+import { ExtLink, Link } from "src/renderer/components/ui/Link";
 import {
   SelectOption,
   Select,
@@ -20,6 +19,7 @@ import {
 import { PasswordField } from "src/renderer/components/ui/TextField";
 import { T } from "src/renderer/i18n";
 import { useStore } from "src/utils/useStore";
+import ThorBanner from "src/renderer/resources/thor_season_banner.webp";
 
 const transifexTags = "v2/login-view";
 
@@ -145,6 +145,13 @@ function LoginView() {
       <Link centered to="/forgot">
         <T _str="Forgot password?" _tags={transifexTags} />
       </Link>
+      {get("ThorSeasonBannerUrl", undefined) ? (
+        <ExtLink href={get("ThorSeasonBannerUrl")}>
+          <img style={{ maxWidth: "100%" }} src={ThorBanner}></img>
+        </ExtLink>
+      ) : (
+        ""
+      )}
     </Layout>
   );
 }
