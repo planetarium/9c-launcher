@@ -11,7 +11,7 @@ win:
     - target: "nsis"
       arch:
         - "x64"
-  icon: "app.ico"
+  icon: "./src/renderer/resources/launcher-icon/main/app.ico"
   sign: "./scripts/sign.js"
 nsis:
   oneClick: false
@@ -20,7 +20,7 @@ nsis:
   allowToChangeInstallationDirectory: true
   deleteAppDataOnUninstall: true
 mac:
-  icon: "AppIcon.icns"
+  icon: "./src/renderer/resources/launcher-icon/main/AppIcon.icns"
   target:
     - "dmg"
     - "zip"
@@ -30,7 +30,7 @@ mac:
   entitlementsInherit: "./signing/entitlements.inherit.plist"
   notarize: { teamId: "Please replace it" }
 dmg:
-  icon: "AppIcon.icns"
+  icon: "./src/renderer/resources/launcher-icon/main/AppIcon.icns"
   iconSize: 75
   sign: false
   contents:

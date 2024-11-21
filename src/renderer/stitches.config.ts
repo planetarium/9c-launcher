@@ -14,6 +14,7 @@ export const {
   theme: {
     colors: {
       gray: "#1d1e1f",
+      gray95: "#1d1e1ff2",
       gray80: "#1d1e1f80",
       accent: "#74f4bc",
       primary: "#3e2a8d",

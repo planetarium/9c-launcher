@@ -17,7 +17,7 @@ const gitHash = child_process.execSync("git rev-parse HEAD", {
 
 function createRenderConfig(
   isDev: boolean,
-  DEFAULT_NETWORK: "main" | "internal" | "previewnet",
+  DEFAULT_NETWORK: "main" | "internal" | "preview",
 ) {
   return {
     context: path.join(__dirname, "src"),
@@ -169,7 +169,7 @@ function createRenderConfig(
 
 function createMainConfig(
   isDev: boolean,
-  DEFAULT_NETWORK: "main" | "internal" | "previewnet",
+  DEFAULT_NETWORK: "main" | "internal" | "preview",
 ) {
   return {
     context: path.join(__dirname, "src"),

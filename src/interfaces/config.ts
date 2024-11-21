@@ -41,4 +41,5 @@ export interface IConfig {
   Maintenance: boolean;
   SwapAvailabilityCheckServiceUrl: string;
   ArenaServiceUrl: string;
+  ThorSeasonBannerUrl: string | undefined;
 }
