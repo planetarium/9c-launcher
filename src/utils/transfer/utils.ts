@@ -16,6 +16,10 @@ export const handleDetailView = (txId: string) => {
       else if (planet === "0x000000000002")
         shell.openExternal(`https://idun.9cscan.com/tx/${txId}`);
       else if (planet === "0x100000000002")
+        shell.openExternal(`https://thor-internal.9cscan.com/tx/${txId}`);
+      else if (planet === "0x000000000003")
+        shell.openExternal(`https://thor.9cscan.com/tx/${txId}`);
+      else if (planet === "0x100000000003")
         shell.openExternal(`https://idun-internal.9cscan.com/tx/${txId}`);
       else
         shell.openExternal(
