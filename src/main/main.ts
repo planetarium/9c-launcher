@@ -152,9 +152,19 @@ async function initializeConfig() {
 
     registry = await data.json();
     if (registry === undefined) throw Error("Failed to parse registry.");
+    if (!Array.isArray(registry) || registry.length <= 0) {
+      throw Error("Registry is empty or invalid. No planets found.");
+    }
 
-    const planet = registry.find((v) => v.id === remoteConfig.Planet);
-    if (!planet) throw Error(`Planet failed to initialize: ${planet}`);
+    const planet =
+      registry.find((v) => v.id === remoteConfig.Planet) ??
+      (() => {
+        console.log(
+          "No matching PlanetID found in registry. Using the first planet.",
+        );
+        remoteConfig.Planet = registry[0].id;
+        return registry[0];
+      })();
 
     remoteNode = await initializeNode(planet.rpcEndpoints, true);
     console.log(registry);
