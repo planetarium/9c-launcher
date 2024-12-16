@@ -76,6 +76,10 @@ const updateOptions: IUpdateOptions = {
   downloadStarted: quitAllProcesses,
 };
 
+/**
+ * NTP Check to adapt on thai calendar system
+ * https://snack.planetarium.dev/kor/2020/02/thai-in-2562/
+ */
 client
   .syncTime()
   .then((time) => {
@@ -94,6 +98,10 @@ client
     console.error(error);
   });
 
+/**
+ * Prevent launcher run concurrently and manage deep link event when running launcher already exists
+ * To prevent other conditional logic making deep link behavior irregular this should be called as early as possible.
+ */
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
@@ -108,6 +116,12 @@ if (!app.requestSingleInstanceLock()) {
 
   cleanUp();
 
+  /** Install rosetta on AArch64
+   * native ARM64 launcher complicates distribution and build (both game and launcher),
+   * only x86 binary is served for both game and launcher.
+   * Rosetta installation is crucial step since 'missing rosetta error' is silent on both main and renderer,
+   * which makes very hard to debug.
+   */
   if (process.platform === "darwin" && process.arch == "arm64") {
     exec("/usr/bin/arch -arch x86_64 uname -m", (error) => {
       if (error) {
@@ -129,6 +143,7 @@ if (!app.requestSingleInstanceLock()) {
 
 async function initializeConfig() {
   try {
+    // Start of config.json fetch flow, can be mutated safely until finalization
     const res = await axios(REMOTE_CONFIG_URL);
     const remoteConfig: IConfig = res.data;
 
@@ -151,11 +166,16 @@ async function initializeConfig() {
     const data = await fetch(remoteConfig.PlanetRegistryUrl);
 
     registry = await data.json();
+
+    /** Planet Registry Failsafe
+     * if registry not exists or failed to fetch, throw 'parse failure'
+     * if registry fetched but the format is invalid, throw 'registry empty'
+     * if registry fetched correctly but matching entry with ID in config.json not exists, use first planet available from parsed data.
+     */
     if (registry === undefined) throw Error("Failed to parse registry.");
     if (!Array.isArray(registry) || registry.length <= 0) {
       throw Error("Registry is empty or invalid. No planets found.");
     }
-
     const planet =
       registry.find((v) => v.id === remoteConfig.Planet) ??
       (() => {
@@ -178,15 +198,11 @@ async function initializeConfig() {
       return;
     }
 
-    // Replace config
     console.log("Replace config with remote config:", remoteConfig);
     remoteConfig.Locale = getConfig("Locale");
-    remoteConfig.PlayerUpdateRetryCount = getConfig(
-      "PlayerUpdateRetryCount",
-      0,
-    );
     remoteConfig.TrayOnClose = getConfig("TrayOnClose", true);
 
+    // config finalized at this point
     configStore.store = remoteConfig;
     console.log("Initialize config complete");
   } catch (error) {
@@ -201,6 +217,7 @@ async function initializeConfig() {
 async function initializeApp() {
   console.log("initializeApp");
 
+  // set default protocol to OS, so that launcher can be executed via protocol even if launcher is off.
   const isProtocolSet = app.setAsDefaultProtocolClient(
     "ninechronicles-launcher",
     process.execPath,
@@ -211,15 +228,18 @@ async function initializeApp() {
   console.log("isProtocolSet", isProtocolSet);
 
   app.on("ready", async () => {
+    // electron-remote initialization.
+    // As this impose security considerations, we should remove this ASAP.
     remoteInitialize();
 
+    // Renderer is initialized at this very moment.
     win = await createV2Window();
     await initGeoBlocking();
 
     process.on("uncaughtException", async (error) => {
       if (error.message.includes("system error -86")) {
         console.error("System error -86 error occurred:", error);
-
+        // system error -86 : unknown arch, missing rosetta, failed to execute x86 program.
         if (win) {
           await dialog
             .showMessageBox(win, {
@@ -251,8 +271,8 @@ async function initializeApp() {
     setV2Quitting(!getConfig("TrayOnClose"));
 
     if (useUpdate) {
-      appUpdaterInstance = new AppUpdater(win, baseUrl, updateOptions);
-      initCheckForUpdateWorker(win, appUpdaterInstance);
+      appUpdaterInstance = new AppUpdater(win, baseUrl, updateOptions); // Launcher Updater
+      initCheckForUpdateWorker(win, appUpdaterInstance); // Game Updater
     }
 
     webEnable(win.webContents);
@@ -285,18 +305,11 @@ function initializeIpc() {
     }
 
     if (utils.getExecutePath() === "PLAYER_UPDATE") {
-      configStore.set(
-        // Update Retry Counter
-        "PlayerUpdateRetryCount",
-        configStore.get("PlayerUpdateRetryCount") + 1,
-      );
       return manualPlayerUpdate();
     }
 
     const node = utils.execute(utils.getExecutePath(), info.args);
-    if (node !== null) {
-      configStore.set("PlayerUpdateRetryCount", 0);
-    }
+
     node.on("close", (code) => {
       // Code 21: ERROR_NOT_READY
       if (code === 21) {
@@ -320,7 +333,6 @@ function initializeIpc() {
   ipcMain.handle("execute launcher update", async (event) => {
     if (appUpdaterInstance === null) throw Error("appUpdaterInstance is null");
     setV2Quitting(true);
-    configStore.set("PlayerUpdateRetryCount", 0);
     await appUpdaterInstance.execute();
   });
 
@@ -336,29 +348,6 @@ function initializeIpc() {
     }
   });
 
-  ipcMain.on("get-aws-sink-cloudwatch-guid", async (event) => {
-    const localAppData = process.env.localappdata;
-    if (process.platform === "win32" && localAppData !== undefined) {
-      const guidPath = path.join(
-        localAppData,
-        "planetarium",
-        ".aws_sink_cloudwatch_guid",
-      );
-
-      if (fs.existsSync(guidPath)) {
-        event.returnValue = await fs.promises.readFile(guidPath, {
-          encoding: "utf-8",
-        });
-      } else {
-        event.returnValue = null;
-      }
-
-      return;
-    }
-
-    event.returnValue = "Not supported platform.";
-  });
-
   ipcMain.on("online-status-changed", (event, status: "online" | "offline") => {
     console.log(`online-status-changed: ${status}`);
     if (status === "offline") {
@@ -367,6 +356,8 @@ function initializeIpc() {
   });
 
   ipcMain.handle("get-planetary-info", async () => {
+    // Synchronously wait until registry / remote node initialized
+    // This should return, otherwise entry point of renderer will stuck in white screen.
     while (!registry || !remoteNode) {
       await utils.sleep(100);
     }
@@ -374,6 +365,7 @@ function initializeIpc() {
   });
 
   ipcMain.handle("check-geoblock", async () => {
+    // synchronously wait until 'await initGeoBlocking();' finished
     while (!geoBlock) {
       await utils.sleep(100);
     }
@@ -483,6 +475,7 @@ function initCheckForUpdateWorker(
     throw new NotSupportedPlatformError(process.platform);
   }
 
+  // Fork separated update checker worker process
   const checkForUpdateWorker = fork(
     path.join(__dirname, "./checkForUpdateWorker.js"),
     [],
@@ -552,6 +545,8 @@ async function initGeoBlocking() {
     return geoBlock.country;
   } catch (error) {
     console.error("Failed to fetch geo data:", error);
+    // Fallback to latest result stored in renderer-side local storage.
+    // defaults to the most strict condition if both remote and local value not exists.
     win?.webContents
       .executeJavaScript('localStorage.getItem("country")')
       .then((result) => {
