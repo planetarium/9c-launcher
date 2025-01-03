@@ -25,14 +25,6 @@ export async function performPlayerUpdate(
     return;
   }
 
-  if (get("PlayerUpdateRetryCount", 0) > 3) {
-    console.error("[ERROR] Player Update Failed 3 Times.");
-    win.webContents.send("go to error page", "player", {
-      url: "reinstall",
-    });
-    return;
-  }
-
   try {
     lockfile.lockSync(lockfilePath);
     console.log(
