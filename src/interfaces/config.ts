@@ -29,6 +29,7 @@ export interface IConfig {
   TrayOnClose: boolean;
   Planet: string;
   PlanetRegistryUrl: string;
+  PlayerUpdateRetryCount: number;
   PatrolRewardServiceUrl: string;
   MeadPledgePortalUrl: string;
   SeasonPassServiceUrl: string;

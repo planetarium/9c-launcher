@@ -16,17 +16,6 @@ import { NodeInfo } from "src/config";
 function App() {
   const { planetary, account, game } = useStore();
   const client = useApolloClient();
-
-  /** Asynchronous Invoke in useEffect
-   * As ipcRenderer.invoke() is async we're not guaranteed to receive IPC result on time
-   *
-   * Also even if we use .then() to force synchronous flow useEffect() won't wait.
-   * But we need these to render login page.
-   * hence we render null until all three initialized;
-   * Planetary, GQL client, AccountStore
-   *
-   * It could be better if we can have react suspense here.
-   */
   useEffect(() => {
     ipcRenderer
       .invoke("get-planetary-info")
