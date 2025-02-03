@@ -348,6 +348,29 @@ function initializeIpc() {
     }
   });
 
+  ipcMain.on("get-aws-sink-cloudwatch-guid", async (event) => {
+    const localAppData = process.env.localappdata;
+    if (process.platform === "win32" && localAppData !== undefined) {
+      const guidPath = path.join(
+        localAppData,
+        "planetarium",
+        ".aws_sink_cloudwatch_guid",
+      );
+
+      if (fs.existsSync(guidPath)) {
+        event.returnValue = await fs.promises.readFile(guidPath, {
+          encoding: "utf-8",
+        });
+      } else {
+        event.returnValue = null;
+      }
+
+      return;
+    }
+
+    event.returnValue = "Not supported platform.";
+  });
+
   ipcMain.on("online-status-changed", (event, status: "online" | "offline") => {
     console.log(`online-status-changed: ${status}`);
     if (status === "offline") {
