@@ -13,8 +13,9 @@ export default class PlanetaryStore {
   }
 
   @action
-  public init(registry: Planet[], node: NodeInfo) {
+  public init(registry: Planet[], node: NodeInfo, accessiblePlanets: Planet[]) {
     this.registry = registry;
+    this.accessiblePlanets = accessiblePlanets;
     this.setPlanet(get("Planet", "0x000000000000"));
     this.setNode(node);
   }
@@ -25,6 +26,8 @@ export default class PlanetaryStore {
   registry!: Planet[];
   @observable
   planet!: Planet;
+  @observable
+  accessiblePlanets!: Planet[];
 
   @action
   public setRegistry(registry: Planet[]) {
@@ -67,7 +70,7 @@ export default class PlanetaryStore {
     const planet = this.getPlanetById(planetID);
     if (planet === undefined) {
       console.error("No matching planet ID found, Using Default.");
-      this.planet = this.registry[0];
+      this.planet = this.accessiblePlanets[0];
     } else this.planet = planet;
     this.updateConfigToPlanet();
   }
@@ -129,10 +132,7 @@ export default class PlanetaryStore {
       } else {
         configStore.delete("GuildServiceUrl");
       }
-      configStore.set(
-        "ArenaServiceUrl",
-        this.planet.rpcEndpoints["arena.rest"],
-      );
+      configStore.set("ArenaServiceUrl", this.planet.rpcEndpoints["arena.gql"]);
     }
   }
 }
