@@ -30,8 +30,8 @@ function App() {
   useEffect(() => {
     ipcRenderer
       .invoke("get-planetary-info")
-      .then((info: [Planet[], NodeInfo]) => {
-        planetary.init(info[0], info[1]);
+      .then((info: [Planet[], NodeInfo, Planet[]]) => {
+        planetary.init(info[0], info[1], info[2]);
       });
     ipcRenderer
       .invoke("check-geoblock")

@@ -67,6 +67,7 @@ let gameNode: ChildProcessWithoutNullStreams | null = null;
 const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 
 let registry: Planet[];
+let accessiblePlanets: Planet[];
 let remoteNode: NodeInfo;
 let geoBlock: { ip: string; country: string; isWhitelist?: boolean };
 
@@ -176,14 +177,16 @@ async function initializeConfig() {
     if (!Array.isArray(registry) || registry.length <= 0) {
       throw Error("Registry is empty or invalid. No planets found.");
     }
+    accessiblePlanets = await filterAccessiblePlanets(registry);
+
     const planet =
-      registry.find((v) => v.id === remoteConfig.Planet) ??
+      accessiblePlanets.find((v) => v.id === remoteConfig.Planet) ??
       (() => {
         console.log(
           "No matching PlanetID found in registry. Using the first planet.",
         );
-        remoteConfig.Planet = registry[0].id;
-        return registry[0];
+        remoteConfig.Planet = accessiblePlanets[0].id;
+        return accessiblePlanets[0];
       })();
 
     remoteNode = await initializeNode(planet.rpcEndpoints, true);
@@ -381,10 +384,10 @@ function initializeIpc() {
   ipcMain.handle("get-planetary-info", async () => {
     // Synchronously wait until registry / remote node initialized
     // This should return, otherwise entry point of renderer will stuck in white screen.
-    while (!registry || !remoteNode) {
+    while (!registry || !remoteNode || !accessiblePlanets) {
       await utils.sleep(100);
     }
-    return [registry, remoteNode];
+    return [registry, remoteNode, accessiblePlanets];
   });
 
   ipcMain.handle("check-geoblock", async () => {
@@ -579,4 +582,38 @@ async function initGeoBlocking() {
         } else geoBlock.country = result;
       });
   }
+}
+
+async function filterAccessiblePlanets(planets: Planet[]): Promise<Planet[]> {
+  const accessiblePlanets: Planet[] = [];
+
+  for (const planet of planets) {
+    const endpoints = Object.values(planet.rpcEndpoints["headless.gql"]).flat();
+    // GraphQL 쿼리 정의
+    const query = `
+      query {
+        nodeStatus {
+          bootstrapEnded
+        }
+      }
+    `;
+    // 모든 endpoint에 대해 병렬로 요청을 보냅니다.
+    const requests = endpoints.map((endpoint) =>
+      axios.post(endpoint, { query }).then(
+        (response) => response.status === 200,
+        () => false, // 요청 실패 시 false 반환
+      ),
+    );
+
+    try {
+      const results = await Promise.all(requests);
+      if (results.some((isAccessible) => isAccessible)) {
+        accessiblePlanets.push(planet);
+      }
+    } catch (error) {
+      console.error(`Error checking endpoints for planet ${planet.id}:`, error);
+    }
+  }
+
+  return accessiblePlanets;
 }
