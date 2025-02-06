@@ -82,7 +82,7 @@ jobs:
           rm -fR ./dist/mac
           rm -fR ./dist/mac-arm64
 
-      - uses: actions/upload-artifact@v3.1.2
+      - uses: actions/upload-artifact@v4
         with:
           path: dist
           name: Dist-${{ matrix.packCmd }}
