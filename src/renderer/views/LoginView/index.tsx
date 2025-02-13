@@ -102,7 +102,13 @@ function LoginView() {
           label="Planet"
         >
           {planetary.registry.map((entry) => (
-            <SelectOption key={entry.id} value={entry.id}>
+            <SelectOption
+              key={entry.id}
+              value={entry.id}
+              disabled={
+                !planetary.accessiblePlanets.some((p) => p.id === entry.id)
+              }
+            >
               {entry.name}
             </SelectOption>
           ))}
