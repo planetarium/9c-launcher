@@ -119,20 +119,6 @@ export default class PlanetaryStore {
         "OnboardingPortalUrl",
         this.planet.rpcEndpoints["world-boss.rest"],
       );
-      if (this.planet.guildIconBucket) {
-        configStore.set("GuildIconBucket", this.planet.guildIconBucket);
-      } else {
-        configStore.delete("GuildIconBucket");
-      }
-      if (this.planet.rpcEndpoints["guild.rest"]) {
-        configStore.set(
-          "GuildServiceUrl",
-          this.planet.rpcEndpoints["guild.rest"][0],
-        );
-      } else {
-        configStore.delete("GuildServiceUrl");
-      }
-      configStore.set("ArenaServiceUrl", this.planet.rpcEndpoints["arena.gql"]);
     }
   }
 }
