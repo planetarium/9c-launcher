@@ -19,7 +19,7 @@ import {
 import { PasswordField } from "src/renderer/components/ui/TextField";
 import { T } from "src/renderer/i18n";
 import { useStore } from "src/utils/useStore";
-import ThorBanner from "src/renderer/resources/thor_season_banner.webp";
+import ThorBanner from "src/renderer/resources/thor_close_banner.webp";
 
 const transifexTags = "v2/login-view";
 
