@@ -106,19 +106,14 @@ export default class PlanetaryStore {
     if (this.planet) {
       configStore.set("Planet", this.planet.id);
       configStore.set("GenesisBlockPath", this.planet.genesisUri);
-      configStore.set("DataProviderUrl", this.planet.rpcEndpoints["dp.gql"]);
-      configStore.set(
-        "MarketServiceUrl",
-        this.planet.rpcEndpoints["market.rest"],
-      );
-      configStore.set(
-        "PatrolRewardServiceUrl",
-        this.planet.rpcEndpoints["patrol-reward.gql"],
-      );
-      configStore.set(
-        "OnboardingPortalUrl",
-        this.planet.rpcEndpoints["world-boss.rest"],
-      );
+
+      const playerConfig = configStore.get("PlayerConfig");
+      playerConfig["MarketServiceHost"] =
+        this.planet.rpcEndpoints["market.rest"];
+      playerConfig["OnboardingHost"] =
+        this.planet.rpcEndpoints["world-boss.rest"];
+      playerConfig["ArenaServiceHost"] = this.planet.rpcEndpoints["arena.rest"];
+      configStore.set("PlayerConfig", playerConfig);
     }
   }
 }
