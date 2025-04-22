@@ -14,31 +14,24 @@ export interface IConfig {
   LogSizeBytes: number;
   Network: string;
   SwapAddress: string | undefined;
-  DataProviderUrl: string | undefined;
   LaunchPlayer: boolean;
   RemoteNodeList: string[];
   RemoteClientStaleTipLimit: number;
   DownloadBaseURL: string;
   UseUpdate: boolean;
-  OnboardingPortalUrl: string;
   ActivationCodeUrl: string;
   KeystoreBackupDocumentationUrl: string;
   UnitySentrySampleRate: number;
   DiscordUrl: string;
-  MarketServiceUrl: string;
   TrayOnClose: boolean;
   Planet: string;
   PlanetRegistryUrl: string;
-  PatrolRewardServiceUrl: string;
   MeadPledgePortalUrl: string;
-  SeasonPassServiceUrl: string;
-  IAPServiceHostUrl: string;
-  AppleMarketUrl: string;
-  GoogleMarketUrl: string;
-  GuildServiceUrl: string | undefined;
-  GuildIconBucket: string | undefined;
-  Maintenance: boolean;
   SwapAvailabilityCheckServiceUrl: string;
-  ArenaServiceUrl: string;
   ThorSeasonBannerUrl: string | undefined;
+  PlayerConfig: PlayerArguments;
+}
+
+export interface PlayerArguments {
+  [key: string]: any;
 }

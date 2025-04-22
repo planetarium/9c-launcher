@@ -2,6 +2,7 @@ import { observable, action, computed, makeAutoObservable } from "mobx";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import { userConfigStore, get as getConfig } from "src/config";
 import { RootStore } from "src/utils/useStore";
+import { PlayerArguments } from "../interfaces/config";
 
 export default class GameStore {
   @observable
@@ -56,63 +57,52 @@ export default class GameStore {
     const awsSinkGuid: string = ipcRenderer.sendSync(
       "get-aws-sink-cloudwatch-guid",
     );
-    const dataProviderUrl = getConfig("DataProviderUrl");
-    const portalUrl = getConfig("OnboardingPortalUrl");
-    const unitySentrySampleRate = getConfig("UnitySentrySampleRate", 0);
-    const marketServiceUrl = getConfig("MarketServiceUrl");
-    const patrolRewardServiceUrl = getConfig("PatrolRewardServiceUrl");
-    const seasonPassServiceUrl = getConfig("SeasonPassServiceUrl");
-    const meadPledgePortalUrl = getConfig("MeadPledgePortalUrl");
     const genesisBlockPath = getConfig("GenesisBlockPath");
     const appProtocolVersion = getConfig("AppProtocolVersion");
-    const IAPServiceHostUrl = getConfig("IAPServiceHostUrl");
-    const appleMarketUrl = getConfig("AppleMarketUrl");
-    const googleMarketUrl = getConfig("GoogleMarketUrl");
-    const guildServiceUrl = getConfig("GuildServiceUrl");
-    const guildIconBucket = getConfig("GuildIconBucket");
-    const maintenance = getConfig("Maintenance", false);
     const planetRegistryUrl = getConfig("PlanetRegistryUrl");
-    const arenaUrl = getConfig("ArenaServiceUrl");
+    const playerArguments = getConfig("PlayerConfig");
 
-    const playerArgs = [
-      `--private-key=${privateKey}`,
-      `--rpc-client=true`,
-      `--rpc-server-host=${host}`,
-      `--rpc-server-port=${port}`,
-      `--selected-planet-id=${planetId}`,
-      `--genesis-block-path=${genesisBlockPath}`,
-      `--language=${this._language}`,
-      `--app-protocol-version=${appProtocolVersion}`,
-      `--aws-sink-guid=${awsSinkGuid}`,
-      `--on-boarding-host=${portalUrl}`,
-      `--sentry-sample-rate=${unitySentrySampleRate}`,
-      `--market-service-host=${marketServiceUrl}`,
-      `--patrol-reward-service-host=${patrolRewardServiceUrl}`,
-      `--season-pass-service-host=${seasonPassServiceUrl}`,
-      `--mead-pledge-portal-url=${meadPledgePortalUrl}`,
-      `--iap-service-host=${IAPServiceHostUrl}`,
-      `--apple-market-url=${appleMarketUrl}`,
-      `--google-market-url=${googleMarketUrl}`,
-      `--arena-service-host=${arenaUrl}`,
-    ];
+    const initializePlayerArgs = (): string[] => {
+      const args: string[] = [
+        `--private-key=${privateKey}`,
+        `--rpc-client`,
+        `--rpc-server-host=${host}`,
+        `--rpc-server-port=${port}`,
+        `--selected-planet-id=${planetId}`,
+        `--genesis-block-path=${genesisBlockPath}`,
+        `--language=${this._language}`,
+        `--app-protocol-version=${appProtocolVersion}`,
+        `--planet-registry-url=${planetRegistryUrl}`,
+      ];
 
-    const appendIfDefined = (value: string | undefined, label: string) => {
-      if (value !== undefined) {
-        playerArgs.push(`--${label}=${value}`);
+      const appendIfDefined = (value: string | undefined, label: string) => {
+        if (value !== undefined) {
+          args.push(`--${label}=${value}`);
+        }
+      };
+
+      const pascalToKebabCase = (input: string): string => {
+        return input
+          .replace(/([a-z])([A-Z])/g, "$1-$2") // Add hyphen between lowercase and uppercase
+          .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2") // Handle consecutive uppercase letters
+          .toLowerCase(); // Convert entire string to lowercase
+      };
+
+      for (const [key, value] of Object.entries(playerArguments)) {
+        const pascalKey = pascalToKebabCase(key);
+        if (typeof value === "boolean") {
+          if (value) {
+            args.push(`--${pascalKey}`);
+          }
+        } else {
+          appendIfDefined(value, pascalKey);
+        }
       }
+
+      return args;
     };
 
-    appendIfDefined(dataProviderUrl, "api-server-host");
-    if (planetId !== "0x000000000000" && planetId !== "0x100000000000") {
-      appendIfDefined(guildServiceUrl, "guild-service-url");
-      appendIfDefined(guildIconBucket, "guild-icon-bucket");
-    }
-
-    if (maintenance) {
-      playerArgs.push(`--maintenance=${maintenance}`);
-    }
-
-    appendIfDefined(planetRegistryUrl, "planet-registry-url");
+    const playerArgs = initializePlayerArgs();
 
     ipcRenderer.send("launch game", {
       args: playerArgs,

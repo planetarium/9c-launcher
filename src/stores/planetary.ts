@@ -106,33 +106,18 @@ export default class PlanetaryStore {
     if (this.planet) {
       configStore.set("Planet", this.planet.id);
       configStore.set("GenesisBlockPath", this.planet.genesisUri);
-      configStore.set("DataProviderUrl", this.planet.rpcEndpoints["dp.gql"]);
-      configStore.set(
-        "MarketServiceUrl",
-        this.planet.rpcEndpoints["market.rest"],
-      );
-      configStore.set(
-        "PatrolRewardServiceUrl",
-        this.planet.rpcEndpoints["patrol-reward.gql"],
-      );
-      configStore.set(
-        "OnboardingPortalUrl",
-        this.planet.rpcEndpoints["world-boss.rest"],
-      );
-      if (this.planet.guildIconBucket) {
-        configStore.set("GuildIconBucket", this.planet.guildIconBucket);
-      } else {
-        configStore.delete("GuildIconBucket");
+
+      const playerConfig = configStore.get("PlayerConfig");
+      playerConfig["MarketServiceHost"] =
+        this.planet.rpcEndpoints["market.rest"];
+      playerConfig["OnboardingHost"] =
+        this.planet.rpcEndpoints["world-boss.rest"];
+      playerConfig["ArenaServiceHost"] = this.planet.rpcEndpoints["arena.rest"];
+      if ("mimir.gql" in this.planet.rpcEndpoints) {
+        playerConfig["MimirServiceHost"] =
+          this.planet.rpcEndpoints["mimir.gql"];
       }
-      if (this.planet.rpcEndpoints["guild.rest"]) {
-        configStore.set(
-          "GuildServiceUrl",
-          this.planet.rpcEndpoints["guild.rest"][0],
-        );
-      } else {
-        configStore.delete("GuildServiceUrl");
-      }
-      configStore.set("ArenaServiceUrl", this.planet.rpcEndpoints["arena.gql"]);
+      configStore.set("PlayerConfig", playerConfig);
     }
   }
 }

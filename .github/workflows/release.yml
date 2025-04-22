@@ -98,7 +98,7 @@ jobs:
           fi
 
       - name: Cache electron-gyp
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v4
         with:
           path: ~/.electron-gyp
           key: ${{ runner.os }}-electron-gyp
