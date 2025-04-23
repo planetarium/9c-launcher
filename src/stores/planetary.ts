@@ -113,6 +113,10 @@ export default class PlanetaryStore {
       playerConfig["OnboardingHost"] =
         this.planet.rpcEndpoints["world-boss.rest"];
       playerConfig["ArenaServiceHost"] = this.planet.rpcEndpoints["arena.rest"];
+      if ("mimir.gql" in this.planet.rpcEndpoints) {
+        playerConfig["MimirServiceHost"] =
+          this.planet.rpcEndpoints["mimir.gql"];
+      }
       configStore.set("PlayerConfig", playerConfig);
     }
   }
