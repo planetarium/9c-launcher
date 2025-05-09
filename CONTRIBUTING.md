@@ -51,4 +51,4 @@ For contributing, we expect you to make a branch from the `development` branch, 
 
 The branch name can be whatever you want (we don't have specific rules for them), but we recommend using one of these prefixes that match your changes: `fix/`, `chore/`, `feat/`.
 
-After making changes in your branch, please push them into your fork and submit a PR with a descrption explaining the changes. The link to relevant issues would be helpful as well.
+After making changes in your branch, please push them into your fork and submit a PR with a description explaining the changes. The link to relevant issues would be helpful as well.
