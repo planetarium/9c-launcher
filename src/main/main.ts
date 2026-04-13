@@ -181,6 +181,12 @@ async function initializeConfig() {
     }
     accessiblePlanets = await filterAccessiblePlanets(registry);
 
+    if (accessiblePlanets.length === 0) {
+      throw Error(
+        "No accessible planets found. All network nodes appear to be unreachable.",
+      );
+    }
+
     const planet =
       accessiblePlanets.find((v) => v.id === remoteConfig.Planet) ??
       (() => {
