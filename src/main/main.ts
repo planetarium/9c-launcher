@@ -6,7 +6,7 @@ import {
   netenv,
   baseUrl,
   CONFIG_FILE_PATH,
-  initializeNode,
+  initializeNodeWithRetry,
   NodeInfo,
 } from "../config";
 import {
@@ -70,6 +70,8 @@ let registry: Planet[];
 let accessiblePlanets: Planet[];
 let remoteNode: NodeInfo;
 let geoBlock: { ip: string; country: string; isWhitelist?: boolean };
+// eslint-disable-next-line prefer-const
+let configInitError: string | null = null;
 
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
@@ -189,7 +191,7 @@ async function initializeConfig() {
         return accessiblePlanets[0];
       })();
 
-    remoteNode = await initializeNode(planet.rpcEndpoints, true);
+    remoteNode = await initializeNodeWithRetry(planet.rpcEndpoints, true);
     console.log(registry);
 
     const localConfigVersion = getConfig("ConfigVersion");
@@ -212,6 +214,7 @@ async function initializeConfig() {
     console.error(
       `An unexpected error occurred during fetching remote config. ${error}`,
     );
+    configInitError = error instanceof Error ? error.message : String(error);
   }
 
   log.transports.file.maxSize = getConfig("LogSizeBytes");
@@ -382,12 +385,33 @@ function initializeIpc() {
   });
 
   ipcMain.handle("get-planetary-info", async () => {
-    // Synchronously wait until registry / remote node initialized
-    // This should return, otherwise entry point of renderer will stuck in white screen.
+    const MAX_WAIT_MS = 30_000;
+    const POLL_INTERVAL_MS = 100;
+    let waited = 0;
+
     while (!registry || !remoteNode || !accessiblePlanets) {
-      await utils.sleep(100);
+      if (configInitError) {
+        return { error: configInitError };
+      }
+      if (waited >= MAX_WAIT_MS) {
+        return { error: "Timed out waiting for node initialization." };
+      }
+      await utils.sleep(POLL_INTERVAL_MS);
+      waited += POLL_INTERVAL_MS;
     }
-    return [registry, remoteNode, accessiblePlanets];
+    return { data: [registry, remoteNode, accessiblePlanets] };
+  });
+
+  ipcMain.handle("retry-planetary-init", async () => {
+    configInitError = null;
+    remoteNode = undefined as unknown as NodeInfo;
+    await initializeConfig();
+    if (remoteNode && registry && accessiblePlanets) {
+      return { data: [registry, remoteNode, accessiblePlanets] };
+    }
+    return {
+      error: configInitError ?? "Failed to initialize after retry.",
+    };
   });
 
   ipcMain.handle("check-geoblock", async () => {

@@ -66,7 +66,12 @@ export class NodeInfo {
   public async PreloadEnded(): Promise<boolean> {
     const headlessGraphQLSDK = getSdk(this.GraphqlClient());
     try {
-      const ended = await headlessGraphQLSDK.PreloadEnded();
+      const ended = await Promise.race([
+        headlessGraphQLSDK.PreloadEnded(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("PreloadEnded timeout")), 5000),
+        ),
+      ]);
       if (ended.status === 200) {
         this.clientCount = ended.data!.rpcInformation.totalCount;
         this.tip = ended.data!.nodeStatus.tip.index;
@@ -329,4 +334,30 @@ export async function initializeNode(
     `selected node: ${nodeInfo.gqlUrl})}, clients: ${nodeInfo.clientCount}`,
   );
   return nodeInfo;
+}
+
+export async function initializeNodeWithRetry(
+  rpcEndpoints: RpcEndpoints,
+  quick: boolean = false,
+  maxRetries: number = 2,
+  baseDelayMs: number = 1000,
+): Promise<NodeInfo> {
+  let lastError: Error | undefined;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await initializeNode(rpcEndpoints, quick);
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error(String(e));
+      console.warn(
+        `initializeNode attempt ${attempt + 1}/${maxRetries + 1} failed: ${
+          lastError.message
+        }`,
+      );
+      if (attempt < maxRetries) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+  }
+  throw lastError!;
 }

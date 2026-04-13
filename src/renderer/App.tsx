@@ -13,30 +13,98 @@ import { observer } from "mobx-react";
 import { Planet } from "src/interfaces/registry";
 import { NodeInfo } from "src/config";
 
+function ConnectionErrorView({
+  error,
+  onRetry,
+}: {
+  error: string;
+  onRetry: () => void;
+}) {
+  const [retrying, setRetrying] = useState(false);
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#1d1e1f",
+        color: "white",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h1 style={{ color: "#74f4bc", marginBottom: 16 }}>Connection Failed</h1>
+      <p style={{ maxWidth: 400, textAlign: "center", marginBottom: 24 }}>
+        Unable to connect to the Nine Chronicles network. Please check your
+        internet connection.
+      </p>
+      <p style={{ fontSize: 12, color: "#888", marginBottom: 24 }}>{error}</p>
+      <button
+        onClick={() => {
+          setRetrying(true);
+          onRetry();
+        }}
+        disabled={retrying}
+        style={{
+          backgroundColor: retrying ? "#555" : "#3e2a8d",
+          color: "white",
+          border: "none",
+          padding: "12px 36px",
+          fontSize: 16,
+          fontWeight: "bold",
+          cursor: retrying ? "default" : "pointer",
+          borderRadius: 4,
+        }}
+      >
+        {retrying ? "Retrying..." : "Retry"}
+      </button>
+    </div>
+  );
+}
+
 function App() {
   const { planetary, account, game } = useStore();
   const client = useApolloClient();
+  const [initError, setInitError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
-  /** Asynchronous Invoke in useEffect
-   * As ipcRenderer.invoke() is async we're not guaranteed to receive IPC result on time
-   *
-   * Also even if we use .then() to force synchronous flow useEffect() won't wait.
-   * But we need these to render login page.
-   * hence we render null until all three initialized;
-   * Planetary, GQL client, AccountStore
-   *
-   * It could be better if we can have react suspense here.
-   */
+  const handlePlanetaryResult = (result: {
+    data?: [Planet[], NodeInfo, Planet[]];
+    error?: string;
+  }) => {
+    if (result.error) {
+      setInitError(result.error);
+      setRetryCount((c) => c + 1);
+      return;
+    }
+    if (result.data) {
+      setInitError(null);
+      planetary.init(result.data[0], result.data[1], result.data[2]);
+    }
+  };
+
   useEffect(() => {
-    ipcRenderer
-      .invoke("get-planetary-info")
-      .then((info: [Planet[], NodeInfo, Planet[]]) => {
-        planetary.init(info[0], info[1], info[2]);
-      });
+    ipcRenderer.invoke("get-planetary-info").then(handlePlanetaryResult);
     ipcRenderer
       .invoke("check-geoblock")
       .then((v) => game.setGeoBlock(v.country, v.isWhitelist ?? false));
   }, []);
+
+  if (initError) {
+    return (
+      <ConnectionErrorView
+        error={initError}
+        onRetry={() => {
+          ipcRenderer
+            .invoke("retry-planetary-init")
+            .then(handlePlanetaryResult);
+        }}
+        key={retryCount}
+      />
+    );
+  }
 
   if (planetary.node === null) return null;
   if (!account.isInitialized) return null;
