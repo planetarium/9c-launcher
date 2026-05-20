@@ -4,7 +4,10 @@ import path from "path";
 import { getSdk } from "./generated/graphql-request";
 import { IConfig } from "./interfaces/config";
 import { RpcEndpoints } from "./interfaces/registry";
-import { rttClientWeightedSelector } from "./utils/nodeSelector";
+import {
+  rttClientWeightedSelector,
+  waitFirstThenGrace,
+} from "./utils/nodeSelector";
 
 export const { app } =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -76,10 +79,11 @@ export class NodeInfo {
         ),
       ]);
       if (ended.status === 200) {
-        this.rttMs = performance.now() - started;
         this.clientCount = ended.data!.rpcInformation.totalCount;
         this.tip = ended.data!.nodeStatus.tip.index;
         this.apv = ended.data!.nodeStatus.appProtocolVersion?.version ?? 0;
+        // 파싱이 끝난 뒤 대입 — 중간에 throw하면 rttMs는 Infinity로 남는다
+        this.rttMs = performance.now() - started;
         return ended.data!.nodeStatus.preloadEnded;
       }
     } catch (e) {
@@ -157,12 +161,7 @@ const NodeList = async (
   });
 
   if (quick) {
-    // 첫 응답 후 grace period 동안 추가 후보를 수집
-    await Promise.any(connectionCheck);
-    await Promise.race([
-      Promise.all(connectionCheck).catch(() => undefined),
-      new Promise((resolve) => setTimeout(resolve, 500)),
-    ]);
+    await waitFirstThenGrace(connectionCheck);
     return [...nodeList];
   }
 

@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createServer, Server } from "http";
 import { AddressInfo } from "net";
-import { rttClientWeightedSelector } from "src/utils/nodeSelector";
+import {
+  rttClientWeightedSelector,
+  waitFirstThenGrace,
+} from "src/utils/nodeSelector";
 
 interface FakeNode {
   server: Server;
@@ -52,13 +55,11 @@ interface ProbedNode {
 
 /**
  * src/config.ts의 NodeList(quick=true) + PreloadEnded 흐름을 재현합니다.
- * - performance.now()로 RTT 측정
- * - Promise.any로 첫 응답 대기
- * - 500ms grace period로 추가 후보 수집
+ * 대기 패턴은 production helper(waitFirstThenGrace)를 직접 사용.
  */
 async function probeWithGrace(
   urls: string[],
-  graceMs: number = 500,
+  graceMs?: number,
 ): Promise<ProbedNode[]> {
   const results: ProbedNode[] = [];
 
@@ -81,8 +82,8 @@ async function probeWithGrace(
             rpcInformation: { totalCount: number };
           };
         };
-        const rttMs = performance.now() - started;
         if (data?.data?.nodeStatus?.preloadEnded) {
+          const rttMs = performance.now() - started;
           results.push({
             url,
             rttMs,
@@ -96,11 +97,7 @@ async function probeWithGrace(
     }
   });
 
-  await Promise.any(probes).catch(() => undefined);
-  await Promise.race([
-    Promise.all(probes).catch(() => undefined),
-    new Promise((resolve) => setTimeout(resolve, graceMs)),
-  ]);
+  await waitFirstThenGrace(probes, graceMs);
   return [...results];
 }
 

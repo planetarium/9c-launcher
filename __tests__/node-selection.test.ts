@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
+  NODE_GRACE_PERIOD_MS,
   rttClientWeightedSelector,
+  waitFirstThenGrace,
   WeightedNode,
 } from "src/utils/nodeSelector";
 
@@ -106,7 +108,7 @@ describe("rttClientWeightedSelector", () => {
   });
 });
 
-describe("NodeList grace period 로직", () => {
+describe("waitFirstThenGrace", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -114,61 +116,68 @@ describe("NodeList grace period 로직", () => {
     vi.useRealTimers();
   });
 
-  async function nodeListQuick(
-    delays: number[], // 각 엔드포인트의 응답 지연 (ms), 음수면 실패
-    graceMs: number = 500,
-  ): Promise<number[]> {
-    const nodeList: number[] = [];
-
-    const connectionCheck = delays.map(
+  // 각 엔드포인트의 응답 지연(ms). 음수면 reject. NodeList의
+  // connectionCheck 셰이프(성공 시 nodeList push)를 시뮬레이션한다.
+  function simulateConnections(delays: number[]): {
+    promises: Promise<void>[];
+    collected: number[];
+  } {
+    const collected: number[] = [];
+    const promises = delays.map(
       (delay, i) =>
         new Promise<void>((resolve, reject) => {
           if (delay < 0) {
             setTimeout(() => reject(new Error("fail")), -delay);
           } else {
             setTimeout(() => {
-              nodeList.push(i);
+              collected.push(i);
               resolve();
             }, delay);
           }
         }),
     );
-
-    await Promise.any(connectionCheck).catch(() => undefined);
-    await Promise.race([
-      Promise.all(connectionCheck).catch(() => undefined),
-      new Promise((resolve) => setTimeout(resolve, graceMs)),
-    ]);
-    return [...nodeList];
+    return { promises, collected };
   }
 
+  it("grace 상수가 500ms로 노출", () => {
+    expect(NODE_GRACE_PERIOD_MS).toBe(500);
+  });
+
   it("두 엔드포인트 100ms 응답 → 둘 다 수집", async () => {
-    const promise = nodeListQuick([100, 100]);
+    const { promises, collected } = simulateConnections([100, 100]);
+    const done = waitFirstThenGrace(promises);
     await vi.advanceTimersByTimeAsync(150);
-    const result = await promise;
-    expect(result).toHaveLength(2);
+    await done;
+    expect(collected).toHaveLength(2);
   });
 
   it("50ms + 3000ms → 빠른 것만, grace 만료로 탈출", async () => {
-    const promise = nodeListQuick([50, 3000]);
+    const { promises, collected } = simulateConnections([50, 3000]);
+    const done = waitFirstThenGrace(promises);
     // 50ms 응답 + 500ms grace
     await vi.advanceTimersByTimeAsync(600);
-    const result = await promise;
-    expect(result).toHaveLength(1);
-    expect(result[0]).toBe(0);
+    await done;
+    expect(collected).toHaveLength(1);
+    expect(collected[0]).toBe(0);
   });
 
   it("단일 엔드포인트 성공 → 즉시 반환", async () => {
-    const promise = nodeListQuick([100]);
+    const { promises, collected } = simulateConnections([100]);
+    const done = waitFirstThenGrace(promises);
     await vi.advanceTimersByTimeAsync(150);
-    const result = await promise;
-    expect(result).toEqual([0]);
+    await done;
+    expect(collected).toEqual([0]);
   });
 
-  it("전부 실패 → 빈 배열", async () => {
-    const promise = nodeListQuick([-100, -200]);
+  it("전부 reject해도 throw하지 않음", async () => {
+    const { promises, collected } = simulateConnections([-100, -200]);
+    const done = waitFirstThenGrace(promises);
     await vi.advanceTimersByTimeAsync(300);
-    const result = await promise;
-    expect(result).toHaveLength(0);
+    await expect(done).resolves.toBeUndefined();
+    expect(collected).toHaveLength(0);
+  });
+
+  it("빈 promise 배열 → 즉시 반환", async () => {
+    await expect(waitFirstThenGrace([])).resolves.toBeUndefined();
   });
 });
