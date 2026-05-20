@@ -4,6 +4,10 @@ import path from "path";
 import { getSdk } from "./generated/graphql-request";
 import { IConfig } from "./interfaces/config";
 import { RpcEndpoints } from "./interfaces/registry";
+import {
+  rttClientWeightedSelector,
+  waitFirstThenGrace,
+} from "./utils/nodeSelector";
 
 export const { app } =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -58,6 +62,7 @@ export class NodeInfo {
   apv = 0;
   clientCount = 0;
   tip = 0;
+  rttMs = Infinity;
 
   public GraphqlClient(): GraphQLClient {
     return new GraphQLClient(this.gqlUrl);
@@ -65,6 +70,7 @@ export class NodeInfo {
 
   public async PreloadEnded(): Promise<boolean> {
     const headlessGraphQLSDK = getSdk(this.GraphqlClient());
+    const started = performance.now();
     try {
       const ended = await Promise.race([
         headlessGraphQLSDK.PreloadEnded(),
@@ -76,6 +82,8 @@ export class NodeInfo {
         this.clientCount = ended.data!.rpcInformation.totalCount;
         this.tip = ended.data!.nodeStatus.tip.index;
         this.apv = ended.data!.nodeStatus.appProtocolVersion?.version ?? 0;
+        // 파싱이 끝난 뒤 대입 — 중간에 throw하면 rttMs는 Infinity로 남는다
+        this.rttMs = performance.now() - started;
         return ended.data!.nodeStatus.preloadEnded;
       }
     } catch (e) {
@@ -153,12 +161,12 @@ const NodeList = async (
   });
 
   if (quick) {
-    await Promise.any(connectionCheck); // Grab the first node succes to cunnect and throw
-    return nodeList;
+    await waitFirstThenGrace(connectionCheck);
+    return [...nodeList];
   }
 
   await Promise.all(connectionCheck);
-  return nodeList;
+  return [...nodeList];
 };
 
 const NonStaleNodeList = (
@@ -170,26 +178,6 @@ const NonStaleNodeList = (
   }
   const maxTip = Math.max(...nodeList.map((node) => node.tip));
   return nodeList.filter((node) => node.tip >= maxTip - staleThreshold);
-};
-
-const clientWeightedSelector = (nodeList: NodeInfo[]): NodeInfo => {
-  if (nodeList.length <= 1) {
-    return nodeList[0];
-  }
-  const sum = nodeList
-    .map((node) => node.clientCount)
-    .reduce((p, c) => p + c, 0);
-  if (sum < nodeList.length) {
-    return nodeList[Math.floor(Math.random() * nodeList.length)];
-  }
-  const weightList = nodeList.map((node) => sum / node.clientCount);
-  const target = Math.random() * weightList.reduce((p, v) => p + v, 0);
-  let weightSum = 0;
-  return nodeList[
-    weightList.findIndex(
-      (weight) => (weightSum += weight) && weightSum >= target,
-    )
-  ];
 };
 
 const RpcServerHost = (): { host: string; notDefault: boolean } => {
@@ -329,9 +317,11 @@ export async function initializeNode(
   if (nodeList.length < 1) {
     throw Error("can't find available remote node.");
   }
-  const nodeInfo = clientWeightedSelector(nodeList);
+  const nodeInfo = rttClientWeightedSelector(nodeList);
   console.log(
-    `selected node: ${nodeInfo.gqlUrl})}, clients: ${nodeInfo.clientCount}`,
+    `selected node: ${nodeInfo.gqlUrl}, clients: ${
+      nodeInfo.clientCount
+    }, rtt: ${nodeInfo.rttMs.toFixed(0)}ms`,
   );
   return nodeInfo;
 }
