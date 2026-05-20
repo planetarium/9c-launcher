@@ -69,7 +69,7 @@ const client = new NTPClient("time.google.com", 123, { timeout: 5000 });
 let registry: Planet[];
 let accessiblePlanets: Planet[];
 let remoteNode: NodeInfo;
-let geoBlock: { ip: string; country: string; isWhitelist?: boolean };
+let geoBlock: { ip?: string; country: string; isWhitelist?: boolean };
 // eslint-disable-next-line prefer-const
 let configInitError: string | null = null;
 
@@ -411,7 +411,11 @@ function initializeIpc() {
   ipcMain.handle("retry-planetary-init", async () => {
     configInitError = null;
     remoteNode = undefined as unknown as NodeInfo;
+    // 첫 부팅이 오프라인이었다면 geoBlock은 fallback 값으로 채워져 있다.
+    // 재연결된 시점에 정확한 country 정보를 받아오기 위해 다시 시도.
+    geoBlock = undefined as unknown as typeof geoBlock;
     await initializeConfig();
+    await initGeoBlocking();
     if (remoteNode && registry && accessiblePlanets) {
       return { data: [registry, remoteNode, accessiblePlanets] };
     }
@@ -603,14 +607,13 @@ async function initGeoBlocking() {
     console.error("Failed to fetch geo data:", error);
     // Fallback to latest result stored in renderer-side local storage.
     // defaults to the most strict condition if both remote and local value not exists.
-    win?.webContents
+    const stored = await (win?.webContents
       .executeJavaScript('localStorage.getItem("country")')
-      .then((result) => {
-        geoBlock.isWhitelist = false;
-        if (result == null) {
-          geoBlock.country = "KR";
-        } else geoBlock.country = result;
-      });
+      .catch(() => null) ?? Promise.resolve(null));
+    geoBlock = {
+      country: stored ?? "KR",
+      isWhitelist: false,
+    };
   }
 }
 
