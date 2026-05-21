@@ -85,11 +85,15 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    ipcRenderer.invoke("get-planetary-info").then(handlePlanetaryResult);
+  const refreshGeoBlock = () => {
     ipcRenderer
       .invoke("check-geoblock")
       .then((v) => game.setGeoBlock(v.country, v.isWhitelist ?? false));
+  };
+
+  useEffect(() => {
+    ipcRenderer.invoke("get-planetary-info").then(handlePlanetaryResult);
+    refreshGeoBlock();
   }, []);
 
   if (initError) {
@@ -97,9 +101,10 @@ function App() {
       <ConnectionErrorView
         error={initError}
         onRetry={() => {
-          ipcRenderer
-            .invoke("retry-planetary-init")
-            .then(handlePlanetaryResult);
+          ipcRenderer.invoke("retry-planetary-init").then((result) => {
+            handlePlanetaryResult(result);
+            if (!result.error) refreshGeoBlock();
+          });
         }}
         key={retryCount}
       />
