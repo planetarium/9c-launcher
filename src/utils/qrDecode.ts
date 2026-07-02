@@ -54,6 +54,12 @@ export async function checkAndSaveFile(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
+      // Ensure the keystore directory exists. On a PC that has never created
+      // an account (e.g. a mobile-only user importing via QR for the first
+      // time), the keystore folder is missing and readdirSync/writeFileSync
+      // would throw ENOENT. This mirrors Web3KeyStore.import's behavior.
+      fs.mkdirSync(dirPath, { recursive: true });
+
       const files = fs.readdirSync(dirPath);
 
       const fileExists = files.some((file) => file.includes(uuid));
