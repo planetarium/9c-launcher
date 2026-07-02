@@ -1,5 +1,5 @@
 import { ApolloProvider } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ipcRenderer } from "electron";
 import { HashRouter as Router } from "react-router-dom";
 import Routes from "./Routes";
@@ -12,56 +12,18 @@ import { ExternalURLProvider } from "src/utils/useExternalURL";
 import { observer } from "mobx-react";
 import { Planet } from "src/interfaces/registry";
 import { NodeInfo } from "src/config";
+import ConnectionErrorView from "src/renderer/components/core/ConnectionErrorView";
+import { useNodeHealth } from "src/utils/useNodeHealth";
 
-function ConnectionErrorView({
-  error,
-  onRetry,
-}: {
-  error: string;
-  onRetry: () => void;
-}) {
-  const [retrying, setRetrying] = useState(false);
-  return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#1d1e1f",
-        color: "white",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <h1 style={{ color: "#74f4bc", marginBottom: 16 }}>Connection Failed</h1>
-      <p style={{ maxWidth: 400, textAlign: "center", marginBottom: 24 }}>
-        Unable to connect to the Nine Chronicles network. Please check your
-        internet connection.
-      </p>
-      <p style={{ fontSize: 12, color: "#888", marginBottom: 24 }}>{error}</p>
-      <button
-        onClick={() => {
-          setRetrying(true);
-          onRetry();
-        }}
-        disabled={retrying}
-        style={{
-          backgroundColor: retrying ? "#555" : "#3e2a8d",
-          color: "white",
-          border: "none",
-          padding: "12px 36px",
-          fontSize: 16,
-          fontWeight: "bold",
-          cursor: retrying ? "default" : "pointer",
-          borderRadius: 4,
-        }}
-      >
-        {retrying ? "Retrying..." : "Retry"}
-      </button>
-    </div>
-  );
+// ApolloProvider 하위에서 돌면서 붙어 있는 노드의 tip 진행을 감시한다.
+// 노드가 런타임에 블록을 더 이상 안 먹여주면(desync/hang) onUnhealthy를 호출해
+// 상위(App)의 연결에러 경로 = ConnectionErrorView + retry-planetary-init 로 넘긴다.
+function NodeHealthMonitor({ onUnhealthy }: { onUnhealthy: () => void }) {
+  const { healthy } = useNodeHealth();
+  useEffect(() => {
+    if (!healthy) onUnhealthy();
+  }, [healthy, onUnhealthy]);
+  return null;
 }
 
 function App() {
@@ -91,6 +53,12 @@ function App() {
       .then((v) => game.setGeoBlock(v.country, v.isWhitelist ?? false));
   };
 
+  // 런타임에 노드 연결이 끊긴 것으로 판단되면 초기 init 실패와 동일한 에러 경로로 보낸다.
+  const handleNodeUnhealthy = useCallback(() => {
+    setInitError((prev) => prev ?? "Connection to the node was lost.");
+    setRetryCount((c) => c + 1);
+  }, []);
+
   useEffect(() => {
     ipcRenderer.invoke("get-planetary-info").then(handlePlanetaryResult);
     refreshGeoBlock();
@@ -118,6 +86,7 @@ function App() {
   return (
     <LocaleProvider>
       <ApolloProvider client={client}>
+        <NodeHealthMonitor onUnhealthy={handleNodeUnhealthy} />
         <StoreProvider>
           <APVSubscriptionProvider>
             <ExternalURLProvider>

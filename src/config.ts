@@ -173,11 +173,15 @@ const NonStaleNodeList = (
   nodeList: NodeInfo[],
   staleThreshold: number,
 ): NodeInfo[] => {
-  if (staleThreshold < 0) {
-    return nodeList;
+  // tip이 0(genesis/미싱크) 이하인 노드는 죽은 것으로 간주하고 후보에서 제외한다.
+  // 이렇게 하지 않으면 응답 노드가 전부 tip=0일 때 maxTip=0이 되어
+  // 상대 임계치(maxTip - staleThreshold)가 음수가 되고 죽은 노드가 통과한다.
+  const liveNodes = nodeList.filter((node) => node.tip > 0);
+  if (staleThreshold < 0 || liveNodes.length === 0) {
+    return liveNodes;
   }
-  const maxTip = Math.max(...nodeList.map((node) => node.tip));
-  return nodeList.filter((node) => node.tip >= maxTip - staleThreshold);
+  const maxTip = Math.max(...liveNodes.map((node) => node.tip));
+  return liveNodes.filter((node) => node.tip >= maxTip - staleThreshold);
 };
 
 const RpcServerHost = (): { host: string; notDefault: boolean } => {
