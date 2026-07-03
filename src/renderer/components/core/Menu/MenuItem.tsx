@@ -8,7 +8,7 @@ const MenuItemContainer = styled("button", {
   alignItems: "center",
   width: 160,
   padding: "10px",
-  appearence: "none",
+  appearance: "none",
   cursor: "pointer",
   "& img": {
     paddingRight: "1rem",
