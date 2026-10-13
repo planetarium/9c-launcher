@@ -52,6 +52,7 @@ import {
 } from "@electron/remote/main";
 import { fork } from "child_process";
 import { Planet } from "src/interfaces/registry";
+import { filterAccessiblePlanets } from "./planetAccess";
 
 Object.assign(console, log.functions);
 
@@ -144,10 +145,15 @@ if (!app.requestSingleInstanceLock()) {
   initializeIpc();
 }
 
+// get-planetary-info가 30초만 기다리므로, 응답 없는 서버에 무기한 묶이지 않게 상한을 둔다.
+const INIT_FETCH_TIMEOUT_MS = 10_000;
+
 async function initializeConfig() {
   try {
     // Start of config.json fetch flow, can be mutated safely until finalization
-    const res = await axios(REMOTE_CONFIG_URL);
+    const res = await axios(REMOTE_CONFIG_URL, {
+      signal: AbortSignal.timeout(INIT_FETCH_TIMEOUT_MS),
+    });
     const remoteConfig: IConfig = res.data;
 
     const exists = await fs.promises.stat(CONFIG_FILE_PATH).catch(() => false);
@@ -166,7 +172,9 @@ async function initializeConfig() {
       "https://planets.nine-chronicles.com/planets/",
     );
 
-    const data = await fetch(remoteConfig.PlanetRegistryUrl);
+    const data = await fetch(remoteConfig.PlanetRegistryUrl, {
+      signal: AbortSignal.timeout(INIT_FETCH_TIMEOUT_MS),
+    });
 
     registry = await data.json();
 
@@ -191,7 +199,9 @@ async function initializeConfig() {
       accessiblePlanets.find((v) => v.id === remoteConfig.Planet) ??
       (() => {
         console.log(
-          "No matching PlanetID found in registry. Using the first planet.",
+          registry.some((v) => v.id === remoteConfig.Planet)
+            ? `Planet ${remoteConfig.Planet} is unreachable. Using the first accessible planet.`
+            : "No matching PlanetID found in registry. Using the first planet.",
         );
         remoteConfig.Planet = accessiblePlanets[0].id;
         return accessiblePlanets[0];
@@ -220,7 +230,12 @@ async function initializeConfig() {
     console.error(
       `An unexpected error occurred during fetching remote config. ${error}`,
     );
-    configInitError = error instanceof Error ? error.message : String(error);
+    // axios 0.26은 abort 시 Error가 아닌 Cancel로 reject한다 ("Cancel: canceled")
+    configInitError = axios.isCancel(error)
+      ? "Timed out fetching remote config."
+      : error instanceof Error
+      ? error.message
+      : String(error);
   }
 
   log.transports.file.maxSize = getConfig("LogSizeBytes");
@@ -615,38 +630,4 @@ async function initGeoBlocking() {
       isWhitelist: false,
     };
   }
-}
-
-async function filterAccessiblePlanets(planets: Planet[]): Promise<Planet[]> {
-  const accessiblePlanets: Planet[] = [];
-
-  for (const planet of planets) {
-    const endpoints = Object.values(planet.rpcEndpoints["headless.gql"]).flat();
-    // GraphQL 쿼리 정의
-    const query = `
-      query {
-        nodeStatus {
-          bootstrapEnded
-        }
-      }
-    `;
-    // 모든 endpoint에 대해 병렬로 요청을 보냅니다.
-    const requests = endpoints.map((endpoint) =>
-      axios.post(endpoint, { query }).then(
-        (response) => response.status === 200,
-        () => false, // 요청 실패 시 false 반환
-      ),
-    );
-
-    try {
-      const results = await Promise.all(requests);
-      if (results.some((isAccessible) => isAccessible)) {
-        accessiblePlanets.push(planet);
-      }
-    } catch (error) {
-      console.error(`Error checking endpoints for planet ${planet.id}:`, error);
-    }
-  }
-
-  return accessiblePlanets;
 }
