@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import axios from "axios";
+import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
+import http from "http";
+import { AddressInfo } from "net";
 import {
   filterAccessiblePlanets,
   probeEndpoint,
@@ -62,32 +63,55 @@ describe("filterAccessiblePlanets", () => {
 });
 
 describe("probeEndpoint", () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
+  const TEST_TIMEOUT_MS = 300;
+  let server: http.Server;
+  let baseUrl: string;
+
+  beforeAll(async () => {
+    server = http.createServer((req, res) => {
+      if (req.url === "/ok") {
+        res.writeHead(200, { "content-type": "application/json" });
+        res.end('{"data":{"nodeStatus":{"bootstrapEnded":true}}}');
+      } else if (req.url === "/trickle") {
+        // 헤더는 보내고 본문을 조금씩 흘린다 (소켓 idle timeout으로는 안 끊김)
+        res.writeHead(200, { "content-type": "application/json" });
+        const timer = setInterval(() => res.write(" "), 50);
+        res.on("close", () => clearInterval(timer));
+      }
+      // 그 외: 연결만 받고 응답하지 않음 (odin5.9capi.com 장애 형태)
+    });
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    baseUrl = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+  afterAll(() => {
+    server.closeAllConnections();
+    server.close();
   });
 
-  it("요청마다 타임아웃을 건다", async () => {
-    const post = vi
-      .spyOn(axios, "post")
-      .mockResolvedValue({ status: 200 } as never);
-
-    await expect(probeEndpoint("https://node/graphql")).resolves.toBe(true);
-    expect(post).toHaveBeenCalledWith(
-      "https://node/graphql",
-      expect.anything(),
-      expect.objectContaining({ timeout: PLANET_CHECK_TIMEOUT_MS }),
+  it("정상 응답이면 true", async () => {
+    await expect(probeEndpoint(`${baseUrl}/ok`, TEST_TIMEOUT_MS)).resolves.toBe(
+      true,
     );
-    expect(PLANET_CHECK_TIMEOUT_MS).toBeLessThan(30_000);
   });
 
-  it("요청 실패(타임아웃 포함) 시 false", async () => {
-    vi.spyOn(axios, "post").mockRejectedValue(
-      new Error("timeout of 5000ms exceeded"),
-    );
-    await expect(probeEndpoint("https://node/graphql")).resolves.toBe(false);
+  it("연결만 받고 응답 없는 서버는 timeout 안에 false", async () => {
+    const start = Date.now();
+    await expect(
+      probeEndpoint(`${baseUrl}/hang`, TEST_TIMEOUT_MS),
+    ).resolves.toBe(false);
+    expect(Date.now() - start).toBeLessThan(TEST_TIMEOUT_MS * 3);
+  });
+
+  it("본문을 조금씩 흘리는 서버도 timeout 안에 false", async () => {
+    const start = Date.now();
+    await expect(
+      probeEndpoint(`${baseUrl}/trickle`, TEST_TIMEOUT_MS),
+    ).resolves.toBe(false);
+    expect(Date.now() - start).toBeLessThan(TEST_TIMEOUT_MS * 3);
+  });
+
+  it("기본 timeout은 get-planetary-info 대기(30초)보다 충분히 짧다", () => {
+    expect(PLANET_CHECK_TIMEOUT_MS).toBeLessThanOrEqual(10_000);
   });
 });

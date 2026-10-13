@@ -2,7 +2,7 @@ import axios from "axios";
 import { Planet } from "src/interfaces/registry";
 
 /**
- * 엔드포인트 1개당 응답 대기 상한.
+ * 엔드포인트 1개당 요청 전체(연결~응답 본문) 상한.
  * get-planetary-info IPC가 30초만 기다리므로 그보다 충분히 짧아야 한다.
  * (응답 없이 매달리는 외부 노드 하나 때문에 전체 초기화가 막히는 걸 방지)
  */
@@ -18,12 +18,17 @@ const BOOTSTRAP_QUERY = `
 
 export type EndpointProbe = (endpoint: string) => Promise<boolean>;
 
-export const probeEndpoint: EndpointProbe = (endpoint) =>
+export const probeEndpoint = (
+  endpoint: string,
+  timeoutMs: number = PLANET_CHECK_TIMEOUT_MS,
+): Promise<boolean> =>
   axios
     .post(
       endpoint,
       { query: BOOTSTRAP_QUERY },
-      { timeout: PLANET_CHECK_TIMEOUT_MS },
+      // axios timeout은 소켓 idle 기준이라 조금씩 흘리는 서버엔 뚫린다.
+      // signal로 요청 전체에 hard deadline을 건다.
+      { signal: AbortSignal.timeout(timeoutMs) },
     )
     .then(
       (response) => response.status === 200,

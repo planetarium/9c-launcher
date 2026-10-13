@@ -145,10 +145,15 @@ if (!app.requestSingleInstanceLock()) {
   initializeIpc();
 }
 
+// get-planetary-info가 30초만 기다리므로, 응답 없는 서버에 무기한 묶이지 않게 상한을 둔다.
+const INIT_FETCH_TIMEOUT_MS = 10_000;
+
 async function initializeConfig() {
   try {
     // Start of config.json fetch flow, can be mutated safely until finalization
-    const res = await axios(REMOTE_CONFIG_URL);
+    const res = await axios(REMOTE_CONFIG_URL, {
+      signal: AbortSignal.timeout(INIT_FETCH_TIMEOUT_MS),
+    });
     const remoteConfig: IConfig = res.data;
 
     const exists = await fs.promises.stat(CONFIG_FILE_PATH).catch(() => false);
@@ -167,7 +172,9 @@ async function initializeConfig() {
       "https://planets.nine-chronicles.com/planets/",
     );
 
-    const data = await fetch(remoteConfig.PlanetRegistryUrl);
+    const data = await fetch(remoteConfig.PlanetRegistryUrl, {
+      signal: AbortSignal.timeout(INIT_FETCH_TIMEOUT_MS),
+    });
 
     registry = await data.json();
 
