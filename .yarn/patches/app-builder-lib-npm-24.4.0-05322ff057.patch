@@ -1,0 +1,26 @@
+diff --git a/out/codeSign/macCodeSign.js b/out/codeSign/macCodeSign.js
+index 26182fdfc41216e49368596f8fa996ae30c67284..600cf74ed89ac70d67649e8ee3aa0adbf7b1c4d3 100644
+--- a/out/codeSign/macCodeSign.js
++++ b/out/codeSign/macCodeSign.js
+@@ -151,16 +151,18 @@ async function createKeychain({ tmpDir, cscLink, cscKeyPassword, cscILink, cscIK
+         bluebird_lst_1.default.map(certLinks, (link, i) => (0, codesign_1.importCertificate)(link, tmpDir, currentDir).then(it => (certPaths[i] = it))),
+         bluebird_lst_1.default.mapSeries(securityCommands, it => (0, util_1.exec)("security", it)),
+     ]);
+-    return await importCerts(keychainFile, certPaths, [cscKeyPassword, cscIKeyPassword].filter(it => it != null));
++    return await importCerts(keychainFile, certPaths, [cscKeyPassword, cscIKeyPassword].filter(it => it != null), keychainPassword);
+ }
+ exports.createKeychain = createKeychain;
+-async function importCerts(keychainFile, paths, keyPasswords) {
++async function importCerts(keychainFile, paths, keyPasswords, keychainPassword) {
+     for (let i = 0; i < paths.length; i++) {
+         const password = keyPasswords[i];
+         await (0, util_1.exec)("security", ["import", paths[i], "-k", keychainFile, "-T", "/usr/bin/codesign", "-T", "/usr/bin/productbuild", "-P", password]);
+         // https://stackoverflow.com/questions/39868578/security-codesign-in-sierra-keychain-ignores-access-control-settings-and-ui-p
+         // https://github.com/electron-userland/electron-packager/issues/701#issuecomment-322315996
+-        await (0, util_1.exec)("security", ["set-key-partition-list", "-S", "apple-tool:,apple:", "-s", "-k", password, keychainFile]);
++        // set-key-partition-list -k 는 keychain 비밀번호여야 한다 (p12 비밀번호를 넘기면 macOS 26+ 에서 SecKeychainUnlock 실패).
++        // upstream electron-builder #10101 / #10172 (26.17.0) 백포트.
++        await (0, util_1.exec)("security", ["set-key-partition-list", "-S", "apple-tool:,apple:", "-s", "-k", keychainPassword, keychainFile]);
+     }
+     return {
+         keychainFile,
