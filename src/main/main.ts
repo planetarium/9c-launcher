@@ -52,6 +52,7 @@ import {
 } from "@electron/remote/main";
 import { fork } from "child_process";
 import { Planet } from "src/interfaces/registry";
+import { filterAccessiblePlanets } from "./planetAccess";
 
 Object.assign(console, log.functions);
 
@@ -615,38 +616,4 @@ async function initGeoBlocking() {
       isWhitelist: false,
     };
   }
-}
-
-async function filterAccessiblePlanets(planets: Planet[]): Promise<Planet[]> {
-  const accessiblePlanets: Planet[] = [];
-
-  for (const planet of planets) {
-    const endpoints = Object.values(planet.rpcEndpoints["headless.gql"]).flat();
-    // GraphQL 쿼리 정의
-    const query = `
-      query {
-        nodeStatus {
-          bootstrapEnded
-        }
-      }
-    `;
-    // 모든 endpoint에 대해 병렬로 요청을 보냅니다.
-    const requests = endpoints.map((endpoint) =>
-      axios.post(endpoint, { query }).then(
-        (response) => response.status === 200,
-        () => false, // 요청 실패 시 false 반환
-      ),
-    );
-
-    try {
-      const results = await Promise.all(requests);
-      if (results.some((isAccessible) => isAccessible)) {
-        accessiblePlanets.push(planet);
-      }
-    } catch (error) {
-      console.error(`Error checking endpoints for planet ${planet.id}:`, error);
-    }
-  }
-
-  return accessiblePlanets;
 }
