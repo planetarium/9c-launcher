@@ -228,7 +228,12 @@ async function initializeConfig() {
     console.error(
       `An unexpected error occurred during fetching remote config. ${error}`,
     );
-    configInitError = error instanceof Error ? error.message : String(error);
+    // axios 0.26은 abort 시 Error가 아닌 Cancel로 reject한다 ("Cancel: canceled")
+    configInitError = axios.isCancel(error)
+      ? "Timed out fetching remote config."
+      : error instanceof Error
+      ? error.message
+      : String(error);
   }
 
   log.transports.file.maxSize = getConfig("LogSizeBytes");
