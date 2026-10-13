@@ -79,7 +79,7 @@ jobs:
             jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
             jq --arg suffix " Preview" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
             jq --arg suffix "Preview" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            sed 's/NineChronicles@workspace/NineChroniclesPreview@workspace/g' yarn.lock > temp1.txt
+            sed -e 's/NineChronicles@workspace/NineChroniclesPreview@workspace/g' -e 's/NineChronicles%40workspace/NineChroniclesPreview%40workspace/g' yarn.lock > temp1.txt
             mv temp1.txt yarn.lock
             mv ./signing/sandbox_code_sign_tool.properties ./tmp/codesign/conf/code_sign_tool.properties
             sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.preview.yml > temp2.txt
@@ -90,7 +90,7 @@ jobs:
             jq --arg version "$version.$timestamp" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
             jq --arg suffix " Internal" '.productName += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
             jq --arg suffix "Internal" '.name += $suffix' package.json > tmp.$$.json && mv tmp.$$.json package.json
-            sed 's/NineChronicles@workspace/NineChroniclesInternal@workspace/g' yarn.lock > temp1.txt
+            sed -e 's/NineChronicles@workspace/NineChroniclesInternal@workspace/g' -e 's/NineChronicles%40workspace/NineChroniclesInternal%40workspace/g' yarn.lock > temp1.txt
             mv temp1.txt yarn.lock
             mv ./signing/sandbox_code_sign_tool.properties ./tmp/codesign/conf/code_sign_tool.properties
             sed "s/Please replace it/${{ secrets.APPLE_TEAM_ID }}/g" electron-builder.internal.yml > temp2.txt
