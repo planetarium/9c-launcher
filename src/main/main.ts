@@ -199,7 +199,9 @@ async function initializeConfig() {
       accessiblePlanets.find((v) => v.id === remoteConfig.Planet) ??
       (() => {
         console.log(
-          "No matching PlanetID found in registry. Using the first planet.",
+          registry.some((v) => v.id === remoteConfig.Planet)
+            ? `Planet ${remoteConfig.Planet} is unreachable. Using the first accessible planet.`
+            : "No matching PlanetID found in registry. Using the first planet.",
         );
         remoteConfig.Planet = accessiblePlanets[0].id;
         return accessiblePlanets[0];
