@@ -74,6 +74,11 @@ let geoBlock: { ip?: string; country: string; isWhitelist?: boolean };
 // eslint-disable-next-line prefer-const
 let configInitError: string | null = null;
 
+// get-planetary-info가 30초만 기다리므로, 응답 없는 서버에 무기한 묶이지 않게 상한을 둔다.
+// 아래 requestSingleInstanceLock 블록이 initializeConfig()를 모듈 평가 중에 바로 호출하므로
+// 그보다 위에 선언해야 한다 (아래에 두면 첫 실행에서 TDZ ReferenceError).
+const INIT_FETCH_TIMEOUT_MS = 10_000;
+
 const useUpdate = getConfig("UseUpdate", process.env.NODE_ENV === "production");
 
 const updateOptions: IUpdateOptions = {
@@ -144,9 +149,6 @@ if (!app.requestSingleInstanceLock()) {
   initializeApp();
   initializeIpc();
 }
-
-// get-planetary-info가 30초만 기다리므로, 응답 없는 서버에 무기한 묶이지 않게 상한을 둔다.
-const INIT_FETCH_TIMEOUT_MS = 10_000;
 
 async function initializeConfig() {
   try {
